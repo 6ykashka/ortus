@@ -739,6 +739,12 @@ type MemberId = Id
 // ModuleKey defines model for moduleKey.
 type ModuleKey = string
 
+// NodeId Examples: 10000000-0000-4000-8000-000000000001
+type NodeId = Id
+
+// NodeVersion defines model for nodeVersion.
+type NodeVersion = int
+
 // OperatorId Examples: 10000000-0000-4000-8000-000000000001
 type OperatorId = Id
 
@@ -768,6 +774,12 @@ type ResponseId = Id
 
 // RoleId Examples: 10000000-0000-4000-8000-000000000001
 type RoleId = Id
+
+// RuleId Examples: 10000000-0000-4000-8000-000000000001
+type RuleId = Id
+
+// SpaceId Examples: 10000000-0000-4000-8000-000000000001
+type SpaceId = Id
 
 // TaskId Examples: 10000000-0000-4000-8000-000000000001
 type TaskId = Id

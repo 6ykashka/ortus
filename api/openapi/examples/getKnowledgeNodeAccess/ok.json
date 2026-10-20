@@ -1,0 +1,52 @@
+{
+  "nodeId": "7a369026-5559-5e6c-a4f3-9eca8c7f5b6c",
+  "title": "Водителям",
+  "accessMode": "listed",
+  "inheritedFrom": {
+    "kind": "space",
+    "id": "a3b6bc34-7307-58e7-990a-5513cd630786",
+    "title": "Логистика"
+  },
+  "chain": [
+    {
+      "kind": "ok",
+      "title": "Организация",
+      "detail": "Владелец бизнеса видит всё"
+    },
+    {
+      "kind": "ok",
+      "title": "Пространство «Логистика»",
+      "detail": "Ограниченное: все в области читают, пишут участники"
+    },
+    {
+      "kind": "ok",
+      "title": "«Водителям»",
+      "detail": "Только выбранные"
+    }
+  ],
+  "entries": [
+    {
+      "who": "role",
+      "can": "view",
+      "refId": "2a857e38-2d94-51a0-81de-406de8b3c772",
+      "orgUnitId": "6de355d2-b019-5bb6-b66a-ddae6a13fb65",
+      "label": "Роль «Водитель» · «Север Логистик»"
+    },
+    {
+      "who": "role",
+      "can": "edit",
+      "refId": "2688205d-9d70-5eaa-a2a8-cb405fe282cb",
+      "label": "Роль «Редактор» в пространстве"
+    }
+  ],
+  "descendantCount": 4,
+  "ownSubnodes": [
+    {
+      "id": "a37b3433-fdfd-584f-b0e4-847197ff6815",
+      "title": "Маршруты"
+    }
+  ],
+  "canManage": false,
+  "leadNames": ["Марина Котова"],
+  "revision": 1
+}

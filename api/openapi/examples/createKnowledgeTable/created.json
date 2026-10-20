@@ -1,0 +1,18 @@
+{
+  "id": "9ed76e4c-0040-582a-948a-16d0e8466008",
+  "nodeId": "babd503a-697f-595f-83f8-6501710d0803",
+  "title": "Расходы в пути",
+  "columns": [
+    {
+      "id": "404e0d21-f2ee-565c-bef3-3967ac725559",
+      "name": "Дата",
+      "type": "text"
+    },
+    {
+      "id": "2a1e8a00-3cbd-54ae-85ae-b99a3cfeda6f",
+      "name": "Сумма, ₽",
+      "type": "number"
+    }
+  ],
+  "rows": []
+}

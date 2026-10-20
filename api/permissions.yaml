@@ -168,13 +168,54 @@ modules:
       calendar.bookings.manage:
         { level: edit, label: Переносить и отменять, scopes: [tenant, unit, self] }
 
+  # W4.04 (docs/23-knowledge-spaces.md «Новые права»; knowledge.md §3.1): области space (пространство), page (страница
+  # с подстраницами), relation (связь с записью CRM — «прораб объекта», KB-01); project остаётся ради совместимости —
+  # «База знаний» её не использует (RS-08). Новые ключи — перенос и архив, доступ к страницам, участники, автоматизация,
+  # создание пространств; knowledge.comment и knowledge.export не вводятся (экранов нет).
   core.knowledge:
     label: База знаний
     actions:
-      knowledge.read: { level: view, label: Читать, scopes: [tenant, unit, project] }
-      knowledge.create: { level: create, label: Создавать, scopes: [tenant, unit, project] }
-      knowledge.update: { level: edit, label: Редактировать, scopes: [tenant, unit, project] }
-      knowledge.publish: { level: settings, label: Публиковать, scopes: [tenant, unit, project] }
+      knowledge.read:
+        { level: view, label: Читать, scopes: [tenant, unit, project, space, page, relation] }
+      knowledge.create:
+        { level: create, label: Создавать, scopes: [tenant, unit, project, space, page] }
+      knowledge.update:
+        {
+          level: edit,
+          label: Редактировать,
+          scopes: [tenant, unit, project, space, page, relation],
+        }
+      # W4.04: уровень review вместо settings (docs/23 «было level: settings», Q-W4.00-knowledge-5) — «Утвердить»;
+      # публикация версии — knowledge.update (Q-W4.00-knowledge-4). Ключ не меняется; правка — двумя ревьюерами.
+      knowledge.publish:
+        { level: review, label: Публиковать, scopes: [tenant, unit, project, space, page] }
+      knowledge.organize:
+        { level: edit, label: Перемещать и архивировать, scopes: [tenant, unit, space] }
+      knowledge.access.manage:
+        {
+          level: settings,
+          label: Доступ к страницам,
+          scopes: [tenant, unit, space],
+          sensitivity: sensitive,
+          note: "выдаёт только то, что имеет сам",
+        }
+      knowledge.members.manage:
+        {
+          level: settings,
+          label: Участники пространства,
+          scopes: [tenant, unit, space],
+          sensitivity: sensitive,
+        }
+      knowledge.automation.manage:
+        {
+          level: settings,
+          label: Настраивать автоматизацию,
+          scopes: [tenant, unit, space],
+          sensitivity: sensitive,
+          note: "правило работает от имени включившего, права проверяются при каждом запуске",
+        }
+      knowledge.spaces.manage:
+        { level: settings, label: Создавать пространства, scopes: [tenant, unit] }
 
   core.chat:
     label: Чаты
@@ -744,6 +785,43 @@ role_templates:
     label: Чаты · создаёт группы
     default_scope: unit
     actions: [chat.read, chat.write, chat.direct, chat.create]
+
+  # W4.04: роли пространства «Базы знаний» (docs/23 «Роли пространства»; KB-02 — без «Автора»). Назначаются только
+  # с областью space (scopes; читатель — и page: одобренный запрос доступа со сроком). В listRoles и listAssignments
+  # access API их нет (Q-W4.00-knowledge-21, Q-W4.30-16 вариант б): участников пространства показывает и меняет API БЗ
+  # (listKnowledgeSpaceMembers, setKnowledgeSpaceMember). Вне своего пространства прав не дают (PD-53).
+  kb_space_lead:
+    label: Руководитель пространства
+    kind: system
+    default_scope: space
+    scopes: [space]
+    actions:
+      [
+        knowledge.read,
+        knowledge.create,
+        knowledge.update,
+        knowledge.organize,
+        knowledge.publish,
+        knowledge.access.manage,
+        knowledge.members.manage,
+        knowledge.automation.manage,
+      ]
+    note: "Всё в пространстве, участники, доступ, автоматизация"
+  kb_space_editor:
+    label: Редактор
+    kind: system
+    default_scope: space
+    scopes: [space]
+    actions:
+      [knowledge.read, knowledge.create, knowledge.update, knowledge.organize, knowledge.publish]
+    note: "Создаёт и правит любые страницы, публикует, перемещает"
+  kb_space_reader:
+    label: Читатель
+    kind: system
+    default_scope: space
+    scopes: [space, page]
+    actions: [knowledge.read]
+    note: "Читает и отмечает «Ознакомлен»"
 
 # Расхождения прототипа (ortus/models.js) с каталогом — исправить при переносе в репозиторий.
 prototype_renames:

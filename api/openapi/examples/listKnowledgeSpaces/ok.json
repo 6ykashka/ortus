@@ -1,0 +1,60 @@
+{
+  "items": [
+    {
+      "id": "a3b6bc34-7307-58e7-990a-5513cd630786",
+      "name": "Логистика",
+      "icon": "local_shipping",
+      "color": "#1F6B52",
+      "orgUnitId": "6de355d2-b019-5bb6-b66a-ddae6a13fb65",
+      "areaLabel": "Фирма «Север Логистик»",
+      "access": "limited",
+      "templateKey": null,
+      "homeNodeId": "5a437a14-2357-5932-ad5e-fa133d3cc218",
+      "my": {
+        "owner": false,
+        "lead": true,
+        "view": true,
+        "create": true,
+        "edit": true,
+        "role": "Руководитель пространства"
+      },
+      "leadNames": ["Марина Котова"],
+      "pageCount": 16,
+      "revision": 1,
+      "lastUpdate": {
+        "nodeId": "babd503a-697f-595f-83f8-6501710d0803",
+        "title": "Журнал осмотров машин",
+        "at": "2026-09-23T21:00:00Z"
+      },
+      "openRequestCount": 0
+    },
+    {
+      "id": "681f3641-54bc-54c9-9e0d-98f91c079698",
+      "name": "Общее",
+      "icon": "apartment",
+      "color": "#2B5479",
+      "orgUnitId": null,
+      "areaLabel": "Вся организация",
+      "access": "open",
+      "templateKey": null,
+      "homeNodeId": "9bc6658a-3711-5605-a18e-ffe93d0edbe3",
+      "my": {
+        "owner": false,
+        "lead": false,
+        "view": true,
+        "create": true,
+        "edit": true,
+        "role": "Редактор"
+      },
+      "leadNames": [],
+      "pageCount": 3,
+      "revision": 1,
+      "lastUpdate": {
+        "nodeId": "b9f5dffd-a4ad-52f1-a0af-7604e4316d81",
+        "title": "Как пользоваться Ортусом",
+        "at": "2026-09-19T21:00:00Z"
+      }
+    }
+  ],
+  "nextCursor": null
+}

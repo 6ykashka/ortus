@@ -36,14 +36,19 @@ var xScopes = map[string]admission{
 	"tenant-org-unit-resource-pool":            {kinds: []string{KindTenant, KindUnit, KindResource}},
 	"tenant-org-unit-warehouse":                {kinds: []string{KindTenant, KindUnit, KindWarehouse}},
 	"tenant-org-unit-account":                  {kinds: []string{KindTenant, KindUnit, KindAccount}},
-	"responsible-manager-or-owner":             {kinds: territorial},
-	"responsible-manager-or-owner-only":        {kinds: territorial},
-	"source-manager-or-owner":                  {kinds: territorial},
-	"target-manager-or-owner":                  {kinds: territorial},
-	"source-or-target-manager-owner":           {kinds: territorial},
-	"owning-object-scope":                      {any: true},
-	"owning-object-and-field-scope":            {any: true},
-	"effective-module-and-field-scopes":        {any: true},
+	// W4.04: «База знаний» — узел и пространство: роли области (и «своё» — открытые пространства всей организации,
+	// Q-W4.00-knowledge-15), роли пространства и страницы, связь; управление пространством — роли области и
+	// пространства.
+	"knowledge-space-node":              {kinds: []string{KindTenant, KindUnit, KindSelf, KindProject, KindSpace, KindPage, KindRelation}},
+	"knowledge-space":                   {kinds: []string{KindTenant, KindUnit, KindSpace}},
+	"responsible-manager-or-owner":      {kinds: territorial},
+	"responsible-manager-or-owner-only": {kinds: territorial},
+	"source-manager-or-owner":           {kinds: territorial},
+	"target-manager-or-owner":           {kinds: territorial},
+	"source-or-target-manager-owner":    {kinds: territorial},
+	"owning-object-scope":               {any: true},
+	"owning-object-and-field-scope":     {any: true},
+	"effective-module-and-field-scopes": {any: true},
 }
 
 // admissionOf returns the admission of an x-scope; an unknown one admits tenant grants only (fail-closed).

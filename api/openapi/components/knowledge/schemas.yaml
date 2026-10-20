@@ -86,3 +86,2001 @@ KnowledgePageList:
     - items
     - nextCursor
   description: Opaque cursor is bound to tenant, principal, effective scopes, filters and sort. Permission changes invalidate the cursor.
+KnowledgeSpaceMy:
+  type: object
+  additionalProperties: false
+  properties:
+    owner:
+      type: boolean
+      description: "The member is an owner of the business: sees and edits everything."
+    lead:
+      type: boolean
+      description: The lead of the space (kb_space_lead) or the owner of the business.
+    view:
+      type: boolean
+      description: Reads the space by a role (its area or the space).
+    create:
+      type: boolean
+      description: Creates pages at the top level («+», «Новая подстраница»).
+    edit:
+      type: boolean
+      description: Edits any page of the space by a role.
+    role:
+      type: string
+      maxLength: 120
+      description: "Label of the role of the member on the card: «Владелец бизнеса», the name of the role of the space, «Читатель по уровню «{уровень}»» or empty («Вы: по ссылке на страницу» — a page assignment only)."
+  required:
+    - owner
+    - lead
+    - view
+    - create
+    - edit
+    - role
+  description: W4.04. The rights of the member in a space (prototype kbSpaceMy).
+KnowledgeLastUpdate:
+  type: object
+  additionalProperties: false
+  properties:
+    nodeId:
+      $ref: ../common/schemas.yaml#/Id
+    title:
+      type: string
+      maxLength: 120
+    at:
+      $ref: ../common/schemas.yaml#/Instant
+  required:
+    - nodeId
+    - title
+    - at
+  description: "W4.04. The last published visible page of a space — «Обновлено: «{страница}», {дата}»."
+KnowledgeSpace:
+  type: object
+  additionalProperties: false
+  properties:
+    id:
+      $ref: ../common/schemas.yaml#/Id
+    name:
+      type: string
+      maxLength: 120
+    icon:
+      type: string
+      pattern: ^[a-z_]{2,40}$
+    color:
+      type: string
+      pattern: ^#[0-9A-Fa-f]{6}$
+    orgUnitId:
+      type:
+        - string
+        - "null"
+      format: uuid
+      description: "Area of the space — whose roles act in it: a region or a company; null — the whole organization."
+    areaLabel:
+      type: string
+      maxLength: 200
+      description: «Вся организация», «Регион «{name}»» or «Фирма «{name}»».
+    access:
+      type: string
+      enum:
+        - open
+        - limited
+        - closed
+      description: "Level of the space: open — roles of the area act fully («Открытое»); limited — everyone in the area reads, members write («Ограниченное»); closed — members and the owner of the business only («Закрытое»)."
+    templateKey:
+      type:
+        - string
+        - "null"
+      maxLength: 40
+      description: Template the space was created from.
+    homeNodeId:
+      type:
+        - string
+        - "null"
+      format: uuid
+      description: The home page «Обзор» — the root node of the space that is never moved or archived.
+    my:
+      $ref: ./schemas.yaml#/KnowledgeSpaceMy
+    leadNames:
+      type: array
+      items:
+        type: string
+        maxLength: 200
+      maxItems: 50
+      description: "Leads of the space; empty — «Руководитель: владелец бизнеса»."
+    pageCount:
+      type: integer
+      minimum: 0
+      description: Visible pages of the space without folders.
+    lastUpdate:
+      $ref: ./schemas.yaml#/KnowledgeLastUpdate
+    openRequestCount:
+      type: integer
+      minimum: 0
+      description: "Open access requests («Запросы доступа: N») — to the lead of the space only."
+    revision:
+      type: integer
+      minimum: 1
+      format: int64
+  required:
+    - id
+    - name
+    - icon
+    - color
+    - orgUnitId
+    - areaLabel
+    - access
+    - templateKey
+    - homeNodeId
+    - my
+    - leadNames
+    - pageCount
+    - revision
+  description: W4.04 (knowledge.md §2.1). A space of the knowledge base — an access area (docs/23).
+KnowledgeSpaceList:
+  type: object
+  additionalProperties: false
+  properties:
+    items:
+      type: array
+      items:
+        $ref: ./schemas.yaml#/KnowledgeSpace
+      maxItems: 200
+    nextCursor:
+      type:
+        - string
+        - "null"
+      maxLength: 2048
+  required:
+    - items
+    - nextCursor
+KnowledgeSpaceCreate:
+  type: object
+  additionalProperties: false
+  properties:
+    name:
+      type: string
+      minLength: 2
+      maxLength: 120
+      description: Name — 2–120 characters, unique in the organization.
+    access:
+      type: string
+      enum:
+        - open
+        - limited
+        - closed
+    icon:
+      type: string
+      pattern: ^[a-z_]{2,40}$
+    color:
+      type: string
+      pattern: ^#[0-9A-Fa-f]{6}$
+    orgUnitId:
+      type:
+        - string
+        - "null"
+      format: uuid
+      description: Area; null or absent — the whole organization.
+    templateKey:
+      type: string
+      enum:
+        - regs
+        - staff
+        - objects
+        - blank
+      default: blank
+      description: Starting template (listKnowledgeSpaceTemplates).
+    templateNodes:
+      type: array
+      items:
+        type: integer
+        minimum: 0
+      maxItems: 50
+      uniqueItems: true
+      description: Indexes of the template nodes to create; absent — all.
+  required:
+    - name
+    - access
+KnowledgeSpacePatch:
+  type: object
+  additionalProperties: false
+  properties:
+    name:
+      type: string
+      minLength: 2
+      maxLength: 120
+    icon:
+      type: string
+      pattern: ^[a-z_]{2,40}$
+    color:
+      type: string
+      pattern: ^#[0-9A-Fa-f]{6}$
+    orgUnitId:
+      type:
+        - string
+        - "null"
+      format: uuid
+    access:
+      type: string
+      enum:
+        - open
+        - limited
+        - closed
+    dryRun:
+      type: boolean
+      description: Return the impact without changing anything.
+  minProperties: 1
+KnowledgeImpactPerson:
+  type: object
+  additionalProperties: false
+  properties:
+    memberId:
+      $ref: ../common/schemas.yaml#/Id
+    displayName:
+      type: string
+      maxLength: 200
+    pages:
+      type: integer
+      minimum: 1
+      description: How many pages of the branch change for the employee.
+  required:
+    - memberId
+    - displayName
+    - pages
+KnowledgeImpactSummary:
+  type: object
+  additionalProperties: false
+  properties:
+    pages:
+      type: integer
+      minimum: 0
+    gainView:
+      type: array
+      items:
+        $ref: ./schemas.yaml#/KnowledgeImpactPerson
+      maxItems: 1000
+    loseView:
+      type: array
+      items:
+        $ref: ./schemas.yaml#/KnowledgeImpactPerson
+      maxItems: 1000
+    gainEdit:
+      type: array
+      items:
+        $ref: ./schemas.yaml#/KnowledgeImpactPerson
+      maxItems: 1000
+    loseEdit:
+      type: array
+      items:
+        $ref: ./schemas.yaml#/KnowledgeImpactPerson
+      maxItems: 1000
+  required:
+    - pages
+    - gainView
+    - loseView
+    - gainEdit
+    - loseEdit
+KnowledgeSpaceChange:
+  type: object
+  additionalProperties: false
+  properties:
+    applied:
+      type: boolean
+      description: "false — dryRun: nothing changed."
+    space:
+      $ref: ./schemas.yaml#/KnowledgeSpace
+    impact:
+      $ref: ./schemas.yaml#/KnowledgeImpactSummary
+  required:
+    - applied
+    - space
+    - impact
+KnowledgeTemplateNode:
+  type: object
+  additionalProperties: false
+  properties:
+    index:
+      type: integer
+      minimum: 0
+    kind:
+      type: string
+      enum:
+        - page
+        - folder
+        - table
+        - diagram
+        - file
+        - link
+    title:
+      type: string
+      maxLength: 120
+    parentIndex:
+      type:
+        - integer
+        - "null"
+      minimum: 0
+    readerRoleLabel:
+      type:
+        - string
+        - "null"
+      maxLength: 120
+      description: "A folder of a function: the role that reads it («Читают: роль «…»»)."
+    requestAck:
+      type: boolean
+      description: "«Ознакомиться: все»."
+  required:
+    - index
+    - kind
+    - title
+    - parentIndex
+    - readerRoleLabel
+    - requestAck
+KnowledgeSpaceTemplate:
+  type: object
+  additionalProperties: false
+  properties:
+    key:
+      type: string
+      enum:
+        - regs
+        - staff
+        - objects
+        - blank
+    name:
+      type: string
+      maxLength: 120
+    icon:
+      type: string
+      pattern: ^[a-z_]{2,40}$
+    hint:
+      type: string
+      maxLength: 300
+    nodes:
+      type: array
+      items:
+        $ref: ./schemas.yaml#/KnowledgeTemplateNode
+      maxItems: 50
+  required:
+    - key
+    - name
+    - icon
+    - hint
+    - nodes
+KnowledgeSpaceTemplateList:
+  type: object
+  additionalProperties: false
+  properties:
+    items:
+      type: array
+      items:
+        $ref: ./schemas.yaml#/KnowledgeSpaceTemplate
+      maxItems: 20
+  required:
+    - items
+KnowledgeNodeMy:
+  type: object
+  additionalProperties: false
+  properties:
+    edit:
+      type: boolean
+      description: Edits the node («Править», «Переместить…»).
+    lead:
+      type: boolean
+      description: The lead of the space or the owner of the business.
+    create:
+      type: boolean
+      description: Creates subpages («Новая подстраница», «+»).
+  required:
+    - edit
+    - lead
+    - create
+KnowledgeNodeSummary:
+  type: object
+  additionalProperties: false
+  properties:
+    id:
+      $ref: ../common/schemas.yaml#/Id
+    spaceId:
+      $ref: ../common/schemas.yaml#/Id
+    parentId:
+      type:
+        - string
+        - "null"
+      format: uuid
+      description: Parent node; null — the top level of the space.
+    position:
+      type: integer
+      minimum: 0
+    kind:
+      type: string
+      enum:
+        - page
+        - folder
+        - table
+        - diagram
+        - file
+        - link
+    title:
+      type: string
+      maxLength: 120
+    status:
+      type: string
+      enum:
+        - draft
+        - review
+        - active
+        - outdated
+      description: draft «Черновик», review «На проверке», active «Действует», outdated «Пора пересмотреть» (Q-W4.00-knowledge-2).
+    accessMode:
+      type: string
+      enum:
+        - inherit
+        - edit_listed
+        - listed
+      description: "Own access of the node: inherit «Как у родителя», edit_listed «Читают все, правят выбранные», listed «Только выбранные» (prototype key edit — edit_listed)."
+    sensitivity:
+      type: string
+      enum:
+        - normal
+        - finance
+      description: "finance — a finance page: closed for the function driver with any roles (AUTH-03)."
+    archived:
+      type: boolean
+    version:
+      type: integer
+      minimum: 1
+      description: Number of the current version.
+    my:
+      $ref: ./schemas.yaml#/KnowledgeNodeMy
+  required:
+    - id
+    - spaceId
+    - parentId
+    - position
+    - kind
+    - title
+    - status
+    - accessMode
+    - sensitivity
+    - archived
+    - version
+    - my
+  description: W4.04. A visible node of the tree (prototype kbView).
+KnowledgeTree:
+  type: object
+  additionalProperties: false
+  properties:
+    space:
+      $ref: ./schemas.yaml#/KnowledgeSpace
+    nodes:
+      type: array
+      items:
+        $ref: ./schemas.yaml#/KnowledgeNodeSummary
+      maxItems: 5000
+      description: Visible not archived nodes depth-first in the order of positions.
+  required:
+    - space
+    - nodes
+KnowledgeNodeRef:
+  type: object
+  additionalProperties: false
+  properties:
+    id:
+      $ref: ../common/schemas.yaml#/Id
+    title:
+      type: string
+      maxLength: 120
+  required:
+    - id
+    - title
+KnowledgeVersion:
+  type: object
+  additionalProperties: false
+  properties:
+    version:
+      type: integer
+      minimum: 1
+    publishedAt:
+      $ref: ../common/schemas.yaml#/Instant
+    authorDisplayName:
+      type: string
+      maxLength: 200
+    body:
+      type: string
+      maxLength: 20000
+      description: Text with paragraphs separated by an empty line, without Markdown (Q-W4.00-knowledge-16).
+  required:
+    - version
+    - publishedAt
+    - authorDisplayName
+    - body
+KnowledgeVersionSummary:
+  type: object
+  additionalProperties: false
+  properties:
+    version:
+      type: integer
+      minimum: 1
+    publishedAt:
+      $ref: ../common/schemas.yaml#/Instant
+    authorDisplayName:
+      type: string
+      maxLength: 200
+  required:
+    - version
+    - publishedAt
+    - authorDisplayName
+KnowledgeAckLogEntry:
+  type: object
+  additionalProperties: false
+  properties:
+    memberId:
+      $ref: ../common/schemas.yaml#/Id
+    displayName:
+      type: string
+      maxLength: 200
+    version:
+      type: integer
+      minimum: 1
+    at:
+      $ref: ../common/schemas.yaml#/Instant
+  required:
+    - memberId
+    - displayName
+    - version
+    - at
+KnowledgeAck:
+  type: object
+  additionalProperties: false
+  properties:
+    version:
+      type: integer
+      minimum: 1
+      description: The version the acknowledgement is requested for.
+    audienceLabel:
+      type: string
+      maxLength: 200
+      description: «все, кто видит страницу» or «роль «{роль}»».
+    mine:
+      type: object
+      additionalProperties: false
+      properties:
+        required:
+          type: boolean
+          description: The member is in the audience («Подтвердите, что прочитали эту версию.»).
+        done:
+          type: boolean
+          description: «Вы подтвердили, что ознакомились с этой версией».
+      required:
+        - required
+        - done
+    total:
+      type: integer
+      minimum: 0
+      description: Audience — to the editors of the node and the lead.
+    doneCount:
+      type: integer
+      minimum: 0
+      description: «X из Y ознакомились» — to the editors of the node and the lead.
+    pendingNames:
+      type: array
+      items:
+        type: string
+        maxLength: 200
+      maxItems: 1000
+      description: "«Ждём: …» — to the editors of the node and the lead."
+    log:
+      type: array
+      items:
+        $ref: ./schemas.yaml#/KnowledgeAckLogEntry
+      maxItems: 5000
+      description: Confirmations of all versions (KB-03) — to the lead of the space and the owner of the business only.
+  required:
+    - version
+    - audienceLabel
+    - mine
+KnowledgeDiagram:
+  type: object
+  additionalProperties: false
+  properties:
+    steps:
+      type: array
+      items:
+        type: string
+        maxLength: 120
+      maxItems: 8
+    outcomes:
+      type: array
+      items:
+        type: object
+        additionalProperties: false
+        properties:
+          text:
+            type: string
+            maxLength: 200
+          tone:
+            type: string
+            enum:
+              - ok
+              - warn
+        required:
+          - text
+          - tone
+      maxItems: 2
+  required:
+    - steps
+    - outcomes
+KnowledgeFile:
+  type: object
+  additionalProperties: false
+  properties:
+    sizeLabel:
+      type: string
+      maxLength: 40
+      description: «1,2 МБ».
+    pages:
+      type: integer
+      minimum: 0
+  required:
+    - sizeLabel
+    - pages
+  description: "A file node: «PDF · {размер} · N страниц»; the preview is a placeholder (Q-W4.00-knowledge-18), files of the knowledge base — files with purpose knowledge_attachment."
+KnowledgeLink:
+  type: object
+  additionalProperties: false
+  properties:
+    label:
+      type: string
+      maxLength: 200
+    moduleKey:
+      type: string
+      pattern: ^[a-z][a-z0-9_-]{1,49}$
+    icon:
+      type: string
+      pattern: ^[a-z_]{2,40}$
+  required:
+    - label
+    - moduleKey
+    - icon
+  description: "A CRM record: «Запись CRM: открывается, если у вас есть доступ к ней» — the module of the record checks the access (Q-W4.00-knowledge-18)."
+KnowledgeEntrySource:
+  type: object
+  additionalProperties: false
+  properties:
+    formId:
+      $ref: ../common/schemas.yaml#/Id
+    responseNumber:
+      type: string
+      maxLength: 40
+      description: Number of the form response («R-1012»).
+    formVersion:
+      type: integer
+      minimum: 1
+  required:
+    - formId
+    - responseNumber
+    - formVersion
+KnowledgeTableColumn:
+  type: object
+  additionalProperties: false
+  properties:
+    id:
+      $ref: ../common/schemas.yaml#/Id
+    name:
+      type: string
+      maxLength: 120
+    type:
+      type: string
+      maxLength: 20
+  required:
+    - id
+    - name
+    - type
+KnowledgeTableRow:
+  type: object
+  additionalProperties: false
+  properties:
+    id:
+      $ref: ../common/schemas.yaml#/Id
+    addedAt:
+      $ref: ../common/schemas.yaml#/Instant
+    source:
+      $ref: ./schemas.yaml#/KnowledgeEntrySource
+    cells:
+      type: object
+      additionalProperties:
+        type: string
+        maxLength: 2000
+      description: Column id → value.
+  required:
+    - id
+    - addedAt
+    - cells
+KnowledgeTable:
+  type: object
+  additionalProperties: false
+  properties:
+    id:
+      $ref: ../common/schemas.yaml#/Id
+    nodeId:
+      $ref: ../common/schemas.yaml#/Id
+    title:
+      type: string
+      maxLength: 120
+    columns:
+      type: array
+      items:
+        $ref: ./schemas.yaml#/KnowledgeTableColumn
+      maxItems: 30
+    rows:
+      type: array
+      items:
+        $ref: ./schemas.yaml#/KnowledgeTableRow
+      maxItems: 5000
+  required:
+    - id
+    - nodeId
+    - title
+    - columns
+    - rows
+  description: W4.04. A table of a page — read-only; rows are added by forms («Строки добавляет форма после принятия ответа; исправления — через ответ формы.»).
+KnowledgeEntry:
+  type: object
+  additionalProperties: false
+  properties:
+    id:
+      $ref: ../common/schemas.yaml#/Id
+    nodeId:
+      $ref: ../common/schemas.yaml#/Id
+    addedAt:
+      $ref: ../common/schemas.yaml#/Instant
+    head:
+      type: string
+      maxLength: 200
+    lines:
+      type: array
+      items:
+        type: object
+        additionalProperties: false
+        properties:
+          name:
+            type: string
+            maxLength: 120
+          value:
+            type: string
+            maxLength: 2000
+        required:
+          - name
+          - value
+      maxItems: 100
+    source:
+      $ref: ./schemas.yaml#/KnowledgeEntrySource
+  required:
+    - id
+    - nodeId
+    - addedAt
+    - head
+    - lines
+    - source
+  description: W4.04. A form entry of a page (D-26 комплекта, the block under the text — no-reference, Q-W4.00-knowledge-14).
+KnowledgeNode:
+  type: object
+  additionalProperties: false
+  properties:
+    id:
+      $ref: ../common/schemas.yaml#/Id
+    spaceId:
+      $ref: ../common/schemas.yaml#/Id
+    parentId:
+      type:
+        - string
+        - "null"
+      format: uuid
+      description: Parent node; null — the top level of the space.
+    position:
+      type: integer
+      minimum: 0
+    kind:
+      type: string
+      enum:
+        - page
+        - folder
+        - table
+        - diagram
+        - file
+        - link
+    title:
+      type: string
+      maxLength: 120
+    status:
+      type: string
+      enum:
+        - draft
+        - review
+        - active
+        - outdated
+      description: draft «Черновик», review «На проверке», active «Действует», outdated «Пора пересмотреть» (Q-W4.00-knowledge-2).
+    accessMode:
+      type: string
+      enum:
+        - inherit
+        - edit_listed
+        - listed
+      description: "Own access of the node: inherit «Как у родителя», edit_listed «Читают все, правят выбранные», listed «Только выбранные» (prototype key edit — edit_listed)."
+    sensitivity:
+      type: string
+      enum:
+        - normal
+        - finance
+      description: "finance — a finance page: closed for the function driver with any roles (AUTH-03)."
+    archived:
+      type: boolean
+    version:
+      type: integer
+      minimum: 1
+      description: Number of the current version.
+    my:
+      $ref: ./schemas.yaml#/KnowledgeNodeMy
+    spaceName:
+      type: string
+      maxLength: 120
+    path:
+      type: array
+      items:
+        $ref: ./schemas.yaml#/KnowledgeNodeRef
+      maxItems: 6
+      description: "Ancestors from the top level: «Пространство › … › страница»."
+    owner:
+      type: object
+      additionalProperties: false
+      properties:
+        memberId:
+          type:
+            - string
+            - "null"
+          format: uuid
+        displayName:
+          type: string
+          maxLength: 200
+      required:
+        - memberId
+        - displayName
+    reviewBy:
+      type:
+        - string
+        - "null"
+      format: date
+      description: «пересмотреть до {дата}».
+    current:
+      $ref: ./schemas.yaml#/KnowledgeVersion
+    versions:
+      type: array
+      items:
+        $ref: ./schemas.yaml#/KnowledgeVersionSummary
+      maxItems: 1000
+      description: Versions, newest first («Версии»).
+    ack:
+      $ref: ./schemas.yaml#/KnowledgeAck
+    diagram:
+      $ref: ./schemas.yaml#/KnowledgeDiagram
+    file:
+      $ref: ./schemas.yaml#/KnowledgeFile
+    link:
+      $ref: ./schemas.yaml#/KnowledgeLink
+    tables:
+      type: array
+      items:
+        $ref: ./schemas.yaml#/KnowledgeTable
+      maxItems: 20
+    entries:
+      type: array
+      items:
+        $ref: ./schemas.yaml#/KnowledgeEntry
+      maxItems: 500
+    revision:
+      type: integer
+      minimum: 1
+      format: int64
+      description: Number of the current version — the ETag and If-Match of publishKnowledgeNodeVersion.
+  required:
+    - id
+    - spaceId
+    - parentId
+    - position
+    - kind
+    - title
+    - status
+    - accessMode
+    - sensitivity
+    - archived
+    - version
+    - my
+    - spaceName
+    - path
+    - owner
+    - reviewBy
+    - current
+    - versions
+    - tables
+    - entries
+    - revision
+  description: "W4.04 (knowledge.md §2.1). A node of the tree: page, folder, table, diagram, file or CRM record."
+KnowledgeNodeCreate:
+  type: object
+  additionalProperties: false
+  properties:
+    parentId:
+      type:
+        - string
+        - "null"
+      format: uuid
+      description: Parent node; null or absent — the top level.
+    kind:
+      type: string
+      enum:
+        - page
+        - folder
+        - diagram
+    title:
+      type: string
+      minLength: 2
+      maxLength: 120
+  required:
+    - kind
+    - title
+KnowledgePublish:
+  type: object
+  additionalProperties: false
+  properties:
+    title:
+      type: string
+      minLength: 2
+      maxLength: 120
+    body:
+      type: string
+      maxLength: 20000
+      description: Text with paragraphs separated by an empty line.
+    steps:
+      type: array
+      items:
+        type: string
+        maxLength: 120
+      maxItems: 8
+      description: Steps of a diagram («Шаги схемы — по одному в строке»).
+    requestAck:
+      type: boolean
+      description: "«Попросить ознакомиться с новой версией: …»."
+  required:
+    - body
+KnowledgePublishResult:
+  type: object
+  additionalProperties: false
+  properties:
+    node:
+      $ref: ./schemas.yaml#/KnowledgeNode
+    version:
+      type: integer
+      minimum: 1
+    ackRequestedCount:
+      type: integer
+      minimum: 0
+      description: Employees asked to acknowledge the new version.
+  required:
+    - node
+    - version
+    - ackRequestedCount
+KnowledgeNodeStatusChange:
+  type: object
+  additionalProperties: false
+  properties:
+    status:
+      type: string
+      enum:
+        - draft
+        - review
+        - active
+        - outdated
+  required:
+    - status
+KnowledgeMove:
+  type: object
+  additionalProperties: false
+  properties:
+    parentId:
+      type:
+        - string
+        - "null"
+      format: uuid
+      description: New parent; null — the top level of the space.
+    dryRun:
+      type: boolean
+      description: Return the impact without moving.
+  required:
+    - parentId
+KnowledgeMoveResult:
+  type: object
+  additionalProperties: false
+  properties:
+    applied:
+      type: boolean
+      description: "false — dryRun: nothing moved."
+    pages:
+      type: integer
+      minimum: 1
+      description: «Переносится N страниц вместе с подстраницами.»
+    loseView:
+      type: array
+      items:
+        $ref: ./schemas.yaml#/KnowledgeImpactPerson
+      maxItems: 1000
+    gainView:
+      type: array
+      items:
+        $ref: ./schemas.yaml#/KnowledgeImpactPerson
+      maxItems: 1000
+    node:
+      $ref: ./schemas.yaml#/KnowledgeNode
+  required:
+    - applied
+    - pages
+    - loseView
+    - gainView
+KnowledgeArchiveResult:
+  type: object
+  additionalProperties: false
+  properties:
+    nodeId:
+      $ref: ../common/schemas.yaml#/Id
+    archived:
+      type: boolean
+    pages:
+      type: integer
+      minimum: 1
+      description: Nodes of the branch.
+  required:
+    - nodeId
+    - archived
+    - pages
+KnowledgeArchiveItem:
+  type: object
+  additionalProperties: false
+  properties:
+    nodeId:
+      $ref: ../common/schemas.yaml#/Id
+    title:
+      type: string
+      maxLength: 120
+    kind:
+      type: string
+      enum:
+        - page
+        - folder
+        - table
+        - diagram
+        - file
+        - link
+    pages:
+      type: integer
+      minimum: 1
+  required:
+    - nodeId
+    - title
+    - kind
+    - pages
+KnowledgeArchiveList:
+  type: object
+  additionalProperties: false
+  properties:
+    items:
+      type: array
+      items:
+        $ref: ./schemas.yaml#/KnowledgeArchiveItem
+      maxItems: 1000
+  required:
+    - items
+KnowledgeAckCreate:
+  type: object
+  additionalProperties: false
+  properties:
+    version:
+      type: integer
+      minimum: 1
+  required:
+    - version
+KnowledgeSearchHit:
+  type: object
+  additionalProperties: false
+  properties:
+    nodeId:
+      $ref: ../common/schemas.yaml#/Id
+    spaceId:
+      $ref: ../common/schemas.yaml#/Id
+    spaceName:
+      type: string
+      maxLength: 120
+    kind:
+      type: string
+      enum:
+        - page
+        - folder
+        - table
+        - diagram
+        - file
+        - link
+    title:
+      type: string
+      maxLength: 120
+    path:
+      type: array
+      items:
+        type: string
+        maxLength: 120
+      maxItems: 7
+      description: «Пространство › родители».
+    excerpt:
+      type: string
+      maxLength: 150
+  required:
+    - nodeId
+    - spaceId
+    - spaceName
+    - kind
+    - title
+    - path
+    - excerpt
+KnowledgeSearchResult:
+  type: object
+  additionalProperties: false
+  properties:
+    items:
+      type: array
+      items:
+        $ref: ./schemas.yaml#/KnowledgeSearchHit
+      maxItems: 12
+  required:
+    - items
+KnowledgeAccessEntryInput:
+  type: object
+  additionalProperties: false
+  properties:
+    who:
+      type: string
+      enum:
+        - member
+        - group
+        - role
+        - relation
+      description: "member — an employee (by exception), group, role — a role in its area (orgUnitId) or a role of the space, relation — a relation with a CRM record (KB-01: given by a section template)."
+    refId:
+      $ref: ../common/schemas.yaml#/Id
+      description: Employee, group or role; absent for relation.
+    relation:
+      type: string
+      enum:
+        - foreman
+      description: "Kind of the relation: foreman — «Прораб объекта» of object."
+    object:
+      $ref: ../common/schemas.yaml#/ObjectRef
+      description: The record of the relation (repairs project).
+    orgUnitId:
+      $ref: ../common/schemas.yaml#/Id
+      description: Area of a role entry; absent — the area of the space.
+    can:
+      type: string
+      enum:
+        - view
+        - edit
+      description: view «Читает», edit «Правит».
+  required:
+    - who
+    - can
+  description: "W4.04. An entry of the access list: refId is required for member, group and role; relation and object — for relation."
+KnowledgeAccessReach:
+  type: object
+  additionalProperties: false
+  properties:
+    members:
+      type: integer
+      minimum: 0
+      description: Employees the entry gives access to.
+    total:
+      type: integer
+      minimum: 0
+      description: Employees matching the entry.
+    blocked:
+      type: array
+      items:
+        type: object
+        additionalProperties: false
+        properties:
+          displayName:
+            type: string
+            maxLength: 200
+          reason:
+            type: string
+            maxLength: 300
+        required:
+          - displayName
+          - reason
+      maxItems: 1000
+      description: "«Не получит доступ: {ФИО} — {причина}»."
+  required:
+    - members
+    - total
+    - blocked
+KnowledgeAccessEntry:
+  type: object
+  additionalProperties: false
+  properties:
+    who:
+      type: string
+      enum:
+        - member
+        - group
+        - role
+        - relation
+      description: "member — an employee (by exception), group, role — a role in its area (orgUnitId) or a role of the space, relation — a relation with a CRM record (KB-01: given by a section template)."
+    refId:
+      $ref: ../common/schemas.yaml#/Id
+      description: Employee, group or role; absent for relation.
+    relation:
+      type: string
+      enum:
+        - foreman
+      description: "Kind of the relation: foreman — «Прораб объекта» of object."
+    object:
+      $ref: ../common/schemas.yaml#/ObjectRef
+      description: The record of the relation (repairs project).
+    orgUnitId:
+      $ref: ../common/schemas.yaml#/Id
+      description: Area of a role entry; absent — the area of the space.
+    can:
+      type: string
+      enum:
+        - view
+        - edit
+      description: view «Читает», edit «Правит».
+    label:
+      type: string
+      maxLength: 300
+      description: «Роль «…» · «{область}»», «Роль «…» в пространстве», «Группа «…»», «Прораб этого объекта», the employee.
+    reach:
+      $ref: ./schemas.yaml#/KnowledgeAccessReach
+  required:
+    - who
+    - can
+    - label
+  description: W4.04. An entry of the access list with its label; reach — to the lead only.
+KnowledgeAccessStep:
+  type: object
+  additionalProperties: false
+  properties:
+    kind:
+      type: string
+      enum:
+        - ok
+        - "no"
+        - wait
+        - inherit
+      description: ok — passes, no — stops, wait — an invitation not accepted, inherit — «Доступ как у родителя».
+    title:
+      type: string
+      maxLength: 200
+    detail:
+      type: string
+      maxLength: 500
+  required:
+    - kind
+    - title
+    - detail
+KnowledgeAccessRequest:
+  type: object
+  additionalProperties: false
+  properties:
+    id:
+      $ref: ../common/schemas.yaml#/Id
+    nodeId:
+      $ref: ../common/schemas.yaml#/Id
+    nodeTitle:
+      type: string
+      maxLength: 120
+    spaceId:
+      $ref: ../common/schemas.yaml#/Id
+    memberId:
+      $ref: ../common/schemas.yaml#/Id
+    memberDisplayName:
+      type: string
+      maxLength: 200
+    can:
+      type: string
+      enum:
+        - view
+        - edit
+      description: edit — «просит право правки»; view — «просит доступ» (seeded only).
+    status:
+      type: string
+      enum:
+        - open
+        - approved
+        - denied
+    requestedAt:
+      $ref: ../common/schemas.yaml#/Instant
+    decidedAt:
+      $ref: ../common/schemas.yaml#/Instant
+    decidedByDisplayName:
+      type: string
+      maxLength: 200
+    until:
+      type: string
+      format: date
+      description: End of an approved request to read.
+  required:
+    - id
+    - nodeId
+    - nodeTitle
+    - spaceId
+    - memberId
+    - memberDisplayName
+    - can
+    - status
+    - requestedAt
+KnowledgeNodeAccess:
+  type: object
+  additionalProperties: false
+  properties:
+    nodeId:
+      $ref: ../common/schemas.yaml#/Id
+    title:
+      type: string
+      maxLength: 120
+    accessMode:
+      type: string
+      enum:
+        - inherit
+        - edit_listed
+        - listed
+    inheritedFrom:
+      type: object
+      additionalProperties: false
+      properties:
+        kind:
+          type: string
+          enum:
+            - space
+            - node
+        id:
+          $ref: ../common/schemas.yaml#/Id
+        title:
+          type: string
+          maxLength: 120
+      required:
+        - kind
+        - id
+        - title
+      description: "Where «Как у родителя» comes from: the space or the nearest node with own access."
+    chain:
+      type: array
+      items:
+        $ref: ./schemas.yaml#/KnowledgeAccessStep
+      maxItems: 20
+    entries:
+      type: array
+      items:
+        $ref: ./schemas.yaml#/KnowledgeAccessEntry
+      maxItems: 50
+    descendantCount:
+      type: integer
+      minimum: 0
+      description: «{путь} · N подстраниц».
+    ownSubnodes:
+      type: array
+      items:
+        $ref: ./schemas.yaml#/KnowledgeNodeRef
+      maxItems: 1000
+      description: Subpages of the branch with their own access («Применить и к подстраницам со своим доступом (N)»).
+    canManage:
+      type: boolean
+      description: The lead of the space or the owner of the business.
+    leadNames:
+      type: array
+      items:
+        type: string
+        maxLength: 200
+      maxItems: 50
+    requests:
+      type: array
+      items:
+        $ref: ./schemas.yaml#/KnowledgeAccessRequest
+      maxItems: 200
+      description: Open requests of the node — to the lead only.
+    revision:
+      type: integer
+      minimum: 1
+      format: int64
+      description: Access revision of the node — If-Match of setKnowledgeNodeAccess.
+  required:
+    - nodeId
+    - title
+    - accessMode
+    - inheritedFrom
+    - chain
+    - entries
+    - descendantCount
+    - ownSubnodes
+    - canManage
+    - leadNames
+    - revision
+KnowledgeAccessCandidate:
+  type: object
+  additionalProperties: false
+  properties:
+    entry:
+      $ref: ./schemas.yaml#/KnowledgeAccessEntryInput
+    label:
+      type: string
+      maxLength: 300
+    reach:
+      type: object
+      additionalProperties: false
+      properties:
+        members:
+          type: integer
+          minimum: 0
+        total:
+          type: integer
+          minimum: 0
+        reason:
+          type:
+            - string
+            - "null"
+          maxLength: 300
+      required:
+        - members
+        - total
+        - reason
+    reachLabel:
+      type: string
+      maxLength: 300
+      description: "«— сейчас никого», «— не получат доступ», «— получат N из M», «— не получит доступ: {причина}» or empty."
+  required:
+    - entry
+    - label
+    - reach
+    - reachLabel
+KnowledgeAccessCandidateList:
+  type: object
+  additionalProperties: false
+  properties:
+    items:
+      type: array
+      items:
+        $ref: ./schemas.yaml#/KnowledgeAccessCandidate
+      maxItems: 1000
+  required:
+    - items
+KnowledgeAccessChange:
+  type: object
+  additionalProperties: false
+  properties:
+    mode:
+      type: string
+      enum:
+        - inherit
+        - edit_listed
+        - listed
+    entries:
+      type: array
+      items:
+        $ref: ./schemas.yaml#/KnowledgeAccessEntryInput
+      maxItems: 50
+    applyToOwn:
+      type: boolean
+      description: Subpages of the branch with their own access become «Как у родителя».
+    dryRun:
+      type: boolean
+      description: Return the impact without saving.
+  required:
+    - mode
+    - entries
+KnowledgeAccessImpact:
+  type: object
+  additionalProperties: false
+  properties:
+    applied:
+      type: boolean
+      description: "false — dryRun: nothing saved."
+    pages:
+      type: integer
+      minimum: 1
+      description: "«Ветка «X»: N страниц»."
+    own:
+      type: array
+      items:
+        $ref: ./schemas.yaml#/KnowledgeNodeRef
+      maxItems: 1000
+      description: Nodes of the branch with their own access.
+    gainView:
+      type: array
+      items:
+        $ref: ./schemas.yaml#/KnowledgeImpactPerson
+      maxItems: 1000
+    loseView:
+      type: array
+      items:
+        $ref: ./schemas.yaml#/KnowledgeImpactPerson
+      maxItems: 1000
+    gainEdit:
+      type: array
+      items:
+        $ref: ./schemas.yaml#/KnowledgeImpactPerson
+      maxItems: 1000
+    loseEdit:
+      type: array
+      items:
+        $ref: ./schemas.yaml#/KnowledgeImpactPerson
+      maxItems: 1000
+    access:
+      $ref: ./schemas.yaml#/KnowledgeNodeAccess
+  required:
+    - applied
+    - pages
+    - own
+    - gainView
+    - loseView
+    - gainEdit
+    - loseEdit
+KnowledgeAccessMap:
+  type: object
+  additionalProperties: false
+  properties:
+    spaceId:
+      $ref: ../common/schemas.yaml#/Id
+    members:
+      type: array
+      items:
+        type: object
+        additionalProperties: false
+        properties:
+          memberId:
+            $ref: ../common/schemas.yaml#/Id
+          displayName:
+            type: string
+            maxLength: 200
+        required:
+          - memberId
+          - displayName
+      maxItems: 8
+    rows:
+      type: array
+      items:
+        type: object
+        additionalProperties: false
+        properties:
+          nodeId:
+            $ref: ../common/schemas.yaml#/Id
+          title:
+            type: string
+            maxLength: 120
+          depth:
+            type: integer
+            minimum: 1
+        required:
+          - nodeId
+          - title
+          - depth
+      maxItems: 5000
+    cells:
+      type: array
+      items:
+        type: array
+        items:
+          type: string
+          enum:
+            - edit
+            - view
+            - none
+            - function
+        maxItems: 8
+      maxItems: 5000
+      description: "Row × column: edit «Правит», view «Читает», none «Нет», function «Функция» (closed by a function)."
+  required:
+    - spaceId
+    - members
+    - rows
+    - cells
+KnowledgeAccessExplanation:
+  type: object
+  additionalProperties: false
+  properties:
+    nodeId:
+      $ref: ../common/schemas.yaml#/Id
+    memberId:
+      $ref: ../common/schemas.yaml#/Id
+    memberDisplayName:
+      type: string
+      maxLength: 200
+    view:
+      type: boolean
+    edit:
+      type: boolean
+    functionBlocked:
+      type: boolean
+      description: "Closed by a function: «Функция «Водитель» закрывает финансовые страницы, роль или группа это не обходят.»"
+    chain:
+      type: array
+      items:
+        $ref: ./schemas.yaml#/KnowledgeAccessStep
+      maxItems: 20
+    summary:
+      type: string
+      maxLength: 300
+  required:
+    - nodeId
+    - memberId
+    - memberDisplayName
+    - view
+    - edit
+    - functionBlocked
+    - chain
+    - summary
+KnowledgeAccessRequestCreate:
+  type: object
+  additionalProperties: false
+  properties:
+    can:
+      type: string
+      enum:
+        - edit
+      description: Only the right to edit a visible page (Q-W4.00-knowledge-6).
+  required:
+    - can
+KnowledgeAccessRequestDecision:
+  type: object
+  additionalProperties: false
+  properties:
+    decision:
+      type: string
+      enum:
+        - approve
+        - deny
+  required:
+    - decision
+KnowledgeAccessRequestList:
+  type: object
+  additionalProperties: false
+  properties:
+    items:
+      type: array
+      items:
+        $ref: ./schemas.yaml#/KnowledgeAccessRequest
+      maxItems: 500
+  required:
+    - items
+KnowledgeSpaceMember:
+  type: object
+  additionalProperties: false
+  properties:
+    memberId:
+      $ref: ../common/schemas.yaml#/Id
+    displayName:
+      type: string
+      maxLength: 200
+    state:
+      type: string
+      enum:
+        - active
+        - invited
+      description: invited — «приглашение не принято».
+  required:
+    - memberId
+    - displayName
+    - state
+KnowledgeSpaceRole:
+  type: object
+  additionalProperties: false
+  properties:
+    role:
+      type: string
+      enum:
+        - kb_space_lead
+        - kb_space_editor
+        - kb_space_reader
+    label:
+      type: string
+      maxLength: 120
+    description:
+      type: string
+      maxLength: 300
+    members:
+      type: array
+      items:
+        $ref: ./schemas.yaml#/KnowledgeSpaceMember
+      maxItems: 1000
+  required:
+    - role
+    - label
+    - description
+    - members
+KnowledgeSpaceMembers:
+  type: object
+  additionalProperties: false
+  properties:
+    spaceId:
+      $ref: ../common/schemas.yaml#/Id
+    levelLabel:
+      type: string
+      maxLength: 300
+      description: "«Остальные получают доступ по уровню пространства: {описание уровня}»."
+    canManage:
+      type: boolean
+      description: The lead of the space or the owner of the business.
+    roles:
+      type: array
+      items:
+        $ref: ./schemas.yaml#/KnowledgeSpaceRole
+      maxItems: 3
+    byLevel:
+      type: object
+      additionalProperties: false
+      properties:
+        label:
+          type: string
+          maxLength: 200
+          description: «По уровню «{уровень}»».
+        members:
+          type: array
+          items:
+            type: object
+            additionalProperties: false
+            properties:
+              memberId:
+                $ref: ../common/schemas.yaml#/Id
+              displayName:
+                type: string
+                maxLength: 200
+              source:
+                type: string
+                maxLength: 300
+            required:
+              - memberId
+              - displayName
+              - source
+          maxItems: 8
+        total:
+          type: integer
+          minimum: 0
+      required:
+        - label
+        - members
+        - total
+    pageAssignments:
+      type: array
+      items:
+        type: object
+        additionalProperties: false
+        properties:
+          memberId:
+            $ref: ../common/schemas.yaml#/Id
+          displayName:
+            type: string
+            maxLength: 200
+          nodeId:
+            $ref: ../common/schemas.yaml#/Id
+          nodeTitle:
+            type: string
+            maxLength: 120
+          until:
+            type:
+              - string
+              - "null"
+            format: date
+        required:
+          - memberId
+          - displayName
+          - nodeId
+          - nodeTitle
+          - until
+      maxItems: 1000
+  required:
+    - spaceId
+    - levelLabel
+    - canManage
+    - roles
+KnowledgeSpaceMemberChange:
+  type: object
+  additionalProperties: false
+  properties:
+    role:
+      type:
+        - string
+        - "null"
+      enum:
+        - kb_space_lead
+        - kb_space_editor
+        - kb_space_reader
+        - null
+      description: Role of the space; null — remove the employee from the space («Убрать»).
+  required:
+    - role
+KnowledgeSectionObject:
+  type: object
+  additionalProperties: false
+  properties:
+    projectId:
+      $ref: ../common/schemas.yaml#/Id
+    name:
+      type: string
+      maxLength: 200
+    stage:
+      type:
+        - string
+        - "null"
+      maxLength: 120
+    foremanName:
+      type:
+        - string
+        - "null"
+      maxLength: 200
+      description: null — «прораб не назначен».
+    sectionNodeId:
+      type:
+        - string
+        - "null"
+      format: uuid
+      description: The section, if created («Открыть раздел»).
+  required:
+    - projectId
+    - name
+    - stage
+    - foremanName
+    - sectionNodeId
+KnowledgeRule:
+  type: object
+  additionalProperties: false
+  properties:
+    id:
+      $ref: ../common/schemas.yaml#/Id
+    spaceId:
+      $ref: ../common/schemas.yaml#/Id
+    kind:
+      type: string
+      enum:
+        - ack
+        - review
+        - section
+      description: ack — ask to acknowledge, review — «Пора пересмотреть», section — the section of an object.
+    name:
+      type: string
+      maxLength: 200
+    trigger:
+      type: string
+      maxLength: 200
+    enabled:
+      type: boolean
+    objects:
+      type: array
+      items:
+        $ref: ./schemas.yaml#/KnowledgeSectionObject
+      maxItems: 1000
+      description: Objects of repairs (kind section).
+  required:
+    - id
+    - spaceId
+    - kind
+    - name
+    - trigger
+    - enabled
+KnowledgeRuleList:
+  type: object
+  additionalProperties: false
+  properties:
+    items:
+      type: array
+      items:
+        $ref: ./schemas.yaml#/KnowledgeRule
+      maxItems: 50
+  required:
+    - items
+KnowledgeRulePatch:
+  type: object
+  additionalProperties: false
+  properties:
+    enabled:
+      type: boolean
+  required:
+    - enabled
+KnowledgeRun:
+  type: object
+  additionalProperties: false
+  properties:
+    id:
+      $ref: ../common/schemas.yaml#/Id
+    ruleId:
+      $ref: ../common/schemas.yaml#/Id
+    at:
+      $ref: ../common/schemas.yaml#/Instant
+    result:
+      type: string
+      enum:
+        - ok
+        - warn
+        - stopped
+        - error
+    text:
+      type: string
+      maxLength: 500
+  required:
+    - id
+    - ruleId
+    - at
+    - result
+    - text
+KnowledgeRunList:
+  type: object
+  additionalProperties: false
+  properties:
+    items:
+      type: array
+      items:
+        $ref: ./schemas.yaml#/KnowledgeRun
+      maxItems: 40
+  required:
+    - items
+KnowledgeRunReport:
+  type: object
+  additionalProperties: false
+  properties:
+    count:
+      type: integer
+      minimum: 0
+      description: Pages that became outdated, or sections created.
+    created:
+      type: boolean
+      description: "runKnowledgeSection: a section was created."
+    nodeId:
+      type:
+        - string
+        - "null"
+      format: uuid
+      description: "runKnowledgeSection: the section of the object."
+    runs:
+      type: array
+      items:
+        $ref: ./schemas.yaml#/KnowledgeRun
+      maxItems: 100
+      description: Journal lines written by this run.
+  required:
+    - count
+    - runs
+KnowledgeSectionCreate:
+  type: object
+  additionalProperties: false
+  properties:
+    projectId:
+      $ref: ../common/schemas.yaml#/Id
+  required:
+    - projectId
+KnowledgeTableCreate:
+  type: object
+  additionalProperties: false
+  properties:
+    title:
+      type: string
+      maxLength: 120
+    columns:
+      type: array
+      items:
+        type: object
+        additionalProperties: false
+        properties:
+          name:
+            type: string
+            maxLength: 120
+          type:
+            type: string
+            maxLength: 20
+            default: text
+        required:
+          - name
+      maxItems: 30
+  required:
+    - title
+    - columns

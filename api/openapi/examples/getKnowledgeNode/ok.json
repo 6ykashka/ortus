@@ -1,0 +1,59 @@
+{
+  "id": "917ba039-1d29-5dd1-b922-b0976cc8a7c2",
+  "spaceId": "a3b6bc34-7307-58e7-990a-5513cd630786",
+  "parentId": "685e71a2-4c0b-57fa-9519-2b65031ed715",
+  "position": 1,
+  "kind": "page",
+  "title": "Регламент приёмки смены",
+  "status": "active",
+  "accessMode": "inherit",
+  "sensitivity": "normal",
+  "archived": false,
+  "version": 2,
+  "my": {
+    "edit": false,
+    "lead": false,
+    "create": false
+  },
+  "spaceName": "Логистика",
+  "path": [
+    {
+      "id": "685e71a2-4c0b-57fa-9519-2b65031ed715",
+      "title": "Регламенты"
+    }
+  ],
+  "owner": {
+    "memberId": "b8df06ec-317e-5f46-b54c-e76603e41b5b",
+    "displayName": "Дарья Зимина"
+  },
+  "reviewBy": "2027-03-24",
+  "current": {
+    "version": 2,
+    "publishedAt": "2026-09-23T21:00:00Z",
+    "authorDisplayName": "Дарья Зимина",
+    "body": "Менеджер проверяет фото до и после (5 ракурсов, включая одометр), пробег и расходы с чеками. При замечаниях смена возвращается водителю с указанием раздела. Машина возвращается в пул только после приёмки."
+  },
+  "versions": [
+    {
+      "version": 2,
+      "publishedAt": "2026-09-23T21:00:00Z",
+      "authorDisplayName": "Дарья Зимина"
+    },
+    {
+      "version": 1,
+      "publishedAt": "2026-09-04T21:00:00Z",
+      "authorDisplayName": "Дарья Зимина"
+    }
+  ],
+  "tables": [],
+  "entries": [],
+  "revision": 2,
+  "ack": {
+    "version": 2,
+    "audienceLabel": "роль «Водитель»",
+    "mine": {
+      "required": true,
+      "done": false
+    }
+  }
+}

@@ -5,8 +5,8 @@
 deltas:
   - pointer: /info/version
     kind: change
-    source: план v2 PD-56, W0.07, W0.08, W1.00, W2.00, W2.40, W2.51, W2.52, W2.57, W4.02, W4.06, W2.71, W4.07
-    reason: 0.1.0-design → 0.2.0-stage0 (W0.07, шаг 0.2, разложен по тегам) → 0.3.0-stage1 (W0.08, шаг 0.3, контракт этапа 1) → 0.4.0-stage1 (W1.00, второй контрактный PR этапа 1) → 0.5.0-stage2 (W2.00, контракт этапа 2) → 0.5.1-stage2 (W2.40, аддитивный PR стюарда этапа 2 для показа 18.10) → 0.6.0-stage2 (W2.51, стюард этапа 2 — пул водителей, наборы «Данных») → 0.6.1-stage2 (W2.52, стюард этапа 2, часть 2 — ответы владельца 17.10 — справочник расходов, история машины, антифрод фото, чек-лист-форма, задача дефекта, заменители интеграций D-11 комплекта) → 0.6.2-stage2 (W2.57, контрактная дельта решения Q-W2.07-1 — временный водитель «только рейс», продление) → 0.7.0-stage4 (W4.02, контрактный PR 1 этапа 4 — виды областей этапов 4–7, объяснение доступа с объектом, вложения задач, Problem.reason, экраны этапа 4; W4.06, контрактный PR 5 этапа 4 — календарь ресурсов, сохранённые виды и выгрузка заданием «Данных») → 0.7.1-stage4 (W2.71, контрактная дельта S2-20 — машина для временного водителя, решение владельца 19.10 по Q-W2.32-1; в ветке 0.6.3-stage2, перенумерована интегратором при вливании после W4.02 и W4.06) → 0.8.0-stage4 (W4.07, контрактный PR 6 этапа 4 — места и тарифная сетка, заявки на тариф, «Использование», каталог аккаунтов и операторы платформы, оформление организации; номер версии согласован интегратором при вливании после W2.71).
+    source: план v2 PD-56, W0.07, W0.08, W1.00, W2.00, W2.40, W2.51, W2.52, W2.57, W4.02, W4.06, W2.71, W4.07, W4.04
+    reason: 0.1.0-design → 0.2.0-stage0 (W0.07, шаг 0.2, разложен по тегам) → 0.3.0-stage1 (W0.08, шаг 0.3, контракт этапа 1) → 0.4.0-stage1 (W1.00, второй контрактный PR этапа 1) → 0.5.0-stage2 (W2.00, контракт этапа 2) → 0.5.1-stage2 (W2.40, аддитивный PR стюарда этапа 2 для показа 18.10) → 0.6.0-stage2 (W2.51, стюард этапа 2 — пул водителей, наборы «Данных») → 0.6.1-stage2 (W2.52, стюард этапа 2, часть 2 — ответы владельца 17.10 — справочник расходов, история машины, антифрод фото, чек-лист-форма, задача дефекта, заменители интеграций D-11 комплекта) → 0.6.2-stage2 (W2.57, контрактная дельта решения Q-W2.07-1 — временный водитель «только рейс», продление) → 0.7.0-stage4 (W4.02, контрактный PR 1 этапа 4 — виды областей этапов 4–7, объяснение доступа с объектом, вложения задач, Problem.reason, экраны этапа 4; W4.06, контрактный PR 5 этапа 4 — календарь ресурсов, сохранённые виды и выгрузка заданием «Данных») → 0.7.1-stage4 (W2.71, контрактная дельта S2-20 — машина для временного водителя, решение владельца 19.10 по Q-W2.32-1; в ветке 0.6.3-stage2, перенумерована интегратором при вливании после W4.02 и W4.06) → 0.8.0-stage4 (W4.07, контрактный PR 6 этапа 4 — места и тарифная сетка, заявки на тариф, «Использование», каталог аккаунтов и операторы платформы, оформление организации; номер версии согласован интегратором при вливании после W2.71) → 0.9.0-stage4 (W4.04, контрактный PR 3 этапа 4 — «База знаний» — пространства, дерево, версии, доступ узла, запросы, участники, автоматизация; влит интегратором после W4.07).
   - pointer: /components/schemas/Tenant/properties/status/enum
     kind: change
     source: 01-technical-spec PLAT-02; 10-data-model «Тенант»; control_0001_init.sql tenant_state; PD-35
@@ -1530,3 +1530,433 @@ deltas:
     kind: add
     source: "W4.07; design/docs/18-branding.md «Где видно оформление»; control 0003"
     reason: "места, участники, тариф и знак организации в списке оператора (W4.07)."
+
+  # W4.04 — контрактный PR 3 этапа 4: «База знаний» (W4.31, W4.32; кандидаты W4.33–W4.36).
+  - pointer: /paths/~1api~1v1~1tenants~1{tenantId}~1knowledge~1pages/get/description
+    kind: change
+    source: "W4.04; knowledge.md §2.2, §3; design/docs/23-knowledge-spaces.md; эталон «База знаний.dc.html» (design-2026-10-19); домен W4.30"
+    reason: "описание 0.1 дополнено: прежняя операция — проекция узлов-страниц (Q-W4.00-knowledge-1, -2, -4); текст 0.1 в начале."
+  - pointer: /paths/~1api~1v1~1tenants~1{tenantId}~1knowledge~1pages/post/description
+    kind: change
+    source: "W4.04; knowledge.md §2.2, §3; design/docs/23-knowledge-spaces.md; эталон «База знаний.dc.html» (design-2026-10-19); домен W4.30"
+    reason: "описание 0.1 дополнено: прежняя операция — проекция узлов-страниц (Q-W4.00-knowledge-1, -2, -4); текст 0.1 в начале."
+  - pointer: /paths/~1api~1v1~1tenants~1{tenantId}~1knowledge~1pages~1{pageId}/get/description
+    kind: change
+    source: "W4.04; knowledge.md §2.2, §3; design/docs/23-knowledge-spaces.md; эталон «База знаний.dc.html» (design-2026-10-19); домен W4.30"
+    reason: "описание 0.1 дополнено: прежняя операция — проекция узлов-страниц (Q-W4.00-knowledge-1, -2, -4); текст 0.1 в начале."
+  - pointer: /paths/~1api~1v1~1tenants~1{tenantId}~1knowledge~1pages~1{pageId}/patch/description
+    kind: change
+    source: "W4.04; knowledge.md §2.2, §3; design/docs/23-knowledge-spaces.md; эталон «База знаний.dc.html» (design-2026-10-19); домен W4.30"
+    reason: "описание 0.1 дополнено: прежняя операция — проекция узлов-страниц (Q-W4.00-knowledge-1, -2, -4); текст 0.1 в начале."
+  - pointer: /paths/~1api~1v1~1tenants~1{tenantId}~1knowledge~1spaces
+    kind: add
+    source: "W4.04; knowledge.md §2.2, §3; design/docs/23-knowledge-spaces.md; эталон «База знаний.dc.html» (design-2026-10-19); домен W4.30"
+    reason: "операции «Базы знаний»: пространства, дерево, узлы и версии, доступ, запросы, участники, автоматизация (Q-W4.00-knowledge-1 — пути /knowledge/*)."
+  - pointer: /paths/~1api~1v1~1tenants~1{tenantId}~1knowledge~1space-templates
+    kind: add
+    source: "W4.04; knowledge.md §2.2, §3; design/docs/23-knowledge-spaces.md; эталон «База знаний.dc.html» (design-2026-10-19); домен W4.30"
+    reason: "операции «Базы знаний»: пространства, дерево, узлы и версии, доступ, запросы, участники, автоматизация (Q-W4.00-knowledge-1 — пути /knowledge/*)."
+  - pointer: /paths/~1api~1v1~1tenants~1{tenantId}~1knowledge~1spaces~1{spaceId}
+    kind: add
+    source: "W4.04; knowledge.md §2.2, §3; design/docs/23-knowledge-spaces.md; эталон «База знаний.dc.html» (design-2026-10-19); домен W4.30"
+    reason: "операции «Базы знаний»: пространства, дерево, узлы и версии, доступ, запросы, участники, автоматизация (Q-W4.00-knowledge-1 — пути /knowledge/*)."
+  - pointer: /paths/~1api~1v1~1tenants~1{tenantId}~1knowledge~1spaces~1{spaceId}~1tree
+    kind: add
+    source: "W4.04; knowledge.md §2.2, §3; design/docs/23-knowledge-spaces.md; эталон «База знаний.dc.html» (design-2026-10-19); домен W4.30"
+    reason: "операции «Базы знаний»: пространства, дерево, узлы и версии, доступ, запросы, участники, автоматизация (Q-W4.00-knowledge-1 — пути /knowledge/*)."
+  - pointer: /paths/~1api~1v1~1tenants~1{tenantId}~1knowledge~1search
+    kind: add
+    source: "W4.04; knowledge.md §2.2, §3; design/docs/23-knowledge-spaces.md; эталон «База знаний.dc.html» (design-2026-10-19); домен W4.30"
+    reason: "операции «Базы знаний»: пространства, дерево, узлы и версии, доступ, запросы, участники, автоматизация (Q-W4.00-knowledge-1 — пути /knowledge/*)."
+  - pointer: /paths/~1api~1v1~1tenants~1{tenantId}~1knowledge~1spaces~1{spaceId}~1nodes
+    kind: add
+    source: "W4.04; knowledge.md §2.2, §3; design/docs/23-knowledge-spaces.md; эталон «База знаний.dc.html» (design-2026-10-19); домен W4.30"
+    reason: "операции «Базы знаний»: пространства, дерево, узлы и версии, доступ, запросы, участники, автоматизация (Q-W4.00-knowledge-1 — пути /knowledge/*)."
+  - pointer: /paths/~1api~1v1~1tenants~1{tenantId}~1knowledge~1nodes~1{nodeId}
+    kind: add
+    source: "W4.04; knowledge.md §2.2, §3; design/docs/23-knowledge-spaces.md; эталон «База знаний.dc.html» (design-2026-10-19); домен W4.30"
+    reason: "операции «Базы знаний»: пространства, дерево, узлы и версии, доступ, запросы, участники, автоматизация (Q-W4.00-knowledge-1 — пути /knowledge/*)."
+  - pointer: /paths/~1api~1v1~1tenants~1{tenantId}~1knowledge~1nodes~1{nodeId}~1versions
+    kind: add
+    source: "W4.04; knowledge.md §2.2, §3; design/docs/23-knowledge-spaces.md; эталон «База знаний.dc.html» (design-2026-10-19); домен W4.30"
+    reason: "операции «Базы знаний»: пространства, дерево, узлы и версии, доступ, запросы, участники, автоматизация (Q-W4.00-knowledge-1 — пути /knowledge/*)."
+  - pointer: /paths/~1api~1v1~1tenants~1{tenantId}~1knowledge~1nodes~1{nodeId}~1versions~1{version}
+    kind: add
+    source: "W4.04; knowledge.md §2.2, §3; design/docs/23-knowledge-spaces.md; эталон «База знаний.dc.html» (design-2026-10-19); домен W4.30"
+    reason: "операции «Базы знаний»: пространства, дерево, узлы и версии, доступ, запросы, участники, автоматизация (Q-W4.00-knowledge-1 — пути /knowledge/*)."
+  - pointer: /paths/~1api~1v1~1tenants~1{tenantId}~1knowledge~1nodes~1{nodeId}~1status
+    kind: add
+    source: "W4.04; knowledge.md §2.2, §3; design/docs/23-knowledge-spaces.md; эталон «База знаний.dc.html» (design-2026-10-19); домен W4.30"
+    reason: "операции «Базы знаний»: пространства, дерево, узлы и версии, доступ, запросы, участники, автоматизация (Q-W4.00-knowledge-1 — пути /knowledge/*)."
+  - pointer: /paths/~1api~1v1~1tenants~1{tenantId}~1knowledge~1nodes~1{nodeId}~1move
+    kind: add
+    source: "W4.04; knowledge.md §2.2, §3; design/docs/23-knowledge-spaces.md; эталон «База знаний.dc.html» (design-2026-10-19); домен W4.30"
+    reason: "операции «Базы знаний»: пространства, дерево, узлы и версии, доступ, запросы, участники, автоматизация (Q-W4.00-knowledge-1 — пути /knowledge/*)."
+  - pointer: /paths/~1api~1v1~1tenants~1{tenantId}~1knowledge~1nodes~1{nodeId}~1archive
+    kind: add
+    source: "W4.04; knowledge.md §2.2, §3; design/docs/23-knowledge-spaces.md; эталон «База знаний.dc.html» (design-2026-10-19); домен W4.30"
+    reason: "операции «Базы знаний»: пространства, дерево, узлы и версии, доступ, запросы, участники, автоматизация (Q-W4.00-knowledge-1 — пути /knowledge/*)."
+  - pointer: /paths/~1api~1v1~1tenants~1{tenantId}~1knowledge~1nodes~1{nodeId}~1restore
+    kind: add
+    source: "W4.04; knowledge.md §2.2, §3; design/docs/23-knowledge-spaces.md; эталон «База знаний.dc.html» (design-2026-10-19); домен W4.30"
+    reason: "операции «Базы знаний»: пространства, дерево, узлы и версии, доступ, запросы, участники, автоматизация (Q-W4.00-knowledge-1 — пути /knowledge/*)."
+  - pointer: /paths/~1api~1v1~1tenants~1{tenantId}~1knowledge~1spaces~1{spaceId}~1archive
+    kind: add
+    source: "W4.04; knowledge.md §2.2, §3; design/docs/23-knowledge-spaces.md; эталон «База знаний.dc.html» (design-2026-10-19); домен W4.30"
+    reason: "операции «Базы знаний»: пространства, дерево, узлы и версии, доступ, запросы, участники, автоматизация (Q-W4.00-knowledge-1 — пути /knowledge/*)."
+  - pointer: /paths/~1api~1v1~1tenants~1{tenantId}~1knowledge~1nodes~1{nodeId}~1ack
+    kind: add
+    source: "W4.04; knowledge.md §2.2, §3; design/docs/23-knowledge-spaces.md; эталон «База знаний.dc.html» (design-2026-10-19); домен W4.30"
+    reason: "операции «Базы знаний»: пространства, дерево, узлы и версии, доступ, запросы, участники, автоматизация (Q-W4.00-knowledge-1 — пути /knowledge/*)."
+  - pointer: /paths/~1api~1v1~1tenants~1{tenantId}~1knowledge~1nodes~1{nodeId}~1access
+    kind: add
+    source: "W4.04; knowledge.md §2.2, §3; design/docs/23-knowledge-spaces.md; эталон «База знаний.dc.html» (design-2026-10-19); домен W4.30"
+    reason: "операции «Базы знаний»: пространства, дерево, узлы и версии, доступ, запросы, участники, автоматизация (Q-W4.00-knowledge-1 — пути /knowledge/*)."
+  - pointer: /paths/~1api~1v1~1tenants~1{tenantId}~1knowledge~1nodes~1{nodeId}~1access~1candidates
+    kind: add
+    source: "W4.04; knowledge.md §2.2, §3; design/docs/23-knowledge-spaces.md; эталон «База знаний.dc.html» (design-2026-10-19); домен W4.30"
+    reason: "операции «Базы знаний»: пространства, дерево, узлы и версии, доступ, запросы, участники, автоматизация (Q-W4.00-knowledge-1 — пути /knowledge/*)."
+  - pointer: /paths/~1api~1v1~1tenants~1{tenantId}~1knowledge~1spaces~1{spaceId}~1access-map
+    kind: add
+    source: "W4.04; knowledge.md §2.2, §3; design/docs/23-knowledge-spaces.md; эталон «База знаний.dc.html» (design-2026-10-19); домен W4.30"
+    reason: "операции «Базы знаний»: пространства, дерево, узлы и версии, доступ, запросы, участники, автоматизация (Q-W4.00-knowledge-1 — пути /knowledge/*)."
+  - pointer: /paths/~1api~1v1~1tenants~1{tenantId}~1knowledge~1nodes~1{nodeId}~1explain
+    kind: add
+    source: "W4.04; knowledge.md §2.2, §3; design/docs/23-knowledge-spaces.md; эталон «База знаний.dc.html» (design-2026-10-19); домен W4.30"
+    reason: "операции «Базы знаний»: пространства, дерево, узлы и версии, доступ, запросы, участники, автоматизация (Q-W4.00-knowledge-1 — пути /knowledge/*)."
+  - pointer: /paths/~1api~1v1~1tenants~1{tenantId}~1knowledge~1nodes~1{nodeId}~1requests
+    kind: add
+    source: "W4.04; knowledge.md §2.2, §3; design/docs/23-knowledge-spaces.md; эталон «База знаний.dc.html» (design-2026-10-19); домен W4.30"
+    reason: "операции «Базы знаний»: пространства, дерево, узлы и версии, доступ, запросы, участники, автоматизация (Q-W4.00-knowledge-1 — пути /knowledge/*)."
+  - pointer: /paths/~1api~1v1~1tenants~1{tenantId}~1knowledge~1requests~1{requestId}~1decision
+    kind: add
+    source: "W4.04; knowledge.md §2.2, §3; design/docs/23-knowledge-spaces.md; эталон «База знаний.dc.html» (design-2026-10-19); домен W4.30"
+    reason: "операции «Базы знаний»: пространства, дерево, узлы и версии, доступ, запросы, участники, автоматизация (Q-W4.00-knowledge-1 — пути /knowledge/*)."
+  - pointer: /paths/~1api~1v1~1tenants~1{tenantId}~1knowledge~1spaces~1{spaceId}~1requests
+    kind: add
+    source: "W4.04; knowledge.md §2.2, §3; design/docs/23-knowledge-spaces.md; эталон «База знаний.dc.html» (design-2026-10-19); домен W4.30"
+    reason: "операции «Базы знаний»: пространства, дерево, узлы и версии, доступ, запросы, участники, автоматизация (Q-W4.00-knowledge-1 — пути /knowledge/*)."
+  - pointer: /paths/~1api~1v1~1tenants~1{tenantId}~1knowledge~1spaces~1{spaceId}~1members
+    kind: add
+    source: "W4.04; knowledge.md §2.2, §3; design/docs/23-knowledge-spaces.md; эталон «База знаний.dc.html» (design-2026-10-19); домен W4.30"
+    reason: "операции «Базы знаний»: пространства, дерево, узлы и версии, доступ, запросы, участники, автоматизация (Q-W4.00-knowledge-1 — пути /knowledge/*)."
+  - pointer: /paths/~1api~1v1~1tenants~1{tenantId}~1knowledge~1spaces~1{spaceId}~1members~1{memberId}
+    kind: add
+    source: "W4.04; knowledge.md §2.2, §3; design/docs/23-knowledge-spaces.md; эталон «База знаний.dc.html» (design-2026-10-19); домен W4.30"
+    reason: "операции «Базы знаний»: пространства, дерево, узлы и версии, доступ, запросы, участники, автоматизация (Q-W4.00-knowledge-1 — пути /knowledge/*)."
+  - pointer: /paths/~1api~1v1~1tenants~1{tenantId}~1knowledge~1spaces~1{spaceId}~1rules
+    kind: add
+    source: "W4.04; knowledge.md §2.2, §3; design/docs/23-knowledge-spaces.md; эталон «База знаний.dc.html» (design-2026-10-19); домен W4.30"
+    reason: "операции «Базы знаний»: пространства, дерево, узлы и версии, доступ, запросы, участники, автоматизация (Q-W4.00-knowledge-1 — пути /knowledge/*)."
+  - pointer: /paths/~1api~1v1~1tenants~1{tenantId}~1knowledge~1rules~1{ruleId}
+    kind: add
+    source: "W4.04; knowledge.md §2.2, §3; design/docs/23-knowledge-spaces.md; эталон «База знаний.dc.html» (design-2026-10-19); домен W4.30"
+    reason: "операции «Базы знаний»: пространства, дерево, узлы и версии, доступ, запросы, участники, автоматизация (Q-W4.00-knowledge-1 — пути /knowledge/*)."
+  - pointer: /paths/~1api~1v1~1tenants~1{tenantId}~1knowledge~1spaces~1{spaceId}~1review-check
+    kind: add
+    source: "W4.04; knowledge.md §2.2, §3; design/docs/23-knowledge-spaces.md; эталон «База знаний.dc.html» (design-2026-10-19); домен W4.30"
+    reason: "операции «Базы знаний»: пространства, дерево, узлы и версии, доступ, запросы, участники, автоматизация (Q-W4.00-knowledge-1 — пути /knowledge/*)."
+  - pointer: /paths/~1api~1v1~1tenants~1{tenantId}~1knowledge~1spaces~1{spaceId}~1sections
+    kind: add
+    source: "W4.04; knowledge.md §2.2, §3; design/docs/23-knowledge-spaces.md; эталон «База знаний.dc.html» (design-2026-10-19); домен W4.30"
+    reason: "операции «Базы знаний»: пространства, дерево, узлы и версии, доступ, запросы, участники, автоматизация (Q-W4.00-knowledge-1 — пути /knowledge/*)."
+  - pointer: /paths/~1api~1v1~1tenants~1{tenantId}~1knowledge~1spaces~1{spaceId}~1runs
+    kind: add
+    source: "W4.04; knowledge.md §2.2, §3; design/docs/23-knowledge-spaces.md; эталон «База знаний.dc.html» (design-2026-10-19); домен W4.30"
+    reason: "операции «Базы знаний»: пространства, дерево, узлы и версии, доступ, запросы, участники, автоматизация (Q-W4.00-knowledge-1 — пути /knowledge/*)."
+  - pointer: /paths/~1api~1v1~1tenants~1{tenantId}~1knowledge~1nodes~1{nodeId}~1tables
+    kind: add
+    source: "W4.04; knowledge.md §2.2, §3; design/docs/23-knowledge-spaces.md; эталон «База знаний.dc.html» (design-2026-10-19); домен W4.30"
+    reason: "операции «Базы знаний»: пространства, дерево, узлы и версии, доступ, запросы, участники, автоматизация (Q-W4.00-knowledge-1 — пути /knowledge/*)."
+  - pointer: /components/parameters/nodeId
+    kind: add
+    source: "W4.04; knowledge.md §2.2, §3; design/docs/23-knowledge-spaces.md; эталон «База знаний.dc.html» (design-2026-10-19); домен W4.30"
+    reason: "общий параметр пути «Базы знаний»: пространство, узел, номер версии, правило."
+  - pointer: /components/parameters/nodeVersion
+    kind: add
+    source: "W4.04; knowledge.md §2.2, §3; design/docs/23-knowledge-spaces.md; эталон «База знаний.dc.html» (design-2026-10-19); домен W4.30"
+    reason: "общий параметр пути «Базы знаний»: пространство, узел, номер версии, правило."
+  - pointer: /components/parameters/ruleId
+    kind: add
+    source: "W4.04; knowledge.md §2.2, §3; design/docs/23-knowledge-spaces.md; эталон «База знаний.dc.html» (design-2026-10-19); домен W4.30"
+    reason: "общий параметр пути «Базы знаний»: пространство, узел, номер версии, правило."
+  - pointer: /components/parameters/spaceId
+    kind: add
+    source: "W4.04; knowledge.md §2.2, §3; design/docs/23-knowledge-spaces.md; эталон «База знаний.dc.html» (design-2026-10-19); домен W4.30"
+    reason: "общий параметр пути «Базы знаний»: пространство, узел, номер версии, правило."
+  - pointer: /components/schemas/KnowledgeAccessCandidate
+    kind: add
+    source: "W4.04; knowledge.md §2.2, §3; design/docs/23-knowledge-spaces.md; эталон «База знаний.dc.html» (design-2026-10-19); домен W4.30"
+    reason: "схема «Базы знаний» (knowledge.md §2.1, §2.2)."
+  - pointer: /components/schemas/KnowledgeAccessCandidateList
+    kind: add
+    source: "W4.04; knowledge.md §2.2, §3; design/docs/23-knowledge-spaces.md; эталон «База знаний.dc.html» (design-2026-10-19); домен W4.30"
+    reason: "схема «Базы знаний» (knowledge.md §2.1, §2.2)."
+  - pointer: /components/schemas/KnowledgeAccessChange
+    kind: add
+    source: "W4.04; knowledge.md §2.2, §3; design/docs/23-knowledge-spaces.md; эталон «База знаний.dc.html» (design-2026-10-19); домен W4.30"
+    reason: "схема «Базы знаний» (knowledge.md §2.1, §2.2)."
+  - pointer: /components/schemas/KnowledgeAccessEntry
+    kind: add
+    source: "W4.04; knowledge.md §2.2, §3; design/docs/23-knowledge-spaces.md; эталон «База знаний.dc.html» (design-2026-10-19); домен W4.30"
+    reason: "схема «Базы знаний» (knowledge.md §2.1, §2.2)."
+  - pointer: /components/schemas/KnowledgeAccessEntryInput
+    kind: add
+    source: "W4.04; knowledge.md §2.2, §3; design/docs/23-knowledge-spaces.md; эталон «База знаний.dc.html» (design-2026-10-19); домен W4.30"
+    reason: "схема «Базы знаний» (knowledge.md §2.1, §2.2)."
+  - pointer: /components/schemas/KnowledgeAccessExplanation
+    kind: add
+    source: "W4.04; knowledge.md §2.2, §3; design/docs/23-knowledge-spaces.md; эталон «База знаний.dc.html» (design-2026-10-19); домен W4.30"
+    reason: "схема «Базы знаний» (knowledge.md §2.1, §2.2)."
+  - pointer: /components/schemas/KnowledgeAccessImpact
+    kind: add
+    source: "W4.04; knowledge.md §2.2, §3; design/docs/23-knowledge-spaces.md; эталон «База знаний.dc.html» (design-2026-10-19); домен W4.30"
+    reason: "схема «Базы знаний» (knowledge.md §2.1, §2.2)."
+  - pointer: /components/schemas/KnowledgeAccessMap
+    kind: add
+    source: "W4.04; knowledge.md §2.2, §3; design/docs/23-knowledge-spaces.md; эталон «База знаний.dc.html» (design-2026-10-19); домен W4.30"
+    reason: "схема «Базы знаний» (knowledge.md §2.1, §2.2)."
+  - pointer: /components/schemas/KnowledgeAccessReach
+    kind: add
+    source: "W4.04; knowledge.md §2.2, §3; design/docs/23-knowledge-spaces.md; эталон «База знаний.dc.html» (design-2026-10-19); домен W4.30"
+    reason: "схема «Базы знаний» (knowledge.md §2.1, §2.2)."
+  - pointer: /components/schemas/KnowledgeAccessRequest
+    kind: add
+    source: "W4.04; knowledge.md §2.2, §3; design/docs/23-knowledge-spaces.md; эталон «База знаний.dc.html» (design-2026-10-19); домен W4.30"
+    reason: "схема «Базы знаний» (knowledge.md §2.1, §2.2)."
+  - pointer: /components/schemas/KnowledgeAccessRequestCreate
+    kind: add
+    source: "W4.04; knowledge.md §2.2, §3; design/docs/23-knowledge-spaces.md; эталон «База знаний.dc.html» (design-2026-10-19); домен W4.30"
+    reason: "схема «Базы знаний» (knowledge.md §2.1, §2.2)."
+  - pointer: /components/schemas/KnowledgeAccessRequestDecision
+    kind: add
+    source: "W4.04; knowledge.md §2.2, §3; design/docs/23-knowledge-spaces.md; эталон «База знаний.dc.html» (design-2026-10-19); домен W4.30"
+    reason: "схема «Базы знаний» (knowledge.md §2.1, §2.2)."
+  - pointer: /components/schemas/KnowledgeAccessRequestList
+    kind: add
+    source: "W4.04; knowledge.md §2.2, §3; design/docs/23-knowledge-spaces.md; эталон «База знаний.dc.html» (design-2026-10-19); домен W4.30"
+    reason: "схема «Базы знаний» (knowledge.md §2.1, §2.2)."
+  - pointer: /components/schemas/KnowledgeAccessStep
+    kind: add
+    source: "W4.04; knowledge.md §2.2, §3; design/docs/23-knowledge-spaces.md; эталон «База знаний.dc.html» (design-2026-10-19); домен W4.30"
+    reason: "схема «Базы знаний» (knowledge.md §2.1, §2.2)."
+  - pointer: /components/schemas/KnowledgeAck
+    kind: add
+    source: "W4.04; knowledge.md §2.2, §3; design/docs/23-knowledge-spaces.md; эталон «База знаний.dc.html» (design-2026-10-19); домен W4.30"
+    reason: "схема «Базы знаний» (knowledge.md §2.1, §2.2)."
+  - pointer: /components/schemas/KnowledgeAckCreate
+    kind: add
+    source: "W4.04; knowledge.md §2.2, §3; design/docs/23-knowledge-spaces.md; эталон «База знаний.dc.html» (design-2026-10-19); домен W4.30"
+    reason: "схема «Базы знаний» (knowledge.md §2.1, §2.2)."
+  - pointer: /components/schemas/KnowledgeAckLogEntry
+    kind: add
+    source: "W4.04; knowledge.md §2.2, §3; design/docs/23-knowledge-spaces.md; эталон «База знаний.dc.html» (design-2026-10-19); домен W4.30"
+    reason: "схема «Базы знаний» (knowledge.md §2.1, §2.2)."
+  - pointer: /components/schemas/KnowledgeArchiveItem
+    kind: add
+    source: "W4.04; knowledge.md §2.2, §3; design/docs/23-knowledge-spaces.md; эталон «База знаний.dc.html» (design-2026-10-19); домен W4.30"
+    reason: "схема «Базы знаний» (knowledge.md §2.1, §2.2)."
+  - pointer: /components/schemas/KnowledgeArchiveList
+    kind: add
+    source: "W4.04; knowledge.md §2.2, §3; design/docs/23-knowledge-spaces.md; эталон «База знаний.dc.html» (design-2026-10-19); домен W4.30"
+    reason: "схема «Базы знаний» (knowledge.md §2.1, §2.2)."
+  - pointer: /components/schemas/KnowledgeArchiveResult
+    kind: add
+    source: "W4.04; knowledge.md §2.2, §3; design/docs/23-knowledge-spaces.md; эталон «База знаний.dc.html» (design-2026-10-19); домен W4.30"
+    reason: "схема «Базы знаний» (knowledge.md §2.1, §2.2)."
+  - pointer: /components/schemas/KnowledgeDiagram
+    kind: add
+    source: "W4.04; knowledge.md §2.2, §3; design/docs/23-knowledge-spaces.md; эталон «База знаний.dc.html» (design-2026-10-19); домен W4.30"
+    reason: "схема «Базы знаний» (knowledge.md §2.1, §2.2)."
+  - pointer: /components/schemas/KnowledgeEntry
+    kind: add
+    source: "W4.04; knowledge.md §2.2, §3; design/docs/23-knowledge-spaces.md; эталон «База знаний.dc.html» (design-2026-10-19); домен W4.30"
+    reason: "схема «Базы знаний» (knowledge.md §2.1, §2.2)."
+  - pointer: /components/schemas/KnowledgeEntrySource
+    kind: add
+    source: "W4.04; knowledge.md §2.2, §3; design/docs/23-knowledge-spaces.md; эталон «База знаний.dc.html» (design-2026-10-19); домен W4.30"
+    reason: "схема «Базы знаний» (knowledge.md §2.1, §2.2)."
+  - pointer: /components/schemas/KnowledgeFile
+    kind: add
+    source: "W4.04; knowledge.md §2.2, §3; design/docs/23-knowledge-spaces.md; эталон «База знаний.dc.html» (design-2026-10-19); домен W4.30"
+    reason: "схема «Базы знаний» (knowledge.md §2.1, §2.2)."
+  - pointer: /components/schemas/KnowledgeImpactPerson
+    kind: add
+    source: "W4.04; knowledge.md §2.2, §3; design/docs/23-knowledge-spaces.md; эталон «База знаний.dc.html» (design-2026-10-19); домен W4.30"
+    reason: "схема «Базы знаний» (knowledge.md §2.1, §2.2)."
+  - pointer: /components/schemas/KnowledgeImpactSummary
+    kind: add
+    source: "W4.04; knowledge.md §2.2, §3; design/docs/23-knowledge-spaces.md; эталон «База знаний.dc.html» (design-2026-10-19); домен W4.30"
+    reason: "схема «Базы знаний» (knowledge.md §2.1, §2.2)."
+  - pointer: /components/schemas/KnowledgeLastUpdate
+    kind: add
+    source: "W4.04; knowledge.md §2.2, §3; design/docs/23-knowledge-spaces.md; эталон «База знаний.dc.html» (design-2026-10-19); домен W4.30"
+    reason: "схема «Базы знаний» (knowledge.md §2.1, §2.2)."
+  - pointer: /components/schemas/KnowledgeLink
+    kind: add
+    source: "W4.04; knowledge.md §2.2, §3; design/docs/23-knowledge-spaces.md; эталон «База знаний.dc.html» (design-2026-10-19); домен W4.30"
+    reason: "схема «Базы знаний» (knowledge.md §2.1, §2.2)."
+  - pointer: /components/schemas/KnowledgeMove
+    kind: add
+    source: "W4.04; knowledge.md §2.2, §3; design/docs/23-knowledge-spaces.md; эталон «База знаний.dc.html» (design-2026-10-19); домен W4.30"
+    reason: "схема «Базы знаний» (knowledge.md §2.1, §2.2)."
+  - pointer: /components/schemas/KnowledgeMoveResult
+    kind: add
+    source: "W4.04; knowledge.md §2.2, §3; design/docs/23-knowledge-spaces.md; эталон «База знаний.dc.html» (design-2026-10-19); домен W4.30"
+    reason: "схема «Базы знаний» (knowledge.md §2.1, §2.2)."
+  - pointer: /components/schemas/KnowledgeNode
+    kind: add
+    source: "W4.04; knowledge.md §2.2, §3; design/docs/23-knowledge-spaces.md; эталон «База знаний.dc.html» (design-2026-10-19); домен W4.30"
+    reason: "схема «Базы знаний» (knowledge.md §2.1, §2.2)."
+  - pointer: /components/schemas/KnowledgeNodeAccess
+    kind: add
+    source: "W4.04; knowledge.md §2.2, §3; design/docs/23-knowledge-spaces.md; эталон «База знаний.dc.html» (design-2026-10-19); домен W4.30"
+    reason: "схема «Базы знаний» (knowledge.md §2.1, §2.2)."
+  - pointer: /components/schemas/KnowledgeNodeCreate
+    kind: add
+    source: "W4.04; knowledge.md §2.2, §3; design/docs/23-knowledge-spaces.md; эталон «База знаний.dc.html» (design-2026-10-19); домен W4.30"
+    reason: "схема «Базы знаний» (knowledge.md §2.1, §2.2)."
+  - pointer: /components/schemas/KnowledgeNodeMy
+    kind: add
+    source: "W4.04; knowledge.md §2.2, §3; design/docs/23-knowledge-spaces.md; эталон «База знаний.dc.html» (design-2026-10-19); домен W4.30"
+    reason: "схема «Базы знаний» (knowledge.md §2.1, §2.2)."
+  - pointer: /components/schemas/KnowledgeNodeRef
+    kind: add
+    source: "W4.04; knowledge.md §2.2, §3; design/docs/23-knowledge-spaces.md; эталон «База знаний.dc.html» (design-2026-10-19); домен W4.30"
+    reason: "схема «Базы знаний» (knowledge.md §2.1, §2.2)."
+  - pointer: /components/schemas/KnowledgeNodeStatusChange
+    kind: add
+    source: "W4.04; knowledge.md §2.2, §3; design/docs/23-knowledge-spaces.md; эталон «База знаний.dc.html» (design-2026-10-19); домен W4.30"
+    reason: "схема «Базы знаний» (knowledge.md §2.1, §2.2)."
+  - pointer: /components/schemas/KnowledgeNodeSummary
+    kind: add
+    source: "W4.04; knowledge.md §2.2, §3; design/docs/23-knowledge-spaces.md; эталон «База знаний.dc.html» (design-2026-10-19); домен W4.30"
+    reason: "схема «Базы знаний» (knowledge.md §2.1, §2.2)."
+  - pointer: /components/schemas/KnowledgePublish
+    kind: add
+    source: "W4.04; knowledge.md §2.2, §3; design/docs/23-knowledge-spaces.md; эталон «База знаний.dc.html» (design-2026-10-19); домен W4.30"
+    reason: "схема «Базы знаний» (knowledge.md §2.1, §2.2)."
+  - pointer: /components/schemas/KnowledgePublishResult
+    kind: add
+    source: "W4.04; knowledge.md §2.2, §3; design/docs/23-knowledge-spaces.md; эталон «База знаний.dc.html» (design-2026-10-19); домен W4.30"
+    reason: "схема «Базы знаний» (knowledge.md §2.1, §2.2)."
+  - pointer: /components/schemas/KnowledgeRule
+    kind: add
+    source: "W4.04; knowledge.md §2.2, §3; design/docs/23-knowledge-spaces.md; эталон «База знаний.dc.html» (design-2026-10-19); домен W4.30"
+    reason: "схема «Базы знаний» (knowledge.md §2.1, §2.2)."
+  - pointer: /components/schemas/KnowledgeRuleList
+    kind: add
+    source: "W4.04; knowledge.md §2.2, §3; design/docs/23-knowledge-spaces.md; эталон «База знаний.dc.html» (design-2026-10-19); домен W4.30"
+    reason: "схема «Базы знаний» (knowledge.md §2.1, §2.2)."
+  - pointer: /components/schemas/KnowledgeRulePatch
+    kind: add
+    source: "W4.04; knowledge.md §2.2, §3; design/docs/23-knowledge-spaces.md; эталон «База знаний.dc.html» (design-2026-10-19); домен W4.30"
+    reason: "схема «Базы знаний» (knowledge.md §2.1, §2.2)."
+  - pointer: /components/schemas/KnowledgeRun
+    kind: add
+    source: "W4.04; knowledge.md §2.2, §3; design/docs/23-knowledge-spaces.md; эталон «База знаний.dc.html» (design-2026-10-19); домен W4.30"
+    reason: "схема «Базы знаний» (knowledge.md §2.1, §2.2)."
+  - pointer: /components/schemas/KnowledgeRunList
+    kind: add
+    source: "W4.04; knowledge.md §2.2, §3; design/docs/23-knowledge-spaces.md; эталон «База знаний.dc.html» (design-2026-10-19); домен W4.30"
+    reason: "схема «Базы знаний» (knowledge.md §2.1, §2.2)."
+  - pointer: /components/schemas/KnowledgeRunReport
+    kind: add
+    source: "W4.04; knowledge.md §2.2, §3; design/docs/23-knowledge-spaces.md; эталон «База знаний.dc.html» (design-2026-10-19); домен W4.30"
+    reason: "схема «Базы знаний» (knowledge.md §2.1, §2.2)."
+  - pointer: /components/schemas/KnowledgeSearchHit
+    kind: add
+    source: "W4.04; knowledge.md §2.2, §3; design/docs/23-knowledge-spaces.md; эталон «База знаний.dc.html» (design-2026-10-19); домен W4.30"
+    reason: "схема «Базы знаний» (knowledge.md §2.1, §2.2)."
+  - pointer: /components/schemas/KnowledgeSearchResult
+    kind: add
+    source: "W4.04; knowledge.md §2.2, §3; design/docs/23-knowledge-spaces.md; эталон «База знаний.dc.html» (design-2026-10-19); домен W4.30"
+    reason: "схема «Базы знаний» (knowledge.md §2.1, §2.2)."
+  - pointer: /components/schemas/KnowledgeSectionCreate
+    kind: add
+    source: "W4.04; knowledge.md §2.2, §3; design/docs/23-knowledge-spaces.md; эталон «База знаний.dc.html» (design-2026-10-19); домен W4.30"
+    reason: "схема «Базы знаний» (knowledge.md §2.1, §2.2)."
+  - pointer: /components/schemas/KnowledgeSectionObject
+    kind: add
+    source: "W4.04; knowledge.md §2.2, §3; design/docs/23-knowledge-spaces.md; эталон «База знаний.dc.html» (design-2026-10-19); домен W4.30"
+    reason: "схема «Базы знаний» (knowledge.md §2.1, §2.2)."
+  - pointer: /components/schemas/KnowledgeSpace
+    kind: add
+    source: "W4.04; knowledge.md §2.2, §3; design/docs/23-knowledge-spaces.md; эталон «База знаний.dc.html» (design-2026-10-19); домен W4.30"
+    reason: "схема «Базы знаний» (knowledge.md §2.1, §2.2)."
+  - pointer: /components/schemas/KnowledgeSpaceChange
+    kind: add
+    source: "W4.04; knowledge.md §2.2, §3; design/docs/23-knowledge-spaces.md; эталон «База знаний.dc.html» (design-2026-10-19); домен W4.30"
+    reason: "схема «Базы знаний» (knowledge.md §2.1, §2.2)."
+  - pointer: /components/schemas/KnowledgeSpaceCreate
+    kind: add
+    source: "W4.04; knowledge.md §2.2, §3; design/docs/23-knowledge-spaces.md; эталон «База знаний.dc.html» (design-2026-10-19); домен W4.30"
+    reason: "схема «Базы знаний» (knowledge.md §2.1, §2.2)."
+  - pointer: /components/schemas/KnowledgeSpaceList
+    kind: add
+    source: "W4.04; knowledge.md §2.2, §3; design/docs/23-knowledge-spaces.md; эталон «База знаний.dc.html» (design-2026-10-19); домен W4.30"
+    reason: "схема «Базы знаний» (knowledge.md §2.1, §2.2)."
+  - pointer: /components/schemas/KnowledgeSpaceMember
+    kind: add
+    source: "W4.04; knowledge.md §2.2, §3; design/docs/23-knowledge-spaces.md; эталон «База знаний.dc.html» (design-2026-10-19); домен W4.30"
+    reason: "схема «Базы знаний» (knowledge.md §2.1, §2.2)."
+  - pointer: /components/schemas/KnowledgeSpaceMemberChange
+    kind: add
+    source: "W4.04; knowledge.md §2.2, §3; design/docs/23-knowledge-spaces.md; эталон «База знаний.dc.html» (design-2026-10-19); домен W4.30"
+    reason: "схема «Базы знаний» (knowledge.md §2.1, §2.2)."
+  - pointer: /components/schemas/KnowledgeSpaceMembers
+    kind: add
+    source: "W4.04; knowledge.md §2.2, §3; design/docs/23-knowledge-spaces.md; эталон «База знаний.dc.html» (design-2026-10-19); домен W4.30"
+    reason: "схема «Базы знаний» (knowledge.md §2.1, §2.2)."
+  - pointer: /components/schemas/KnowledgeSpaceMy
+    kind: add
+    source: "W4.04; knowledge.md §2.2, §3; design/docs/23-knowledge-spaces.md; эталон «База знаний.dc.html» (design-2026-10-19); домен W4.30"
+    reason: "схема «Базы знаний» (knowledge.md §2.1, §2.2)."
+  - pointer: /components/schemas/KnowledgeSpacePatch
+    kind: add
+    source: "W4.04; knowledge.md §2.2, §3; design/docs/23-knowledge-spaces.md; эталон «База знаний.dc.html» (design-2026-10-19); домен W4.30"
+    reason: "схема «Базы знаний» (knowledge.md §2.1, §2.2)."
+  - pointer: /components/schemas/KnowledgeSpaceRole
+    kind: add
+    source: "W4.04; knowledge.md §2.2, §3; design/docs/23-knowledge-spaces.md; эталон «База знаний.dc.html» (design-2026-10-19); домен W4.30"
+    reason: "схема «Базы знаний» (knowledge.md §2.1, §2.2)."
+  - pointer: /components/schemas/KnowledgeSpaceTemplate
+    kind: add
+    source: "W4.04; knowledge.md §2.2, §3; design/docs/23-knowledge-spaces.md; эталон «База знаний.dc.html» (design-2026-10-19); домен W4.30"
+    reason: "схема «Базы знаний» (knowledge.md §2.1, §2.2)."
+  - pointer: /components/schemas/KnowledgeSpaceTemplateList
+    kind: add
+    source: "W4.04; knowledge.md §2.2, §3; design/docs/23-knowledge-spaces.md; эталон «База знаний.dc.html» (design-2026-10-19); домен W4.30"
+    reason: "схема «Базы знаний» (knowledge.md §2.1, §2.2)."
+  - pointer: /components/schemas/KnowledgeTable
+    kind: add
+    source: "W4.04; knowledge.md §2.2, §3; design/docs/23-knowledge-spaces.md; эталон «База знаний.dc.html» (design-2026-10-19); домен W4.30"
+    reason: "схема «Базы знаний» (knowledge.md §2.1, §2.2)."
+  - pointer: /components/schemas/KnowledgeTableColumn
+    kind: add
+    source: "W4.04; knowledge.md §2.2, §3; design/docs/23-knowledge-spaces.md; эталон «База знаний.dc.html» (design-2026-10-19); домен W4.30"
+    reason: "схема «Базы знаний» (knowledge.md §2.1, §2.2)."
+  - pointer: /components/schemas/KnowledgeTableCreate
+    kind: add
+    source: "W4.04; knowledge.md §2.2, §3; design/docs/23-knowledge-spaces.md; эталон «База знаний.dc.html» (design-2026-10-19); домен W4.30"
+    reason: "схема «Базы знаний» (knowledge.md §2.1, §2.2)."
+  - pointer: /components/schemas/KnowledgeTableRow
+    kind: add
+    source: "W4.04; knowledge.md §2.2, §3; design/docs/23-knowledge-spaces.md; эталон «База знаний.dc.html» (design-2026-10-19); домен W4.30"
+    reason: "схема «Базы знаний» (knowledge.md §2.1, §2.2)."
+  - pointer: /components/schemas/KnowledgeTemplateNode
+    kind: add
+    source: "W4.04; knowledge.md §2.2, §3; design/docs/23-knowledge-spaces.md; эталон «База знаний.dc.html» (design-2026-10-19); домен W4.30"
+    reason: "схема «Базы знаний» (knowledge.md §2.1, §2.2)."
+  - pointer: /components/schemas/KnowledgeTree
+    kind: add
+    source: "W4.04; knowledge.md §2.2, §3; design/docs/23-knowledge-spaces.md; эталон «База знаний.dc.html» (design-2026-10-19); домен W4.30"
+    reason: "схема «Базы знаний» (knowledge.md §2.1, §2.2)."
+  - pointer: /components/schemas/KnowledgeVersion
+    kind: add
+    source: "W4.04; knowledge.md §2.2, §3; design/docs/23-knowledge-spaces.md; эталон «База знаний.dc.html» (design-2026-10-19); домен W4.30"
+    reason: "схема «Базы знаний» (knowledge.md §2.1, §2.2)."
+  - pointer: /components/schemas/KnowledgeVersionSummary
+    kind: add
+    source: "W4.04; knowledge.md §2.2, §3; design/docs/23-knowledge-spaces.md; эталон «База знаний.dc.html» (design-2026-10-19); домен W4.30"
+    reason: "схема «Базы знаний» (knowledge.md §2.1, §2.2)."

@@ -99,6 +99,16 @@ export function scopeKinds(opScope: string): readonly string[] | 'any' {
   return kinds;
 }
 
+/**
+ * Ключи участника из назначений, которые хранит модуль, а не access API (W4.04: роли пространств и страниц «Базы
+ * знаний» — Q-W4.00-knowledge-21, Q-W4.30-16 вариант б). Модуль регистрирует функцию при загрузке.
+ */
+export type ScopedKeys = (t: TenantAccess, opScope: string, now: string) => readonly string[];
+const scopedKeys: ScopedKeys[] = [];
+export function registerScopedKeys(f: ScopedKeys): void {
+  if (!scopedKeys.includes(f)) scopedKeys.push(f);
+}
+
 /** Ключи действий участника, годные для операции с областью `opScope`. */
 export function actionsFor(t: TenantAccess, opScope: string, now: string): Set<string> {
   if (t.owner) return new Set([...ACTIONS.keys()].filter((k) => !k.startsWith('platform.')));
@@ -109,6 +119,7 @@ export function actionsFor(t: TenantAccess, opScope: string, now: string): Set<s
     if (kinds !== 'any' && !kinds.includes(g.scope.kind)) continue;
     for (const k of g.keys) out.add(k);
   }
+  for (const f of scopedKeys) for (const k of f(t, opScope, now)) out.add(k);
   return out;
 }
 

@@ -1,0 +1,13 @@
+{
+  "id": "d143b523-a6c4-5dca-ac12-37a0382b3c07",
+  "nodeId": "89800cc0-ed79-5986-818e-e0168e016798",
+  "nodeTitle": "Памятка водителя",
+  "spaceId": "a3b6bc34-7307-58e7-990a-5513cd630786",
+  "memberId": "a560b4fe-78b7-585e-b960-f0ab3622570c",
+  "memberDisplayName": "Илья Васильев",
+  "can": "edit",
+  "status": "approved",
+  "requestedAt": "2026-10-01T07:30:00Z",
+  "decidedAt": "2026-10-01T07:30:00Z",
+  "decidedByDisplayName": "Марина Котова"
+}

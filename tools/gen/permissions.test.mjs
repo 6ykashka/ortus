@@ -32,6 +32,23 @@ const ADDED = {
   ],
   cash: ['cash.read', 'cash.post', 'cash.manage'],
 };
+// W4.04 (контракт «Базы знаний», docs/23-knowledge-spaces.md «Новые права», knowledge.md §3.1): к областям ключей
+// core.knowledge добавлены space, page, relation (надмножество 11, порядок 11 — в начале), knowledge.publish — уровень
+// review вместо settings (Q-W4.00-knowledge-5), пять новых ключей модуля.
+const W404_SCOPES = new Set([
+  'knowledge.read',
+  'knowledge.create',
+  'knowledge.update',
+  'knowledge.publish',
+]);
+const W404_LEVEL = { 'knowledge.publish': 'review' };
+const W404_KEYS = [
+  'knowledge.organize',
+  'knowledge.access.manage',
+  'knowledge.members.manage',
+  'knowledge.automation.manage',
+  'knowledge.spaces.manage',
+];
 const FIELDS = [
   'level',
   'label',
@@ -62,11 +79,19 @@ describe('каталог прав api/permissions.yaml', () => {
       assert.ok(a, `нет ключа ${key}`);
       assert.equal(a.module, src.module, key);
       const want = { ...src, ...CHANGED_SINCE_14_10[key] };
-      for (const f of FIELDS) assert.deepEqual(a[f], want[f], `${key}.${f}`);
+      for (const f of FIELDS) {
+        if (f === 'scopes' && W404_SCOPES.has(key)) {
+          assert.deepEqual(a.scopes.slice(0, want.scopes.length), want.scopes, key);
+        } else if (f === 'level' && key in W404_LEVEL) {
+          assert.equal(a.level, W404_LEVEL[key], key);
+        } else {
+          assert.deepEqual(a[f], want[f], `${key}.${f}`);
+        }
+      }
     }
   });
 
-  it('14 ключей cash/inventory/spa из OpenAPI 0.1, forms.responses.assign и ключи этапов добавлены, итого 124', () => {
+  it('14 ключей cash/inventory/spa из OpenAPI 0.1, forms.responses.assign и ключи этапов добавлены, итого 129', () => {
     for (const k of ADDED_LATER) assert.ok(actions.has(k), k);
     for (const [mod, keys] of Object.entries(ADDED)) {
       assert.equal(catalog.modules[mod]?.proposed, true, `модуль ${mod} помечен proposed`);
@@ -78,7 +103,8 @@ describe('каталог прав api/permissions.yaml', () => {
     assert.equal(assign.module, 'core.forms');
     assert.deepEqual(assign.scopes, ['tenant', 'unit', 'project']);
     assert.match(assign.note ?? '', /PROPOSED W0\.07/);
-    assert.equal(actions.size, 123 + ADDED_LATER.length);
+    for (const k of W404_KEYS) assert.equal(actions.get(k)?.module, 'core.knowledge', k);
+    assert.equal(actions.size, 123 + ADDED_LATER.length + W404_KEYS.length);
   });
 
   it('каждый x-permissions бандла есть в каталоге', () => {

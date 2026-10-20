@@ -153,12 +153,15 @@ describe('контракт 0.7.0-stage4 (W4.02): виды областей', () 
 
   // W2.71 (0.7.1-stage4, S2-20) влит позже и добавил fleet.reservations.choose и offer_closed: W4.02 своих не добавлял.
   it('новых ключей прав и кодов ошибок нет', () => {
-    const actions = [...flattenActions(loadCatalog()).keys()];
-    // W4.07 (0.8.0-stage4) — branding.manage.
-    assert.equal(
-      actions.filter((k) => k !== 'fleet.reservations.choose' && k !== 'branding.manage').length,
-      123,
+    // W4.07 (0.8.0-stage4) — branding.manage, W4.04 — ключи «Базы знаний» (core.knowledge): остальных ключей вне БЗ
+    // без choose — 119, как в 0.6.x/0.7.0.
+    const actions = [...flattenActions(loadCatalog())].filter(
+      ([k, a]) =>
+        k !== 'fleet.reservations.choose' &&
+        k !== 'branding.manage' &&
+        a.module !== 'core.knowledge',
     );
+    assert.equal(actions.length, 119);
     const codes = Object.keys(loadRegistry().codes);
     assert.equal(codes.filter((c) => c !== 'offer_closed').length, 52);
   });
@@ -418,7 +421,9 @@ describe('контракт 0.7.0-stage4 (W4.02): примеры, аддитив�
       readme,
       /\|\s*tenant\s*\|\s*0020\s*\|\s*`0020_access_scope_kinds_stage4\.sql`[^|]*\|\s*W4\.02/,
     );
-    assert.match(readme, /\|\s*tenant\s*\|\s*0024–0039\s*\|/); // после W4.06 (0021–0022) и W2.71 (0023)
+    // после W4.06 (0021–0022) и W2.71 (0023) резерв — 0024–0039; следующие контрактные PR этапа 4 (W4.04 и др.)
+    // сдвигают его начало.
+    assert.match(readme, /\|\s*tenant\s*\|\s*00(2[4-9]|3\d)–0039\s*\|/);
   });
 
   it('возврат 1: api/README.md — порядок вливания tenant 0019 (W2.71) и 0020 (W4.02), goose без out-of-order', () => {
@@ -440,7 +445,8 @@ describe('контракт 0.7.0-stage4 (W4.02): примеры, аддитив�
     }
   });
 
-  // W2.71 (S2-20) влит после W4.02 и W4.06 — 0.7.1-stage4: проверяется «этап 4, не ниже 0.7.0-stage4».
+  // W2.71 (S2-20) влит после W4.02 и W4.06 — 0.7.1-stage4, следующие контрактные PR этапа 4 — W4.04 и др.:
+  // проверяется «этап 4, не ниже 0.7.0-stage4».
   it('версия контракта — не ниже 0.7.0-stage4', () => {
     const m = /^0\.(\d+)\.(\d+)-stage(\d+)$/.exec(doc.info.version);
     assert.ok(m, doc.info.version);

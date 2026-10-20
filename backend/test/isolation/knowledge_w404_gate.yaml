@@ -1,0 +1,310 @@
+# Матрица изоляции: отказы шлюза «Базы знаний» (W4.04, контракт 0.9.0-stage4) — без pending. Шлюз cmd/api допускает
+# операцию, только если у актора есть грант с действием x-permissions в виде области x-scope: knowledge-space-node
+# (tenant, org_unit, self, project, space, page, relation) — чтение (им же пускаются создание узла, публикация версии
+# и таблица страницы: право создавать и править проверяет модуль по цепочке доступа), утверждение; knowledge-space
+# (tenant, org_unit, space) — порядок дерева, доступ, участники, автоматизация; tenant-org-unit — пространства и
+# шаблоны (knowledge.spaces.manage). У «Администратора» фикстур нет ни одного действия knowledge.*, у «Менеджера
+# логистики» и «Водителя» — только knowledge.read: 403 до хендлера, верно и после него (README.md, «Как WS добавляет
+# строки»). Роли пространства (вид space) до регистрации вида W4.01 не дают ничего — их строки в scope_kinds_gate.yaml,
+# здесь только акторы без нужного ключа в любой области. Команды с If-Match получают 403 шлюза раньше предусловия;
+# id в пути — tenant:missing. Формат — README.md. После правки: go -C backend generate ./test/isolation
+module: knowledge_w404_gate
+endpoints:
+  # knowledge.read — нет ни в одной роли «Администратора»
+  - op: listKnowledgeSpaces
+    method: GET
+    path: /api/v1/tenants/{tenantId}/knowledge/spaces
+    rows:
+      - actor: a.admin
+        params: { tenantId: tenant:a }
+        status: 403
+        code: forbidden_action
+        note: у «Администратора» нет knowledge.read — «База знаний» закрыта
+  - op: getKnowledgeSpaceTree
+    method: GET
+    path: /api/v1/tenants/{tenantId}/knowledge/spaces/{spaceId}/tree
+    rows:
+      - actor: a.admin
+        params: { tenantId: tenant:a, spaceId: tenant:missing }
+        status: 403
+        code: forbidden_action
+  - op: searchKnowledge
+    method: GET
+    path: /api/v1/tenants/{tenantId}/knowledge/search?q=rules
+    rows:
+      - actor: a.admin
+        params: { tenantId: tenant:a }
+        status: 403
+        code: forbidden_action
+  - op: getKnowledgeNode
+    method: GET
+    path: /api/v1/tenants/{tenantId}/knowledge/nodes/{nodeId}
+    rows:
+      - actor: a.admin
+        params: { tenantId: tenant:a, nodeId: tenant:missing }
+        status: 403
+        code: forbidden_action
+  - op: getKnowledgeNodeVersion
+    method: GET
+    path: /api/v1/tenants/{tenantId}/knowledge/nodes/{nodeId}/versions/1
+    rows:
+      - actor: a.admin
+        params: { tenantId: tenant:a, nodeId: tenant:missing }
+        status: 403
+        code: forbidden_action
+  - op: ackKnowledgeNode
+    method: POST
+    path: /api/v1/tenants/{tenantId}/knowledge/nodes/{nodeId}/ack
+    rows:
+      - actor: a.admin
+        params: { tenantId: tenant:a, nodeId: tenant:missing }
+        status: 403
+        code: forbidden_action
+        body: '{"version": 1}'
+  - op: getKnowledgeNodeAccess
+    method: GET
+    path: /api/v1/tenants/{tenantId}/knowledge/nodes/{nodeId}/access
+    rows:
+      - actor: a.admin
+        params: { tenantId: tenant:a, nodeId: tenant:missing }
+        status: 403
+        code: forbidden_action
+  - op: createKnowledgeAccessRequest
+    method: POST
+    path: /api/v1/tenants/{tenantId}/knowledge/nodes/{nodeId}/requests
+    rows:
+      - actor: a.admin
+        params: { tenantId: tenant:a, nodeId: tenant:missing }
+        status: 403
+        code: forbidden_action
+        body: '{"can": "edit"}'
+  - op: listKnowledgeSpaceMembers
+    method: GET
+    path: /api/v1/tenants/{tenantId}/knowledge/spaces/{spaceId}/members
+    rows:
+      - actor: a.admin
+        params: { tenantId: tenant:a, spaceId: tenant:missing }
+        status: 403
+        code: forbidden_action
+  # Пространства и шаблоны — knowledge.spaces.manage (tenant-org-unit)
+  - op: createKnowledgeSpace
+    method: POST
+    path: /api/v1/tenants/{tenantId}/knowledge/spaces
+    rows:
+      - actor: a.manager-msk1
+        params: { tenantId: tenant:a }
+        status: 403
+        code: forbidden_action
+        body: '{"name": "Склад", "access": "open"}'
+        note: у «Менеджера логистики» нет knowledge.spaces.manage (пример createKnowledgeSpace/forbidden_action)
+      - actor: a.driver-msk1
+        params: { tenantId: tenant:a }
+        status: 403
+        code: forbidden_action
+        body: '{"name": "Склад", "access": "open"}'
+  - op: listKnowledgeSpaceTemplates
+    method: GET
+    path: /api/v1/tenants/{tenantId}/knowledge/space-templates
+    rows:
+      - actor: a.manager-msk1
+        params: { tenantId: tenant:a }
+        status: 403
+        code: forbidden_action
+        note: шаблоны — только с правом создавать пространства
+  # Создание и правка узла, таблица страницы — шлюз пускает читающего (knowledge.read, knowledge-space-node), право
+  # создавать и править проверяет модуль по цепочке доступа (возврат 1: записи «правит», связь «прораб объекта»,
+  # одобренный запрос, автор, руководитель). Отказ шлюза — только без knowledge.read.
+  - op: createKnowledgeNode
+    method: POST
+    path: /api/v1/tenants/{tenantId}/knowledge/spaces/{spaceId}/nodes
+    rows:
+      - actor: a.admin
+        params: { tenantId: tenant:a, spaceId: tenant:missing }
+        status: 403
+        code: forbidden_action
+        body: '{"kind": "page", "title": "Моя страница"}'
+        note: у «Администратора» нет knowledge.read; водителя без права создавать отсекает модуль, не шлюз
+  - op: publishKnowledgeNodeVersion
+    method: POST
+    path: /api/v1/tenants/{tenantId}/knowledge/nodes/{nodeId}/versions
+    rows:
+      - actor: a.admin
+        params: { tenantId: tenant:a, nodeId: tenant:missing }
+        status: 403
+        code: forbidden_action
+        body: '{"body": "Новый текст."}'
+        note: без knowledge.read — 403 шлюза раньше If-Match; право править проверяет модуль
+  - op: setKnowledgeNodeStatus
+    method: POST
+    path: /api/v1/tenants/{tenantId}/knowledge/nodes/{nodeId}/status
+    rows:
+      - actor: a.manager-msk1
+        params: { tenantId: tenant:a, nodeId: tenant:missing }
+        status: 403
+        code: forbidden_action
+        body: '{"status": "active"}'
+        note: утверждение — knowledge.publish (уровень review, Q-W4.00-knowledge-5)
+  - op: createKnowledgeTable
+    method: POST
+    path: /api/v1/tenants/{tenantId}/knowledge/nodes/{nodeId}/tables
+    rows:
+      - actor: a.admin
+        params: { tenantId: tenant:a, nodeId: tenant:missing }
+        status: 403
+        code: forbidden_action
+        body: '{"title": "Пробеги", "columns": [{"name": "Дата"}]}'
+  # Порядок дерева — knowledge.organize (knowledge-space)
+  - op: moveKnowledgeNode
+    method: POST
+    path: /api/v1/tenants/{tenantId}/knowledge/nodes/{nodeId}/move
+    rows:
+      - actor: a.manager-msk1
+        params: { tenantId: tenant:a, nodeId: tenant:missing }
+        status: 403
+        code: forbidden_action
+        body: '{"parentId": null}'
+  - op: archiveKnowledgeNode
+    method: POST
+    path: /api/v1/tenants/{tenantId}/knowledge/nodes/{nodeId}/archive
+    rows:
+      - actor: a.driver-msk1
+        params: { tenantId: tenant:a, nodeId: tenant:missing }
+        status: 403
+        code: forbidden_action
+  - op: restoreKnowledgeNode
+    method: POST
+    path: /api/v1/tenants/{tenantId}/knowledge/nodes/{nodeId}/restore
+    rows:
+      - actor: a.driver-msk1
+        params: { tenantId: tenant:a, nodeId: tenant:missing }
+        status: 403
+        code: forbidden_action
+        note: пример restoreKnowledgeNode/forbidden_action
+  - op: listKnowledgeArchive
+    method: GET
+    path: /api/v1/tenants/{tenantId}/knowledge/spaces/{spaceId}/archive
+    rows:
+      - actor: a.driver-msk1
+        params: { tenantId: tenant:a, spaceId: tenant:missing }
+        status: 403
+        code: forbidden_action
+  # Доступ — knowledge.access.manage (knowledge-space)
+  - op: updateKnowledgeSpace
+    method: PATCH
+    path: /api/v1/tenants/{tenantId}/knowledge/spaces/{spaceId}
+    rows:
+      - actor: a.manager-msk1
+        params: { tenantId: tenant:a, spaceId: tenant:missing }
+        status: 403
+        code: forbidden_action
+        body: '{"access": "limited"}'
+        note: без knowledge.access.manage — 403 шлюза раньше If-Match
+  - op: setKnowledgeNodeAccess
+    method: PUT
+    path: /api/v1/tenants/{tenantId}/knowledge/nodes/{nodeId}/access
+    rows:
+      - actor: a.manager-msk1
+        params: { tenantId: tenant:a, nodeId: tenant:missing }
+        status: 403
+        code: forbidden_action
+        body: '{"mode": "inherit", "entries": []}'
+      - actor: a.driver-msk1
+        params: { tenantId: tenant:a, nodeId: tenant:missing }
+        status: 403
+        code: forbidden_action
+        body: '{"mode": "inherit", "entries": []}'
+  - op: listKnowledgeAccessCandidates
+    method: GET
+    path: /api/v1/tenants/{tenantId}/knowledge/nodes/{nodeId}/access/candidates
+    rows:
+      - actor: a.driver-msk1
+        params: { tenantId: tenant:a, nodeId: tenant:missing }
+        status: 403
+        code: forbidden_action
+  - op: getKnowledgeAccessMap
+    method: GET
+    path: /api/v1/tenants/{tenantId}/knowledge/spaces/{spaceId}/access-map
+    rows:
+      - actor: a.driver-msk1
+        params: { tenantId: tenant:a, spaceId: tenant:missing }
+        status: 403
+        code: forbidden_action
+  - op: explainKnowledgeAccess
+    method: GET
+    path: /api/v1/tenants/{tenantId}/knowledge/nodes/{nodeId}/explain?memberId={memberId}
+    rows:
+      - actor: a.manager-msk1
+        params: { tenantId: tenant:a, nodeId: tenant:missing, memberId: person:a.driver-msk1@a }
+        status: 403
+        code: forbidden_action
+        note: «Проверить сотрудника» — только с knowledge.access.manage
+  - op: decideKnowledgeAccessRequest
+    method: POST
+    path: /api/v1/tenants/{tenantId}/knowledge/requests/{requestId}/decision
+    rows:
+      - actor: a.driver-msk1
+        params: { tenantId: tenant:a, requestId: tenant:missing }
+        status: 403
+        code: forbidden_action
+        body: '{"decision": "approve"}'
+  - op: listKnowledgeAccessRequests
+    method: GET
+    path: /api/v1/tenants/{tenantId}/knowledge/spaces/{spaceId}/requests
+    rows:
+      - actor: a.driver-msk1
+        params: { tenantId: tenant:a, spaceId: tenant:missing }
+        status: 403
+        code: forbidden_action
+  # Участники — knowledge.members.manage (knowledge-space)
+  - op: setKnowledgeSpaceMember
+    method: PUT
+    path: /api/v1/tenants/{tenantId}/knowledge/spaces/{spaceId}/members/{memberId}
+    rows:
+      - actor: a.manager-msk1
+        params: { tenantId: tenant:a, spaceId: tenant:missing, memberId: person:a.driver-msk1@a }
+        status: 403
+        code: forbidden_action
+        body: '{"role": "kb_space_reader"}'
+  # Автоматизация — knowledge.automation.manage (knowledge-space)
+  - op: listKnowledgeRules
+    method: GET
+    path: /api/v1/tenants/{tenantId}/knowledge/spaces/{spaceId}/rules
+    rows:
+      - actor: a.driver-msk1
+        params: { tenantId: tenant:a, spaceId: tenant:missing }
+        status: 403
+        code: forbidden_action
+  - op: setKnowledgeRuleEnabled
+    method: PATCH
+    path: /api/v1/tenants/{tenantId}/knowledge/rules/{ruleId}
+    rows:
+      - actor: a.manager-msk1
+        params: { tenantId: tenant:a, ruleId: tenant:missing }
+        status: 403
+        code: forbidden_action
+        body: '{"enabled": false}'
+  - op: runKnowledgeReviewCheck
+    method: POST
+    path: /api/v1/tenants/{tenantId}/knowledge/spaces/{spaceId}/review-check
+    rows:
+      - actor: a.driver-msk1
+        params: { tenantId: tenant:a, spaceId: tenant:missing }
+        status: 403
+        code: forbidden_action
+  - op: runKnowledgeSection
+    method: POST
+    path: /api/v1/tenants/{tenantId}/knowledge/spaces/{spaceId}/sections
+    rows:
+      - actor: a.manager-msk1
+        params: { tenantId: tenant:a, spaceId: tenant:missing }
+        status: 403
+        code: forbidden_action
+        body: '{"projectId": "{{repair_project:a.flat}}"}'
+  - op: listKnowledgeRuns
+    method: GET
+    path: /api/v1/tenants/{tenantId}/knowledge/spaces/{spaceId}/runs
+    rows:
+      - actor: a.driver-msk1
+        params: { tenantId: tenant:a, spaceId: tenant:missing }
+        status: 403
+        code: forbidden_action

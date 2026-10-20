@@ -86,8 +86,12 @@ describe('контракт 0.6.3-stage2 (W2.71): права и коды', () => 
       keys.indexOf('fleet.reservations.manage') + 1,
       'после fleet.reservations.manage, как в 11 (19.10b)',
     );
-    // W4.07 (0.8.0-stage4) влит позже и добавил branding.manage.
-    assert.equal([...actions.keys()].filter((k) => k !== 'branding.manage').length, 124);
+    // W4.07 (0.8.0-stage4) и W4.04 (0.9.0-stage4) влиты позже: branding.manage и ключи «Базы знаний»
+    // (core.knowledge) не считаются — остальных 120, как в 0.7.1.
+    const own = [...actions].filter(
+      ([k, x]) => k !== 'branding.manage' && x.module !== 'core.knowledge',
+    );
+    assert.equal(own.length, 120);
   });
 
   it('подпись fleet.reservations.manage — «Ставить и снимать брони» (19.10b), остальное как в 11', () => {

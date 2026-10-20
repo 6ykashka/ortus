@@ -1,0 +1,37 @@
+{
+  "spaceId": "a3b6bc34-7307-58e7-990a-5513cd630786",
+  "levelLabel": "Все в области читают, пишут участники",
+  "canManage": false,
+  "roles": [
+    {
+      "role": "kb_space_lead",
+      "label": "Руководитель пространства",
+      "description": "Всё в пространстве, участники, доступ, автоматизация",
+      "members": [
+        {
+          "memberId": "ac41932c-dbd9-53b1-a84b-42cbc1d6629a",
+          "displayName": "Марина Котова",
+          "state": "active"
+        }
+      ]
+    },
+    {
+      "role": "kb_space_editor",
+      "label": "Редактор",
+      "description": "Создаёт и правит любые страницы, публикует, перемещает",
+      "members": [
+        {
+          "memberId": "ea845988-640e-5506-9303-1cbfc3dede0d",
+          "displayName": "Вера Котельникова",
+          "state": "active"
+        }
+      ]
+    },
+    {
+      "role": "kb_space_reader",
+      "label": "Читатель",
+      "description": "Читает и отмечает «Ознакомлен»",
+      "members": []
+    }
+  ]
+}

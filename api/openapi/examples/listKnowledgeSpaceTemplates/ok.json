@@ -1,0 +1,172 @@
+{
+  "items": [
+    {
+      "key": "regs",
+      "name": "Регламенты подразделения",
+      "icon": "rule",
+      "hint": "Обзор, регламенты, чек-листы, журнал изменений",
+      "nodes": [
+        {
+          "index": 0,
+          "kind": "page",
+          "title": "Обзор",
+          "parentIndex": null,
+          "readerRoleLabel": null,
+          "requestAck": false
+        },
+        {
+          "index": 1,
+          "kind": "folder",
+          "title": "Регламенты",
+          "parentIndex": null,
+          "readerRoleLabel": null,
+          "requestAck": false
+        },
+        {
+          "index": 2,
+          "kind": "page",
+          "title": "Порядок работы",
+          "parentIndex": 1,
+          "readerRoleLabel": null,
+          "requestAck": false
+        },
+        {
+          "index": 3,
+          "kind": "folder",
+          "title": "Чек-листы",
+          "parentIndex": null,
+          "readerRoleLabel": null,
+          "requestAck": false
+        },
+        {
+          "index": 4,
+          "kind": "page",
+          "title": "Журнал изменений",
+          "parentIndex": null,
+          "readerRoleLabel": null,
+          "requestAck": false
+        }
+      ]
+    },
+    {
+      "key": "staff",
+      "name": "Инструкции для сотрудников",
+      "icon": "health_and_safety",
+      "hint": "Вводный инструктаж и папки по функциям: водители, прорабы, массажисты",
+      "nodes": [
+        {
+          "index": 0,
+          "kind": "page",
+          "title": "Обзор",
+          "parentIndex": null,
+          "readerRoleLabel": null,
+          "requestAck": false
+        },
+        {
+          "index": 1,
+          "kind": "page",
+          "title": "Вводный инструктаж",
+          "parentIndex": null,
+          "readerRoleLabel": null,
+          "requestAck": true
+        },
+        {
+          "index": 2,
+          "kind": "folder",
+          "title": "Водителям",
+          "parentIndex": null,
+          "readerRoleLabel": "Водитель",
+          "requestAck": false
+        },
+        {
+          "index": 3,
+          "kind": "page",
+          "title": "Перед выездом",
+          "parentIndex": 2,
+          "readerRoleLabel": null,
+          "requestAck": false
+        },
+        {
+          "index": 4,
+          "kind": "folder",
+          "title": "Прорабам и бригадам",
+          "parentIndex": null,
+          "readerRoleLabel": "Прораб",
+          "requestAck": false
+        },
+        {
+          "index": 5,
+          "kind": "page",
+          "title": "Работа на высоте",
+          "parentIndex": 4,
+          "readerRoleLabel": null,
+          "requestAck": false
+        },
+        {
+          "index": 6,
+          "kind": "folder",
+          "title": "Массажистам",
+          "parentIndex": null,
+          "readerRoleLabel": "Массажист",
+          "requestAck": false
+        },
+        {
+          "index": 7,
+          "kind": "page",
+          "title": "Подготовка кабинета",
+          "parentIndex": 6,
+          "readerRoleLabel": null,
+          "requestAck": false
+        }
+      ]
+    },
+    {
+      "key": "objects",
+      "name": "Объекты и проекты",
+      "icon": "home_work",
+      "hint": "Папка «Объекты» и технология работ",
+      "nodes": [
+        {
+          "index": 0,
+          "kind": "page",
+          "title": "Обзор",
+          "parentIndex": null,
+          "readerRoleLabel": null,
+          "requestAck": false
+        },
+        {
+          "index": 1,
+          "kind": "folder",
+          "title": "Объекты",
+          "parentIndex": null,
+          "readerRoleLabel": null,
+          "requestAck": false
+        },
+        {
+          "index": 2,
+          "kind": "page",
+          "title": "Технология работ",
+          "parentIndex": null,
+          "readerRoleLabel": null,
+          "requestAck": false
+        }
+      ]
+    },
+    {
+      "key": "blank",
+      "name": "Пустое пространство",
+      "icon": "draft",
+      "hint": "Только главная страница",
+      "nodes": [
+        {
+          "index": 0,
+          "kind": "page",
+          "title": "Обзор",
+          "parentIndex": null,
+          "readerRoleLabel": null,
+          "requestAck": false
+        }
+      ]
+    }
+  ]
+}

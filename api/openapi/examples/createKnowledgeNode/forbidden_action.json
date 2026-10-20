@@ -1,0 +1,8 @@
+{
+  "type": "https://docs.ortus.example/errors/forbidden_action",
+  "title": "Нет действия ни в одной роли",
+  "status": 403,
+  "code": "forbidden_action",
+  "detail": "Нет права создавать страницы в пространстве",
+  "requestId": "01J9Z4QK8M6T2V5X7Y9A1B3C5D"
+}

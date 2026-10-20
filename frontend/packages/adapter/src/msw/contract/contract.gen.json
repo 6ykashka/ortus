@@ -1,5 +1,5 @@
 {
-  "version": "0.8.0-stage4",
+  "version": "0.9.0-stage4",
   "operations": [
     {
       "id": "getMyContext",
@@ -8027,6 +8027,818 @@
         },
         "required": ["kind", "fileName", "contentType", "contentBase64"]
       }
+    },
+    {
+      "id": "listKnowledgeSpaces",
+      "method": "GET",
+      "path": "/api/v1/tenants/{tenantId}/knowledge/spaces",
+      "tag": "Knowledge",
+      "stage1": false,
+      "stage2": false,
+      "stage4": true,
+      "permissions": ["knowledge.read"],
+      "mode": "all",
+      "scope": "knowledge-space-node",
+      "public": false,
+      "mutating": false,
+      "ifMatch": false,
+      "idempotent": false,
+      "statuses": [200, 400, 401, 403, 404, 422, 429],
+      "success": 200,
+      "successBody": true,
+      "etag": false
+    },
+    {
+      "id": "createKnowledgeSpace",
+      "method": "POST",
+      "path": "/api/v1/tenants/{tenantId}/knowledge/spaces",
+      "tag": "Knowledge",
+      "stage1": false,
+      "stage2": false,
+      "stage4": true,
+      "permissions": ["knowledge.spaces.manage"],
+      "mode": "all",
+      "scope": "tenant-org-unit",
+      "public": false,
+      "mutating": true,
+      "ifMatch": false,
+      "idempotent": true,
+      "statuses": [201, 400, 401, 403, 404, 409, 422, 429],
+      "success": 201,
+      "successBody": true,
+      "etag": true,
+      "request": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "name": { "type": "string", "minLength": 2, "maxLength": 120 },
+          "access": { "type": "string", "enum": ["open", "limited", "closed"] },
+          "icon": { "type": "string", "pattern": "^[a-z_]{2,40}$" },
+          "color": { "type": "string", "pattern": "^#[0-9A-Fa-f]{6}$" },
+          "orgUnitId": { "type": ["string", "null"], "format": "uuid" },
+          "templateKey": { "type": "string", "enum": ["regs", "staff", "objects", "blank"] },
+          "templateNodes": {
+            "type": "array",
+            "items": { "type": "integer", "minimum": 0 },
+            "maxItems": 50,
+            "uniqueItems": true
+          }
+        },
+        "required": ["name", "access"]
+      }
+    },
+    {
+      "id": "listKnowledgeSpaceTemplates",
+      "method": "GET",
+      "path": "/api/v1/tenants/{tenantId}/knowledge/space-templates",
+      "tag": "Knowledge",
+      "stage1": false,
+      "stage2": false,
+      "stage4": true,
+      "permissions": ["knowledge.spaces.manage"],
+      "mode": "all",
+      "scope": "tenant-org-unit",
+      "public": false,
+      "mutating": false,
+      "ifMatch": false,
+      "idempotent": false,
+      "statuses": [200, 400, 401, 403, 404, 422, 429],
+      "success": 200,
+      "successBody": true,
+      "etag": false
+    },
+    {
+      "id": "updateKnowledgeSpace",
+      "method": "PATCH",
+      "path": "/api/v1/tenants/{tenantId}/knowledge/spaces/{spaceId}",
+      "tag": "Knowledge",
+      "stage1": false,
+      "stage2": false,
+      "stage4": true,
+      "permissions": ["knowledge.access.manage"],
+      "mode": "all",
+      "scope": "knowledge-space",
+      "public": false,
+      "mutating": true,
+      "ifMatch": true,
+      "idempotent": true,
+      "statuses": [200, 400, 401, 403, 404, 409, 412, 422, 428, 429],
+      "success": 200,
+      "successBody": true,
+      "etag": true,
+      "request": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "name": { "type": "string", "minLength": 2, "maxLength": 120 },
+          "icon": { "type": "string", "pattern": "^[a-z_]{2,40}$" },
+          "color": { "type": "string", "pattern": "^#[0-9A-Fa-f]{6}$" },
+          "orgUnitId": { "type": ["string", "null"], "format": "uuid" },
+          "access": { "type": "string", "enum": ["open", "limited", "closed"] },
+          "dryRun": { "type": "boolean" }
+        },
+        "minProperties": 1
+      }
+    },
+    {
+      "id": "getKnowledgeSpaceTree",
+      "method": "GET",
+      "path": "/api/v1/tenants/{tenantId}/knowledge/spaces/{spaceId}/tree",
+      "tag": "Knowledge",
+      "stage1": false,
+      "stage2": false,
+      "stage4": true,
+      "permissions": ["knowledge.read"],
+      "mode": "all",
+      "scope": "knowledge-space-node",
+      "public": false,
+      "mutating": false,
+      "ifMatch": false,
+      "idempotent": false,
+      "statuses": [200, 400, 401, 403, 404, 422, 429],
+      "success": 200,
+      "successBody": true,
+      "etag": false
+    },
+    {
+      "id": "searchKnowledge",
+      "method": "GET",
+      "path": "/api/v1/tenants/{tenantId}/knowledge/search",
+      "tag": "Knowledge",
+      "stage1": false,
+      "stage2": false,
+      "stage4": true,
+      "permissions": ["knowledge.read"],
+      "mode": "all",
+      "scope": "knowledge-space-node",
+      "public": false,
+      "mutating": false,
+      "ifMatch": false,
+      "idempotent": false,
+      "statuses": [200, 400, 401, 403, 404, 422, 429],
+      "success": 200,
+      "successBody": true,
+      "etag": false
+    },
+    {
+      "id": "createKnowledgeNode",
+      "method": "POST",
+      "path": "/api/v1/tenants/{tenantId}/knowledge/spaces/{spaceId}/nodes",
+      "tag": "Knowledge",
+      "stage1": false,
+      "stage2": false,
+      "stage4": true,
+      "permissions": ["knowledge.read"],
+      "mode": "all",
+      "scope": "knowledge-space-node",
+      "public": false,
+      "mutating": true,
+      "ifMatch": false,
+      "idempotent": true,
+      "statuses": [201, 400, 401, 403, 404, 409, 422, 429],
+      "success": 201,
+      "successBody": true,
+      "etag": true,
+      "request": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "parentId": { "type": ["string", "null"], "format": "uuid" },
+          "kind": { "type": "string", "enum": ["page", "folder", "diagram"] },
+          "title": { "type": "string", "minLength": 2, "maxLength": 120 }
+        },
+        "required": ["kind", "title"]
+      }
+    },
+    {
+      "id": "getKnowledgeNode",
+      "method": "GET",
+      "path": "/api/v1/tenants/{tenantId}/knowledge/nodes/{nodeId}",
+      "tag": "Knowledge",
+      "stage1": false,
+      "stage2": false,
+      "stage4": true,
+      "permissions": ["knowledge.read"],
+      "mode": "all",
+      "scope": "knowledge-space-node",
+      "public": false,
+      "mutating": false,
+      "ifMatch": false,
+      "idempotent": false,
+      "statuses": [200, 400, 401, 403, 404, 422, 429],
+      "success": 200,
+      "successBody": true,
+      "etag": true
+    },
+    {
+      "id": "publishKnowledgeNodeVersion",
+      "method": "POST",
+      "path": "/api/v1/tenants/{tenantId}/knowledge/nodes/{nodeId}/versions",
+      "tag": "Knowledge",
+      "stage1": false,
+      "stage2": false,
+      "stage4": true,
+      "permissions": ["knowledge.read"],
+      "mode": "all",
+      "scope": "knowledge-space-node",
+      "public": false,
+      "mutating": true,
+      "ifMatch": true,
+      "idempotent": true,
+      "statuses": [201, 400, 401, 403, 404, 409, 412, 422, 428, 429],
+      "success": 201,
+      "successBody": true,
+      "etag": true,
+      "request": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "title": { "type": "string", "minLength": 2, "maxLength": 120 },
+          "body": { "type": "string", "maxLength": 20000 },
+          "steps": {
+            "type": "array",
+            "items": { "type": "string", "maxLength": 120 },
+            "maxItems": 8
+          },
+          "requestAck": { "type": "boolean" }
+        },
+        "required": ["body"]
+      }
+    },
+    {
+      "id": "getKnowledgeNodeVersion",
+      "method": "GET",
+      "path": "/api/v1/tenants/{tenantId}/knowledge/nodes/{nodeId}/versions/{version}",
+      "tag": "Knowledge",
+      "stage1": false,
+      "stage2": false,
+      "stage4": true,
+      "permissions": ["knowledge.read"],
+      "mode": "all",
+      "scope": "knowledge-space-node",
+      "public": false,
+      "mutating": false,
+      "ifMatch": false,
+      "idempotent": false,
+      "statuses": [200, 400, 401, 403, 404, 422, 429],
+      "success": 200,
+      "successBody": true,
+      "etag": false
+    },
+    {
+      "id": "setKnowledgeNodeStatus",
+      "method": "POST",
+      "path": "/api/v1/tenants/{tenantId}/knowledge/nodes/{nodeId}/status",
+      "tag": "Knowledge",
+      "stage1": false,
+      "stage2": false,
+      "stage4": true,
+      "permissions": ["knowledge.publish"],
+      "mode": "all",
+      "scope": "knowledge-space-node",
+      "public": false,
+      "mutating": true,
+      "ifMatch": false,
+      "idempotent": true,
+      "statuses": [200, 400, 401, 403, 404, 409, 422, 429],
+      "success": 200,
+      "successBody": true,
+      "etag": true,
+      "request": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "status": { "type": "string", "enum": ["draft", "review", "active", "outdated"] }
+        },
+        "required": ["status"]
+      }
+    },
+    {
+      "id": "moveKnowledgeNode",
+      "method": "POST",
+      "path": "/api/v1/tenants/{tenantId}/knowledge/nodes/{nodeId}/move",
+      "tag": "Knowledge",
+      "stage1": false,
+      "stage2": false,
+      "stage4": true,
+      "permissions": ["knowledge.organize"],
+      "mode": "all",
+      "scope": "knowledge-space",
+      "public": false,
+      "mutating": true,
+      "ifMatch": false,
+      "idempotent": true,
+      "statuses": [200, 400, 401, 403, 404, 409, 422, 429],
+      "success": 200,
+      "successBody": true,
+      "etag": false,
+      "request": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "parentId": { "type": ["string", "null"], "format": "uuid" },
+          "dryRun": { "type": "boolean" }
+        },
+        "required": ["parentId"]
+      }
+    },
+    {
+      "id": "archiveKnowledgeNode",
+      "method": "POST",
+      "path": "/api/v1/tenants/{tenantId}/knowledge/nodes/{nodeId}/archive",
+      "tag": "Knowledge",
+      "stage1": false,
+      "stage2": false,
+      "stage4": true,
+      "permissions": ["knowledge.organize"],
+      "mode": "all",
+      "scope": "knowledge-space",
+      "public": false,
+      "mutating": true,
+      "ifMatch": false,
+      "idempotent": true,
+      "statuses": [200, 400, 401, 403, 404, 409, 422, 429],
+      "success": 200,
+      "successBody": true,
+      "etag": false
+    },
+    {
+      "id": "restoreKnowledgeNode",
+      "method": "POST",
+      "path": "/api/v1/tenants/{tenantId}/knowledge/nodes/{nodeId}/restore",
+      "tag": "Knowledge",
+      "stage1": false,
+      "stage2": false,
+      "stage4": true,
+      "permissions": ["knowledge.organize"],
+      "mode": "all",
+      "scope": "knowledge-space",
+      "public": false,
+      "mutating": true,
+      "ifMatch": false,
+      "idempotent": true,
+      "statuses": [200, 400, 401, 403, 404, 409, 422, 429],
+      "success": 200,
+      "successBody": true,
+      "etag": false
+    },
+    {
+      "id": "listKnowledgeArchive",
+      "method": "GET",
+      "path": "/api/v1/tenants/{tenantId}/knowledge/spaces/{spaceId}/archive",
+      "tag": "Knowledge",
+      "stage1": false,
+      "stage2": false,
+      "stage4": true,
+      "permissions": ["knowledge.organize"],
+      "mode": "all",
+      "scope": "knowledge-space",
+      "public": false,
+      "mutating": false,
+      "ifMatch": false,
+      "idempotent": false,
+      "statuses": [200, 400, 401, 403, 404, 422, 429],
+      "success": 200,
+      "successBody": true,
+      "etag": false
+    },
+    {
+      "id": "ackKnowledgeNode",
+      "method": "POST",
+      "path": "/api/v1/tenants/{tenantId}/knowledge/nodes/{nodeId}/ack",
+      "tag": "Knowledge",
+      "stage1": false,
+      "stage2": false,
+      "stage4": true,
+      "permissions": ["knowledge.read"],
+      "mode": "all",
+      "scope": "knowledge-space-node",
+      "public": false,
+      "mutating": true,
+      "ifMatch": false,
+      "idempotent": true,
+      "statuses": [200, 400, 401, 403, 404, 409, 422, 429],
+      "success": 200,
+      "successBody": true,
+      "etag": false,
+      "request": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": { "version": { "type": "integer", "minimum": 1 } },
+        "required": ["version"]
+      }
+    },
+    {
+      "id": "getKnowledgeNodeAccess",
+      "method": "GET",
+      "path": "/api/v1/tenants/{tenantId}/knowledge/nodes/{nodeId}/access",
+      "tag": "Knowledge",
+      "stage1": false,
+      "stage2": false,
+      "stage4": true,
+      "permissions": ["knowledge.read"],
+      "mode": "all",
+      "scope": "knowledge-space-node",
+      "public": false,
+      "mutating": false,
+      "ifMatch": false,
+      "idempotent": false,
+      "statuses": [200, 400, 401, 403, 404, 422, 429],
+      "success": 200,
+      "successBody": true,
+      "etag": true
+    },
+    {
+      "id": "setKnowledgeNodeAccess",
+      "method": "PUT",
+      "path": "/api/v1/tenants/{tenantId}/knowledge/nodes/{nodeId}/access",
+      "tag": "Knowledge",
+      "stage1": false,
+      "stage2": false,
+      "stage4": true,
+      "permissions": ["knowledge.access.manage"],
+      "mode": "all",
+      "scope": "knowledge-space",
+      "public": false,
+      "mutating": true,
+      "ifMatch": true,
+      "idempotent": true,
+      "statuses": [200, 400, 401, 403, 404, 409, 412, 422, 428, 429],
+      "success": 200,
+      "successBody": true,
+      "etag": true,
+      "request": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "mode": { "type": "string", "enum": ["inherit", "edit_listed", "listed"] },
+          "entries": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "who": { "type": "string", "enum": ["member", "group", "role", "relation"] },
+                "refId": { "type": "string", "format": "uuid" },
+                "relation": { "type": "string", "enum": ["foreman"] },
+                "object": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "properties": {
+                    "moduleKey": { "type": "string", "pattern": "^[a-z][a-z0-9_-]{1,49}$" },
+                    "entityType": { "type": "string", "pattern": "^[a-z][a-z0-9_]{1,49}$" },
+                    "entityId": { "type": "string", "format": "uuid" }
+                  },
+                  "required": ["moduleKey", "entityType", "entityId"]
+                },
+                "orgUnitId": { "type": "string", "format": "uuid" },
+                "can": { "type": "string", "enum": ["view", "edit"] }
+              },
+              "required": ["who", "can"]
+            },
+            "maxItems": 50
+          },
+          "applyToOwn": { "type": "boolean" },
+          "dryRun": { "type": "boolean" }
+        },
+        "required": ["mode", "entries"]
+      }
+    },
+    {
+      "id": "listKnowledgeAccessCandidates",
+      "method": "GET",
+      "path": "/api/v1/tenants/{tenantId}/knowledge/nodes/{nodeId}/access/candidates",
+      "tag": "Knowledge",
+      "stage1": false,
+      "stage2": false,
+      "stage4": true,
+      "permissions": ["knowledge.access.manage"],
+      "mode": "all",
+      "scope": "knowledge-space",
+      "public": false,
+      "mutating": false,
+      "ifMatch": false,
+      "idempotent": false,
+      "statuses": [200, 400, 401, 403, 404, 422, 429],
+      "success": 200,
+      "successBody": true,
+      "etag": false
+    },
+    {
+      "id": "getKnowledgeAccessMap",
+      "method": "GET",
+      "path": "/api/v1/tenants/{tenantId}/knowledge/spaces/{spaceId}/access-map",
+      "tag": "Knowledge",
+      "stage1": false,
+      "stage2": false,
+      "stage4": true,
+      "permissions": ["knowledge.access.manage"],
+      "mode": "all",
+      "scope": "knowledge-space",
+      "public": false,
+      "mutating": false,
+      "ifMatch": false,
+      "idempotent": false,
+      "statuses": [200, 400, 401, 403, 404, 422, 429],
+      "success": 200,
+      "successBody": true,
+      "etag": false
+    },
+    {
+      "id": "explainKnowledgeAccess",
+      "method": "GET",
+      "path": "/api/v1/tenants/{tenantId}/knowledge/nodes/{nodeId}/explain",
+      "tag": "Knowledge",
+      "stage1": false,
+      "stage2": false,
+      "stage4": true,
+      "permissions": ["knowledge.access.manage"],
+      "mode": "all",
+      "scope": "knowledge-space",
+      "public": false,
+      "mutating": false,
+      "ifMatch": false,
+      "idempotent": false,
+      "statuses": [200, 400, 401, 403, 404, 422, 429],
+      "success": 200,
+      "successBody": true,
+      "etag": false
+    },
+    {
+      "id": "createKnowledgeAccessRequest",
+      "method": "POST",
+      "path": "/api/v1/tenants/{tenantId}/knowledge/nodes/{nodeId}/requests",
+      "tag": "Knowledge",
+      "stage1": false,
+      "stage2": false,
+      "stage4": true,
+      "permissions": ["knowledge.read"],
+      "mode": "all",
+      "scope": "knowledge-space-node",
+      "public": false,
+      "mutating": true,
+      "ifMatch": false,
+      "idempotent": true,
+      "statuses": [201, 400, 401, 403, 404, 409, 422, 429],
+      "success": 201,
+      "successBody": true,
+      "etag": false,
+      "request": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": { "can": { "type": "string", "enum": ["edit"] } },
+        "required": ["can"]
+      }
+    },
+    {
+      "id": "decideKnowledgeAccessRequest",
+      "method": "POST",
+      "path": "/api/v1/tenants/{tenantId}/knowledge/requests/{requestId}/decision",
+      "tag": "Knowledge",
+      "stage1": false,
+      "stage2": false,
+      "stage4": true,
+      "permissions": ["knowledge.access.manage"],
+      "mode": "all",
+      "scope": "knowledge-space",
+      "public": false,
+      "mutating": true,
+      "ifMatch": false,
+      "idempotent": true,
+      "statuses": [200, 400, 401, 403, 404, 409, 422, 429],
+      "success": 200,
+      "successBody": true,
+      "etag": false,
+      "request": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": { "decision": { "type": "string", "enum": ["approve", "deny"] } },
+        "required": ["decision"]
+      }
+    },
+    {
+      "id": "listKnowledgeAccessRequests",
+      "method": "GET",
+      "path": "/api/v1/tenants/{tenantId}/knowledge/spaces/{spaceId}/requests",
+      "tag": "Knowledge",
+      "stage1": false,
+      "stage2": false,
+      "stage4": true,
+      "permissions": ["knowledge.access.manage"],
+      "mode": "all",
+      "scope": "knowledge-space",
+      "public": false,
+      "mutating": false,
+      "ifMatch": false,
+      "idempotent": false,
+      "statuses": [200, 400, 401, 403, 404, 422, 429],
+      "success": 200,
+      "successBody": true,
+      "etag": false
+    },
+    {
+      "id": "listKnowledgeSpaceMembers",
+      "method": "GET",
+      "path": "/api/v1/tenants/{tenantId}/knowledge/spaces/{spaceId}/members",
+      "tag": "Knowledge",
+      "stage1": false,
+      "stage2": false,
+      "stage4": true,
+      "permissions": ["knowledge.read"],
+      "mode": "all",
+      "scope": "knowledge-space-node",
+      "public": false,
+      "mutating": false,
+      "ifMatch": false,
+      "idempotent": false,
+      "statuses": [200, 400, 401, 403, 404, 422, 429],
+      "success": 200,
+      "successBody": true,
+      "etag": false
+    },
+    {
+      "id": "setKnowledgeSpaceMember",
+      "method": "PUT",
+      "path": "/api/v1/tenants/{tenantId}/knowledge/spaces/{spaceId}/members/{memberId}",
+      "tag": "Knowledge",
+      "stage1": false,
+      "stage2": false,
+      "stage4": true,
+      "permissions": ["knowledge.members.manage"],
+      "mode": "all",
+      "scope": "knowledge-space",
+      "public": false,
+      "mutating": true,
+      "ifMatch": false,
+      "idempotent": true,
+      "statuses": [200, 400, 401, 403, 404, 409, 422, 429],
+      "success": 200,
+      "successBody": true,
+      "etag": false,
+      "request": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "role": {
+            "type": ["string", "null"],
+            "enum": ["kb_space_lead", "kb_space_editor", "kb_space_reader", null]
+          }
+        },
+        "required": ["role"]
+      }
+    },
+    {
+      "id": "listKnowledgeRules",
+      "method": "GET",
+      "path": "/api/v1/tenants/{tenantId}/knowledge/spaces/{spaceId}/rules",
+      "tag": "Knowledge",
+      "stage1": false,
+      "stage2": false,
+      "stage4": true,
+      "permissions": ["knowledge.automation.manage"],
+      "mode": "all",
+      "scope": "knowledge-space",
+      "public": false,
+      "mutating": false,
+      "ifMatch": false,
+      "idempotent": false,
+      "statuses": [200, 400, 401, 403, 404, 422, 429],
+      "success": 200,
+      "successBody": true,
+      "etag": false
+    },
+    {
+      "id": "setKnowledgeRuleEnabled",
+      "method": "PATCH",
+      "path": "/api/v1/tenants/{tenantId}/knowledge/rules/{ruleId}",
+      "tag": "Knowledge",
+      "stage1": false,
+      "stage2": false,
+      "stage4": true,
+      "permissions": ["knowledge.automation.manage"],
+      "mode": "all",
+      "scope": "knowledge-space",
+      "public": false,
+      "mutating": true,
+      "ifMatch": false,
+      "idempotent": true,
+      "statuses": [200, 400, 401, 403, 404, 409, 422, 429],
+      "success": 200,
+      "successBody": true,
+      "etag": false,
+      "request": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": { "enabled": { "type": "boolean" } },
+        "required": ["enabled"]
+      }
+    },
+    {
+      "id": "runKnowledgeReviewCheck",
+      "method": "POST",
+      "path": "/api/v1/tenants/{tenantId}/knowledge/spaces/{spaceId}/review-check",
+      "tag": "Knowledge",
+      "stage1": false,
+      "stage2": false,
+      "stage4": true,
+      "permissions": ["knowledge.automation.manage"],
+      "mode": "all",
+      "scope": "knowledge-space",
+      "public": false,
+      "mutating": true,
+      "ifMatch": false,
+      "idempotent": true,
+      "statuses": [200, 400, 401, 403, 404, 409, 422, 429],
+      "success": 200,
+      "successBody": true,
+      "etag": false
+    },
+    {
+      "id": "runKnowledgeSection",
+      "method": "POST",
+      "path": "/api/v1/tenants/{tenantId}/knowledge/spaces/{spaceId}/sections",
+      "tag": "Knowledge",
+      "stage1": false,
+      "stage2": false,
+      "stage4": true,
+      "permissions": ["knowledge.automation.manage"],
+      "mode": "all",
+      "scope": "knowledge-space",
+      "public": false,
+      "mutating": true,
+      "ifMatch": false,
+      "idempotent": true,
+      "statuses": [200, 400, 401, 403, 404, 409, 422, 429],
+      "success": 200,
+      "successBody": true,
+      "etag": false,
+      "request": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": { "projectId": { "type": "string", "format": "uuid" } },
+        "required": ["projectId"]
+      }
+    },
+    {
+      "id": "listKnowledgeRuns",
+      "method": "GET",
+      "path": "/api/v1/tenants/{tenantId}/knowledge/spaces/{spaceId}/runs",
+      "tag": "Knowledge",
+      "stage1": false,
+      "stage2": false,
+      "stage4": true,
+      "permissions": ["knowledge.automation.manage"],
+      "mode": "all",
+      "scope": "knowledge-space",
+      "public": false,
+      "mutating": false,
+      "ifMatch": false,
+      "idempotent": false,
+      "statuses": [200, 400, 401, 403, 404, 422, 429],
+      "success": 200,
+      "successBody": true,
+      "etag": false
+    },
+    {
+      "id": "createKnowledgeTable",
+      "method": "POST",
+      "path": "/api/v1/tenants/{tenantId}/knowledge/nodes/{nodeId}/tables",
+      "tag": "Knowledge",
+      "stage1": false,
+      "stage2": false,
+      "stage4": true,
+      "permissions": ["knowledge.read"],
+      "mode": "all",
+      "scope": "knowledge-space-node",
+      "public": false,
+      "mutating": true,
+      "ifMatch": false,
+      "idempotent": true,
+      "statuses": [201, 400, 401, 403, 404, 409, 422, 429],
+      "success": 201,
+      "successBody": true,
+      "etag": false,
+      "request": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "title": { "type": "string", "maxLength": 120 },
+          "columns": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "name": { "type": "string", "maxLength": 120 },
+                "type": { "type": "string", "maxLength": 20 }
+              },
+              "required": ["name"]
+            },
+            "maxItems": 30
+          }
+        },
+        "required": ["title", "columns"]
+      }
     }
   ],
   "errors": {
@@ -8547,28 +9359,66 @@
         "key": "knowledge.read",
         "module": "core.knowledge",
         "label": "Читать",
-        "scopes": ["tenant", "unit", "project"],
+        "scopes": ["tenant", "unit", "project", "space", "page", "relation"],
         "level": "view"
       },
       {
         "key": "knowledge.create",
         "module": "core.knowledge",
         "label": "Создавать",
-        "scopes": ["tenant", "unit", "project"],
+        "scopes": ["tenant", "unit", "project", "space", "page"],
         "level": "create"
       },
       {
         "key": "knowledge.update",
         "module": "core.knowledge",
         "label": "Редактировать",
-        "scopes": ["tenant", "unit", "project"],
+        "scopes": ["tenant", "unit", "project", "space", "page", "relation"],
         "level": "edit"
       },
       {
         "key": "knowledge.publish",
         "module": "core.knowledge",
         "label": "Публиковать",
-        "scopes": ["tenant", "unit", "project"],
+        "scopes": ["tenant", "unit", "project", "space", "page"],
+        "level": "review"
+      },
+      {
+        "key": "knowledge.organize",
+        "module": "core.knowledge",
+        "label": "Перемещать и архивировать",
+        "scopes": ["tenant", "unit", "space"],
+        "level": "edit"
+      },
+      {
+        "key": "knowledge.access.manage",
+        "module": "core.knowledge",
+        "label": "Доступ к страницам",
+        "scopes": ["tenant", "unit", "space"],
+        "level": "settings",
+        "sensitivity": "sensitive"
+      },
+      {
+        "key": "knowledge.members.manage",
+        "module": "core.knowledge",
+        "label": "Участники пространства",
+        "scopes": ["tenant", "unit", "space"],
+        "level": "settings",
+        "sensitivity": "sensitive"
+      },
+      {
+        "key": "knowledge.automation.manage",
+        "module": "core.knowledge",
+        "label": "Настраивать автоматизацию",
+        "scopes": ["tenant", "unit", "space"],
+        "level": "settings",
+        "sensitivity": "sensitive"
+      },
+      {
+        "key": "knowledge.spaces.manage",
+        "module": "core.knowledge",
+        "label": "Создавать пространства",
+        "scopes": ["tenant", "unit"],
         "level": "settings"
       },
       {
@@ -9222,7 +10072,17 @@
         "label": "База знаний",
         "dependsOn": [],
         "system": false,
-        "actions": ["knowledge.read", "knowledge.create", "knowledge.update", "knowledge.publish"]
+        "actions": [
+          "knowledge.read",
+          "knowledge.create",
+          "knowledge.update",
+          "knowledge.publish",
+          "knowledge.organize",
+          "knowledge.access.manage",
+          "knowledge.members.manage",
+          "knowledge.automation.manage",
+          "knowledge.spaces.manage"
+        ]
       },
       "core.chat": {
         "label": "Чаты",
@@ -9650,6 +10510,42 @@
         "actions": ["chat.read", "chat.write", "chat.direct", "chat.create"],
         "optionalRestricted": [],
         "defaultScope": "unit"
+      },
+      "kb_space_lead": {
+        "label": "Руководитель пространства",
+        "actions": [
+          "knowledge.read",
+          "knowledge.create",
+          "knowledge.update",
+          "knowledge.organize",
+          "knowledge.publish",
+          "knowledge.access.manage",
+          "knowledge.members.manage",
+          "knowledge.automation.manage"
+        ],
+        "optionalRestricted": [],
+        "kind": "system",
+        "defaultScope": "space"
+      },
+      "kb_space_editor": {
+        "label": "Редактор",
+        "actions": [
+          "knowledge.read",
+          "knowledge.create",
+          "knowledge.update",
+          "knowledge.organize",
+          "knowledge.publish"
+        ],
+        "optionalRestricted": [],
+        "kind": "system",
+        "defaultScope": "space"
+      },
+      "kb_space_reader": {
+        "label": "Читатель",
+        "actions": ["knowledge.read"],
+        "optionalRestricted": [],
+        "kind": "system",
+        "defaultScope": "space"
       }
     },
     "renames": {
@@ -10743,6 +11639,26 @@
                 "scope": { "kind": "tenant", "resourceIds": [], "includeDescendants": true }
               },
               {
+                "permission": "knowledge.organize",
+                "scope": { "kind": "tenant", "resourceIds": [], "includeDescendants": true }
+              },
+              {
+                "permission": "knowledge.access.manage",
+                "scope": { "kind": "tenant", "resourceIds": [], "includeDescendants": true }
+              },
+              {
+                "permission": "knowledge.members.manage",
+                "scope": { "kind": "tenant", "resourceIds": [], "includeDescendants": true }
+              },
+              {
+                "permission": "knowledge.automation.manage",
+                "scope": { "kind": "tenant", "resourceIds": [], "includeDescendants": true }
+              },
+              {
+                "permission": "knowledge.spaces.manage",
+                "scope": { "kind": "tenant", "resourceIds": [], "includeDescendants": true }
+              },
+              {
                 "permission": "inventory.items.read",
                 "scope": { "kind": "tenant", "resourceIds": [], "includeDescendants": true }
               },
@@ -11084,6 +12000,26 @@
               },
               {
                 "permission": "knowledge.publish",
+                "scope": { "kind": "tenant", "resourceIds": [], "includeDescendants": true }
+              },
+              {
+                "permission": "knowledge.organize",
+                "scope": { "kind": "tenant", "resourceIds": [], "includeDescendants": true }
+              },
+              {
+                "permission": "knowledge.access.manage",
+                "scope": { "kind": "tenant", "resourceIds": [], "includeDescendants": true }
+              },
+              {
+                "permission": "knowledge.members.manage",
+                "scope": { "kind": "tenant", "resourceIds": [], "includeDescendants": true }
+              },
+              {
+                "permission": "knowledge.automation.manage",
+                "scope": { "kind": "tenant", "resourceIds": [], "includeDescendants": true }
+              },
+              {
+                "permission": "knowledge.spaces.manage",
                 "scope": { "kind": "tenant", "resourceIds": [], "includeDescendants": true }
               },
               {
@@ -12200,6 +13136,11 @@
               "knowledge.create",
               "knowledge.update",
               "knowledge.publish",
+              "knowledge.organize",
+              "knowledge.access.manage",
+              "knowledge.members.manage",
+              "knowledge.automation.manage",
+              "knowledge.spaces.manage",
               "inventory.items.read",
               "inventory.items.manage",
               "inventory.movements.read",
@@ -18486,6 +19427,1844 @@
           }
         ]
       }
+    },
+    "listKnowledgeSpaces": {
+      "ok": {
+        "items": [
+          {
+            "id": "a3b6bc34-7307-58e7-990a-5513cd630786",
+            "name": "Логистика",
+            "icon": "local_shipping",
+            "color": "#1F6B52",
+            "orgUnitId": "6de355d2-b019-5bb6-b66a-ddae6a13fb65",
+            "areaLabel": "Фирма «Север Логистик»",
+            "access": "limited",
+            "templateKey": null,
+            "homeNodeId": "5a437a14-2357-5932-ad5e-fa133d3cc218",
+            "my": {
+              "owner": false,
+              "lead": true,
+              "view": true,
+              "create": true,
+              "edit": true,
+              "role": "Руководитель пространства"
+            },
+            "leadNames": ["Марина Котова"],
+            "pageCount": 16,
+            "revision": 1,
+            "lastUpdate": {
+              "nodeId": "babd503a-697f-595f-83f8-6501710d0803",
+              "title": "Журнал осмотров машин",
+              "at": "2026-09-23T21:00:00Z"
+            },
+            "openRequestCount": 0
+          },
+          {
+            "id": "681f3641-54bc-54c9-9e0d-98f91c079698",
+            "name": "Общее",
+            "icon": "apartment",
+            "color": "#2B5479",
+            "orgUnitId": null,
+            "areaLabel": "Вся организация",
+            "access": "open",
+            "templateKey": null,
+            "homeNodeId": "9bc6658a-3711-5605-a18e-ffe93d0edbe3",
+            "my": {
+              "owner": false,
+              "lead": false,
+              "view": true,
+              "create": true,
+              "edit": true,
+              "role": "Редактор"
+            },
+            "leadNames": [],
+            "pageCount": 3,
+            "revision": 1,
+            "lastUpdate": {
+              "nodeId": "b9f5dffd-a4ad-52f1-a0af-7604e4316d81",
+              "title": "Как пользоваться Ортусом",
+              "at": "2026-09-19T21:00:00Z"
+            }
+          }
+        ],
+        "nextCursor": null
+      },
+      "session_expired": {
+        "type": "https://docs.ortus.example/errors/session_expired",
+        "title": "Нет или истекла сессия",
+        "status": 401,
+        "code": "session_expired",
+        "requestId": "01J9Z4QK8M6T2V5X7Y9A1B3C5D"
+      }
+    },
+    "createKnowledgeSpace": {
+      "created": {
+        "id": "ae167306-f901-567a-a2fa-842559f2929f",
+        "name": "Охрана труда",
+        "icon": "health_and_safety",
+        "color": "#A13A33",
+        "orgUnitId": null,
+        "areaLabel": "Вся организация",
+        "access": "open",
+        "templateKey": "blank",
+        "homeNodeId": "a8def4a4-65c5-5b67-9148-402f4141bff7",
+        "my": {
+          "owner": true,
+          "lead": true,
+          "view": true,
+          "create": true,
+          "edit": true,
+          "role": "Владелец бизнеса"
+        },
+        "leadNames": [],
+        "pageCount": 1,
+        "revision": 1,
+        "lastUpdate": {
+          "nodeId": "a8def4a4-65c5-5b67-9148-402f4141bff7",
+          "title": "Обзор",
+          "at": "2026-09-30T21:00:00Z"
+        },
+        "openRequestCount": 0
+      },
+      "forbidden_action": {
+        "type": "https://docs.ortus.example/errors/forbidden_action",
+        "title": "Нет действия ни в одной роли",
+        "status": 403,
+        "code": "forbidden_action",
+        "detail": "Создавать пространства может владелец бизнеса или роль с правом «База знаний · Настраивать»",
+        "requestId": "01J9Z4QK8M6T2V5X7Y9A1B3C5D"
+      },
+      "validation_failed": {
+        "type": "https://docs.ortus.example/errors/validation_failed",
+        "title": "Ошибки полей",
+        "status": 422,
+        "code": "validation_failed",
+        "detail": "Пространство «логистика» уже есть",
+        "requestId": "01J9Z4QK8M6T2V5X7Y9A1B3C5D"
+      }
+    },
+    "listKnowledgeSpaceTemplates": {
+      "forbidden_action": {
+        "type": "https://docs.ortus.example/errors/forbidden_action",
+        "title": "Нет действия ни в одной роли",
+        "status": 403,
+        "code": "forbidden_action",
+        "detail": "Создавать пространства может владелец бизнеса или роль с правом «База знаний · Настраивать»",
+        "requestId": "01J9Z4QK8M6T2V5X7Y9A1B3C5D"
+      },
+      "ok": {
+        "items": [
+          {
+            "key": "regs",
+            "name": "Регламенты подразделения",
+            "icon": "rule",
+            "hint": "Обзор, регламенты, чек-листы, журнал изменений",
+            "nodes": [
+              {
+                "index": 0,
+                "kind": "page",
+                "title": "Обзор",
+                "parentIndex": null,
+                "readerRoleLabel": null,
+                "requestAck": false
+              },
+              {
+                "index": 1,
+                "kind": "folder",
+                "title": "Регламенты",
+                "parentIndex": null,
+                "readerRoleLabel": null,
+                "requestAck": false
+              },
+              {
+                "index": 2,
+                "kind": "page",
+                "title": "Порядок работы",
+                "parentIndex": 1,
+                "readerRoleLabel": null,
+                "requestAck": false
+              },
+              {
+                "index": 3,
+                "kind": "folder",
+                "title": "Чек-листы",
+                "parentIndex": null,
+                "readerRoleLabel": null,
+                "requestAck": false
+              },
+              {
+                "index": 4,
+                "kind": "page",
+                "title": "Журнал изменений",
+                "parentIndex": null,
+                "readerRoleLabel": null,
+                "requestAck": false
+              }
+            ]
+          },
+          {
+            "key": "staff",
+            "name": "Инструкции для сотрудников",
+            "icon": "health_and_safety",
+            "hint": "Вводный инструктаж и папки по функциям: водители, прорабы, массажисты",
+            "nodes": [
+              {
+                "index": 0,
+                "kind": "page",
+                "title": "Обзор",
+                "parentIndex": null,
+                "readerRoleLabel": null,
+                "requestAck": false
+              },
+              {
+                "index": 1,
+                "kind": "page",
+                "title": "Вводный инструктаж",
+                "parentIndex": null,
+                "readerRoleLabel": null,
+                "requestAck": true
+              },
+              {
+                "index": 2,
+                "kind": "folder",
+                "title": "Водителям",
+                "parentIndex": null,
+                "readerRoleLabel": "Водитель",
+                "requestAck": false
+              },
+              {
+                "index": 3,
+                "kind": "page",
+                "title": "Перед выездом",
+                "parentIndex": 2,
+                "readerRoleLabel": null,
+                "requestAck": false
+              },
+              {
+                "index": 4,
+                "kind": "folder",
+                "title": "Прорабам и бригадам",
+                "parentIndex": null,
+                "readerRoleLabel": "Прораб",
+                "requestAck": false
+              },
+              {
+                "index": 5,
+                "kind": "page",
+                "title": "Работа на высоте",
+                "parentIndex": 4,
+                "readerRoleLabel": null,
+                "requestAck": false
+              },
+              {
+                "index": 6,
+                "kind": "folder",
+                "title": "Массажистам",
+                "parentIndex": null,
+                "readerRoleLabel": "Массажист",
+                "requestAck": false
+              },
+              {
+                "index": 7,
+                "kind": "page",
+                "title": "Подготовка кабинета",
+                "parentIndex": 6,
+                "readerRoleLabel": null,
+                "requestAck": false
+              }
+            ]
+          },
+          {
+            "key": "objects",
+            "name": "Объекты и проекты",
+            "icon": "home_work",
+            "hint": "Папка «Объекты» и технология работ",
+            "nodes": [
+              {
+                "index": 0,
+                "kind": "page",
+                "title": "Обзор",
+                "parentIndex": null,
+                "readerRoleLabel": null,
+                "requestAck": false
+              },
+              {
+                "index": 1,
+                "kind": "folder",
+                "title": "Объекты",
+                "parentIndex": null,
+                "readerRoleLabel": null,
+                "requestAck": false
+              },
+              {
+                "index": 2,
+                "kind": "page",
+                "title": "Технология работ",
+                "parentIndex": null,
+                "readerRoleLabel": null,
+                "requestAck": false
+              }
+            ]
+          },
+          {
+            "key": "blank",
+            "name": "Пустое пространство",
+            "icon": "draft",
+            "hint": "Только главная страница",
+            "nodes": [
+              {
+                "index": 0,
+                "kind": "page",
+                "title": "Обзор",
+                "parentIndex": null,
+                "readerRoleLabel": null,
+                "requestAck": false
+              }
+            ]
+          }
+        ]
+      }
+    },
+    "updateKnowledgeSpace": {
+      "dry-run": {
+        "applied": false,
+        "space": {
+          "id": "7a758d2b-4550-562b-ba46-38a513cfe88d",
+          "name": "Руководство",
+          "icon": "shield_person",
+          "color": "#3A4844",
+          "orgUnitId": null,
+          "areaLabel": "Вся организация",
+          "access": "limited",
+          "templateKey": null,
+          "homeNodeId": "54b78193-0f1b-58a3-9a13-4e6b4d998f78",
+          "my": {
+            "owner": true,
+            "lead": true,
+            "view": true,
+            "create": true,
+            "edit": true,
+            "role": "Владелец бизнеса"
+          },
+          "leadNames": [],
+          "pageCount": 2,
+          "revision": 1,
+          "lastUpdate": {
+            "nodeId": "54b78193-0f1b-58a3-9a13-4e6b4d998f78",
+            "title": "Обзор",
+            "at": "2026-09-19T21:00:00Z"
+          },
+          "openRequestCount": 0
+        },
+        "impact": {
+          "pages": 2,
+          "gainView": [
+            {
+              "memberId": "a560b4fe-78b7-585e-b960-f0ab3622570c",
+              "displayName": "Илья Васильев",
+              "pages": 1
+            },
+            {
+              "memberId": "25097109-efb6-5471-880f-7a01ee6615a0",
+              "displayName": "Анна Морозова",
+              "pages": 1
+            },
+            {
+              "memberId": "ebdf9767-327e-55cc-8c65-cb5fd313bdf4",
+              "displayName": "Алексей Соколов",
+              "pages": 1
+            }
+          ],
+          "loseView": [],
+          "gainEdit": [],
+          "loseEdit": []
+        }
+      },
+      "revision_mismatch": {
+        "type": "https://docs.ortus.example/errors/revision_mismatch",
+        "title": "Устаревший If-Match",
+        "status": 412,
+        "code": "revision_mismatch",
+        "requestId": "01J9Z4QK8M6T2V5X7Y9A1B3C5D"
+      }
+    },
+    "getKnowledgeSpaceTree": {
+      "not_found": {
+        "type": "https://docs.ortus.example/errors/not_found",
+        "title": "Нет объекта или он вне области",
+        "status": 404,
+        "code": "not_found",
+        "detail": "Пространство не найдено",
+        "requestId": "01J9Z4QK8M6T2V5X7Y9A1B3C5D"
+      },
+      "ok": {
+        "space": {
+          "id": "a3b6bc34-7307-58e7-990a-5513cd630786",
+          "name": "Логистика",
+          "icon": "local_shipping",
+          "color": "#1F6B52",
+          "orgUnitId": "6de355d2-b019-5bb6-b66a-ddae6a13fb65",
+          "areaLabel": "Фирма «Север Логистик»",
+          "access": "limited",
+          "templateKey": null,
+          "homeNodeId": "5a437a14-2357-5932-ad5e-fa133d3cc218",
+          "my": {
+            "owner": false,
+            "lead": false,
+            "view": true,
+            "create": false,
+            "edit": false,
+            "role": "Читатель по уровню «Ограниченное»"
+          },
+          "leadNames": ["Марина Котова"],
+          "pageCount": 14,
+          "revision": 1,
+          "lastUpdate": {
+            "nodeId": "babd503a-697f-595f-83f8-6501710d0803",
+            "title": "Журнал осмотров машин",
+            "at": "2026-09-23T21:00:00Z"
+          }
+        },
+        "nodes": [
+          {
+            "id": "5a437a14-2357-5932-ad5e-fa133d3cc218",
+            "spaceId": "a3b6bc34-7307-58e7-990a-5513cd630786",
+            "parentId": null,
+            "position": 0,
+            "kind": "page",
+            "title": "Обзор",
+            "status": "active",
+            "accessMode": "inherit",
+            "sensitivity": "normal",
+            "archived": false,
+            "version": 1,
+            "my": { "edit": false, "lead": false, "create": false }
+          },
+          {
+            "id": "685e71a2-4c0b-57fa-9519-2b65031ed715",
+            "spaceId": "a3b6bc34-7307-58e7-990a-5513cd630786",
+            "parentId": null,
+            "position": 1,
+            "kind": "folder",
+            "title": "Регламенты",
+            "status": "active",
+            "accessMode": "inherit",
+            "sensitivity": "normal",
+            "archived": false,
+            "version": 1,
+            "my": { "edit": false, "lead": false, "create": false }
+          },
+          {
+            "id": "917ba039-1d29-5dd1-b922-b0976cc8a7c2",
+            "spaceId": "a3b6bc34-7307-58e7-990a-5513cd630786",
+            "parentId": "685e71a2-4c0b-57fa-9519-2b65031ed715",
+            "position": 1,
+            "kind": "page",
+            "title": "Регламент приёмки смены",
+            "status": "active",
+            "accessMode": "inherit",
+            "sensitivity": "normal",
+            "archived": false,
+            "version": 2,
+            "my": { "edit": false, "lead": false, "create": false }
+          },
+          {
+            "id": "641c9079-5db8-513f-9ce5-59525d87c375",
+            "spaceId": "a3b6bc34-7307-58e7-990a-5513cd630786",
+            "parentId": "917ba039-1d29-5dd1-b922-b0976cc8a7c2",
+            "position": 1,
+            "kind": "page",
+            "title": "Чек-лист приёмки",
+            "status": "active",
+            "accessMode": "inherit",
+            "sensitivity": "normal",
+            "archived": false,
+            "version": 1,
+            "my": { "edit": false, "lead": false, "create": false }
+          },
+          {
+            "id": "2f8e26cb-d191-5b2b-b88e-0e6eade36db5",
+            "spaceId": "a3b6bc34-7307-58e7-990a-5513cd630786",
+            "parentId": "917ba039-1d29-5dd1-b922-b0976cc8a7c2",
+            "position": 2,
+            "kind": "page",
+            "title": "Типовые замечания",
+            "status": "active",
+            "accessMode": "inherit",
+            "sensitivity": "normal",
+            "archived": false,
+            "version": 1,
+            "my": { "edit": false, "lead": false, "create": false }
+          },
+          {
+            "id": "aedda75a-8456-5d8b-94b8-d72a63e1a783",
+            "spaceId": "a3b6bc34-7307-58e7-990a-5513cd630786",
+            "parentId": "685e71a2-4c0b-57fa-9519-2b65031ed715",
+            "position": 2,
+            "kind": "page",
+            "title": "Как фотографировать машину при осмотре",
+            "status": "active",
+            "accessMode": "inherit",
+            "sensitivity": "normal",
+            "archived": false,
+            "version": 1,
+            "my": { "edit": false, "lead": false, "create": false }
+          },
+          {
+            "id": "bb2327dd-1958-5b40-8bb4-54cbb208cb7f",
+            "spaceId": "a3b6bc34-7307-58e7-990a-5513cd630786",
+            "parentId": "685e71a2-4c0b-57fa-9519-2b65031ed715",
+            "position": 3,
+            "kind": "page",
+            "title": "Выезд при критическом дефекте",
+            "status": "review",
+            "accessMode": "inherit",
+            "sensitivity": "normal",
+            "archived": false,
+            "version": 1,
+            "my": { "edit": false, "lead": false, "create": false }
+          },
+          {
+            "id": "babd503a-697f-595f-83f8-6501710d0803",
+            "spaceId": "a3b6bc34-7307-58e7-990a-5513cd630786",
+            "parentId": null,
+            "position": 2,
+            "kind": "table",
+            "title": "Журнал осмотров машин",
+            "status": "active",
+            "accessMode": "inherit",
+            "sensitivity": "normal",
+            "archived": false,
+            "version": 1,
+            "my": { "edit": false, "lead": false, "create": false }
+          },
+          {
+            "id": "ebeaeb8c-54db-5a74-8350-de6bd561c76d",
+            "spaceId": "a3b6bc34-7307-58e7-990a-5513cd630786",
+            "parentId": null,
+            "position": 3,
+            "kind": "diagram",
+            "title": "Схема сдачи смены",
+            "status": "active",
+            "accessMode": "inherit",
+            "sensitivity": "normal",
+            "archived": false,
+            "version": 1,
+            "my": { "edit": false, "lead": false, "create": false }
+          },
+          {
+            "id": "7a369026-5559-5e6c-a4f3-9eca8c7f5b6c",
+            "spaceId": "a3b6bc34-7307-58e7-990a-5513cd630786",
+            "parentId": null,
+            "position": 4,
+            "kind": "folder",
+            "title": "Водителям",
+            "status": "active",
+            "accessMode": "listed",
+            "sensitivity": "normal",
+            "archived": false,
+            "version": 1,
+            "my": { "edit": false, "lead": false, "create": false }
+          },
+          {
+            "id": "89800cc0-ed79-5986-818e-e0168e016798",
+            "spaceId": "a3b6bc34-7307-58e7-990a-5513cd630786",
+            "parentId": "7a369026-5559-5e6c-a4f3-9eca8c7f5b6c",
+            "position": 1,
+            "kind": "page",
+            "title": "Памятка водителя",
+            "status": "active",
+            "accessMode": "inherit",
+            "sensitivity": "normal",
+            "archived": false,
+            "version": 1,
+            "my": { "edit": false, "lead": false, "create": false }
+          },
+          {
+            "id": "2913db05-18a2-538a-aa3c-76c449093462",
+            "spaceId": "a3b6bc34-7307-58e7-990a-5513cd630786",
+            "parentId": "7a369026-5559-5e6c-a4f3-9eca8c7f5b6c",
+            "position": 2,
+            "kind": "page",
+            "title": "ДТП и поломка в пути",
+            "status": "active",
+            "accessMode": "inherit",
+            "sensitivity": "normal",
+            "archived": false,
+            "version": 1,
+            "my": { "edit": false, "lead": false, "create": false }
+          },
+          {
+            "id": "0b79defd-2388-5089-a36c-94a78807432f",
+            "spaceId": "a3b6bc34-7307-58e7-990a-5513cd630786",
+            "parentId": "7a369026-5559-5e6c-a4f3-9eca8c7f5b6c",
+            "position": 3,
+            "kind": "page",
+            "title": "Контакты диспетчеров",
+            "status": "active",
+            "accessMode": "inherit",
+            "sensitivity": "normal",
+            "archived": false,
+            "version": 1,
+            "my": { "edit": false, "lead": false, "create": false }
+          },
+          {
+            "id": "a37b3433-fdfd-584f-b0e4-847197ff6815",
+            "spaceId": "a3b6bc34-7307-58e7-990a-5513cd630786",
+            "parentId": "7a369026-5559-5e6c-a4f3-9eca8c7f5b6c",
+            "position": 4,
+            "kind": "diagram",
+            "title": "Маршруты",
+            "status": "active",
+            "accessMode": "edit_listed",
+            "sensitivity": "normal",
+            "archived": false,
+            "version": 1,
+            "my": { "edit": false, "lead": false, "create": false }
+          },
+          {
+            "id": "70c4493b-75ab-5381-a28d-2ee375259122",
+            "spaceId": "a3b6bc34-7307-58e7-990a-5513cd630786",
+            "parentId": null,
+            "position": 6,
+            "kind": "file",
+            "title": "Договор аренды стоянки.pdf",
+            "status": "active",
+            "accessMode": "inherit",
+            "sensitivity": "normal",
+            "archived": false,
+            "version": 1,
+            "my": { "edit": false, "lead": false, "create": false }
+          },
+          {
+            "id": "01b0d68a-1f9a-5e8e-b0ce-0fd1f5fbab58",
+            "spaceId": "a3b6bc34-7307-58e7-990a-5513cd630786",
+            "parentId": null,
+            "position": 7,
+            "kind": "link",
+            "title": "Форма «Осмотр машины»",
+            "status": "active",
+            "accessMode": "inherit",
+            "sensitivity": "normal",
+            "archived": false,
+            "version": 1,
+            "my": { "edit": false, "lead": false, "create": false }
+          }
+        ]
+      }
+    },
+    "searchKnowledge": {
+      "ok": {
+        "items": [
+          {
+            "nodeId": "917ba039-1d29-5dd1-b922-b0976cc8a7c2",
+            "spaceId": "a3b6bc34-7307-58e7-990a-5513cd630786",
+            "spaceName": "Логистика",
+            "kind": "page",
+            "title": "Регламент приёмки смены",
+            "path": ["Логистика", "Регламенты"],
+            "excerpt": "Менеджер проверяет фото до и после (5 ракурсов, включая одометр), пробег и расходы с чеками. При замечаниях смена возвращается водителю с указанием р…"
+          },
+          {
+            "nodeId": "aedda75a-8456-5d8b-94b8-d72a63e1a783",
+            "spaceId": "a3b6bc34-7307-58e7-990a-5513cd630786",
+            "spaceName": "Логистика",
+            "kind": "page",
+            "title": "Как фотографировать машину при осмотре",
+            "path": ["Логистика", "Регламенты"],
+            "excerpt": "Снимайте при дневном свете с расстояния 3–4 метра. Номер должен читаться на фото спереди и сзади. Одометр — крупно, без бликов."
+          },
+          {
+            "nodeId": "641c9079-5db8-513f-9ce5-59525d87c375",
+            "spaceId": "a3b6bc34-7307-58e7-990a-5513cd630786",
+            "spaceName": "Логистика",
+            "kind": "page",
+            "title": "Чек-лист приёмки",
+            "path": ["Логистика", "Регламенты", "Регламент приёмки смены"],
+            "excerpt": "Фото с пяти ракурсов, включая одометр. Пробег совпадает с одометром на фото. У каждого расхода есть чек. Топлива не меньше, чем при выезде."
+          },
+          {
+            "nodeId": "2f8e26cb-d191-5b2b-b88e-0e6eade36db5",
+            "spaceId": "a3b6bc34-7307-58e7-990a-5513cd630786",
+            "spaceName": "Логистика",
+            "kind": "page",
+            "title": "Типовые замечания",
+            "path": ["Логистика", "Регламенты", "Регламент приёмки смены"],
+            "excerpt": "Нет фото одометра — вернуть раздел «Фото». Расход без чека — вернуть раздел «Расходы». Пробег не совпадает с фото — вернуть раздел «Пробег»."
+          }
+        ]
+      },
+      "validation_failed": {
+        "type": "https://docs.ortus.example/errors/validation_failed",
+        "title": "Ошибки полей",
+        "status": 422,
+        "code": "validation_failed",
+        "detail": "Введите не меньше 2 символов",
+        "requestId": "01J9Z4QK8M6T2V5X7Y9A1B3C5D",
+        "violations": [
+          { "field": "q", "code": "too_short", "message": "Введите не меньше 2 символов" }
+        ]
+      }
+    },
+    "createKnowledgeNode": {
+      "created": {
+        "id": "c43260de-a42a-581d-95a4-385dd85a4362",
+        "spaceId": "a3b6bc34-7307-58e7-990a-5513cd630786",
+        "parentId": "685e71a2-4c0b-57fa-9519-2b65031ed715",
+        "position": 4,
+        "kind": "page",
+        "title": "Выезд в непогоду",
+        "status": "draft",
+        "accessMode": "inherit",
+        "sensitivity": "normal",
+        "archived": false,
+        "version": 1,
+        "my": { "edit": true, "lead": true, "create": true },
+        "spaceName": "Логистика",
+        "path": [{ "id": "685e71a2-4c0b-57fa-9519-2b65031ed715", "title": "Регламенты" }],
+        "owner": {
+          "memberId": "ac41932c-dbd9-53b1-a84b-42cbc1d6629a",
+          "displayName": "Марина Котова"
+        },
+        "reviewBy": null,
+        "current": {
+          "version": 1,
+          "publishedAt": "2026-09-30T21:00:00Z",
+          "authorDisplayName": "Марина Котова",
+          "body": ""
+        },
+        "versions": [
+          {
+            "version": 1,
+            "publishedAt": "2026-09-30T21:00:00Z",
+            "authorDisplayName": "Марина Котова"
+          }
+        ],
+        "tables": [],
+        "entries": [],
+        "revision": 1
+      },
+      "forbidden_action": {
+        "type": "https://docs.ortus.example/errors/forbidden_action",
+        "title": "Нет действия ни в одной роли",
+        "status": 403,
+        "code": "forbidden_action",
+        "detail": "Нет права создавать страницы в пространстве",
+        "requestId": "01J9Z4QK8M6T2V5X7Y9A1B3C5D"
+      }
+    },
+    "getKnowledgeNode": {
+      "not_found": {
+        "type": "https://docs.ortus.example/errors/not_found",
+        "title": "Нет объекта или он вне области",
+        "status": 404,
+        "code": "not_found",
+        "detail": "Страница не найдена или недоступна",
+        "requestId": "01J9Z4QK8M6T2V5X7Y9A1B3C5D"
+      },
+      "ok": {
+        "id": "917ba039-1d29-5dd1-b922-b0976cc8a7c2",
+        "spaceId": "a3b6bc34-7307-58e7-990a-5513cd630786",
+        "parentId": "685e71a2-4c0b-57fa-9519-2b65031ed715",
+        "position": 1,
+        "kind": "page",
+        "title": "Регламент приёмки смены",
+        "status": "active",
+        "accessMode": "inherit",
+        "sensitivity": "normal",
+        "archived": false,
+        "version": 2,
+        "my": { "edit": false, "lead": false, "create": false },
+        "spaceName": "Логистика",
+        "path": [{ "id": "685e71a2-4c0b-57fa-9519-2b65031ed715", "title": "Регламенты" }],
+        "owner": {
+          "memberId": "b8df06ec-317e-5f46-b54c-e76603e41b5b",
+          "displayName": "Дарья Зимина"
+        },
+        "reviewBy": "2027-03-24",
+        "current": {
+          "version": 2,
+          "publishedAt": "2026-09-23T21:00:00Z",
+          "authorDisplayName": "Дарья Зимина",
+          "body": "Менеджер проверяет фото до и после (5 ракурсов, включая одометр), пробег и расходы с чеками. При замечаниях смена возвращается водителю с указанием раздела. Машина возвращается в пул только после приёмки."
+        },
+        "versions": [
+          {
+            "version": 2,
+            "publishedAt": "2026-09-23T21:00:00Z",
+            "authorDisplayName": "Дарья Зимина"
+          },
+          {
+            "version": 1,
+            "publishedAt": "2026-09-04T21:00:00Z",
+            "authorDisplayName": "Дарья Зимина"
+          }
+        ],
+        "tables": [],
+        "entries": [],
+        "revision": 2,
+        "ack": {
+          "version": 2,
+          "audienceLabel": "роль «Водитель»",
+          "mine": { "required": true, "done": false }
+        }
+      }
+    },
+    "publishKnowledgeNodeVersion": {
+      "ok": {
+        "node": {
+          "id": "917ba039-1d29-5dd1-b922-b0976cc8a7c2",
+          "spaceId": "a3b6bc34-7307-58e7-990a-5513cd630786",
+          "parentId": "685e71a2-4c0b-57fa-9519-2b65031ed715",
+          "position": 1,
+          "kind": "page",
+          "title": "Регламент приёмки смены",
+          "status": "active",
+          "accessMode": "inherit",
+          "sensitivity": "normal",
+          "archived": false,
+          "version": 3,
+          "my": { "edit": true, "lead": true, "create": true },
+          "spaceName": "Логистика",
+          "path": [{ "id": "685e71a2-4c0b-57fa-9519-2b65031ed715", "title": "Регламенты" }],
+          "owner": {
+            "memberId": "b8df06ec-317e-5f46-b54c-e76603e41b5b",
+            "displayName": "Дарья Зимина"
+          },
+          "reviewBy": "2027-03-24",
+          "current": {
+            "version": 3,
+            "publishedAt": "2026-09-30T21:00:00Z",
+            "authorDisplayName": "Марина Котова",
+            "body": "Менеджер проверяет фото до и после (5 ракурсов, включая одометр), пробег и расходы с чеками.\n\nМашина возвращается в пул только после приёмки."
+          },
+          "versions": [
+            {
+              "version": 3,
+              "publishedAt": "2026-09-30T21:00:00Z",
+              "authorDisplayName": "Марина Котова"
+            },
+            {
+              "version": 2,
+              "publishedAt": "2026-09-23T21:00:00Z",
+              "authorDisplayName": "Дарья Зимина"
+            },
+            {
+              "version": 1,
+              "publishedAt": "2026-09-04T21:00:00Z",
+              "authorDisplayName": "Дарья Зимина"
+            }
+          ],
+          "tables": [],
+          "entries": [],
+          "revision": 3,
+          "ack": {
+            "version": 3,
+            "audienceLabel": "роль «Водитель»",
+            "mine": { "required": false, "done": false },
+            "total": 1,
+            "doneCount": 0,
+            "pendingNames": ["Илья Васильев"],
+            "log": []
+          }
+        },
+        "version": 3,
+        "ackRequestedCount": 1
+      },
+      "revision_mismatch": {
+        "type": "https://docs.ortus.example/errors/revision_mismatch",
+        "title": "Устаревший If-Match",
+        "status": 412,
+        "code": "revision_mismatch",
+        "detail": "Страницу уже изменили (v2). Обновите и повторите правку.",
+        "requestId": "01J9Z4QK8M6T2V5X7Y9A1B3C5D"
+      }
+    },
+    "getKnowledgeNodeVersion": {
+      "not_found": {
+        "type": "https://docs.ortus.example/errors/not_found",
+        "title": "Нет объекта или он вне области",
+        "status": 404,
+        "code": "not_found",
+        "detail": "Версия не найдена",
+        "requestId": "01J9Z4QK8M6T2V5X7Y9A1B3C5D"
+      },
+      "ok": {
+        "version": 1,
+        "publishedAt": "2026-09-04T21:00:00Z",
+        "authorDisplayName": "Дарья Зимина",
+        "body": "Менеджер проверяет фото до и после, пробег и расходы. Машина возвращается в пул только после приёмки."
+      }
+    },
+    "setKnowledgeNodeStatus": {
+      "forbidden_action": {
+        "type": "https://docs.ortus.example/errors/forbidden_action",
+        "title": "Нет действия ни в одной роли",
+        "status": 403,
+        "code": "forbidden_action",
+        "detail": "Утверждать может редактор или руководитель пространства",
+        "requestId": "01J9Z4QK8M6T2V5X7Y9A1B3C5D"
+      },
+      "ok": {
+        "id": "bb2327dd-1958-5b40-8bb4-54cbb208cb7f",
+        "spaceId": "a3b6bc34-7307-58e7-990a-5513cd630786",
+        "parentId": "685e71a2-4c0b-57fa-9519-2b65031ed715",
+        "position": 3,
+        "kind": "page",
+        "title": "Выезд при критическом дефекте",
+        "status": "active",
+        "accessMode": "inherit",
+        "sensitivity": "normal",
+        "archived": false,
+        "version": 1,
+        "my": { "edit": true, "lead": true, "create": true },
+        "spaceName": "Логистика",
+        "path": [{ "id": "685e71a2-4c0b-57fa-9519-2b65031ed715", "title": "Регламенты" }],
+        "owner": {
+          "memberId": "ac41932c-dbd9-53b1-a84b-42cbc1d6629a",
+          "displayName": "Марина Котова"
+        },
+        "reviewBy": null,
+        "current": {
+          "version": 1,
+          "publishedAt": "2026-09-19T21:00:00Z",
+          "authorDisplayName": "Марина Котова",
+          "body": "Если при осмотре отмечен критический дефект, выезд блокируется. Менеджер разрешает выезд или подтверждает неисправность и отправляет машину в ремонт."
+        },
+        "versions": [
+          {
+            "version": 1,
+            "publishedAt": "2026-09-19T21:00:00Z",
+            "authorDisplayName": "Марина Котова"
+          }
+        ],
+        "tables": [],
+        "entries": [],
+        "revision": 1
+      }
+    },
+    "moveKnowledgeNode": {
+      "dry-run": { "applied": false, "pages": 1, "loseView": [], "gainView": [] },
+      "validation_failed": {
+        "type": "https://docs.ortus.example/errors/validation_failed",
+        "title": "Ошибки полей",
+        "status": 422,
+        "code": "validation_failed",
+        "detail": "Нельзя перенести страницу внутрь её же подстраницы",
+        "requestId": "01J9Z4QK8M6T2V5X7Y9A1B3C5D"
+      }
+    },
+    "archiveKnowledgeNode": {
+      "ok": { "nodeId": "2f8e26cb-d191-5b2b-b88e-0e6eade36db5", "archived": true, "pages": 1 },
+      "validation_failed": {
+        "type": "https://docs.ortus.example/errors/validation_failed",
+        "title": "Ошибки полей",
+        "status": 422,
+        "code": "validation_failed",
+        "detail": "Главную страницу пространства архивировать нельзя",
+        "requestId": "01J9Z4QK8M6T2V5X7Y9A1B3C5D"
+      }
+    },
+    "restoreKnowledgeNode": {
+      "forbidden_action": {
+        "type": "https://docs.ortus.example/errors/forbidden_action",
+        "title": "Нет действия ни в одной роли",
+        "status": 403,
+        "code": "forbidden_action",
+        "detail": "Архивировать может редактор или руководитель пространства",
+        "requestId": "01J9Z4QK8M6T2V5X7Y9A1B3C5D"
+      },
+      "ok": { "nodeId": "2f8e26cb-d191-5b2b-b88e-0e6eade36db5", "archived": false, "pages": 1 }
+    },
+    "listKnowledgeArchive": {
+      "forbidden_action": {
+        "type": "https://docs.ortus.example/errors/forbidden_action",
+        "title": "Нет действия ни в одной роли",
+        "status": 403,
+        "code": "forbidden_action",
+        "detail": "Архивировать может редактор или руководитель пространства",
+        "requestId": "01J9Z4QK8M6T2V5X7Y9A1B3C5D"
+      },
+      "ok": {
+        "items": [
+          {
+            "nodeId": "2f8e26cb-d191-5b2b-b88e-0e6eade36db5",
+            "title": "Типовые замечания",
+            "kind": "page",
+            "pages": 1
+          }
+        ]
+      }
+    },
+    "ackKnowledgeNode": {
+      "ok": {
+        "version": 2,
+        "audienceLabel": "роль «Водитель»",
+        "mine": { "required": true, "done": true }
+      },
+      "validation_failed": {
+        "type": "https://docs.ortus.example/errors/validation_failed",
+        "title": "Ошибки полей",
+        "status": 422,
+        "code": "validation_failed",
+        "detail": "Ознакомление запрошено у другой роли",
+        "requestId": "01J9Z4QK8M6T2V5X7Y9A1B3C5D"
+      }
+    },
+    "getKnowledgeNodeAccess": {
+      "lead": {
+        "nodeId": "7a369026-5559-5e6c-a4f3-9eca8c7f5b6c",
+        "title": "Водителям",
+        "accessMode": "listed",
+        "inheritedFrom": {
+          "kind": "space",
+          "id": "a3b6bc34-7307-58e7-990a-5513cd630786",
+          "title": "Логистика"
+        },
+        "chain": [
+          { "kind": "ok", "title": "Организация", "detail": "Владелец бизнеса видит всё" },
+          {
+            "kind": "ok",
+            "title": "Пространство «Логистика»",
+            "detail": "Ограниченное: все в области читают, пишут участники"
+          },
+          { "kind": "ok", "title": "«Водителям»", "detail": "Настраиваете сейчас" }
+        ],
+        "entries": [
+          {
+            "who": "role",
+            "can": "view",
+            "refId": "2a857e38-2d94-51a0-81de-406de8b3c772",
+            "orgUnitId": "6de355d2-b019-5bb6-b66a-ddae6a13fb65",
+            "label": "Роль «Водитель» · «Север Логистик»",
+            "reach": { "members": 1, "total": 1, "blocked": [] }
+          },
+          {
+            "who": "role",
+            "can": "edit",
+            "refId": "2688205d-9d70-5eaa-a2a8-cb405fe282cb",
+            "label": "Роль «Редактор» в пространстве",
+            "reach": { "members": 1, "total": 1, "blocked": [] }
+          }
+        ],
+        "descendantCount": 4,
+        "ownSubnodes": [{ "id": "a37b3433-fdfd-584f-b0e4-847197ff6815", "title": "Маршруты" }],
+        "canManage": true,
+        "leadNames": ["Марина Котова"],
+        "revision": 1,
+        "requests": []
+      },
+      "not_found": {
+        "type": "https://docs.ortus.example/errors/not_found",
+        "title": "Нет объекта или он вне области",
+        "status": 404,
+        "code": "not_found",
+        "detail": "Страница не найдена или недоступна",
+        "requestId": "01J9Z4QK8M6T2V5X7Y9A1B3C5D"
+      },
+      "ok": {
+        "nodeId": "7a369026-5559-5e6c-a4f3-9eca8c7f5b6c",
+        "title": "Водителям",
+        "accessMode": "listed",
+        "inheritedFrom": {
+          "kind": "space",
+          "id": "a3b6bc34-7307-58e7-990a-5513cd630786",
+          "title": "Логистика"
+        },
+        "chain": [
+          { "kind": "ok", "title": "Организация", "detail": "Владелец бизнеса видит всё" },
+          {
+            "kind": "ok",
+            "title": "Пространство «Логистика»",
+            "detail": "Ограниченное: все в области читают, пишут участники"
+          },
+          { "kind": "ok", "title": "«Водителям»", "detail": "Только выбранные" }
+        ],
+        "entries": [
+          {
+            "who": "role",
+            "can": "view",
+            "refId": "2a857e38-2d94-51a0-81de-406de8b3c772",
+            "orgUnitId": "6de355d2-b019-5bb6-b66a-ddae6a13fb65",
+            "label": "Роль «Водитель» · «Север Логистик»"
+          },
+          {
+            "who": "role",
+            "can": "edit",
+            "refId": "2688205d-9d70-5eaa-a2a8-cb405fe282cb",
+            "label": "Роль «Редактор» в пространстве"
+          }
+        ],
+        "descendantCount": 4,
+        "ownSubnodes": [{ "id": "a37b3433-fdfd-584f-b0e4-847197ff6815", "title": "Маршруты" }],
+        "canManage": false,
+        "leadNames": ["Марина Котова"],
+        "revision": 1
+      }
+    },
+    "setKnowledgeNodeAccess": {
+      "dry-run": {
+        "applied": false,
+        "pages": 1,
+        "own": [],
+        "gainView": [],
+        "loseView": [],
+        "gainEdit": [],
+        "loseEdit": []
+      },
+      "validation_failed": {
+        "type": "https://docs.ortus.example/errors/validation_failed",
+        "title": "Ошибки полей",
+        "status": 422,
+        "code": "validation_failed",
+        "detail": "Связь с записью CRM задаётся шаблоном раздела",
+        "requestId": "01J9Z4QK8M6T2V5X7Y9A1B3C5D"
+      }
+    },
+    "listKnowledgeAccessCandidates": {
+      "forbidden_action": {
+        "type": "https://docs.ortus.example/errors/forbidden_action",
+        "title": "Нет действия ни в одной роли",
+        "status": 403,
+        "code": "forbidden_action",
+        "detail": "Это может руководитель пространства или владелец бизнеса",
+        "requestId": "01J9Z4QK8M6T2V5X7Y9A1B3C5D"
+      },
+      "ok": {
+        "items": [
+          {
+            "entry": {
+              "who": "role",
+              "can": "view",
+              "refId": "ec7feec1-6f4d-54fb-9a58-63ab98c54aca",
+              "orgUnitId": "6de355d2-b019-5bb6-b66a-ddae6a13fb65"
+            },
+            "label": "Роль «Менеджер логистики» · «Север Логистик»",
+            "reach": { "members": 0, "total": 0, "reason": null },
+            "reachLabel": "— сейчас никого"
+          },
+          {
+            "entry": {
+              "who": "role",
+              "can": "view",
+              "refId": "2a857e38-2d94-51a0-81de-406de8b3c772",
+              "orgUnitId": "6de355d2-b019-5bb6-b66a-ddae6a13fb65"
+            },
+            "label": "Роль «Водитель» · «Север Логистик»",
+            "reach": { "members": 1, "total": 1, "reason": null },
+            "reachLabel": ""
+          },
+          {
+            "entry": {
+              "who": "role",
+              "can": "view",
+              "refId": "82ab2491-f90d-5be3-8ae0-5cd0196d94d8",
+              "orgUnitId": "6de355d2-b019-5bb6-b66a-ddae6a13fb65"
+            },
+            "label": "Роль «Массажист» · «Север Логистик»",
+            "reach": { "members": 0, "total": 0, "reason": null },
+            "reachLabel": "— сейчас никого"
+          },
+          {
+            "entry": {
+              "who": "role",
+              "can": "view",
+              "refId": "bbc56a08-74b3-5118-bd78-9e9f85d37f33",
+              "orgUnitId": "6de355d2-b019-5bb6-b66a-ddae6a13fb65"
+            },
+            "label": "Роль «Прораб» · «Север Логистик»",
+            "reach": { "members": 0, "total": 0, "reason": null },
+            "reachLabel": "— сейчас никого"
+          },
+          {
+            "entry": {
+              "who": "role",
+              "can": "view",
+              "refId": "c813124c-4173-52e5-99f6-6ae27d703ec6"
+            },
+            "label": "Роль «Руководитель пространства» в пространстве",
+            "reach": { "members": 1, "total": 1, "reason": null },
+            "reachLabel": ""
+          },
+          {
+            "entry": {
+              "who": "role",
+              "can": "view",
+              "refId": "2688205d-9d70-5eaa-a2a8-cb405fe282cb"
+            },
+            "label": "Роль «Редактор» в пространстве",
+            "reach": { "members": 1, "total": 1, "reason": null },
+            "reachLabel": ""
+          },
+          {
+            "entry": {
+              "who": "role",
+              "can": "view",
+              "refId": "bcc10ec9-6ca5-5075-acb7-5031e06adf97"
+            },
+            "label": "Роль «Читатель» в пространстве",
+            "reach": { "members": 0, "total": 0, "reason": null },
+            "reachLabel": "— сейчас никого"
+          },
+          {
+            "entry": {
+              "who": "group",
+              "can": "view",
+              "refId": "ffdc7501-0a74-5af4-950b-894aeb64d658"
+            },
+            "label": "Группа «Диспетчеры Север»",
+            "reach": {
+              "members": 1,
+              "total": 2,
+              "reason": "нет роли в области «фирма «Север Логистик»» и не участник пространства"
+            },
+            "reachLabel": "— получат 1 из 2"
+          },
+          {
+            "entry": {
+              "who": "group",
+              "can": "view",
+              "refId": "ce9dd6e5-dcb8-5d08-ad94-53c3155b3d14"
+            },
+            "label": "Группа «Водители Север»",
+            "reach": { "members": 1, "total": 1, "reason": null },
+            "reachLabel": ""
+          },
+          {
+            "entry": {
+              "who": "member",
+              "refId": "b8df06ec-317e-5f46-b54c-e76603e41b5b",
+              "can": "view"
+            },
+            "label": "Дарья Зимина",
+            "reach": { "members": 1, "total": 1, "reason": null },
+            "reachLabel": ""
+          },
+          {
+            "entry": {
+              "who": "member",
+              "refId": "ac41932c-dbd9-53b1-a84b-42cbc1d6629a",
+              "can": "view"
+            },
+            "label": "Марина Котова",
+            "reach": { "members": 1, "total": 1, "reason": null },
+            "reachLabel": ""
+          },
+          {
+            "entry": {
+              "who": "member",
+              "refId": "a560b4fe-78b7-585e-b960-f0ab3622570c",
+              "can": "view"
+            },
+            "label": "Илья Васильев",
+            "reach": { "members": 1, "total": 1, "reason": null },
+            "reachLabel": ""
+          },
+          {
+            "entry": {
+              "who": "member",
+              "refId": "25097109-efb6-5471-880f-7a01ee6615a0",
+              "can": "view"
+            },
+            "label": "Анна Морозова",
+            "reach": {
+              "members": 0,
+              "total": 1,
+              "reason": "нет роли в области «фирма «Север Логистик»» и не участник пространства"
+            },
+            "reachLabel": "— не получит доступ: нет роли в области «фирма «Север Логистик»» и не участник пространства"
+          },
+          {
+            "entry": {
+              "who": "member",
+              "refId": "ebdf9767-327e-55cc-8c65-cb5fd313bdf4",
+              "can": "view"
+            },
+            "label": "Алексей Соколов",
+            "reach": {
+              "members": 0,
+              "total": 1,
+              "reason": "нет роли в области «фирма «Север Логистик»» и не участник пространства"
+            },
+            "reachLabel": "— не получит доступ: нет роли в области «фирма «Север Логистик»» и не участник пространства"
+          },
+          {
+            "entry": {
+              "who": "member",
+              "refId": "5f46d721-04b7-5e52-9f86-14c5bdfcf6aa",
+              "can": "view"
+            },
+            "label": "Олеся Петрова",
+            "reach": {
+              "members": 0,
+              "total": 1,
+              "reason": "нет роли в области «фирма «Север Логистик»» и не участник пространства"
+            },
+            "reachLabel": "— не получит доступ: нет роли в области «фирма «Север Логистик»» и не участник пространства"
+          },
+          {
+            "entry": {
+              "who": "member",
+              "refId": "ea845988-640e-5506-9303-1cbfc3dede0d",
+              "can": "view"
+            },
+            "label": "Вера Котельникова",
+            "reach": { "members": 1, "total": 1, "reason": null },
+            "reachLabel": ""
+          },
+          {
+            "entry": {
+              "who": "member",
+              "refId": "1a544c8a-52b8-557b-9720-10b9d94fdd10",
+              "can": "view"
+            },
+            "label": "Тимур Ахмедов",
+            "reach": {
+              "members": 0,
+              "total": 1,
+              "reason": "нет роли в области «фирма «Север Логистик»» и не участник пространства"
+            },
+            "reachLabel": "— не получит доступ: нет роли в области «фирма «Север Логистик»» и не участник пространства"
+          },
+          {
+            "entry": {
+              "who": "member",
+              "refId": "0079e3dc-bef7-5e8b-986a-085809065166",
+              "can": "view"
+            },
+            "label": "Сергей Ильин",
+            "reach": {
+              "members": 0,
+              "total": 1,
+              "reason": "нет роли в области «фирма «Север Логистик»» и не участник пространства"
+            },
+            "reachLabel": "— не получит доступ: нет роли в области «фирма «Север Логистик»» и не участник пространства"
+          }
+        ]
+      }
+    },
+    "getKnowledgeAccessMap": {
+      "forbidden_action": {
+        "type": "https://docs.ortus.example/errors/forbidden_action",
+        "title": "Нет действия ни в одной роли",
+        "status": 403,
+        "code": "forbidden_action",
+        "detail": "Это может руководитель пространства или владелец бизнеса",
+        "requestId": "01J9Z4QK8M6T2V5X7Y9A1B3C5D"
+      },
+      "ok": {
+        "spaceId": "a3b6bc34-7307-58e7-990a-5513cd630786",
+        "members": [
+          { "memberId": "ac41932c-dbd9-53b1-a84b-42cbc1d6629a", "displayName": "Марина Котова" },
+          { "memberId": "a560b4fe-78b7-585e-b960-f0ab3622570c", "displayName": "Илья Васильев" },
+          { "memberId": "ea845988-640e-5506-9303-1cbfc3dede0d", "displayName": "Вера Котельникова" }
+        ],
+        "rows": [
+          { "nodeId": "5a437a14-2357-5932-ad5e-fa133d3cc218", "title": "Обзор", "depth": 1 },
+          { "nodeId": "685e71a2-4c0b-57fa-9519-2b65031ed715", "title": "Регламенты", "depth": 1 },
+          {
+            "nodeId": "917ba039-1d29-5dd1-b922-b0976cc8a7c2",
+            "title": "Регламент приёмки смены",
+            "depth": 2
+          },
+          {
+            "nodeId": "641c9079-5db8-513f-9ce5-59525d87c375",
+            "title": "Чек-лист приёмки",
+            "depth": 3
+          },
+          {
+            "nodeId": "2f8e26cb-d191-5b2b-b88e-0e6eade36db5",
+            "title": "Типовые замечания",
+            "depth": 3
+          },
+          {
+            "nodeId": "aedda75a-8456-5d8b-94b8-d72a63e1a783",
+            "title": "Как фотографировать машину при осмотре",
+            "depth": 2
+          },
+          {
+            "nodeId": "bb2327dd-1958-5b40-8bb4-54cbb208cb7f",
+            "title": "Выезд при критическом дефекте",
+            "depth": 2
+          },
+          {
+            "nodeId": "babd503a-697f-595f-83f8-6501710d0803",
+            "title": "Журнал осмотров машин",
+            "depth": 1
+          },
+          {
+            "nodeId": "ebeaeb8c-54db-5a74-8350-de6bd561c76d",
+            "title": "Схема сдачи смены",
+            "depth": 1
+          },
+          { "nodeId": "7a369026-5559-5e6c-a4f3-9eca8c7f5b6c", "title": "Водителям", "depth": 1 },
+          {
+            "nodeId": "89800cc0-ed79-5986-818e-e0168e016798",
+            "title": "Памятка водителя",
+            "depth": 2
+          },
+          {
+            "nodeId": "2913db05-18a2-538a-aa3c-76c449093462",
+            "title": "ДТП и поломка в пути",
+            "depth": 2
+          },
+          {
+            "nodeId": "0b79defd-2388-5089-a36c-94a78807432f",
+            "title": "Контакты диспетчеров",
+            "depth": 2
+          },
+          { "nodeId": "a37b3433-fdfd-584f-b0e4-847197ff6815", "title": "Маршруты", "depth": 2 },
+          {
+            "nodeId": "b0c727db-bfc6-5635-ab3c-a3363cd14daa",
+            "title": "Тарифы и начисления",
+            "depth": 1
+          },
+          {
+            "nodeId": "41befb90-5d23-555e-a8e0-19ce76812a75",
+            "title": "Ставки по маршрутам",
+            "depth": 2
+          },
+          {
+            "nodeId": "70c4493b-75ab-5381-a28d-2ee375259122",
+            "title": "Договор аренды стоянки.pdf",
+            "depth": 1
+          },
+          {
+            "nodeId": "01b0d68a-1f9a-5e8e-b0ce-0fd1f5fbab58",
+            "title": "Форма «Осмотр машины»",
+            "depth": 1
+          }
+        ],
+        "cells": [
+          ["edit", "view", "edit"],
+          ["edit", "view", "edit"],
+          ["edit", "view", "edit"],
+          ["edit", "view", "edit"],
+          ["edit", "view", "edit"],
+          ["edit", "view", "edit"],
+          ["edit", "view", "edit"],
+          ["edit", "view", "edit"],
+          ["edit", "view", "edit"],
+          ["edit", "view", "edit"],
+          ["edit", "view", "edit"],
+          ["edit", "view", "edit"],
+          ["edit", "view", "edit"],
+          ["edit", "view", "view"],
+          ["edit", "function", "view"],
+          ["edit", "function", "view"],
+          ["edit", "view", "edit"],
+          ["edit", "view", "edit"]
+        ]
+      }
+    },
+    "explainKnowledgeAccess": {
+      "not_found": {
+        "type": "https://docs.ortus.example/errors/not_found",
+        "title": "Нет объекта или он вне области",
+        "status": 404,
+        "code": "not_found",
+        "detail": "Сотрудник не найден",
+        "requestId": "01J9Z4QK8M6T2V5X7Y9A1B3C5D"
+      },
+      "ok": {
+        "nodeId": "b0c727db-bfc6-5635-ab3c-a3363cd14daa",
+        "memberId": "a560b4fe-78b7-585e-b960-f0ab3622570c",
+        "memberDisplayName": "Илья Васильев",
+        "view": false,
+        "edit": false,
+        "functionBlocked": true,
+        "chain": [
+          { "kind": "ok", "title": "Организация", "detail": "Активный сотрудник" },
+          {
+            "kind": "ok",
+            "title": "Пространство «Логистика»",
+            "detail": "Читатель по уровню «Ограниченное»: роль «Водитель»"
+          },
+          {
+            "kind": "no",
+            "title": "«Тарифы и начисления»",
+            "detail": "Свой доступ «Только выбранные»: нет в списке"
+          },
+          {
+            "kind": "no",
+            "title": "Функция «Водитель»",
+            "detail": "Финансовые страницы закрыты всегда"
+          }
+        ],
+        "summary": "Не видит: страницы нет в его дереве, поиске и блоке «Подстраницы». Функция «Водитель» закрывает финансовые страницы, роль или группа это не обходят."
+      }
+    },
+    "createKnowledgeAccessRequest": {
+      "created": {
+        "id": "d143b523-a6c4-5dca-ac12-37a0382b3c07",
+        "nodeId": "89800cc0-ed79-5986-818e-e0168e016798",
+        "nodeTitle": "Памятка водителя",
+        "spaceId": "a3b6bc34-7307-58e7-990a-5513cd630786",
+        "memberId": "a560b4fe-78b7-585e-b960-f0ab3622570c",
+        "memberDisplayName": "Илья Васильев",
+        "can": "edit",
+        "status": "open",
+        "requestedAt": "2026-10-01T07:30:00Z"
+      },
+      "request_pending": {
+        "type": "https://docs.ortus.example/errors/request_pending",
+        "title": "У организации уже есть заявка на тариф на рассмотрении",
+        "status": 409,
+        "code": "request_pending",
+        "detail": "Запрос уже отправлен",
+        "requestId": "01J9Z4QK8M6T2V5X7Y9A1B3C5D"
+      }
+    },
+    "decideKnowledgeAccessRequest": {
+      "approved": {
+        "id": "d143b523-a6c4-5dca-ac12-37a0382b3c07",
+        "nodeId": "89800cc0-ed79-5986-818e-e0168e016798",
+        "nodeTitle": "Памятка водителя",
+        "spaceId": "a3b6bc34-7307-58e7-990a-5513cd630786",
+        "memberId": "a560b4fe-78b7-585e-b960-f0ab3622570c",
+        "memberDisplayName": "Илья Васильев",
+        "can": "edit",
+        "status": "approved",
+        "requestedAt": "2026-10-01T07:30:00Z",
+        "decidedAt": "2026-10-01T07:30:00Z",
+        "decidedByDisplayName": "Марина Котова"
+      },
+      "not_found": {
+        "type": "https://docs.ortus.example/errors/not_found",
+        "title": "Нет объекта или он вне области",
+        "status": 404,
+        "code": "not_found",
+        "detail": "Запрос не найден или уже решён",
+        "requestId": "01J9Z4QK8M6T2V5X7Y9A1B3C5D"
+      }
+    },
+    "listKnowledgeAccessRequests": {
+      "forbidden_action": {
+        "type": "https://docs.ortus.example/errors/forbidden_action",
+        "title": "Нет действия ни в одной роли",
+        "status": 403,
+        "code": "forbidden_action",
+        "detail": "Это может руководитель пространства или владелец бизнеса",
+        "requestId": "01J9Z4QK8M6T2V5X7Y9A1B3C5D"
+      },
+      "ok": {
+        "items": [
+          {
+            "id": "d143b523-a6c4-5dca-ac12-37a0382b3c07",
+            "nodeId": "89800cc0-ed79-5986-818e-e0168e016798",
+            "nodeTitle": "Памятка водителя",
+            "spaceId": "a3b6bc34-7307-58e7-990a-5513cd630786",
+            "memberId": "a560b4fe-78b7-585e-b960-f0ab3622570c",
+            "memberDisplayName": "Илья Васильев",
+            "can": "edit",
+            "status": "open",
+            "requestedAt": "2026-10-01T07:30:00Z"
+          }
+        ]
+      }
+    },
+    "listKnowledgeSpaceMembers": {
+      "lead": {
+        "spaceId": "a3b6bc34-7307-58e7-990a-5513cd630786",
+        "levelLabel": "Все в области читают, пишут участники",
+        "canManage": true,
+        "roles": [
+          {
+            "role": "kb_space_lead",
+            "label": "Руководитель пространства",
+            "description": "Всё в пространстве, участники, доступ, автоматизация",
+            "members": [
+              {
+                "memberId": "ac41932c-dbd9-53b1-a84b-42cbc1d6629a",
+                "displayName": "Марина Котова",
+                "state": "active"
+              }
+            ]
+          },
+          {
+            "role": "kb_space_editor",
+            "label": "Редактор",
+            "description": "Создаёт и правит любые страницы, публикует, перемещает",
+            "members": [
+              {
+                "memberId": "ea845988-640e-5506-9303-1cbfc3dede0d",
+                "displayName": "Вера Котельникова",
+                "state": "active"
+              }
+            ]
+          },
+          {
+            "role": "kb_space_reader",
+            "label": "Читатель",
+            "description": "Читает и отмечает «Ознакомлен»",
+            "members": []
+          }
+        ],
+        "byLevel": {
+          "label": "По уровню «Ограниченное»",
+          "members": [
+            {
+              "memberId": "a560b4fe-78b7-585e-b960-f0ab3622570c",
+              "displayName": "Илья Васильев",
+              "source": "роль «Водитель» · север логистик"
+            }
+          ],
+          "total": 1
+        },
+        "pageAssignments": []
+      },
+      "not_found": {
+        "type": "https://docs.ortus.example/errors/not_found",
+        "title": "Нет объекта или он вне области",
+        "status": 404,
+        "code": "not_found",
+        "detail": "Пространство не найдено",
+        "requestId": "01J9Z4QK8M6T2V5X7Y9A1B3C5D"
+      },
+      "ok": {
+        "spaceId": "a3b6bc34-7307-58e7-990a-5513cd630786",
+        "levelLabel": "Все в области читают, пишут участники",
+        "canManage": false,
+        "roles": [
+          {
+            "role": "kb_space_lead",
+            "label": "Руководитель пространства",
+            "description": "Всё в пространстве, участники, доступ, автоматизация",
+            "members": [
+              {
+                "memberId": "ac41932c-dbd9-53b1-a84b-42cbc1d6629a",
+                "displayName": "Марина Котова",
+                "state": "active"
+              }
+            ]
+          },
+          {
+            "role": "kb_space_editor",
+            "label": "Редактор",
+            "description": "Создаёт и правит любые страницы, публикует, перемещает",
+            "members": [
+              {
+                "memberId": "ea845988-640e-5506-9303-1cbfc3dede0d",
+                "displayName": "Вера Котельникова",
+                "state": "active"
+              }
+            ]
+          },
+          {
+            "role": "kb_space_reader",
+            "label": "Читатель",
+            "description": "Читает и отмечает «Ознакомлен»",
+            "members": []
+          }
+        ]
+      }
+    },
+    "setKnowledgeSpaceMember": {
+      "ok": {
+        "spaceId": "a3b6bc34-7307-58e7-990a-5513cd630786",
+        "levelLabel": "Все в области читают, пишут участники",
+        "canManage": true,
+        "roles": [
+          {
+            "role": "kb_space_lead",
+            "label": "Руководитель пространства",
+            "description": "Всё в пространстве, участники, доступ, автоматизация",
+            "members": [
+              {
+                "memberId": "ac41932c-dbd9-53b1-a84b-42cbc1d6629a",
+                "displayName": "Марина Котова",
+                "state": "active"
+              }
+            ]
+          },
+          {
+            "role": "kb_space_editor",
+            "label": "Редактор",
+            "description": "Создаёт и правит любые страницы, публикует, перемещает",
+            "members": [
+              {
+                "memberId": "ea845988-640e-5506-9303-1cbfc3dede0d",
+                "displayName": "Вера Котельникова",
+                "state": "active"
+              }
+            ]
+          },
+          {
+            "role": "kb_space_reader",
+            "label": "Читатель",
+            "description": "Читает и отмечает «Ознакомлен»",
+            "members": [
+              {
+                "memberId": "1a544c8a-52b8-557b-9720-10b9d94fdd10",
+                "displayName": "Тимур Ахмедов",
+                "state": "active"
+              }
+            ]
+          }
+        ],
+        "byLevel": {
+          "label": "По уровню «Ограниченное»",
+          "members": [
+            {
+              "memberId": "a560b4fe-78b7-585e-b960-f0ab3622570c",
+              "displayName": "Илья Васильев",
+              "source": "роль «Водитель» · север логистик"
+            }
+          ],
+          "total": 1
+        },
+        "pageAssignments": []
+      },
+      "validation_failed": {
+        "type": "https://docs.ortus.example/errors/validation_failed",
+        "title": "Ошибки полей",
+        "status": 422,
+        "code": "validation_failed",
+        "detail": "Свою роль руководителя снимает владелец бизнеса",
+        "requestId": "01J9Z4QK8M6T2V5X7Y9A1B3C5D"
+      }
+    },
+    "listKnowledgeRules": {
+      "forbidden_action": {
+        "type": "https://docs.ortus.example/errors/forbidden_action",
+        "title": "Нет действия ни в одной роли",
+        "status": 403,
+        "code": "forbidden_action",
+        "detail": "Это может руководитель пространства или владелец бизнеса",
+        "requestId": "01J9Z4QK8M6T2V5X7Y9A1B3C5D"
+      },
+      "ok": {
+        "items": [
+          {
+            "id": "ef847bf5-5414-537e-9c1f-5941be1e001b",
+            "spaceId": "a3b6bc34-7307-58e7-990a-5513cd630786",
+            "kind": "ack",
+            "name": "Новая версия регламента → попросить ознакомиться заново",
+            "trigger": "База знаний · страница опубликована",
+            "enabled": true
+          },
+          {
+            "id": "0c7659fc-b4d3-5a46-9f5e-5479de804ac9",
+            "spaceId": "a3b6bc34-7307-58e7-990a-5513cd630786",
+            "kind": "review",
+            "name": "Пора пересмотреть страницу → уведомить владельца",
+            "trigger": "По расписанию · каждый день в 09:00",
+            "enabled": true
+          }
+        ]
+      }
+    },
+    "setKnowledgeRuleEnabled": {
+      "not_found": {
+        "type": "https://docs.ortus.example/errors/not_found",
+        "title": "Нет объекта или он вне области",
+        "status": 404,
+        "code": "not_found",
+        "detail": "Правило не найдено",
+        "requestId": "01J9Z4QK8M6T2V5X7Y9A1B3C5D"
+      },
+      "ok": {
+        "id": "0c7659fc-b4d3-5a46-9f5e-5479de804ac9",
+        "spaceId": "a3b6bc34-7307-58e7-990a-5513cd630786",
+        "kind": "review",
+        "name": "Пора пересмотреть страницу → уведомить владельца",
+        "trigger": "По расписанию · каждый день в 09:00",
+        "enabled": false
+      }
+    },
+    "runKnowledgeReviewCheck": {
+      "ok": {
+        "count": 1,
+        "runs": [
+          {
+            "id": "e278de58-f6af-5b1c-87cf-39e8386794aa",
+            "ruleId": "0c7659fc-b4d3-5a46-9f5e-5479de804ac9",
+            "at": "2026-10-01T07:30:00Z",
+            "result": "ok",
+            "text": "«Как фотографировать машину при осмотре»: срок пересмотра 30.09.2026, уведомлён владелец Марина Котова"
+          }
+        ]
+      },
+      "validation_failed": {
+        "type": "https://docs.ortus.example/errors/validation_failed",
+        "title": "Ошибки полей",
+        "status": 422,
+        "code": "validation_failed",
+        "detail": "Правило «Пора пересмотреть» выключено",
+        "requestId": "01J9Z4QK8M6T2V5X7Y9A1B3C5D"
+      }
+    },
+    "runKnowledgeSection": {
+      "created": {
+        "count": 1,
+        "created": true,
+        "nodeId": "da043a7d-49da-5200-9db4-e5f1109e2df3",
+        "runs": [
+          {
+            "id": "e278de58-f6af-5b1c-87cf-39e8386794aa",
+            "ruleId": "3959df32-3d2e-5a2a-bf21-3c69dc660b78",
+            "at": "2026-10-01T07:30:00Z",
+            "result": "warn",
+            "text": "Кофейня на Покровке: прораб не назначен — раздел создан, доступ пока у редакторов. Назначат прораба — он получит доступ сам"
+          }
+        ]
+      },
+      "not_found": {
+        "type": "https://docs.ortus.example/errors/not_found",
+        "title": "Нет объекта или он вне области",
+        "status": 404,
+        "code": "not_found",
+        "detail": "Объект не найден",
+        "requestId": "01J9Z4QK8M6T2V5X7Y9A1B3C5D"
+      }
+    },
+    "listKnowledgeRuns": {
+      "forbidden_action": {
+        "type": "https://docs.ortus.example/errors/forbidden_action",
+        "title": "Нет действия ни в одной роли",
+        "status": 403,
+        "code": "forbidden_action",
+        "detail": "Это может руководитель пространства или владелец бизнеса",
+        "requestId": "01J9Z4QK8M6T2V5X7Y9A1B3C5D"
+      },
+      "ok": {
+        "items": [
+          {
+            "id": "bd2162ed-7591-5f0a-be45-a49ac72b9da2",
+            "ruleId": "3959df32-3d2e-5a2a-bf21-3c69dc660b78",
+            "at": "2026-09-24T07:42:00Z",
+            "result": "ok",
+            "text": "ЖК Речной · квартира 42: создан раздел и 5 подстраниц, доступ получил прораб Алексей Соколов"
+          },
+          {
+            "id": "9b5bc19f-0c6c-5bc9-be26-77ca6febd86a",
+            "ruleId": "3959df32-3d2e-5a2a-bf21-3c69dc660b78",
+            "at": "2026-10-01T11:05:00Z",
+            "result": "stopped",
+            "text": "Дом 120 м², Истра: остановлено условием — новый этап «Замер», а не «Договор»"
+          }
+        ]
+      }
+    },
+    "createKnowledgeTable": {
+      "created": {
+        "id": "9ed76e4c-0040-582a-948a-16d0e8466008",
+        "nodeId": "babd503a-697f-595f-83f8-6501710d0803",
+        "title": "Расходы в пути",
+        "columns": [
+          { "id": "404e0d21-f2ee-565c-bef3-3967ac725559", "name": "Дата", "type": "text" },
+          { "id": "2a1e8a00-3cbd-54ae-85ae-b99a3cfeda6f", "name": "Сумма, ₽", "type": "number" }
+        ],
+        "rows": []
+      },
+      "validation_failed": {
+        "type": "https://docs.ortus.example/errors/validation_failed",
+        "title": "Ошибки полей",
+        "status": 422,
+        "code": "validation_failed",
+        "detail": "Добавьте хотя бы один столбец",
+        "requestId": "01J9Z4QK8M6T2V5X7Y9A1B3C5D"
+      }
     }
   },
   "seedIds": {
@@ -18553,6 +21332,8 @@
       "b-a2": "db6412f9-f1f9-5fba-a945-5fdbcb856d9c",
       "b-a3": "ec30fb9f-f6e0-5788-95f6-f8d650e48357",
       "b-br": "0a269c1f-4dc4-5ded-a908-3d8385793a76",
+      "c-w1": "404e0d21-f2ee-565c-bef3-3967ac725559",
+      "c-w2": "2a1e8a00-3cbd-54ae-85ae-b99a3cfeda6f",
       "checklist:departure:1": "5d6fb3d3-4082-5302-b552-ef2d23223335",
       "d-104": "6f0d2321-532c-5f7a-8e75-ec1196316a7d",
       "d-117": "ac90c429-0be6-58ff-9486-cb47b14ce96d",
@@ -18572,6 +21353,38 @@
       "fleet": "1380e888-13ac-5357-9a6f-a592a20e8220",
       "g-disp": "ffdc7501-0a74-5af4-950b-894aeb64d658",
       "g-drv": "ce9dd6e5-dcb8-5d08-ad94-53c3155b3d14",
+      "kb-1": "917ba039-1d29-5dd1-b922-b0976cc8a7c2",
+      "kb-1a": "641c9079-5db8-513f-9ce5-59525d87c375",
+      "kb-1b": "2f8e26cb-d191-5b2b-b88e-0e6eade36db5",
+      "kb-2": "aedda75a-8456-5d8b-94b8-d72a63e1a783",
+      "kb-5": "babd503a-697f-595f-83f8-6501710d0803",
+      "kb-6": "bb2327dd-1958-5b40-8bb4-54cbb208cb7f",
+      "kb-d1": "ebeaeb8c-54db-5a74-8350-de6bd561c76d",
+      "kb-drv-1": "89800cc0-ed79-5986-818e-e0168e016798",
+      "kb-drv-2": "2913db05-18a2-538a-aa3c-76c449093462",
+      "kb-drv-3": "0b79defd-2388-5089-a36c-94a78807432f",
+      "kb-drv-4": "a37b3433-fdfd-584f-b0e4-847197ff6815",
+      "kb-f-drv": "7a369026-5559-5e6c-a4f3-9eca8c7f5b6c",
+      "kb-f-reg": "685e71a2-4c0b-57fa-9519-2b65031ed715",
+      "kb-file1": "70c4493b-75ab-5381-a28d-2ee375259122",
+      "kb-fin": "b0c727db-bfc6-5635-ab3c-a3363cd14daa",
+      "kb-fin-1": "41befb90-5d23-555e-a8e0-19ce76812a75",
+      "kb-gen-2": "b9f5dffd-a4ad-52f1-a0af-7604e4316d81",
+      "kb-gen-home": "9bc6658a-3711-5605-a18e-ffe93d0edbe3",
+      "kb-lnk1": "01b0d68a-1f9a-5e8e-b0ce-0fd1f5fbab58",
+      "kb-log-home": "5a437a14-2357-5932-ad5e-fa133d3cc218",
+      "kb-o-obj-45": "da043a7d-49da-5200-9db4-e5f1109e2df3",
+      "kb-own-home": "54b78193-0f1b-58a3-9a13-4e6b4d998f78",
+      "kb-w1": "c43260de-a42a-581d-95a4-385dd85a4362",
+      "kb-w2": "a8def4a4-65c5-5b67-9148-402f4141bff7",
+      "kq-w1": "d143b523-a6c4-5dca-ac12-37a0382b3c07",
+      "kr-1": "ef847bf5-5414-537e-9c1f-5941be1e001b",
+      "kr-2": "0c7659fc-b4d3-5a46-9f5e-5479de804ac9",
+      "kr-3": "3959df32-3d2e-5a2a-bf21-3c69dc660b78",
+      "krr-1": "bd2162ed-7591-5f0a-be45-a49ac72b9da2",
+      "krr-2": "9b5bc19f-0c6c-5bc9-be26-77ca6febd86a",
+      "krr-w1": "e278de58-f6af-5b1c-87cf-39e8386794aa",
+      "kt-w3": "9ed76e4c-0040-582a-948a-16d0e8466008",
       "m-akhmedov": "1a544c8a-52b8-557b-9720-10b9d94fdd10",
       "m-gromov": "e3e06740-e478-5398-a737-dd89c477cbd7",
       "m-ilyin": "0079e3dc-bef7-5e8b-986a-085809065166",
@@ -18588,6 +21401,9 @@
       "r-driver": "2a857e38-2d94-51a0-81de-406de8b3c772",
       "r-exec": "a1d32c48-efcb-55cb-a846-3e4e35bc6034",
       "r-foreman": "bbc56a08-74b3-5118-bd78-9e9f85d37f33",
+      "r-kb-editor": "2688205d-9d70-5eaa-a2a8-cb405fe282cb",
+      "r-kb-lead": "c813124c-4173-52e5-99f6-6ae27d703ec6",
+      "r-kb-reader": "bcc10ec9-6ca5-5075-acb7-5031e06adf97",
       "r-manager": "ec7feec1-6f4d-54fb-9a58-63ab98c54aca",
       "r-msk": "a2801280-868f-57ce-a599-d0e2e969be87",
       "r-owner": "b91d0ed2-e771-56da-b1d2-6f9fbc5c30c3",
@@ -18601,6 +21417,10 @@
       "res-room2": "253914e3-34db-54e1-996e-6eb38b9dd29b",
       "res-room3": "16627cc9-a5b5-5e15-8d93-5a07e8257b62",
       "res-table": "960765fa-e4bb-5e74-83a7-b441941a0a35",
+      "sp-gen": "681f3641-54bc-54c9-9e0d-98f91c079698",
+      "sp-log": "a3b6bc34-7307-58e7-990a-5513cd630786",
+      "sp-own": "7a758d2b-4550-562b-ba46-38a513cfe88d",
+      "sp-w1": "ae167306-f901-567a-a2fa-842559f2929f",
       "v1": "94f7eb3d-41d3-5dee-a58d-2053dcb63646",
       "v5": "ca7940cc-9cbe-5487-8b11-8087457d50b9",
       "v6": "b9ef5783-2b1a-5682-8d25-66e89de49b8e",

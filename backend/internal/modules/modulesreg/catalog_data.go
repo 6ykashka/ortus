@@ -54,10 +54,15 @@ module core.calendar | Календарь |
   calendar.bookings.create | Бронировать | create | tenant unit self | normal
   calendar.bookings.manage | Переносить и отменять | edit | tenant unit self | normal
 module core.knowledge | База знаний |
-  knowledge.read | Читать | view | tenant unit project | normal
-  knowledge.create | Создавать | create | tenant unit project | normal
-  knowledge.update | Редактировать | edit | tenant unit project | normal
-  knowledge.publish | Публиковать | settings | tenant unit project | normal
+  knowledge.read | Читать | view | tenant unit project space page relation | normal
+  knowledge.create | Создавать | create | tenant unit project space page | normal
+  knowledge.update | Редактировать | edit | tenant unit project space page relation | normal
+  knowledge.publish | Публиковать | review | tenant unit project space page | normal
+  knowledge.organize | Перемещать и архивировать | edit | tenant unit space | normal
+  knowledge.access.manage | Доступ к страницам | settings | tenant unit space | sensitive
+  knowledge.members.manage | Участники пространства | settings | tenant unit space | sensitive
+  knowledge.automation.manage | Настраивать автоматизацию | settings | tenant unit space | sensitive
+  knowledge.spaces.manage | Создавать пространства | settings | tenant unit | normal
 module core.chat | Чаты |
   chat.read | Читать чаты | view | tenant unit chat relation self | normal
   chat.write | Писать сообщения | create | tenant unit chat relation self | normal

@@ -1,0 +1,8 @@
+{
+  "version": 2,
+  "audienceLabel": "роль «Водитель»",
+  "mine": {
+    "required": true,
+    "done": true
+  }
+}

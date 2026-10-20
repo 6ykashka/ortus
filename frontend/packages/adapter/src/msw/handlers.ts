@@ -17,6 +17,7 @@ import { dataViewHandlers } from './data/views.ts';
 import { filesHandlers } from './files/index.ts';
 import { filesListHandlers } from './files/list.ts';
 import { fleetHandlers } from './fleet/index.ts';
+import { knowledgeHandlers } from './knowledge/index.ts';
 import { moduleDeactivationHandlers } from './modules/deactivation.ts';
 import { modulesHandlers } from './modules/index.ts';
 import { accountsHandlers } from './platform/accounts.ts';
@@ -54,4 +55,6 @@ export const defaultRegistry: Registry = {
   ...usageHandlers,
   ...accountsHandlers,
   ...brandingHandlers,
+  // W4.04 (контрактный PR 3 этапа 4): «База знаний».
+  ...knowledgeHandlers,
 };

@@ -1,0 +1,46 @@
+{
+  "id": "c43260de-a42a-581d-95a4-385dd85a4362",
+  "spaceId": "a3b6bc34-7307-58e7-990a-5513cd630786",
+  "parentId": "685e71a2-4c0b-57fa-9519-2b65031ed715",
+  "position": 4,
+  "kind": "page",
+  "title": "Выезд в непогоду",
+  "status": "draft",
+  "accessMode": "inherit",
+  "sensitivity": "normal",
+  "archived": false,
+  "version": 1,
+  "my": {
+    "edit": true,
+    "lead": true,
+    "create": true
+  },
+  "spaceName": "Логистика",
+  "path": [
+    {
+      "id": "685e71a2-4c0b-57fa-9519-2b65031ed715",
+      "title": "Регламенты"
+    }
+  ],
+  "owner": {
+    "memberId": "ac41932c-dbd9-53b1-a84b-42cbc1d6629a",
+    "displayName": "Марина Котова"
+  },
+  "reviewBy": null,
+  "current": {
+    "version": 1,
+    "publishedAt": "2026-09-30T21:00:00Z",
+    "authorDisplayName": "Марина Котова",
+    "body": ""
+  },
+  "versions": [
+    {
+      "version": 1,
+      "publishedAt": "2026-09-30T21:00:00Z",
+      "authorDisplayName": "Марина Котова"
+    }
+  ],
+  "tables": [],
+  "entries": [],
+  "revision": 1
+}

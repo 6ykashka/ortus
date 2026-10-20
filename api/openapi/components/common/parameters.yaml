@@ -317,3 +317,34 @@ operatorId:
   description: W4.07. Opaque UUID of a platform operator (PlatformOperator.id, platform_operators.id).
   schema:
     $ref: ./schemas.yaml#/Id
+# W4.04: «База знаний» — пространство, узел дерева, номер версии узла, правило автоматизации.
+spaceId:
+  name: spaceId
+  in: path
+  required: true
+  description: W4.04. Opaque UUID of a knowledge space; a space the member does not see — 404, as a missing one.
+  schema:
+    $ref: ./schemas.yaml#/Id
+nodeId:
+  name: nodeId
+  in: path
+  required: true
+  description: W4.04. Opaque UUID of a node of the knowledge tree (page, folder, table, diagram, file, CRM record); a node the member does not see — 404 «Страница не найдена или недоступна», as a missing one.
+  schema:
+    $ref: ./schemas.yaml#/Id
+nodeVersion:
+  name: version
+  in: path
+  required: true
+  description: W4.04. Number of a version of the node (KnowledgeVersion.version).
+  schema:
+    type: integer
+    minimum: 1
+    maximum: 1000000
+ruleId:
+  name: ruleId
+  in: path
+  required: true
+  description: W4.04. Opaque UUID of an automation rule of a knowledge space; visible to the lead of the space only.
+  schema:
+    $ref: ./schemas.yaml#/Id

@@ -18,11 +18,13 @@
 # вложения задач, Problem.reason.
 # 0.8.0-stage4 (W4.07, контрактный PR 6 этапа 4): места и тарифная сетка, заявки на тариф, «Использование», каталог
 # аккаунтов и операторы платформы; тег Branding — оформление организации; TenantContext.branding.
+# 0.9.0-stage4 (W4.04, контрактный PR 3 этапа 4): «База знаний» — пространства, дерево узлов, версии, доступ,
+# запросы, участники, правила автоматизации, таблицы.
 openapi: 3.1.0
 jsonSchemaDialect: https://json-schema.org/draft/2020-12/schema
 info:
   title: ORTUS CRM Constructor — Design API
-  version: 0.8.0-stage4
+  version: 0.9.0-stage4
   summary: Reviewable starting contract for a tenant-isolated modular CRM on Go; not an implemented or exhaustive API.
   description: |-
     Design snapshot, 2026-10-01. A tenant is one business holding; regions/companies/branches are scoped organization units within it. Platform administration is a separate control plane and never implies business-data access.
@@ -394,6 +396,66 @@ paths:
     $ref: paths/branding.yaml#/~1api~1v1~1tenants~1%7BtenantId%7D~1branding
   /api/v1/tenants/{tenantId}/branding/assets:
     $ref: paths/branding.yaml#/~1api~1v1~1tenants~1%7BtenantId%7D~1branding~1assets
+  /api/v1/tenants/{tenantId}/knowledge/spaces:
+    $ref: paths/knowledge.yaml#/~1api~1v1~1tenants~1%7BtenantId%7D~1knowledge~1spaces
+  /api/v1/tenants/{tenantId}/knowledge/space-templates:
+    $ref: paths/knowledge.yaml#/~1api~1v1~1tenants~1%7BtenantId%7D~1knowledge~1space-templates
+  /api/v1/tenants/{tenantId}/knowledge/spaces/{spaceId}:
+    $ref: paths/knowledge.yaml#/~1api~1v1~1tenants~1%7BtenantId%7D~1knowledge~1spaces~1%7BspaceId%7D
+  /api/v1/tenants/{tenantId}/knowledge/spaces/{spaceId}/tree:
+    $ref: paths/knowledge.yaml#/~1api~1v1~1tenants~1%7BtenantId%7D~1knowledge~1spaces~1%7BspaceId%7D~1tree
+  /api/v1/tenants/{tenantId}/knowledge/search:
+    $ref: paths/knowledge.yaml#/~1api~1v1~1tenants~1%7BtenantId%7D~1knowledge~1search
+  /api/v1/tenants/{tenantId}/knowledge/spaces/{spaceId}/nodes:
+    $ref: paths/knowledge.yaml#/~1api~1v1~1tenants~1%7BtenantId%7D~1knowledge~1spaces~1%7BspaceId%7D~1nodes
+  /api/v1/tenants/{tenantId}/knowledge/nodes/{nodeId}:
+    $ref: paths/knowledge.yaml#/~1api~1v1~1tenants~1%7BtenantId%7D~1knowledge~1nodes~1%7BnodeId%7D
+  /api/v1/tenants/{tenantId}/knowledge/nodes/{nodeId}/versions:
+    $ref: paths/knowledge.yaml#/~1api~1v1~1tenants~1%7BtenantId%7D~1knowledge~1nodes~1%7BnodeId%7D~1versions
+  /api/v1/tenants/{tenantId}/knowledge/nodes/{nodeId}/versions/{version}:
+    $ref: paths/knowledge.yaml#/~1api~1v1~1tenants~1%7BtenantId%7D~1knowledge~1nodes~1%7BnodeId%7D~1versions~1%7Bversion%7D
+  /api/v1/tenants/{tenantId}/knowledge/nodes/{nodeId}/status:
+    $ref: paths/knowledge.yaml#/~1api~1v1~1tenants~1%7BtenantId%7D~1knowledge~1nodes~1%7BnodeId%7D~1status
+  /api/v1/tenants/{tenantId}/knowledge/nodes/{nodeId}/move:
+    $ref: paths/knowledge.yaml#/~1api~1v1~1tenants~1%7BtenantId%7D~1knowledge~1nodes~1%7BnodeId%7D~1move
+  /api/v1/tenants/{tenantId}/knowledge/nodes/{nodeId}/archive:
+    $ref: paths/knowledge.yaml#/~1api~1v1~1tenants~1%7BtenantId%7D~1knowledge~1nodes~1%7BnodeId%7D~1archive
+  /api/v1/tenants/{tenantId}/knowledge/nodes/{nodeId}/restore:
+    $ref: paths/knowledge.yaml#/~1api~1v1~1tenants~1%7BtenantId%7D~1knowledge~1nodes~1%7BnodeId%7D~1restore
+  /api/v1/tenants/{tenantId}/knowledge/spaces/{spaceId}/archive:
+    $ref: paths/knowledge.yaml#/~1api~1v1~1tenants~1%7BtenantId%7D~1knowledge~1spaces~1%7BspaceId%7D~1archive
+  /api/v1/tenants/{tenantId}/knowledge/nodes/{nodeId}/ack:
+    $ref: paths/knowledge.yaml#/~1api~1v1~1tenants~1%7BtenantId%7D~1knowledge~1nodes~1%7BnodeId%7D~1ack
+  /api/v1/tenants/{tenantId}/knowledge/nodes/{nodeId}/access:
+    $ref: paths/knowledge.yaml#/~1api~1v1~1tenants~1%7BtenantId%7D~1knowledge~1nodes~1%7BnodeId%7D~1access
+  /api/v1/tenants/{tenantId}/knowledge/nodes/{nodeId}/access/candidates:
+    $ref: paths/knowledge.yaml#/~1api~1v1~1tenants~1%7BtenantId%7D~1knowledge~1nodes~1%7BnodeId%7D~1access~1candidates
+  /api/v1/tenants/{tenantId}/knowledge/spaces/{spaceId}/access-map:
+    $ref: paths/knowledge.yaml#/~1api~1v1~1tenants~1%7BtenantId%7D~1knowledge~1spaces~1%7BspaceId%7D~1access-map
+  /api/v1/tenants/{tenantId}/knowledge/nodes/{nodeId}/explain:
+    $ref: paths/knowledge.yaml#/~1api~1v1~1tenants~1%7BtenantId%7D~1knowledge~1nodes~1%7BnodeId%7D~1explain
+  /api/v1/tenants/{tenantId}/knowledge/nodes/{nodeId}/requests:
+    $ref: paths/knowledge.yaml#/~1api~1v1~1tenants~1%7BtenantId%7D~1knowledge~1nodes~1%7BnodeId%7D~1requests
+  /api/v1/tenants/{tenantId}/knowledge/requests/{requestId}/decision:
+    $ref: paths/knowledge.yaml#/~1api~1v1~1tenants~1%7BtenantId%7D~1knowledge~1requests~1%7BrequestId%7D~1decision
+  /api/v1/tenants/{tenantId}/knowledge/spaces/{spaceId}/requests:
+    $ref: paths/knowledge.yaml#/~1api~1v1~1tenants~1%7BtenantId%7D~1knowledge~1spaces~1%7BspaceId%7D~1requests
+  /api/v1/tenants/{tenantId}/knowledge/spaces/{spaceId}/members:
+    $ref: paths/knowledge.yaml#/~1api~1v1~1tenants~1%7BtenantId%7D~1knowledge~1spaces~1%7BspaceId%7D~1members
+  /api/v1/tenants/{tenantId}/knowledge/spaces/{spaceId}/members/{memberId}:
+    $ref: paths/knowledge.yaml#/~1api~1v1~1tenants~1%7BtenantId%7D~1knowledge~1spaces~1%7BspaceId%7D~1members~1%7BmemberId%7D
+  /api/v1/tenants/{tenantId}/knowledge/spaces/{spaceId}/rules:
+    $ref: paths/knowledge.yaml#/~1api~1v1~1tenants~1%7BtenantId%7D~1knowledge~1spaces~1%7BspaceId%7D~1rules
+  /api/v1/tenants/{tenantId}/knowledge/rules/{ruleId}:
+    $ref: paths/knowledge.yaml#/~1api~1v1~1tenants~1%7BtenantId%7D~1knowledge~1rules~1%7BruleId%7D
+  /api/v1/tenants/{tenantId}/knowledge/spaces/{spaceId}/review-check:
+    $ref: paths/knowledge.yaml#/~1api~1v1~1tenants~1%7BtenantId%7D~1knowledge~1spaces~1%7BspaceId%7D~1review-check
+  /api/v1/tenants/{tenantId}/knowledge/spaces/{spaceId}/sections:
+    $ref: paths/knowledge.yaml#/~1api~1v1~1tenants~1%7BtenantId%7D~1knowledge~1spaces~1%7BspaceId%7D~1sections
+  /api/v1/tenants/{tenantId}/knowledge/spaces/{spaceId}/runs:
+    $ref: paths/knowledge.yaml#/~1api~1v1~1tenants~1%7BtenantId%7D~1knowledge~1spaces~1%7BspaceId%7D~1runs
+  /api/v1/tenants/{tenantId}/knowledge/nodes/{nodeId}/tables:
+    $ref: paths/knowledge.yaml#/~1api~1v1~1tenants~1%7BtenantId%7D~1knowledge~1nodes~1%7BnodeId%7D~1tables
 x-contract-status: design-proposal-not-implemented
 x-authorization-order:
   - authenticate

@@ -17,6 +17,579 @@ import (
 	openapi_types "github.com/oapi-codegen/runtime/types"
 )
 
+// Defines values for KnowledgeAccessChangeMode.
+const (
+	KnowledgeAccessChangeModeEditListed KnowledgeAccessChangeMode = "edit_listed"
+	KnowledgeAccessChangeModeInherit    KnowledgeAccessChangeMode = "inherit"
+	KnowledgeAccessChangeModeListed     KnowledgeAccessChangeMode = "listed"
+)
+
+// Valid indicates whether the value is a known member of the KnowledgeAccessChangeMode enum.
+func (e KnowledgeAccessChangeMode) Valid() bool {
+	switch e {
+	case KnowledgeAccessChangeModeEditListed:
+		return true
+	case KnowledgeAccessChangeModeInherit:
+		return true
+	case KnowledgeAccessChangeModeListed:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for KnowledgeAccessEntryCan.
+const (
+	KnowledgeAccessEntryCanEdit KnowledgeAccessEntryCan = "edit"
+	KnowledgeAccessEntryCanView KnowledgeAccessEntryCan = "view"
+)
+
+// Valid indicates whether the value is a known member of the KnowledgeAccessEntryCan enum.
+func (e KnowledgeAccessEntryCan) Valid() bool {
+	switch e {
+	case KnowledgeAccessEntryCanEdit:
+		return true
+	case KnowledgeAccessEntryCanView:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for KnowledgeAccessEntryRelation.
+const (
+	KnowledgeAccessEntryRelationForeman KnowledgeAccessEntryRelation = "foreman"
+)
+
+// Valid indicates whether the value is a known member of the KnowledgeAccessEntryRelation enum.
+func (e KnowledgeAccessEntryRelation) Valid() bool {
+	switch e {
+	case KnowledgeAccessEntryRelationForeman:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for KnowledgeAccessEntryWho.
+const (
+	KnowledgeAccessEntryWhoGroup    KnowledgeAccessEntryWho = "group"
+	KnowledgeAccessEntryWhoMember   KnowledgeAccessEntryWho = "member"
+	KnowledgeAccessEntryWhoRelation KnowledgeAccessEntryWho = "relation"
+	KnowledgeAccessEntryWhoRole     KnowledgeAccessEntryWho = "role"
+)
+
+// Valid indicates whether the value is a known member of the KnowledgeAccessEntryWho enum.
+func (e KnowledgeAccessEntryWho) Valid() bool {
+	switch e {
+	case KnowledgeAccessEntryWhoGroup:
+		return true
+	case KnowledgeAccessEntryWhoMember:
+		return true
+	case KnowledgeAccessEntryWhoRelation:
+		return true
+	case KnowledgeAccessEntryWhoRole:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for KnowledgeAccessEntryInputCan.
+const (
+	KnowledgeAccessEntryInputCanEdit KnowledgeAccessEntryInputCan = "edit"
+	KnowledgeAccessEntryInputCanView KnowledgeAccessEntryInputCan = "view"
+)
+
+// Valid indicates whether the value is a known member of the KnowledgeAccessEntryInputCan enum.
+func (e KnowledgeAccessEntryInputCan) Valid() bool {
+	switch e {
+	case KnowledgeAccessEntryInputCanEdit:
+		return true
+	case KnowledgeAccessEntryInputCanView:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for KnowledgeAccessEntryInputRelation.
+const (
+	KnowledgeAccessEntryInputRelationForeman KnowledgeAccessEntryInputRelation = "foreman"
+)
+
+// Valid indicates whether the value is a known member of the KnowledgeAccessEntryInputRelation enum.
+func (e KnowledgeAccessEntryInputRelation) Valid() bool {
+	switch e {
+	case KnowledgeAccessEntryInputRelationForeman:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for KnowledgeAccessEntryInputWho.
+const (
+	KnowledgeAccessEntryInputWhoGroup    KnowledgeAccessEntryInputWho = "group"
+	KnowledgeAccessEntryInputWhoMember   KnowledgeAccessEntryInputWho = "member"
+	KnowledgeAccessEntryInputWhoRelation KnowledgeAccessEntryInputWho = "relation"
+	KnowledgeAccessEntryInputWhoRole     KnowledgeAccessEntryInputWho = "role"
+)
+
+// Valid indicates whether the value is a known member of the KnowledgeAccessEntryInputWho enum.
+func (e KnowledgeAccessEntryInputWho) Valid() bool {
+	switch e {
+	case KnowledgeAccessEntryInputWhoGroup:
+		return true
+	case KnowledgeAccessEntryInputWhoMember:
+		return true
+	case KnowledgeAccessEntryInputWhoRelation:
+		return true
+	case KnowledgeAccessEntryInputWhoRole:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for KnowledgeAccessMapCells.
+const (
+	KnowledgeAccessMapCellsEdit     KnowledgeAccessMapCells = "edit"
+	KnowledgeAccessMapCellsFunction KnowledgeAccessMapCells = "function"
+	KnowledgeAccessMapCellsNone     KnowledgeAccessMapCells = "none"
+	KnowledgeAccessMapCellsView     KnowledgeAccessMapCells = "view"
+)
+
+// Valid indicates whether the value is a known member of the KnowledgeAccessMapCells enum.
+func (e KnowledgeAccessMapCells) Valid() bool {
+	switch e {
+	case KnowledgeAccessMapCellsEdit:
+		return true
+	case KnowledgeAccessMapCellsFunction:
+		return true
+	case KnowledgeAccessMapCellsNone:
+		return true
+	case KnowledgeAccessMapCellsView:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for KnowledgeAccessRequestCan.
+const (
+	KnowledgeAccessRequestCanEdit KnowledgeAccessRequestCan = "edit"
+	KnowledgeAccessRequestCanView KnowledgeAccessRequestCan = "view"
+)
+
+// Valid indicates whether the value is a known member of the KnowledgeAccessRequestCan enum.
+func (e KnowledgeAccessRequestCan) Valid() bool {
+	switch e {
+	case KnowledgeAccessRequestCanEdit:
+		return true
+	case KnowledgeAccessRequestCanView:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for KnowledgeAccessRequestStatus.
+const (
+	KnowledgeAccessRequestStatusApproved KnowledgeAccessRequestStatus = "approved"
+	KnowledgeAccessRequestStatusDenied   KnowledgeAccessRequestStatus = "denied"
+	KnowledgeAccessRequestStatusOpen     KnowledgeAccessRequestStatus = "open"
+)
+
+// Valid indicates whether the value is a known member of the KnowledgeAccessRequestStatus enum.
+func (e KnowledgeAccessRequestStatus) Valid() bool {
+	switch e {
+	case KnowledgeAccessRequestStatusApproved:
+		return true
+	case KnowledgeAccessRequestStatusDenied:
+		return true
+	case KnowledgeAccessRequestStatusOpen:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for KnowledgeAccessRequestCreateCan.
+const (
+	KnowledgeAccessRequestCreateCanEdit KnowledgeAccessRequestCreateCan = "edit"
+)
+
+// Valid indicates whether the value is a known member of the KnowledgeAccessRequestCreateCan enum.
+func (e KnowledgeAccessRequestCreateCan) Valid() bool {
+	switch e {
+	case KnowledgeAccessRequestCreateCanEdit:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for KnowledgeAccessRequestDecisionDecision.
+const (
+	Approve KnowledgeAccessRequestDecisionDecision = "approve"
+	Deny    KnowledgeAccessRequestDecisionDecision = "deny"
+)
+
+// Valid indicates whether the value is a known member of the KnowledgeAccessRequestDecisionDecision enum.
+func (e KnowledgeAccessRequestDecisionDecision) Valid() bool {
+	switch e {
+	case Approve:
+		return true
+	case Deny:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for KnowledgeAccessStepKind.
+const (
+	KnowledgeAccessStepKindInherit KnowledgeAccessStepKind = "inherit"
+	KnowledgeAccessStepKindNo      KnowledgeAccessStepKind = "no"
+	KnowledgeAccessStepKindOk      KnowledgeAccessStepKind = "ok"
+	KnowledgeAccessStepKindWait    KnowledgeAccessStepKind = "wait"
+)
+
+// Valid indicates whether the value is a known member of the KnowledgeAccessStepKind enum.
+func (e KnowledgeAccessStepKind) Valid() bool {
+	switch e {
+	case KnowledgeAccessStepKindInherit:
+		return true
+	case KnowledgeAccessStepKindNo:
+		return true
+	case KnowledgeAccessStepKindOk:
+		return true
+	case KnowledgeAccessStepKindWait:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for KnowledgeArchiveItemKind.
+const (
+	KnowledgeArchiveItemKindDiagram KnowledgeArchiveItemKind = "diagram"
+	KnowledgeArchiveItemKindFile    KnowledgeArchiveItemKind = "file"
+	KnowledgeArchiveItemKindFolder  KnowledgeArchiveItemKind = "folder"
+	KnowledgeArchiveItemKindLink    KnowledgeArchiveItemKind = "link"
+	KnowledgeArchiveItemKindPage    KnowledgeArchiveItemKind = "page"
+	KnowledgeArchiveItemKindTable   KnowledgeArchiveItemKind = "table"
+)
+
+// Valid indicates whether the value is a known member of the KnowledgeArchiveItemKind enum.
+func (e KnowledgeArchiveItemKind) Valid() bool {
+	switch e {
+	case KnowledgeArchiveItemKindDiagram:
+		return true
+	case KnowledgeArchiveItemKindFile:
+		return true
+	case KnowledgeArchiveItemKindFolder:
+		return true
+	case KnowledgeArchiveItemKindLink:
+		return true
+	case KnowledgeArchiveItemKindPage:
+		return true
+	case KnowledgeArchiveItemKindTable:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for KnowledgeDiagramOutcomesTone.
+const (
+	KnowledgeDiagramOutcomesToneOk   KnowledgeDiagramOutcomesTone = "ok"
+	KnowledgeDiagramOutcomesToneWarn KnowledgeDiagramOutcomesTone = "warn"
+)
+
+// Valid indicates whether the value is a known member of the KnowledgeDiagramOutcomesTone enum.
+func (e KnowledgeDiagramOutcomesTone) Valid() bool {
+	switch e {
+	case KnowledgeDiagramOutcomesToneOk:
+		return true
+	case KnowledgeDiagramOutcomesToneWarn:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for KnowledgeNodeAccessMode.
+const (
+	KnowledgeNodeAccessModeEditListed KnowledgeNodeAccessMode = "edit_listed"
+	KnowledgeNodeAccessModeInherit    KnowledgeNodeAccessMode = "inherit"
+	KnowledgeNodeAccessModeListed     KnowledgeNodeAccessMode = "listed"
+)
+
+// Valid indicates whether the value is a known member of the KnowledgeNodeAccessMode enum.
+func (e KnowledgeNodeAccessMode) Valid() bool {
+	switch e {
+	case KnowledgeNodeAccessModeEditListed:
+		return true
+	case KnowledgeNodeAccessModeInherit:
+		return true
+	case KnowledgeNodeAccessModeListed:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for KnowledgeNodeKind.
+const (
+	KnowledgeNodeKindDiagram KnowledgeNodeKind = "diagram"
+	KnowledgeNodeKindFile    KnowledgeNodeKind = "file"
+	KnowledgeNodeKindFolder  KnowledgeNodeKind = "folder"
+	KnowledgeNodeKindLink    KnowledgeNodeKind = "link"
+	KnowledgeNodeKindPage    KnowledgeNodeKind = "page"
+	KnowledgeNodeKindTable   KnowledgeNodeKind = "table"
+)
+
+// Valid indicates whether the value is a known member of the KnowledgeNodeKind enum.
+func (e KnowledgeNodeKind) Valid() bool {
+	switch e {
+	case KnowledgeNodeKindDiagram:
+		return true
+	case KnowledgeNodeKindFile:
+		return true
+	case KnowledgeNodeKindFolder:
+		return true
+	case KnowledgeNodeKindLink:
+		return true
+	case KnowledgeNodeKindPage:
+		return true
+	case KnowledgeNodeKindTable:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for KnowledgeNodeSensitivity.
+const (
+	KnowledgeNodeSensitivityFinance KnowledgeNodeSensitivity = "finance"
+	KnowledgeNodeSensitivityNormal  KnowledgeNodeSensitivity = "normal"
+)
+
+// Valid indicates whether the value is a known member of the KnowledgeNodeSensitivity enum.
+func (e KnowledgeNodeSensitivity) Valid() bool {
+	switch e {
+	case KnowledgeNodeSensitivityFinance:
+		return true
+	case KnowledgeNodeSensitivityNormal:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for KnowledgeNodeStatus.
+const (
+	KnowledgeNodeStatusActive   KnowledgeNodeStatus = "active"
+	KnowledgeNodeStatusDraft    KnowledgeNodeStatus = "draft"
+	KnowledgeNodeStatusOutdated KnowledgeNodeStatus = "outdated"
+	KnowledgeNodeStatusReview   KnowledgeNodeStatus = "review"
+)
+
+// Valid indicates whether the value is a known member of the KnowledgeNodeStatus enum.
+func (e KnowledgeNodeStatus) Valid() bool {
+	switch e {
+	case KnowledgeNodeStatusActive:
+		return true
+	case KnowledgeNodeStatusDraft:
+		return true
+	case KnowledgeNodeStatusOutdated:
+		return true
+	case KnowledgeNodeStatusReview:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for KnowledgeNodeAccessAccessMode.
+const (
+	KnowledgeNodeAccessAccessModeEditListed KnowledgeNodeAccessAccessMode = "edit_listed"
+	KnowledgeNodeAccessAccessModeInherit    KnowledgeNodeAccessAccessMode = "inherit"
+	KnowledgeNodeAccessAccessModeListed     KnowledgeNodeAccessAccessMode = "listed"
+)
+
+// Valid indicates whether the value is a known member of the KnowledgeNodeAccessAccessMode enum.
+func (e KnowledgeNodeAccessAccessMode) Valid() bool {
+	switch e {
+	case KnowledgeNodeAccessAccessModeEditListed:
+		return true
+	case KnowledgeNodeAccessAccessModeInherit:
+		return true
+	case KnowledgeNodeAccessAccessModeListed:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for KnowledgeNodeAccessInheritedFromKind.
+const (
+	KnowledgeNodeAccessInheritedFromKindNode  KnowledgeNodeAccessInheritedFromKind = "node"
+	KnowledgeNodeAccessInheritedFromKindSpace KnowledgeNodeAccessInheritedFromKind = "space"
+)
+
+// Valid indicates whether the value is a known member of the KnowledgeNodeAccessInheritedFromKind enum.
+func (e KnowledgeNodeAccessInheritedFromKind) Valid() bool {
+	switch e {
+	case KnowledgeNodeAccessInheritedFromKindNode:
+		return true
+	case KnowledgeNodeAccessInheritedFromKindSpace:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for KnowledgeNodeCreateKind.
+const (
+	KnowledgeNodeCreateKindDiagram KnowledgeNodeCreateKind = "diagram"
+	KnowledgeNodeCreateKindFolder  KnowledgeNodeCreateKind = "folder"
+	KnowledgeNodeCreateKindPage    KnowledgeNodeCreateKind = "page"
+)
+
+// Valid indicates whether the value is a known member of the KnowledgeNodeCreateKind enum.
+func (e KnowledgeNodeCreateKind) Valid() bool {
+	switch e {
+	case KnowledgeNodeCreateKindDiagram:
+		return true
+	case KnowledgeNodeCreateKindFolder:
+		return true
+	case KnowledgeNodeCreateKindPage:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for KnowledgeNodeStatusChangeStatus.
+const (
+	KnowledgeNodeStatusChangeStatusActive   KnowledgeNodeStatusChangeStatus = "active"
+	KnowledgeNodeStatusChangeStatusDraft    KnowledgeNodeStatusChangeStatus = "draft"
+	KnowledgeNodeStatusChangeStatusOutdated KnowledgeNodeStatusChangeStatus = "outdated"
+	KnowledgeNodeStatusChangeStatusReview   KnowledgeNodeStatusChangeStatus = "review"
+)
+
+// Valid indicates whether the value is a known member of the KnowledgeNodeStatusChangeStatus enum.
+func (e KnowledgeNodeStatusChangeStatus) Valid() bool {
+	switch e {
+	case KnowledgeNodeStatusChangeStatusActive:
+		return true
+	case KnowledgeNodeStatusChangeStatusDraft:
+		return true
+	case KnowledgeNodeStatusChangeStatusOutdated:
+		return true
+	case KnowledgeNodeStatusChangeStatusReview:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for KnowledgeNodeSummaryAccessMode.
+const (
+	KnowledgeNodeSummaryAccessModeEditListed KnowledgeNodeSummaryAccessMode = "edit_listed"
+	KnowledgeNodeSummaryAccessModeInherit    KnowledgeNodeSummaryAccessMode = "inherit"
+	KnowledgeNodeSummaryAccessModeListed     KnowledgeNodeSummaryAccessMode = "listed"
+)
+
+// Valid indicates whether the value is a known member of the KnowledgeNodeSummaryAccessMode enum.
+func (e KnowledgeNodeSummaryAccessMode) Valid() bool {
+	switch e {
+	case KnowledgeNodeSummaryAccessModeEditListed:
+		return true
+	case KnowledgeNodeSummaryAccessModeInherit:
+		return true
+	case KnowledgeNodeSummaryAccessModeListed:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for KnowledgeNodeSummaryKind.
+const (
+	KnowledgeNodeSummaryKindDiagram KnowledgeNodeSummaryKind = "diagram"
+	KnowledgeNodeSummaryKindFile    KnowledgeNodeSummaryKind = "file"
+	KnowledgeNodeSummaryKindFolder  KnowledgeNodeSummaryKind = "folder"
+	KnowledgeNodeSummaryKindLink    KnowledgeNodeSummaryKind = "link"
+	KnowledgeNodeSummaryKindPage    KnowledgeNodeSummaryKind = "page"
+	KnowledgeNodeSummaryKindTable   KnowledgeNodeSummaryKind = "table"
+)
+
+// Valid indicates whether the value is a known member of the KnowledgeNodeSummaryKind enum.
+func (e KnowledgeNodeSummaryKind) Valid() bool {
+	switch e {
+	case KnowledgeNodeSummaryKindDiagram:
+		return true
+	case KnowledgeNodeSummaryKindFile:
+		return true
+	case KnowledgeNodeSummaryKindFolder:
+		return true
+	case KnowledgeNodeSummaryKindLink:
+		return true
+	case KnowledgeNodeSummaryKindPage:
+		return true
+	case KnowledgeNodeSummaryKindTable:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for KnowledgeNodeSummarySensitivity.
+const (
+	KnowledgeNodeSummarySensitivityFinance KnowledgeNodeSummarySensitivity = "finance"
+	KnowledgeNodeSummarySensitivityNormal  KnowledgeNodeSummarySensitivity = "normal"
+)
+
+// Valid indicates whether the value is a known member of the KnowledgeNodeSummarySensitivity enum.
+func (e KnowledgeNodeSummarySensitivity) Valid() bool {
+	switch e {
+	case KnowledgeNodeSummarySensitivityFinance:
+		return true
+	case KnowledgeNodeSummarySensitivityNormal:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for KnowledgeNodeSummaryStatus.
+const (
+	KnowledgeNodeSummaryStatusActive   KnowledgeNodeSummaryStatus = "active"
+	KnowledgeNodeSummaryStatusDraft    KnowledgeNodeSummaryStatus = "draft"
+	KnowledgeNodeSummaryStatusOutdated KnowledgeNodeSummaryStatus = "outdated"
+	KnowledgeNodeSummaryStatusReview   KnowledgeNodeSummaryStatus = "review"
+)
+
+// Valid indicates whether the value is a known member of the KnowledgeNodeSummaryStatus enum.
+func (e KnowledgeNodeSummaryStatus) Valid() bool {
+	switch e {
+	case KnowledgeNodeSummaryStatusActive:
+		return true
+	case KnowledgeNodeSummaryStatusDraft:
+		return true
+	case KnowledgeNodeSummaryStatusOutdated:
+		return true
+	case KnowledgeNodeSummaryStatusReview:
+		return true
+	default:
+		return false
+	}
+}
+
 // Defines values for KnowledgePageStatus.
 const (
 	KnowledgePageStatusArchived  KnowledgePageStatus = "archived"
@@ -53,6 +626,285 @@ func (e KnowledgePagePatchStatus) Valid() bool {
 	case KnowledgePagePatchStatusDraft:
 		return true
 	case KnowledgePagePatchStatusPublished:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for KnowledgeRuleKind.
+const (
+	KnowledgeRuleKindAck     KnowledgeRuleKind = "ack"
+	KnowledgeRuleKindReview  KnowledgeRuleKind = "review"
+	KnowledgeRuleKindSection KnowledgeRuleKind = "section"
+)
+
+// Valid indicates whether the value is a known member of the KnowledgeRuleKind enum.
+func (e KnowledgeRuleKind) Valid() bool {
+	switch e {
+	case KnowledgeRuleKindAck:
+		return true
+	case KnowledgeRuleKindReview:
+		return true
+	case KnowledgeRuleKindSection:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for KnowledgeRunResult.
+const (
+	KnowledgeRunResultError   KnowledgeRunResult = "error"
+	KnowledgeRunResultOk      KnowledgeRunResult = "ok"
+	KnowledgeRunResultStopped KnowledgeRunResult = "stopped"
+	KnowledgeRunResultWarn    KnowledgeRunResult = "warn"
+)
+
+// Valid indicates whether the value is a known member of the KnowledgeRunResult enum.
+func (e KnowledgeRunResult) Valid() bool {
+	switch e {
+	case KnowledgeRunResultError:
+		return true
+	case KnowledgeRunResultOk:
+		return true
+	case KnowledgeRunResultStopped:
+		return true
+	case KnowledgeRunResultWarn:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for KnowledgeSearchHitKind.
+const (
+	KnowledgeSearchHitKindDiagram KnowledgeSearchHitKind = "diagram"
+	KnowledgeSearchHitKindFile    KnowledgeSearchHitKind = "file"
+	KnowledgeSearchHitKindFolder  KnowledgeSearchHitKind = "folder"
+	KnowledgeSearchHitKindLink    KnowledgeSearchHitKind = "link"
+	KnowledgeSearchHitKindPage    KnowledgeSearchHitKind = "page"
+	KnowledgeSearchHitKindTable   KnowledgeSearchHitKind = "table"
+)
+
+// Valid indicates whether the value is a known member of the KnowledgeSearchHitKind enum.
+func (e KnowledgeSearchHitKind) Valid() bool {
+	switch e {
+	case KnowledgeSearchHitKindDiagram:
+		return true
+	case KnowledgeSearchHitKindFile:
+		return true
+	case KnowledgeSearchHitKindFolder:
+		return true
+	case KnowledgeSearchHitKindLink:
+		return true
+	case KnowledgeSearchHitKindPage:
+		return true
+	case KnowledgeSearchHitKindTable:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for KnowledgeSpaceAccess.
+const (
+	KnowledgeSpaceAccessClosed  KnowledgeSpaceAccess = "closed"
+	KnowledgeSpaceAccessLimited KnowledgeSpaceAccess = "limited"
+	KnowledgeSpaceAccessOpen    KnowledgeSpaceAccess = "open"
+)
+
+// Valid indicates whether the value is a known member of the KnowledgeSpaceAccess enum.
+func (e KnowledgeSpaceAccess) Valid() bool {
+	switch e {
+	case KnowledgeSpaceAccessClosed:
+		return true
+	case KnowledgeSpaceAccessLimited:
+		return true
+	case KnowledgeSpaceAccessOpen:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for KnowledgeSpaceCreateAccess.
+const (
+	KnowledgeSpaceCreateAccessClosed  KnowledgeSpaceCreateAccess = "closed"
+	KnowledgeSpaceCreateAccessLimited KnowledgeSpaceCreateAccess = "limited"
+	KnowledgeSpaceCreateAccessOpen    KnowledgeSpaceCreateAccess = "open"
+)
+
+// Valid indicates whether the value is a known member of the KnowledgeSpaceCreateAccess enum.
+func (e KnowledgeSpaceCreateAccess) Valid() bool {
+	switch e {
+	case KnowledgeSpaceCreateAccessClosed:
+		return true
+	case KnowledgeSpaceCreateAccessLimited:
+		return true
+	case KnowledgeSpaceCreateAccessOpen:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for KnowledgeSpaceCreateTemplateKey.
+const (
+	KnowledgeSpaceCreateTemplateKeyBlank   KnowledgeSpaceCreateTemplateKey = "blank"
+	KnowledgeSpaceCreateTemplateKeyObjects KnowledgeSpaceCreateTemplateKey = "objects"
+	KnowledgeSpaceCreateTemplateKeyRegs    KnowledgeSpaceCreateTemplateKey = "regs"
+	KnowledgeSpaceCreateTemplateKeyStaff   KnowledgeSpaceCreateTemplateKey = "staff"
+)
+
+// Valid indicates whether the value is a known member of the KnowledgeSpaceCreateTemplateKey enum.
+func (e KnowledgeSpaceCreateTemplateKey) Valid() bool {
+	switch e {
+	case KnowledgeSpaceCreateTemplateKeyBlank:
+		return true
+	case KnowledgeSpaceCreateTemplateKeyObjects:
+		return true
+	case KnowledgeSpaceCreateTemplateKeyRegs:
+		return true
+	case KnowledgeSpaceCreateTemplateKeyStaff:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for KnowledgeSpaceMemberState.
+const (
+	KnowledgeSpaceMemberStateActive  KnowledgeSpaceMemberState = "active"
+	KnowledgeSpaceMemberStateInvited KnowledgeSpaceMemberState = "invited"
+)
+
+// Valid indicates whether the value is a known member of the KnowledgeSpaceMemberState enum.
+func (e KnowledgeSpaceMemberState) Valid() bool {
+	switch e {
+	case KnowledgeSpaceMemberStateActive:
+		return true
+	case KnowledgeSpaceMemberStateInvited:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for KnowledgeSpaceMemberChangeRole.
+const (
+	KnowledgeSpaceMemberChangeRoleKbSpaceEditor KnowledgeSpaceMemberChangeRole = "kb_space_editor"
+	KnowledgeSpaceMemberChangeRoleKbSpaceLead   KnowledgeSpaceMemberChangeRole = "kb_space_lead"
+	KnowledgeSpaceMemberChangeRoleKbSpaceReader KnowledgeSpaceMemberChangeRole = "kb_space_reader"
+	KnowledgeSpaceMemberChangeRoleLessThannil   KnowledgeSpaceMemberChangeRole = "<nil>"
+)
+
+// Valid indicates whether the value is a known member of the KnowledgeSpaceMemberChangeRole enum.
+func (e KnowledgeSpaceMemberChangeRole) Valid() bool {
+	switch e {
+	case KnowledgeSpaceMemberChangeRoleKbSpaceEditor:
+		return true
+	case KnowledgeSpaceMemberChangeRoleKbSpaceLead:
+		return true
+	case KnowledgeSpaceMemberChangeRoleKbSpaceReader:
+		return true
+	case KnowledgeSpaceMemberChangeRoleLessThannil:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for KnowledgeSpacePatchAccess.
+const (
+	KnowledgeSpacePatchAccessClosed  KnowledgeSpacePatchAccess = "closed"
+	KnowledgeSpacePatchAccessLimited KnowledgeSpacePatchAccess = "limited"
+	KnowledgeSpacePatchAccessOpen    KnowledgeSpacePatchAccess = "open"
+)
+
+// Valid indicates whether the value is a known member of the KnowledgeSpacePatchAccess enum.
+func (e KnowledgeSpacePatchAccess) Valid() bool {
+	switch e {
+	case KnowledgeSpacePatchAccessClosed:
+		return true
+	case KnowledgeSpacePatchAccessLimited:
+		return true
+	case KnowledgeSpacePatchAccessOpen:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for KnowledgeSpaceRoleRole.
+const (
+	KnowledgeSpaceRoleRoleKbSpaceEditor KnowledgeSpaceRoleRole = "kb_space_editor"
+	KnowledgeSpaceRoleRoleKbSpaceLead   KnowledgeSpaceRoleRole = "kb_space_lead"
+	KnowledgeSpaceRoleRoleKbSpaceReader KnowledgeSpaceRoleRole = "kb_space_reader"
+)
+
+// Valid indicates whether the value is a known member of the KnowledgeSpaceRoleRole enum.
+func (e KnowledgeSpaceRoleRole) Valid() bool {
+	switch e {
+	case KnowledgeSpaceRoleRoleKbSpaceEditor:
+		return true
+	case KnowledgeSpaceRoleRoleKbSpaceLead:
+		return true
+	case KnowledgeSpaceRoleRoleKbSpaceReader:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for KnowledgeSpaceTemplateKey.
+const (
+	KnowledgeSpaceTemplateKeyBlank   KnowledgeSpaceTemplateKey = "blank"
+	KnowledgeSpaceTemplateKeyObjects KnowledgeSpaceTemplateKey = "objects"
+	KnowledgeSpaceTemplateKeyRegs    KnowledgeSpaceTemplateKey = "regs"
+	KnowledgeSpaceTemplateKeyStaff   KnowledgeSpaceTemplateKey = "staff"
+)
+
+// Valid indicates whether the value is a known member of the KnowledgeSpaceTemplateKey enum.
+func (e KnowledgeSpaceTemplateKey) Valid() bool {
+	switch e {
+	case KnowledgeSpaceTemplateKeyBlank:
+		return true
+	case KnowledgeSpaceTemplateKeyObjects:
+		return true
+	case KnowledgeSpaceTemplateKeyRegs:
+		return true
+	case KnowledgeSpaceTemplateKeyStaff:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for KnowledgeTemplateNodeKind.
+const (
+	KnowledgeTemplateNodeKindDiagram KnowledgeTemplateNodeKind = "diagram"
+	KnowledgeTemplateNodeKindFile    KnowledgeTemplateNodeKind = "file"
+	KnowledgeTemplateNodeKindFolder  KnowledgeTemplateNodeKind = "folder"
+	KnowledgeTemplateNodeKindLink    KnowledgeTemplateNodeKind = "link"
+	KnowledgeTemplateNodeKindPage    KnowledgeTemplateNodeKind = "page"
+	KnowledgeTemplateNodeKindTable   KnowledgeTemplateNodeKind = "table"
+)
+
+// Valid indicates whether the value is a known member of the KnowledgeTemplateNodeKind enum.
+func (e KnowledgeTemplateNodeKind) Valid() bool {
+	switch e {
+	case KnowledgeTemplateNodeKindDiagram:
+		return true
+	case KnowledgeTemplateNodeKindFile:
+		return true
+	case KnowledgeTemplateNodeKindFolder:
+		return true
+	case KnowledgeTemplateNodeKindLink:
+		return true
+	case KnowledgeTemplateNodeKindPage:
+		return true
+	case KnowledgeTemplateNodeKindTable:
 		return true
 	default:
 		return false
@@ -232,49 +1084,70 @@ func (e ProblemCode) Valid() bool {
 
 // Defines values for ScopeKind.
 const (
-	Account       ScopeKind = "account"
-	Chat          ScopeKind = "chat"
-	Doc           ScopeKind = "doc"
-	Folder        ScopeKind = "folder"
-	OrgUnit       ScopeKind = "org_unit"
-	Page          ScopeKind = "page"
-	Project       ScopeKind = "project"
-	Relation      ScopeKind = "relation"
-	RepairProject ScopeKind = "repair_project"
-	ResourcePool  ScopeKind = "resource_pool"
-	Self          ScopeKind = "self"
-	Space         ScopeKind = "space"
-	Tenant        ScopeKind = "tenant"
+	ScopeKindAccount       ScopeKind = "account"
+	ScopeKindChat          ScopeKind = "chat"
+	ScopeKindDoc           ScopeKind = "doc"
+	ScopeKindFolder        ScopeKind = "folder"
+	ScopeKindOrgUnit       ScopeKind = "org_unit"
+	ScopeKindPage          ScopeKind = "page"
+	ScopeKindProject       ScopeKind = "project"
+	ScopeKindRelation      ScopeKind = "relation"
+	ScopeKindRepairProject ScopeKind = "repair_project"
+	ScopeKindResourcePool  ScopeKind = "resource_pool"
+	ScopeKindSelf          ScopeKind = "self"
+	ScopeKindSpace         ScopeKind = "space"
+	ScopeKindTenant        ScopeKind = "tenant"
 )
 
 // Valid indicates whether the value is a known member of the ScopeKind enum.
 func (e ScopeKind) Valid() bool {
 	switch e {
-	case Account:
+	case ScopeKindAccount:
 		return true
-	case Chat:
+	case ScopeKindChat:
 		return true
-	case Doc:
+	case ScopeKindDoc:
 		return true
-	case Folder:
+	case ScopeKindFolder:
 		return true
-	case OrgUnit:
+	case ScopeKindOrgUnit:
 		return true
-	case Page:
+	case ScopeKindPage:
 		return true
-	case Project:
+	case ScopeKindProject:
 		return true
-	case Relation:
+	case ScopeKindRelation:
 		return true
-	case RepairProject:
+	case ScopeKindRepairProject:
 		return true
-	case ResourcePool:
+	case ScopeKindResourcePool:
 		return true
-	case Self:
+	case ScopeKindSelf:
 		return true
-	case Space:
+	case ScopeKindSpace:
 		return true
-	case Tenant:
+	case ScopeKindTenant:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for ListKnowledgeAccessRequestsParamsStatus.
+const (
+	ListKnowledgeAccessRequestsParamsStatusApproved ListKnowledgeAccessRequestsParamsStatus = "approved"
+	ListKnowledgeAccessRequestsParamsStatusDenied   ListKnowledgeAccessRequestsParamsStatus = "denied"
+	ListKnowledgeAccessRequestsParamsStatusOpen     ListKnowledgeAccessRequestsParamsStatus = "open"
+)
+
+// Valid indicates whether the value is a known member of the ListKnowledgeAccessRequestsParamsStatus enum.
+func (e ListKnowledgeAccessRequestsParamsStatus) Valid() bool {
+	switch e {
+	case ListKnowledgeAccessRequestsParamsStatusApproved:
+		return true
+	case ListKnowledgeAccessRequestsParamsStatusDenied:
+		return true
+	case ListKnowledgeAccessRequestsParamsStatusOpen:
 		return true
 	default:
 		return false
@@ -288,6 +1161,640 @@ type Id = openapi_types.UUID
 //
 // Examples: 2026-10-05T06:00:00Z
 type Instant = time.Time
+
+// KnowledgeAccessCandidate defines model for KnowledgeAccessCandidate.
+type KnowledgeAccessCandidate struct {
+	// Entry W4.04. An entry of the access list: refId is required for member, group and role; relation and object — for relation.
+	Entry KnowledgeAccessEntryInput `json:"entry"`
+	Label string                    `json:"label"`
+	Reach struct {
+		Members int     `json:"members"`
+		Reason  *string `json:"reason"`
+		Total   int     `json:"total"`
+	} `json:"reach"`
+
+	// ReachLabel «— сейчас никого», «— не получат доступ», «— получат N из M», «— не получит доступ: {причина}» or empty.
+	ReachLabel string `json:"reachLabel"`
+}
+
+// KnowledgeAccessCandidateList defines model for KnowledgeAccessCandidateList.
+type KnowledgeAccessCandidateList struct {
+	Items []KnowledgeAccessCandidate `json:"items"`
+}
+
+// KnowledgeAccessChange defines model for KnowledgeAccessChange.
+type KnowledgeAccessChange struct {
+	// ApplyToOwn Subpages of the branch with their own access become «Как у родителя».
+	ApplyToOwn *bool `json:"applyToOwn,omitempty"`
+
+	// DryRun Return the impact without saving.
+	DryRun  *bool                       `json:"dryRun,omitempty"`
+	Entries []KnowledgeAccessEntryInput `json:"entries"`
+	Mode    KnowledgeAccessChangeMode   `json:"mode"`
+}
+
+// KnowledgeAccessChangeMode defines model for KnowledgeAccessChange.Mode.
+type KnowledgeAccessChangeMode string
+
+// KnowledgeAccessEntry W4.04. An entry of the access list with its label; reach — to the lead only.
+type KnowledgeAccessEntry struct {
+	// Can view «Читает», edit «Правит».
+	Can KnowledgeAccessEntryCan `json:"can"`
+
+	// Label «Роль «…» · «{область}»», «Роль «…» в пространстве», «Группа «…»», «Прораб этого объекта», the employee.
+	Label string `json:"label"`
+
+	// Object The record of the relation (repairs project).
+	Object *ObjectRef `json:"object,omitempty"`
+
+	// OrgUnitId Area of a role entry; absent — the area of the space.
+	//
+	// Examples: 10000000-0000-4000-8000-000000000001
+	OrgUnitId *Id                   `json:"orgUnitId,omitempty"`
+	Reach     *KnowledgeAccessReach `json:"reach,omitempty"`
+
+	// RefId Employee, group or role; absent for relation.
+	//
+	// Examples: 10000000-0000-4000-8000-000000000001
+	RefId *Id `json:"refId,omitempty"`
+
+	// Relation Kind of the relation: foreman — «Прораб объекта» of object.
+	Relation *KnowledgeAccessEntryRelation `json:"relation,omitempty"`
+
+	// Who member — an employee (by exception), group, role — a role in its area (orgUnitId) or a role of the space, relation — a relation with a CRM record (KB-01: given by a section template).
+	Who KnowledgeAccessEntryWho `json:"who"`
+}
+
+// KnowledgeAccessEntryCan view «Читает», edit «Правит».
+type KnowledgeAccessEntryCan string
+
+// KnowledgeAccessEntryRelation Kind of the relation: foreman — «Прораб объекта» of object.
+type KnowledgeAccessEntryRelation string
+
+// KnowledgeAccessEntryWho member — an employee (by exception), group, role — a role in its area (orgUnitId) or a role of the space, relation — a relation with a CRM record (KB-01: given by a section template).
+type KnowledgeAccessEntryWho string
+
+// KnowledgeAccessEntryInput W4.04. An entry of the access list: refId is required for member, group and role; relation and object — for relation.
+type KnowledgeAccessEntryInput struct {
+	// Can view «Читает», edit «Правит».
+	Can KnowledgeAccessEntryInputCan `json:"can"`
+
+	// Object The record of the relation (repairs project).
+	Object *ObjectRef `json:"object,omitempty"`
+
+	// OrgUnitId Area of a role entry; absent — the area of the space.
+	//
+	// Examples: 10000000-0000-4000-8000-000000000001
+	OrgUnitId *Id `json:"orgUnitId,omitempty"`
+
+	// RefId Employee, group or role; absent for relation.
+	//
+	// Examples: 10000000-0000-4000-8000-000000000001
+	RefId *Id `json:"refId,omitempty"`
+
+	// Relation Kind of the relation: foreman — «Прораб объекта» of object.
+	Relation *KnowledgeAccessEntryInputRelation `json:"relation,omitempty"`
+
+	// Who member — an employee (by exception), group, role — a role in its area (orgUnitId) or a role of the space, relation — a relation with a CRM record (KB-01: given by a section template).
+	Who KnowledgeAccessEntryInputWho `json:"who"`
+}
+
+// KnowledgeAccessEntryInputCan view «Читает», edit «Правит».
+type KnowledgeAccessEntryInputCan string
+
+// KnowledgeAccessEntryInputRelation Kind of the relation: foreman — «Прораб объекта» of object.
+type KnowledgeAccessEntryInputRelation string
+
+// KnowledgeAccessEntryInputWho member — an employee (by exception), group, role — a role in its area (orgUnitId) or a role of the space, relation — a relation with a CRM record (KB-01: given by a section template).
+type KnowledgeAccessEntryInputWho string
+
+// KnowledgeAccessExplanation defines model for KnowledgeAccessExplanation.
+type KnowledgeAccessExplanation struct {
+	Chain []KnowledgeAccessStep `json:"chain"`
+	Edit  bool                  `json:"edit"`
+
+	// FunctionBlocked Closed by a function: «Функция «Водитель» закрывает финансовые страницы, роль или группа это не обходят.»
+	FunctionBlocked   bool   `json:"functionBlocked"`
+	MemberDisplayName string `json:"memberDisplayName"`
+
+	// MemberId Examples: 10000000-0000-4000-8000-000000000001
+	MemberId Id `json:"memberId"`
+
+	// NodeId Examples: 10000000-0000-4000-8000-000000000001
+	NodeId  Id     `json:"nodeId"`
+	Summary string `json:"summary"`
+	View    bool   `json:"view"`
+}
+
+// KnowledgeAccessImpact defines model for KnowledgeAccessImpact.
+type KnowledgeAccessImpact struct {
+	Access *KnowledgeNodeAccess `json:"access,omitempty"`
+
+	// Applied false — dryRun: nothing saved.
+	Applied  bool                    `json:"applied"`
+	GainEdit []KnowledgeImpactPerson `json:"gainEdit"`
+	GainView []KnowledgeImpactPerson `json:"gainView"`
+	LoseEdit []KnowledgeImpactPerson `json:"loseEdit"`
+	LoseView []KnowledgeImpactPerson `json:"loseView"`
+
+	// Own Nodes of the branch with their own access.
+	Own []KnowledgeNodeRef `json:"own"`
+
+	// Pages «Ветка «X»: N страниц».
+	Pages int `json:"pages"`
+}
+
+// KnowledgeAccessMap defines model for KnowledgeAccessMap.
+type KnowledgeAccessMap struct {
+	// Cells Row × column: edit «Правит», view «Читает», none «Нет», function «Функция» (closed by a function).
+	Cells   [][]KnowledgeAccessMapCells `json:"cells"`
+	Members []struct {
+		DisplayName string `json:"displayName"`
+
+		// MemberId Examples: 10000000-0000-4000-8000-000000000001
+		MemberId Id `json:"memberId"`
+	} `json:"members"`
+	Rows []struct {
+		Depth int `json:"depth"`
+
+		// NodeId Examples: 10000000-0000-4000-8000-000000000001
+		NodeId Id     `json:"nodeId"`
+		Title  string `json:"title"`
+	} `json:"rows"`
+
+	// SpaceId Examples: 10000000-0000-4000-8000-000000000001
+	SpaceId Id `json:"spaceId"`
+}
+
+// KnowledgeAccessMapCells defines model for KnowledgeAccessMap.Cells.
+type KnowledgeAccessMapCells string
+
+// KnowledgeAccessReach defines model for KnowledgeAccessReach.
+type KnowledgeAccessReach struct {
+	// Blocked «Не получит доступ: {ФИО} — {причина}».
+	Blocked []struct {
+		DisplayName string `json:"displayName"`
+		Reason      string `json:"reason"`
+	} `json:"blocked"`
+
+	// Members Employees the entry gives access to.
+	Members int `json:"members"`
+
+	// Total Employees matching the entry.
+	Total int `json:"total"`
+}
+
+// KnowledgeAccessRequest defines model for KnowledgeAccessRequest.
+type KnowledgeAccessRequest struct {
+	// Can edit — «просит право правки»; view — «просит доступ» (seeded only).
+	Can KnowledgeAccessRequestCan `json:"can"`
+
+	// DecidedAt UTC RFC3339 instant. Write requests must use the Z suffix; retain the IANA timezone separately for local calendars.
+	//
+	// Examples: 2026-10-05T06:00:00Z
+	DecidedAt            *Instant `json:"decidedAt,omitempty"`
+	DecidedByDisplayName *string  `json:"decidedByDisplayName,omitempty"`
+
+	// Id Examples: 10000000-0000-4000-8000-000000000001
+	Id                Id     `json:"id"`
+	MemberDisplayName string `json:"memberDisplayName"`
+
+	// MemberId Examples: 10000000-0000-4000-8000-000000000001
+	MemberId Id `json:"memberId"`
+
+	// NodeId Examples: 10000000-0000-4000-8000-000000000001
+	NodeId    Id     `json:"nodeId"`
+	NodeTitle string `json:"nodeTitle"`
+
+	// RequestedAt UTC RFC3339 instant. Write requests must use the Z suffix; retain the IANA timezone separately for local calendars.
+	//
+	// Examples: 2026-10-05T06:00:00Z
+	RequestedAt Instant `json:"requestedAt"`
+
+	// SpaceId Examples: 10000000-0000-4000-8000-000000000001
+	SpaceId Id                           `json:"spaceId"`
+	Status  KnowledgeAccessRequestStatus `json:"status"`
+
+	// Until End of an approved request to read.
+	Until *openapi_types.Date `json:"until,omitempty"`
+}
+
+// KnowledgeAccessRequestCan edit — «просит право правки»; view — «просит доступ» (seeded only).
+type KnowledgeAccessRequestCan string
+
+// KnowledgeAccessRequestStatus defines model for KnowledgeAccessRequest.Status.
+type KnowledgeAccessRequestStatus string
+
+// KnowledgeAccessRequestCreate defines model for KnowledgeAccessRequestCreate.
+type KnowledgeAccessRequestCreate struct {
+	// Can Only the right to edit a visible page (Q-W4.00-knowledge-6).
+	Can KnowledgeAccessRequestCreateCan `json:"can"`
+}
+
+// KnowledgeAccessRequestCreateCan Only the right to edit a visible page (Q-W4.00-knowledge-6).
+type KnowledgeAccessRequestCreateCan string
+
+// KnowledgeAccessRequestDecision defines model for KnowledgeAccessRequestDecision.
+type KnowledgeAccessRequestDecision struct {
+	Decision KnowledgeAccessRequestDecisionDecision `json:"decision"`
+}
+
+// KnowledgeAccessRequestDecisionDecision defines model for KnowledgeAccessRequestDecision.Decision.
+type KnowledgeAccessRequestDecisionDecision string
+
+// KnowledgeAccessRequestList defines model for KnowledgeAccessRequestList.
+type KnowledgeAccessRequestList struct {
+	Items []KnowledgeAccessRequest `json:"items"`
+}
+
+// KnowledgeAccessStep defines model for KnowledgeAccessStep.
+type KnowledgeAccessStep struct {
+	Detail string `json:"detail"`
+
+	// Kind ok — passes, no — stops, wait — an invitation not accepted, inherit — «Доступ как у родителя».
+	Kind  KnowledgeAccessStepKind `json:"kind"`
+	Title string                  `json:"title"`
+}
+
+// KnowledgeAccessStepKind ok — passes, no — stops, wait — an invitation not accepted, inherit — «Доступ как у родителя».
+type KnowledgeAccessStepKind string
+
+// KnowledgeAck defines model for KnowledgeAck.
+type KnowledgeAck struct {
+	// AudienceLabel «все, кто видит страницу» or «роль «{роль}»».
+	AudienceLabel string `json:"audienceLabel"`
+
+	// DoneCount «X из Y ознакомились» — to the editors of the node and the lead.
+	DoneCount *int `json:"doneCount,omitempty"`
+
+	// Log Confirmations of all versions (KB-03) — to the lead of the space and the owner of the business only.
+	Log  *[]KnowledgeAckLogEntry `json:"log,omitempty"`
+	Mine struct {
+		// Done «Вы подтвердили, что ознакомились с этой версией».
+		Done bool `json:"done"`
+
+		// Required The member is in the audience («Подтвердите, что прочитали эту версию.»).
+		Required bool `json:"required"`
+	} `json:"mine"`
+
+	// PendingNames «Ждём: …» — to the editors of the node and the lead.
+	PendingNames *[]string `json:"pendingNames,omitempty"`
+
+	// Total Audience — to the editors of the node and the lead.
+	Total *int `json:"total,omitempty"`
+
+	// Version The version the acknowledgement is requested for.
+	Version int `json:"version"`
+}
+
+// KnowledgeAckCreate defines model for KnowledgeAckCreate.
+type KnowledgeAckCreate struct {
+	Version int `json:"version"`
+}
+
+// KnowledgeAckLogEntry defines model for KnowledgeAckLogEntry.
+type KnowledgeAckLogEntry struct {
+	// At UTC RFC3339 instant. Write requests must use the Z suffix; retain the IANA timezone separately for local calendars.
+	//
+	// Examples: 2026-10-05T06:00:00Z
+	At          Instant `json:"at"`
+	DisplayName string  `json:"displayName"`
+
+	// MemberId Examples: 10000000-0000-4000-8000-000000000001
+	MemberId Id  `json:"memberId"`
+	Version  int `json:"version"`
+}
+
+// KnowledgeArchiveItem defines model for KnowledgeArchiveItem.
+type KnowledgeArchiveItem struct {
+	Kind KnowledgeArchiveItemKind `json:"kind"`
+
+	// NodeId Examples: 10000000-0000-4000-8000-000000000001
+	NodeId Id     `json:"nodeId"`
+	Pages  int    `json:"pages"`
+	Title  string `json:"title"`
+}
+
+// KnowledgeArchiveItemKind defines model for KnowledgeArchiveItem.Kind.
+type KnowledgeArchiveItemKind string
+
+// KnowledgeArchiveList defines model for KnowledgeArchiveList.
+type KnowledgeArchiveList struct {
+	Items []KnowledgeArchiveItem `json:"items"`
+}
+
+// KnowledgeArchiveResult defines model for KnowledgeArchiveResult.
+type KnowledgeArchiveResult struct {
+	Archived bool `json:"archived"`
+
+	// NodeId Examples: 10000000-0000-4000-8000-000000000001
+	NodeId Id `json:"nodeId"`
+
+	// Pages Nodes of the branch.
+	Pages int `json:"pages"`
+}
+
+// KnowledgeDiagram defines model for KnowledgeDiagram.
+type KnowledgeDiagram struct {
+	Outcomes []struct {
+		Text string                       `json:"text"`
+		Tone KnowledgeDiagramOutcomesTone `json:"tone"`
+	} `json:"outcomes"`
+	Steps []string `json:"steps"`
+}
+
+// KnowledgeDiagramOutcomesTone defines model for KnowledgeDiagram.Outcomes.Tone.
+type KnowledgeDiagramOutcomesTone string
+
+// KnowledgeEntry W4.04. A form entry of a page (D-26 комплекта, the block under the text — no-reference, Q-W4.00-knowledge-14).
+type KnowledgeEntry struct {
+	// AddedAt UTC RFC3339 instant. Write requests must use the Z suffix; retain the IANA timezone separately for local calendars.
+	//
+	// Examples: 2026-10-05T06:00:00Z
+	AddedAt Instant `json:"addedAt"`
+	Head    string  `json:"head"`
+
+	// Id Examples: 10000000-0000-4000-8000-000000000001
+	Id    Id `json:"id"`
+	Lines []struct {
+		Name  string `json:"name"`
+		Value string `json:"value"`
+	} `json:"lines"`
+
+	// NodeId Examples: 10000000-0000-4000-8000-000000000001
+	NodeId Id                   `json:"nodeId"`
+	Source KnowledgeEntrySource `json:"source"`
+}
+
+// KnowledgeEntrySource defines model for KnowledgeEntrySource.
+type KnowledgeEntrySource struct {
+	// FormId Examples: 10000000-0000-4000-8000-000000000001
+	FormId      Id  `json:"formId"`
+	FormVersion int `json:"formVersion"`
+
+	// ResponseNumber Number of the form response («R-1012»).
+	ResponseNumber string `json:"responseNumber"`
+}
+
+// KnowledgeFile A file node: «PDF · {размер} · N страниц»; the preview is a placeholder (Q-W4.00-knowledge-18), files of the knowledge base — files with purpose knowledge_attachment.
+type KnowledgeFile struct {
+	Pages int `json:"pages"`
+
+	// SizeLabel «1,2 МБ».
+	SizeLabel string `json:"sizeLabel"`
+}
+
+// KnowledgeImpactPerson defines model for KnowledgeImpactPerson.
+type KnowledgeImpactPerson struct {
+	DisplayName string `json:"displayName"`
+
+	// MemberId Examples: 10000000-0000-4000-8000-000000000001
+	MemberId Id `json:"memberId"`
+
+	// Pages How many pages of the branch change for the employee.
+	Pages int `json:"pages"`
+}
+
+// KnowledgeImpactSummary defines model for KnowledgeImpactSummary.
+type KnowledgeImpactSummary struct {
+	GainEdit []KnowledgeImpactPerson `json:"gainEdit"`
+	GainView []KnowledgeImpactPerson `json:"gainView"`
+	LoseEdit []KnowledgeImpactPerson `json:"loseEdit"`
+	LoseView []KnowledgeImpactPerson `json:"loseView"`
+	Pages    int                     `json:"pages"`
+}
+
+// KnowledgeLastUpdate W4.04. The last published visible page of a space — «Обновлено: «{страница}», {дата}».
+type KnowledgeLastUpdate struct {
+	// At UTC RFC3339 instant. Write requests must use the Z suffix; retain the IANA timezone separately for local calendars.
+	//
+	// Examples: 2026-10-05T06:00:00Z
+	At Instant `json:"at"`
+
+	// NodeId Examples: 10000000-0000-4000-8000-000000000001
+	NodeId Id     `json:"nodeId"`
+	Title  string `json:"title"`
+}
+
+// KnowledgeLink A CRM record: «Запись CRM: открывается, если у вас есть доступ к ней» — the module of the record checks the access (Q-W4.00-knowledge-18).
+type KnowledgeLink struct {
+	Icon      string `json:"icon"`
+	Label     string `json:"label"`
+	ModuleKey string `json:"moduleKey"`
+}
+
+// KnowledgeMove defines model for KnowledgeMove.
+type KnowledgeMove struct {
+	// DryRun Return the impact without moving.
+	DryRun *bool `json:"dryRun,omitempty"`
+
+	// ParentId New parent; null — the top level of the space.
+	ParentId *openapi_types.UUID `json:"parentId"`
+}
+
+// KnowledgeMoveResult defines model for KnowledgeMoveResult.
+type KnowledgeMoveResult struct {
+	// Applied false — dryRun: nothing moved.
+	Applied  bool                    `json:"applied"`
+	GainView []KnowledgeImpactPerson `json:"gainView"`
+	LoseView []KnowledgeImpactPerson `json:"loseView"`
+
+	// Node W4.04 (knowledge.md §2.1). A node of the tree: page, folder, table, diagram, file or CRM record.
+	Node *KnowledgeNode `json:"node,omitempty"`
+
+	// Pages «Переносится N страниц вместе с подстраницами.»
+	Pages int `json:"pages"`
+}
+
+// KnowledgeNode W4.04 (knowledge.md §2.1). A node of the tree: page, folder, table, diagram, file or CRM record.
+type KnowledgeNode struct {
+	// AccessMode Own access of the node: inherit «Как у родителя», edit_listed «Читают все, правят выбранные», listed «Только выбранные» (prototype key edit — edit_listed).
+	AccessMode KnowledgeNodeAccessMode `json:"accessMode"`
+	Ack        *KnowledgeAck           `json:"ack,omitempty"`
+	Archived   bool                    `json:"archived"`
+	Current    KnowledgeVersion        `json:"current"`
+	Diagram    *KnowledgeDiagram       `json:"diagram,omitempty"`
+	Entries    []KnowledgeEntry        `json:"entries"`
+
+	// File A file node: «PDF · {размер} · N страниц»; the preview is a placeholder (Q-W4.00-knowledge-18), files of the knowledge base — files with purpose knowledge_attachment.
+	File *KnowledgeFile `json:"file,omitempty"`
+
+	// Id Examples: 10000000-0000-4000-8000-000000000001
+	Id   Id                `json:"id"`
+	Kind KnowledgeNodeKind `json:"kind"`
+
+	// Link A CRM record: «Запись CRM: открывается, если у вас есть доступ к ней» — the module of the record checks the access (Q-W4.00-knowledge-18).
+	Link  *KnowledgeLink  `json:"link,omitempty"`
+	My    KnowledgeNodeMy `json:"my"`
+	Owner struct {
+		DisplayName string              `json:"displayName"`
+		MemberId    *openapi_types.UUID `json:"memberId"`
+	} `json:"owner"`
+
+	// ParentId Parent node; null — the top level of the space.
+	ParentId *openapi_types.UUID `json:"parentId"`
+
+	// Path Ancestors from the top level: «Пространство › … › страница».
+	Path     []KnowledgeNodeRef `json:"path"`
+	Position int                `json:"position"`
+
+	// ReviewBy «пересмотреть до {дата}».
+	ReviewBy *openapi_types.Date `json:"reviewBy"`
+
+	// Revision Number of the current version — the ETag and If-Match of publishKnowledgeNodeVersion.
+	Revision int64 `json:"revision"`
+
+	// Sensitivity finance — a finance page: closed for the function driver with any roles (AUTH-03).
+	Sensitivity KnowledgeNodeSensitivity `json:"sensitivity"`
+
+	// SpaceId Examples: 10000000-0000-4000-8000-000000000001
+	SpaceId   Id     `json:"spaceId"`
+	SpaceName string `json:"spaceName"`
+
+	// Status draft «Черновик», review «На проверке», active «Действует», outdated «Пора пересмотреть» (Q-W4.00-knowledge-2).
+	Status KnowledgeNodeStatus `json:"status"`
+	Tables []KnowledgeTable    `json:"tables"`
+	Title  string              `json:"title"`
+
+	// Version Number of the current version.
+	Version int `json:"version"`
+
+	// Versions Versions, newest first («Версии»).
+	Versions []KnowledgeVersionSummary `json:"versions"`
+}
+
+// KnowledgeNodeAccessMode Own access of the node: inherit «Как у родителя», edit_listed «Читают все, правят выбранные», listed «Только выбранные» (prototype key edit — edit_listed).
+type KnowledgeNodeAccessMode string
+
+// KnowledgeNodeKind defines model for KnowledgeNode.Kind.
+type KnowledgeNodeKind string
+
+// KnowledgeNodeSensitivity finance — a finance page: closed for the function driver with any roles (AUTH-03).
+type KnowledgeNodeSensitivity string
+
+// KnowledgeNodeStatus draft «Черновик», review «На проверке», active «Действует», outdated «Пора пересмотреть» (Q-W4.00-knowledge-2).
+type KnowledgeNodeStatus string
+
+// KnowledgeNodeAccess defines model for KnowledgeNodeAccess.
+type KnowledgeNodeAccess struct {
+	AccessMode KnowledgeNodeAccessAccessMode `json:"accessMode"`
+
+	// CanManage The lead of the space or the owner of the business.
+	CanManage bool                  `json:"canManage"`
+	Chain     []KnowledgeAccessStep `json:"chain"`
+
+	// DescendantCount «{путь} · N подстраниц».
+	DescendantCount int                    `json:"descendantCount"`
+	Entries         []KnowledgeAccessEntry `json:"entries"`
+
+	// InheritedFrom Where «Как у родителя» comes from: the space or the nearest node with own access.
+	InheritedFrom struct {
+		// Id Examples: 10000000-0000-4000-8000-000000000001
+		Id    Id                                   `json:"id"`
+		Kind  KnowledgeNodeAccessInheritedFromKind `json:"kind"`
+		Title string                               `json:"title"`
+	} `json:"inheritedFrom"`
+	LeadNames []string `json:"leadNames"`
+
+	// NodeId Examples: 10000000-0000-4000-8000-000000000001
+	NodeId Id `json:"nodeId"`
+
+	// OwnSubnodes Subpages of the branch with their own access («Применить и к подстраницам со своим доступом (N)»).
+	OwnSubnodes []KnowledgeNodeRef `json:"ownSubnodes"`
+
+	// Requests Open requests of the node — to the lead only.
+	Requests *[]KnowledgeAccessRequest `json:"requests,omitempty"`
+
+	// Revision Access revision of the node — If-Match of setKnowledgeNodeAccess.
+	Revision int64  `json:"revision"`
+	Title    string `json:"title"`
+}
+
+// KnowledgeNodeAccessAccessMode defines model for KnowledgeNodeAccess.AccessMode.
+type KnowledgeNodeAccessAccessMode string
+
+// KnowledgeNodeAccessInheritedFromKind defines model for KnowledgeNodeAccess.InheritedFrom.Kind.
+type KnowledgeNodeAccessInheritedFromKind string
+
+// KnowledgeNodeCreate defines model for KnowledgeNodeCreate.
+type KnowledgeNodeCreate struct {
+	Kind KnowledgeNodeCreateKind `json:"kind"`
+
+	// ParentId Parent node; null or absent — the top level.
+	ParentId *openapi_types.UUID `json:"parentId,omitempty"`
+	Title    string              `json:"title"`
+}
+
+// KnowledgeNodeCreateKind defines model for KnowledgeNodeCreate.Kind.
+type KnowledgeNodeCreateKind string
+
+// KnowledgeNodeMy defines model for KnowledgeNodeMy.
+type KnowledgeNodeMy struct {
+	// Create Creates subpages («Новая подстраница», «+»).
+	Create bool `json:"create"`
+
+	// Edit Edits the node («Править», «Переместить…»).
+	Edit bool `json:"edit"`
+
+	// Lead The lead of the space or the owner of the business.
+	Lead bool `json:"lead"`
+}
+
+// KnowledgeNodeRef defines model for KnowledgeNodeRef.
+type KnowledgeNodeRef struct {
+	// Id Examples: 10000000-0000-4000-8000-000000000001
+	Id    Id     `json:"id"`
+	Title string `json:"title"`
+}
+
+// KnowledgeNodeStatusChange defines model for KnowledgeNodeStatusChange.
+type KnowledgeNodeStatusChange struct {
+	Status KnowledgeNodeStatusChangeStatus `json:"status"`
+}
+
+// KnowledgeNodeStatusChangeStatus defines model for KnowledgeNodeStatusChange.Status.
+type KnowledgeNodeStatusChangeStatus string
+
+// KnowledgeNodeSummary W4.04. A visible node of the tree (prototype kbView).
+type KnowledgeNodeSummary struct {
+	// AccessMode Own access of the node: inherit «Как у родителя», edit_listed «Читают все, правят выбранные», listed «Только выбранные» (prototype key edit — edit_listed).
+	AccessMode KnowledgeNodeSummaryAccessMode `json:"accessMode"`
+	Archived   bool                           `json:"archived"`
+
+	// Id Examples: 10000000-0000-4000-8000-000000000001
+	Id   Id                       `json:"id"`
+	Kind KnowledgeNodeSummaryKind `json:"kind"`
+	My   KnowledgeNodeMy          `json:"my"`
+
+	// ParentId Parent node; null — the top level of the space.
+	ParentId *openapi_types.UUID `json:"parentId"`
+	Position int                 `json:"position"`
+
+	// Sensitivity finance — a finance page: closed for the function driver with any roles (AUTH-03).
+	Sensitivity KnowledgeNodeSummarySensitivity `json:"sensitivity"`
+
+	// SpaceId Examples: 10000000-0000-4000-8000-000000000001
+	SpaceId Id `json:"spaceId"`
+
+	// Status draft «Черновик», review «На проверке», active «Действует», outdated «Пора пересмотреть» (Q-W4.00-knowledge-2).
+	Status KnowledgeNodeSummaryStatus `json:"status"`
+	Title  string                     `json:"title"`
+
+	// Version Number of the current version.
+	Version int `json:"version"`
+}
+
+// KnowledgeNodeSummaryAccessMode Own access of the node: inherit «Как у родителя», edit_listed «Читают все, правят выбранные», listed «Только выбранные» (prototype key edit — edit_listed).
+type KnowledgeNodeSummaryAccessMode string
+
+// KnowledgeNodeSummaryKind defines model for KnowledgeNodeSummary.Kind.
+type KnowledgeNodeSummaryKind string
+
+// KnowledgeNodeSummarySensitivity finance — a finance page: closed for the function driver with any roles (AUTH-03).
+type KnowledgeNodeSummarySensitivity string
+
+// KnowledgeNodeSummaryStatus draft «Черновик», review «На проверке», active «Действует», outdated «Пора пересмотреть» (Q-W4.00-knowledge-2).
+type KnowledgeNodeSummaryStatus string
 
 // KnowledgePage defines model for KnowledgePage.
 type KnowledgePage struct {
@@ -341,6 +1848,457 @@ type KnowledgePagePatch struct {
 
 // KnowledgePagePatchStatus defines model for KnowledgePagePatch.Status.
 type KnowledgePagePatchStatus string
+
+// KnowledgePublish defines model for KnowledgePublish.
+type KnowledgePublish struct {
+	// Body Text with paragraphs separated by an empty line.
+	Body string `json:"body"`
+
+	// RequestAck «Попросить ознакомиться с новой версией: …».
+	RequestAck *bool `json:"requestAck,omitempty"`
+
+	// Steps Steps of a diagram («Шаги схемы — по одному в строке»).
+	Steps *[]string `json:"steps,omitempty"`
+	Title *string   `json:"title,omitempty"`
+}
+
+// KnowledgePublishResult defines model for KnowledgePublishResult.
+type KnowledgePublishResult struct {
+	// AckRequestedCount Employees asked to acknowledge the new version.
+	AckRequestedCount int `json:"ackRequestedCount"`
+
+	// Node W4.04 (knowledge.md §2.1). A node of the tree: page, folder, table, diagram, file or CRM record.
+	Node    KnowledgeNode `json:"node"`
+	Version int           `json:"version"`
+}
+
+// KnowledgeRule defines model for KnowledgeRule.
+type KnowledgeRule struct {
+	Enabled bool `json:"enabled"`
+
+	// Id Examples: 10000000-0000-4000-8000-000000000001
+	Id Id `json:"id"`
+
+	// Kind ack — ask to acknowledge, review — «Пора пересмотреть», section — the section of an object.
+	Kind KnowledgeRuleKind `json:"kind"`
+	Name string            `json:"name"`
+
+	// Objects Objects of repairs (kind section).
+	Objects *[]KnowledgeSectionObject `json:"objects,omitempty"`
+
+	// SpaceId Examples: 10000000-0000-4000-8000-000000000001
+	SpaceId Id     `json:"spaceId"`
+	Trigger string `json:"trigger"`
+}
+
+// KnowledgeRuleKind ack — ask to acknowledge, review — «Пора пересмотреть», section — the section of an object.
+type KnowledgeRuleKind string
+
+// KnowledgeRuleList defines model for KnowledgeRuleList.
+type KnowledgeRuleList struct {
+	Items []KnowledgeRule `json:"items"`
+}
+
+// KnowledgeRulePatch defines model for KnowledgeRulePatch.
+type KnowledgeRulePatch struct {
+	Enabled bool `json:"enabled"`
+}
+
+// KnowledgeRun defines model for KnowledgeRun.
+type KnowledgeRun struct {
+	// At UTC RFC3339 instant. Write requests must use the Z suffix; retain the IANA timezone separately for local calendars.
+	//
+	// Examples: 2026-10-05T06:00:00Z
+	At Instant `json:"at"`
+
+	// Id Examples: 10000000-0000-4000-8000-000000000001
+	Id     Id                 `json:"id"`
+	Result KnowledgeRunResult `json:"result"`
+
+	// RuleId Examples: 10000000-0000-4000-8000-000000000001
+	RuleId Id     `json:"ruleId"`
+	Text   string `json:"text"`
+}
+
+// KnowledgeRunResult defines model for KnowledgeRun.Result.
+type KnowledgeRunResult string
+
+// KnowledgeRunList defines model for KnowledgeRunList.
+type KnowledgeRunList struct {
+	Items []KnowledgeRun `json:"items"`
+}
+
+// KnowledgeRunReport defines model for KnowledgeRunReport.
+type KnowledgeRunReport struct {
+	// Count Pages that became outdated, or sections created.
+	Count int `json:"count"`
+
+	// Created runKnowledgeSection: a section was created.
+	Created *bool `json:"created,omitempty"`
+
+	// NodeId runKnowledgeSection: the section of the object.
+	NodeId *openapi_types.UUID `json:"nodeId,omitempty"`
+
+	// Runs Journal lines written by this run.
+	Runs []KnowledgeRun `json:"runs"`
+}
+
+// KnowledgeSearchHit defines model for KnowledgeSearchHit.
+type KnowledgeSearchHit struct {
+	Excerpt string                 `json:"excerpt"`
+	Kind    KnowledgeSearchHitKind `json:"kind"`
+
+	// NodeId Examples: 10000000-0000-4000-8000-000000000001
+	NodeId Id `json:"nodeId"`
+
+	// Path «Пространство › родители».
+	Path []string `json:"path"`
+
+	// SpaceId Examples: 10000000-0000-4000-8000-000000000001
+	SpaceId   Id     `json:"spaceId"`
+	SpaceName string `json:"spaceName"`
+	Title     string `json:"title"`
+}
+
+// KnowledgeSearchHitKind defines model for KnowledgeSearchHit.Kind.
+type KnowledgeSearchHitKind string
+
+// KnowledgeSearchResult defines model for KnowledgeSearchResult.
+type KnowledgeSearchResult struct {
+	Items []KnowledgeSearchHit `json:"items"`
+}
+
+// KnowledgeSectionCreate defines model for KnowledgeSectionCreate.
+type KnowledgeSectionCreate struct {
+	// ProjectId Examples: 10000000-0000-4000-8000-000000000001
+	ProjectId Id `json:"projectId"`
+}
+
+// KnowledgeSectionObject defines model for KnowledgeSectionObject.
+type KnowledgeSectionObject struct {
+	// ForemanName null — «прораб не назначен».
+	ForemanName *string `json:"foremanName"`
+	Name        string  `json:"name"`
+
+	// ProjectId Examples: 10000000-0000-4000-8000-000000000001
+	ProjectId Id `json:"projectId"`
+
+	// SectionNodeId The section, if created («Открыть раздел»).
+	SectionNodeId *openapi_types.UUID `json:"sectionNodeId"`
+	Stage         *string             `json:"stage"`
+}
+
+// KnowledgeSpace W4.04 (knowledge.md §2.1). A space of the knowledge base — an access area (docs/23).
+type KnowledgeSpace struct {
+	// Access Level of the space: open — roles of the area act fully («Открытое»); limited — everyone in the area reads, members write («Ограниченное»); closed — members and the owner of the business only («Закрытое»).
+	Access KnowledgeSpaceAccess `json:"access"`
+
+	// AreaLabel «Вся организация», «Регион «{name}»» or «Фирма «{name}»».
+	AreaLabel string `json:"areaLabel"`
+	Color     string `json:"color"`
+
+	// HomeNodeId The home page «Обзор» — the root node of the space that is never moved or archived.
+	HomeNodeId *openapi_types.UUID `json:"homeNodeId"`
+	Icon       string              `json:"icon"`
+
+	// Id Examples: 10000000-0000-4000-8000-000000000001
+	Id Id `json:"id"`
+
+	// LastUpdate W4.04. The last published visible page of a space — «Обновлено: «{страница}», {дата}».
+	LastUpdate *KnowledgeLastUpdate `json:"lastUpdate,omitempty"`
+
+	// LeadNames Leads of the space; empty — «Руководитель: владелец бизнеса».
+	LeadNames []string `json:"leadNames"`
+
+	// My W4.04. The rights of the member in a space (prototype kbSpaceMy).
+	My   KnowledgeSpaceMy `json:"my"`
+	Name string           `json:"name"`
+
+	// OpenRequestCount Open access requests («Запросы доступа: N») — to the lead of the space only.
+	OpenRequestCount *int `json:"openRequestCount,omitempty"`
+
+	// OrgUnitId Area of the space — whose roles act in it: a region or a company; null — the whole organization.
+	OrgUnitId *openapi_types.UUID `json:"orgUnitId"`
+
+	// PageCount Visible pages of the space without folders.
+	PageCount int   `json:"pageCount"`
+	Revision  int64 `json:"revision"`
+
+	// TemplateKey Template the space was created from.
+	TemplateKey *string `json:"templateKey"`
+}
+
+// KnowledgeSpaceAccess Level of the space: open — roles of the area act fully («Открытое»); limited — everyone in the area reads, members write («Ограниченное»); closed — members and the owner of the business only («Закрытое»).
+type KnowledgeSpaceAccess string
+
+// KnowledgeSpaceChange defines model for KnowledgeSpaceChange.
+type KnowledgeSpaceChange struct {
+	// Applied false — dryRun: nothing changed.
+	Applied bool                   `json:"applied"`
+	Impact  KnowledgeImpactSummary `json:"impact"`
+
+	// Space W4.04 (knowledge.md §2.1). A space of the knowledge base — an access area (docs/23).
+	Space KnowledgeSpace `json:"space"`
+}
+
+// KnowledgeSpaceCreate defines model for KnowledgeSpaceCreate.
+type KnowledgeSpaceCreate struct {
+	Access KnowledgeSpaceCreateAccess `json:"access"`
+	Color  *string                    `json:"color,omitempty"`
+	Icon   *string                    `json:"icon,omitempty"`
+
+	// Name Name — 2–120 characters, unique in the organization.
+	Name string `json:"name"`
+
+	// OrgUnitId Area; null or absent — the whole organization.
+	OrgUnitId *openapi_types.UUID `json:"orgUnitId,omitempty"`
+
+	// TemplateKey Starting template (listKnowledgeSpaceTemplates).
+	TemplateKey *KnowledgeSpaceCreateTemplateKey `json:"templateKey,omitempty"`
+
+	// TemplateNodes Indexes of the template nodes to create; absent — all.
+	TemplateNodes *[]int `json:"templateNodes,omitempty"`
+}
+
+// KnowledgeSpaceCreateAccess defines model for KnowledgeSpaceCreate.Access.
+type KnowledgeSpaceCreateAccess string
+
+// KnowledgeSpaceCreateTemplateKey Starting template (listKnowledgeSpaceTemplates).
+type KnowledgeSpaceCreateTemplateKey string
+
+// KnowledgeSpaceList defines model for KnowledgeSpaceList.
+type KnowledgeSpaceList struct {
+	Items      []KnowledgeSpace `json:"items"`
+	NextCursor *string          `json:"nextCursor"`
+}
+
+// KnowledgeSpaceMember defines model for KnowledgeSpaceMember.
+type KnowledgeSpaceMember struct {
+	DisplayName string `json:"displayName"`
+
+	// MemberId Examples: 10000000-0000-4000-8000-000000000001
+	MemberId Id `json:"memberId"`
+
+	// State invited — «приглашение не принято».
+	State KnowledgeSpaceMemberState `json:"state"`
+}
+
+// KnowledgeSpaceMemberState invited — «приглашение не принято».
+type KnowledgeSpaceMemberState string
+
+// KnowledgeSpaceMemberChange defines model for KnowledgeSpaceMemberChange.
+type KnowledgeSpaceMemberChange struct {
+	// Role Role of the space; null — remove the employee from the space («Убрать»).
+	Role *KnowledgeSpaceMemberChangeRole `json:"role"`
+}
+
+// KnowledgeSpaceMemberChangeRole Role of the space; null — remove the employee from the space («Убрать»).
+type KnowledgeSpaceMemberChangeRole string
+
+// KnowledgeSpaceMembers defines model for KnowledgeSpaceMembers.
+type KnowledgeSpaceMembers struct {
+	ByLevel *struct {
+		// Label «По уровню «{уровень}»».
+		Label   string `json:"label"`
+		Members []struct {
+			DisplayName string `json:"displayName"`
+
+			// MemberId Examples: 10000000-0000-4000-8000-000000000001
+			MemberId Id     `json:"memberId"`
+			Source   string `json:"source"`
+		} `json:"members"`
+		Total int `json:"total"`
+	} `json:"byLevel,omitempty"`
+
+	// CanManage The lead of the space or the owner of the business.
+	CanManage bool `json:"canManage"`
+
+	// LevelLabel «Остальные получают доступ по уровню пространства: {описание уровня}».
+	LevelLabel      string `json:"levelLabel"`
+	PageAssignments *[]struct {
+		DisplayName string `json:"displayName"`
+
+		// MemberId Examples: 10000000-0000-4000-8000-000000000001
+		MemberId Id `json:"memberId"`
+
+		// NodeId Examples: 10000000-0000-4000-8000-000000000001
+		NodeId    Id                  `json:"nodeId"`
+		NodeTitle string              `json:"nodeTitle"`
+		Until     *openapi_types.Date `json:"until"`
+	} `json:"pageAssignments,omitempty"`
+	Roles []KnowledgeSpaceRole `json:"roles"`
+
+	// SpaceId Examples: 10000000-0000-4000-8000-000000000001
+	SpaceId Id `json:"spaceId"`
+}
+
+// KnowledgeSpaceMy W4.04. The rights of the member in a space (prototype kbSpaceMy).
+type KnowledgeSpaceMy struct {
+	// Create Creates pages at the top level («+», «Новая подстраница»).
+	Create bool `json:"create"`
+
+	// Edit Edits any page of the space by a role.
+	Edit bool `json:"edit"`
+
+	// Lead The lead of the space (kb_space_lead) or the owner of the business.
+	Lead bool `json:"lead"`
+
+	// Owner The member is an owner of the business: sees and edits everything.
+	Owner bool `json:"owner"`
+
+	// Role Label of the role of the member on the card: «Владелец бизнеса», the name of the role of the space, «Читатель по уровню «{уровень}»» or empty («Вы: по ссылке на страницу» — a page assignment only).
+	Role string `json:"role"`
+
+	// View Reads the space by a role (its area or the space).
+	View bool `json:"view"`
+}
+
+// KnowledgeSpacePatch defines model for KnowledgeSpacePatch.
+type KnowledgeSpacePatch struct {
+	Access *KnowledgeSpacePatchAccess `json:"access,omitempty"`
+	Color  *string                    `json:"color,omitempty"`
+
+	// DryRun Return the impact without changing anything.
+	DryRun    *bool               `json:"dryRun,omitempty"`
+	Icon      *string             `json:"icon,omitempty"`
+	Name      *string             `json:"name,omitempty"`
+	OrgUnitId *openapi_types.UUID `json:"orgUnitId,omitempty"`
+}
+
+// KnowledgeSpacePatchAccess defines model for KnowledgeSpacePatch.Access.
+type KnowledgeSpacePatchAccess string
+
+// KnowledgeSpaceRole defines model for KnowledgeSpaceRole.
+type KnowledgeSpaceRole struct {
+	Description string                 `json:"description"`
+	Label       string                 `json:"label"`
+	Members     []KnowledgeSpaceMember `json:"members"`
+	Role        KnowledgeSpaceRoleRole `json:"role"`
+}
+
+// KnowledgeSpaceRoleRole defines model for KnowledgeSpaceRole.Role.
+type KnowledgeSpaceRoleRole string
+
+// KnowledgeSpaceTemplate defines model for KnowledgeSpaceTemplate.
+type KnowledgeSpaceTemplate struct {
+	Hint  string                    `json:"hint"`
+	Icon  string                    `json:"icon"`
+	Key   KnowledgeSpaceTemplateKey `json:"key"`
+	Name  string                    `json:"name"`
+	Nodes []KnowledgeTemplateNode   `json:"nodes"`
+}
+
+// KnowledgeSpaceTemplateKey defines model for KnowledgeSpaceTemplate.Key.
+type KnowledgeSpaceTemplateKey string
+
+// KnowledgeSpaceTemplateList defines model for KnowledgeSpaceTemplateList.
+type KnowledgeSpaceTemplateList struct {
+	Items []KnowledgeSpaceTemplate `json:"items"`
+}
+
+// KnowledgeTable W4.04. A table of a page — read-only; rows are added by forms («Строки добавляет форма после принятия ответа; исправления — через ответ формы.»).
+type KnowledgeTable struct {
+	Columns []KnowledgeTableColumn `json:"columns"`
+
+	// Id Examples: 10000000-0000-4000-8000-000000000001
+	Id Id `json:"id"`
+
+	// NodeId Examples: 10000000-0000-4000-8000-000000000001
+	NodeId Id                  `json:"nodeId"`
+	Rows   []KnowledgeTableRow `json:"rows"`
+	Title  string              `json:"title"`
+}
+
+// KnowledgeTableColumn defines model for KnowledgeTableColumn.
+type KnowledgeTableColumn struct {
+	// Id Examples: 10000000-0000-4000-8000-000000000001
+	Id   Id     `json:"id"`
+	Name string `json:"name"`
+	Type string `json:"type"`
+}
+
+// KnowledgeTableCreate defines model for KnowledgeTableCreate.
+type KnowledgeTableCreate struct {
+	Columns []struct {
+		Name string  `json:"name"`
+		Type *string `json:"type,omitempty"`
+	} `json:"columns"`
+	Title string `json:"title"`
+}
+
+// KnowledgeTableRow defines model for KnowledgeTableRow.
+type KnowledgeTableRow struct {
+	// AddedAt UTC RFC3339 instant. Write requests must use the Z suffix; retain the IANA timezone separately for local calendars.
+	//
+	// Examples: 2026-10-05T06:00:00Z
+	AddedAt Instant `json:"addedAt"`
+
+	// Cells Column id → value.
+	Cells map[string]string `json:"cells"`
+
+	// Id Examples: 10000000-0000-4000-8000-000000000001
+	Id     Id                    `json:"id"`
+	Source *KnowledgeEntrySource `json:"source,omitempty"`
+}
+
+// KnowledgeTemplateNode defines model for KnowledgeTemplateNode.
+type KnowledgeTemplateNode struct {
+	Index       int                       `json:"index"`
+	Kind        KnowledgeTemplateNodeKind `json:"kind"`
+	ParentIndex *int                      `json:"parentIndex"`
+
+	// ReaderRoleLabel A folder of a function: the role that reads it («Читают: роль «…»»).
+	ReaderRoleLabel *string `json:"readerRoleLabel"`
+
+	// RequestAck «Ознакомиться: все».
+	RequestAck bool   `json:"requestAck"`
+	Title      string `json:"title"`
+}
+
+// KnowledgeTemplateNodeKind defines model for KnowledgeTemplateNode.Kind.
+type KnowledgeTemplateNodeKind string
+
+// KnowledgeTree defines model for KnowledgeTree.
+type KnowledgeTree struct {
+	// Nodes Visible not archived nodes depth-first in the order of positions.
+	Nodes []KnowledgeNodeSummary `json:"nodes"`
+
+	// Space W4.04 (knowledge.md §2.1). A space of the knowledge base — an access area (docs/23).
+	Space KnowledgeSpace `json:"space"`
+}
+
+// KnowledgeVersion defines model for KnowledgeVersion.
+type KnowledgeVersion struct {
+	AuthorDisplayName string `json:"authorDisplayName"`
+
+	// Body Text with paragraphs separated by an empty line, without Markdown (Q-W4.00-knowledge-16).
+	Body string `json:"body"`
+
+	// PublishedAt UTC RFC3339 instant. Write requests must use the Z suffix; retain the IANA timezone separately for local calendars.
+	//
+	// Examples: 2026-10-05T06:00:00Z
+	PublishedAt Instant `json:"publishedAt"`
+	Version     int     `json:"version"`
+}
+
+// KnowledgeVersionSummary defines model for KnowledgeVersionSummary.
+type KnowledgeVersionSummary struct {
+	AuthorDisplayName string `json:"authorDisplayName"`
+
+	// PublishedAt UTC RFC3339 instant. Write requests must use the Z suffix; retain the IANA timezone separately for local calendars.
+	//
+	// Examples: 2026-10-05T06:00:00Z
+	PublishedAt Instant `json:"publishedAt"`
+	Version     int     `json:"version"`
+}
+
+// ObjectRef Server verifies same-tenant ownership and target visibility. A reference never grants access.
+type ObjectRef struct {
+	// EntityId Examples: 10000000-0000-4000-8000-000000000001
+	EntityId   Id     `json:"entityId"`
+	EntityType string `json:"entityType"`
+	ModuleKey  string `json:"moduleKey"`
+}
 
 // Problem Problem Details. No cross-tenant IDs, SQL, token values or storage keys in errors. Retryable conflict codes: reservation_overlap, resources_unavailable, idempotency_in_progress; quota errors: quota_exceeded, downgrade_below_usage.
 type Problem struct {
@@ -449,6 +2407,12 @@ type MemberId = Id
 // ModuleKey defines model for moduleKey.
 type ModuleKey = string
 
+// NodeId Examples: 10000000-0000-4000-8000-000000000001
+type NodeId = Id
+
+// NodeVersion defines model for nodeVersion.
+type NodeVersion = int
+
 // OperatorId Examples: 10000000-0000-4000-8000-000000000001
 type OperatorId = Id
 
@@ -478,6 +2442,12 @@ type ResponseId = Id
 
 // RoleId Examples: 10000000-0000-4000-8000-000000000001
 type RoleId = Id
+
+// RuleId Examples: 10000000-0000-4000-8000-000000000001
+type RuleId = Id
+
+// SpaceId Examples: 10000000-0000-4000-8000-000000000001
+type SpaceId = Id
 
 // TaskId Examples: 10000000-0000-4000-8000-000000000001
 type TaskId = Id
@@ -533,6 +2503,126 @@ type Unauthenticated = Problem
 // Validation Problem Details. No cross-tenant IDs, SQL, token values or storage keys in errors. Retryable conflict codes: reservation_overlap, resources_unavailable, idempotency_in_progress; quota errors: quota_exceeded, downgrade_below_usage.
 type Validation = Problem
 
+// SetKnowledgeNodeAccessParams defines parameters for SetKnowledgeNodeAccess.
+type SetKnowledgeNodeAccessParams struct {
+	// IdempotencyKey Stable per intended command. Retain record at least 7 days; financial deduplication also retains a durable tenant+actor+operation+key digest receipt. Key is scoped to tenant+actor+operation. Reuse only for an identical request.
+	IdempotencyKey IdempotencyKey `json:"Idempotency-Key"`
+
+	// XCSRFToken Required for cookie-authenticated state changes; not required with bearer-only authentication. Invalid/missing token or Origin yields 403. Conditional requirement cannot be represented by OpenAPI required=true.
+	XCSRFToken *Csrf `json:"X-CSRF-Token,omitempty"`
+
+	// Origin Required and checked against the deployment allowlist for cookie-authenticated state changes and browser public-form submissions/uploads. Never accept wildcard with credentialed requests.
+	Origin *Origin `json:"Origin,omitempty"`
+
+	// IfMatch Strong ETag obtained from latest GET or mutation response. * is not accepted. Missing=428; stale=412. Idempotent replay is checked before current revision precondition.
+	IfMatch IfMatch `json:"If-Match"`
+}
+
+// AckKnowledgeNodeParams defines parameters for AckKnowledgeNode.
+type AckKnowledgeNodeParams struct {
+	// IdempotencyKey Stable per intended command. Retain record at least 7 days; financial deduplication also retains a durable tenant+actor+operation+key digest receipt. Key is scoped to tenant+actor+operation. Reuse only for an identical request.
+	IdempotencyKey IdempotencyKey `json:"Idempotency-Key"`
+
+	// XCSRFToken Required for cookie-authenticated state changes; not required with bearer-only authentication. Invalid/missing token or Origin yields 403. Conditional requirement cannot be represented by OpenAPI required=true.
+	XCSRFToken *Csrf `json:"X-CSRF-Token,omitempty"`
+
+	// Origin Required and checked against the deployment allowlist for cookie-authenticated state changes and browser public-form submissions/uploads. Never accept wildcard with credentialed requests.
+	Origin *Origin `json:"Origin,omitempty"`
+}
+
+// ArchiveKnowledgeNodeParams defines parameters for ArchiveKnowledgeNode.
+type ArchiveKnowledgeNodeParams struct {
+	// IdempotencyKey Stable per intended command. Retain record at least 7 days; financial deduplication also retains a durable tenant+actor+operation+key digest receipt. Key is scoped to tenant+actor+operation. Reuse only for an identical request.
+	IdempotencyKey IdempotencyKey `json:"Idempotency-Key"`
+
+	// XCSRFToken Required for cookie-authenticated state changes; not required with bearer-only authentication. Invalid/missing token or Origin yields 403. Conditional requirement cannot be represented by OpenAPI required=true.
+	XCSRFToken *Csrf `json:"X-CSRF-Token,omitempty"`
+
+	// Origin Required and checked against the deployment allowlist for cookie-authenticated state changes and browser public-form submissions/uploads. Never accept wildcard with credentialed requests.
+	Origin *Origin `json:"Origin,omitempty"`
+}
+
+// ExplainKnowledgeAccessParams defines parameters for ExplainKnowledgeAccess.
+type ExplainKnowledgeAccessParams struct {
+	// MemberId W4.04. The employee whose access is explained.
+	MemberId Id `form:"memberId" json:"memberId"`
+}
+
+// MoveKnowledgeNodeParams defines parameters for MoveKnowledgeNode.
+type MoveKnowledgeNodeParams struct {
+	// IdempotencyKey Stable per intended command. Retain record at least 7 days; financial deduplication also retains a durable tenant+actor+operation+key digest receipt. Key is scoped to tenant+actor+operation. Reuse only for an identical request.
+	IdempotencyKey IdempotencyKey `json:"Idempotency-Key"`
+
+	// XCSRFToken Required for cookie-authenticated state changes; not required with bearer-only authentication. Invalid/missing token or Origin yields 403. Conditional requirement cannot be represented by OpenAPI required=true.
+	XCSRFToken *Csrf `json:"X-CSRF-Token,omitempty"`
+
+	// Origin Required and checked against the deployment allowlist for cookie-authenticated state changes and browser public-form submissions/uploads. Never accept wildcard with credentialed requests.
+	Origin *Origin `json:"Origin,omitempty"`
+}
+
+// CreateKnowledgeAccessRequestParams defines parameters for CreateKnowledgeAccessRequest.
+type CreateKnowledgeAccessRequestParams struct {
+	// IdempotencyKey Stable per intended command. Retain record at least 7 days; financial deduplication also retains a durable tenant+actor+operation+key digest receipt. Key is scoped to tenant+actor+operation. Reuse only for an identical request.
+	IdempotencyKey IdempotencyKey `json:"Idempotency-Key"`
+
+	// XCSRFToken Required for cookie-authenticated state changes; not required with bearer-only authentication. Invalid/missing token or Origin yields 403. Conditional requirement cannot be represented by OpenAPI required=true.
+	XCSRFToken *Csrf `json:"X-CSRF-Token,omitempty"`
+
+	// Origin Required and checked against the deployment allowlist for cookie-authenticated state changes and browser public-form submissions/uploads. Never accept wildcard with credentialed requests.
+	Origin *Origin `json:"Origin,omitempty"`
+}
+
+// RestoreKnowledgeNodeParams defines parameters for RestoreKnowledgeNode.
+type RestoreKnowledgeNodeParams struct {
+	// IdempotencyKey Stable per intended command. Retain record at least 7 days; financial deduplication also retains a durable tenant+actor+operation+key digest receipt. Key is scoped to tenant+actor+operation. Reuse only for an identical request.
+	IdempotencyKey IdempotencyKey `json:"Idempotency-Key"`
+
+	// XCSRFToken Required for cookie-authenticated state changes; not required with bearer-only authentication. Invalid/missing token or Origin yields 403. Conditional requirement cannot be represented by OpenAPI required=true.
+	XCSRFToken *Csrf `json:"X-CSRF-Token,omitempty"`
+
+	// Origin Required and checked against the deployment allowlist for cookie-authenticated state changes and browser public-form submissions/uploads. Never accept wildcard with credentialed requests.
+	Origin *Origin `json:"Origin,omitempty"`
+}
+
+// SetKnowledgeNodeStatusParams defines parameters for SetKnowledgeNodeStatus.
+type SetKnowledgeNodeStatusParams struct {
+	// IdempotencyKey Stable per intended command. Retain record at least 7 days; financial deduplication also retains a durable tenant+actor+operation+key digest receipt. Key is scoped to tenant+actor+operation. Reuse only for an identical request.
+	IdempotencyKey IdempotencyKey `json:"Idempotency-Key"`
+
+	// XCSRFToken Required for cookie-authenticated state changes; not required with bearer-only authentication. Invalid/missing token or Origin yields 403. Conditional requirement cannot be represented by OpenAPI required=true.
+	XCSRFToken *Csrf `json:"X-CSRF-Token,omitempty"`
+
+	// Origin Required and checked against the deployment allowlist for cookie-authenticated state changes and browser public-form submissions/uploads. Never accept wildcard with credentialed requests.
+	Origin *Origin `json:"Origin,omitempty"`
+}
+
+// CreateKnowledgeTableParams defines parameters for CreateKnowledgeTable.
+type CreateKnowledgeTableParams struct {
+	// IdempotencyKey Stable per intended command. Retain record at least 7 days; financial deduplication also retains a durable tenant+actor+operation+key digest receipt. Key is scoped to tenant+actor+operation. Reuse only for an identical request.
+	IdempotencyKey IdempotencyKey `json:"Idempotency-Key"`
+
+	// XCSRFToken Required for cookie-authenticated state changes; not required with bearer-only authentication. Invalid/missing token or Origin yields 403. Conditional requirement cannot be represented by OpenAPI required=true.
+	XCSRFToken *Csrf `json:"X-CSRF-Token,omitempty"`
+
+	// Origin Required and checked against the deployment allowlist for cookie-authenticated state changes and browser public-form submissions/uploads. Never accept wildcard with credentialed requests.
+	Origin *Origin `json:"Origin,omitempty"`
+}
+
+// PublishKnowledgeNodeVersionParams defines parameters for PublishKnowledgeNodeVersion.
+type PublishKnowledgeNodeVersionParams struct {
+	// IdempotencyKey Stable per intended command. Retain record at least 7 days; financial deduplication also retains a durable tenant+actor+operation+key digest receipt. Key is scoped to tenant+actor+operation. Reuse only for an identical request.
+	IdempotencyKey IdempotencyKey `json:"Idempotency-Key"`
+
+	// XCSRFToken Required for cookie-authenticated state changes; not required with bearer-only authentication. Invalid/missing token or Origin yields 403. Conditional requirement cannot be represented by OpenAPI required=true.
+	XCSRFToken *Csrf `json:"X-CSRF-Token,omitempty"`
+
+	// Origin Required and checked against the deployment allowlist for cookie-authenticated state changes and browser public-form submissions/uploads. Never accept wildcard with credentialed requests.
+	Origin *Origin `json:"Origin,omitempty"`
+
+	// IfMatch Strong ETag obtained from latest GET or mutation response. * is not accepted. Missing=428; stale=412. Idempotent replay is checked before current revision precondition.
+	IfMatch IfMatch `json:"If-Match"`
+}
+
 // ListKnowledgePagesParams defines parameters for ListKnowledgePages.
 type ListKnowledgePagesParams struct {
 	// Cursor Opaque cursor from the preceding response; no offset pagination.
@@ -567,14 +2657,228 @@ type UpdateKnowledgePageParams struct {
 	IfMatch IfMatch `json:"If-Match"`
 }
 
+// DecideKnowledgeAccessRequestParams defines parameters for DecideKnowledgeAccessRequest.
+type DecideKnowledgeAccessRequestParams struct {
+	// IdempotencyKey Stable per intended command. Retain record at least 7 days; financial deduplication also retains a durable tenant+actor+operation+key digest receipt. Key is scoped to tenant+actor+operation. Reuse only for an identical request.
+	IdempotencyKey IdempotencyKey `json:"Idempotency-Key"`
+
+	// XCSRFToken Required for cookie-authenticated state changes; not required with bearer-only authentication. Invalid/missing token or Origin yields 403. Conditional requirement cannot be represented by OpenAPI required=true.
+	XCSRFToken *Csrf `json:"X-CSRF-Token,omitempty"`
+
+	// Origin Required and checked against the deployment allowlist for cookie-authenticated state changes and browser public-form submissions/uploads. Never accept wildcard with credentialed requests.
+	Origin *Origin `json:"Origin,omitempty"`
+}
+
+// SetKnowledgeRuleEnabledParams defines parameters for SetKnowledgeRuleEnabled.
+type SetKnowledgeRuleEnabledParams struct {
+	// IdempotencyKey Stable per intended command. Retain record at least 7 days; financial deduplication also retains a durable tenant+actor+operation+key digest receipt. Key is scoped to tenant+actor+operation. Reuse only for an identical request.
+	IdempotencyKey IdempotencyKey `json:"Idempotency-Key"`
+
+	// XCSRFToken Required for cookie-authenticated state changes; not required with bearer-only authentication. Invalid/missing token or Origin yields 403. Conditional requirement cannot be represented by OpenAPI required=true.
+	XCSRFToken *Csrf `json:"X-CSRF-Token,omitempty"`
+
+	// Origin Required and checked against the deployment allowlist for cookie-authenticated state changes and browser public-form submissions/uploads. Never accept wildcard with credentialed requests.
+	Origin *Origin `json:"Origin,omitempty"`
+}
+
+// SearchKnowledgeParams defines parameters for SearchKnowledge.
+type SearchKnowledgeParams struct {
+	// Q W4.04. Text to find: at least 2 characters after trimming.
+	Q string `form:"q" json:"q"`
+
+	// SpaceId W4.04. Only the nodes of this space («Найти в пространстве»).
+	SpaceId *Id `form:"spaceId,omitempty" json:"spaceId,omitempty"`
+}
+
+// ListKnowledgeSpacesParams defines parameters for ListKnowledgeSpaces.
+type ListKnowledgeSpacesParams struct {
+	// Cursor Opaque cursor from the preceding response; no offset pagination.
+	Cursor *Cursor `form:"cursor,omitempty" json:"cursor,omitempty"`
+	Limit  *Limit  `form:"limit,omitempty" json:"limit,omitempty"`
+}
+
+// CreateKnowledgeSpaceParams defines parameters for CreateKnowledgeSpace.
+type CreateKnowledgeSpaceParams struct {
+	// IdempotencyKey Stable per intended command. Retain record at least 7 days; financial deduplication also retains a durable tenant+actor+operation+key digest receipt. Key is scoped to tenant+actor+operation. Reuse only for an identical request.
+	IdempotencyKey IdempotencyKey `json:"Idempotency-Key"`
+
+	// XCSRFToken Required for cookie-authenticated state changes; not required with bearer-only authentication. Invalid/missing token or Origin yields 403. Conditional requirement cannot be represented by OpenAPI required=true.
+	XCSRFToken *Csrf `json:"X-CSRF-Token,omitempty"`
+
+	// Origin Required and checked against the deployment allowlist for cookie-authenticated state changes and browser public-form submissions/uploads. Never accept wildcard with credentialed requests.
+	Origin *Origin `json:"Origin,omitempty"`
+}
+
+// UpdateKnowledgeSpaceParams defines parameters for UpdateKnowledgeSpace.
+type UpdateKnowledgeSpaceParams struct {
+	// IdempotencyKey Stable per intended command. Retain record at least 7 days; financial deduplication also retains a durable tenant+actor+operation+key digest receipt. Key is scoped to tenant+actor+operation. Reuse only for an identical request.
+	IdempotencyKey IdempotencyKey `json:"Idempotency-Key"`
+
+	// XCSRFToken Required for cookie-authenticated state changes; not required with bearer-only authentication. Invalid/missing token or Origin yields 403. Conditional requirement cannot be represented by OpenAPI required=true.
+	XCSRFToken *Csrf `json:"X-CSRF-Token,omitempty"`
+
+	// Origin Required and checked against the deployment allowlist for cookie-authenticated state changes and browser public-form submissions/uploads. Never accept wildcard with credentialed requests.
+	Origin *Origin `json:"Origin,omitempty"`
+
+	// IfMatch Strong ETag obtained from latest GET or mutation response. * is not accepted. Missing=428; stale=412. Idempotent replay is checked before current revision precondition.
+	IfMatch IfMatch `json:"If-Match"`
+}
+
+// GetKnowledgeAccessMapParams defines parameters for GetKnowledgeAccessMap.
+type GetKnowledgeAccessMapParams struct {
+	// MemberIds W4.04. Columns of the map: up to 8 employees, comma-separated; default — the first 8 employees with access.
+	MemberIds *[]Id `form:"memberIds,omitempty" json:"memberIds,omitempty"`
+}
+
+// SetKnowledgeSpaceMemberParams defines parameters for SetKnowledgeSpaceMember.
+type SetKnowledgeSpaceMemberParams struct {
+	// IdempotencyKey Stable per intended command. Retain record at least 7 days; financial deduplication also retains a durable tenant+actor+operation+key digest receipt. Key is scoped to tenant+actor+operation. Reuse only for an identical request.
+	IdempotencyKey IdempotencyKey `json:"Idempotency-Key"`
+
+	// XCSRFToken Required for cookie-authenticated state changes; not required with bearer-only authentication. Invalid/missing token or Origin yields 403. Conditional requirement cannot be represented by OpenAPI required=true.
+	XCSRFToken *Csrf `json:"X-CSRF-Token,omitempty"`
+
+	// Origin Required and checked against the deployment allowlist for cookie-authenticated state changes and browser public-form submissions/uploads. Never accept wildcard with credentialed requests.
+	Origin *Origin `json:"Origin,omitempty"`
+}
+
+// CreateKnowledgeNodeParams defines parameters for CreateKnowledgeNode.
+type CreateKnowledgeNodeParams struct {
+	// IdempotencyKey Stable per intended command. Retain record at least 7 days; financial deduplication also retains a durable tenant+actor+operation+key digest receipt. Key is scoped to tenant+actor+operation. Reuse only for an identical request.
+	IdempotencyKey IdempotencyKey `json:"Idempotency-Key"`
+
+	// XCSRFToken Required for cookie-authenticated state changes; not required with bearer-only authentication. Invalid/missing token or Origin yields 403. Conditional requirement cannot be represented by OpenAPI required=true.
+	XCSRFToken *Csrf `json:"X-CSRF-Token,omitempty"`
+
+	// Origin Required and checked against the deployment allowlist for cookie-authenticated state changes and browser public-form submissions/uploads. Never accept wildcard with credentialed requests.
+	Origin *Origin `json:"Origin,omitempty"`
+}
+
+// ListKnowledgeAccessRequestsParams defines parameters for ListKnowledgeAccessRequests.
+type ListKnowledgeAccessRequestsParams struct {
+	// Status W4.04. State of the requests; default open.
+	Status *ListKnowledgeAccessRequestsParamsStatus `form:"status,omitempty" json:"status,omitempty"`
+}
+
+// ListKnowledgeAccessRequestsParamsStatus defines parameters for ListKnowledgeAccessRequests.
+type ListKnowledgeAccessRequestsParamsStatus string
+
+// RunKnowledgeReviewCheckParams defines parameters for RunKnowledgeReviewCheck.
+type RunKnowledgeReviewCheckParams struct {
+	// IdempotencyKey Stable per intended command. Retain record at least 7 days; financial deduplication also retains a durable tenant+actor+operation+key digest receipt. Key is scoped to tenant+actor+operation. Reuse only for an identical request.
+	IdempotencyKey IdempotencyKey `json:"Idempotency-Key"`
+
+	// XCSRFToken Required for cookie-authenticated state changes; not required with bearer-only authentication. Invalid/missing token or Origin yields 403. Conditional requirement cannot be represented by OpenAPI required=true.
+	XCSRFToken *Csrf `json:"X-CSRF-Token,omitempty"`
+
+	// Origin Required and checked against the deployment allowlist for cookie-authenticated state changes and browser public-form submissions/uploads. Never accept wildcard with credentialed requests.
+	Origin *Origin `json:"Origin,omitempty"`
+}
+
+// RunKnowledgeSectionParams defines parameters for RunKnowledgeSection.
+type RunKnowledgeSectionParams struct {
+	// IdempotencyKey Stable per intended command. Retain record at least 7 days; financial deduplication also retains a durable tenant+actor+operation+key digest receipt. Key is scoped to tenant+actor+operation. Reuse only for an identical request.
+	IdempotencyKey IdempotencyKey `json:"Idempotency-Key"`
+
+	// XCSRFToken Required for cookie-authenticated state changes; not required with bearer-only authentication. Invalid/missing token or Origin yields 403. Conditional requirement cannot be represented by OpenAPI required=true.
+	XCSRFToken *Csrf `json:"X-CSRF-Token,omitempty"`
+
+	// Origin Required and checked against the deployment allowlist for cookie-authenticated state changes and browser public-form submissions/uploads. Never accept wildcard with credentialed requests.
+	Origin *Origin `json:"Origin,omitempty"`
+}
+
+// SetKnowledgeNodeAccessJSONRequestBody defines body for SetKnowledgeNodeAccess for application/json ContentType.
+type SetKnowledgeNodeAccessJSONRequestBody = KnowledgeAccessChange
+
+// AckKnowledgeNodeJSONRequestBody defines body for AckKnowledgeNode for application/json ContentType.
+type AckKnowledgeNodeJSONRequestBody = KnowledgeAckCreate
+
+// MoveKnowledgeNodeJSONRequestBody defines body for MoveKnowledgeNode for application/json ContentType.
+type MoveKnowledgeNodeJSONRequestBody = KnowledgeMove
+
+// CreateKnowledgeAccessRequestJSONRequestBody defines body for CreateKnowledgeAccessRequest for application/json ContentType.
+type CreateKnowledgeAccessRequestJSONRequestBody = KnowledgeAccessRequestCreate
+
+// SetKnowledgeNodeStatusJSONRequestBody defines body for SetKnowledgeNodeStatus for application/json ContentType.
+type SetKnowledgeNodeStatusJSONRequestBody = KnowledgeNodeStatusChange
+
+// CreateKnowledgeTableJSONRequestBody defines body for CreateKnowledgeTable for application/json ContentType.
+type CreateKnowledgeTableJSONRequestBody = KnowledgeTableCreate
+
+// PublishKnowledgeNodeVersionJSONRequestBody defines body for PublishKnowledgeNodeVersion for application/json ContentType.
+type PublishKnowledgeNodeVersionJSONRequestBody = KnowledgePublish
+
 // CreateKnowledgePageJSONRequestBody defines body for CreateKnowledgePage for application/json ContentType.
 type CreateKnowledgePageJSONRequestBody = KnowledgePageCreate
 
 // UpdateKnowledgePageJSONRequestBody defines body for UpdateKnowledgePage for application/json ContentType.
 type UpdateKnowledgePageJSONRequestBody = KnowledgePagePatch
 
+// DecideKnowledgeAccessRequestJSONRequestBody defines body for DecideKnowledgeAccessRequest for application/json ContentType.
+type DecideKnowledgeAccessRequestJSONRequestBody = KnowledgeAccessRequestDecision
+
+// SetKnowledgeRuleEnabledJSONRequestBody defines body for SetKnowledgeRuleEnabled for application/json ContentType.
+type SetKnowledgeRuleEnabledJSONRequestBody = KnowledgeRulePatch
+
+// CreateKnowledgeSpaceJSONRequestBody defines body for CreateKnowledgeSpace for application/json ContentType.
+type CreateKnowledgeSpaceJSONRequestBody = KnowledgeSpaceCreate
+
+// UpdateKnowledgeSpaceJSONRequestBody defines body for UpdateKnowledgeSpace for application/json ContentType.
+type UpdateKnowledgeSpaceJSONRequestBody = KnowledgeSpacePatch
+
+// SetKnowledgeSpaceMemberJSONRequestBody defines body for SetKnowledgeSpaceMember for application/json ContentType.
+type SetKnowledgeSpaceMemberJSONRequestBody = KnowledgeSpaceMemberChange
+
+// CreateKnowledgeNodeJSONRequestBody defines body for CreateKnowledgeNode for application/json ContentType.
+type CreateKnowledgeNodeJSONRequestBody = KnowledgeNodeCreate
+
+// RunKnowledgeSectionJSONRequestBody defines body for RunKnowledgeSection for application/json ContentType.
+type RunKnowledgeSectionJSONRequestBody = KnowledgeSectionCreate
+
 // ServerInterface represents all server handlers.
 type ServerInterface interface {
+	// GetKnowledgeNode Read a node of the knowledge base
+	// (GET /api/v1/tenants/{tenantId}/knowledge/nodes/{nodeId})
+	GetKnowledgeNode(w http.ResponseWriter, r *http.Request, tenantId TenantId, nodeId NodeId)
+	// GetKnowledgeNodeAccess Read the access of a node
+	// (GET /api/v1/tenants/{tenantId}/knowledge/nodes/{nodeId}/access)
+	GetKnowledgeNodeAccess(w http.ResponseWriter, r *http.Request, tenantId TenantId, nodeId NodeId)
+	// SetKnowledgeNodeAccess Change the access of a node
+	// (PUT /api/v1/tenants/{tenantId}/knowledge/nodes/{nodeId}/access)
+	SetKnowledgeNodeAccess(w http.ResponseWriter, r *http.Request, tenantId TenantId, nodeId NodeId, params SetKnowledgeNodeAccessParams)
+	// ListKnowledgeAccessCandidates List whom the access of a node may name
+	// (GET /api/v1/tenants/{tenantId}/knowledge/nodes/{nodeId}/access/candidates)
+	ListKnowledgeAccessCandidates(w http.ResponseWriter, r *http.Request, tenantId TenantId, nodeId NodeId)
+	// AckKnowledgeNode Confirm reading the current version
+	// (POST /api/v1/tenants/{tenantId}/knowledge/nodes/{nodeId}/ack)
+	AckKnowledgeNode(w http.ResponseWriter, r *http.Request, tenantId TenantId, nodeId NodeId, params AckKnowledgeNodeParams)
+	// ArchiveKnowledgeNode Move a branch to the archive
+	// (POST /api/v1/tenants/{tenantId}/knowledge/nodes/{nodeId}/archive)
+	ArchiveKnowledgeNode(w http.ResponseWriter, r *http.Request, tenantId TenantId, nodeId NodeId, params ArchiveKnowledgeNodeParams)
+	// ExplainKnowledgeAccess Explain the access of an employee to a node
+	// (GET /api/v1/tenants/{tenantId}/knowledge/nodes/{nodeId}/explain)
+	ExplainKnowledgeAccess(w http.ResponseWriter, r *http.Request, tenantId TenantId, nodeId NodeId, params ExplainKnowledgeAccessParams)
+	// MoveKnowledgeNode Move a node to another parent
+	// (POST /api/v1/tenants/{tenantId}/knowledge/nodes/{nodeId}/move)
+	MoveKnowledgeNode(w http.ResponseWriter, r *http.Request, tenantId TenantId, nodeId NodeId, params MoveKnowledgeNodeParams)
+	// CreateKnowledgeAccessRequest Request the right to edit a page
+	// (POST /api/v1/tenants/{tenantId}/knowledge/nodes/{nodeId}/requests)
+	CreateKnowledgeAccessRequest(w http.ResponseWriter, r *http.Request, tenantId TenantId, nodeId NodeId, params CreateKnowledgeAccessRequestParams)
+	// RestoreKnowledgeNode Restore a branch from the archive
+	// (POST /api/v1/tenants/{tenantId}/knowledge/nodes/{nodeId}/restore)
+	RestoreKnowledgeNode(w http.ResponseWriter, r *http.Request, tenantId TenantId, nodeId NodeId, params RestoreKnowledgeNodeParams)
+	// SetKnowledgeNodeStatus Approve a node or change its status
+	// (POST /api/v1/tenants/{tenantId}/knowledge/nodes/{nodeId}/status)
+	SetKnowledgeNodeStatus(w http.ResponseWriter, r *http.Request, tenantId TenantId, nodeId NodeId, params SetKnowledgeNodeStatusParams)
+	// CreateKnowledgeTable Create a table on a page
+	// (POST /api/v1/tenants/{tenantId}/knowledge/nodes/{nodeId}/tables)
+	CreateKnowledgeTable(w http.ResponseWriter, r *http.Request, tenantId TenantId, nodeId NodeId, params CreateKnowledgeTableParams)
+	// PublishKnowledgeNodeVersion Publish a new version of a node
+	// (POST /api/v1/tenants/{tenantId}/knowledge/nodes/{nodeId}/versions)
+	PublishKnowledgeNodeVersion(w http.ResponseWriter, r *http.Request, tenantId TenantId, nodeId NodeId, params PublishKnowledgeNodeVersionParams)
+	// GetKnowledgeNodeVersion Read an old version of a node
+	// (GET /api/v1/tenants/{tenantId}/knowledge/nodes/{nodeId}/versions/{version})
+	GetKnowledgeNodeVersion(w http.ResponseWriter, r *http.Request, tenantId TenantId, nodeId NodeId, version NodeVersion)
 	// ListKnowledgePages List visible pages
 	// (GET /api/v1/tenants/{tenantId}/knowledge/pages)
 	ListKnowledgePages(w http.ResponseWriter, r *http.Request, tenantId TenantId, params ListKnowledgePagesParams)
@@ -587,11 +2891,149 @@ type ServerInterface interface {
 	// UpdateKnowledgePage Save a page revision or publish it
 	// (PATCH /api/v1/tenants/{tenantId}/knowledge/pages/{pageId})
 	UpdateKnowledgePage(w http.ResponseWriter, r *http.Request, tenantId TenantId, pageId PageId, params UpdateKnowledgePageParams)
+	// DecideKnowledgeAccessRequest Approve or deny an access request
+	// (POST /api/v1/tenants/{tenantId}/knowledge/requests/{requestId}/decision)
+	DecideKnowledgeAccessRequest(w http.ResponseWriter, r *http.Request, tenantId TenantId, requestId RequestId, params DecideKnowledgeAccessRequestParams)
+	// SetKnowledgeRuleEnabled Switch an automation rule on or off
+	// (PATCH /api/v1/tenants/{tenantId}/knowledge/rules/{ruleId})
+	SetKnowledgeRuleEnabled(w http.ResponseWriter, r *http.Request, tenantId TenantId, ruleId RuleId, params SetKnowledgeRuleEnabledParams)
+	// SearchKnowledge Search the visible pages
+	// (GET /api/v1/tenants/{tenantId}/knowledge/search)
+	SearchKnowledge(w http.ResponseWriter, r *http.Request, tenantId TenantId, params SearchKnowledgeParams)
+	// ListKnowledgeSpaceTemplates List the starting templates of spaces
+	// (GET /api/v1/tenants/{tenantId}/knowledge/space-templates)
+	ListKnowledgeSpaceTemplates(w http.ResponseWriter, r *http.Request, tenantId TenantId)
+	// ListKnowledgeSpaces List the knowledge spaces the member sees
+	// (GET /api/v1/tenants/{tenantId}/knowledge/spaces)
+	ListKnowledgeSpaces(w http.ResponseWriter, r *http.Request, tenantId TenantId, params ListKnowledgeSpacesParams)
+	// CreateKnowledgeSpace Create a knowledge space from a template
+	// (POST /api/v1/tenants/{tenantId}/knowledge/spaces)
+	CreateKnowledgeSpace(w http.ResponseWriter, r *http.Request, tenantId TenantId, params CreateKnowledgeSpaceParams)
+	// UpdateKnowledgeSpace Change the name, area or level of a space
+	// (PATCH /api/v1/tenants/{tenantId}/knowledge/spaces/{spaceId})
+	UpdateKnowledgeSpace(w http.ResponseWriter, r *http.Request, tenantId TenantId, spaceId SpaceId, params UpdateKnowledgeSpaceParams)
+	// GetKnowledgeAccessMap Read the access map of a space
+	// (GET /api/v1/tenants/{tenantId}/knowledge/spaces/{spaceId}/access-map)
+	GetKnowledgeAccessMap(w http.ResponseWriter, r *http.Request, tenantId TenantId, spaceId SpaceId, params GetKnowledgeAccessMapParams)
+	// ListKnowledgeArchive List the archived branches of a space
+	// (GET /api/v1/tenants/{tenantId}/knowledge/spaces/{spaceId}/archive)
+	ListKnowledgeArchive(w http.ResponseWriter, r *http.Request, tenantId TenantId, spaceId SpaceId)
+	// ListKnowledgeSpaceMembers List the members of a space
+	// (GET /api/v1/tenants/{tenantId}/knowledge/spaces/{spaceId}/members)
+	ListKnowledgeSpaceMembers(w http.ResponseWriter, r *http.Request, tenantId TenantId, spaceId SpaceId)
+	// SetKnowledgeSpaceMember Give, change or remove the role of an employee in a space
+	// (PUT /api/v1/tenants/{tenantId}/knowledge/spaces/{spaceId}/members/{memberId})
+	SetKnowledgeSpaceMember(w http.ResponseWriter, r *http.Request, tenantId TenantId, spaceId SpaceId, memberId MemberId, params SetKnowledgeSpaceMemberParams)
+	// CreateKnowledgeNode Create a page, a folder or a diagram
+	// (POST /api/v1/tenants/{tenantId}/knowledge/spaces/{spaceId}/nodes)
+	CreateKnowledgeNode(w http.ResponseWriter, r *http.Request, tenantId TenantId, spaceId SpaceId, params CreateKnowledgeNodeParams)
+	// ListKnowledgeAccessRequests List the access requests of a space
+	// (GET /api/v1/tenants/{tenantId}/knowledge/spaces/{spaceId}/requests)
+	ListKnowledgeAccessRequests(w http.ResponseWriter, r *http.Request, tenantId TenantId, spaceId SpaceId, params ListKnowledgeAccessRequestsParams)
+	// RunKnowledgeReviewCheck Check the review dates of a space now
+	// (POST /api/v1/tenants/{tenantId}/knowledge/spaces/{spaceId}/review-check)
+	RunKnowledgeReviewCheck(w http.ResponseWriter, r *http.Request, tenantId TenantId, spaceId SpaceId, params RunKnowledgeReviewCheckParams)
+	// ListKnowledgeRules List the automation rules of a space
+	// (GET /api/v1/tenants/{tenantId}/knowledge/spaces/{spaceId}/rules)
+	ListKnowledgeRules(w http.ResponseWriter, r *http.Request, tenantId TenantId, spaceId SpaceId)
+	// ListKnowledgeRuns List the runs of the automation rules of a space
+	// (GET /api/v1/tenants/{tenantId}/knowledge/spaces/{spaceId}/runs)
+	ListKnowledgeRuns(w http.ResponseWriter, r *http.Request, tenantId TenantId, spaceId SpaceId)
+	// RunKnowledgeSection Create the section of an object of repairs
+	// (POST /api/v1/tenants/{tenantId}/knowledge/spaces/{spaceId}/sections)
+	RunKnowledgeSection(w http.ResponseWriter, r *http.Request, tenantId TenantId, spaceId SpaceId, params RunKnowledgeSectionParams)
+	// GetKnowledgeSpaceTree Read the tree of a space
+	// (GET /api/v1/tenants/{tenantId}/knowledge/spaces/{spaceId}/tree)
+	GetKnowledgeSpaceTree(w http.ResponseWriter, r *http.Request, tenantId TenantId, spaceId SpaceId)
 }
 
 // Unimplemented server implementation that returns http.StatusNotImplemented for each endpoint.
 
 type Unimplemented struct{}
+
+// GetKnowledgeNode Read a node of the knowledge base
+// (GET /api/v1/tenants/{tenantId}/knowledge/nodes/{nodeId})
+func (_ Unimplemented) GetKnowledgeNode(w http.ResponseWriter, r *http.Request, tenantId TenantId, nodeId NodeId) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// GetKnowledgeNodeAccess Read the access of a node
+// (GET /api/v1/tenants/{tenantId}/knowledge/nodes/{nodeId}/access)
+func (_ Unimplemented) GetKnowledgeNodeAccess(w http.ResponseWriter, r *http.Request, tenantId TenantId, nodeId NodeId) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// SetKnowledgeNodeAccess Change the access of a node
+// (PUT /api/v1/tenants/{tenantId}/knowledge/nodes/{nodeId}/access)
+func (_ Unimplemented) SetKnowledgeNodeAccess(w http.ResponseWriter, r *http.Request, tenantId TenantId, nodeId NodeId, params SetKnowledgeNodeAccessParams) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// ListKnowledgeAccessCandidates List whom the access of a node may name
+// (GET /api/v1/tenants/{tenantId}/knowledge/nodes/{nodeId}/access/candidates)
+func (_ Unimplemented) ListKnowledgeAccessCandidates(w http.ResponseWriter, r *http.Request, tenantId TenantId, nodeId NodeId) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// AckKnowledgeNode Confirm reading the current version
+// (POST /api/v1/tenants/{tenantId}/knowledge/nodes/{nodeId}/ack)
+func (_ Unimplemented) AckKnowledgeNode(w http.ResponseWriter, r *http.Request, tenantId TenantId, nodeId NodeId, params AckKnowledgeNodeParams) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// ArchiveKnowledgeNode Move a branch to the archive
+// (POST /api/v1/tenants/{tenantId}/knowledge/nodes/{nodeId}/archive)
+func (_ Unimplemented) ArchiveKnowledgeNode(w http.ResponseWriter, r *http.Request, tenantId TenantId, nodeId NodeId, params ArchiveKnowledgeNodeParams) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// ExplainKnowledgeAccess Explain the access of an employee to a node
+// (GET /api/v1/tenants/{tenantId}/knowledge/nodes/{nodeId}/explain)
+func (_ Unimplemented) ExplainKnowledgeAccess(w http.ResponseWriter, r *http.Request, tenantId TenantId, nodeId NodeId, params ExplainKnowledgeAccessParams) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// MoveKnowledgeNode Move a node to another parent
+// (POST /api/v1/tenants/{tenantId}/knowledge/nodes/{nodeId}/move)
+func (_ Unimplemented) MoveKnowledgeNode(w http.ResponseWriter, r *http.Request, tenantId TenantId, nodeId NodeId, params MoveKnowledgeNodeParams) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// CreateKnowledgeAccessRequest Request the right to edit a page
+// (POST /api/v1/tenants/{tenantId}/knowledge/nodes/{nodeId}/requests)
+func (_ Unimplemented) CreateKnowledgeAccessRequest(w http.ResponseWriter, r *http.Request, tenantId TenantId, nodeId NodeId, params CreateKnowledgeAccessRequestParams) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// RestoreKnowledgeNode Restore a branch from the archive
+// (POST /api/v1/tenants/{tenantId}/knowledge/nodes/{nodeId}/restore)
+func (_ Unimplemented) RestoreKnowledgeNode(w http.ResponseWriter, r *http.Request, tenantId TenantId, nodeId NodeId, params RestoreKnowledgeNodeParams) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// SetKnowledgeNodeStatus Approve a node or change its status
+// (POST /api/v1/tenants/{tenantId}/knowledge/nodes/{nodeId}/status)
+func (_ Unimplemented) SetKnowledgeNodeStatus(w http.ResponseWriter, r *http.Request, tenantId TenantId, nodeId NodeId, params SetKnowledgeNodeStatusParams) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// CreateKnowledgeTable Create a table on a page
+// (POST /api/v1/tenants/{tenantId}/knowledge/nodes/{nodeId}/tables)
+func (_ Unimplemented) CreateKnowledgeTable(w http.ResponseWriter, r *http.Request, tenantId TenantId, nodeId NodeId, params CreateKnowledgeTableParams) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// PublishKnowledgeNodeVersion Publish a new version of a node
+// (POST /api/v1/tenants/{tenantId}/knowledge/nodes/{nodeId}/versions)
+func (_ Unimplemented) PublishKnowledgeNodeVersion(w http.ResponseWriter, r *http.Request, tenantId TenantId, nodeId NodeId, params PublishKnowledgeNodeVersionParams) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// GetKnowledgeNodeVersion Read an old version of a node
+// (GET /api/v1/tenants/{tenantId}/knowledge/nodes/{nodeId}/versions/{version})
+func (_ Unimplemented) GetKnowledgeNodeVersion(w http.ResponseWriter, r *http.Request, tenantId TenantId, nodeId NodeId, version NodeVersion) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
 
 // ListKnowledgePages List visible pages
 // (GET /api/v1/tenants/{tenantId}/knowledge/pages)
@@ -617,6 +3059,114 @@ func (_ Unimplemented) UpdateKnowledgePage(w http.ResponseWriter, r *http.Reques
 	w.WriteHeader(http.StatusNotImplemented)
 }
 
+// DecideKnowledgeAccessRequest Approve or deny an access request
+// (POST /api/v1/tenants/{tenantId}/knowledge/requests/{requestId}/decision)
+func (_ Unimplemented) DecideKnowledgeAccessRequest(w http.ResponseWriter, r *http.Request, tenantId TenantId, requestId RequestId, params DecideKnowledgeAccessRequestParams) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// SetKnowledgeRuleEnabled Switch an automation rule on or off
+// (PATCH /api/v1/tenants/{tenantId}/knowledge/rules/{ruleId})
+func (_ Unimplemented) SetKnowledgeRuleEnabled(w http.ResponseWriter, r *http.Request, tenantId TenantId, ruleId RuleId, params SetKnowledgeRuleEnabledParams) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// SearchKnowledge Search the visible pages
+// (GET /api/v1/tenants/{tenantId}/knowledge/search)
+func (_ Unimplemented) SearchKnowledge(w http.ResponseWriter, r *http.Request, tenantId TenantId, params SearchKnowledgeParams) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// ListKnowledgeSpaceTemplates List the starting templates of spaces
+// (GET /api/v1/tenants/{tenantId}/knowledge/space-templates)
+func (_ Unimplemented) ListKnowledgeSpaceTemplates(w http.ResponseWriter, r *http.Request, tenantId TenantId) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// ListKnowledgeSpaces List the knowledge spaces the member sees
+// (GET /api/v1/tenants/{tenantId}/knowledge/spaces)
+func (_ Unimplemented) ListKnowledgeSpaces(w http.ResponseWriter, r *http.Request, tenantId TenantId, params ListKnowledgeSpacesParams) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// CreateKnowledgeSpace Create a knowledge space from a template
+// (POST /api/v1/tenants/{tenantId}/knowledge/spaces)
+func (_ Unimplemented) CreateKnowledgeSpace(w http.ResponseWriter, r *http.Request, tenantId TenantId, params CreateKnowledgeSpaceParams) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// UpdateKnowledgeSpace Change the name, area or level of a space
+// (PATCH /api/v1/tenants/{tenantId}/knowledge/spaces/{spaceId})
+func (_ Unimplemented) UpdateKnowledgeSpace(w http.ResponseWriter, r *http.Request, tenantId TenantId, spaceId SpaceId, params UpdateKnowledgeSpaceParams) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// GetKnowledgeAccessMap Read the access map of a space
+// (GET /api/v1/tenants/{tenantId}/knowledge/spaces/{spaceId}/access-map)
+func (_ Unimplemented) GetKnowledgeAccessMap(w http.ResponseWriter, r *http.Request, tenantId TenantId, spaceId SpaceId, params GetKnowledgeAccessMapParams) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// ListKnowledgeArchive List the archived branches of a space
+// (GET /api/v1/tenants/{tenantId}/knowledge/spaces/{spaceId}/archive)
+func (_ Unimplemented) ListKnowledgeArchive(w http.ResponseWriter, r *http.Request, tenantId TenantId, spaceId SpaceId) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// ListKnowledgeSpaceMembers List the members of a space
+// (GET /api/v1/tenants/{tenantId}/knowledge/spaces/{spaceId}/members)
+func (_ Unimplemented) ListKnowledgeSpaceMembers(w http.ResponseWriter, r *http.Request, tenantId TenantId, spaceId SpaceId) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// SetKnowledgeSpaceMember Give, change or remove the role of an employee in a space
+// (PUT /api/v1/tenants/{tenantId}/knowledge/spaces/{spaceId}/members/{memberId})
+func (_ Unimplemented) SetKnowledgeSpaceMember(w http.ResponseWriter, r *http.Request, tenantId TenantId, spaceId SpaceId, memberId MemberId, params SetKnowledgeSpaceMemberParams) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// CreateKnowledgeNode Create a page, a folder or a diagram
+// (POST /api/v1/tenants/{tenantId}/knowledge/spaces/{spaceId}/nodes)
+func (_ Unimplemented) CreateKnowledgeNode(w http.ResponseWriter, r *http.Request, tenantId TenantId, spaceId SpaceId, params CreateKnowledgeNodeParams) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// ListKnowledgeAccessRequests List the access requests of a space
+// (GET /api/v1/tenants/{tenantId}/knowledge/spaces/{spaceId}/requests)
+func (_ Unimplemented) ListKnowledgeAccessRequests(w http.ResponseWriter, r *http.Request, tenantId TenantId, spaceId SpaceId, params ListKnowledgeAccessRequestsParams) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// RunKnowledgeReviewCheck Check the review dates of a space now
+// (POST /api/v1/tenants/{tenantId}/knowledge/spaces/{spaceId}/review-check)
+func (_ Unimplemented) RunKnowledgeReviewCheck(w http.ResponseWriter, r *http.Request, tenantId TenantId, spaceId SpaceId, params RunKnowledgeReviewCheckParams) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// ListKnowledgeRules List the automation rules of a space
+// (GET /api/v1/tenants/{tenantId}/knowledge/spaces/{spaceId}/rules)
+func (_ Unimplemented) ListKnowledgeRules(w http.ResponseWriter, r *http.Request, tenantId TenantId, spaceId SpaceId) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// ListKnowledgeRuns List the runs of the automation rules of a space
+// (GET /api/v1/tenants/{tenantId}/knowledge/spaces/{spaceId}/runs)
+func (_ Unimplemented) ListKnowledgeRuns(w http.ResponseWriter, r *http.Request, tenantId TenantId, spaceId SpaceId) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// RunKnowledgeSection Create the section of an object of repairs
+// (POST /api/v1/tenants/{tenantId}/knowledge/spaces/{spaceId}/sections)
+func (_ Unimplemented) RunKnowledgeSection(w http.ResponseWriter, r *http.Request, tenantId TenantId, spaceId SpaceId, params RunKnowledgeSectionParams) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// GetKnowledgeSpaceTree Read the tree of a space
+// (GET /api/v1/tenants/{tenantId}/knowledge/spaces/{spaceId}/tree)
+func (_ Unimplemented) GetKnowledgeSpaceTree(w http.ResponseWriter, r *http.Request, tenantId TenantId, spaceId SpaceId) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
 // ServerInterfaceWrapper converts contexts to parameters.
 type ServerInterfaceWrapper struct {
 	Handler            ServerInterface
@@ -625,6 +3175,1161 @@ type ServerInterfaceWrapper struct {
 }
 
 type MiddlewareFunc func(http.Handler) http.Handler
+
+// GetKnowledgeNode operation middleware
+func (siw *ServerInterfaceWrapper) GetKnowledgeNode(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+	_ = err
+
+	// ------------- Path parameter "tenantId" -------------
+	var tenantId TenantId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "tenantId", chi.URLParam(r, "tenantId"), &tenantId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "tenantId", Err: err})
+		return
+	}
+
+	// ------------- Path parameter "nodeId" -------------
+	var nodeId NodeId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "nodeId", chi.URLParam(r, "nodeId"), &nodeId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "nodeId", Err: err})
+		return
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.GetKnowledgeNode(w, r, tenantId, nodeId)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// GetKnowledgeNodeAccess operation middleware
+func (siw *ServerInterfaceWrapper) GetKnowledgeNodeAccess(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+	_ = err
+
+	// ------------- Path parameter "tenantId" -------------
+	var tenantId TenantId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "tenantId", chi.URLParam(r, "tenantId"), &tenantId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "tenantId", Err: err})
+		return
+	}
+
+	// ------------- Path parameter "nodeId" -------------
+	var nodeId NodeId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "nodeId", chi.URLParam(r, "nodeId"), &nodeId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "nodeId", Err: err})
+		return
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.GetKnowledgeNodeAccess(w, r, tenantId, nodeId)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// SetKnowledgeNodeAccess operation middleware
+func (siw *ServerInterfaceWrapper) SetKnowledgeNodeAccess(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+	_ = err
+
+	// ------------- Path parameter "tenantId" -------------
+	var tenantId TenantId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "tenantId", chi.URLParam(r, "tenantId"), &tenantId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "tenantId", Err: err})
+		return
+	}
+
+	// ------------- Path parameter "nodeId" -------------
+	var nodeId NodeId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "nodeId", chi.URLParam(r, "nodeId"), &nodeId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "nodeId", Err: err})
+		return
+	}
+
+	// Parameter object where we will unmarshal all parameters from the context
+	var params SetKnowledgeNodeAccessParams
+
+	headers := r.Header
+
+	// ------------- Required header parameter "Idempotency-Key" -------------
+	if valueList, found := headers[http.CanonicalHeaderKey("Idempotency-Key")]; found {
+		var IdempotencyKey IdempotencyKey
+		n := len(valueList)
+		if n != 1 {
+			siw.ErrorHandlerFunc(w, r, &TooManyValuesForParamError{ParamName: "Idempotency-Key", Count: n})
+			return
+		}
+
+		err = runtime.BindStyledParameterWithOptions("simple", "Idempotency-Key", valueList[0], &IdempotencyKey, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: true, Type: "string", Format: ""})
+		if err != nil {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "Idempotency-Key", Err: err})
+			return
+		}
+
+		params.IdempotencyKey = IdempotencyKey
+
+	} else {
+		err := fmt.Errorf("Header parameter Idempotency-Key is required, but not found")
+		siw.ErrorHandlerFunc(w, r, &RequiredHeaderError{ParamName: "Idempotency-Key", Err: err})
+		return
+	}
+
+	// ------------- Optional header parameter "X-CSRF-Token" -------------
+	if valueList, found := headers[http.CanonicalHeaderKey("X-CSRF-Token")]; found {
+		var XCSRFToken Csrf
+		n := len(valueList)
+		if n != 1 {
+			siw.ErrorHandlerFunc(w, r, &TooManyValuesForParamError{ParamName: "X-CSRF-Token", Count: n})
+			return
+		}
+
+		err = runtime.BindStyledParameterWithOptions("simple", "X-CSRF-Token", valueList[0], &XCSRFToken, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: false, Type: "string", Format: ""})
+		if err != nil {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "X-CSRF-Token", Err: err})
+			return
+		}
+
+		params.XCSRFToken = &XCSRFToken
+
+	}
+
+	// ------------- Optional header parameter "Origin" -------------
+	if valueList, found := headers[http.CanonicalHeaderKey("Origin")]; found {
+		var Origin Origin
+		n := len(valueList)
+		if n != 1 {
+			siw.ErrorHandlerFunc(w, r, &TooManyValuesForParamError{ParamName: "Origin", Count: n})
+			return
+		}
+
+		err = runtime.BindStyledParameterWithOptions("simple", "Origin", valueList[0], &Origin, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: false, Type: "string", Format: "uri"})
+		if err != nil {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "Origin", Err: err})
+			return
+		}
+
+		params.Origin = &Origin
+
+	}
+
+	// ------------- Required header parameter "If-Match" -------------
+	if valueList, found := headers[http.CanonicalHeaderKey("If-Match")]; found {
+		var IfMatch IfMatch
+		n := len(valueList)
+		if n != 1 {
+			siw.ErrorHandlerFunc(w, r, &TooManyValuesForParamError{ParamName: "If-Match", Count: n})
+			return
+		}
+
+		err = runtime.BindStyledParameterWithOptions("simple", "If-Match", valueList[0], &IfMatch, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: true, Type: "string", Format: ""})
+		if err != nil {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "If-Match", Err: err})
+			return
+		}
+
+		params.IfMatch = IfMatch
+
+	} else {
+		err := fmt.Errorf("Header parameter If-Match is required, but not found")
+		siw.ErrorHandlerFunc(w, r, &RequiredHeaderError{ParamName: "If-Match", Err: err})
+		return
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.SetKnowledgeNodeAccess(w, r, tenantId, nodeId, params)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// ListKnowledgeAccessCandidates operation middleware
+func (siw *ServerInterfaceWrapper) ListKnowledgeAccessCandidates(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+	_ = err
+
+	// ------------- Path parameter "tenantId" -------------
+	var tenantId TenantId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "tenantId", chi.URLParam(r, "tenantId"), &tenantId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "tenantId", Err: err})
+		return
+	}
+
+	// ------------- Path parameter "nodeId" -------------
+	var nodeId NodeId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "nodeId", chi.URLParam(r, "nodeId"), &nodeId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "nodeId", Err: err})
+		return
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.ListKnowledgeAccessCandidates(w, r, tenantId, nodeId)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// AckKnowledgeNode operation middleware
+func (siw *ServerInterfaceWrapper) AckKnowledgeNode(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+	_ = err
+
+	// ------------- Path parameter "tenantId" -------------
+	var tenantId TenantId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "tenantId", chi.URLParam(r, "tenantId"), &tenantId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "tenantId", Err: err})
+		return
+	}
+
+	// ------------- Path parameter "nodeId" -------------
+	var nodeId NodeId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "nodeId", chi.URLParam(r, "nodeId"), &nodeId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "nodeId", Err: err})
+		return
+	}
+
+	// Parameter object where we will unmarshal all parameters from the context
+	var params AckKnowledgeNodeParams
+
+	headers := r.Header
+
+	// ------------- Required header parameter "Idempotency-Key" -------------
+	if valueList, found := headers[http.CanonicalHeaderKey("Idempotency-Key")]; found {
+		var IdempotencyKey IdempotencyKey
+		n := len(valueList)
+		if n != 1 {
+			siw.ErrorHandlerFunc(w, r, &TooManyValuesForParamError{ParamName: "Idempotency-Key", Count: n})
+			return
+		}
+
+		err = runtime.BindStyledParameterWithOptions("simple", "Idempotency-Key", valueList[0], &IdempotencyKey, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: true, Type: "string", Format: ""})
+		if err != nil {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "Idempotency-Key", Err: err})
+			return
+		}
+
+		params.IdempotencyKey = IdempotencyKey
+
+	} else {
+		err := fmt.Errorf("Header parameter Idempotency-Key is required, but not found")
+		siw.ErrorHandlerFunc(w, r, &RequiredHeaderError{ParamName: "Idempotency-Key", Err: err})
+		return
+	}
+
+	// ------------- Optional header parameter "X-CSRF-Token" -------------
+	if valueList, found := headers[http.CanonicalHeaderKey("X-CSRF-Token")]; found {
+		var XCSRFToken Csrf
+		n := len(valueList)
+		if n != 1 {
+			siw.ErrorHandlerFunc(w, r, &TooManyValuesForParamError{ParamName: "X-CSRF-Token", Count: n})
+			return
+		}
+
+		err = runtime.BindStyledParameterWithOptions("simple", "X-CSRF-Token", valueList[0], &XCSRFToken, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: false, Type: "string", Format: ""})
+		if err != nil {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "X-CSRF-Token", Err: err})
+			return
+		}
+
+		params.XCSRFToken = &XCSRFToken
+
+	}
+
+	// ------------- Optional header parameter "Origin" -------------
+	if valueList, found := headers[http.CanonicalHeaderKey("Origin")]; found {
+		var Origin Origin
+		n := len(valueList)
+		if n != 1 {
+			siw.ErrorHandlerFunc(w, r, &TooManyValuesForParamError{ParamName: "Origin", Count: n})
+			return
+		}
+
+		err = runtime.BindStyledParameterWithOptions("simple", "Origin", valueList[0], &Origin, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: false, Type: "string", Format: "uri"})
+		if err != nil {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "Origin", Err: err})
+			return
+		}
+
+		params.Origin = &Origin
+
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.AckKnowledgeNode(w, r, tenantId, nodeId, params)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// ArchiveKnowledgeNode operation middleware
+func (siw *ServerInterfaceWrapper) ArchiveKnowledgeNode(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+	_ = err
+
+	// ------------- Path parameter "tenantId" -------------
+	var tenantId TenantId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "tenantId", chi.URLParam(r, "tenantId"), &tenantId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "tenantId", Err: err})
+		return
+	}
+
+	// ------------- Path parameter "nodeId" -------------
+	var nodeId NodeId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "nodeId", chi.URLParam(r, "nodeId"), &nodeId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "nodeId", Err: err})
+		return
+	}
+
+	// Parameter object where we will unmarshal all parameters from the context
+	var params ArchiveKnowledgeNodeParams
+
+	headers := r.Header
+
+	// ------------- Required header parameter "Idempotency-Key" -------------
+	if valueList, found := headers[http.CanonicalHeaderKey("Idempotency-Key")]; found {
+		var IdempotencyKey IdempotencyKey
+		n := len(valueList)
+		if n != 1 {
+			siw.ErrorHandlerFunc(w, r, &TooManyValuesForParamError{ParamName: "Idempotency-Key", Count: n})
+			return
+		}
+
+		err = runtime.BindStyledParameterWithOptions("simple", "Idempotency-Key", valueList[0], &IdempotencyKey, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: true, Type: "string", Format: ""})
+		if err != nil {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "Idempotency-Key", Err: err})
+			return
+		}
+
+		params.IdempotencyKey = IdempotencyKey
+
+	} else {
+		err := fmt.Errorf("Header parameter Idempotency-Key is required, but not found")
+		siw.ErrorHandlerFunc(w, r, &RequiredHeaderError{ParamName: "Idempotency-Key", Err: err})
+		return
+	}
+
+	// ------------- Optional header parameter "X-CSRF-Token" -------------
+	if valueList, found := headers[http.CanonicalHeaderKey("X-CSRF-Token")]; found {
+		var XCSRFToken Csrf
+		n := len(valueList)
+		if n != 1 {
+			siw.ErrorHandlerFunc(w, r, &TooManyValuesForParamError{ParamName: "X-CSRF-Token", Count: n})
+			return
+		}
+
+		err = runtime.BindStyledParameterWithOptions("simple", "X-CSRF-Token", valueList[0], &XCSRFToken, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: false, Type: "string", Format: ""})
+		if err != nil {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "X-CSRF-Token", Err: err})
+			return
+		}
+
+		params.XCSRFToken = &XCSRFToken
+
+	}
+
+	// ------------- Optional header parameter "Origin" -------------
+	if valueList, found := headers[http.CanonicalHeaderKey("Origin")]; found {
+		var Origin Origin
+		n := len(valueList)
+		if n != 1 {
+			siw.ErrorHandlerFunc(w, r, &TooManyValuesForParamError{ParamName: "Origin", Count: n})
+			return
+		}
+
+		err = runtime.BindStyledParameterWithOptions("simple", "Origin", valueList[0], &Origin, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: false, Type: "string", Format: "uri"})
+		if err != nil {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "Origin", Err: err})
+			return
+		}
+
+		params.Origin = &Origin
+
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.ArchiveKnowledgeNode(w, r, tenantId, nodeId, params)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// ExplainKnowledgeAccess operation middleware
+func (siw *ServerInterfaceWrapper) ExplainKnowledgeAccess(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+	_ = err
+
+	// ------------- Path parameter "tenantId" -------------
+	var tenantId TenantId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "tenantId", chi.URLParam(r, "tenantId"), &tenantId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "tenantId", Err: err})
+		return
+	}
+
+	// ------------- Path parameter "nodeId" -------------
+	var nodeId NodeId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "nodeId", chi.URLParam(r, "nodeId"), &nodeId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "nodeId", Err: err})
+		return
+	}
+
+	// Parameter object where we will unmarshal all parameters from the context
+	var params ExplainKnowledgeAccessParams
+
+	// ------------- Required query parameter "memberId" -------------
+
+	err = runtime.BindQueryParameterWithOptions("form", true, true, "memberId", r.URL.Query(), &params.MemberId, runtime.BindQueryParameterOptions{Type: "string", Format: "uuid"})
+	if err != nil {
+		var requiredError *runtime.RequiredParameterError
+		if errors.As(err, &requiredError) {
+			siw.ErrorHandlerFunc(w, r, &RequiredParamError{ParamName: "memberId"})
+		} else {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "memberId", Err: err})
+		}
+		return
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.ExplainKnowledgeAccess(w, r, tenantId, nodeId, params)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// MoveKnowledgeNode operation middleware
+func (siw *ServerInterfaceWrapper) MoveKnowledgeNode(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+	_ = err
+
+	// ------------- Path parameter "tenantId" -------------
+	var tenantId TenantId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "tenantId", chi.URLParam(r, "tenantId"), &tenantId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "tenantId", Err: err})
+		return
+	}
+
+	// ------------- Path parameter "nodeId" -------------
+	var nodeId NodeId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "nodeId", chi.URLParam(r, "nodeId"), &nodeId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "nodeId", Err: err})
+		return
+	}
+
+	// Parameter object where we will unmarshal all parameters from the context
+	var params MoveKnowledgeNodeParams
+
+	headers := r.Header
+
+	// ------------- Required header parameter "Idempotency-Key" -------------
+	if valueList, found := headers[http.CanonicalHeaderKey("Idempotency-Key")]; found {
+		var IdempotencyKey IdempotencyKey
+		n := len(valueList)
+		if n != 1 {
+			siw.ErrorHandlerFunc(w, r, &TooManyValuesForParamError{ParamName: "Idempotency-Key", Count: n})
+			return
+		}
+
+		err = runtime.BindStyledParameterWithOptions("simple", "Idempotency-Key", valueList[0], &IdempotencyKey, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: true, Type: "string", Format: ""})
+		if err != nil {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "Idempotency-Key", Err: err})
+			return
+		}
+
+		params.IdempotencyKey = IdempotencyKey
+
+	} else {
+		err := fmt.Errorf("Header parameter Idempotency-Key is required, but not found")
+		siw.ErrorHandlerFunc(w, r, &RequiredHeaderError{ParamName: "Idempotency-Key", Err: err})
+		return
+	}
+
+	// ------------- Optional header parameter "X-CSRF-Token" -------------
+	if valueList, found := headers[http.CanonicalHeaderKey("X-CSRF-Token")]; found {
+		var XCSRFToken Csrf
+		n := len(valueList)
+		if n != 1 {
+			siw.ErrorHandlerFunc(w, r, &TooManyValuesForParamError{ParamName: "X-CSRF-Token", Count: n})
+			return
+		}
+
+		err = runtime.BindStyledParameterWithOptions("simple", "X-CSRF-Token", valueList[0], &XCSRFToken, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: false, Type: "string", Format: ""})
+		if err != nil {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "X-CSRF-Token", Err: err})
+			return
+		}
+
+		params.XCSRFToken = &XCSRFToken
+
+	}
+
+	// ------------- Optional header parameter "Origin" -------------
+	if valueList, found := headers[http.CanonicalHeaderKey("Origin")]; found {
+		var Origin Origin
+		n := len(valueList)
+		if n != 1 {
+			siw.ErrorHandlerFunc(w, r, &TooManyValuesForParamError{ParamName: "Origin", Count: n})
+			return
+		}
+
+		err = runtime.BindStyledParameterWithOptions("simple", "Origin", valueList[0], &Origin, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: false, Type: "string", Format: "uri"})
+		if err != nil {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "Origin", Err: err})
+			return
+		}
+
+		params.Origin = &Origin
+
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.MoveKnowledgeNode(w, r, tenantId, nodeId, params)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// CreateKnowledgeAccessRequest operation middleware
+func (siw *ServerInterfaceWrapper) CreateKnowledgeAccessRequest(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+	_ = err
+
+	// ------------- Path parameter "tenantId" -------------
+	var tenantId TenantId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "tenantId", chi.URLParam(r, "tenantId"), &tenantId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "tenantId", Err: err})
+		return
+	}
+
+	// ------------- Path parameter "nodeId" -------------
+	var nodeId NodeId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "nodeId", chi.URLParam(r, "nodeId"), &nodeId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "nodeId", Err: err})
+		return
+	}
+
+	// Parameter object where we will unmarshal all parameters from the context
+	var params CreateKnowledgeAccessRequestParams
+
+	headers := r.Header
+
+	// ------------- Required header parameter "Idempotency-Key" -------------
+	if valueList, found := headers[http.CanonicalHeaderKey("Idempotency-Key")]; found {
+		var IdempotencyKey IdempotencyKey
+		n := len(valueList)
+		if n != 1 {
+			siw.ErrorHandlerFunc(w, r, &TooManyValuesForParamError{ParamName: "Idempotency-Key", Count: n})
+			return
+		}
+
+		err = runtime.BindStyledParameterWithOptions("simple", "Idempotency-Key", valueList[0], &IdempotencyKey, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: true, Type: "string", Format: ""})
+		if err != nil {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "Idempotency-Key", Err: err})
+			return
+		}
+
+		params.IdempotencyKey = IdempotencyKey
+
+	} else {
+		err := fmt.Errorf("Header parameter Idempotency-Key is required, but not found")
+		siw.ErrorHandlerFunc(w, r, &RequiredHeaderError{ParamName: "Idempotency-Key", Err: err})
+		return
+	}
+
+	// ------------- Optional header parameter "X-CSRF-Token" -------------
+	if valueList, found := headers[http.CanonicalHeaderKey("X-CSRF-Token")]; found {
+		var XCSRFToken Csrf
+		n := len(valueList)
+		if n != 1 {
+			siw.ErrorHandlerFunc(w, r, &TooManyValuesForParamError{ParamName: "X-CSRF-Token", Count: n})
+			return
+		}
+
+		err = runtime.BindStyledParameterWithOptions("simple", "X-CSRF-Token", valueList[0], &XCSRFToken, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: false, Type: "string", Format: ""})
+		if err != nil {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "X-CSRF-Token", Err: err})
+			return
+		}
+
+		params.XCSRFToken = &XCSRFToken
+
+	}
+
+	// ------------- Optional header parameter "Origin" -------------
+	if valueList, found := headers[http.CanonicalHeaderKey("Origin")]; found {
+		var Origin Origin
+		n := len(valueList)
+		if n != 1 {
+			siw.ErrorHandlerFunc(w, r, &TooManyValuesForParamError{ParamName: "Origin", Count: n})
+			return
+		}
+
+		err = runtime.BindStyledParameterWithOptions("simple", "Origin", valueList[0], &Origin, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: false, Type: "string", Format: "uri"})
+		if err != nil {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "Origin", Err: err})
+			return
+		}
+
+		params.Origin = &Origin
+
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.CreateKnowledgeAccessRequest(w, r, tenantId, nodeId, params)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// RestoreKnowledgeNode operation middleware
+func (siw *ServerInterfaceWrapper) RestoreKnowledgeNode(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+	_ = err
+
+	// ------------- Path parameter "tenantId" -------------
+	var tenantId TenantId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "tenantId", chi.URLParam(r, "tenantId"), &tenantId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "tenantId", Err: err})
+		return
+	}
+
+	// ------------- Path parameter "nodeId" -------------
+	var nodeId NodeId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "nodeId", chi.URLParam(r, "nodeId"), &nodeId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "nodeId", Err: err})
+		return
+	}
+
+	// Parameter object where we will unmarshal all parameters from the context
+	var params RestoreKnowledgeNodeParams
+
+	headers := r.Header
+
+	// ------------- Required header parameter "Idempotency-Key" -------------
+	if valueList, found := headers[http.CanonicalHeaderKey("Idempotency-Key")]; found {
+		var IdempotencyKey IdempotencyKey
+		n := len(valueList)
+		if n != 1 {
+			siw.ErrorHandlerFunc(w, r, &TooManyValuesForParamError{ParamName: "Idempotency-Key", Count: n})
+			return
+		}
+
+		err = runtime.BindStyledParameterWithOptions("simple", "Idempotency-Key", valueList[0], &IdempotencyKey, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: true, Type: "string", Format: ""})
+		if err != nil {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "Idempotency-Key", Err: err})
+			return
+		}
+
+		params.IdempotencyKey = IdempotencyKey
+
+	} else {
+		err := fmt.Errorf("Header parameter Idempotency-Key is required, but not found")
+		siw.ErrorHandlerFunc(w, r, &RequiredHeaderError{ParamName: "Idempotency-Key", Err: err})
+		return
+	}
+
+	// ------------- Optional header parameter "X-CSRF-Token" -------------
+	if valueList, found := headers[http.CanonicalHeaderKey("X-CSRF-Token")]; found {
+		var XCSRFToken Csrf
+		n := len(valueList)
+		if n != 1 {
+			siw.ErrorHandlerFunc(w, r, &TooManyValuesForParamError{ParamName: "X-CSRF-Token", Count: n})
+			return
+		}
+
+		err = runtime.BindStyledParameterWithOptions("simple", "X-CSRF-Token", valueList[0], &XCSRFToken, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: false, Type: "string", Format: ""})
+		if err != nil {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "X-CSRF-Token", Err: err})
+			return
+		}
+
+		params.XCSRFToken = &XCSRFToken
+
+	}
+
+	// ------------- Optional header parameter "Origin" -------------
+	if valueList, found := headers[http.CanonicalHeaderKey("Origin")]; found {
+		var Origin Origin
+		n := len(valueList)
+		if n != 1 {
+			siw.ErrorHandlerFunc(w, r, &TooManyValuesForParamError{ParamName: "Origin", Count: n})
+			return
+		}
+
+		err = runtime.BindStyledParameterWithOptions("simple", "Origin", valueList[0], &Origin, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: false, Type: "string", Format: "uri"})
+		if err != nil {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "Origin", Err: err})
+			return
+		}
+
+		params.Origin = &Origin
+
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.RestoreKnowledgeNode(w, r, tenantId, nodeId, params)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// SetKnowledgeNodeStatus operation middleware
+func (siw *ServerInterfaceWrapper) SetKnowledgeNodeStatus(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+	_ = err
+
+	// ------------- Path parameter "tenantId" -------------
+	var tenantId TenantId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "tenantId", chi.URLParam(r, "tenantId"), &tenantId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "tenantId", Err: err})
+		return
+	}
+
+	// ------------- Path parameter "nodeId" -------------
+	var nodeId NodeId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "nodeId", chi.URLParam(r, "nodeId"), &nodeId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "nodeId", Err: err})
+		return
+	}
+
+	// Parameter object where we will unmarshal all parameters from the context
+	var params SetKnowledgeNodeStatusParams
+
+	headers := r.Header
+
+	// ------------- Required header parameter "Idempotency-Key" -------------
+	if valueList, found := headers[http.CanonicalHeaderKey("Idempotency-Key")]; found {
+		var IdempotencyKey IdempotencyKey
+		n := len(valueList)
+		if n != 1 {
+			siw.ErrorHandlerFunc(w, r, &TooManyValuesForParamError{ParamName: "Idempotency-Key", Count: n})
+			return
+		}
+
+		err = runtime.BindStyledParameterWithOptions("simple", "Idempotency-Key", valueList[0], &IdempotencyKey, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: true, Type: "string", Format: ""})
+		if err != nil {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "Idempotency-Key", Err: err})
+			return
+		}
+
+		params.IdempotencyKey = IdempotencyKey
+
+	} else {
+		err := fmt.Errorf("Header parameter Idempotency-Key is required, but not found")
+		siw.ErrorHandlerFunc(w, r, &RequiredHeaderError{ParamName: "Idempotency-Key", Err: err})
+		return
+	}
+
+	// ------------- Optional header parameter "X-CSRF-Token" -------------
+	if valueList, found := headers[http.CanonicalHeaderKey("X-CSRF-Token")]; found {
+		var XCSRFToken Csrf
+		n := len(valueList)
+		if n != 1 {
+			siw.ErrorHandlerFunc(w, r, &TooManyValuesForParamError{ParamName: "X-CSRF-Token", Count: n})
+			return
+		}
+
+		err = runtime.BindStyledParameterWithOptions("simple", "X-CSRF-Token", valueList[0], &XCSRFToken, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: false, Type: "string", Format: ""})
+		if err != nil {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "X-CSRF-Token", Err: err})
+			return
+		}
+
+		params.XCSRFToken = &XCSRFToken
+
+	}
+
+	// ------------- Optional header parameter "Origin" -------------
+	if valueList, found := headers[http.CanonicalHeaderKey("Origin")]; found {
+		var Origin Origin
+		n := len(valueList)
+		if n != 1 {
+			siw.ErrorHandlerFunc(w, r, &TooManyValuesForParamError{ParamName: "Origin", Count: n})
+			return
+		}
+
+		err = runtime.BindStyledParameterWithOptions("simple", "Origin", valueList[0], &Origin, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: false, Type: "string", Format: "uri"})
+		if err != nil {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "Origin", Err: err})
+			return
+		}
+
+		params.Origin = &Origin
+
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.SetKnowledgeNodeStatus(w, r, tenantId, nodeId, params)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// CreateKnowledgeTable operation middleware
+func (siw *ServerInterfaceWrapper) CreateKnowledgeTable(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+	_ = err
+
+	// ------------- Path parameter "tenantId" -------------
+	var tenantId TenantId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "tenantId", chi.URLParam(r, "tenantId"), &tenantId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "tenantId", Err: err})
+		return
+	}
+
+	// ------------- Path parameter "nodeId" -------------
+	var nodeId NodeId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "nodeId", chi.URLParam(r, "nodeId"), &nodeId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "nodeId", Err: err})
+		return
+	}
+
+	// Parameter object where we will unmarshal all parameters from the context
+	var params CreateKnowledgeTableParams
+
+	headers := r.Header
+
+	// ------------- Required header parameter "Idempotency-Key" -------------
+	if valueList, found := headers[http.CanonicalHeaderKey("Idempotency-Key")]; found {
+		var IdempotencyKey IdempotencyKey
+		n := len(valueList)
+		if n != 1 {
+			siw.ErrorHandlerFunc(w, r, &TooManyValuesForParamError{ParamName: "Idempotency-Key", Count: n})
+			return
+		}
+
+		err = runtime.BindStyledParameterWithOptions("simple", "Idempotency-Key", valueList[0], &IdempotencyKey, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: true, Type: "string", Format: ""})
+		if err != nil {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "Idempotency-Key", Err: err})
+			return
+		}
+
+		params.IdempotencyKey = IdempotencyKey
+
+	} else {
+		err := fmt.Errorf("Header parameter Idempotency-Key is required, but not found")
+		siw.ErrorHandlerFunc(w, r, &RequiredHeaderError{ParamName: "Idempotency-Key", Err: err})
+		return
+	}
+
+	// ------------- Optional header parameter "X-CSRF-Token" -------------
+	if valueList, found := headers[http.CanonicalHeaderKey("X-CSRF-Token")]; found {
+		var XCSRFToken Csrf
+		n := len(valueList)
+		if n != 1 {
+			siw.ErrorHandlerFunc(w, r, &TooManyValuesForParamError{ParamName: "X-CSRF-Token", Count: n})
+			return
+		}
+
+		err = runtime.BindStyledParameterWithOptions("simple", "X-CSRF-Token", valueList[0], &XCSRFToken, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: false, Type: "string", Format: ""})
+		if err != nil {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "X-CSRF-Token", Err: err})
+			return
+		}
+
+		params.XCSRFToken = &XCSRFToken
+
+	}
+
+	// ------------- Optional header parameter "Origin" -------------
+	if valueList, found := headers[http.CanonicalHeaderKey("Origin")]; found {
+		var Origin Origin
+		n := len(valueList)
+		if n != 1 {
+			siw.ErrorHandlerFunc(w, r, &TooManyValuesForParamError{ParamName: "Origin", Count: n})
+			return
+		}
+
+		err = runtime.BindStyledParameterWithOptions("simple", "Origin", valueList[0], &Origin, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: false, Type: "string", Format: "uri"})
+		if err != nil {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "Origin", Err: err})
+			return
+		}
+
+		params.Origin = &Origin
+
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.CreateKnowledgeTable(w, r, tenantId, nodeId, params)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// PublishKnowledgeNodeVersion operation middleware
+func (siw *ServerInterfaceWrapper) PublishKnowledgeNodeVersion(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+	_ = err
+
+	// ------------- Path parameter "tenantId" -------------
+	var tenantId TenantId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "tenantId", chi.URLParam(r, "tenantId"), &tenantId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "tenantId", Err: err})
+		return
+	}
+
+	// ------------- Path parameter "nodeId" -------------
+	var nodeId NodeId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "nodeId", chi.URLParam(r, "nodeId"), &nodeId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "nodeId", Err: err})
+		return
+	}
+
+	// Parameter object where we will unmarshal all parameters from the context
+	var params PublishKnowledgeNodeVersionParams
+
+	headers := r.Header
+
+	// ------------- Required header parameter "Idempotency-Key" -------------
+	if valueList, found := headers[http.CanonicalHeaderKey("Idempotency-Key")]; found {
+		var IdempotencyKey IdempotencyKey
+		n := len(valueList)
+		if n != 1 {
+			siw.ErrorHandlerFunc(w, r, &TooManyValuesForParamError{ParamName: "Idempotency-Key", Count: n})
+			return
+		}
+
+		err = runtime.BindStyledParameterWithOptions("simple", "Idempotency-Key", valueList[0], &IdempotencyKey, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: true, Type: "string", Format: ""})
+		if err != nil {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "Idempotency-Key", Err: err})
+			return
+		}
+
+		params.IdempotencyKey = IdempotencyKey
+
+	} else {
+		err := fmt.Errorf("Header parameter Idempotency-Key is required, but not found")
+		siw.ErrorHandlerFunc(w, r, &RequiredHeaderError{ParamName: "Idempotency-Key", Err: err})
+		return
+	}
+
+	// ------------- Optional header parameter "X-CSRF-Token" -------------
+	if valueList, found := headers[http.CanonicalHeaderKey("X-CSRF-Token")]; found {
+		var XCSRFToken Csrf
+		n := len(valueList)
+		if n != 1 {
+			siw.ErrorHandlerFunc(w, r, &TooManyValuesForParamError{ParamName: "X-CSRF-Token", Count: n})
+			return
+		}
+
+		err = runtime.BindStyledParameterWithOptions("simple", "X-CSRF-Token", valueList[0], &XCSRFToken, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: false, Type: "string", Format: ""})
+		if err != nil {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "X-CSRF-Token", Err: err})
+			return
+		}
+
+		params.XCSRFToken = &XCSRFToken
+
+	}
+
+	// ------------- Optional header parameter "Origin" -------------
+	if valueList, found := headers[http.CanonicalHeaderKey("Origin")]; found {
+		var Origin Origin
+		n := len(valueList)
+		if n != 1 {
+			siw.ErrorHandlerFunc(w, r, &TooManyValuesForParamError{ParamName: "Origin", Count: n})
+			return
+		}
+
+		err = runtime.BindStyledParameterWithOptions("simple", "Origin", valueList[0], &Origin, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: false, Type: "string", Format: "uri"})
+		if err != nil {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "Origin", Err: err})
+			return
+		}
+
+		params.Origin = &Origin
+
+	}
+
+	// ------------- Required header parameter "If-Match" -------------
+	if valueList, found := headers[http.CanonicalHeaderKey("If-Match")]; found {
+		var IfMatch IfMatch
+		n := len(valueList)
+		if n != 1 {
+			siw.ErrorHandlerFunc(w, r, &TooManyValuesForParamError{ParamName: "If-Match", Count: n})
+			return
+		}
+
+		err = runtime.BindStyledParameterWithOptions("simple", "If-Match", valueList[0], &IfMatch, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: true, Type: "string", Format: ""})
+		if err != nil {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "If-Match", Err: err})
+			return
+		}
+
+		params.IfMatch = IfMatch
+
+	} else {
+		err := fmt.Errorf("Header parameter If-Match is required, but not found")
+		siw.ErrorHandlerFunc(w, r, &RequiredHeaderError{ParamName: "If-Match", Err: err})
+		return
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.PublishKnowledgeNodeVersion(w, r, tenantId, nodeId, params)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// GetKnowledgeNodeVersion operation middleware
+func (siw *ServerInterfaceWrapper) GetKnowledgeNodeVersion(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+	_ = err
+
+	// ------------- Path parameter "tenantId" -------------
+	var tenantId TenantId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "tenantId", chi.URLParam(r, "tenantId"), &tenantId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "tenantId", Err: err})
+		return
+	}
+
+	// ------------- Path parameter "nodeId" -------------
+	var nodeId NodeId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "nodeId", chi.URLParam(r, "nodeId"), &nodeId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "nodeId", Err: err})
+		return
+	}
+
+	// ------------- Path parameter "version" -------------
+	var version NodeVersion
+
+	err = runtime.BindStyledParameterWithOptions("simple", "version", chi.URLParam(r, "version"), &version, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "integer", Format: "", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "version", Err: err})
+		return
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.GetKnowledgeNodeVersion(w, r, tenantId, nodeId, version)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
 
 // ListKnowledgePages operation middleware
 func (siw *ServerInterfaceWrapper) ListKnowledgePages(w http.ResponseWriter, r *http.Request) {
@@ -932,6 +4637,1250 @@ func (siw *ServerInterfaceWrapper) UpdateKnowledgePage(w http.ResponseWriter, r 
 	handler.ServeHTTP(w, r)
 }
 
+// DecideKnowledgeAccessRequest operation middleware
+func (siw *ServerInterfaceWrapper) DecideKnowledgeAccessRequest(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+	_ = err
+
+	// ------------- Path parameter "tenantId" -------------
+	var tenantId TenantId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "tenantId", chi.URLParam(r, "tenantId"), &tenantId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "tenantId", Err: err})
+		return
+	}
+
+	// ------------- Path parameter "requestId" -------------
+	var requestId RequestId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "requestId", chi.URLParam(r, "requestId"), &requestId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "requestId", Err: err})
+		return
+	}
+
+	// Parameter object where we will unmarshal all parameters from the context
+	var params DecideKnowledgeAccessRequestParams
+
+	headers := r.Header
+
+	// ------------- Required header parameter "Idempotency-Key" -------------
+	if valueList, found := headers[http.CanonicalHeaderKey("Idempotency-Key")]; found {
+		var IdempotencyKey IdempotencyKey
+		n := len(valueList)
+		if n != 1 {
+			siw.ErrorHandlerFunc(w, r, &TooManyValuesForParamError{ParamName: "Idempotency-Key", Count: n})
+			return
+		}
+
+		err = runtime.BindStyledParameterWithOptions("simple", "Idempotency-Key", valueList[0], &IdempotencyKey, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: true, Type: "string", Format: ""})
+		if err != nil {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "Idempotency-Key", Err: err})
+			return
+		}
+
+		params.IdempotencyKey = IdempotencyKey
+
+	} else {
+		err := fmt.Errorf("Header parameter Idempotency-Key is required, but not found")
+		siw.ErrorHandlerFunc(w, r, &RequiredHeaderError{ParamName: "Idempotency-Key", Err: err})
+		return
+	}
+
+	// ------------- Optional header parameter "X-CSRF-Token" -------------
+	if valueList, found := headers[http.CanonicalHeaderKey("X-CSRF-Token")]; found {
+		var XCSRFToken Csrf
+		n := len(valueList)
+		if n != 1 {
+			siw.ErrorHandlerFunc(w, r, &TooManyValuesForParamError{ParamName: "X-CSRF-Token", Count: n})
+			return
+		}
+
+		err = runtime.BindStyledParameterWithOptions("simple", "X-CSRF-Token", valueList[0], &XCSRFToken, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: false, Type: "string", Format: ""})
+		if err != nil {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "X-CSRF-Token", Err: err})
+			return
+		}
+
+		params.XCSRFToken = &XCSRFToken
+
+	}
+
+	// ------------- Optional header parameter "Origin" -------------
+	if valueList, found := headers[http.CanonicalHeaderKey("Origin")]; found {
+		var Origin Origin
+		n := len(valueList)
+		if n != 1 {
+			siw.ErrorHandlerFunc(w, r, &TooManyValuesForParamError{ParamName: "Origin", Count: n})
+			return
+		}
+
+		err = runtime.BindStyledParameterWithOptions("simple", "Origin", valueList[0], &Origin, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: false, Type: "string", Format: "uri"})
+		if err != nil {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "Origin", Err: err})
+			return
+		}
+
+		params.Origin = &Origin
+
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.DecideKnowledgeAccessRequest(w, r, tenantId, requestId, params)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// SetKnowledgeRuleEnabled operation middleware
+func (siw *ServerInterfaceWrapper) SetKnowledgeRuleEnabled(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+	_ = err
+
+	// ------------- Path parameter "tenantId" -------------
+	var tenantId TenantId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "tenantId", chi.URLParam(r, "tenantId"), &tenantId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "tenantId", Err: err})
+		return
+	}
+
+	// ------------- Path parameter "ruleId" -------------
+	var ruleId RuleId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "ruleId", chi.URLParam(r, "ruleId"), &ruleId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "ruleId", Err: err})
+		return
+	}
+
+	// Parameter object where we will unmarshal all parameters from the context
+	var params SetKnowledgeRuleEnabledParams
+
+	headers := r.Header
+
+	// ------------- Required header parameter "Idempotency-Key" -------------
+	if valueList, found := headers[http.CanonicalHeaderKey("Idempotency-Key")]; found {
+		var IdempotencyKey IdempotencyKey
+		n := len(valueList)
+		if n != 1 {
+			siw.ErrorHandlerFunc(w, r, &TooManyValuesForParamError{ParamName: "Idempotency-Key", Count: n})
+			return
+		}
+
+		err = runtime.BindStyledParameterWithOptions("simple", "Idempotency-Key", valueList[0], &IdempotencyKey, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: true, Type: "string", Format: ""})
+		if err != nil {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "Idempotency-Key", Err: err})
+			return
+		}
+
+		params.IdempotencyKey = IdempotencyKey
+
+	} else {
+		err := fmt.Errorf("Header parameter Idempotency-Key is required, but not found")
+		siw.ErrorHandlerFunc(w, r, &RequiredHeaderError{ParamName: "Idempotency-Key", Err: err})
+		return
+	}
+
+	// ------------- Optional header parameter "X-CSRF-Token" -------------
+	if valueList, found := headers[http.CanonicalHeaderKey("X-CSRF-Token")]; found {
+		var XCSRFToken Csrf
+		n := len(valueList)
+		if n != 1 {
+			siw.ErrorHandlerFunc(w, r, &TooManyValuesForParamError{ParamName: "X-CSRF-Token", Count: n})
+			return
+		}
+
+		err = runtime.BindStyledParameterWithOptions("simple", "X-CSRF-Token", valueList[0], &XCSRFToken, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: false, Type: "string", Format: ""})
+		if err != nil {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "X-CSRF-Token", Err: err})
+			return
+		}
+
+		params.XCSRFToken = &XCSRFToken
+
+	}
+
+	// ------------- Optional header parameter "Origin" -------------
+	if valueList, found := headers[http.CanonicalHeaderKey("Origin")]; found {
+		var Origin Origin
+		n := len(valueList)
+		if n != 1 {
+			siw.ErrorHandlerFunc(w, r, &TooManyValuesForParamError{ParamName: "Origin", Count: n})
+			return
+		}
+
+		err = runtime.BindStyledParameterWithOptions("simple", "Origin", valueList[0], &Origin, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: false, Type: "string", Format: "uri"})
+		if err != nil {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "Origin", Err: err})
+			return
+		}
+
+		params.Origin = &Origin
+
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.SetKnowledgeRuleEnabled(w, r, tenantId, ruleId, params)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// SearchKnowledge operation middleware
+func (siw *ServerInterfaceWrapper) SearchKnowledge(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+	_ = err
+
+	// ------------- Path parameter "tenantId" -------------
+	var tenantId TenantId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "tenantId", chi.URLParam(r, "tenantId"), &tenantId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "tenantId", Err: err})
+		return
+	}
+
+	// Parameter object where we will unmarshal all parameters from the context
+	var params SearchKnowledgeParams
+
+	// ------------- Required query parameter "q" -------------
+
+	err = runtime.BindQueryParameterWithOptions("form", true, true, "q", r.URL.Query(), &params.Q, runtime.BindQueryParameterOptions{Type: "string", Format: ""})
+	if err != nil {
+		var requiredError *runtime.RequiredParameterError
+		if errors.As(err, &requiredError) {
+			siw.ErrorHandlerFunc(w, r, &RequiredParamError{ParamName: "q"})
+		} else {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "q", Err: err})
+		}
+		return
+	}
+
+	// ------------- Optional query parameter "spaceId" -------------
+
+	err = runtime.BindQueryParameterWithOptions("form", true, false, "spaceId", r.URL.Query(), &params.SpaceId, runtime.BindQueryParameterOptions{Type: "string", Format: "uuid"})
+	if err != nil {
+		var requiredError *runtime.RequiredParameterError
+		if errors.As(err, &requiredError) {
+			siw.ErrorHandlerFunc(w, r, &RequiredParamError{ParamName: "spaceId"})
+		} else {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "spaceId", Err: err})
+		}
+		return
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.SearchKnowledge(w, r, tenantId, params)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// ListKnowledgeSpaceTemplates operation middleware
+func (siw *ServerInterfaceWrapper) ListKnowledgeSpaceTemplates(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+	_ = err
+
+	// ------------- Path parameter "tenantId" -------------
+	var tenantId TenantId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "tenantId", chi.URLParam(r, "tenantId"), &tenantId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "tenantId", Err: err})
+		return
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.ListKnowledgeSpaceTemplates(w, r, tenantId)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// ListKnowledgeSpaces operation middleware
+func (siw *ServerInterfaceWrapper) ListKnowledgeSpaces(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+	_ = err
+
+	// ------------- Path parameter "tenantId" -------------
+	var tenantId TenantId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "tenantId", chi.URLParam(r, "tenantId"), &tenantId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "tenantId", Err: err})
+		return
+	}
+
+	// Parameter object where we will unmarshal all parameters from the context
+	var params ListKnowledgeSpacesParams
+
+	// ------------- Optional query parameter "cursor" -------------
+
+	err = runtime.BindQueryParameterWithOptions("form", true, false, "cursor", r.URL.Query(), &params.Cursor, runtime.BindQueryParameterOptions{Type: "string", Format: ""})
+	if err != nil {
+		var requiredError *runtime.RequiredParameterError
+		if errors.As(err, &requiredError) {
+			siw.ErrorHandlerFunc(w, r, &RequiredParamError{ParamName: "cursor"})
+		} else {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "cursor", Err: err})
+		}
+		return
+	}
+
+	// ------------- Optional query parameter "limit" -------------
+
+	err = runtime.BindQueryParameterWithOptions("form", true, false, "limit", r.URL.Query(), &params.Limit, runtime.BindQueryParameterOptions{Type: "integer", Format: ""})
+	if err != nil {
+		var requiredError *runtime.RequiredParameterError
+		if errors.As(err, &requiredError) {
+			siw.ErrorHandlerFunc(w, r, &RequiredParamError{ParamName: "limit"})
+		} else {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "limit", Err: err})
+		}
+		return
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.ListKnowledgeSpaces(w, r, tenantId, params)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// CreateKnowledgeSpace operation middleware
+func (siw *ServerInterfaceWrapper) CreateKnowledgeSpace(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+	_ = err
+
+	// ------------- Path parameter "tenantId" -------------
+	var tenantId TenantId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "tenantId", chi.URLParam(r, "tenantId"), &tenantId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "tenantId", Err: err})
+		return
+	}
+
+	// Parameter object where we will unmarshal all parameters from the context
+	var params CreateKnowledgeSpaceParams
+
+	headers := r.Header
+
+	// ------------- Required header parameter "Idempotency-Key" -------------
+	if valueList, found := headers[http.CanonicalHeaderKey("Idempotency-Key")]; found {
+		var IdempotencyKey IdempotencyKey
+		n := len(valueList)
+		if n != 1 {
+			siw.ErrorHandlerFunc(w, r, &TooManyValuesForParamError{ParamName: "Idempotency-Key", Count: n})
+			return
+		}
+
+		err = runtime.BindStyledParameterWithOptions("simple", "Idempotency-Key", valueList[0], &IdempotencyKey, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: true, Type: "string", Format: ""})
+		if err != nil {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "Idempotency-Key", Err: err})
+			return
+		}
+
+		params.IdempotencyKey = IdempotencyKey
+
+	} else {
+		err := fmt.Errorf("Header parameter Idempotency-Key is required, but not found")
+		siw.ErrorHandlerFunc(w, r, &RequiredHeaderError{ParamName: "Idempotency-Key", Err: err})
+		return
+	}
+
+	// ------------- Optional header parameter "X-CSRF-Token" -------------
+	if valueList, found := headers[http.CanonicalHeaderKey("X-CSRF-Token")]; found {
+		var XCSRFToken Csrf
+		n := len(valueList)
+		if n != 1 {
+			siw.ErrorHandlerFunc(w, r, &TooManyValuesForParamError{ParamName: "X-CSRF-Token", Count: n})
+			return
+		}
+
+		err = runtime.BindStyledParameterWithOptions("simple", "X-CSRF-Token", valueList[0], &XCSRFToken, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: false, Type: "string", Format: ""})
+		if err != nil {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "X-CSRF-Token", Err: err})
+			return
+		}
+
+		params.XCSRFToken = &XCSRFToken
+
+	}
+
+	// ------------- Optional header parameter "Origin" -------------
+	if valueList, found := headers[http.CanonicalHeaderKey("Origin")]; found {
+		var Origin Origin
+		n := len(valueList)
+		if n != 1 {
+			siw.ErrorHandlerFunc(w, r, &TooManyValuesForParamError{ParamName: "Origin", Count: n})
+			return
+		}
+
+		err = runtime.BindStyledParameterWithOptions("simple", "Origin", valueList[0], &Origin, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: false, Type: "string", Format: "uri"})
+		if err != nil {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "Origin", Err: err})
+			return
+		}
+
+		params.Origin = &Origin
+
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.CreateKnowledgeSpace(w, r, tenantId, params)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// UpdateKnowledgeSpace operation middleware
+func (siw *ServerInterfaceWrapper) UpdateKnowledgeSpace(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+	_ = err
+
+	// ------------- Path parameter "tenantId" -------------
+	var tenantId TenantId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "tenantId", chi.URLParam(r, "tenantId"), &tenantId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "tenantId", Err: err})
+		return
+	}
+
+	// ------------- Path parameter "spaceId" -------------
+	var spaceId SpaceId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "spaceId", chi.URLParam(r, "spaceId"), &spaceId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "spaceId", Err: err})
+		return
+	}
+
+	// Parameter object where we will unmarshal all parameters from the context
+	var params UpdateKnowledgeSpaceParams
+
+	headers := r.Header
+
+	// ------------- Required header parameter "Idempotency-Key" -------------
+	if valueList, found := headers[http.CanonicalHeaderKey("Idempotency-Key")]; found {
+		var IdempotencyKey IdempotencyKey
+		n := len(valueList)
+		if n != 1 {
+			siw.ErrorHandlerFunc(w, r, &TooManyValuesForParamError{ParamName: "Idempotency-Key", Count: n})
+			return
+		}
+
+		err = runtime.BindStyledParameterWithOptions("simple", "Idempotency-Key", valueList[0], &IdempotencyKey, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: true, Type: "string", Format: ""})
+		if err != nil {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "Idempotency-Key", Err: err})
+			return
+		}
+
+		params.IdempotencyKey = IdempotencyKey
+
+	} else {
+		err := fmt.Errorf("Header parameter Idempotency-Key is required, but not found")
+		siw.ErrorHandlerFunc(w, r, &RequiredHeaderError{ParamName: "Idempotency-Key", Err: err})
+		return
+	}
+
+	// ------------- Optional header parameter "X-CSRF-Token" -------------
+	if valueList, found := headers[http.CanonicalHeaderKey("X-CSRF-Token")]; found {
+		var XCSRFToken Csrf
+		n := len(valueList)
+		if n != 1 {
+			siw.ErrorHandlerFunc(w, r, &TooManyValuesForParamError{ParamName: "X-CSRF-Token", Count: n})
+			return
+		}
+
+		err = runtime.BindStyledParameterWithOptions("simple", "X-CSRF-Token", valueList[0], &XCSRFToken, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: false, Type: "string", Format: ""})
+		if err != nil {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "X-CSRF-Token", Err: err})
+			return
+		}
+
+		params.XCSRFToken = &XCSRFToken
+
+	}
+
+	// ------------- Optional header parameter "Origin" -------------
+	if valueList, found := headers[http.CanonicalHeaderKey("Origin")]; found {
+		var Origin Origin
+		n := len(valueList)
+		if n != 1 {
+			siw.ErrorHandlerFunc(w, r, &TooManyValuesForParamError{ParamName: "Origin", Count: n})
+			return
+		}
+
+		err = runtime.BindStyledParameterWithOptions("simple", "Origin", valueList[0], &Origin, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: false, Type: "string", Format: "uri"})
+		if err != nil {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "Origin", Err: err})
+			return
+		}
+
+		params.Origin = &Origin
+
+	}
+
+	// ------------- Required header parameter "If-Match" -------------
+	if valueList, found := headers[http.CanonicalHeaderKey("If-Match")]; found {
+		var IfMatch IfMatch
+		n := len(valueList)
+		if n != 1 {
+			siw.ErrorHandlerFunc(w, r, &TooManyValuesForParamError{ParamName: "If-Match", Count: n})
+			return
+		}
+
+		err = runtime.BindStyledParameterWithOptions("simple", "If-Match", valueList[0], &IfMatch, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: true, Type: "string", Format: ""})
+		if err != nil {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "If-Match", Err: err})
+			return
+		}
+
+		params.IfMatch = IfMatch
+
+	} else {
+		err := fmt.Errorf("Header parameter If-Match is required, but not found")
+		siw.ErrorHandlerFunc(w, r, &RequiredHeaderError{ParamName: "If-Match", Err: err})
+		return
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.UpdateKnowledgeSpace(w, r, tenantId, spaceId, params)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// GetKnowledgeAccessMap operation middleware
+func (siw *ServerInterfaceWrapper) GetKnowledgeAccessMap(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+	_ = err
+
+	// ------------- Path parameter "tenantId" -------------
+	var tenantId TenantId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "tenantId", chi.URLParam(r, "tenantId"), &tenantId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "tenantId", Err: err})
+		return
+	}
+
+	// ------------- Path parameter "spaceId" -------------
+	var spaceId SpaceId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "spaceId", chi.URLParam(r, "spaceId"), &spaceId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "spaceId", Err: err})
+		return
+	}
+
+	// Parameter object where we will unmarshal all parameters from the context
+	var params GetKnowledgeAccessMapParams
+
+	// ------------- Optional query parameter "memberIds" -------------
+
+	err = runtime.BindQueryParameterWithOptions("form", false, false, "memberIds", r.URL.Query(), &params.MemberIds, runtime.BindQueryParameterOptions{Type: "array", Format: ""})
+	if err != nil {
+		var requiredError *runtime.RequiredParameterError
+		if errors.As(err, &requiredError) {
+			siw.ErrorHandlerFunc(w, r, &RequiredParamError{ParamName: "memberIds"})
+		} else {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "memberIds", Err: err})
+		}
+		return
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.GetKnowledgeAccessMap(w, r, tenantId, spaceId, params)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// ListKnowledgeArchive operation middleware
+func (siw *ServerInterfaceWrapper) ListKnowledgeArchive(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+	_ = err
+
+	// ------------- Path parameter "tenantId" -------------
+	var tenantId TenantId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "tenantId", chi.URLParam(r, "tenantId"), &tenantId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "tenantId", Err: err})
+		return
+	}
+
+	// ------------- Path parameter "spaceId" -------------
+	var spaceId SpaceId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "spaceId", chi.URLParam(r, "spaceId"), &spaceId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "spaceId", Err: err})
+		return
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.ListKnowledgeArchive(w, r, tenantId, spaceId)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// ListKnowledgeSpaceMembers operation middleware
+func (siw *ServerInterfaceWrapper) ListKnowledgeSpaceMembers(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+	_ = err
+
+	// ------------- Path parameter "tenantId" -------------
+	var tenantId TenantId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "tenantId", chi.URLParam(r, "tenantId"), &tenantId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "tenantId", Err: err})
+		return
+	}
+
+	// ------------- Path parameter "spaceId" -------------
+	var spaceId SpaceId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "spaceId", chi.URLParam(r, "spaceId"), &spaceId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "spaceId", Err: err})
+		return
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.ListKnowledgeSpaceMembers(w, r, tenantId, spaceId)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// SetKnowledgeSpaceMember operation middleware
+func (siw *ServerInterfaceWrapper) SetKnowledgeSpaceMember(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+	_ = err
+
+	// ------------- Path parameter "tenantId" -------------
+	var tenantId TenantId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "tenantId", chi.URLParam(r, "tenantId"), &tenantId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "tenantId", Err: err})
+		return
+	}
+
+	// ------------- Path parameter "spaceId" -------------
+	var spaceId SpaceId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "spaceId", chi.URLParam(r, "spaceId"), &spaceId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "spaceId", Err: err})
+		return
+	}
+
+	// ------------- Path parameter "memberId" -------------
+	var memberId MemberId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "memberId", chi.URLParam(r, "memberId"), &memberId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "memberId", Err: err})
+		return
+	}
+
+	// Parameter object where we will unmarshal all parameters from the context
+	var params SetKnowledgeSpaceMemberParams
+
+	headers := r.Header
+
+	// ------------- Required header parameter "Idempotency-Key" -------------
+	if valueList, found := headers[http.CanonicalHeaderKey("Idempotency-Key")]; found {
+		var IdempotencyKey IdempotencyKey
+		n := len(valueList)
+		if n != 1 {
+			siw.ErrorHandlerFunc(w, r, &TooManyValuesForParamError{ParamName: "Idempotency-Key", Count: n})
+			return
+		}
+
+		err = runtime.BindStyledParameterWithOptions("simple", "Idempotency-Key", valueList[0], &IdempotencyKey, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: true, Type: "string", Format: ""})
+		if err != nil {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "Idempotency-Key", Err: err})
+			return
+		}
+
+		params.IdempotencyKey = IdempotencyKey
+
+	} else {
+		err := fmt.Errorf("Header parameter Idempotency-Key is required, but not found")
+		siw.ErrorHandlerFunc(w, r, &RequiredHeaderError{ParamName: "Idempotency-Key", Err: err})
+		return
+	}
+
+	// ------------- Optional header parameter "X-CSRF-Token" -------------
+	if valueList, found := headers[http.CanonicalHeaderKey("X-CSRF-Token")]; found {
+		var XCSRFToken Csrf
+		n := len(valueList)
+		if n != 1 {
+			siw.ErrorHandlerFunc(w, r, &TooManyValuesForParamError{ParamName: "X-CSRF-Token", Count: n})
+			return
+		}
+
+		err = runtime.BindStyledParameterWithOptions("simple", "X-CSRF-Token", valueList[0], &XCSRFToken, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: false, Type: "string", Format: ""})
+		if err != nil {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "X-CSRF-Token", Err: err})
+			return
+		}
+
+		params.XCSRFToken = &XCSRFToken
+
+	}
+
+	// ------------- Optional header parameter "Origin" -------------
+	if valueList, found := headers[http.CanonicalHeaderKey("Origin")]; found {
+		var Origin Origin
+		n := len(valueList)
+		if n != 1 {
+			siw.ErrorHandlerFunc(w, r, &TooManyValuesForParamError{ParamName: "Origin", Count: n})
+			return
+		}
+
+		err = runtime.BindStyledParameterWithOptions("simple", "Origin", valueList[0], &Origin, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: false, Type: "string", Format: "uri"})
+		if err != nil {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "Origin", Err: err})
+			return
+		}
+
+		params.Origin = &Origin
+
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.SetKnowledgeSpaceMember(w, r, tenantId, spaceId, memberId, params)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// CreateKnowledgeNode operation middleware
+func (siw *ServerInterfaceWrapper) CreateKnowledgeNode(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+	_ = err
+
+	// ------------- Path parameter "tenantId" -------------
+	var tenantId TenantId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "tenantId", chi.URLParam(r, "tenantId"), &tenantId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "tenantId", Err: err})
+		return
+	}
+
+	// ------------- Path parameter "spaceId" -------------
+	var spaceId SpaceId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "spaceId", chi.URLParam(r, "spaceId"), &spaceId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "spaceId", Err: err})
+		return
+	}
+
+	// Parameter object where we will unmarshal all parameters from the context
+	var params CreateKnowledgeNodeParams
+
+	headers := r.Header
+
+	// ------------- Required header parameter "Idempotency-Key" -------------
+	if valueList, found := headers[http.CanonicalHeaderKey("Idempotency-Key")]; found {
+		var IdempotencyKey IdempotencyKey
+		n := len(valueList)
+		if n != 1 {
+			siw.ErrorHandlerFunc(w, r, &TooManyValuesForParamError{ParamName: "Idempotency-Key", Count: n})
+			return
+		}
+
+		err = runtime.BindStyledParameterWithOptions("simple", "Idempotency-Key", valueList[0], &IdempotencyKey, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: true, Type: "string", Format: ""})
+		if err != nil {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "Idempotency-Key", Err: err})
+			return
+		}
+
+		params.IdempotencyKey = IdempotencyKey
+
+	} else {
+		err := fmt.Errorf("Header parameter Idempotency-Key is required, but not found")
+		siw.ErrorHandlerFunc(w, r, &RequiredHeaderError{ParamName: "Idempotency-Key", Err: err})
+		return
+	}
+
+	// ------------- Optional header parameter "X-CSRF-Token" -------------
+	if valueList, found := headers[http.CanonicalHeaderKey("X-CSRF-Token")]; found {
+		var XCSRFToken Csrf
+		n := len(valueList)
+		if n != 1 {
+			siw.ErrorHandlerFunc(w, r, &TooManyValuesForParamError{ParamName: "X-CSRF-Token", Count: n})
+			return
+		}
+
+		err = runtime.BindStyledParameterWithOptions("simple", "X-CSRF-Token", valueList[0], &XCSRFToken, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: false, Type: "string", Format: ""})
+		if err != nil {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "X-CSRF-Token", Err: err})
+			return
+		}
+
+		params.XCSRFToken = &XCSRFToken
+
+	}
+
+	// ------------- Optional header parameter "Origin" -------------
+	if valueList, found := headers[http.CanonicalHeaderKey("Origin")]; found {
+		var Origin Origin
+		n := len(valueList)
+		if n != 1 {
+			siw.ErrorHandlerFunc(w, r, &TooManyValuesForParamError{ParamName: "Origin", Count: n})
+			return
+		}
+
+		err = runtime.BindStyledParameterWithOptions("simple", "Origin", valueList[0], &Origin, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: false, Type: "string", Format: "uri"})
+		if err != nil {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "Origin", Err: err})
+			return
+		}
+
+		params.Origin = &Origin
+
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.CreateKnowledgeNode(w, r, tenantId, spaceId, params)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// ListKnowledgeAccessRequests operation middleware
+func (siw *ServerInterfaceWrapper) ListKnowledgeAccessRequests(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+	_ = err
+
+	// ------------- Path parameter "tenantId" -------------
+	var tenantId TenantId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "tenantId", chi.URLParam(r, "tenantId"), &tenantId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "tenantId", Err: err})
+		return
+	}
+
+	// ------------- Path parameter "spaceId" -------------
+	var spaceId SpaceId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "spaceId", chi.URLParam(r, "spaceId"), &spaceId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "spaceId", Err: err})
+		return
+	}
+
+	// Parameter object where we will unmarshal all parameters from the context
+	var params ListKnowledgeAccessRequestsParams
+
+	// ------------- Optional query parameter "status" -------------
+
+	err = runtime.BindQueryParameterWithOptions("form", true, false, "status", r.URL.Query(), &params.Status, runtime.BindQueryParameterOptions{Type: "string", Format: ""})
+	if err != nil {
+		var requiredError *runtime.RequiredParameterError
+		if errors.As(err, &requiredError) {
+			siw.ErrorHandlerFunc(w, r, &RequiredParamError{ParamName: "status"})
+		} else {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "status", Err: err})
+		}
+		return
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.ListKnowledgeAccessRequests(w, r, tenantId, spaceId, params)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// RunKnowledgeReviewCheck operation middleware
+func (siw *ServerInterfaceWrapper) RunKnowledgeReviewCheck(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+	_ = err
+
+	// ------------- Path parameter "tenantId" -------------
+	var tenantId TenantId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "tenantId", chi.URLParam(r, "tenantId"), &tenantId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "tenantId", Err: err})
+		return
+	}
+
+	// ------------- Path parameter "spaceId" -------------
+	var spaceId SpaceId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "spaceId", chi.URLParam(r, "spaceId"), &spaceId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "spaceId", Err: err})
+		return
+	}
+
+	// Parameter object where we will unmarshal all parameters from the context
+	var params RunKnowledgeReviewCheckParams
+
+	headers := r.Header
+
+	// ------------- Required header parameter "Idempotency-Key" -------------
+	if valueList, found := headers[http.CanonicalHeaderKey("Idempotency-Key")]; found {
+		var IdempotencyKey IdempotencyKey
+		n := len(valueList)
+		if n != 1 {
+			siw.ErrorHandlerFunc(w, r, &TooManyValuesForParamError{ParamName: "Idempotency-Key", Count: n})
+			return
+		}
+
+		err = runtime.BindStyledParameterWithOptions("simple", "Idempotency-Key", valueList[0], &IdempotencyKey, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: true, Type: "string", Format: ""})
+		if err != nil {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "Idempotency-Key", Err: err})
+			return
+		}
+
+		params.IdempotencyKey = IdempotencyKey
+
+	} else {
+		err := fmt.Errorf("Header parameter Idempotency-Key is required, but not found")
+		siw.ErrorHandlerFunc(w, r, &RequiredHeaderError{ParamName: "Idempotency-Key", Err: err})
+		return
+	}
+
+	// ------------- Optional header parameter "X-CSRF-Token" -------------
+	if valueList, found := headers[http.CanonicalHeaderKey("X-CSRF-Token")]; found {
+		var XCSRFToken Csrf
+		n := len(valueList)
+		if n != 1 {
+			siw.ErrorHandlerFunc(w, r, &TooManyValuesForParamError{ParamName: "X-CSRF-Token", Count: n})
+			return
+		}
+
+		err = runtime.BindStyledParameterWithOptions("simple", "X-CSRF-Token", valueList[0], &XCSRFToken, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: false, Type: "string", Format: ""})
+		if err != nil {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "X-CSRF-Token", Err: err})
+			return
+		}
+
+		params.XCSRFToken = &XCSRFToken
+
+	}
+
+	// ------------- Optional header parameter "Origin" -------------
+	if valueList, found := headers[http.CanonicalHeaderKey("Origin")]; found {
+		var Origin Origin
+		n := len(valueList)
+		if n != 1 {
+			siw.ErrorHandlerFunc(w, r, &TooManyValuesForParamError{ParamName: "Origin", Count: n})
+			return
+		}
+
+		err = runtime.BindStyledParameterWithOptions("simple", "Origin", valueList[0], &Origin, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: false, Type: "string", Format: "uri"})
+		if err != nil {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "Origin", Err: err})
+			return
+		}
+
+		params.Origin = &Origin
+
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.RunKnowledgeReviewCheck(w, r, tenantId, spaceId, params)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// ListKnowledgeRules operation middleware
+func (siw *ServerInterfaceWrapper) ListKnowledgeRules(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+	_ = err
+
+	// ------------- Path parameter "tenantId" -------------
+	var tenantId TenantId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "tenantId", chi.URLParam(r, "tenantId"), &tenantId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "tenantId", Err: err})
+		return
+	}
+
+	// ------------- Path parameter "spaceId" -------------
+	var spaceId SpaceId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "spaceId", chi.URLParam(r, "spaceId"), &spaceId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "spaceId", Err: err})
+		return
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.ListKnowledgeRules(w, r, tenantId, spaceId)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// ListKnowledgeRuns operation middleware
+func (siw *ServerInterfaceWrapper) ListKnowledgeRuns(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+	_ = err
+
+	// ------------- Path parameter "tenantId" -------------
+	var tenantId TenantId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "tenantId", chi.URLParam(r, "tenantId"), &tenantId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "tenantId", Err: err})
+		return
+	}
+
+	// ------------- Path parameter "spaceId" -------------
+	var spaceId SpaceId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "spaceId", chi.URLParam(r, "spaceId"), &spaceId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "spaceId", Err: err})
+		return
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.ListKnowledgeRuns(w, r, tenantId, spaceId)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// RunKnowledgeSection operation middleware
+func (siw *ServerInterfaceWrapper) RunKnowledgeSection(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+	_ = err
+
+	// ------------- Path parameter "tenantId" -------------
+	var tenantId TenantId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "tenantId", chi.URLParam(r, "tenantId"), &tenantId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "tenantId", Err: err})
+		return
+	}
+
+	// ------------- Path parameter "spaceId" -------------
+	var spaceId SpaceId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "spaceId", chi.URLParam(r, "spaceId"), &spaceId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "spaceId", Err: err})
+		return
+	}
+
+	// Parameter object where we will unmarshal all parameters from the context
+	var params RunKnowledgeSectionParams
+
+	headers := r.Header
+
+	// ------------- Required header parameter "Idempotency-Key" -------------
+	if valueList, found := headers[http.CanonicalHeaderKey("Idempotency-Key")]; found {
+		var IdempotencyKey IdempotencyKey
+		n := len(valueList)
+		if n != 1 {
+			siw.ErrorHandlerFunc(w, r, &TooManyValuesForParamError{ParamName: "Idempotency-Key", Count: n})
+			return
+		}
+
+		err = runtime.BindStyledParameterWithOptions("simple", "Idempotency-Key", valueList[0], &IdempotencyKey, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: true, Type: "string", Format: ""})
+		if err != nil {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "Idempotency-Key", Err: err})
+			return
+		}
+
+		params.IdempotencyKey = IdempotencyKey
+
+	} else {
+		err := fmt.Errorf("Header parameter Idempotency-Key is required, but not found")
+		siw.ErrorHandlerFunc(w, r, &RequiredHeaderError{ParamName: "Idempotency-Key", Err: err})
+		return
+	}
+
+	// ------------- Optional header parameter "X-CSRF-Token" -------------
+	if valueList, found := headers[http.CanonicalHeaderKey("X-CSRF-Token")]; found {
+		var XCSRFToken Csrf
+		n := len(valueList)
+		if n != 1 {
+			siw.ErrorHandlerFunc(w, r, &TooManyValuesForParamError{ParamName: "X-CSRF-Token", Count: n})
+			return
+		}
+
+		err = runtime.BindStyledParameterWithOptions("simple", "X-CSRF-Token", valueList[0], &XCSRFToken, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: false, Type: "string", Format: ""})
+		if err != nil {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "X-CSRF-Token", Err: err})
+			return
+		}
+
+		params.XCSRFToken = &XCSRFToken
+
+	}
+
+	// ------------- Optional header parameter "Origin" -------------
+	if valueList, found := headers[http.CanonicalHeaderKey("Origin")]; found {
+		var Origin Origin
+		n := len(valueList)
+		if n != 1 {
+			siw.ErrorHandlerFunc(w, r, &TooManyValuesForParamError{ParamName: "Origin", Count: n})
+			return
+		}
+
+		err = runtime.BindStyledParameterWithOptions("simple", "Origin", valueList[0], &Origin, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: false, Type: "string", Format: "uri"})
+		if err != nil {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "Origin", Err: err})
+			return
+		}
+
+		params.Origin = &Origin
+
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.RunKnowledgeSection(w, r, tenantId, spaceId, params)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// GetKnowledgeSpaceTree operation middleware
+func (siw *ServerInterfaceWrapper) GetKnowledgeSpaceTree(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+	_ = err
+
+	// ------------- Path parameter "tenantId" -------------
+	var tenantId TenantId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "tenantId", chi.URLParam(r, "tenantId"), &tenantId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "tenantId", Err: err})
+		return
+	}
+
+	// ------------- Path parameter "spaceId" -------------
+	var spaceId SpaceId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "spaceId", chi.URLParam(r, "spaceId"), &spaceId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "spaceId", Err: err})
+		return
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.GetKnowledgeSpaceTree(w, r, tenantId, spaceId)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
 type UnescapedCookieParamError struct {
 	ParamName string
 	Err       error
@@ -1057,6 +6006,102 @@ func HandlerWithOptions(si ServerInterface, options ChiServerOptions) http.Handl
 	r.Group(func(r chi.Router) {
 		r.Patch(options.BaseURL+"/api/v1/tenants/{tenantId}/knowledge/pages/{pageId}", wrapper.UpdateKnowledgePage)
 	})
+	r.Group(func(r chi.Router) {
+		r.Get(options.BaseURL+"/api/v1/tenants/{tenantId}/knowledge/spaces", wrapper.ListKnowledgeSpaces)
+	})
+	r.Group(func(r chi.Router) {
+		r.Post(options.BaseURL+"/api/v1/tenants/{tenantId}/knowledge/spaces", wrapper.CreateKnowledgeSpace)
+	})
+	r.Group(func(r chi.Router) {
+		r.Get(options.BaseURL+"/api/v1/tenants/{tenantId}/knowledge/space-templates", wrapper.ListKnowledgeSpaceTemplates)
+	})
+	r.Group(func(r chi.Router) {
+		r.Patch(options.BaseURL+"/api/v1/tenants/{tenantId}/knowledge/spaces/{spaceId}", wrapper.UpdateKnowledgeSpace)
+	})
+	r.Group(func(r chi.Router) {
+		r.Get(options.BaseURL+"/api/v1/tenants/{tenantId}/knowledge/spaces/{spaceId}/tree", wrapper.GetKnowledgeSpaceTree)
+	})
+	r.Group(func(r chi.Router) {
+		r.Get(options.BaseURL+"/api/v1/tenants/{tenantId}/knowledge/search", wrapper.SearchKnowledge)
+	})
+	r.Group(func(r chi.Router) {
+		r.Post(options.BaseURL+"/api/v1/tenants/{tenantId}/knowledge/spaces/{spaceId}/nodes", wrapper.CreateKnowledgeNode)
+	})
+	r.Group(func(r chi.Router) {
+		r.Get(options.BaseURL+"/api/v1/tenants/{tenantId}/knowledge/nodes/{nodeId}", wrapper.GetKnowledgeNode)
+	})
+	r.Group(func(r chi.Router) {
+		r.Post(options.BaseURL+"/api/v1/tenants/{tenantId}/knowledge/nodes/{nodeId}/versions", wrapper.PublishKnowledgeNodeVersion)
+	})
+	r.Group(func(r chi.Router) {
+		r.Get(options.BaseURL+"/api/v1/tenants/{tenantId}/knowledge/nodes/{nodeId}/versions/{version}", wrapper.GetKnowledgeNodeVersion)
+	})
+	r.Group(func(r chi.Router) {
+		r.Post(options.BaseURL+"/api/v1/tenants/{tenantId}/knowledge/nodes/{nodeId}/status", wrapper.SetKnowledgeNodeStatus)
+	})
+	r.Group(func(r chi.Router) {
+		r.Post(options.BaseURL+"/api/v1/tenants/{tenantId}/knowledge/nodes/{nodeId}/move", wrapper.MoveKnowledgeNode)
+	})
+	r.Group(func(r chi.Router) {
+		r.Post(options.BaseURL+"/api/v1/tenants/{tenantId}/knowledge/nodes/{nodeId}/archive", wrapper.ArchiveKnowledgeNode)
+	})
+	r.Group(func(r chi.Router) {
+		r.Post(options.BaseURL+"/api/v1/tenants/{tenantId}/knowledge/nodes/{nodeId}/restore", wrapper.RestoreKnowledgeNode)
+	})
+	r.Group(func(r chi.Router) {
+		r.Get(options.BaseURL+"/api/v1/tenants/{tenantId}/knowledge/spaces/{spaceId}/archive", wrapper.ListKnowledgeArchive)
+	})
+	r.Group(func(r chi.Router) {
+		r.Post(options.BaseURL+"/api/v1/tenants/{tenantId}/knowledge/nodes/{nodeId}/ack", wrapper.AckKnowledgeNode)
+	})
+	r.Group(func(r chi.Router) {
+		r.Get(options.BaseURL+"/api/v1/tenants/{tenantId}/knowledge/nodes/{nodeId}/access", wrapper.GetKnowledgeNodeAccess)
+	})
+	r.Group(func(r chi.Router) {
+		r.Put(options.BaseURL+"/api/v1/tenants/{tenantId}/knowledge/nodes/{nodeId}/access", wrapper.SetKnowledgeNodeAccess)
+	})
+	r.Group(func(r chi.Router) {
+		r.Get(options.BaseURL+"/api/v1/tenants/{tenantId}/knowledge/nodes/{nodeId}/access/candidates", wrapper.ListKnowledgeAccessCandidates)
+	})
+	r.Group(func(r chi.Router) {
+		r.Get(options.BaseURL+"/api/v1/tenants/{tenantId}/knowledge/spaces/{spaceId}/access-map", wrapper.GetKnowledgeAccessMap)
+	})
+	r.Group(func(r chi.Router) {
+		r.Get(options.BaseURL+"/api/v1/tenants/{tenantId}/knowledge/nodes/{nodeId}/explain", wrapper.ExplainKnowledgeAccess)
+	})
+	r.Group(func(r chi.Router) {
+		r.Post(options.BaseURL+"/api/v1/tenants/{tenantId}/knowledge/nodes/{nodeId}/requests", wrapper.CreateKnowledgeAccessRequest)
+	})
+	r.Group(func(r chi.Router) {
+		r.Post(options.BaseURL+"/api/v1/tenants/{tenantId}/knowledge/requests/{requestId}/decision", wrapper.DecideKnowledgeAccessRequest)
+	})
+	r.Group(func(r chi.Router) {
+		r.Get(options.BaseURL+"/api/v1/tenants/{tenantId}/knowledge/spaces/{spaceId}/requests", wrapper.ListKnowledgeAccessRequests)
+	})
+	r.Group(func(r chi.Router) {
+		r.Get(options.BaseURL+"/api/v1/tenants/{tenantId}/knowledge/spaces/{spaceId}/members", wrapper.ListKnowledgeSpaceMembers)
+	})
+	r.Group(func(r chi.Router) {
+		r.Put(options.BaseURL+"/api/v1/tenants/{tenantId}/knowledge/spaces/{spaceId}/members/{memberId}", wrapper.SetKnowledgeSpaceMember)
+	})
+	r.Group(func(r chi.Router) {
+		r.Get(options.BaseURL+"/api/v1/tenants/{tenantId}/knowledge/spaces/{spaceId}/rules", wrapper.ListKnowledgeRules)
+	})
+	r.Group(func(r chi.Router) {
+		r.Patch(options.BaseURL+"/api/v1/tenants/{tenantId}/knowledge/rules/{ruleId}", wrapper.SetKnowledgeRuleEnabled)
+	})
+	r.Group(func(r chi.Router) {
+		r.Post(options.BaseURL+"/api/v1/tenants/{tenantId}/knowledge/spaces/{spaceId}/review-check", wrapper.RunKnowledgeReviewCheck)
+	})
+	r.Group(func(r chi.Router) {
+		r.Post(options.BaseURL+"/api/v1/tenants/{tenantId}/knowledge/spaces/{spaceId}/sections", wrapper.RunKnowledgeSection)
+	})
+	r.Group(func(r chi.Router) {
+		r.Get(options.BaseURL+"/api/v1/tenants/{tenantId}/knowledge/spaces/{spaceId}/runs", wrapper.ListKnowledgeRuns)
+	})
+	r.Group(func(r chi.Router) {
+		r.Post(options.BaseURL+"/api/v1/tenants/{tenantId}/knowledge/nodes/{nodeId}/tables", wrapper.CreateKnowledgeTable)
+	})
 
 	return r
 }
@@ -1151,6 +6196,2510 @@ type ValidationApplicationProblemPlusJSONResponse struct {
 	Body Problem
 
 	Headers ValidationResponseHeaders
+}
+
+type GetKnowledgeNodeRequestObject struct {
+	TenantId TenantId `json:"tenantId"`
+	NodeId   NodeId   `json:"nodeId"`
+}
+
+type GetKnowledgeNodeResponseObject interface {
+	VisitGetKnowledgeNodeResponse(w http.ResponseWriter) error
+}
+
+type GetKnowledgeNode200ResponseHeaders struct {
+	CacheControl *string
+	ETag         *string
+	XRequestId   *string
+}
+
+type GetKnowledgeNode200JSONResponse struct {
+	Body    KnowledgeNode
+	Headers GetKnowledgeNode200ResponseHeaders
+}
+
+func (response GetKnowledgeNode200JSONResponse) VisitGetKnowledgeNodeResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	if response.Headers.CacheControl != nil {
+		w.Header().Set("Cache-Control", fmt.Sprint(*response.Headers.CacheControl))
+	}
+	if response.Headers.ETag != nil {
+		w.Header().Set("ETag", fmt.Sprint(*response.Headers.ETag))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(200)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type GetKnowledgeNode400ApplicationProblemPlusJSONResponse struct {
+	BadRequestApplicationProblemPlusJSONResponse
+}
+
+func (response GetKnowledgeNode400ApplicationProblemPlusJSONResponse) VisitGetKnowledgeNodeResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(400)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type GetKnowledgeNode401ApplicationProblemPlusJSONResponse struct {
+	UnauthenticatedApplicationProblemPlusJSONResponse
+}
+
+func (response GetKnowledgeNode401ApplicationProblemPlusJSONResponse) VisitGetKnowledgeNodeResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(401)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type GetKnowledgeNode403ApplicationProblemPlusJSONResponse struct {
+	ForbiddenApplicationProblemPlusJSONResponse
+}
+
+func (response GetKnowledgeNode403ApplicationProblemPlusJSONResponse) VisitGetKnowledgeNodeResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(403)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type GetKnowledgeNode404ApplicationProblemPlusJSONResponse struct {
+	NotFoundApplicationProblemPlusJSONResponse
+}
+
+func (response GetKnowledgeNode404ApplicationProblemPlusJSONResponse) VisitGetKnowledgeNodeResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(404)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type GetKnowledgeNode422ApplicationProblemPlusJSONResponse struct {
+	ValidationApplicationProblemPlusJSONResponse
+}
+
+func (response GetKnowledgeNode422ApplicationProblemPlusJSONResponse) VisitGetKnowledgeNodeResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(422)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type GetKnowledgeNode429ApplicationProblemPlusJSONResponse struct {
+	RateLimitedApplicationProblemPlusJSONResponse
+}
+
+func (response GetKnowledgeNode429ApplicationProblemPlusJSONResponse) VisitGetKnowledgeNodeResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.RetryAfter != nil {
+		w.Header().Set("Retry-After", fmt.Sprint(*response.Headers.RetryAfter))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(429)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type GetKnowledgeNodeAccessRequestObject struct {
+	TenantId TenantId `json:"tenantId"`
+	NodeId   NodeId   `json:"nodeId"`
+}
+
+type GetKnowledgeNodeAccessResponseObject interface {
+	VisitGetKnowledgeNodeAccessResponse(w http.ResponseWriter) error
+}
+
+type GetKnowledgeNodeAccess200ResponseHeaders struct {
+	CacheControl *string
+	ETag         *string
+	XRequestId   *string
+}
+
+type GetKnowledgeNodeAccess200JSONResponse struct {
+	Body    KnowledgeNodeAccess
+	Headers GetKnowledgeNodeAccess200ResponseHeaders
+}
+
+func (response GetKnowledgeNodeAccess200JSONResponse) VisitGetKnowledgeNodeAccessResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	if response.Headers.CacheControl != nil {
+		w.Header().Set("Cache-Control", fmt.Sprint(*response.Headers.CacheControl))
+	}
+	if response.Headers.ETag != nil {
+		w.Header().Set("ETag", fmt.Sprint(*response.Headers.ETag))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(200)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type GetKnowledgeNodeAccess400ApplicationProblemPlusJSONResponse struct {
+	BadRequestApplicationProblemPlusJSONResponse
+}
+
+func (response GetKnowledgeNodeAccess400ApplicationProblemPlusJSONResponse) VisitGetKnowledgeNodeAccessResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(400)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type GetKnowledgeNodeAccess401ApplicationProblemPlusJSONResponse struct {
+	UnauthenticatedApplicationProblemPlusJSONResponse
+}
+
+func (response GetKnowledgeNodeAccess401ApplicationProblemPlusJSONResponse) VisitGetKnowledgeNodeAccessResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(401)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type GetKnowledgeNodeAccess403ApplicationProblemPlusJSONResponse struct {
+	ForbiddenApplicationProblemPlusJSONResponse
+}
+
+func (response GetKnowledgeNodeAccess403ApplicationProblemPlusJSONResponse) VisitGetKnowledgeNodeAccessResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(403)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type GetKnowledgeNodeAccess404ApplicationProblemPlusJSONResponse struct {
+	NotFoundApplicationProblemPlusJSONResponse
+}
+
+func (response GetKnowledgeNodeAccess404ApplicationProblemPlusJSONResponse) VisitGetKnowledgeNodeAccessResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(404)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type GetKnowledgeNodeAccess422ApplicationProblemPlusJSONResponse struct {
+	ValidationApplicationProblemPlusJSONResponse
+}
+
+func (response GetKnowledgeNodeAccess422ApplicationProblemPlusJSONResponse) VisitGetKnowledgeNodeAccessResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(422)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type GetKnowledgeNodeAccess429ApplicationProblemPlusJSONResponse struct {
+	RateLimitedApplicationProblemPlusJSONResponse
+}
+
+func (response GetKnowledgeNodeAccess429ApplicationProblemPlusJSONResponse) VisitGetKnowledgeNodeAccessResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.RetryAfter != nil {
+		w.Header().Set("Retry-After", fmt.Sprint(*response.Headers.RetryAfter))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(429)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type SetKnowledgeNodeAccessRequestObject struct {
+	TenantId TenantId `json:"tenantId"`
+	NodeId   NodeId   `json:"nodeId"`
+	Params   SetKnowledgeNodeAccessParams
+	Body     *SetKnowledgeNodeAccessJSONRequestBody
+}
+
+type SetKnowledgeNodeAccessResponseObject interface {
+	VisitSetKnowledgeNodeAccessResponse(w http.ResponseWriter) error
+}
+
+type SetKnowledgeNodeAccess200ResponseHeaders struct {
+	CacheControl        *string
+	ETag                *string
+	IdempotencyReplayed *bool
+	XRequestId          *string
+}
+
+type SetKnowledgeNodeAccess200JSONResponse struct {
+	Body    KnowledgeAccessImpact
+	Headers SetKnowledgeNodeAccess200ResponseHeaders
+}
+
+func (response SetKnowledgeNodeAccess200JSONResponse) VisitSetKnowledgeNodeAccessResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	if response.Headers.CacheControl != nil {
+		w.Header().Set("Cache-Control", fmt.Sprint(*response.Headers.CacheControl))
+	}
+	if response.Headers.ETag != nil {
+		w.Header().Set("ETag", fmt.Sprint(*response.Headers.ETag))
+	}
+	if response.Headers.IdempotencyReplayed != nil {
+		w.Header().Set("Idempotency-Replayed", fmt.Sprint(*response.Headers.IdempotencyReplayed))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(200)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type SetKnowledgeNodeAccess400ApplicationProblemPlusJSONResponse struct {
+	BadRequestApplicationProblemPlusJSONResponse
+}
+
+func (response SetKnowledgeNodeAccess400ApplicationProblemPlusJSONResponse) VisitSetKnowledgeNodeAccessResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(400)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type SetKnowledgeNodeAccess401ApplicationProblemPlusJSONResponse struct {
+	UnauthenticatedApplicationProblemPlusJSONResponse
+}
+
+func (response SetKnowledgeNodeAccess401ApplicationProblemPlusJSONResponse) VisitSetKnowledgeNodeAccessResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(401)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type SetKnowledgeNodeAccess403ApplicationProblemPlusJSONResponse struct {
+	ForbiddenApplicationProblemPlusJSONResponse
+}
+
+func (response SetKnowledgeNodeAccess403ApplicationProblemPlusJSONResponse) VisitSetKnowledgeNodeAccessResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(403)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type SetKnowledgeNodeAccess404ApplicationProblemPlusJSONResponse struct {
+	NotFoundApplicationProblemPlusJSONResponse
+}
+
+func (response SetKnowledgeNodeAccess404ApplicationProblemPlusJSONResponse) VisitSetKnowledgeNodeAccessResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(404)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type SetKnowledgeNodeAccess409ApplicationProblemPlusJSONResponse struct {
+	ConflictApplicationProblemPlusJSONResponse
+}
+
+func (response SetKnowledgeNodeAccess409ApplicationProblemPlusJSONResponse) VisitSetKnowledgeNodeAccessResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.RetryAfter != nil {
+		w.Header().Set("Retry-After", fmt.Sprint(*response.Headers.RetryAfter))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(409)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type SetKnowledgeNodeAccess412ApplicationProblemPlusJSONResponse struct {
+	PreconditionFailedApplicationProblemPlusJSONResponse
+}
+
+func (response SetKnowledgeNodeAccess412ApplicationProblemPlusJSONResponse) VisitSetKnowledgeNodeAccessResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(412)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type SetKnowledgeNodeAccess422ApplicationProblemPlusJSONResponse struct {
+	ValidationApplicationProblemPlusJSONResponse
+}
+
+func (response SetKnowledgeNodeAccess422ApplicationProblemPlusJSONResponse) VisitSetKnowledgeNodeAccessResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(422)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type SetKnowledgeNodeAccess428ApplicationProblemPlusJSONResponse struct {
+	PreconditionRequiredApplicationProblemPlusJSONResponse
+}
+
+func (response SetKnowledgeNodeAccess428ApplicationProblemPlusJSONResponse) VisitSetKnowledgeNodeAccessResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(428)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type SetKnowledgeNodeAccess429ApplicationProblemPlusJSONResponse struct {
+	RateLimitedApplicationProblemPlusJSONResponse
+}
+
+func (response SetKnowledgeNodeAccess429ApplicationProblemPlusJSONResponse) VisitSetKnowledgeNodeAccessResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.RetryAfter != nil {
+		w.Header().Set("Retry-After", fmt.Sprint(*response.Headers.RetryAfter))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(429)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type ListKnowledgeAccessCandidatesRequestObject struct {
+	TenantId TenantId `json:"tenantId"`
+	NodeId   NodeId   `json:"nodeId"`
+}
+
+type ListKnowledgeAccessCandidatesResponseObject interface {
+	VisitListKnowledgeAccessCandidatesResponse(w http.ResponseWriter) error
+}
+
+type ListKnowledgeAccessCandidates200ResponseHeaders struct {
+	CacheControl *string
+	XRequestId   *string
+}
+
+type ListKnowledgeAccessCandidates200JSONResponse struct {
+	Body    KnowledgeAccessCandidateList
+	Headers ListKnowledgeAccessCandidates200ResponseHeaders
+}
+
+func (response ListKnowledgeAccessCandidates200JSONResponse) VisitListKnowledgeAccessCandidatesResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	if response.Headers.CacheControl != nil {
+		w.Header().Set("Cache-Control", fmt.Sprint(*response.Headers.CacheControl))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(200)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type ListKnowledgeAccessCandidates400ApplicationProblemPlusJSONResponse struct {
+	BadRequestApplicationProblemPlusJSONResponse
+}
+
+func (response ListKnowledgeAccessCandidates400ApplicationProblemPlusJSONResponse) VisitListKnowledgeAccessCandidatesResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(400)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type ListKnowledgeAccessCandidates401ApplicationProblemPlusJSONResponse struct {
+	UnauthenticatedApplicationProblemPlusJSONResponse
+}
+
+func (response ListKnowledgeAccessCandidates401ApplicationProblemPlusJSONResponse) VisitListKnowledgeAccessCandidatesResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(401)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type ListKnowledgeAccessCandidates403ApplicationProblemPlusJSONResponse struct {
+	ForbiddenApplicationProblemPlusJSONResponse
+}
+
+func (response ListKnowledgeAccessCandidates403ApplicationProblemPlusJSONResponse) VisitListKnowledgeAccessCandidatesResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(403)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type ListKnowledgeAccessCandidates404ApplicationProblemPlusJSONResponse struct {
+	NotFoundApplicationProblemPlusJSONResponse
+}
+
+func (response ListKnowledgeAccessCandidates404ApplicationProblemPlusJSONResponse) VisitListKnowledgeAccessCandidatesResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(404)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type ListKnowledgeAccessCandidates422ApplicationProblemPlusJSONResponse struct {
+	ValidationApplicationProblemPlusJSONResponse
+}
+
+func (response ListKnowledgeAccessCandidates422ApplicationProblemPlusJSONResponse) VisitListKnowledgeAccessCandidatesResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(422)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type ListKnowledgeAccessCandidates429ApplicationProblemPlusJSONResponse struct {
+	RateLimitedApplicationProblemPlusJSONResponse
+}
+
+func (response ListKnowledgeAccessCandidates429ApplicationProblemPlusJSONResponse) VisitListKnowledgeAccessCandidatesResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.RetryAfter != nil {
+		w.Header().Set("Retry-After", fmt.Sprint(*response.Headers.RetryAfter))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(429)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type AckKnowledgeNodeRequestObject struct {
+	TenantId TenantId `json:"tenantId"`
+	NodeId   NodeId   `json:"nodeId"`
+	Params   AckKnowledgeNodeParams
+	Body     *AckKnowledgeNodeJSONRequestBody
+}
+
+type AckKnowledgeNodeResponseObject interface {
+	VisitAckKnowledgeNodeResponse(w http.ResponseWriter) error
+}
+
+type AckKnowledgeNode200ResponseHeaders struct {
+	CacheControl        *string
+	IdempotencyReplayed *bool
+	XRequestId          *string
+}
+
+type AckKnowledgeNode200JSONResponse struct {
+	Body    KnowledgeAck
+	Headers AckKnowledgeNode200ResponseHeaders
+}
+
+func (response AckKnowledgeNode200JSONResponse) VisitAckKnowledgeNodeResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	if response.Headers.CacheControl != nil {
+		w.Header().Set("Cache-Control", fmt.Sprint(*response.Headers.CacheControl))
+	}
+	if response.Headers.IdempotencyReplayed != nil {
+		w.Header().Set("Idempotency-Replayed", fmt.Sprint(*response.Headers.IdempotencyReplayed))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(200)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type AckKnowledgeNode400ApplicationProblemPlusJSONResponse struct {
+	BadRequestApplicationProblemPlusJSONResponse
+}
+
+func (response AckKnowledgeNode400ApplicationProblemPlusJSONResponse) VisitAckKnowledgeNodeResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(400)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type AckKnowledgeNode401ApplicationProblemPlusJSONResponse struct {
+	UnauthenticatedApplicationProblemPlusJSONResponse
+}
+
+func (response AckKnowledgeNode401ApplicationProblemPlusJSONResponse) VisitAckKnowledgeNodeResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(401)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type AckKnowledgeNode403ApplicationProblemPlusJSONResponse struct {
+	ForbiddenApplicationProblemPlusJSONResponse
+}
+
+func (response AckKnowledgeNode403ApplicationProblemPlusJSONResponse) VisitAckKnowledgeNodeResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(403)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type AckKnowledgeNode404ApplicationProblemPlusJSONResponse struct {
+	NotFoundApplicationProblemPlusJSONResponse
+}
+
+func (response AckKnowledgeNode404ApplicationProblemPlusJSONResponse) VisitAckKnowledgeNodeResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(404)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type AckKnowledgeNode409ApplicationProblemPlusJSONResponse struct {
+	ConflictApplicationProblemPlusJSONResponse
+}
+
+func (response AckKnowledgeNode409ApplicationProblemPlusJSONResponse) VisitAckKnowledgeNodeResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.RetryAfter != nil {
+		w.Header().Set("Retry-After", fmt.Sprint(*response.Headers.RetryAfter))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(409)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type AckKnowledgeNode422ApplicationProblemPlusJSONResponse struct {
+	ValidationApplicationProblemPlusJSONResponse
+}
+
+func (response AckKnowledgeNode422ApplicationProblemPlusJSONResponse) VisitAckKnowledgeNodeResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(422)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type AckKnowledgeNode429ApplicationProblemPlusJSONResponse struct {
+	RateLimitedApplicationProblemPlusJSONResponse
+}
+
+func (response AckKnowledgeNode429ApplicationProblemPlusJSONResponse) VisitAckKnowledgeNodeResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.RetryAfter != nil {
+		w.Header().Set("Retry-After", fmt.Sprint(*response.Headers.RetryAfter))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(429)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type ArchiveKnowledgeNodeRequestObject struct {
+	TenantId TenantId `json:"tenantId"`
+	NodeId   NodeId   `json:"nodeId"`
+	Params   ArchiveKnowledgeNodeParams
+}
+
+type ArchiveKnowledgeNodeResponseObject interface {
+	VisitArchiveKnowledgeNodeResponse(w http.ResponseWriter) error
+}
+
+type ArchiveKnowledgeNode200ResponseHeaders struct {
+	CacheControl        *string
+	IdempotencyReplayed *bool
+	XRequestId          *string
+}
+
+type ArchiveKnowledgeNode200JSONResponse struct {
+	Body    KnowledgeArchiveResult
+	Headers ArchiveKnowledgeNode200ResponseHeaders
+}
+
+func (response ArchiveKnowledgeNode200JSONResponse) VisitArchiveKnowledgeNodeResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	if response.Headers.CacheControl != nil {
+		w.Header().Set("Cache-Control", fmt.Sprint(*response.Headers.CacheControl))
+	}
+	if response.Headers.IdempotencyReplayed != nil {
+		w.Header().Set("Idempotency-Replayed", fmt.Sprint(*response.Headers.IdempotencyReplayed))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(200)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type ArchiveKnowledgeNode400ApplicationProblemPlusJSONResponse struct {
+	BadRequestApplicationProblemPlusJSONResponse
+}
+
+func (response ArchiveKnowledgeNode400ApplicationProblemPlusJSONResponse) VisitArchiveKnowledgeNodeResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(400)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type ArchiveKnowledgeNode401ApplicationProblemPlusJSONResponse struct {
+	UnauthenticatedApplicationProblemPlusJSONResponse
+}
+
+func (response ArchiveKnowledgeNode401ApplicationProblemPlusJSONResponse) VisitArchiveKnowledgeNodeResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(401)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type ArchiveKnowledgeNode403ApplicationProblemPlusJSONResponse struct {
+	ForbiddenApplicationProblemPlusJSONResponse
+}
+
+func (response ArchiveKnowledgeNode403ApplicationProblemPlusJSONResponse) VisitArchiveKnowledgeNodeResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(403)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type ArchiveKnowledgeNode404ApplicationProblemPlusJSONResponse struct {
+	NotFoundApplicationProblemPlusJSONResponse
+}
+
+func (response ArchiveKnowledgeNode404ApplicationProblemPlusJSONResponse) VisitArchiveKnowledgeNodeResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(404)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type ArchiveKnowledgeNode409ApplicationProblemPlusJSONResponse struct {
+	ConflictApplicationProblemPlusJSONResponse
+}
+
+func (response ArchiveKnowledgeNode409ApplicationProblemPlusJSONResponse) VisitArchiveKnowledgeNodeResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.RetryAfter != nil {
+		w.Header().Set("Retry-After", fmt.Sprint(*response.Headers.RetryAfter))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(409)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type ArchiveKnowledgeNode422ApplicationProblemPlusJSONResponse struct {
+	ValidationApplicationProblemPlusJSONResponse
+}
+
+func (response ArchiveKnowledgeNode422ApplicationProblemPlusJSONResponse) VisitArchiveKnowledgeNodeResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(422)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type ArchiveKnowledgeNode429ApplicationProblemPlusJSONResponse struct {
+	RateLimitedApplicationProblemPlusJSONResponse
+}
+
+func (response ArchiveKnowledgeNode429ApplicationProblemPlusJSONResponse) VisitArchiveKnowledgeNodeResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.RetryAfter != nil {
+		w.Header().Set("Retry-After", fmt.Sprint(*response.Headers.RetryAfter))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(429)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type ExplainKnowledgeAccessRequestObject struct {
+	TenantId TenantId `json:"tenantId"`
+	NodeId   NodeId   `json:"nodeId"`
+	Params   ExplainKnowledgeAccessParams
+}
+
+type ExplainKnowledgeAccessResponseObject interface {
+	VisitExplainKnowledgeAccessResponse(w http.ResponseWriter) error
+}
+
+type ExplainKnowledgeAccess200ResponseHeaders struct {
+	CacheControl *string
+	XRequestId   *string
+}
+
+type ExplainKnowledgeAccess200JSONResponse struct {
+	Body    KnowledgeAccessExplanation
+	Headers ExplainKnowledgeAccess200ResponseHeaders
+}
+
+func (response ExplainKnowledgeAccess200JSONResponse) VisitExplainKnowledgeAccessResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	if response.Headers.CacheControl != nil {
+		w.Header().Set("Cache-Control", fmt.Sprint(*response.Headers.CacheControl))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(200)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type ExplainKnowledgeAccess400ApplicationProblemPlusJSONResponse struct {
+	BadRequestApplicationProblemPlusJSONResponse
+}
+
+func (response ExplainKnowledgeAccess400ApplicationProblemPlusJSONResponse) VisitExplainKnowledgeAccessResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(400)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type ExplainKnowledgeAccess401ApplicationProblemPlusJSONResponse struct {
+	UnauthenticatedApplicationProblemPlusJSONResponse
+}
+
+func (response ExplainKnowledgeAccess401ApplicationProblemPlusJSONResponse) VisitExplainKnowledgeAccessResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(401)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type ExplainKnowledgeAccess403ApplicationProblemPlusJSONResponse struct {
+	ForbiddenApplicationProblemPlusJSONResponse
+}
+
+func (response ExplainKnowledgeAccess403ApplicationProblemPlusJSONResponse) VisitExplainKnowledgeAccessResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(403)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type ExplainKnowledgeAccess404ApplicationProblemPlusJSONResponse struct {
+	NotFoundApplicationProblemPlusJSONResponse
+}
+
+func (response ExplainKnowledgeAccess404ApplicationProblemPlusJSONResponse) VisitExplainKnowledgeAccessResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(404)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type ExplainKnowledgeAccess422ApplicationProblemPlusJSONResponse struct {
+	ValidationApplicationProblemPlusJSONResponse
+}
+
+func (response ExplainKnowledgeAccess422ApplicationProblemPlusJSONResponse) VisitExplainKnowledgeAccessResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(422)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type ExplainKnowledgeAccess429ApplicationProblemPlusJSONResponse struct {
+	RateLimitedApplicationProblemPlusJSONResponse
+}
+
+func (response ExplainKnowledgeAccess429ApplicationProblemPlusJSONResponse) VisitExplainKnowledgeAccessResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.RetryAfter != nil {
+		w.Header().Set("Retry-After", fmt.Sprint(*response.Headers.RetryAfter))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(429)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type MoveKnowledgeNodeRequestObject struct {
+	TenantId TenantId `json:"tenantId"`
+	NodeId   NodeId   `json:"nodeId"`
+	Params   MoveKnowledgeNodeParams
+	Body     *MoveKnowledgeNodeJSONRequestBody
+}
+
+type MoveKnowledgeNodeResponseObject interface {
+	VisitMoveKnowledgeNodeResponse(w http.ResponseWriter) error
+}
+
+type MoveKnowledgeNode200ResponseHeaders struct {
+	CacheControl        *string
+	IdempotencyReplayed *bool
+	XRequestId          *string
+}
+
+type MoveKnowledgeNode200JSONResponse struct {
+	Body    KnowledgeMoveResult
+	Headers MoveKnowledgeNode200ResponseHeaders
+}
+
+func (response MoveKnowledgeNode200JSONResponse) VisitMoveKnowledgeNodeResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	if response.Headers.CacheControl != nil {
+		w.Header().Set("Cache-Control", fmt.Sprint(*response.Headers.CacheControl))
+	}
+	if response.Headers.IdempotencyReplayed != nil {
+		w.Header().Set("Idempotency-Replayed", fmt.Sprint(*response.Headers.IdempotencyReplayed))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(200)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type MoveKnowledgeNode400ApplicationProblemPlusJSONResponse struct {
+	BadRequestApplicationProblemPlusJSONResponse
+}
+
+func (response MoveKnowledgeNode400ApplicationProblemPlusJSONResponse) VisitMoveKnowledgeNodeResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(400)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type MoveKnowledgeNode401ApplicationProblemPlusJSONResponse struct {
+	UnauthenticatedApplicationProblemPlusJSONResponse
+}
+
+func (response MoveKnowledgeNode401ApplicationProblemPlusJSONResponse) VisitMoveKnowledgeNodeResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(401)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type MoveKnowledgeNode403ApplicationProblemPlusJSONResponse struct {
+	ForbiddenApplicationProblemPlusJSONResponse
+}
+
+func (response MoveKnowledgeNode403ApplicationProblemPlusJSONResponse) VisitMoveKnowledgeNodeResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(403)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type MoveKnowledgeNode404ApplicationProblemPlusJSONResponse struct {
+	NotFoundApplicationProblemPlusJSONResponse
+}
+
+func (response MoveKnowledgeNode404ApplicationProblemPlusJSONResponse) VisitMoveKnowledgeNodeResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(404)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type MoveKnowledgeNode409ApplicationProblemPlusJSONResponse struct {
+	ConflictApplicationProblemPlusJSONResponse
+}
+
+func (response MoveKnowledgeNode409ApplicationProblemPlusJSONResponse) VisitMoveKnowledgeNodeResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.RetryAfter != nil {
+		w.Header().Set("Retry-After", fmt.Sprint(*response.Headers.RetryAfter))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(409)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type MoveKnowledgeNode422ApplicationProblemPlusJSONResponse struct {
+	ValidationApplicationProblemPlusJSONResponse
+}
+
+func (response MoveKnowledgeNode422ApplicationProblemPlusJSONResponse) VisitMoveKnowledgeNodeResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(422)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type MoveKnowledgeNode429ApplicationProblemPlusJSONResponse struct {
+	RateLimitedApplicationProblemPlusJSONResponse
+}
+
+func (response MoveKnowledgeNode429ApplicationProblemPlusJSONResponse) VisitMoveKnowledgeNodeResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.RetryAfter != nil {
+		w.Header().Set("Retry-After", fmt.Sprint(*response.Headers.RetryAfter))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(429)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type CreateKnowledgeAccessRequestRequestObject struct {
+	TenantId TenantId `json:"tenantId"`
+	NodeId   NodeId   `json:"nodeId"`
+	Params   CreateKnowledgeAccessRequestParams
+	Body     *CreateKnowledgeAccessRequestJSONRequestBody
+}
+
+type CreateKnowledgeAccessRequestResponseObject interface {
+	VisitCreateKnowledgeAccessRequestResponse(w http.ResponseWriter) error
+}
+
+type CreateKnowledgeAccessRequest201ResponseHeaders struct {
+	CacheControl        *string
+	IdempotencyReplayed *bool
+	XRequestId          *string
+}
+
+type CreateKnowledgeAccessRequest201JSONResponse struct {
+	Body    KnowledgeAccessRequest
+	Headers CreateKnowledgeAccessRequest201ResponseHeaders
+}
+
+func (response CreateKnowledgeAccessRequest201JSONResponse) VisitCreateKnowledgeAccessRequestResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	if response.Headers.CacheControl != nil {
+		w.Header().Set("Cache-Control", fmt.Sprint(*response.Headers.CacheControl))
+	}
+	if response.Headers.IdempotencyReplayed != nil {
+		w.Header().Set("Idempotency-Replayed", fmt.Sprint(*response.Headers.IdempotencyReplayed))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(201)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type CreateKnowledgeAccessRequest400ApplicationProblemPlusJSONResponse struct {
+	BadRequestApplicationProblemPlusJSONResponse
+}
+
+func (response CreateKnowledgeAccessRequest400ApplicationProblemPlusJSONResponse) VisitCreateKnowledgeAccessRequestResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(400)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type CreateKnowledgeAccessRequest401ApplicationProblemPlusJSONResponse struct {
+	UnauthenticatedApplicationProblemPlusJSONResponse
+}
+
+func (response CreateKnowledgeAccessRequest401ApplicationProblemPlusJSONResponse) VisitCreateKnowledgeAccessRequestResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(401)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type CreateKnowledgeAccessRequest403ApplicationProblemPlusJSONResponse struct {
+	ForbiddenApplicationProblemPlusJSONResponse
+}
+
+func (response CreateKnowledgeAccessRequest403ApplicationProblemPlusJSONResponse) VisitCreateKnowledgeAccessRequestResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(403)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type CreateKnowledgeAccessRequest404ApplicationProblemPlusJSONResponse struct {
+	NotFoundApplicationProblemPlusJSONResponse
+}
+
+func (response CreateKnowledgeAccessRequest404ApplicationProblemPlusJSONResponse) VisitCreateKnowledgeAccessRequestResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(404)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type CreateKnowledgeAccessRequest409ApplicationProblemPlusJSONResponse struct {
+	ConflictApplicationProblemPlusJSONResponse
+}
+
+func (response CreateKnowledgeAccessRequest409ApplicationProblemPlusJSONResponse) VisitCreateKnowledgeAccessRequestResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.RetryAfter != nil {
+		w.Header().Set("Retry-After", fmt.Sprint(*response.Headers.RetryAfter))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(409)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type CreateKnowledgeAccessRequest422ApplicationProblemPlusJSONResponse struct {
+	ValidationApplicationProblemPlusJSONResponse
+}
+
+func (response CreateKnowledgeAccessRequest422ApplicationProblemPlusJSONResponse) VisitCreateKnowledgeAccessRequestResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(422)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type CreateKnowledgeAccessRequest429ApplicationProblemPlusJSONResponse struct {
+	RateLimitedApplicationProblemPlusJSONResponse
+}
+
+func (response CreateKnowledgeAccessRequest429ApplicationProblemPlusJSONResponse) VisitCreateKnowledgeAccessRequestResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.RetryAfter != nil {
+		w.Header().Set("Retry-After", fmt.Sprint(*response.Headers.RetryAfter))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(429)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type RestoreKnowledgeNodeRequestObject struct {
+	TenantId TenantId `json:"tenantId"`
+	NodeId   NodeId   `json:"nodeId"`
+	Params   RestoreKnowledgeNodeParams
+}
+
+type RestoreKnowledgeNodeResponseObject interface {
+	VisitRestoreKnowledgeNodeResponse(w http.ResponseWriter) error
+}
+
+type RestoreKnowledgeNode200ResponseHeaders struct {
+	CacheControl        *string
+	IdempotencyReplayed *bool
+	XRequestId          *string
+}
+
+type RestoreKnowledgeNode200JSONResponse struct {
+	Body    KnowledgeArchiveResult
+	Headers RestoreKnowledgeNode200ResponseHeaders
+}
+
+func (response RestoreKnowledgeNode200JSONResponse) VisitRestoreKnowledgeNodeResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	if response.Headers.CacheControl != nil {
+		w.Header().Set("Cache-Control", fmt.Sprint(*response.Headers.CacheControl))
+	}
+	if response.Headers.IdempotencyReplayed != nil {
+		w.Header().Set("Idempotency-Replayed", fmt.Sprint(*response.Headers.IdempotencyReplayed))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(200)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type RestoreKnowledgeNode400ApplicationProblemPlusJSONResponse struct {
+	BadRequestApplicationProblemPlusJSONResponse
+}
+
+func (response RestoreKnowledgeNode400ApplicationProblemPlusJSONResponse) VisitRestoreKnowledgeNodeResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(400)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type RestoreKnowledgeNode401ApplicationProblemPlusJSONResponse struct {
+	UnauthenticatedApplicationProblemPlusJSONResponse
+}
+
+func (response RestoreKnowledgeNode401ApplicationProblemPlusJSONResponse) VisitRestoreKnowledgeNodeResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(401)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type RestoreKnowledgeNode403ApplicationProblemPlusJSONResponse struct {
+	ForbiddenApplicationProblemPlusJSONResponse
+}
+
+func (response RestoreKnowledgeNode403ApplicationProblemPlusJSONResponse) VisitRestoreKnowledgeNodeResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(403)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type RestoreKnowledgeNode404ApplicationProblemPlusJSONResponse struct {
+	NotFoundApplicationProblemPlusJSONResponse
+}
+
+func (response RestoreKnowledgeNode404ApplicationProblemPlusJSONResponse) VisitRestoreKnowledgeNodeResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(404)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type RestoreKnowledgeNode409ApplicationProblemPlusJSONResponse struct {
+	ConflictApplicationProblemPlusJSONResponse
+}
+
+func (response RestoreKnowledgeNode409ApplicationProblemPlusJSONResponse) VisitRestoreKnowledgeNodeResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.RetryAfter != nil {
+		w.Header().Set("Retry-After", fmt.Sprint(*response.Headers.RetryAfter))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(409)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type RestoreKnowledgeNode422ApplicationProblemPlusJSONResponse struct {
+	ValidationApplicationProblemPlusJSONResponse
+}
+
+func (response RestoreKnowledgeNode422ApplicationProblemPlusJSONResponse) VisitRestoreKnowledgeNodeResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(422)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type RestoreKnowledgeNode429ApplicationProblemPlusJSONResponse struct {
+	RateLimitedApplicationProblemPlusJSONResponse
+}
+
+func (response RestoreKnowledgeNode429ApplicationProblemPlusJSONResponse) VisitRestoreKnowledgeNodeResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.RetryAfter != nil {
+		w.Header().Set("Retry-After", fmt.Sprint(*response.Headers.RetryAfter))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(429)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type SetKnowledgeNodeStatusRequestObject struct {
+	TenantId TenantId `json:"tenantId"`
+	NodeId   NodeId   `json:"nodeId"`
+	Params   SetKnowledgeNodeStatusParams
+	Body     *SetKnowledgeNodeStatusJSONRequestBody
+}
+
+type SetKnowledgeNodeStatusResponseObject interface {
+	VisitSetKnowledgeNodeStatusResponse(w http.ResponseWriter) error
+}
+
+type SetKnowledgeNodeStatus200ResponseHeaders struct {
+	CacheControl        *string
+	ETag                *string
+	IdempotencyReplayed *bool
+	XRequestId          *string
+}
+
+type SetKnowledgeNodeStatus200JSONResponse struct {
+	Body    KnowledgeNode
+	Headers SetKnowledgeNodeStatus200ResponseHeaders
+}
+
+func (response SetKnowledgeNodeStatus200JSONResponse) VisitSetKnowledgeNodeStatusResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	if response.Headers.CacheControl != nil {
+		w.Header().Set("Cache-Control", fmt.Sprint(*response.Headers.CacheControl))
+	}
+	if response.Headers.ETag != nil {
+		w.Header().Set("ETag", fmt.Sprint(*response.Headers.ETag))
+	}
+	if response.Headers.IdempotencyReplayed != nil {
+		w.Header().Set("Idempotency-Replayed", fmt.Sprint(*response.Headers.IdempotencyReplayed))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(200)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type SetKnowledgeNodeStatus400ApplicationProblemPlusJSONResponse struct {
+	BadRequestApplicationProblemPlusJSONResponse
+}
+
+func (response SetKnowledgeNodeStatus400ApplicationProblemPlusJSONResponse) VisitSetKnowledgeNodeStatusResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(400)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type SetKnowledgeNodeStatus401ApplicationProblemPlusJSONResponse struct {
+	UnauthenticatedApplicationProblemPlusJSONResponse
+}
+
+func (response SetKnowledgeNodeStatus401ApplicationProblemPlusJSONResponse) VisitSetKnowledgeNodeStatusResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(401)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type SetKnowledgeNodeStatus403ApplicationProblemPlusJSONResponse struct {
+	ForbiddenApplicationProblemPlusJSONResponse
+}
+
+func (response SetKnowledgeNodeStatus403ApplicationProblemPlusJSONResponse) VisitSetKnowledgeNodeStatusResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(403)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type SetKnowledgeNodeStatus404ApplicationProblemPlusJSONResponse struct {
+	NotFoundApplicationProblemPlusJSONResponse
+}
+
+func (response SetKnowledgeNodeStatus404ApplicationProblemPlusJSONResponse) VisitSetKnowledgeNodeStatusResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(404)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type SetKnowledgeNodeStatus409ApplicationProblemPlusJSONResponse struct {
+	ConflictApplicationProblemPlusJSONResponse
+}
+
+func (response SetKnowledgeNodeStatus409ApplicationProblemPlusJSONResponse) VisitSetKnowledgeNodeStatusResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.RetryAfter != nil {
+		w.Header().Set("Retry-After", fmt.Sprint(*response.Headers.RetryAfter))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(409)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type SetKnowledgeNodeStatus422ApplicationProblemPlusJSONResponse struct {
+	ValidationApplicationProblemPlusJSONResponse
+}
+
+func (response SetKnowledgeNodeStatus422ApplicationProblemPlusJSONResponse) VisitSetKnowledgeNodeStatusResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(422)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type SetKnowledgeNodeStatus429ApplicationProblemPlusJSONResponse struct {
+	RateLimitedApplicationProblemPlusJSONResponse
+}
+
+func (response SetKnowledgeNodeStatus429ApplicationProblemPlusJSONResponse) VisitSetKnowledgeNodeStatusResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.RetryAfter != nil {
+		w.Header().Set("Retry-After", fmt.Sprint(*response.Headers.RetryAfter))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(429)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type CreateKnowledgeTableRequestObject struct {
+	TenantId TenantId `json:"tenantId"`
+	NodeId   NodeId   `json:"nodeId"`
+	Params   CreateKnowledgeTableParams
+	Body     *CreateKnowledgeTableJSONRequestBody
+}
+
+type CreateKnowledgeTableResponseObject interface {
+	VisitCreateKnowledgeTableResponse(w http.ResponseWriter) error
+}
+
+type CreateKnowledgeTable201ResponseHeaders struct {
+	CacheControl        *string
+	IdempotencyReplayed *bool
+	XRequestId          *string
+}
+
+type CreateKnowledgeTable201JSONResponse struct {
+	Body    KnowledgeTable
+	Headers CreateKnowledgeTable201ResponseHeaders
+}
+
+func (response CreateKnowledgeTable201JSONResponse) VisitCreateKnowledgeTableResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	if response.Headers.CacheControl != nil {
+		w.Header().Set("Cache-Control", fmt.Sprint(*response.Headers.CacheControl))
+	}
+	if response.Headers.IdempotencyReplayed != nil {
+		w.Header().Set("Idempotency-Replayed", fmt.Sprint(*response.Headers.IdempotencyReplayed))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(201)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type CreateKnowledgeTable400ApplicationProblemPlusJSONResponse struct {
+	BadRequestApplicationProblemPlusJSONResponse
+}
+
+func (response CreateKnowledgeTable400ApplicationProblemPlusJSONResponse) VisitCreateKnowledgeTableResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(400)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type CreateKnowledgeTable401ApplicationProblemPlusJSONResponse struct {
+	UnauthenticatedApplicationProblemPlusJSONResponse
+}
+
+func (response CreateKnowledgeTable401ApplicationProblemPlusJSONResponse) VisitCreateKnowledgeTableResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(401)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type CreateKnowledgeTable403ApplicationProblemPlusJSONResponse struct {
+	ForbiddenApplicationProblemPlusJSONResponse
+}
+
+func (response CreateKnowledgeTable403ApplicationProblemPlusJSONResponse) VisitCreateKnowledgeTableResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(403)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type CreateKnowledgeTable404ApplicationProblemPlusJSONResponse struct {
+	NotFoundApplicationProblemPlusJSONResponse
+}
+
+func (response CreateKnowledgeTable404ApplicationProblemPlusJSONResponse) VisitCreateKnowledgeTableResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(404)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type CreateKnowledgeTable409ApplicationProblemPlusJSONResponse struct {
+	ConflictApplicationProblemPlusJSONResponse
+}
+
+func (response CreateKnowledgeTable409ApplicationProblemPlusJSONResponse) VisitCreateKnowledgeTableResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.RetryAfter != nil {
+		w.Header().Set("Retry-After", fmt.Sprint(*response.Headers.RetryAfter))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(409)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type CreateKnowledgeTable422ApplicationProblemPlusJSONResponse struct {
+	ValidationApplicationProblemPlusJSONResponse
+}
+
+func (response CreateKnowledgeTable422ApplicationProblemPlusJSONResponse) VisitCreateKnowledgeTableResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(422)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type CreateKnowledgeTable429ApplicationProblemPlusJSONResponse struct {
+	RateLimitedApplicationProblemPlusJSONResponse
+}
+
+func (response CreateKnowledgeTable429ApplicationProblemPlusJSONResponse) VisitCreateKnowledgeTableResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.RetryAfter != nil {
+		w.Header().Set("Retry-After", fmt.Sprint(*response.Headers.RetryAfter))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(429)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type PublishKnowledgeNodeVersionRequestObject struct {
+	TenantId TenantId `json:"tenantId"`
+	NodeId   NodeId   `json:"nodeId"`
+	Params   PublishKnowledgeNodeVersionParams
+	Body     *PublishKnowledgeNodeVersionJSONRequestBody
+}
+
+type PublishKnowledgeNodeVersionResponseObject interface {
+	VisitPublishKnowledgeNodeVersionResponse(w http.ResponseWriter) error
+}
+
+type PublishKnowledgeNodeVersion201ResponseHeaders struct {
+	CacheControl        *string
+	ETag                *string
+	IdempotencyReplayed *bool
+	XRequestId          *string
+}
+
+type PublishKnowledgeNodeVersion201JSONResponse struct {
+	Body    KnowledgePublishResult
+	Headers PublishKnowledgeNodeVersion201ResponseHeaders
+}
+
+func (response PublishKnowledgeNodeVersion201JSONResponse) VisitPublishKnowledgeNodeVersionResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	if response.Headers.CacheControl != nil {
+		w.Header().Set("Cache-Control", fmt.Sprint(*response.Headers.CacheControl))
+	}
+	if response.Headers.ETag != nil {
+		w.Header().Set("ETag", fmt.Sprint(*response.Headers.ETag))
+	}
+	if response.Headers.IdempotencyReplayed != nil {
+		w.Header().Set("Idempotency-Replayed", fmt.Sprint(*response.Headers.IdempotencyReplayed))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(201)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type PublishKnowledgeNodeVersion400ApplicationProblemPlusJSONResponse struct {
+	BadRequestApplicationProblemPlusJSONResponse
+}
+
+func (response PublishKnowledgeNodeVersion400ApplicationProblemPlusJSONResponse) VisitPublishKnowledgeNodeVersionResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(400)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type PublishKnowledgeNodeVersion401ApplicationProblemPlusJSONResponse struct {
+	UnauthenticatedApplicationProblemPlusJSONResponse
+}
+
+func (response PublishKnowledgeNodeVersion401ApplicationProblemPlusJSONResponse) VisitPublishKnowledgeNodeVersionResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(401)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type PublishKnowledgeNodeVersion403ApplicationProblemPlusJSONResponse struct {
+	ForbiddenApplicationProblemPlusJSONResponse
+}
+
+func (response PublishKnowledgeNodeVersion403ApplicationProblemPlusJSONResponse) VisitPublishKnowledgeNodeVersionResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(403)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type PublishKnowledgeNodeVersion404ApplicationProblemPlusJSONResponse struct {
+	NotFoundApplicationProblemPlusJSONResponse
+}
+
+func (response PublishKnowledgeNodeVersion404ApplicationProblemPlusJSONResponse) VisitPublishKnowledgeNodeVersionResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(404)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type PublishKnowledgeNodeVersion409ApplicationProblemPlusJSONResponse struct {
+	ConflictApplicationProblemPlusJSONResponse
+}
+
+func (response PublishKnowledgeNodeVersion409ApplicationProblemPlusJSONResponse) VisitPublishKnowledgeNodeVersionResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.RetryAfter != nil {
+		w.Header().Set("Retry-After", fmt.Sprint(*response.Headers.RetryAfter))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(409)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type PublishKnowledgeNodeVersion412ApplicationProblemPlusJSONResponse struct {
+	PreconditionFailedApplicationProblemPlusJSONResponse
+}
+
+func (response PublishKnowledgeNodeVersion412ApplicationProblemPlusJSONResponse) VisitPublishKnowledgeNodeVersionResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(412)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type PublishKnowledgeNodeVersion422ApplicationProblemPlusJSONResponse struct {
+	ValidationApplicationProblemPlusJSONResponse
+}
+
+func (response PublishKnowledgeNodeVersion422ApplicationProblemPlusJSONResponse) VisitPublishKnowledgeNodeVersionResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(422)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type PublishKnowledgeNodeVersion428ApplicationProblemPlusJSONResponse struct {
+	PreconditionRequiredApplicationProblemPlusJSONResponse
+}
+
+func (response PublishKnowledgeNodeVersion428ApplicationProblemPlusJSONResponse) VisitPublishKnowledgeNodeVersionResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(428)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type PublishKnowledgeNodeVersion429ApplicationProblemPlusJSONResponse struct {
+	RateLimitedApplicationProblemPlusJSONResponse
+}
+
+func (response PublishKnowledgeNodeVersion429ApplicationProblemPlusJSONResponse) VisitPublishKnowledgeNodeVersionResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.RetryAfter != nil {
+		w.Header().Set("Retry-After", fmt.Sprint(*response.Headers.RetryAfter))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(429)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type GetKnowledgeNodeVersionRequestObject struct {
+	TenantId TenantId    `json:"tenantId"`
+	NodeId   NodeId      `json:"nodeId"`
+	Version  NodeVersion `json:"version"`
+}
+
+type GetKnowledgeNodeVersionResponseObject interface {
+	VisitGetKnowledgeNodeVersionResponse(w http.ResponseWriter) error
+}
+
+type GetKnowledgeNodeVersion200ResponseHeaders struct {
+	CacheControl *string
+	XRequestId   *string
+}
+
+type GetKnowledgeNodeVersion200JSONResponse struct {
+	Body    KnowledgeVersion
+	Headers GetKnowledgeNodeVersion200ResponseHeaders
+}
+
+func (response GetKnowledgeNodeVersion200JSONResponse) VisitGetKnowledgeNodeVersionResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	if response.Headers.CacheControl != nil {
+		w.Header().Set("Cache-Control", fmt.Sprint(*response.Headers.CacheControl))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(200)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type GetKnowledgeNodeVersion400ApplicationProblemPlusJSONResponse struct {
+	BadRequestApplicationProblemPlusJSONResponse
+}
+
+func (response GetKnowledgeNodeVersion400ApplicationProblemPlusJSONResponse) VisitGetKnowledgeNodeVersionResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(400)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type GetKnowledgeNodeVersion401ApplicationProblemPlusJSONResponse struct {
+	UnauthenticatedApplicationProblemPlusJSONResponse
+}
+
+func (response GetKnowledgeNodeVersion401ApplicationProblemPlusJSONResponse) VisitGetKnowledgeNodeVersionResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(401)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type GetKnowledgeNodeVersion403ApplicationProblemPlusJSONResponse struct {
+	ForbiddenApplicationProblemPlusJSONResponse
+}
+
+func (response GetKnowledgeNodeVersion403ApplicationProblemPlusJSONResponse) VisitGetKnowledgeNodeVersionResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(403)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type GetKnowledgeNodeVersion404ApplicationProblemPlusJSONResponse struct {
+	NotFoundApplicationProblemPlusJSONResponse
+}
+
+func (response GetKnowledgeNodeVersion404ApplicationProblemPlusJSONResponse) VisitGetKnowledgeNodeVersionResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(404)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type GetKnowledgeNodeVersion422ApplicationProblemPlusJSONResponse struct {
+	ValidationApplicationProblemPlusJSONResponse
+}
+
+func (response GetKnowledgeNodeVersion422ApplicationProblemPlusJSONResponse) VisitGetKnowledgeNodeVersionResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(422)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type GetKnowledgeNodeVersion429ApplicationProblemPlusJSONResponse struct {
+	RateLimitedApplicationProblemPlusJSONResponse
+}
+
+func (response GetKnowledgeNodeVersion429ApplicationProblemPlusJSONResponse) VisitGetKnowledgeNodeVersionResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.RetryAfter != nil {
+		w.Header().Set("Retry-After", fmt.Sprint(*response.Headers.RetryAfter))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(429)
+	_, err := buf.WriteTo(w)
+	return err
 }
 
 type ListKnowledgePagesRequestObject struct {
@@ -1931,8 +9480,3096 @@ func (response UpdateKnowledgePage429ApplicationProblemPlusJSONResponse) VisitUp
 	return err
 }
 
+type DecideKnowledgeAccessRequestRequestObject struct {
+	TenantId  TenantId  `json:"tenantId"`
+	RequestId RequestId `json:"requestId"`
+	Params    DecideKnowledgeAccessRequestParams
+	Body      *DecideKnowledgeAccessRequestJSONRequestBody
+}
+
+type DecideKnowledgeAccessRequestResponseObject interface {
+	VisitDecideKnowledgeAccessRequestResponse(w http.ResponseWriter) error
+}
+
+type DecideKnowledgeAccessRequest200ResponseHeaders struct {
+	CacheControl        *string
+	IdempotencyReplayed *bool
+	XRequestId          *string
+}
+
+type DecideKnowledgeAccessRequest200JSONResponse struct {
+	Body    KnowledgeAccessRequest
+	Headers DecideKnowledgeAccessRequest200ResponseHeaders
+}
+
+func (response DecideKnowledgeAccessRequest200JSONResponse) VisitDecideKnowledgeAccessRequestResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	if response.Headers.CacheControl != nil {
+		w.Header().Set("Cache-Control", fmt.Sprint(*response.Headers.CacheControl))
+	}
+	if response.Headers.IdempotencyReplayed != nil {
+		w.Header().Set("Idempotency-Replayed", fmt.Sprint(*response.Headers.IdempotencyReplayed))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(200)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type DecideKnowledgeAccessRequest400ApplicationProblemPlusJSONResponse struct {
+	BadRequestApplicationProblemPlusJSONResponse
+}
+
+func (response DecideKnowledgeAccessRequest400ApplicationProblemPlusJSONResponse) VisitDecideKnowledgeAccessRequestResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(400)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type DecideKnowledgeAccessRequest401ApplicationProblemPlusJSONResponse struct {
+	UnauthenticatedApplicationProblemPlusJSONResponse
+}
+
+func (response DecideKnowledgeAccessRequest401ApplicationProblemPlusJSONResponse) VisitDecideKnowledgeAccessRequestResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(401)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type DecideKnowledgeAccessRequest403ApplicationProblemPlusJSONResponse struct {
+	ForbiddenApplicationProblemPlusJSONResponse
+}
+
+func (response DecideKnowledgeAccessRequest403ApplicationProblemPlusJSONResponse) VisitDecideKnowledgeAccessRequestResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(403)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type DecideKnowledgeAccessRequest404ApplicationProblemPlusJSONResponse struct {
+	NotFoundApplicationProblemPlusJSONResponse
+}
+
+func (response DecideKnowledgeAccessRequest404ApplicationProblemPlusJSONResponse) VisitDecideKnowledgeAccessRequestResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(404)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type DecideKnowledgeAccessRequest409ApplicationProblemPlusJSONResponse struct {
+	ConflictApplicationProblemPlusJSONResponse
+}
+
+func (response DecideKnowledgeAccessRequest409ApplicationProblemPlusJSONResponse) VisitDecideKnowledgeAccessRequestResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.RetryAfter != nil {
+		w.Header().Set("Retry-After", fmt.Sprint(*response.Headers.RetryAfter))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(409)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type DecideKnowledgeAccessRequest422ApplicationProblemPlusJSONResponse struct {
+	ValidationApplicationProblemPlusJSONResponse
+}
+
+func (response DecideKnowledgeAccessRequest422ApplicationProblemPlusJSONResponse) VisitDecideKnowledgeAccessRequestResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(422)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type DecideKnowledgeAccessRequest429ApplicationProblemPlusJSONResponse struct {
+	RateLimitedApplicationProblemPlusJSONResponse
+}
+
+func (response DecideKnowledgeAccessRequest429ApplicationProblemPlusJSONResponse) VisitDecideKnowledgeAccessRequestResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.RetryAfter != nil {
+		w.Header().Set("Retry-After", fmt.Sprint(*response.Headers.RetryAfter))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(429)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type SetKnowledgeRuleEnabledRequestObject struct {
+	TenantId TenantId `json:"tenantId"`
+	RuleId   RuleId   `json:"ruleId"`
+	Params   SetKnowledgeRuleEnabledParams
+	Body     *SetKnowledgeRuleEnabledJSONRequestBody
+}
+
+type SetKnowledgeRuleEnabledResponseObject interface {
+	VisitSetKnowledgeRuleEnabledResponse(w http.ResponseWriter) error
+}
+
+type SetKnowledgeRuleEnabled200ResponseHeaders struct {
+	CacheControl        *string
+	IdempotencyReplayed *bool
+	XRequestId          *string
+}
+
+type SetKnowledgeRuleEnabled200JSONResponse struct {
+	Body    KnowledgeRule
+	Headers SetKnowledgeRuleEnabled200ResponseHeaders
+}
+
+func (response SetKnowledgeRuleEnabled200JSONResponse) VisitSetKnowledgeRuleEnabledResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	if response.Headers.CacheControl != nil {
+		w.Header().Set("Cache-Control", fmt.Sprint(*response.Headers.CacheControl))
+	}
+	if response.Headers.IdempotencyReplayed != nil {
+		w.Header().Set("Idempotency-Replayed", fmt.Sprint(*response.Headers.IdempotencyReplayed))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(200)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type SetKnowledgeRuleEnabled400ApplicationProblemPlusJSONResponse struct {
+	BadRequestApplicationProblemPlusJSONResponse
+}
+
+func (response SetKnowledgeRuleEnabled400ApplicationProblemPlusJSONResponse) VisitSetKnowledgeRuleEnabledResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(400)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type SetKnowledgeRuleEnabled401ApplicationProblemPlusJSONResponse struct {
+	UnauthenticatedApplicationProblemPlusJSONResponse
+}
+
+func (response SetKnowledgeRuleEnabled401ApplicationProblemPlusJSONResponse) VisitSetKnowledgeRuleEnabledResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(401)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type SetKnowledgeRuleEnabled403ApplicationProblemPlusJSONResponse struct {
+	ForbiddenApplicationProblemPlusJSONResponse
+}
+
+func (response SetKnowledgeRuleEnabled403ApplicationProblemPlusJSONResponse) VisitSetKnowledgeRuleEnabledResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(403)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type SetKnowledgeRuleEnabled404ApplicationProblemPlusJSONResponse struct {
+	NotFoundApplicationProblemPlusJSONResponse
+}
+
+func (response SetKnowledgeRuleEnabled404ApplicationProblemPlusJSONResponse) VisitSetKnowledgeRuleEnabledResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(404)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type SetKnowledgeRuleEnabled409ApplicationProblemPlusJSONResponse struct {
+	ConflictApplicationProblemPlusJSONResponse
+}
+
+func (response SetKnowledgeRuleEnabled409ApplicationProblemPlusJSONResponse) VisitSetKnowledgeRuleEnabledResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.RetryAfter != nil {
+		w.Header().Set("Retry-After", fmt.Sprint(*response.Headers.RetryAfter))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(409)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type SetKnowledgeRuleEnabled422ApplicationProblemPlusJSONResponse struct {
+	ValidationApplicationProblemPlusJSONResponse
+}
+
+func (response SetKnowledgeRuleEnabled422ApplicationProblemPlusJSONResponse) VisitSetKnowledgeRuleEnabledResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(422)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type SetKnowledgeRuleEnabled429ApplicationProblemPlusJSONResponse struct {
+	RateLimitedApplicationProblemPlusJSONResponse
+}
+
+func (response SetKnowledgeRuleEnabled429ApplicationProblemPlusJSONResponse) VisitSetKnowledgeRuleEnabledResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.RetryAfter != nil {
+		w.Header().Set("Retry-After", fmt.Sprint(*response.Headers.RetryAfter))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(429)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type SearchKnowledgeRequestObject struct {
+	TenantId TenantId `json:"tenantId"`
+	Params   SearchKnowledgeParams
+}
+
+type SearchKnowledgeResponseObject interface {
+	VisitSearchKnowledgeResponse(w http.ResponseWriter) error
+}
+
+type SearchKnowledge200ResponseHeaders struct {
+	CacheControl *string
+	XRequestId   *string
+}
+
+type SearchKnowledge200JSONResponse struct {
+	Body    KnowledgeSearchResult
+	Headers SearchKnowledge200ResponseHeaders
+}
+
+func (response SearchKnowledge200JSONResponse) VisitSearchKnowledgeResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	if response.Headers.CacheControl != nil {
+		w.Header().Set("Cache-Control", fmt.Sprint(*response.Headers.CacheControl))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(200)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type SearchKnowledge400ApplicationProblemPlusJSONResponse struct {
+	BadRequestApplicationProblemPlusJSONResponse
+}
+
+func (response SearchKnowledge400ApplicationProblemPlusJSONResponse) VisitSearchKnowledgeResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(400)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type SearchKnowledge401ApplicationProblemPlusJSONResponse struct {
+	UnauthenticatedApplicationProblemPlusJSONResponse
+}
+
+func (response SearchKnowledge401ApplicationProblemPlusJSONResponse) VisitSearchKnowledgeResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(401)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type SearchKnowledge403ApplicationProblemPlusJSONResponse struct {
+	ForbiddenApplicationProblemPlusJSONResponse
+}
+
+func (response SearchKnowledge403ApplicationProblemPlusJSONResponse) VisitSearchKnowledgeResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(403)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type SearchKnowledge404ApplicationProblemPlusJSONResponse struct {
+	NotFoundApplicationProblemPlusJSONResponse
+}
+
+func (response SearchKnowledge404ApplicationProblemPlusJSONResponse) VisitSearchKnowledgeResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(404)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type SearchKnowledge422ApplicationProblemPlusJSONResponse struct {
+	ValidationApplicationProblemPlusJSONResponse
+}
+
+func (response SearchKnowledge422ApplicationProblemPlusJSONResponse) VisitSearchKnowledgeResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(422)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type SearchKnowledge429ApplicationProblemPlusJSONResponse struct {
+	RateLimitedApplicationProblemPlusJSONResponse
+}
+
+func (response SearchKnowledge429ApplicationProblemPlusJSONResponse) VisitSearchKnowledgeResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.RetryAfter != nil {
+		w.Header().Set("Retry-After", fmt.Sprint(*response.Headers.RetryAfter))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(429)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type ListKnowledgeSpaceTemplatesRequestObject struct {
+	TenantId TenantId `json:"tenantId"`
+}
+
+type ListKnowledgeSpaceTemplatesResponseObject interface {
+	VisitListKnowledgeSpaceTemplatesResponse(w http.ResponseWriter) error
+}
+
+type ListKnowledgeSpaceTemplates200ResponseHeaders struct {
+	CacheControl *string
+	XRequestId   *string
+}
+
+type ListKnowledgeSpaceTemplates200JSONResponse struct {
+	Body    KnowledgeSpaceTemplateList
+	Headers ListKnowledgeSpaceTemplates200ResponseHeaders
+}
+
+func (response ListKnowledgeSpaceTemplates200JSONResponse) VisitListKnowledgeSpaceTemplatesResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	if response.Headers.CacheControl != nil {
+		w.Header().Set("Cache-Control", fmt.Sprint(*response.Headers.CacheControl))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(200)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type ListKnowledgeSpaceTemplates400ApplicationProblemPlusJSONResponse struct {
+	BadRequestApplicationProblemPlusJSONResponse
+}
+
+func (response ListKnowledgeSpaceTemplates400ApplicationProblemPlusJSONResponse) VisitListKnowledgeSpaceTemplatesResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(400)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type ListKnowledgeSpaceTemplates401ApplicationProblemPlusJSONResponse struct {
+	UnauthenticatedApplicationProblemPlusJSONResponse
+}
+
+func (response ListKnowledgeSpaceTemplates401ApplicationProblemPlusJSONResponse) VisitListKnowledgeSpaceTemplatesResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(401)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type ListKnowledgeSpaceTemplates403ApplicationProblemPlusJSONResponse struct {
+	ForbiddenApplicationProblemPlusJSONResponse
+}
+
+func (response ListKnowledgeSpaceTemplates403ApplicationProblemPlusJSONResponse) VisitListKnowledgeSpaceTemplatesResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(403)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type ListKnowledgeSpaceTemplates404ApplicationProblemPlusJSONResponse struct {
+	NotFoundApplicationProblemPlusJSONResponse
+}
+
+func (response ListKnowledgeSpaceTemplates404ApplicationProblemPlusJSONResponse) VisitListKnowledgeSpaceTemplatesResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(404)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type ListKnowledgeSpaceTemplates422ApplicationProblemPlusJSONResponse struct {
+	ValidationApplicationProblemPlusJSONResponse
+}
+
+func (response ListKnowledgeSpaceTemplates422ApplicationProblemPlusJSONResponse) VisitListKnowledgeSpaceTemplatesResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(422)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type ListKnowledgeSpaceTemplates429ApplicationProblemPlusJSONResponse struct {
+	RateLimitedApplicationProblemPlusJSONResponse
+}
+
+func (response ListKnowledgeSpaceTemplates429ApplicationProblemPlusJSONResponse) VisitListKnowledgeSpaceTemplatesResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.RetryAfter != nil {
+		w.Header().Set("Retry-After", fmt.Sprint(*response.Headers.RetryAfter))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(429)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type ListKnowledgeSpacesRequestObject struct {
+	TenantId TenantId `json:"tenantId"`
+	Params   ListKnowledgeSpacesParams
+}
+
+type ListKnowledgeSpacesResponseObject interface {
+	VisitListKnowledgeSpacesResponse(w http.ResponseWriter) error
+}
+
+type ListKnowledgeSpaces200ResponseHeaders struct {
+	CacheControl *string
+	XRequestId   *string
+}
+
+type ListKnowledgeSpaces200JSONResponse struct {
+	Body    KnowledgeSpaceList
+	Headers ListKnowledgeSpaces200ResponseHeaders
+}
+
+func (response ListKnowledgeSpaces200JSONResponse) VisitListKnowledgeSpacesResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	if response.Headers.CacheControl != nil {
+		w.Header().Set("Cache-Control", fmt.Sprint(*response.Headers.CacheControl))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(200)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type ListKnowledgeSpaces400ApplicationProblemPlusJSONResponse struct {
+	BadRequestApplicationProblemPlusJSONResponse
+}
+
+func (response ListKnowledgeSpaces400ApplicationProblemPlusJSONResponse) VisitListKnowledgeSpacesResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(400)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type ListKnowledgeSpaces401ApplicationProblemPlusJSONResponse struct {
+	UnauthenticatedApplicationProblemPlusJSONResponse
+}
+
+func (response ListKnowledgeSpaces401ApplicationProblemPlusJSONResponse) VisitListKnowledgeSpacesResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(401)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type ListKnowledgeSpaces403ApplicationProblemPlusJSONResponse struct {
+	ForbiddenApplicationProblemPlusJSONResponse
+}
+
+func (response ListKnowledgeSpaces403ApplicationProblemPlusJSONResponse) VisitListKnowledgeSpacesResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(403)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type ListKnowledgeSpaces404ApplicationProblemPlusJSONResponse struct {
+	NotFoundApplicationProblemPlusJSONResponse
+}
+
+func (response ListKnowledgeSpaces404ApplicationProblemPlusJSONResponse) VisitListKnowledgeSpacesResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(404)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type ListKnowledgeSpaces422ApplicationProblemPlusJSONResponse struct {
+	ValidationApplicationProblemPlusJSONResponse
+}
+
+func (response ListKnowledgeSpaces422ApplicationProblemPlusJSONResponse) VisitListKnowledgeSpacesResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(422)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type ListKnowledgeSpaces429ApplicationProblemPlusJSONResponse struct {
+	RateLimitedApplicationProblemPlusJSONResponse
+}
+
+func (response ListKnowledgeSpaces429ApplicationProblemPlusJSONResponse) VisitListKnowledgeSpacesResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.RetryAfter != nil {
+		w.Header().Set("Retry-After", fmt.Sprint(*response.Headers.RetryAfter))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(429)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type CreateKnowledgeSpaceRequestObject struct {
+	TenantId TenantId `json:"tenantId"`
+	Params   CreateKnowledgeSpaceParams
+	Body     *CreateKnowledgeSpaceJSONRequestBody
+}
+
+type CreateKnowledgeSpaceResponseObject interface {
+	VisitCreateKnowledgeSpaceResponse(w http.ResponseWriter) error
+}
+
+type CreateKnowledgeSpace201ResponseHeaders struct {
+	CacheControl        *string
+	ETag                *string
+	IdempotencyReplayed *bool
+	XRequestId          *string
+}
+
+type CreateKnowledgeSpace201JSONResponse struct {
+	Body    KnowledgeSpace
+	Headers CreateKnowledgeSpace201ResponseHeaders
+}
+
+func (response CreateKnowledgeSpace201JSONResponse) VisitCreateKnowledgeSpaceResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	if response.Headers.CacheControl != nil {
+		w.Header().Set("Cache-Control", fmt.Sprint(*response.Headers.CacheControl))
+	}
+	if response.Headers.ETag != nil {
+		w.Header().Set("ETag", fmt.Sprint(*response.Headers.ETag))
+	}
+	if response.Headers.IdempotencyReplayed != nil {
+		w.Header().Set("Idempotency-Replayed", fmt.Sprint(*response.Headers.IdempotencyReplayed))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(201)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type CreateKnowledgeSpace400ApplicationProblemPlusJSONResponse struct {
+	BadRequestApplicationProblemPlusJSONResponse
+}
+
+func (response CreateKnowledgeSpace400ApplicationProblemPlusJSONResponse) VisitCreateKnowledgeSpaceResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(400)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type CreateKnowledgeSpace401ApplicationProblemPlusJSONResponse struct {
+	UnauthenticatedApplicationProblemPlusJSONResponse
+}
+
+func (response CreateKnowledgeSpace401ApplicationProblemPlusJSONResponse) VisitCreateKnowledgeSpaceResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(401)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type CreateKnowledgeSpace403ApplicationProblemPlusJSONResponse struct {
+	ForbiddenApplicationProblemPlusJSONResponse
+}
+
+func (response CreateKnowledgeSpace403ApplicationProblemPlusJSONResponse) VisitCreateKnowledgeSpaceResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(403)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type CreateKnowledgeSpace404ApplicationProblemPlusJSONResponse struct {
+	NotFoundApplicationProblemPlusJSONResponse
+}
+
+func (response CreateKnowledgeSpace404ApplicationProblemPlusJSONResponse) VisitCreateKnowledgeSpaceResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(404)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type CreateKnowledgeSpace409ApplicationProblemPlusJSONResponse struct {
+	ConflictApplicationProblemPlusJSONResponse
+}
+
+func (response CreateKnowledgeSpace409ApplicationProblemPlusJSONResponse) VisitCreateKnowledgeSpaceResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.RetryAfter != nil {
+		w.Header().Set("Retry-After", fmt.Sprint(*response.Headers.RetryAfter))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(409)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type CreateKnowledgeSpace422ApplicationProblemPlusJSONResponse struct {
+	ValidationApplicationProblemPlusJSONResponse
+}
+
+func (response CreateKnowledgeSpace422ApplicationProblemPlusJSONResponse) VisitCreateKnowledgeSpaceResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(422)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type CreateKnowledgeSpace429ApplicationProblemPlusJSONResponse struct {
+	RateLimitedApplicationProblemPlusJSONResponse
+}
+
+func (response CreateKnowledgeSpace429ApplicationProblemPlusJSONResponse) VisitCreateKnowledgeSpaceResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.RetryAfter != nil {
+		w.Header().Set("Retry-After", fmt.Sprint(*response.Headers.RetryAfter))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(429)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type UpdateKnowledgeSpaceRequestObject struct {
+	TenantId TenantId `json:"tenantId"`
+	SpaceId  SpaceId  `json:"spaceId"`
+	Params   UpdateKnowledgeSpaceParams
+	Body     *UpdateKnowledgeSpaceJSONRequestBody
+}
+
+type UpdateKnowledgeSpaceResponseObject interface {
+	VisitUpdateKnowledgeSpaceResponse(w http.ResponseWriter) error
+}
+
+type UpdateKnowledgeSpace200ResponseHeaders struct {
+	CacheControl        *string
+	ETag                *string
+	IdempotencyReplayed *bool
+	XRequestId          *string
+}
+
+type UpdateKnowledgeSpace200JSONResponse struct {
+	Body    KnowledgeSpaceChange
+	Headers UpdateKnowledgeSpace200ResponseHeaders
+}
+
+func (response UpdateKnowledgeSpace200JSONResponse) VisitUpdateKnowledgeSpaceResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	if response.Headers.CacheControl != nil {
+		w.Header().Set("Cache-Control", fmt.Sprint(*response.Headers.CacheControl))
+	}
+	if response.Headers.ETag != nil {
+		w.Header().Set("ETag", fmt.Sprint(*response.Headers.ETag))
+	}
+	if response.Headers.IdempotencyReplayed != nil {
+		w.Header().Set("Idempotency-Replayed", fmt.Sprint(*response.Headers.IdempotencyReplayed))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(200)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type UpdateKnowledgeSpace400ApplicationProblemPlusJSONResponse struct {
+	BadRequestApplicationProblemPlusJSONResponse
+}
+
+func (response UpdateKnowledgeSpace400ApplicationProblemPlusJSONResponse) VisitUpdateKnowledgeSpaceResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(400)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type UpdateKnowledgeSpace401ApplicationProblemPlusJSONResponse struct {
+	UnauthenticatedApplicationProblemPlusJSONResponse
+}
+
+func (response UpdateKnowledgeSpace401ApplicationProblemPlusJSONResponse) VisitUpdateKnowledgeSpaceResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(401)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type UpdateKnowledgeSpace403ApplicationProblemPlusJSONResponse struct {
+	ForbiddenApplicationProblemPlusJSONResponse
+}
+
+func (response UpdateKnowledgeSpace403ApplicationProblemPlusJSONResponse) VisitUpdateKnowledgeSpaceResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(403)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type UpdateKnowledgeSpace404ApplicationProblemPlusJSONResponse struct {
+	NotFoundApplicationProblemPlusJSONResponse
+}
+
+func (response UpdateKnowledgeSpace404ApplicationProblemPlusJSONResponse) VisitUpdateKnowledgeSpaceResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(404)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type UpdateKnowledgeSpace409ApplicationProblemPlusJSONResponse struct {
+	ConflictApplicationProblemPlusJSONResponse
+}
+
+func (response UpdateKnowledgeSpace409ApplicationProblemPlusJSONResponse) VisitUpdateKnowledgeSpaceResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.RetryAfter != nil {
+		w.Header().Set("Retry-After", fmt.Sprint(*response.Headers.RetryAfter))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(409)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type UpdateKnowledgeSpace412ApplicationProblemPlusJSONResponse struct {
+	PreconditionFailedApplicationProblemPlusJSONResponse
+}
+
+func (response UpdateKnowledgeSpace412ApplicationProblemPlusJSONResponse) VisitUpdateKnowledgeSpaceResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(412)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type UpdateKnowledgeSpace422ApplicationProblemPlusJSONResponse struct {
+	ValidationApplicationProblemPlusJSONResponse
+}
+
+func (response UpdateKnowledgeSpace422ApplicationProblemPlusJSONResponse) VisitUpdateKnowledgeSpaceResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(422)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type UpdateKnowledgeSpace428ApplicationProblemPlusJSONResponse struct {
+	PreconditionRequiredApplicationProblemPlusJSONResponse
+}
+
+func (response UpdateKnowledgeSpace428ApplicationProblemPlusJSONResponse) VisitUpdateKnowledgeSpaceResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(428)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type UpdateKnowledgeSpace429ApplicationProblemPlusJSONResponse struct {
+	RateLimitedApplicationProblemPlusJSONResponse
+}
+
+func (response UpdateKnowledgeSpace429ApplicationProblemPlusJSONResponse) VisitUpdateKnowledgeSpaceResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.RetryAfter != nil {
+		w.Header().Set("Retry-After", fmt.Sprint(*response.Headers.RetryAfter))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(429)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type GetKnowledgeAccessMapRequestObject struct {
+	TenantId TenantId `json:"tenantId"`
+	SpaceId  SpaceId  `json:"spaceId"`
+	Params   GetKnowledgeAccessMapParams
+}
+
+type GetKnowledgeAccessMapResponseObject interface {
+	VisitGetKnowledgeAccessMapResponse(w http.ResponseWriter) error
+}
+
+type GetKnowledgeAccessMap200ResponseHeaders struct {
+	CacheControl *string
+	XRequestId   *string
+}
+
+type GetKnowledgeAccessMap200JSONResponse struct {
+	Body    KnowledgeAccessMap
+	Headers GetKnowledgeAccessMap200ResponseHeaders
+}
+
+func (response GetKnowledgeAccessMap200JSONResponse) VisitGetKnowledgeAccessMapResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	if response.Headers.CacheControl != nil {
+		w.Header().Set("Cache-Control", fmt.Sprint(*response.Headers.CacheControl))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(200)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type GetKnowledgeAccessMap400ApplicationProblemPlusJSONResponse struct {
+	BadRequestApplicationProblemPlusJSONResponse
+}
+
+func (response GetKnowledgeAccessMap400ApplicationProblemPlusJSONResponse) VisitGetKnowledgeAccessMapResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(400)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type GetKnowledgeAccessMap401ApplicationProblemPlusJSONResponse struct {
+	UnauthenticatedApplicationProblemPlusJSONResponse
+}
+
+func (response GetKnowledgeAccessMap401ApplicationProblemPlusJSONResponse) VisitGetKnowledgeAccessMapResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(401)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type GetKnowledgeAccessMap403ApplicationProblemPlusJSONResponse struct {
+	ForbiddenApplicationProblemPlusJSONResponse
+}
+
+func (response GetKnowledgeAccessMap403ApplicationProblemPlusJSONResponse) VisitGetKnowledgeAccessMapResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(403)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type GetKnowledgeAccessMap404ApplicationProblemPlusJSONResponse struct {
+	NotFoundApplicationProblemPlusJSONResponse
+}
+
+func (response GetKnowledgeAccessMap404ApplicationProblemPlusJSONResponse) VisitGetKnowledgeAccessMapResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(404)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type GetKnowledgeAccessMap422ApplicationProblemPlusJSONResponse struct {
+	ValidationApplicationProblemPlusJSONResponse
+}
+
+func (response GetKnowledgeAccessMap422ApplicationProblemPlusJSONResponse) VisitGetKnowledgeAccessMapResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(422)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type GetKnowledgeAccessMap429ApplicationProblemPlusJSONResponse struct {
+	RateLimitedApplicationProblemPlusJSONResponse
+}
+
+func (response GetKnowledgeAccessMap429ApplicationProblemPlusJSONResponse) VisitGetKnowledgeAccessMapResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.RetryAfter != nil {
+		w.Header().Set("Retry-After", fmt.Sprint(*response.Headers.RetryAfter))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(429)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type ListKnowledgeArchiveRequestObject struct {
+	TenantId TenantId `json:"tenantId"`
+	SpaceId  SpaceId  `json:"spaceId"`
+}
+
+type ListKnowledgeArchiveResponseObject interface {
+	VisitListKnowledgeArchiveResponse(w http.ResponseWriter) error
+}
+
+type ListKnowledgeArchive200ResponseHeaders struct {
+	CacheControl *string
+	XRequestId   *string
+}
+
+type ListKnowledgeArchive200JSONResponse struct {
+	Body    KnowledgeArchiveList
+	Headers ListKnowledgeArchive200ResponseHeaders
+}
+
+func (response ListKnowledgeArchive200JSONResponse) VisitListKnowledgeArchiveResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	if response.Headers.CacheControl != nil {
+		w.Header().Set("Cache-Control", fmt.Sprint(*response.Headers.CacheControl))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(200)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type ListKnowledgeArchive400ApplicationProblemPlusJSONResponse struct {
+	BadRequestApplicationProblemPlusJSONResponse
+}
+
+func (response ListKnowledgeArchive400ApplicationProblemPlusJSONResponse) VisitListKnowledgeArchiveResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(400)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type ListKnowledgeArchive401ApplicationProblemPlusJSONResponse struct {
+	UnauthenticatedApplicationProblemPlusJSONResponse
+}
+
+func (response ListKnowledgeArchive401ApplicationProblemPlusJSONResponse) VisitListKnowledgeArchiveResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(401)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type ListKnowledgeArchive403ApplicationProblemPlusJSONResponse struct {
+	ForbiddenApplicationProblemPlusJSONResponse
+}
+
+func (response ListKnowledgeArchive403ApplicationProblemPlusJSONResponse) VisitListKnowledgeArchiveResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(403)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type ListKnowledgeArchive404ApplicationProblemPlusJSONResponse struct {
+	NotFoundApplicationProblemPlusJSONResponse
+}
+
+func (response ListKnowledgeArchive404ApplicationProblemPlusJSONResponse) VisitListKnowledgeArchiveResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(404)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type ListKnowledgeArchive422ApplicationProblemPlusJSONResponse struct {
+	ValidationApplicationProblemPlusJSONResponse
+}
+
+func (response ListKnowledgeArchive422ApplicationProblemPlusJSONResponse) VisitListKnowledgeArchiveResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(422)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type ListKnowledgeArchive429ApplicationProblemPlusJSONResponse struct {
+	RateLimitedApplicationProblemPlusJSONResponse
+}
+
+func (response ListKnowledgeArchive429ApplicationProblemPlusJSONResponse) VisitListKnowledgeArchiveResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.RetryAfter != nil {
+		w.Header().Set("Retry-After", fmt.Sprint(*response.Headers.RetryAfter))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(429)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type ListKnowledgeSpaceMembersRequestObject struct {
+	TenantId TenantId `json:"tenantId"`
+	SpaceId  SpaceId  `json:"spaceId"`
+}
+
+type ListKnowledgeSpaceMembersResponseObject interface {
+	VisitListKnowledgeSpaceMembersResponse(w http.ResponseWriter) error
+}
+
+type ListKnowledgeSpaceMembers200ResponseHeaders struct {
+	CacheControl *string
+	XRequestId   *string
+}
+
+type ListKnowledgeSpaceMembers200JSONResponse struct {
+	Body    KnowledgeSpaceMembers
+	Headers ListKnowledgeSpaceMembers200ResponseHeaders
+}
+
+func (response ListKnowledgeSpaceMembers200JSONResponse) VisitListKnowledgeSpaceMembersResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	if response.Headers.CacheControl != nil {
+		w.Header().Set("Cache-Control", fmt.Sprint(*response.Headers.CacheControl))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(200)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type ListKnowledgeSpaceMembers400ApplicationProblemPlusJSONResponse struct {
+	BadRequestApplicationProblemPlusJSONResponse
+}
+
+func (response ListKnowledgeSpaceMembers400ApplicationProblemPlusJSONResponse) VisitListKnowledgeSpaceMembersResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(400)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type ListKnowledgeSpaceMembers401ApplicationProblemPlusJSONResponse struct {
+	UnauthenticatedApplicationProblemPlusJSONResponse
+}
+
+func (response ListKnowledgeSpaceMembers401ApplicationProblemPlusJSONResponse) VisitListKnowledgeSpaceMembersResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(401)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type ListKnowledgeSpaceMembers403ApplicationProblemPlusJSONResponse struct {
+	ForbiddenApplicationProblemPlusJSONResponse
+}
+
+func (response ListKnowledgeSpaceMembers403ApplicationProblemPlusJSONResponse) VisitListKnowledgeSpaceMembersResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(403)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type ListKnowledgeSpaceMembers404ApplicationProblemPlusJSONResponse struct {
+	NotFoundApplicationProblemPlusJSONResponse
+}
+
+func (response ListKnowledgeSpaceMembers404ApplicationProblemPlusJSONResponse) VisitListKnowledgeSpaceMembersResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(404)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type ListKnowledgeSpaceMembers422ApplicationProblemPlusJSONResponse struct {
+	ValidationApplicationProblemPlusJSONResponse
+}
+
+func (response ListKnowledgeSpaceMembers422ApplicationProblemPlusJSONResponse) VisitListKnowledgeSpaceMembersResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(422)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type ListKnowledgeSpaceMembers429ApplicationProblemPlusJSONResponse struct {
+	RateLimitedApplicationProblemPlusJSONResponse
+}
+
+func (response ListKnowledgeSpaceMembers429ApplicationProblemPlusJSONResponse) VisitListKnowledgeSpaceMembersResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.RetryAfter != nil {
+		w.Header().Set("Retry-After", fmt.Sprint(*response.Headers.RetryAfter))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(429)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type SetKnowledgeSpaceMemberRequestObject struct {
+	TenantId TenantId `json:"tenantId"`
+	SpaceId  SpaceId  `json:"spaceId"`
+	MemberId MemberId `json:"memberId"`
+	Params   SetKnowledgeSpaceMemberParams
+	Body     *SetKnowledgeSpaceMemberJSONRequestBody
+}
+
+type SetKnowledgeSpaceMemberResponseObject interface {
+	VisitSetKnowledgeSpaceMemberResponse(w http.ResponseWriter) error
+}
+
+type SetKnowledgeSpaceMember200ResponseHeaders struct {
+	CacheControl        *string
+	IdempotencyReplayed *bool
+	XRequestId          *string
+}
+
+type SetKnowledgeSpaceMember200JSONResponse struct {
+	Body    KnowledgeSpaceMembers
+	Headers SetKnowledgeSpaceMember200ResponseHeaders
+}
+
+func (response SetKnowledgeSpaceMember200JSONResponse) VisitSetKnowledgeSpaceMemberResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	if response.Headers.CacheControl != nil {
+		w.Header().Set("Cache-Control", fmt.Sprint(*response.Headers.CacheControl))
+	}
+	if response.Headers.IdempotencyReplayed != nil {
+		w.Header().Set("Idempotency-Replayed", fmt.Sprint(*response.Headers.IdempotencyReplayed))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(200)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type SetKnowledgeSpaceMember400ApplicationProblemPlusJSONResponse struct {
+	BadRequestApplicationProblemPlusJSONResponse
+}
+
+func (response SetKnowledgeSpaceMember400ApplicationProblemPlusJSONResponse) VisitSetKnowledgeSpaceMemberResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(400)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type SetKnowledgeSpaceMember401ApplicationProblemPlusJSONResponse struct {
+	UnauthenticatedApplicationProblemPlusJSONResponse
+}
+
+func (response SetKnowledgeSpaceMember401ApplicationProblemPlusJSONResponse) VisitSetKnowledgeSpaceMemberResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(401)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type SetKnowledgeSpaceMember403ApplicationProblemPlusJSONResponse struct {
+	ForbiddenApplicationProblemPlusJSONResponse
+}
+
+func (response SetKnowledgeSpaceMember403ApplicationProblemPlusJSONResponse) VisitSetKnowledgeSpaceMemberResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(403)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type SetKnowledgeSpaceMember404ApplicationProblemPlusJSONResponse struct {
+	NotFoundApplicationProblemPlusJSONResponse
+}
+
+func (response SetKnowledgeSpaceMember404ApplicationProblemPlusJSONResponse) VisitSetKnowledgeSpaceMemberResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(404)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type SetKnowledgeSpaceMember409ApplicationProblemPlusJSONResponse struct {
+	ConflictApplicationProblemPlusJSONResponse
+}
+
+func (response SetKnowledgeSpaceMember409ApplicationProblemPlusJSONResponse) VisitSetKnowledgeSpaceMemberResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.RetryAfter != nil {
+		w.Header().Set("Retry-After", fmt.Sprint(*response.Headers.RetryAfter))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(409)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type SetKnowledgeSpaceMember422ApplicationProblemPlusJSONResponse struct {
+	ValidationApplicationProblemPlusJSONResponse
+}
+
+func (response SetKnowledgeSpaceMember422ApplicationProblemPlusJSONResponse) VisitSetKnowledgeSpaceMemberResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(422)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type SetKnowledgeSpaceMember429ApplicationProblemPlusJSONResponse struct {
+	RateLimitedApplicationProblemPlusJSONResponse
+}
+
+func (response SetKnowledgeSpaceMember429ApplicationProblemPlusJSONResponse) VisitSetKnowledgeSpaceMemberResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.RetryAfter != nil {
+		w.Header().Set("Retry-After", fmt.Sprint(*response.Headers.RetryAfter))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(429)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type CreateKnowledgeNodeRequestObject struct {
+	TenantId TenantId `json:"tenantId"`
+	SpaceId  SpaceId  `json:"spaceId"`
+	Params   CreateKnowledgeNodeParams
+	Body     *CreateKnowledgeNodeJSONRequestBody
+}
+
+type CreateKnowledgeNodeResponseObject interface {
+	VisitCreateKnowledgeNodeResponse(w http.ResponseWriter) error
+}
+
+type CreateKnowledgeNode201ResponseHeaders struct {
+	CacheControl        *string
+	ETag                *string
+	IdempotencyReplayed *bool
+	XRequestId          *string
+}
+
+type CreateKnowledgeNode201JSONResponse struct {
+	Body    KnowledgeNode
+	Headers CreateKnowledgeNode201ResponseHeaders
+}
+
+func (response CreateKnowledgeNode201JSONResponse) VisitCreateKnowledgeNodeResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	if response.Headers.CacheControl != nil {
+		w.Header().Set("Cache-Control", fmt.Sprint(*response.Headers.CacheControl))
+	}
+	if response.Headers.ETag != nil {
+		w.Header().Set("ETag", fmt.Sprint(*response.Headers.ETag))
+	}
+	if response.Headers.IdempotencyReplayed != nil {
+		w.Header().Set("Idempotency-Replayed", fmt.Sprint(*response.Headers.IdempotencyReplayed))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(201)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type CreateKnowledgeNode400ApplicationProblemPlusJSONResponse struct {
+	BadRequestApplicationProblemPlusJSONResponse
+}
+
+func (response CreateKnowledgeNode400ApplicationProblemPlusJSONResponse) VisitCreateKnowledgeNodeResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(400)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type CreateKnowledgeNode401ApplicationProblemPlusJSONResponse struct {
+	UnauthenticatedApplicationProblemPlusJSONResponse
+}
+
+func (response CreateKnowledgeNode401ApplicationProblemPlusJSONResponse) VisitCreateKnowledgeNodeResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(401)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type CreateKnowledgeNode403ApplicationProblemPlusJSONResponse struct {
+	ForbiddenApplicationProblemPlusJSONResponse
+}
+
+func (response CreateKnowledgeNode403ApplicationProblemPlusJSONResponse) VisitCreateKnowledgeNodeResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(403)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type CreateKnowledgeNode404ApplicationProblemPlusJSONResponse struct {
+	NotFoundApplicationProblemPlusJSONResponse
+}
+
+func (response CreateKnowledgeNode404ApplicationProblemPlusJSONResponse) VisitCreateKnowledgeNodeResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(404)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type CreateKnowledgeNode409ApplicationProblemPlusJSONResponse struct {
+	ConflictApplicationProblemPlusJSONResponse
+}
+
+func (response CreateKnowledgeNode409ApplicationProblemPlusJSONResponse) VisitCreateKnowledgeNodeResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.RetryAfter != nil {
+		w.Header().Set("Retry-After", fmt.Sprint(*response.Headers.RetryAfter))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(409)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type CreateKnowledgeNode422ApplicationProblemPlusJSONResponse struct {
+	ValidationApplicationProblemPlusJSONResponse
+}
+
+func (response CreateKnowledgeNode422ApplicationProblemPlusJSONResponse) VisitCreateKnowledgeNodeResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(422)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type CreateKnowledgeNode429ApplicationProblemPlusJSONResponse struct {
+	RateLimitedApplicationProblemPlusJSONResponse
+}
+
+func (response CreateKnowledgeNode429ApplicationProblemPlusJSONResponse) VisitCreateKnowledgeNodeResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.RetryAfter != nil {
+		w.Header().Set("Retry-After", fmt.Sprint(*response.Headers.RetryAfter))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(429)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type ListKnowledgeAccessRequestsRequestObject struct {
+	TenantId TenantId `json:"tenantId"`
+	SpaceId  SpaceId  `json:"spaceId"`
+	Params   ListKnowledgeAccessRequestsParams
+}
+
+type ListKnowledgeAccessRequestsResponseObject interface {
+	VisitListKnowledgeAccessRequestsResponse(w http.ResponseWriter) error
+}
+
+type ListKnowledgeAccessRequests200ResponseHeaders struct {
+	CacheControl *string
+	XRequestId   *string
+}
+
+type ListKnowledgeAccessRequests200JSONResponse struct {
+	Body    KnowledgeAccessRequestList
+	Headers ListKnowledgeAccessRequests200ResponseHeaders
+}
+
+func (response ListKnowledgeAccessRequests200JSONResponse) VisitListKnowledgeAccessRequestsResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	if response.Headers.CacheControl != nil {
+		w.Header().Set("Cache-Control", fmt.Sprint(*response.Headers.CacheControl))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(200)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type ListKnowledgeAccessRequests400ApplicationProblemPlusJSONResponse struct {
+	BadRequestApplicationProblemPlusJSONResponse
+}
+
+func (response ListKnowledgeAccessRequests400ApplicationProblemPlusJSONResponse) VisitListKnowledgeAccessRequestsResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(400)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type ListKnowledgeAccessRequests401ApplicationProblemPlusJSONResponse struct {
+	UnauthenticatedApplicationProblemPlusJSONResponse
+}
+
+func (response ListKnowledgeAccessRequests401ApplicationProblemPlusJSONResponse) VisitListKnowledgeAccessRequestsResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(401)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type ListKnowledgeAccessRequests403ApplicationProblemPlusJSONResponse struct {
+	ForbiddenApplicationProblemPlusJSONResponse
+}
+
+func (response ListKnowledgeAccessRequests403ApplicationProblemPlusJSONResponse) VisitListKnowledgeAccessRequestsResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(403)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type ListKnowledgeAccessRequests404ApplicationProblemPlusJSONResponse struct {
+	NotFoundApplicationProblemPlusJSONResponse
+}
+
+func (response ListKnowledgeAccessRequests404ApplicationProblemPlusJSONResponse) VisitListKnowledgeAccessRequestsResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(404)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type ListKnowledgeAccessRequests422ApplicationProblemPlusJSONResponse struct {
+	ValidationApplicationProblemPlusJSONResponse
+}
+
+func (response ListKnowledgeAccessRequests422ApplicationProblemPlusJSONResponse) VisitListKnowledgeAccessRequestsResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(422)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type ListKnowledgeAccessRequests429ApplicationProblemPlusJSONResponse struct {
+	RateLimitedApplicationProblemPlusJSONResponse
+}
+
+func (response ListKnowledgeAccessRequests429ApplicationProblemPlusJSONResponse) VisitListKnowledgeAccessRequestsResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.RetryAfter != nil {
+		w.Header().Set("Retry-After", fmt.Sprint(*response.Headers.RetryAfter))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(429)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type RunKnowledgeReviewCheckRequestObject struct {
+	TenantId TenantId `json:"tenantId"`
+	SpaceId  SpaceId  `json:"spaceId"`
+	Params   RunKnowledgeReviewCheckParams
+}
+
+type RunKnowledgeReviewCheckResponseObject interface {
+	VisitRunKnowledgeReviewCheckResponse(w http.ResponseWriter) error
+}
+
+type RunKnowledgeReviewCheck200ResponseHeaders struct {
+	CacheControl        *string
+	IdempotencyReplayed *bool
+	XRequestId          *string
+}
+
+type RunKnowledgeReviewCheck200JSONResponse struct {
+	Body    KnowledgeRunReport
+	Headers RunKnowledgeReviewCheck200ResponseHeaders
+}
+
+func (response RunKnowledgeReviewCheck200JSONResponse) VisitRunKnowledgeReviewCheckResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	if response.Headers.CacheControl != nil {
+		w.Header().Set("Cache-Control", fmt.Sprint(*response.Headers.CacheControl))
+	}
+	if response.Headers.IdempotencyReplayed != nil {
+		w.Header().Set("Idempotency-Replayed", fmt.Sprint(*response.Headers.IdempotencyReplayed))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(200)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type RunKnowledgeReviewCheck400ApplicationProblemPlusJSONResponse struct {
+	BadRequestApplicationProblemPlusJSONResponse
+}
+
+func (response RunKnowledgeReviewCheck400ApplicationProblemPlusJSONResponse) VisitRunKnowledgeReviewCheckResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(400)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type RunKnowledgeReviewCheck401ApplicationProblemPlusJSONResponse struct {
+	UnauthenticatedApplicationProblemPlusJSONResponse
+}
+
+func (response RunKnowledgeReviewCheck401ApplicationProblemPlusJSONResponse) VisitRunKnowledgeReviewCheckResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(401)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type RunKnowledgeReviewCheck403ApplicationProblemPlusJSONResponse struct {
+	ForbiddenApplicationProblemPlusJSONResponse
+}
+
+func (response RunKnowledgeReviewCheck403ApplicationProblemPlusJSONResponse) VisitRunKnowledgeReviewCheckResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(403)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type RunKnowledgeReviewCheck404ApplicationProblemPlusJSONResponse struct {
+	NotFoundApplicationProblemPlusJSONResponse
+}
+
+func (response RunKnowledgeReviewCheck404ApplicationProblemPlusJSONResponse) VisitRunKnowledgeReviewCheckResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(404)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type RunKnowledgeReviewCheck409ApplicationProblemPlusJSONResponse struct {
+	ConflictApplicationProblemPlusJSONResponse
+}
+
+func (response RunKnowledgeReviewCheck409ApplicationProblemPlusJSONResponse) VisitRunKnowledgeReviewCheckResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.RetryAfter != nil {
+		w.Header().Set("Retry-After", fmt.Sprint(*response.Headers.RetryAfter))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(409)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type RunKnowledgeReviewCheck422ApplicationProblemPlusJSONResponse struct {
+	ValidationApplicationProblemPlusJSONResponse
+}
+
+func (response RunKnowledgeReviewCheck422ApplicationProblemPlusJSONResponse) VisitRunKnowledgeReviewCheckResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(422)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type RunKnowledgeReviewCheck429ApplicationProblemPlusJSONResponse struct {
+	RateLimitedApplicationProblemPlusJSONResponse
+}
+
+func (response RunKnowledgeReviewCheck429ApplicationProblemPlusJSONResponse) VisitRunKnowledgeReviewCheckResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.RetryAfter != nil {
+		w.Header().Set("Retry-After", fmt.Sprint(*response.Headers.RetryAfter))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(429)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type ListKnowledgeRulesRequestObject struct {
+	TenantId TenantId `json:"tenantId"`
+	SpaceId  SpaceId  `json:"spaceId"`
+}
+
+type ListKnowledgeRulesResponseObject interface {
+	VisitListKnowledgeRulesResponse(w http.ResponseWriter) error
+}
+
+type ListKnowledgeRules200ResponseHeaders struct {
+	CacheControl *string
+	XRequestId   *string
+}
+
+type ListKnowledgeRules200JSONResponse struct {
+	Body    KnowledgeRuleList
+	Headers ListKnowledgeRules200ResponseHeaders
+}
+
+func (response ListKnowledgeRules200JSONResponse) VisitListKnowledgeRulesResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	if response.Headers.CacheControl != nil {
+		w.Header().Set("Cache-Control", fmt.Sprint(*response.Headers.CacheControl))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(200)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type ListKnowledgeRules400ApplicationProblemPlusJSONResponse struct {
+	BadRequestApplicationProblemPlusJSONResponse
+}
+
+func (response ListKnowledgeRules400ApplicationProblemPlusJSONResponse) VisitListKnowledgeRulesResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(400)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type ListKnowledgeRules401ApplicationProblemPlusJSONResponse struct {
+	UnauthenticatedApplicationProblemPlusJSONResponse
+}
+
+func (response ListKnowledgeRules401ApplicationProblemPlusJSONResponse) VisitListKnowledgeRulesResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(401)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type ListKnowledgeRules403ApplicationProblemPlusJSONResponse struct {
+	ForbiddenApplicationProblemPlusJSONResponse
+}
+
+func (response ListKnowledgeRules403ApplicationProblemPlusJSONResponse) VisitListKnowledgeRulesResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(403)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type ListKnowledgeRules404ApplicationProblemPlusJSONResponse struct {
+	NotFoundApplicationProblemPlusJSONResponse
+}
+
+func (response ListKnowledgeRules404ApplicationProblemPlusJSONResponse) VisitListKnowledgeRulesResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(404)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type ListKnowledgeRules422ApplicationProblemPlusJSONResponse struct {
+	ValidationApplicationProblemPlusJSONResponse
+}
+
+func (response ListKnowledgeRules422ApplicationProblemPlusJSONResponse) VisitListKnowledgeRulesResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(422)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type ListKnowledgeRules429ApplicationProblemPlusJSONResponse struct {
+	RateLimitedApplicationProblemPlusJSONResponse
+}
+
+func (response ListKnowledgeRules429ApplicationProblemPlusJSONResponse) VisitListKnowledgeRulesResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.RetryAfter != nil {
+		w.Header().Set("Retry-After", fmt.Sprint(*response.Headers.RetryAfter))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(429)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type ListKnowledgeRunsRequestObject struct {
+	TenantId TenantId `json:"tenantId"`
+	SpaceId  SpaceId  `json:"spaceId"`
+}
+
+type ListKnowledgeRunsResponseObject interface {
+	VisitListKnowledgeRunsResponse(w http.ResponseWriter) error
+}
+
+type ListKnowledgeRuns200ResponseHeaders struct {
+	CacheControl *string
+	XRequestId   *string
+}
+
+type ListKnowledgeRuns200JSONResponse struct {
+	Body    KnowledgeRunList
+	Headers ListKnowledgeRuns200ResponseHeaders
+}
+
+func (response ListKnowledgeRuns200JSONResponse) VisitListKnowledgeRunsResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	if response.Headers.CacheControl != nil {
+		w.Header().Set("Cache-Control", fmt.Sprint(*response.Headers.CacheControl))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(200)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type ListKnowledgeRuns400ApplicationProblemPlusJSONResponse struct {
+	BadRequestApplicationProblemPlusJSONResponse
+}
+
+func (response ListKnowledgeRuns400ApplicationProblemPlusJSONResponse) VisitListKnowledgeRunsResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(400)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type ListKnowledgeRuns401ApplicationProblemPlusJSONResponse struct {
+	UnauthenticatedApplicationProblemPlusJSONResponse
+}
+
+func (response ListKnowledgeRuns401ApplicationProblemPlusJSONResponse) VisitListKnowledgeRunsResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(401)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type ListKnowledgeRuns403ApplicationProblemPlusJSONResponse struct {
+	ForbiddenApplicationProblemPlusJSONResponse
+}
+
+func (response ListKnowledgeRuns403ApplicationProblemPlusJSONResponse) VisitListKnowledgeRunsResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(403)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type ListKnowledgeRuns404ApplicationProblemPlusJSONResponse struct {
+	NotFoundApplicationProblemPlusJSONResponse
+}
+
+func (response ListKnowledgeRuns404ApplicationProblemPlusJSONResponse) VisitListKnowledgeRunsResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(404)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type ListKnowledgeRuns422ApplicationProblemPlusJSONResponse struct {
+	ValidationApplicationProblemPlusJSONResponse
+}
+
+func (response ListKnowledgeRuns422ApplicationProblemPlusJSONResponse) VisitListKnowledgeRunsResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(422)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type ListKnowledgeRuns429ApplicationProblemPlusJSONResponse struct {
+	RateLimitedApplicationProblemPlusJSONResponse
+}
+
+func (response ListKnowledgeRuns429ApplicationProblemPlusJSONResponse) VisitListKnowledgeRunsResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.RetryAfter != nil {
+		w.Header().Set("Retry-After", fmt.Sprint(*response.Headers.RetryAfter))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(429)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type RunKnowledgeSectionRequestObject struct {
+	TenantId TenantId `json:"tenantId"`
+	SpaceId  SpaceId  `json:"spaceId"`
+	Params   RunKnowledgeSectionParams
+	Body     *RunKnowledgeSectionJSONRequestBody
+}
+
+type RunKnowledgeSectionResponseObject interface {
+	VisitRunKnowledgeSectionResponse(w http.ResponseWriter) error
+}
+
+type RunKnowledgeSection200ResponseHeaders struct {
+	CacheControl        *string
+	IdempotencyReplayed *bool
+	XRequestId          *string
+}
+
+type RunKnowledgeSection200JSONResponse struct {
+	Body    KnowledgeRunReport
+	Headers RunKnowledgeSection200ResponseHeaders
+}
+
+func (response RunKnowledgeSection200JSONResponse) VisitRunKnowledgeSectionResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	if response.Headers.CacheControl != nil {
+		w.Header().Set("Cache-Control", fmt.Sprint(*response.Headers.CacheControl))
+	}
+	if response.Headers.IdempotencyReplayed != nil {
+		w.Header().Set("Idempotency-Replayed", fmt.Sprint(*response.Headers.IdempotencyReplayed))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(200)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type RunKnowledgeSection400ApplicationProblemPlusJSONResponse struct {
+	BadRequestApplicationProblemPlusJSONResponse
+}
+
+func (response RunKnowledgeSection400ApplicationProblemPlusJSONResponse) VisitRunKnowledgeSectionResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(400)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type RunKnowledgeSection401ApplicationProblemPlusJSONResponse struct {
+	UnauthenticatedApplicationProblemPlusJSONResponse
+}
+
+func (response RunKnowledgeSection401ApplicationProblemPlusJSONResponse) VisitRunKnowledgeSectionResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(401)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type RunKnowledgeSection403ApplicationProblemPlusJSONResponse struct {
+	ForbiddenApplicationProblemPlusJSONResponse
+}
+
+func (response RunKnowledgeSection403ApplicationProblemPlusJSONResponse) VisitRunKnowledgeSectionResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(403)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type RunKnowledgeSection404ApplicationProblemPlusJSONResponse struct {
+	NotFoundApplicationProblemPlusJSONResponse
+}
+
+func (response RunKnowledgeSection404ApplicationProblemPlusJSONResponse) VisitRunKnowledgeSectionResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(404)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type RunKnowledgeSection409ApplicationProblemPlusJSONResponse struct {
+	ConflictApplicationProblemPlusJSONResponse
+}
+
+func (response RunKnowledgeSection409ApplicationProblemPlusJSONResponse) VisitRunKnowledgeSectionResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.RetryAfter != nil {
+		w.Header().Set("Retry-After", fmt.Sprint(*response.Headers.RetryAfter))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(409)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type RunKnowledgeSection422ApplicationProblemPlusJSONResponse struct {
+	ValidationApplicationProblemPlusJSONResponse
+}
+
+func (response RunKnowledgeSection422ApplicationProblemPlusJSONResponse) VisitRunKnowledgeSectionResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(422)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type RunKnowledgeSection429ApplicationProblemPlusJSONResponse struct {
+	RateLimitedApplicationProblemPlusJSONResponse
+}
+
+func (response RunKnowledgeSection429ApplicationProblemPlusJSONResponse) VisitRunKnowledgeSectionResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.RetryAfter != nil {
+		w.Header().Set("Retry-After", fmt.Sprint(*response.Headers.RetryAfter))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(429)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type GetKnowledgeSpaceTreeRequestObject struct {
+	TenantId TenantId `json:"tenantId"`
+	SpaceId  SpaceId  `json:"spaceId"`
+}
+
+type GetKnowledgeSpaceTreeResponseObject interface {
+	VisitGetKnowledgeSpaceTreeResponse(w http.ResponseWriter) error
+}
+
+type GetKnowledgeSpaceTree200ResponseHeaders struct {
+	CacheControl *string
+	XRequestId   *string
+}
+
+type GetKnowledgeSpaceTree200JSONResponse struct {
+	Body    KnowledgeTree
+	Headers GetKnowledgeSpaceTree200ResponseHeaders
+}
+
+func (response GetKnowledgeSpaceTree200JSONResponse) VisitGetKnowledgeSpaceTreeResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	if response.Headers.CacheControl != nil {
+		w.Header().Set("Cache-Control", fmt.Sprint(*response.Headers.CacheControl))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(200)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type GetKnowledgeSpaceTree400ApplicationProblemPlusJSONResponse struct {
+	BadRequestApplicationProblemPlusJSONResponse
+}
+
+func (response GetKnowledgeSpaceTree400ApplicationProblemPlusJSONResponse) VisitGetKnowledgeSpaceTreeResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(400)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type GetKnowledgeSpaceTree401ApplicationProblemPlusJSONResponse struct {
+	UnauthenticatedApplicationProblemPlusJSONResponse
+}
+
+func (response GetKnowledgeSpaceTree401ApplicationProblemPlusJSONResponse) VisitGetKnowledgeSpaceTreeResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(401)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type GetKnowledgeSpaceTree403ApplicationProblemPlusJSONResponse struct {
+	ForbiddenApplicationProblemPlusJSONResponse
+}
+
+func (response GetKnowledgeSpaceTree403ApplicationProblemPlusJSONResponse) VisitGetKnowledgeSpaceTreeResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(403)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type GetKnowledgeSpaceTree404ApplicationProblemPlusJSONResponse struct {
+	NotFoundApplicationProblemPlusJSONResponse
+}
+
+func (response GetKnowledgeSpaceTree404ApplicationProblemPlusJSONResponse) VisitGetKnowledgeSpaceTreeResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(404)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type GetKnowledgeSpaceTree422ApplicationProblemPlusJSONResponse struct {
+	ValidationApplicationProblemPlusJSONResponse
+}
+
+func (response GetKnowledgeSpaceTree422ApplicationProblemPlusJSONResponse) VisitGetKnowledgeSpaceTreeResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(422)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type GetKnowledgeSpaceTree429ApplicationProblemPlusJSONResponse struct {
+	RateLimitedApplicationProblemPlusJSONResponse
+}
+
+func (response GetKnowledgeSpaceTree429ApplicationProblemPlusJSONResponse) VisitGetKnowledgeSpaceTreeResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.RetryAfter != nil {
+		w.Header().Set("Retry-After", fmt.Sprint(*response.Headers.RetryAfter))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(429)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
 // StrictServerInterface represents all server handlers.
 type StrictServerInterface interface {
+	// GetKnowledgeNode Read a node of the knowledge base
+	// (GET /api/v1/tenants/{tenantId}/knowledge/nodes/{nodeId})
+	GetKnowledgeNode(ctx context.Context, request GetKnowledgeNodeRequestObject) (GetKnowledgeNodeResponseObject, error)
+	// GetKnowledgeNodeAccess Read the access of a node
+	// (GET /api/v1/tenants/{tenantId}/knowledge/nodes/{nodeId}/access)
+	GetKnowledgeNodeAccess(ctx context.Context, request GetKnowledgeNodeAccessRequestObject) (GetKnowledgeNodeAccessResponseObject, error)
+	// SetKnowledgeNodeAccess Change the access of a node
+	// (PUT /api/v1/tenants/{tenantId}/knowledge/nodes/{nodeId}/access)
+	SetKnowledgeNodeAccess(ctx context.Context, request SetKnowledgeNodeAccessRequestObject) (SetKnowledgeNodeAccessResponseObject, error)
+	// ListKnowledgeAccessCandidates List whom the access of a node may name
+	// (GET /api/v1/tenants/{tenantId}/knowledge/nodes/{nodeId}/access/candidates)
+	ListKnowledgeAccessCandidates(ctx context.Context, request ListKnowledgeAccessCandidatesRequestObject) (ListKnowledgeAccessCandidatesResponseObject, error)
+	// AckKnowledgeNode Confirm reading the current version
+	// (POST /api/v1/tenants/{tenantId}/knowledge/nodes/{nodeId}/ack)
+	AckKnowledgeNode(ctx context.Context, request AckKnowledgeNodeRequestObject) (AckKnowledgeNodeResponseObject, error)
+	// ArchiveKnowledgeNode Move a branch to the archive
+	// (POST /api/v1/tenants/{tenantId}/knowledge/nodes/{nodeId}/archive)
+	ArchiveKnowledgeNode(ctx context.Context, request ArchiveKnowledgeNodeRequestObject) (ArchiveKnowledgeNodeResponseObject, error)
+	// ExplainKnowledgeAccess Explain the access of an employee to a node
+	// (GET /api/v1/tenants/{tenantId}/knowledge/nodes/{nodeId}/explain)
+	ExplainKnowledgeAccess(ctx context.Context, request ExplainKnowledgeAccessRequestObject) (ExplainKnowledgeAccessResponseObject, error)
+	// MoveKnowledgeNode Move a node to another parent
+	// (POST /api/v1/tenants/{tenantId}/knowledge/nodes/{nodeId}/move)
+	MoveKnowledgeNode(ctx context.Context, request MoveKnowledgeNodeRequestObject) (MoveKnowledgeNodeResponseObject, error)
+	// CreateKnowledgeAccessRequest Request the right to edit a page
+	// (POST /api/v1/tenants/{tenantId}/knowledge/nodes/{nodeId}/requests)
+	CreateKnowledgeAccessRequest(ctx context.Context, request CreateKnowledgeAccessRequestRequestObject) (CreateKnowledgeAccessRequestResponseObject, error)
+	// RestoreKnowledgeNode Restore a branch from the archive
+	// (POST /api/v1/tenants/{tenantId}/knowledge/nodes/{nodeId}/restore)
+	RestoreKnowledgeNode(ctx context.Context, request RestoreKnowledgeNodeRequestObject) (RestoreKnowledgeNodeResponseObject, error)
+	// SetKnowledgeNodeStatus Approve a node or change its status
+	// (POST /api/v1/tenants/{tenantId}/knowledge/nodes/{nodeId}/status)
+	SetKnowledgeNodeStatus(ctx context.Context, request SetKnowledgeNodeStatusRequestObject) (SetKnowledgeNodeStatusResponseObject, error)
+	// CreateKnowledgeTable Create a table on a page
+	// (POST /api/v1/tenants/{tenantId}/knowledge/nodes/{nodeId}/tables)
+	CreateKnowledgeTable(ctx context.Context, request CreateKnowledgeTableRequestObject) (CreateKnowledgeTableResponseObject, error)
+	// PublishKnowledgeNodeVersion Publish a new version of a node
+	// (POST /api/v1/tenants/{tenantId}/knowledge/nodes/{nodeId}/versions)
+	PublishKnowledgeNodeVersion(ctx context.Context, request PublishKnowledgeNodeVersionRequestObject) (PublishKnowledgeNodeVersionResponseObject, error)
+	// GetKnowledgeNodeVersion Read an old version of a node
+	// (GET /api/v1/tenants/{tenantId}/knowledge/nodes/{nodeId}/versions/{version})
+	GetKnowledgeNodeVersion(ctx context.Context, request GetKnowledgeNodeVersionRequestObject) (GetKnowledgeNodeVersionResponseObject, error)
 	// ListKnowledgePages List visible pages
 	// (GET /api/v1/tenants/{tenantId}/knowledge/pages)
 	ListKnowledgePages(ctx context.Context, request ListKnowledgePagesRequestObject) (ListKnowledgePagesResponseObject, error)
@@ -1945,6 +12582,60 @@ type StrictServerInterface interface {
 	// UpdateKnowledgePage Save a page revision or publish it
 	// (PATCH /api/v1/tenants/{tenantId}/knowledge/pages/{pageId})
 	UpdateKnowledgePage(ctx context.Context, request UpdateKnowledgePageRequestObject) (UpdateKnowledgePageResponseObject, error)
+	// DecideKnowledgeAccessRequest Approve or deny an access request
+	// (POST /api/v1/tenants/{tenantId}/knowledge/requests/{requestId}/decision)
+	DecideKnowledgeAccessRequest(ctx context.Context, request DecideKnowledgeAccessRequestRequestObject) (DecideKnowledgeAccessRequestResponseObject, error)
+	// SetKnowledgeRuleEnabled Switch an automation rule on or off
+	// (PATCH /api/v1/tenants/{tenantId}/knowledge/rules/{ruleId})
+	SetKnowledgeRuleEnabled(ctx context.Context, request SetKnowledgeRuleEnabledRequestObject) (SetKnowledgeRuleEnabledResponseObject, error)
+	// SearchKnowledge Search the visible pages
+	// (GET /api/v1/tenants/{tenantId}/knowledge/search)
+	SearchKnowledge(ctx context.Context, request SearchKnowledgeRequestObject) (SearchKnowledgeResponseObject, error)
+	// ListKnowledgeSpaceTemplates List the starting templates of spaces
+	// (GET /api/v1/tenants/{tenantId}/knowledge/space-templates)
+	ListKnowledgeSpaceTemplates(ctx context.Context, request ListKnowledgeSpaceTemplatesRequestObject) (ListKnowledgeSpaceTemplatesResponseObject, error)
+	// ListKnowledgeSpaces List the knowledge spaces the member sees
+	// (GET /api/v1/tenants/{tenantId}/knowledge/spaces)
+	ListKnowledgeSpaces(ctx context.Context, request ListKnowledgeSpacesRequestObject) (ListKnowledgeSpacesResponseObject, error)
+	// CreateKnowledgeSpace Create a knowledge space from a template
+	// (POST /api/v1/tenants/{tenantId}/knowledge/spaces)
+	CreateKnowledgeSpace(ctx context.Context, request CreateKnowledgeSpaceRequestObject) (CreateKnowledgeSpaceResponseObject, error)
+	// UpdateKnowledgeSpace Change the name, area or level of a space
+	// (PATCH /api/v1/tenants/{tenantId}/knowledge/spaces/{spaceId})
+	UpdateKnowledgeSpace(ctx context.Context, request UpdateKnowledgeSpaceRequestObject) (UpdateKnowledgeSpaceResponseObject, error)
+	// GetKnowledgeAccessMap Read the access map of a space
+	// (GET /api/v1/tenants/{tenantId}/knowledge/spaces/{spaceId}/access-map)
+	GetKnowledgeAccessMap(ctx context.Context, request GetKnowledgeAccessMapRequestObject) (GetKnowledgeAccessMapResponseObject, error)
+	// ListKnowledgeArchive List the archived branches of a space
+	// (GET /api/v1/tenants/{tenantId}/knowledge/spaces/{spaceId}/archive)
+	ListKnowledgeArchive(ctx context.Context, request ListKnowledgeArchiveRequestObject) (ListKnowledgeArchiveResponseObject, error)
+	// ListKnowledgeSpaceMembers List the members of a space
+	// (GET /api/v1/tenants/{tenantId}/knowledge/spaces/{spaceId}/members)
+	ListKnowledgeSpaceMembers(ctx context.Context, request ListKnowledgeSpaceMembersRequestObject) (ListKnowledgeSpaceMembersResponseObject, error)
+	// SetKnowledgeSpaceMember Give, change or remove the role of an employee in a space
+	// (PUT /api/v1/tenants/{tenantId}/knowledge/spaces/{spaceId}/members/{memberId})
+	SetKnowledgeSpaceMember(ctx context.Context, request SetKnowledgeSpaceMemberRequestObject) (SetKnowledgeSpaceMemberResponseObject, error)
+	// CreateKnowledgeNode Create a page, a folder or a diagram
+	// (POST /api/v1/tenants/{tenantId}/knowledge/spaces/{spaceId}/nodes)
+	CreateKnowledgeNode(ctx context.Context, request CreateKnowledgeNodeRequestObject) (CreateKnowledgeNodeResponseObject, error)
+	// ListKnowledgeAccessRequests List the access requests of a space
+	// (GET /api/v1/tenants/{tenantId}/knowledge/spaces/{spaceId}/requests)
+	ListKnowledgeAccessRequests(ctx context.Context, request ListKnowledgeAccessRequestsRequestObject) (ListKnowledgeAccessRequestsResponseObject, error)
+	// RunKnowledgeReviewCheck Check the review dates of a space now
+	// (POST /api/v1/tenants/{tenantId}/knowledge/spaces/{spaceId}/review-check)
+	RunKnowledgeReviewCheck(ctx context.Context, request RunKnowledgeReviewCheckRequestObject) (RunKnowledgeReviewCheckResponseObject, error)
+	// ListKnowledgeRules List the automation rules of a space
+	// (GET /api/v1/tenants/{tenantId}/knowledge/spaces/{spaceId}/rules)
+	ListKnowledgeRules(ctx context.Context, request ListKnowledgeRulesRequestObject) (ListKnowledgeRulesResponseObject, error)
+	// ListKnowledgeRuns List the runs of the automation rules of a space
+	// (GET /api/v1/tenants/{tenantId}/knowledge/spaces/{spaceId}/runs)
+	ListKnowledgeRuns(ctx context.Context, request ListKnowledgeRunsRequestObject) (ListKnowledgeRunsResponseObject, error)
+	// RunKnowledgeSection Create the section of an object of repairs
+	// (POST /api/v1/tenants/{tenantId}/knowledge/spaces/{spaceId}/sections)
+	RunKnowledgeSection(ctx context.Context, request RunKnowledgeSectionRequestObject) (RunKnowledgeSectionResponseObject, error)
+	// GetKnowledgeSpaceTree Read the tree of a space
+	// (GET /api/v1/tenants/{tenantId}/knowledge/spaces/{spaceId}/tree)
+	GetKnowledgeSpaceTree(ctx context.Context, request GetKnowledgeSpaceTreeRequestObject) (GetKnowledgeSpaceTreeResponseObject, error)
 }
 
 type StrictHandlerFunc func(ctx context.Context, w http.ResponseWriter, r *http.Request, request any) (any, error)
@@ -1984,6 +12675,444 @@ type strictHandler struct {
 	ssi         StrictServerInterface
 	middlewares []StrictMiddlewareFunc
 	options     StrictHTTPServerOptions
+}
+
+// GetKnowledgeNode operation middleware
+func (sh *strictHandler) GetKnowledgeNode(w http.ResponseWriter, r *http.Request, tenantId TenantId, nodeId NodeId) {
+	var request GetKnowledgeNodeRequestObject
+
+	request.TenantId = tenantId
+	request.NodeId = nodeId
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.GetKnowledgeNode(ctx, request.(GetKnowledgeNodeRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "GetKnowledgeNode")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(GetKnowledgeNodeResponseObject); ok {
+		if err := validResponse.VisitGetKnowledgeNodeResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// GetKnowledgeNodeAccess operation middleware
+func (sh *strictHandler) GetKnowledgeNodeAccess(w http.ResponseWriter, r *http.Request, tenantId TenantId, nodeId NodeId) {
+	var request GetKnowledgeNodeAccessRequestObject
+
+	request.TenantId = tenantId
+	request.NodeId = nodeId
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.GetKnowledgeNodeAccess(ctx, request.(GetKnowledgeNodeAccessRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "GetKnowledgeNodeAccess")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(GetKnowledgeNodeAccessResponseObject); ok {
+		if err := validResponse.VisitGetKnowledgeNodeAccessResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// SetKnowledgeNodeAccess operation middleware
+func (sh *strictHandler) SetKnowledgeNodeAccess(w http.ResponseWriter, r *http.Request, tenantId TenantId, nodeId NodeId, params SetKnowledgeNodeAccessParams) {
+	var request SetKnowledgeNodeAccessRequestObject
+
+	request.TenantId = tenantId
+	request.NodeId = nodeId
+	request.Params = params
+
+	var body SetKnowledgeNodeAccessJSONRequestBody
+	if err := json.NewDecoder(r.Body).Decode(&body); err != nil {
+		sh.options.RequestErrorHandlerFunc(w, r, fmt.Errorf("can't decode JSON body: %w", err))
+		return
+	}
+	request.Body = &body
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.SetKnowledgeNodeAccess(ctx, request.(SetKnowledgeNodeAccessRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "SetKnowledgeNodeAccess")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(SetKnowledgeNodeAccessResponseObject); ok {
+		if err := validResponse.VisitSetKnowledgeNodeAccessResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// ListKnowledgeAccessCandidates operation middleware
+func (sh *strictHandler) ListKnowledgeAccessCandidates(w http.ResponseWriter, r *http.Request, tenantId TenantId, nodeId NodeId) {
+	var request ListKnowledgeAccessCandidatesRequestObject
+
+	request.TenantId = tenantId
+	request.NodeId = nodeId
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.ListKnowledgeAccessCandidates(ctx, request.(ListKnowledgeAccessCandidatesRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "ListKnowledgeAccessCandidates")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(ListKnowledgeAccessCandidatesResponseObject); ok {
+		if err := validResponse.VisitListKnowledgeAccessCandidatesResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// AckKnowledgeNode operation middleware
+func (sh *strictHandler) AckKnowledgeNode(w http.ResponseWriter, r *http.Request, tenantId TenantId, nodeId NodeId, params AckKnowledgeNodeParams) {
+	var request AckKnowledgeNodeRequestObject
+
+	request.TenantId = tenantId
+	request.NodeId = nodeId
+	request.Params = params
+
+	var body AckKnowledgeNodeJSONRequestBody
+	if err := json.NewDecoder(r.Body).Decode(&body); err != nil {
+		sh.options.RequestErrorHandlerFunc(w, r, fmt.Errorf("can't decode JSON body: %w", err))
+		return
+	}
+	request.Body = &body
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.AckKnowledgeNode(ctx, request.(AckKnowledgeNodeRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "AckKnowledgeNode")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(AckKnowledgeNodeResponseObject); ok {
+		if err := validResponse.VisitAckKnowledgeNodeResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// ArchiveKnowledgeNode operation middleware
+func (sh *strictHandler) ArchiveKnowledgeNode(w http.ResponseWriter, r *http.Request, tenantId TenantId, nodeId NodeId, params ArchiveKnowledgeNodeParams) {
+	var request ArchiveKnowledgeNodeRequestObject
+
+	request.TenantId = tenantId
+	request.NodeId = nodeId
+	request.Params = params
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.ArchiveKnowledgeNode(ctx, request.(ArchiveKnowledgeNodeRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "ArchiveKnowledgeNode")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(ArchiveKnowledgeNodeResponseObject); ok {
+		if err := validResponse.VisitArchiveKnowledgeNodeResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// ExplainKnowledgeAccess operation middleware
+func (sh *strictHandler) ExplainKnowledgeAccess(w http.ResponseWriter, r *http.Request, tenantId TenantId, nodeId NodeId, params ExplainKnowledgeAccessParams) {
+	var request ExplainKnowledgeAccessRequestObject
+
+	request.TenantId = tenantId
+	request.NodeId = nodeId
+	request.Params = params
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.ExplainKnowledgeAccess(ctx, request.(ExplainKnowledgeAccessRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "ExplainKnowledgeAccess")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(ExplainKnowledgeAccessResponseObject); ok {
+		if err := validResponse.VisitExplainKnowledgeAccessResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// MoveKnowledgeNode operation middleware
+func (sh *strictHandler) MoveKnowledgeNode(w http.ResponseWriter, r *http.Request, tenantId TenantId, nodeId NodeId, params MoveKnowledgeNodeParams) {
+	var request MoveKnowledgeNodeRequestObject
+
+	request.TenantId = tenantId
+	request.NodeId = nodeId
+	request.Params = params
+
+	var body MoveKnowledgeNodeJSONRequestBody
+	if err := json.NewDecoder(r.Body).Decode(&body); err != nil {
+		sh.options.RequestErrorHandlerFunc(w, r, fmt.Errorf("can't decode JSON body: %w", err))
+		return
+	}
+	request.Body = &body
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.MoveKnowledgeNode(ctx, request.(MoveKnowledgeNodeRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "MoveKnowledgeNode")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(MoveKnowledgeNodeResponseObject); ok {
+		if err := validResponse.VisitMoveKnowledgeNodeResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// CreateKnowledgeAccessRequest operation middleware
+func (sh *strictHandler) CreateKnowledgeAccessRequest(w http.ResponseWriter, r *http.Request, tenantId TenantId, nodeId NodeId, params CreateKnowledgeAccessRequestParams) {
+	var request CreateKnowledgeAccessRequestRequestObject
+
+	request.TenantId = tenantId
+	request.NodeId = nodeId
+	request.Params = params
+
+	var body CreateKnowledgeAccessRequestJSONRequestBody
+	if err := json.NewDecoder(r.Body).Decode(&body); err != nil {
+		sh.options.RequestErrorHandlerFunc(w, r, fmt.Errorf("can't decode JSON body: %w", err))
+		return
+	}
+	request.Body = &body
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.CreateKnowledgeAccessRequest(ctx, request.(CreateKnowledgeAccessRequestRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "CreateKnowledgeAccessRequest")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(CreateKnowledgeAccessRequestResponseObject); ok {
+		if err := validResponse.VisitCreateKnowledgeAccessRequestResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// RestoreKnowledgeNode operation middleware
+func (sh *strictHandler) RestoreKnowledgeNode(w http.ResponseWriter, r *http.Request, tenantId TenantId, nodeId NodeId, params RestoreKnowledgeNodeParams) {
+	var request RestoreKnowledgeNodeRequestObject
+
+	request.TenantId = tenantId
+	request.NodeId = nodeId
+	request.Params = params
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.RestoreKnowledgeNode(ctx, request.(RestoreKnowledgeNodeRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "RestoreKnowledgeNode")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(RestoreKnowledgeNodeResponseObject); ok {
+		if err := validResponse.VisitRestoreKnowledgeNodeResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// SetKnowledgeNodeStatus operation middleware
+func (sh *strictHandler) SetKnowledgeNodeStatus(w http.ResponseWriter, r *http.Request, tenantId TenantId, nodeId NodeId, params SetKnowledgeNodeStatusParams) {
+	var request SetKnowledgeNodeStatusRequestObject
+
+	request.TenantId = tenantId
+	request.NodeId = nodeId
+	request.Params = params
+
+	var body SetKnowledgeNodeStatusJSONRequestBody
+	if err := json.NewDecoder(r.Body).Decode(&body); err != nil {
+		sh.options.RequestErrorHandlerFunc(w, r, fmt.Errorf("can't decode JSON body: %w", err))
+		return
+	}
+	request.Body = &body
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.SetKnowledgeNodeStatus(ctx, request.(SetKnowledgeNodeStatusRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "SetKnowledgeNodeStatus")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(SetKnowledgeNodeStatusResponseObject); ok {
+		if err := validResponse.VisitSetKnowledgeNodeStatusResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// CreateKnowledgeTable operation middleware
+func (sh *strictHandler) CreateKnowledgeTable(w http.ResponseWriter, r *http.Request, tenantId TenantId, nodeId NodeId, params CreateKnowledgeTableParams) {
+	var request CreateKnowledgeTableRequestObject
+
+	request.TenantId = tenantId
+	request.NodeId = nodeId
+	request.Params = params
+
+	var body CreateKnowledgeTableJSONRequestBody
+	if err := json.NewDecoder(r.Body).Decode(&body); err != nil {
+		sh.options.RequestErrorHandlerFunc(w, r, fmt.Errorf("can't decode JSON body: %w", err))
+		return
+	}
+	request.Body = &body
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.CreateKnowledgeTable(ctx, request.(CreateKnowledgeTableRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "CreateKnowledgeTable")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(CreateKnowledgeTableResponseObject); ok {
+		if err := validResponse.VisitCreateKnowledgeTableResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// PublishKnowledgeNodeVersion operation middleware
+func (sh *strictHandler) PublishKnowledgeNodeVersion(w http.ResponseWriter, r *http.Request, tenantId TenantId, nodeId NodeId, params PublishKnowledgeNodeVersionParams) {
+	var request PublishKnowledgeNodeVersionRequestObject
+
+	request.TenantId = tenantId
+	request.NodeId = nodeId
+	request.Params = params
+
+	var body PublishKnowledgeNodeVersionJSONRequestBody
+	if err := json.NewDecoder(r.Body).Decode(&body); err != nil {
+		sh.options.RequestErrorHandlerFunc(w, r, fmt.Errorf("can't decode JSON body: %w", err))
+		return
+	}
+	request.Body = &body
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.PublishKnowledgeNodeVersion(ctx, request.(PublishKnowledgeNodeVersionRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "PublishKnowledgeNodeVersion")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(PublishKnowledgeNodeVersionResponseObject); ok {
+		if err := validResponse.VisitPublishKnowledgeNodeVersionResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// GetKnowledgeNodeVersion operation middleware
+func (sh *strictHandler) GetKnowledgeNodeVersion(w http.ResponseWriter, r *http.Request, tenantId TenantId, nodeId NodeId, version NodeVersion) {
+	var request GetKnowledgeNodeVersionRequestObject
+
+	request.TenantId = tenantId
+	request.NodeId = nodeId
+	request.Version = version
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.GetKnowledgeNodeVersion(ctx, request.(GetKnowledgeNodeVersionRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "GetKnowledgeNodeVersion")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(GetKnowledgeNodeVersionResponseObject); ok {
+		if err := validResponse.VisitGetKnowledgeNodeVersionResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
 }
 
 // ListKnowledgePages operation middleware
@@ -2102,6 +13231,550 @@ func (sh *strictHandler) UpdateKnowledgePage(w http.ResponseWriter, r *http.Requ
 		sh.options.ResponseErrorHandlerFunc(w, r, err)
 	} else if validResponse, ok := response.(UpdateKnowledgePageResponseObject); ok {
 		if err := validResponse.VisitUpdateKnowledgePageResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// DecideKnowledgeAccessRequest operation middleware
+func (sh *strictHandler) DecideKnowledgeAccessRequest(w http.ResponseWriter, r *http.Request, tenantId TenantId, requestId RequestId, params DecideKnowledgeAccessRequestParams) {
+	var request DecideKnowledgeAccessRequestRequestObject
+
+	request.TenantId = tenantId
+	request.RequestId = requestId
+	request.Params = params
+
+	var body DecideKnowledgeAccessRequestJSONRequestBody
+	if err := json.NewDecoder(r.Body).Decode(&body); err != nil {
+		sh.options.RequestErrorHandlerFunc(w, r, fmt.Errorf("can't decode JSON body: %w", err))
+		return
+	}
+	request.Body = &body
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.DecideKnowledgeAccessRequest(ctx, request.(DecideKnowledgeAccessRequestRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "DecideKnowledgeAccessRequest")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(DecideKnowledgeAccessRequestResponseObject); ok {
+		if err := validResponse.VisitDecideKnowledgeAccessRequestResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// SetKnowledgeRuleEnabled operation middleware
+func (sh *strictHandler) SetKnowledgeRuleEnabled(w http.ResponseWriter, r *http.Request, tenantId TenantId, ruleId RuleId, params SetKnowledgeRuleEnabledParams) {
+	var request SetKnowledgeRuleEnabledRequestObject
+
+	request.TenantId = tenantId
+	request.RuleId = ruleId
+	request.Params = params
+
+	var body SetKnowledgeRuleEnabledJSONRequestBody
+	if err := json.NewDecoder(r.Body).Decode(&body); err != nil {
+		sh.options.RequestErrorHandlerFunc(w, r, fmt.Errorf("can't decode JSON body: %w", err))
+		return
+	}
+	request.Body = &body
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.SetKnowledgeRuleEnabled(ctx, request.(SetKnowledgeRuleEnabledRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "SetKnowledgeRuleEnabled")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(SetKnowledgeRuleEnabledResponseObject); ok {
+		if err := validResponse.VisitSetKnowledgeRuleEnabledResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// SearchKnowledge operation middleware
+func (sh *strictHandler) SearchKnowledge(w http.ResponseWriter, r *http.Request, tenantId TenantId, params SearchKnowledgeParams) {
+	var request SearchKnowledgeRequestObject
+
+	request.TenantId = tenantId
+	request.Params = params
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.SearchKnowledge(ctx, request.(SearchKnowledgeRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "SearchKnowledge")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(SearchKnowledgeResponseObject); ok {
+		if err := validResponse.VisitSearchKnowledgeResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// ListKnowledgeSpaceTemplates operation middleware
+func (sh *strictHandler) ListKnowledgeSpaceTemplates(w http.ResponseWriter, r *http.Request, tenantId TenantId) {
+	var request ListKnowledgeSpaceTemplatesRequestObject
+
+	request.TenantId = tenantId
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.ListKnowledgeSpaceTemplates(ctx, request.(ListKnowledgeSpaceTemplatesRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "ListKnowledgeSpaceTemplates")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(ListKnowledgeSpaceTemplatesResponseObject); ok {
+		if err := validResponse.VisitListKnowledgeSpaceTemplatesResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// ListKnowledgeSpaces operation middleware
+func (sh *strictHandler) ListKnowledgeSpaces(w http.ResponseWriter, r *http.Request, tenantId TenantId, params ListKnowledgeSpacesParams) {
+	var request ListKnowledgeSpacesRequestObject
+
+	request.TenantId = tenantId
+	request.Params = params
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.ListKnowledgeSpaces(ctx, request.(ListKnowledgeSpacesRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "ListKnowledgeSpaces")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(ListKnowledgeSpacesResponseObject); ok {
+		if err := validResponse.VisitListKnowledgeSpacesResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// CreateKnowledgeSpace operation middleware
+func (sh *strictHandler) CreateKnowledgeSpace(w http.ResponseWriter, r *http.Request, tenantId TenantId, params CreateKnowledgeSpaceParams) {
+	var request CreateKnowledgeSpaceRequestObject
+
+	request.TenantId = tenantId
+	request.Params = params
+
+	var body CreateKnowledgeSpaceJSONRequestBody
+	if err := json.NewDecoder(r.Body).Decode(&body); err != nil {
+		sh.options.RequestErrorHandlerFunc(w, r, fmt.Errorf("can't decode JSON body: %w", err))
+		return
+	}
+	request.Body = &body
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.CreateKnowledgeSpace(ctx, request.(CreateKnowledgeSpaceRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "CreateKnowledgeSpace")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(CreateKnowledgeSpaceResponseObject); ok {
+		if err := validResponse.VisitCreateKnowledgeSpaceResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// UpdateKnowledgeSpace operation middleware
+func (sh *strictHandler) UpdateKnowledgeSpace(w http.ResponseWriter, r *http.Request, tenantId TenantId, spaceId SpaceId, params UpdateKnowledgeSpaceParams) {
+	var request UpdateKnowledgeSpaceRequestObject
+
+	request.TenantId = tenantId
+	request.SpaceId = spaceId
+	request.Params = params
+
+	var body UpdateKnowledgeSpaceJSONRequestBody
+	if err := json.NewDecoder(r.Body).Decode(&body); err != nil {
+		sh.options.RequestErrorHandlerFunc(w, r, fmt.Errorf("can't decode JSON body: %w", err))
+		return
+	}
+	request.Body = &body
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.UpdateKnowledgeSpace(ctx, request.(UpdateKnowledgeSpaceRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "UpdateKnowledgeSpace")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(UpdateKnowledgeSpaceResponseObject); ok {
+		if err := validResponse.VisitUpdateKnowledgeSpaceResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// GetKnowledgeAccessMap operation middleware
+func (sh *strictHandler) GetKnowledgeAccessMap(w http.ResponseWriter, r *http.Request, tenantId TenantId, spaceId SpaceId, params GetKnowledgeAccessMapParams) {
+	var request GetKnowledgeAccessMapRequestObject
+
+	request.TenantId = tenantId
+	request.SpaceId = spaceId
+	request.Params = params
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.GetKnowledgeAccessMap(ctx, request.(GetKnowledgeAccessMapRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "GetKnowledgeAccessMap")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(GetKnowledgeAccessMapResponseObject); ok {
+		if err := validResponse.VisitGetKnowledgeAccessMapResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// ListKnowledgeArchive operation middleware
+func (sh *strictHandler) ListKnowledgeArchive(w http.ResponseWriter, r *http.Request, tenantId TenantId, spaceId SpaceId) {
+	var request ListKnowledgeArchiveRequestObject
+
+	request.TenantId = tenantId
+	request.SpaceId = spaceId
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.ListKnowledgeArchive(ctx, request.(ListKnowledgeArchiveRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "ListKnowledgeArchive")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(ListKnowledgeArchiveResponseObject); ok {
+		if err := validResponse.VisitListKnowledgeArchiveResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// ListKnowledgeSpaceMembers operation middleware
+func (sh *strictHandler) ListKnowledgeSpaceMembers(w http.ResponseWriter, r *http.Request, tenantId TenantId, spaceId SpaceId) {
+	var request ListKnowledgeSpaceMembersRequestObject
+
+	request.TenantId = tenantId
+	request.SpaceId = spaceId
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.ListKnowledgeSpaceMembers(ctx, request.(ListKnowledgeSpaceMembersRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "ListKnowledgeSpaceMembers")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(ListKnowledgeSpaceMembersResponseObject); ok {
+		if err := validResponse.VisitListKnowledgeSpaceMembersResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// SetKnowledgeSpaceMember operation middleware
+func (sh *strictHandler) SetKnowledgeSpaceMember(w http.ResponseWriter, r *http.Request, tenantId TenantId, spaceId SpaceId, memberId MemberId, params SetKnowledgeSpaceMemberParams) {
+	var request SetKnowledgeSpaceMemberRequestObject
+
+	request.TenantId = tenantId
+	request.SpaceId = spaceId
+	request.MemberId = memberId
+	request.Params = params
+
+	var body SetKnowledgeSpaceMemberJSONRequestBody
+	if err := json.NewDecoder(r.Body).Decode(&body); err != nil {
+		sh.options.RequestErrorHandlerFunc(w, r, fmt.Errorf("can't decode JSON body: %w", err))
+		return
+	}
+	request.Body = &body
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.SetKnowledgeSpaceMember(ctx, request.(SetKnowledgeSpaceMemberRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "SetKnowledgeSpaceMember")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(SetKnowledgeSpaceMemberResponseObject); ok {
+		if err := validResponse.VisitSetKnowledgeSpaceMemberResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// CreateKnowledgeNode operation middleware
+func (sh *strictHandler) CreateKnowledgeNode(w http.ResponseWriter, r *http.Request, tenantId TenantId, spaceId SpaceId, params CreateKnowledgeNodeParams) {
+	var request CreateKnowledgeNodeRequestObject
+
+	request.TenantId = tenantId
+	request.SpaceId = spaceId
+	request.Params = params
+
+	var body CreateKnowledgeNodeJSONRequestBody
+	if err := json.NewDecoder(r.Body).Decode(&body); err != nil {
+		sh.options.RequestErrorHandlerFunc(w, r, fmt.Errorf("can't decode JSON body: %w", err))
+		return
+	}
+	request.Body = &body
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.CreateKnowledgeNode(ctx, request.(CreateKnowledgeNodeRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "CreateKnowledgeNode")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(CreateKnowledgeNodeResponseObject); ok {
+		if err := validResponse.VisitCreateKnowledgeNodeResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// ListKnowledgeAccessRequests operation middleware
+func (sh *strictHandler) ListKnowledgeAccessRequests(w http.ResponseWriter, r *http.Request, tenantId TenantId, spaceId SpaceId, params ListKnowledgeAccessRequestsParams) {
+	var request ListKnowledgeAccessRequestsRequestObject
+
+	request.TenantId = tenantId
+	request.SpaceId = spaceId
+	request.Params = params
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.ListKnowledgeAccessRequests(ctx, request.(ListKnowledgeAccessRequestsRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "ListKnowledgeAccessRequests")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(ListKnowledgeAccessRequestsResponseObject); ok {
+		if err := validResponse.VisitListKnowledgeAccessRequestsResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// RunKnowledgeReviewCheck operation middleware
+func (sh *strictHandler) RunKnowledgeReviewCheck(w http.ResponseWriter, r *http.Request, tenantId TenantId, spaceId SpaceId, params RunKnowledgeReviewCheckParams) {
+	var request RunKnowledgeReviewCheckRequestObject
+
+	request.TenantId = tenantId
+	request.SpaceId = spaceId
+	request.Params = params
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.RunKnowledgeReviewCheck(ctx, request.(RunKnowledgeReviewCheckRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "RunKnowledgeReviewCheck")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(RunKnowledgeReviewCheckResponseObject); ok {
+		if err := validResponse.VisitRunKnowledgeReviewCheckResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// ListKnowledgeRules operation middleware
+func (sh *strictHandler) ListKnowledgeRules(w http.ResponseWriter, r *http.Request, tenantId TenantId, spaceId SpaceId) {
+	var request ListKnowledgeRulesRequestObject
+
+	request.TenantId = tenantId
+	request.SpaceId = spaceId
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.ListKnowledgeRules(ctx, request.(ListKnowledgeRulesRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "ListKnowledgeRules")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(ListKnowledgeRulesResponseObject); ok {
+		if err := validResponse.VisitListKnowledgeRulesResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// ListKnowledgeRuns operation middleware
+func (sh *strictHandler) ListKnowledgeRuns(w http.ResponseWriter, r *http.Request, tenantId TenantId, spaceId SpaceId) {
+	var request ListKnowledgeRunsRequestObject
+
+	request.TenantId = tenantId
+	request.SpaceId = spaceId
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.ListKnowledgeRuns(ctx, request.(ListKnowledgeRunsRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "ListKnowledgeRuns")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(ListKnowledgeRunsResponseObject); ok {
+		if err := validResponse.VisitListKnowledgeRunsResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// RunKnowledgeSection operation middleware
+func (sh *strictHandler) RunKnowledgeSection(w http.ResponseWriter, r *http.Request, tenantId TenantId, spaceId SpaceId, params RunKnowledgeSectionParams) {
+	var request RunKnowledgeSectionRequestObject
+
+	request.TenantId = tenantId
+	request.SpaceId = spaceId
+	request.Params = params
+
+	var body RunKnowledgeSectionJSONRequestBody
+	if err := json.NewDecoder(r.Body).Decode(&body); err != nil {
+		sh.options.RequestErrorHandlerFunc(w, r, fmt.Errorf("can't decode JSON body: %w", err))
+		return
+	}
+	request.Body = &body
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.RunKnowledgeSection(ctx, request.(RunKnowledgeSectionRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "RunKnowledgeSection")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(RunKnowledgeSectionResponseObject); ok {
+		if err := validResponse.VisitRunKnowledgeSectionResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// GetKnowledgeSpaceTree operation middleware
+func (sh *strictHandler) GetKnowledgeSpaceTree(w http.ResponseWriter, r *http.Request, tenantId TenantId, spaceId SpaceId) {
+	var request GetKnowledgeSpaceTreeRequestObject
+
+	request.TenantId = tenantId
+	request.SpaceId = spaceId
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.GetKnowledgeSpaceTree(ctx, request.(GetKnowledgeSpaceTreeRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "GetKnowledgeSpaceTree")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(GetKnowledgeSpaceTreeResponseObject); ok {
+		if err := validResponse.VisitGetKnowledgeSpaceTreeResponse(w); err != nil {
 			sh.options.ResponseErrorHandlerFunc(w, r, err)
 		}
 	} else if response != nil {

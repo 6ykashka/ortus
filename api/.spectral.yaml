@@ -83,7 +83,7 @@ rules:
       function: publicSecurity
 
   ortus-x-scope-known:
-    description: x-scope из словаря областей контракта (27 значений 0.1; расширяет стюард).
+    description: x-scope из словаря областей контракта (27 значений 0.1; расширяет стюард; W4.04 — два значения «Базы знаний»).
     severity: error
     given: "#Operation"
     then:
@@ -94,6 +94,8 @@ rules:
           - effective-module-and-field-scopes
           - form-version-field-and-nonce
           - identity
+          - knowledge-space
+          - knowledge-space-node
           - owning-object-and-field-scope
           - owning-object-scope
           - platform

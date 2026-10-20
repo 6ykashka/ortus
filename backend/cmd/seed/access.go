@@ -66,7 +66,8 @@ var (
 			"tasks.automation.manage,forms.read,forms.create,forms.manage,forms.publish,forms.publish_public," +
 			"forms.responses.read,forms.responses.review,forms.responses.assign,calendar.availability.read," +
 			"calendar.bookings.read,calendar.bookings.create,calendar.bookings.manage,knowledge.read,knowledge.create," +
-			"knowledge.update,knowledge.publish,inventory.items.read,inventory.items.manage,inventory.movements.read," +
+			"knowledge.update,knowledge.publish,knowledge.organize,knowledge.access.manage,knowledge.members.manage," +
+			"knowledge.automation.manage,knowledge.spaces.manage,inventory.items.read,inventory.items.manage,inventory.movements.read," +
 			"inventory.movements.post,inventory.consume,spa.services.read,spa.services.manage,spa.appointments.read," +
 			"spa.appointments.create,spa.appointments.perform,spa.appointments.complete,cash.read,cash.post,cash.manage")}
 	roleManager = roleDef{"r-manager", "Менеджер логистики", kindTemplate, "logistics_manager", actions(

@@ -602,28 +602,51 @@ screens:
     operations: [listTaskProjects, listTasks, transitionTask]
     note: Судьбу старой доски решает W4.13 (A, факт 11).
 
-  # Этап 4 (W4.02): «База знаний» — knowledge.md §6.1 (шаг 4.3). Пространства, узлы, доступ, участники, запросы и
-  # правила — контрактный PR knowledge (п. 3); четыре операции knowledge/pages остаются проекцией узлов.
+  # Этап 4 (W4.02): «База знаний» — knowledge.md §6.1 (шаг 4.3). Операции — контрактный PR knowledge (W4.04, п. 3);
+  # четыре операции knowledge/pages остаются проекцией узлов. Без экрана: updateKnowledgeSpace (Q-W4.00-knowledge-17)
+  # и createKnowledgeTable (ядро «Форм», W4.05).
   knowledge-spaces:
     title: База знаний
     stage: 4
     ws: W4.32
     reference: design-2026-10-19 · База знаний.dc.html · список пространств, поиск, карточки (М:29–59, knowledge.md §6.1)
-    operations: []
+    operations:
+      [listKnowledgeSpaces, searchKnowledge, createKnowledgeSpace, listKnowledgeSpaceTemplates]
 
   knowledge-space:
     title: Страницы
     stage: 4
     ws: W4.32
     reference: design-2026-10-19 · База знаний.dc.html · «Страницы» — дерево, страница, редактор, версии, ознакомление (М:61–197, knowledge.md §6.1)
-    operations: []
+    operations:
+      [
+        getKnowledgeSpaceTree,
+        searchKnowledge,
+        getKnowledgeNode,
+        getKnowledgeNodeVersion,
+        publishKnowledgeNodeVersion,
+        setKnowledgeNodeStatus,
+        ackKnowledgeNode,
+        createKnowledgeAccessRequest,
+        archiveKnowledgeNode,
+        createKnowledgeNode,
+        moveKnowledgeNode,
+        getKnowledgeNodeAccess,
+      ]
 
   knowledge-people:
     title: Участники и доступ
     stage: 4
     ws: W4.32
     reference: design-2026-10-19 · База знаний.dc.html · «Участники и доступ» — роли, карта, «Проверить сотрудника» (М:199–256, knowledge.md §6.1)
-    operations: []
+    operations:
+      [
+        listKnowledgeSpaceMembers,
+        setKnowledgeSpaceMember,
+        getKnowledgeAccessMap,
+        explainKnowledgeAccess,
+        listKnowledgeAccessRequests,
+      ]
     note: DoR предлагает отдельный WS W4.34 (кандидат). Роли пространства вне пространства прав не дают (PD-53); в listRoles их нет (Q-W4.00-knowledge-21).
 
   knowledge-automation:
@@ -631,7 +654,14 @@ screens:
     stage: 4
     ws: W4.32
     reference: design-2026-10-19 · База знаний.dc.html · «Автоматизация» (М:258–280, knowledge.md §6.1)
-    operations: []
+    operations:
+      [
+        listKnowledgeRules,
+        setKnowledgeRuleEnabled,
+        runKnowledgeReviewCheck,
+        runKnowledgeSection,
+        listKnowledgeRuns,
+      ]
     note: DoR предлагает отдельный WS W4.35 (кандидат).
 
   knowledge-archive:
@@ -639,35 +669,43 @@ screens:
     stage: 4
     ws: W4.32
     reference: design-2026-10-19 · База знаний.dc.html · «Архив» (М:282–290, knowledge.md §6.1)
-    operations: []
+    operations: [listKnowledgeArchive, restoreKnowledgeNode]
 
   modal-kb-space:
     title: Новое пространство
     stage: 4
     ws: W4.32
     reference: design-2026-10-19 · База знаний.dc.html · диалог «Новое пространство» (М:299–309, knowledge.md §6.1)
-    operations: []
+    operations: [listKnowledgeSpaceTemplates, createKnowledgeSpace]
 
   modal-kb-node:
     title: Создать в …
     stage: 4
     ws: W4.32
     reference: design-2026-10-19 · База знаний.dc.html · диалог «Создать в …» (М:311–318, knowledge.md §6.1)
-    operations: []
+    operations: [createKnowledgeNode, getKnowledgeSpaceTree]
 
   modal-kb-move:
     title: Переместить …
     stage: 4
     ws: W4.32
     reference: design-2026-10-19 · База знаний.dc.html · диалог «Переместить …» (М:320–325, knowledge.md §6.1)
-    operations: []
+    operations: [moveKnowledgeNode, getKnowledgeSpaceTree]
 
   modal-kb-access:
     title: Доступ · …
     stage: 4
     ws: W4.32
     reference: design-2026-10-19 · База знаний.dc.html · диалог «Доступ · …» (М:327–365, knowledge.md §6.1)
-    operations: []
+    operations:
+      [
+        getKnowledgeNodeAccess,
+        listKnowledgeAccessCandidates,
+        setKnowledgeNodeAccess,
+        listKnowledgeAccessRequests,
+        decideKnowledgeAccessRequest,
+        setKnowledgeSpaceMember,
+      ]
     note: DoR предлагает отдельный WS W4.34 (кандидат); ACL на узлах — W4.01.
 
   # Этап 4 (W4.02): «Формы и опросы» — forms.md §6 (шаг 4.2). Черновик, FormDefinition v2, настройки, группы,

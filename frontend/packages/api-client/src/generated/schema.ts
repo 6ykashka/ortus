@@ -760,13 +760,13 @@ export interface paths {
     };
     /**
      * List visible pages
-     * @description List visible pages
+     * @description List visible pages. W4.04: a projection of the page nodes of the spaces (kind page, not archived) visible to the member (Q-W4.00-knowledge-1): status draft and review → draft, active and outdated → published; archived nodes are not listed; scope project is kept for compatibility, the knowledge base does not use it (RS-08). New clients read listKnowledgeSpaces and getKnowledgeSpaceTree.
      */
     get: operations['listKnowledgePages'];
     put?: never;
     /**
      * Create a scoped knowledge page
-     * @description Create a scoped knowledge page
+     * @description Create a scoped knowledge page. W4.04: kept for the forms core (createKbPage — the action «в БЗ» of a form): a page node of kind page at the top level of the space of parentPageId or of the first space the member may create in, version 1 with the text; the title is unique among the pages of the space the member sees (an invisible duplicate is not revealed, knowledge.md §5 п. 25). New clients create nodes with createKnowledgeNode and publish with publishKnowledgeNodeVersion.
      */
     post: operations['createKnowledgePage'];
     delete?: never;
@@ -789,7 +789,7 @@ export interface paths {
     };
     /**
      * Read latest visible page revision
-     * @description Read latest visible page revision
+     * @description Read latest visible page revision. W4.04: a projection of a page node (getKnowledgeNode) with the status mapping of listKnowledgePages; revision is the number of the current version; a hidden node — 404.
      */
     get: operations['getKnowledgePage'];
     put?: never;
@@ -799,7 +799,7 @@ export interface paths {
     head?: never;
     /**
      * Save a page revision or publish it
-     * @description Publishing additionally requires knowledge.publish. Every accepted write retains an immutable revision; conflicting editor does not overwrite silently. HTML is sanitized; embedded ObjectRefs retain target ACL checks.
+     * @description Publishing additionally requires knowledge.publish. Every accepted write retains an immutable revision; conflicting editor does not overwrite silently. HTML is sanitized; embedded ObjectRefs retain target ACL checks. W4.04: a projection — bodyMarkdown is published as a new version of the node (publishKnowledgeNodeVersion; the text is kept without Markdown parsing, Q-W4.00-knowledge-16), status archived archives the branch (knowledge.organize). Publishing a version requires knowledge.update on the node (Q-W4.00-knowledge-4); knowledge.publish approves only (setKnowledgeNodeStatus).
      */
     patch: operations['updateKnowledgePage'];
     trace?: never;
@@ -3835,6 +3835,762 @@ export interface paths {
     patch?: never;
     trace?: never;
   };
+  '/api/v1/tenants/{tenantId}/knowledge/spaces': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+      };
+      cookie?: never;
+    };
+    /**
+     * List the knowledge spaces the member sees
+     * @description W4.04 (knowledge.md §2.2, prototype «База знаний» — the list of spaces, kbView). The spaces the member sees: a role of the area of the space with knowledge.read (an open space — all its verbs, a limited one — reading), a role of the space (assignments of scope space: kb_space_lead, kb_space_editor, kb_space_reader) or at least one visible page (an assignment of scope page by an approved request — «Вы: по ссылке на страницу»). A closed space — its members and the owner of the business only (KB-04: roles of a higher area do not open it). An open or limited space of the whole organization (orgUnitId null) is read by every role with knowledge.read, «своё» included (Q-W4.00-knowledge-15). Each space carries the rights of the member (my), the leads, the number of visible pages without folders (pageCount), the last published visible page (lastUpdate — «Обновлено: «{страница}», {дата}») and, to its lead only, the number of open access requests (openRequestCount). Order — as created; an empty list is a valid answer.
+     */
+    get: operations['listKnowledgeSpaces'];
+    put?: never;
+    /**
+     * Create a knowledge space from a template
+     * @description W4.04 (knowledge.md §2.2, prototype kbCreateSpace, dialog «Новое пространство» — «Область и уровень доступа можно поменять позже»). Requires knowledge.spaces.manage of a role whose area covers orgUnitId of the new space (PD-53: a role of a space or of another object does not give it; orgUnitId null — the whole organization — a role of the organization) or the owner of the business; otherwise 403 forbidden_action «Создавать пространства может владелец бизнеса или роль с правом «База знаний · Настраивать»». The space is created with the nodes of the template (templateKey, default blank; templateNodes — indexes of the template nodes to create, default all; a subpage is created only with its folder): «Обзор» is the home page; a folder of a function («Водителям») gets the access «Только выбранные» — the role of the function in the area of the space reads, the editors edit; a node with acknowledgement asks everyone who sees it. The author (unless the owner of the business) gets the role kb_space_lead in the new space. 422 validation_failed: name shorter than 2 or longer than 120 characters («Название — не короче 2 символов» / «Название — не длиннее 120 символов»), a space with the same name (case-insensitive) in the organization («Пространство «{name}» уже есть»), an unknown level («Выберите уровень доступа»); an unknown or deleted orgUnitId — 422. Emits kb.space.created.
+     */
+    post: operations['createKnowledgeSpace'];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/v1/tenants/{tenantId}/knowledge/space-templates': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+      };
+      cookie?: never;
+    };
+    /**
+     * List the starting templates of spaces
+     * @description W4.04 (knowledge.md §2.2, prototype KB_TEMPLATES — the block «Шаблон» of the dialog «Новое пространство»). The starting templates of Ortus — constants of the module, not data of the organization («Регламенты подразделения», «Инструкции для сотрудников», «Объекты и проекты», «Пустое пространство»; saving a space as a template is not in stage 4): key, name, icon, hint and nodes with their kind, title, the index of the parent folder, the role that reads a folder of a function («Читают: роль «…»») and acknowledgement («Ознакомиться: все»). Requires knowledge.spaces.manage, as createKnowledgeSpace.
+     */
+    get: operations['listKnowledgeSpaceTemplates'];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/v1/tenants/{tenantId}/knowledge/spaces/{spaceId}': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+        /** @description W4.04. Opaque UUID of a knowledge space; a space the member does not see — 404, as a missing one. */
+        spaceId: components['parameters']['spaceId'];
+      };
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    /**
+     * Change the name, area or level of a space
+     * @description W4.04 (knowledge.md §2.2; Q-W4.00-knowledge-17 — the dialog says «Область и уровень доступа можно поменять позже», the reference has no screen for it: no-reference). Requires knowledge.access.manage in the space — its lead or the owner of the business (otherwise 403 forbidden_action «Это может руководитель пространства или владелец бизнеса»); a new area (orgUnitId) additionally requires knowledge.spaces.manage covering it (PD-53). If-Match is KnowledgeSpace.revision (412 revision_mismatch, 428 revision_required). dryRun true — nothing changes: the answer carries the impact of the new area or level on the readers and editors of the pages of the space (applied false); without dryRun the change applies and the same impact is returned with the space (applied true). The rules of name — as createKnowledgeSpace. A space the member does not see — 404 not_found «Пространство не найдено», as a missing one. Emits kb.access.changed when the area or the level changes.
+     */
+    patch: operations['updateKnowledgeSpace'];
+    trace?: never;
+  };
+  '/api/v1/tenants/{tenantId}/knowledge/spaces/{spaceId}/tree': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+        /** @description W4.04. Opaque UUID of a knowledge space; a space the member does not see — 404, as a missing one. */
+        spaceId: components['parameters']['spaceId'];
+      };
+      cookie?: never;
+    };
+    /**
+     * Read the tree of a space
+     * @description W4.04 (knowledge.md §2.2, prototype kbView — the tab «Страницы», the tree). The space and its visible nodes depth-first in the order of positions. A node hidden from the member — by the chain organization → space → each parent with its own access → the node → the function (a «Только выбранные» node without him, a finance node or its descendant for the function driver, anything under a hidden node) — is absent from the tree, from the search and from the block «Подстраницы» (docs/23 «Скрытое не видно нигде»). Archived nodes are not in the tree (listKnowledgeArchive). Each node carries its own access mode (the lock «Свой доступ»), sensitivity (payments «Финансовая страница»), status and my (edit, lead, create — the buttons «Править», «+», «Новая подстраница»). A space the member does not see — 404 not_found «Пространство не найдено», as a missing one.
+     */
+    get: operations['getKnowledgeSpaceTree'];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/v1/tenants/{tenantId}/knowledge/search': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+      };
+      cookie?: never;
+    };
+    /**
+     * Search the visible pages
+     * @description W4.04 (knowledge.md §2.2, prototype search «Поиск по доступным страницам» of the list and «Найти в пространстве» of the tree). q — at least 2 characters after trimming (shorter — 422 validation_failed, field q, «Введите не меньше 2 символов»); the title and the text of the current version, case-insensitive; only visible and not archived nodes. spaceId narrows the search to one space (a space the member does not see — 404 not_found «Пространство не найдено»). At most 12 results ordered by space and tree; each — the path «Пространство › родители» and an excerpt of up to 150 characters. Nothing found — an empty list («Среди доступных вам страниц ничего не нашлось»).
+     */
+    get: operations['searchKnowledge'];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/v1/tenants/{tenantId}/knowledge/spaces/{spaceId}/nodes': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+        /** @description W4.04. Opaque UUID of a knowledge space; a space the member does not see — 404, as a missing one. */
+        spaceId: components['parameters']['spaceId'];
+      };
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /**
+     * Create a page, a folder or a diagram
+     * @description W4.04 (knowledge.md §2.2, prototype kbCreateNode, dialog «Создать в «{пространство}»» — «Подстраница получит доступ родителя»). kind — page, folder or diagram: files and CRM records come from templates and migration only (Q-W4.00-knowledge-18), another kind — 422 validation_failed «Выберите тип: страница, папка или схема». parentId null — the top level of the space. The gateway admits a member who reads the knowledge base (knowledge.read): the right to create is checked by the module where the node is created, by the access chain of the prototype (kbAccess). In the parent — the right to edit the parent (the lead of the space; knowledge.update of a role of the area or of the space when no ancestor has own access; otherwise a «правит» entry of the nearest own access — an employee, a role in its area, a group, the relation «прораб объекта», an approved request to edit; the author of the parent with knowledge.create) or knowledge.create of such a role when the parent has no own access on its path, otherwise 403 forbidden_action «Нет права создавать страницы внутри «{parent}»»; at the top level — knowledge.create in the space (a role of the area or of the space, the lead), otherwise 403 «Нет права создавать страницы в пространстве». A parent of another space — 422 «Родитель — из другого пространства»; deeper than six levels (KB-06) — 422 «Не больше шести уровней вложенности»; a hidden parent — 404. title — 2–120 characters (422 «Название — не короче 2 символов» / «Название — не длиннее 120 символов»). The node gets the access of the parent («Как у родителя»), the author as owner, the status draft (a folder — active), version 1 with an empty text and the next position; a diagram gets the steps «Начало», «Шаг», «Готово». A space the member does not see — 404 not_found «Пространство не найдено», as a missing one. Emits kb.node.created.
+     */
+    post: operations['createKnowledgeNode'];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/v1/tenants/{tenantId}/knowledge/nodes/{nodeId}': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+        /** @description W4.04. Opaque UUID of a node of the knowledge tree (page, folder, table, diagram, file, CRM record); a node the member does not see — 404 «Страница не найдена или недоступна», as a missing one. */
+        nodeId: components['parameters']['nodeId'];
+      };
+      cookie?: never;
+    };
+    /**
+     * Read a node of the knowledge base
+     * @description W4.04 (knowledge.md §2.2, prototype kbView — the page of the tab «Страницы»). The node with its current version, the list of versions (number, date, author — «Версии»), the path «Пространство › … › страница», the owner, the review date, acknowledgement, diagram, file or CRM record, the tables and form entries of the page (D-26 комплекта, read-only, Q-W4.00-knowledge-14). ETag is the number of the current version (If-Match of publishKnowledgeNodeVersion). A node that does not exist, belongs to another tenant, is hidden by the access chain (organization → space → parents with own access → node → function), is archived (for everyone but the editors and the lead of the space) or is a finance node (sensitivity finance on the node or an ancestor) read by the function driver — the same 404 not_found «Страница не найдена или недоступна»: never function_blocked, hidden is invisible everywhere (docs/23); the reason is shown to the lead only (explainKnowledgeAccess). The acknowledgement statistics — to the editors of the node and the lead; the acknowledgement log (KB-03) — to the lead of the space and the owner of the business only (Q-W4.30-8); others get their own state (ack.mine). A CRM record opens the module of the record, which checks the access to the record itself (Q-W4.00-knowledge-18).
+     */
+    get: operations['getKnowledgeNode'];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/v1/tenants/{tenantId}/knowledge/nodes/{nodeId}/versions': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+        /** @description W4.04. Opaque UUID of a node of the knowledge tree (page, folder, table, diagram, file, CRM record); a node the member does not see — 404 «Страница не найдена или недоступна», as a missing one. */
+        nodeId: components['parameters']['nodeId'];
+      };
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /**
+     * Publish a new version of a node
+     * @description W4.04 (knowledge.md §2.2, prototype kbPublish — «Опубликовать v{N+1}», «Восстановить как новую»; saveKbPage of the forms core is the same command with a required base). The gateway admits a member who reads the knowledge base (knowledge.read): the right to edit the node is checked by the module by the access chain of the prototype (kbAccess) — the lead of the space; knowledge.update of a role of the area or of the space when no ancestor has own access; otherwise a «правит» entry of the nearest own access (an employee, a role in its area, a group, the relation «прораб объекта», an approved request to edit); the author of the node with knowledge.create. knowledge.publish is not needed (Q-W4.00-knowledge-4). A node the member sees but may not edit — 403 forbidden_action «Нет права править «{title}»». If-Match is the number of the current version (ETag of getKnowledgeNode): a newer version — 412 revision_mismatch «Страницу уже изменили (v{N}). Обновите и повторите правку.», no If-Match — 428 revision_required. body — the text with paragraphs separated by an empty line, without Markdown (Q-W4.00-knowledge-16), at most 20 000 characters (422 validation_failed «Текст — не длиннее 20 000 символов»); title — 2–120 characters, default the current title; steps — the steps of a diagram, up to 8 (kind diagram only). The new version gets the number N+1; the status draft or outdated becomes active; requestAck true on a node with acknowledgement moves it to the new version, resets the done list (the log is kept, KB-03) and notifies the audience (ackRequestedCount). Restoring an old version publishes its text as a new one. A node the member does not see (hidden by the access chain, archived for a reader, finance for the function driver) — 404 not_found «Страница не найдена или недоступна», as a missing one. Emits kb.node.published, kb.ack.requested.
+     */
+    post: operations['publishKnowledgeNodeVersion'];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/v1/tenants/{tenantId}/knowledge/nodes/{nodeId}/versions/{version}': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+        /** @description W4.04. Opaque UUID of a node of the knowledge tree (page, folder, table, diagram, file, CRM record); a node the member does not see — 404 «Страница не найдена или недоступна», as a missing one. */
+        nodeId: components['parameters']['nodeId'];
+        /** @description W4.04. Number of a version of the node (KnowledgeVersion.version). */
+        version: components['parameters']['nodeVersion'];
+      };
+      cookie?: never;
+    };
+    /**
+     * Read an old version of a node
+     * @description W4.04 (knowledge.md §2.2, prototype — «Вы смотрите версию N от {дата}. Текущая — vM.», «К текущей версии»). A version of a visible node: number, date, author and text; versions of the text are kept without a term (KB-08). An unknown version — 404 not_found «Версия не найдена». A node the member does not see (hidden by the access chain, archived for a reader, finance for the function driver) — 404 not_found «Страница не найдена или недоступна», as a missing one.
+     */
+    get: operations['getKnowledgeNodeVersion'];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/v1/tenants/{tenantId}/knowledge/nodes/{nodeId}/status': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+        /** @description W4.04. Opaque UUID of a node of the knowledge tree (page, folder, table, diagram, file, CRM record); a node the member does not see — 404 «Страница не найдена или недоступна», as a missing one. */
+        nodeId: components['parameters']['nodeId'];
+      };
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /**
+     * Approve a node or change its status
+     * @description W4.04 (knowledge.md §2.2, prototype kbSetStatus — «Утвердить» in the menu «⋯»). Requires knowledge.publish and the right to edit the node by the access chain (Q-W4.00-knowledge-4: approval is the publish right, a new version — knowledge.update); otherwise 403 forbidden_action «Нет права править «{title}»». The status review («На проверке») is set only by this command — there is no button «На проверку» (Q-W4.00-knowledge-3, KB-02); outdated («Пора пересмотреть») is set by the review rule. An unknown status — 422 validation_failed «Неизвестный статус». A node the member does not see (hidden by the access chain, archived for a reader, finance for the function driver) — 404 not_found «Страница не найдена или недоступна», as a missing one. Emits kb.node.status_changed.
+     */
+    post: operations['setKnowledgeNodeStatus'];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/v1/tenants/{tenantId}/knowledge/nodes/{nodeId}/move': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+        /** @description W4.04. Opaque UUID of a node of the knowledge tree (page, folder, table, diagram, file, CRM record); a node the member does not see — 404 «Страница не найдена или недоступна», as a missing one. */
+        nodeId: components['parameters']['nodeId'];
+      };
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /**
+     * Move a node to another parent
+     * @description W4.04 (knowledge.md §2.2, prototype kbMove + kbMoveImpact — dialog «Переместить «{title}»», «Доступ пересчитается по новому родителю»). Requires knowledge.organize in the space, the right to edit the node and to create in the new parent (403 forbidden_action «Нет права добавлять страницы в «{parent}»»); the home page of the space («Обзор») is not moved. parentId null — the top level. dryRun true — nothing changes: the answer is the impact — the number of moved pages with subpages and who loses or gains reading («Потеряют чтение (страниц)», «Получат чтение (страниц)»; applied false); without dryRun the node moves to the end of the children of the new parent and the same impact is returned with the node (applied true). 422 validation_failed: «Переносить можно только внутри пространства», «Нельзя перенести страницу внутрь её же подстраницы», «Не больше шести уровней вложенности». A node the member does not see (hidden by the access chain, archived for a reader, finance for the function driver) — 404 not_found «Страница не найдена или недоступна», as a missing one. Emits kb.node.moved.
+     */
+    post: operations['moveKnowledgeNode'];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/v1/tenants/{tenantId}/knowledge/nodes/{nodeId}/archive': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+        /** @description W4.04. Opaque UUID of a node of the knowledge tree (page, folder, table, diagram, file, CRM record); a node the member does not see — 404 «Страница не найдена или недоступна», as a missing one. */
+        nodeId: components['parameters']['nodeId'];
+      };
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /**
+     * Move a branch to the archive
+     * @description W4.04 (knowledge.md §2.2, prototype kbArchive(on) — «В архив» in the menu «⋯»). Requires knowledge.organize: an editor or the lead of the space (otherwise 403 forbidden_action «Архивировать может редактор или руководитель пространства»). The whole branch goes to the archive: its nodes disappear from the tree and the search, nothing is deleted (no trash; versions are kept, KB-08). The home page of the space — 422 validation_failed «Главную страницу пространства архивировать нельзя». A node the member does not see (hidden by the access chain, archived for a reader, finance for the function driver) — 404 not_found «Страница не найдена или недоступна», as a missing one. Emits kb.node.archived.
+     */
+    post: operations['archiveKnowledgeNode'];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/v1/tenants/{tenantId}/knowledge/nodes/{nodeId}/restore': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+        /** @description W4.04. Opaque UUID of a node of the knowledge tree (page, folder, table, diagram, file, CRM record); a node the member does not see — 404 «Страница не найдена или недоступна», as a missing one. */
+        nodeId: components['parameters']['nodeId'];
+      };
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /**
+     * Restore a branch from the archive
+     * @description W4.04 (knowledge.md §2.2, prototype kbArchive(off) — «Восстановить» on the tab «Архив», «Восстановление возвращает ветку на прежнее место»). Requires knowledge.organize: an editor or the lead of the space (otherwise 403 forbidden_action «Архивировать может редактор или руководитель пространства»). The branch returns to its previous parent and position; restoring a node that is not archived changes nothing. A node the member does not see — 404. Emits kb.node.archived (archived false).
+     */
+    post: operations['restoreKnowledgeNode'];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/v1/tenants/{tenantId}/knowledge/spaces/{spaceId}/archive': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+        /** @description W4.04. Opaque UUID of a knowledge space; a space the member does not see — 404, as a missing one. */
+        spaceId: components['parameters']['spaceId'];
+      };
+      cookie?: never;
+    };
+    /**
+     * List the archived branches of a space
+     * @description W4.04 (knowledge.md §2.2, prototype tab «Архив» — «Страницы в архиве не видны в дереве и поиске. Восстановление возвращает ветку на прежнее место.»). Requires knowledge.organize in the space: an editor or the lead (others — 403 forbidden_action; the tab is shown to them only). The roots of the archived branches with the number of pages in the branch («N страниц в ветке»); empty — «В архиве ничего нет». A space the member does not see — 404 not_found «Пространство не найдено», as a missing one.
+     */
+    get: operations['listKnowledgeArchive'];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/v1/tenants/{tenantId}/knowledge/nodes/{nodeId}/ack': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+        /** @description W4.04. Opaque UUID of a node of the knowledge tree (page, folder, table, diagram, file, CRM record); a node the member does not see — 404 «Страница не найдена или недоступна», as a missing one. */
+        nodeId: components['parameters']['nodeId'];
+      };
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /**
+     * Confirm reading the current version
+     * @description W4.04 (knowledge.md §2.2, prototype kbAck — «Ознакомлен», «Вы подтвердили, что ознакомились с этой версией»). version — the version the member read: the acknowledgement of the node must be requested for it. 422 validation_failed: «Ознакомление со страницей не запрошено» (no acknowledgement on the node or it is requested for another version), «Ознакомление запрошено у другой роли» (the member is not in the audience). The confirmation is recorded once with the version and the time in the log (KB-03: a button and a log, kept after a new version and after the member leaves — 5 years by default); a repeated confirmation returns the same state. A node the member does not see (hidden by the access chain, archived for a reader, finance for the function driver) — 404 not_found «Страница не найдена или недоступна», as a missing one. Emits kb.ack.done.
+     */
+    post: operations['ackKnowledgeNode'];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/v1/tenants/{tenantId}/knowledge/nodes/{nodeId}/access': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+        /** @description W4.04. Opaque UUID of a node of the knowledge tree (page, folder, table, diagram, file, CRM record); a node the member does not see — 404 «Страница не найдена или недоступна», as a missing one. */
+        nodeId: components['parameters']['nodeId'];
+      };
+      cookie?: never;
+    };
+    /**
+     * Read the access of a node
+     * @description W4.04 (knowledge.md §2.2, prototype dialog «Доступ · {title}» — kbPath, kbEntryReach). The access of a visible node: the chain «Организация — Владелец бизнеса видит всё» → «Пространство «…» — {уровень}» → the nodes with their own access → «{title} — Настраиваете сейчас», the mode («Как у родителя» — at the top level «Как у пространства», «Читают все, правят выбранные», «Только выбранные»), where an inherited mode comes from, the entries of its list with labels (roles with the area, roles of the space, groups, employees of «сотрудник» entries, the relation «Прораб этого объекта»), the number of subpages, the nodes of the branch with their own access and canManage. The reach of the entries (who will and who will not get access, with the reason) and the open access requests of the node — to the lead of the space and the owner of the business only (Q-W4.00-knowledge-9); others read the list and «Доступ меняет руководитель пространства ({leads}). Здесь видно, кто читает и правит.». ETag is the access revision of the node (If-Match of setKnowledgeNodeAccess). A node the member does not see (hidden by the access chain, archived for a reader, finance for the function driver) — 404 not_found «Страница не найдена или недоступна», as a missing one.
+     */
+    get: operations['getKnowledgeNodeAccess'];
+    /**
+     * Change the access of a node
+     * @description W4.04 (knowledge.md §2.2, prototype kbSetAccess + kbImpact — «Сохранить · N страниц», «Что изменится»). Requires knowledge.access.manage in the space: the lead of the space or the owner of the business (otherwise 403 forbidden_action «Это может руководитель пространства или владелец бизнеса»). If-Match is the access revision of the node (KnowledgeNodeAccess.revision; 412 revision_mismatch). mode inherit («Как у родителя») drops the list; edit_listed («Читают все, правят выбранные») — reading as the parent, editing by the list; listed («Только выбранные») — only the list reads and edits (the lead and the owner of the business always do). entries — roles (with the area of a role, orgUnitId), roles of the space, groups, employees and the relation «Прораб объекта»; the relation is given by the template of a section only (KB-01: an entry already on the node or the foreman of its section; otherwise 422 validation_failed «Связь с записью CRM задаётся шаблоном раздела»). 422 validation_failed: «Выберите, кто видит страницу» (no mode), «Неверная запись в списке доступа», «Сотрудник не найден», «Группа не найдена», «Роль не найдена». applyToOwn — the subpages of the branch with their own access become «Как у родителя». dryRun true — nothing changes, the impact is returned (applied false): the pages of the branch, its nodes with their own access, who gains and who loses reading and editing (by pages; «Ни у кого доступ не изменится» — empty lists); without dryRun the access is saved, the history of the node gets «Доступ: {mode} · {entries}» and the impact is returned with the new access (applied true). A grant never exceeds the rights of the one who gives it (docs/23 — 409 delegation_exceeds_grant). A node the member does not see (hidden by the access chain, archived for a reader, finance for the function driver) — 404 not_found «Страница не найдена или недоступна», as a missing one. Emits kb.access.changed.
+     */
+    put: operations['setKnowledgeNodeAccess'];
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/v1/tenants/{tenantId}/knowledge/nodes/{nodeId}/access/candidates': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+        /** @description W4.04. Opaque UUID of a node of the knowledge tree (page, folder, table, diagram, file, CRM record); a node the member does not see — 404 «Страница не найдена или недоступна», as a missing one. */
+        nodeId: components['parameters']['nodeId'];
+      };
+      cookie?: never;
+    };
+    /**
+     * List whom the access of a node may name
+     * @description W4.04 (knowledge.md §2.2, prototype whoOptions — «Кого добавить»: «Выберите роль, группу или сотрудника»). Requires knowledge.access.manage in the space (the lead or the owner of the business; otherwise 403 forbidden_action «Это может руководитель пространства или владелец бизнеса»). Candidates: roles of the area of the space («Роль «…» · «{область}»»), roles of the space («Роль «…» в пространстве»), groups («Группа «…»»), the relation «Прораб этого объекта» — only in a section of an object (KB-01), active and invited employees (blocked are not offered, Q-W4.00-knowledge-11); each with its reach: «— сейчас никого», «— не получат доступ», «— получат N из M», «— не получит доступ: {причина}». A node the member does not see (hidden by the access chain, archived for a reader, finance for the function driver) — 404 not_found «Страница не найдена или недоступна», as a missing one.
+     */
+    get: operations['listKnowledgeAccessCandidates'];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/v1/tenants/{tenantId}/knowledge/spaces/{spaceId}/access-map': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+        /** @description W4.04. Opaque UUID of a knowledge space; a space the member does not see — 404, as a missing one. */
+        spaceId: components['parameters']['spaceId'];
+      };
+      cookie?: never;
+    };
+    /**
+     * Read the access map of a space
+     * @description W4.04 (knowledge.md §2.2, prototype «Карта доступа» — «Страницы × сотрудники. Нажмите на ячейку, чтобы увидеть причину. Владелец бизнеса видит всё.»). Requires knowledge.access.manage in the space (the lead or the owner of the business; otherwise 403 forbidden_action «Это может руководитель пространства или владелец бизнеса»). Columns — up to 8 employees: memberIds, default the first 8 active employees with access to at least one page of the space, without the owner of the business (Q-W4.00-knowledge-10); rows — the not archived nodes of the space depth-first; cells — edit «Правит», view «Читает», none «Нет», function «Функция» (a finance page for the function driver). More than 8 memberIds or an unknown employee — 422 validation_failed. A space the member does not see — 404 not_found «Пространство не найдено», as a missing one.
+     */
+    get: operations['getKnowledgeAccessMap'];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/v1/tenants/{tenantId}/knowledge/nodes/{nodeId}/explain': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+        /** @description W4.04. Opaque UUID of a node of the knowledge tree (page, folder, table, diagram, file, CRM record); a node the member does not see — 404 «Страница не найдена или недоступна», as a missing one. */
+        nodeId: components['parameters']['nodeId'];
+      };
+      cookie?: never;
+    };
+    /**
+     * Explain the access of an employee to a node
+     * @description W4.04 (knowledge.md §2.2, prototype «Проверить сотрудника» — kbAccess.chain). Requires knowledge.access.manage in the space (the lead or the owner of the business; otherwise 403 forbidden_action «Это может руководитель пространства или владелец бизнеса»). The chain of reasons of the access of memberId to the node: the organization (an active employee, an invitation not accepted, blocked), the space (a role or the level), the branch of a page assignment, each parent with its own access, the node and the function; the result — view, edit, functionBlocked and the summary «Читает и правит.» / «Читает, править не может.» / «Не видит: страницы нет в его дереве, поиске и блоке «Подстраницы».» (+ «Функция «Водитель» закрывает финансовые страницы, роль или группа это не обходят.»). An unknown employee — 404 not_found. A node the member does not see (hidden by the access chain, archived for a reader, finance for the function driver) — 404 not_found «Страница не найдена или недоступна», as a missing one.
+     */
+    get: operations['explainKnowledgeAccess'];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/v1/tenants/{tenantId}/knowledge/nodes/{nodeId}/requests': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+        /** @description W4.04. Opaque UUID of a node of the knowledge tree (page, folder, table, diagram, file, CRM record); a node the member does not see — 404 «Страница не найдена или недоступна», as a missing one. */
+        nodeId: components['parameters']['nodeId'];
+      };
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /**
+     * Request the right to edit a page
+     * @description W4.04 (knowledge.md §2.2, prototype kbRequest — «Запросить право правки» → «Запрос отправлен», toast «Запрос отправлен руководителю пространства»). Only the right to edit a page the member sees (Q-W4.00-knowledge-6: a hidden page — 404, a request to read is not made); not for a folder or a CRM record (422 validation_failed). The page is already editable — 422 validation_failed «Вы уже можете править страницу»; an open request of the member on the node — 409 request_pending «Запрос уже отправлен». The request goes at once to all leads of the space and the owners of the business (Q-W4.00-knowledge-7). A node the member does not see (hidden by the access chain, archived for a reader, finance for the function driver) — 404 not_found «Страница не найдена или недоступна», as a missing one. Emits kb.request.created.
+     */
+    post: operations['createKnowledgeAccessRequest'];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/v1/tenants/{tenantId}/knowledge/requests/{requestId}/decision': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        requestId: components['parameters']['requestId'];
+      };
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /**
+     * Approve or deny an access request
+     * @description W4.04 (knowledge.md §2.2, prototype kbDecide — «Одобрить» / «Отклонить», toasts «Запрос одобрен» / «Запрос отклонён»). Requires knowledge.access.manage in the space of the node: its lead or the owner of the business (otherwise 403 forbidden_action «Это может руководитель пространства или владелец бизнеса»). An unknown or decided request — 404 not_found «Запрос не найден или уже решён». approve of a request to edit — the employee gets an entry «правит» in the list of the node (a node «Как у родителя» becomes «Читают все, правят выбранные» with the editors of the space); approve of a request to read (seeded requests only) — an assignment kb_space_reader of scope page for 30 days by the domain clock (until, PD-60, Q-W4.00-knowledge-7). deny closes the request. The author is notified («Одобрен запрос к «{title}»» / «Отклонён запрос к «{title}»»). Emits kb.request.decided.
+     */
+    post: operations['decideKnowledgeAccessRequest'];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/v1/tenants/{tenantId}/knowledge/spaces/{spaceId}/requests': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+        /** @description W4.04. Opaque UUID of a knowledge space; a space the member does not see — 404, as a missing one. */
+        spaceId: components['parameters']['spaceId'];
+      };
+      cookie?: never;
+    };
+    /**
+     * List the access requests of a space
+     * @description W4.04 (knowledge.md §2.2, prototype «Запросы доступа» of the dialog «Доступ» — «{ФИО} просит право правки · {время}»; the badge of the tab «Участники и доступ»). Requires knowledge.access.manage in the space (the lead or the owner of the business; otherwise 403 forbidden_action «Это может руководитель пространства или владелец бизнеса»). status filters the requests (default open), newest first. A space the member does not see — 404 not_found «Пространство не найдено», as a missing one.
+     */
+    get: operations['listKnowledgeAccessRequests'];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/v1/tenants/{tenantId}/knowledge/spaces/{spaceId}/members': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+        /** @description W4.04. Opaque UUID of a knowledge space; a space the member does not see — 404, as a missing one. */
+        spaceId: components['parameters']['spaceId'];
+      };
+      cookie?: never;
+    };
+    /**
+     * List the members of a space
+     * @description W4.04 (knowledge.md §2.2, prototype tab «Участники и доступ» — «Роли пространства — назначения из «Пользователей и ролей» с областью «{пространство}»»). The roles of the space — assignments of scope space (kb_space_lead «Руководитель пространства», kb_space_editor «Редактор», kb_space_reader «Читатель»; KB-02 — no «Автор») with their members («назначение в пространстве», «приглашение не принято»); everyone who sees the space reads the role cards. byLevel — up to 8 employees who read by the level of the space with the source («роль «…» · {область}») and the total; pageAssignments — the assignments to pages («Страница «…» до {дата}»): both to the lead and the owner of the business only. These roles and assignments are not in listRoles and listAssignments of the access API (Q-W4.00-knowledge-21, Q-W4.30-16 option (b)). A space the member does not see — 404 not_found «Пространство не найдено», as a missing one.
+     */
+    get: operations['listKnowledgeSpaceMembers'];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/v1/tenants/{tenantId}/knowledge/spaces/{spaceId}/members/{memberId}': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+        /** @description W4.04. Opaque UUID of a knowledge space; a space the member does not see — 404, as a missing one. */
+        spaceId: components['parameters']['spaceId'];
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        memberId: components['parameters']['memberId'];
+      };
+      cookie?: never;
+    };
+    get?: never;
+    /**
+     * Give, change or remove the role of an employee in a space
+     * @description W4.04 (knowledge.md §2.2, prototype kbSetMember — «Добавить в пространство», «Роль в пространстве», «Убрать», «Добавить в пространство читателем»; toasts «Добавлен(а) в пространство», «Роль изменена», «Убран(а) из пространства»). Requires knowledge.members.manage in the space: its lead or the owner of the business (otherwise 403 forbidden_action «Это может руководитель пространства или владелец бизнеса»). role — a template of a role of the space, null — remove the employee from the space; the assignment of scope space is written to the common table of assignments (access.assignment.changed). 422 validation_failed: «Выберите сотрудника» (an unknown employee), «Выберите роль пространства», «Владелец бизнеса видит всё без назначения», «Свою роль руководителя снимает владелец бизнеса». The lead gives only the roles whose rights he has (docs/23, as roles.assign) — otherwise 409 delegation_exceeds_grant. A space the member does not see — 404 not_found «Пространство не найдено», as a missing one.
+     */
+    put: operations['setKnowledgeSpaceMember'];
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/v1/tenants/{tenantId}/knowledge/spaces/{spaceId}/rules': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+        /** @description W4.04. Opaque UUID of a knowledge space; a space the member does not see — 404, as a missing one. */
+        spaceId: components['parameters']['spaceId'];
+      };
+      cookie?: never;
+    };
+    /**
+     * List the automation rules of a space
+     * @description W4.04 (knowledge.md §2.2, prototype tab «Автоматизация» — «Правила пространства», the lead only). Requires knowledge.automation.manage in the space (the lead or the owner of the business; otherwise 403 forbidden_action «Это может руководитель пространства или владелец бизнеса»). The three kinds of rules of the reference (Q-W4.00-knowledge-20): ack — asks to acknowledge a new version, review — sets «Пора пересмотреть» and notifies the owner, section — creates the section of an object of repairs; rules are switched on and off, not edited. A section rule lists the objects of repairs with their stage, foreman and section (objects — «Создать раздел» / «Открыть раздел»). A space the member does not see — 404 not_found «Пространство не найдено», as a missing one.
+     */
+    get: operations['listKnowledgeRules'];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/v1/tenants/{tenantId}/knowledge/rules/{ruleId}': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+        /** @description W4.04. Opaque UUID of an automation rule of a knowledge space; visible to the lead of the space only. */
+        ruleId: components['parameters']['ruleId'];
+      };
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    /**
+     * Switch an automation rule on or off
+     * @description W4.04 (knowledge.md §2.2, prototype kbToggleRule — the switch «Правило включено», toasts «Правило включено» / «Правило выключено»). Requires knowledge.automation.manage in the space of the rule (the lead or the owner of the business; otherwise 403 forbidden_action «Это может руководитель пространства или владелец бизнеса»); an unknown rule — 404 not_found «Правило не найдено». «Правило выполняется от имени того, кто его включил; права проверяются при каждом запуске. Изменения, которые сделало правило, другие правила не запускают.»
+     */
+    patch: operations['setKnowledgeRuleEnabled'];
+    trace?: never;
+  };
+  '/api/v1/tenants/{tenantId}/knowledge/spaces/{spaceId}/review-check': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+        /** @description W4.04. Opaque UUID of a knowledge space; a space the member does not see — 404, as a missing one. */
+        spaceId: components['parameters']['spaceId'];
+      };
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /**
+     * Check the review dates of a space now
+     * @description W4.04 (knowledge.md §2.2, prototype kbCheckReview — «Проверить сроки сейчас», toast «Проверка выполнена»; the same check runs daily by the schedule of the rule, W4.35). Requires knowledge.automation.manage in the space. The rule «Пора пересмотреть» of the space must be on — otherwise 422 validation_failed «Правило «Пора пересмотреть» выключено». The pages whose review date has come get the status outdated («Пора пересмотреть»), their owners are notified (without a task, Q-W4.00-knowledge-19), each gets a line of the journal; none — the line «Остановлено условием: сроки пересмотра не наступили». A space the member does not see — 404 not_found «Пространство не найдено», as a missing one. Emits kb.review.due.
+     */
+    post: operations['runKnowledgeReviewCheck'];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/v1/tenants/{tenantId}/knowledge/spaces/{spaceId}/sections': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+        /** @description W4.04. Opaque UUID of a knowledge space; a space the member does not see — 404, as a missing one. */
+        spaceId: components['parameters']['spaceId'];
+      };
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /**
+     * Create the section of an object of repairs
+     * @description W4.04 (knowledge.md §2.2, prototype kbRunSection — «Создать раздел», toast «Раздел создан»; the event «этап объекта изменён» of repairs — a WS of stage 6, Q-W4.00-knowledge-20). Requires knowledge.automation.manage in the space; the section rule of the space must be on (422 validation_failed «Правило выключено»); the space must have a top-level folder «Объекты» (422 validation_failed «В пространстве нет папки «Объекты»»); an unknown project of repairs — 404 not_found «Объект не найден». Creates the section of the object from the template «Объект ремонта» v3: a folder read by the relation «Прораб объекта» (the foreman by id) and edited by the editors, and five subpages («Паспорт объекта», «Как попасть на объект», «Акты скрытых работ», «Фотоотчёт», «Гарантия»); the journal gets «{объект}: создан раздел и 5 подстраниц, доступ получил прораб {ФИО}» or, without a foreman, a warning. A section that exists — nothing is created (created false, «{объект}: остановлено условием — раздел уже есть»). A space the member does not see — 404 not_found «Пространство не найдено», as a missing one. Emits kb.section.created.
+     */
+    post: operations['runKnowledgeSection'];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/v1/tenants/{tenantId}/knowledge/spaces/{spaceId}/runs': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+        /** @description W4.04. Opaque UUID of a knowledge space; a space the member does not see — 404, as a missing one. */
+        spaceId: components['parameters']['spaceId'];
+      };
+      cookie?: never;
+    };
+    /**
+     * List the runs of the automation rules of a space
+     * @description W4.04 (knowledge.md §2.2, prototype «Журнал запусков» — «Запусков пока нет»). Requires knowledge.automation.manage in the space (the lead or the owner of the business; otherwise 403 forbidden_action «Это может руководитель пространства или владелец бизнеса»). The last 40 runs of the rules of the space (result ok, warn, stopped or error and the text), newest first. A space the member does not see — 404 not_found «Пространство не найдено», as a missing one.
+     */
+    get: operations['listKnowledgeRuns'];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/v1/tenants/{tenantId}/knowledge/nodes/{nodeId}/tables': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+        /** @description W4.04. Opaque UUID of a node of the knowledge tree (page, folder, table, diagram, file, CRM record); a node the member does not see — 404 «Страница не найдена или недоступна», as a missing one. */
+        nodeId: components['parameters']['nodeId'];
+      };
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /**
+     * Create a table on a page
+     * @description W4.04 (knowledge.md §2.2, forms core createKbTable — the action «в БЗ» of a form writes rows of the table, D-26 комплекта). The gateway admits a member who reads the knowledge base (knowledge.read): the right to edit the page is checked by the module by the access chain, as for publishKnowledgeNodeVersion — the lead of the space; knowledge.update of a role of the area or of the space when no ancestor has own access; otherwise a «правит» entry of the nearest own access (an employee, a role in its area, a group, the relation «прораб объекта», an approved request to edit); the author of the page with knowledge.create (otherwise 403 forbidden_action «Нет права править «{title}»»); a hidden node — 404 not_found «Страница не найдена». title — at least 2 characters (422 validation_failed «Название таблицы — не короче 2 символов»), a table with the same title on the page — 422 «На странице уже есть таблица «{title}»»; columns — at least one (422 «Добавьте хотя бы один столбец»), each with a name (422 «У столбца нет названия»), names do not repeat (422 «Названия столбцов повторяются»). Rows are added by forms only: «Строки добавляет форма после принятия ответа; исправления — через ответ формы.»
+     */
+    post: operations['createKnowledgeTable'];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -5425,6 +6181,443 @@ export interface components {
       /** @description One-time invitation secret from the e-mail link fragment. The server stores only its hash. */
       token: string;
     };
+    KnowledgeAccessCandidate: {
+      entry: components['schemas']['KnowledgeAccessEntryInput'];
+      label: string;
+      reach: {
+        members: number;
+        total: number;
+        reason: string | null;
+      };
+      /** @description «— сейчас никого», «— не получат доступ», «— получат N из M», «— не получит доступ: {причина}» or empty. */
+      reachLabel: string;
+    };
+    KnowledgeAccessCandidateList: {
+      items: components['schemas']['KnowledgeAccessCandidate'][];
+    };
+    KnowledgeAccessChange: {
+      /** @enum {string} */
+      mode: 'inherit' | 'edit_listed' | 'listed';
+      entries: components['schemas']['KnowledgeAccessEntryInput'][];
+      /** @description Subpages of the branch with their own access become «Как у родителя». */
+      applyToOwn?: boolean;
+      /** @description Return the impact without saving. */
+      dryRun?: boolean;
+    };
+    /** @description W4.04. An entry of the access list with its label; reach — to the lead only. */
+    KnowledgeAccessEntry: {
+      /**
+       * @description member — an employee (by exception), group, role — a role in its area (orgUnitId) or a role of the space, relation — a relation with a CRM record (KB-01: given by a section template).
+       * @enum {string}
+       */
+      who: 'member' | 'group' | 'role' | 'relation';
+      /** @description Employee, group or role; absent for relation. */
+      refId?: components['schemas']['Id'];
+      /**
+       * @description Kind of the relation: foreman — «Прораб объекта» of object.
+       * @enum {string}
+       */
+      relation?: 'foreman';
+      /** @description The record of the relation (repairs project). */
+      object?: components['schemas']['ObjectRef'];
+      /** @description Area of a role entry; absent — the area of the space. */
+      orgUnitId?: components['schemas']['Id'];
+      /**
+       * @description view «Читает», edit «Правит».
+       * @enum {string}
+       */
+      can: 'view' | 'edit';
+      /** @description «Роль «…» · «{область}»», «Роль «…» в пространстве», «Группа «…»», «Прораб этого объекта», the employee. */
+      label: string;
+      reach?: components['schemas']['KnowledgeAccessReach'];
+    };
+    /** @description W4.04. An entry of the access list: refId is required for member, group and role; relation and object — for relation. */
+    KnowledgeAccessEntryInput: {
+      /**
+       * @description member — an employee (by exception), group, role — a role in its area (orgUnitId) or a role of the space, relation — a relation with a CRM record (KB-01: given by a section template).
+       * @enum {string}
+       */
+      who: 'member' | 'group' | 'role' | 'relation';
+      /** @description Employee, group or role; absent for relation. */
+      refId?: components['schemas']['Id'];
+      /**
+       * @description Kind of the relation: foreman — «Прораб объекта» of object.
+       * @enum {string}
+       */
+      relation?: 'foreman';
+      /** @description The record of the relation (repairs project). */
+      object?: components['schemas']['ObjectRef'];
+      /** @description Area of a role entry; absent — the area of the space. */
+      orgUnitId?: components['schemas']['Id'];
+      /**
+       * @description view «Читает», edit «Правит».
+       * @enum {string}
+       */
+      can: 'view' | 'edit';
+    };
+    KnowledgeAccessExplanation: {
+      nodeId: components['schemas']['Id'];
+      memberId: components['schemas']['Id'];
+      memberDisplayName: string;
+      view: boolean;
+      edit: boolean;
+      /** @description Closed by a function: «Функция «Водитель» закрывает финансовые страницы, роль или группа это не обходят.» */
+      functionBlocked: boolean;
+      chain: components['schemas']['KnowledgeAccessStep'][];
+      summary: string;
+    };
+    KnowledgeAccessImpact: {
+      /** @description false — dryRun: nothing saved. */
+      applied: boolean;
+      /** @description «Ветка «X»: N страниц». */
+      pages: number;
+      /** @description Nodes of the branch with their own access. */
+      own: components['schemas']['KnowledgeNodeRef'][];
+      gainView: components['schemas']['KnowledgeImpactPerson'][];
+      loseView: components['schemas']['KnowledgeImpactPerson'][];
+      gainEdit: components['schemas']['KnowledgeImpactPerson'][];
+      loseEdit: components['schemas']['KnowledgeImpactPerson'][];
+      access?: components['schemas']['KnowledgeNodeAccess'];
+    };
+    KnowledgeAccessMap: {
+      spaceId: components['schemas']['Id'];
+      members: {
+        memberId: components['schemas']['Id'];
+        displayName: string;
+      }[];
+      rows: {
+        nodeId: components['schemas']['Id'];
+        title: string;
+        depth: number;
+      }[];
+      /** @description Row × column: edit «Правит», view «Читает», none «Нет», function «Функция» (closed by a function). */
+      cells: ('edit' | 'view' | 'none' | 'function')[][];
+    };
+    KnowledgeAccessReach: {
+      /** @description Employees the entry gives access to. */
+      members: number;
+      /** @description Employees matching the entry. */
+      total: number;
+      /** @description «Не получит доступ: {ФИО} — {причина}». */
+      blocked: {
+        displayName: string;
+        reason: string;
+      }[];
+    };
+    KnowledgeAccessRequest: {
+      id: components['schemas']['Id'];
+      nodeId: components['schemas']['Id'];
+      nodeTitle: string;
+      spaceId: components['schemas']['Id'];
+      memberId: components['schemas']['Id'];
+      memberDisplayName: string;
+      /**
+       * @description edit — «просит право правки»; view — «просит доступ» (seeded only).
+       * @enum {string}
+       */
+      can: 'view' | 'edit';
+      /** @enum {string} */
+      status: 'open' | 'approved' | 'denied';
+      requestedAt: components['schemas']['Instant'];
+      decidedAt?: components['schemas']['Instant'];
+      decidedByDisplayName?: string;
+      /**
+       * Format: date
+       * @description End of an approved request to read.
+       */
+      until?: string;
+    };
+    KnowledgeAccessRequestCreate: {
+      /**
+       * @description Only the right to edit a visible page (Q-W4.00-knowledge-6).
+       * @enum {string}
+       */
+      can: 'edit';
+    };
+    KnowledgeAccessRequestDecision: {
+      /** @enum {string} */
+      decision: 'approve' | 'deny';
+    };
+    KnowledgeAccessRequestList: {
+      items: components['schemas']['KnowledgeAccessRequest'][];
+    };
+    KnowledgeAccessStep: {
+      /**
+       * @description ok — passes, no — stops, wait — an invitation not accepted, inherit — «Доступ как у родителя».
+       * @enum {string}
+       */
+      kind: 'ok' | 'no' | 'wait' | 'inherit';
+      title: string;
+      detail: string;
+    };
+    KnowledgeAck: {
+      /** @description The version the acknowledgement is requested for. */
+      version: number;
+      /** @description «все, кто видит страницу» or «роль «{роль}»». */
+      audienceLabel: string;
+      mine: {
+        /** @description The member is in the audience («Подтвердите, что прочитали эту версию.»). */
+        required: boolean;
+        /** @description «Вы подтвердили, что ознакомились с этой версией». */
+        done: boolean;
+      };
+      /** @description Audience — to the editors of the node and the lead. */
+      total?: number;
+      /** @description «X из Y ознакомились» — to the editors of the node and the lead. */
+      doneCount?: number;
+      /** @description «Ждём: …» — to the editors of the node and the lead. */
+      pendingNames?: string[];
+      /** @description Confirmations of all versions (KB-03) — to the lead of the space and the owner of the business only. */
+      log?: components['schemas']['KnowledgeAckLogEntry'][];
+    };
+    KnowledgeAckCreate: {
+      version: number;
+    };
+    KnowledgeAckLogEntry: {
+      memberId: components['schemas']['Id'];
+      displayName: string;
+      version: number;
+      at: components['schemas']['Instant'];
+    };
+    KnowledgeArchiveItem: {
+      nodeId: components['schemas']['Id'];
+      title: string;
+      /** @enum {string} */
+      kind: 'page' | 'folder' | 'table' | 'diagram' | 'file' | 'link';
+      pages: number;
+    };
+    KnowledgeArchiveList: {
+      items: components['schemas']['KnowledgeArchiveItem'][];
+    };
+    KnowledgeArchiveResult: {
+      nodeId: components['schemas']['Id'];
+      archived: boolean;
+      /** @description Nodes of the branch. */
+      pages: number;
+    };
+    KnowledgeDiagram: {
+      steps: string[];
+      outcomes: {
+        text: string;
+        /** @enum {string} */
+        tone: 'ok' | 'warn';
+      }[];
+    };
+    /** @description W4.04. A form entry of a page (D-26 комплекта, the block under the text — no-reference, Q-W4.00-knowledge-14). */
+    KnowledgeEntry: {
+      id: components['schemas']['Id'];
+      nodeId: components['schemas']['Id'];
+      addedAt: components['schemas']['Instant'];
+      head: string;
+      lines: {
+        name: string;
+        value: string;
+      }[];
+      source: components['schemas']['KnowledgeEntrySource'];
+    };
+    KnowledgeEntrySource: {
+      formId: components['schemas']['Id'];
+      /** @description Number of the form response («R-1012»). */
+      responseNumber: string;
+      formVersion: number;
+    };
+    /** @description A file node: «PDF · {размер} · N страниц»; the preview is a placeholder (Q-W4.00-knowledge-18), files of the knowledge base — files with purpose knowledge_attachment. */
+    KnowledgeFile: {
+      /** @description «1,2 МБ». */
+      sizeLabel: string;
+      pages: number;
+    };
+    KnowledgeImpactPerson: {
+      memberId: components['schemas']['Id'];
+      displayName: string;
+      /** @description How many pages of the branch change for the employee. */
+      pages: number;
+    };
+    KnowledgeImpactSummary: {
+      pages: number;
+      gainView: components['schemas']['KnowledgeImpactPerson'][];
+      loseView: components['schemas']['KnowledgeImpactPerson'][];
+      gainEdit: components['schemas']['KnowledgeImpactPerson'][];
+      loseEdit: components['schemas']['KnowledgeImpactPerson'][];
+    };
+    /** @description W4.04. The last published visible page of a space — «Обновлено: «{страница}», {дата}». */
+    KnowledgeLastUpdate: {
+      nodeId: components['schemas']['Id'];
+      title: string;
+      at: components['schemas']['Instant'];
+    };
+    /** @description A CRM record: «Запись CRM: открывается, если у вас есть доступ к ней» — the module of the record checks the access (Q-W4.00-knowledge-18). */
+    KnowledgeLink: {
+      label: string;
+      moduleKey: string;
+      icon: string;
+    };
+    KnowledgeMove: {
+      /**
+       * Format: uuid
+       * @description New parent; null — the top level of the space.
+       */
+      parentId: string | null;
+      /** @description Return the impact without moving. */
+      dryRun?: boolean;
+    };
+    KnowledgeMoveResult: {
+      /** @description false — dryRun: nothing moved. */
+      applied: boolean;
+      /** @description «Переносится N страниц вместе с подстраницами.» */
+      pages: number;
+      loseView: components['schemas']['KnowledgeImpactPerson'][];
+      gainView: components['schemas']['KnowledgeImpactPerson'][];
+      node?: components['schemas']['KnowledgeNode'];
+    };
+    /** @description W4.04 (knowledge.md §2.1). A node of the tree: page, folder, table, diagram, file or CRM record. */
+    KnowledgeNode: {
+      id: components['schemas']['Id'];
+      spaceId: components['schemas']['Id'];
+      /**
+       * Format: uuid
+       * @description Parent node; null — the top level of the space.
+       */
+      parentId: string | null;
+      position: number;
+      /** @enum {string} */
+      kind: 'page' | 'folder' | 'table' | 'diagram' | 'file' | 'link';
+      title: string;
+      /**
+       * @description draft «Черновик», review «На проверке», active «Действует», outdated «Пора пересмотреть» (Q-W4.00-knowledge-2).
+       * @enum {string}
+       */
+      status: 'draft' | 'review' | 'active' | 'outdated';
+      /**
+       * @description Own access of the node: inherit «Как у родителя», edit_listed «Читают все, правят выбранные», listed «Только выбранные» (prototype key edit — edit_listed).
+       * @enum {string}
+       */
+      accessMode: 'inherit' | 'edit_listed' | 'listed';
+      /**
+       * @description finance — a finance page: closed for the function driver with any roles (AUTH-03).
+       * @enum {string}
+       */
+      sensitivity: 'normal' | 'finance';
+      archived: boolean;
+      /** @description Number of the current version. */
+      version: number;
+      my: components['schemas']['KnowledgeNodeMy'];
+      spaceName: string;
+      /** @description Ancestors from the top level: «Пространство › … › страница». */
+      path: components['schemas']['KnowledgeNodeRef'][];
+      owner: {
+        /** Format: uuid */
+        memberId: string | null;
+        displayName: string;
+      };
+      /**
+       * Format: date
+       * @description «пересмотреть до {дата}».
+       */
+      reviewBy: string | null;
+      current: components['schemas']['KnowledgeVersion'];
+      /** @description Versions, newest first («Версии»). */
+      versions: components['schemas']['KnowledgeVersionSummary'][];
+      ack?: components['schemas']['KnowledgeAck'];
+      diagram?: components['schemas']['KnowledgeDiagram'];
+      file?: components['schemas']['KnowledgeFile'];
+      link?: components['schemas']['KnowledgeLink'];
+      tables: components['schemas']['KnowledgeTable'][];
+      entries: components['schemas']['KnowledgeEntry'][];
+      /**
+       * Format: int64
+       * @description Number of the current version — the ETag and If-Match of publishKnowledgeNodeVersion.
+       */
+      revision: number;
+    };
+    KnowledgeNodeAccess: {
+      nodeId: components['schemas']['Id'];
+      title: string;
+      /** @enum {string} */
+      accessMode: 'inherit' | 'edit_listed' | 'listed';
+      /** @description Where «Как у родителя» comes from: the space or the nearest node with own access. */
+      inheritedFrom: {
+        /** @enum {string} */
+        kind: 'space' | 'node';
+        id: components['schemas']['Id'];
+        title: string;
+      };
+      chain: components['schemas']['KnowledgeAccessStep'][];
+      entries: components['schemas']['KnowledgeAccessEntry'][];
+      /** @description «{путь} · N подстраниц». */
+      descendantCount: number;
+      /** @description Subpages of the branch with their own access («Применить и к подстраницам со своим доступом (N)»). */
+      ownSubnodes: components['schemas']['KnowledgeNodeRef'][];
+      /** @description The lead of the space or the owner of the business. */
+      canManage: boolean;
+      leadNames: string[];
+      /** @description Open requests of the node — to the lead only. */
+      requests?: components['schemas']['KnowledgeAccessRequest'][];
+      /**
+       * Format: int64
+       * @description Access revision of the node — If-Match of setKnowledgeNodeAccess.
+       */
+      revision: number;
+    };
+    KnowledgeNodeCreate: {
+      /**
+       * Format: uuid
+       * @description Parent node; null or absent — the top level.
+       */
+      parentId?: string | null;
+      /** @enum {string} */
+      kind: 'page' | 'folder' | 'diagram';
+      title: string;
+    };
+    KnowledgeNodeMy: {
+      /** @description Edits the node («Править», «Переместить…»). */
+      edit: boolean;
+      /** @description The lead of the space or the owner of the business. */
+      lead: boolean;
+      /** @description Creates subpages («Новая подстраница», «+»). */
+      create: boolean;
+    };
+    KnowledgeNodeRef: {
+      id: components['schemas']['Id'];
+      title: string;
+    };
+    KnowledgeNodeStatusChange: {
+      /** @enum {string} */
+      status: 'draft' | 'review' | 'active' | 'outdated';
+    };
+    /** @description W4.04. A visible node of the tree (prototype kbView). */
+    KnowledgeNodeSummary: {
+      id: components['schemas']['Id'];
+      spaceId: components['schemas']['Id'];
+      /**
+       * Format: uuid
+       * @description Parent node; null — the top level of the space.
+       */
+      parentId: string | null;
+      position: number;
+      /** @enum {string} */
+      kind: 'page' | 'folder' | 'table' | 'diagram' | 'file' | 'link';
+      title: string;
+      /**
+       * @description draft «Черновик», review «На проверке», active «Действует», outdated «Пора пересмотреть» (Q-W4.00-knowledge-2).
+       * @enum {string}
+       */
+      status: 'draft' | 'review' | 'active' | 'outdated';
+      /**
+       * @description Own access of the node: inherit «Как у родителя», edit_listed «Читают все, правят выбранные», listed «Только выбранные» (prototype key edit — edit_listed).
+       * @enum {string}
+       */
+      accessMode: 'inherit' | 'edit_listed' | 'listed';
+      /**
+       * @description finance — a finance page: closed for the function driver with any roles (AUTH-03).
+       * @enum {string}
+       */
+      sensitivity: 'normal' | 'finance';
+      archived: boolean;
+      /** @description Number of the current version. */
+      version: number;
+      my: components['schemas']['KnowledgeNodeMy'];
+    };
     KnowledgePage: {
       id: components['schemas']['Id'];
       title: string;
@@ -5453,6 +6646,305 @@ export interface components {
       bodyMarkdown?: string;
       /** @enum {string} */
       status?: 'draft' | 'published' | 'archived';
+    };
+    KnowledgePublish: {
+      title?: string;
+      /** @description Text with paragraphs separated by an empty line. */
+      body: string;
+      /** @description Steps of a diagram («Шаги схемы — по одному в строке»). */
+      steps?: string[];
+      /** @description «Попросить ознакомиться с новой версией: …». */
+      requestAck?: boolean;
+    };
+    KnowledgePublishResult: {
+      node: components['schemas']['KnowledgeNode'];
+      version: number;
+      /** @description Employees asked to acknowledge the new version. */
+      ackRequestedCount: number;
+    };
+    KnowledgeRule: {
+      id: components['schemas']['Id'];
+      spaceId: components['schemas']['Id'];
+      /**
+       * @description ack — ask to acknowledge, review — «Пора пересмотреть», section — the section of an object.
+       * @enum {string}
+       */
+      kind: 'ack' | 'review' | 'section';
+      name: string;
+      trigger: string;
+      enabled: boolean;
+      /** @description Objects of repairs (kind section). */
+      objects?: components['schemas']['KnowledgeSectionObject'][];
+    };
+    KnowledgeRuleList: {
+      items: components['schemas']['KnowledgeRule'][];
+    };
+    KnowledgeRulePatch: {
+      enabled: boolean;
+    };
+    KnowledgeRun: {
+      id: components['schemas']['Id'];
+      ruleId: components['schemas']['Id'];
+      at: components['schemas']['Instant'];
+      /** @enum {string} */
+      result: 'ok' | 'warn' | 'stopped' | 'error';
+      text: string;
+    };
+    KnowledgeRunList: {
+      items: components['schemas']['KnowledgeRun'][];
+    };
+    KnowledgeRunReport: {
+      /** @description Pages that became outdated, or sections created. */
+      count: number;
+      /** @description runKnowledgeSection: a section was created. */
+      created?: boolean;
+      /**
+       * Format: uuid
+       * @description runKnowledgeSection: the section of the object.
+       */
+      nodeId?: string | null;
+      /** @description Journal lines written by this run. */
+      runs: components['schemas']['KnowledgeRun'][];
+    };
+    KnowledgeSearchHit: {
+      nodeId: components['schemas']['Id'];
+      spaceId: components['schemas']['Id'];
+      spaceName: string;
+      /** @enum {string} */
+      kind: 'page' | 'folder' | 'table' | 'diagram' | 'file' | 'link';
+      title: string;
+      /** @description «Пространство › родители». */
+      path: string[];
+      excerpt: string;
+    };
+    KnowledgeSearchResult: {
+      items: components['schemas']['KnowledgeSearchHit'][];
+    };
+    KnowledgeSectionCreate: {
+      projectId: components['schemas']['Id'];
+    };
+    KnowledgeSectionObject: {
+      projectId: components['schemas']['Id'];
+      name: string;
+      stage: string | null;
+      /** @description null — «прораб не назначен». */
+      foremanName: string | null;
+      /**
+       * Format: uuid
+       * @description The section, if created («Открыть раздел»).
+       */
+      sectionNodeId: string | null;
+    };
+    /** @description W4.04 (knowledge.md §2.1). A space of the knowledge base — an access area (docs/23). */
+    KnowledgeSpace: {
+      id: components['schemas']['Id'];
+      name: string;
+      icon: string;
+      color: string;
+      /**
+       * Format: uuid
+       * @description Area of the space — whose roles act in it: a region or a company; null — the whole organization.
+       */
+      orgUnitId: string | null;
+      /** @description «Вся организация», «Регион «{name}»» or «Фирма «{name}»». */
+      areaLabel: string;
+      /**
+       * @description Level of the space: open — roles of the area act fully («Открытое»); limited — everyone in the area reads, members write («Ограниченное»); closed — members and the owner of the business only («Закрытое»).
+       * @enum {string}
+       */
+      access: 'open' | 'limited' | 'closed';
+      /** @description Template the space was created from. */
+      templateKey: string | null;
+      /**
+       * Format: uuid
+       * @description The home page «Обзор» — the root node of the space that is never moved or archived.
+       */
+      homeNodeId: string | null;
+      my: components['schemas']['KnowledgeSpaceMy'];
+      /** @description Leads of the space; empty — «Руководитель: владелец бизнеса». */
+      leadNames: string[];
+      /** @description Visible pages of the space without folders. */
+      pageCount: number;
+      lastUpdate?: components['schemas']['KnowledgeLastUpdate'];
+      /** @description Open access requests («Запросы доступа: N») — to the lead of the space only. */
+      openRequestCount?: number;
+      /** Format: int64 */
+      revision: number;
+    };
+    KnowledgeSpaceChange: {
+      /** @description false — dryRun: nothing changed. */
+      applied: boolean;
+      space: components['schemas']['KnowledgeSpace'];
+      impact: components['schemas']['KnowledgeImpactSummary'];
+    };
+    KnowledgeSpaceCreate: {
+      /** @description Name — 2–120 characters, unique in the organization. */
+      name: string;
+      /** @enum {string} */
+      access: 'open' | 'limited' | 'closed';
+      icon?: string;
+      color?: string;
+      /**
+       * Format: uuid
+       * @description Area; null or absent — the whole organization.
+       */
+      orgUnitId?: string | null;
+      /**
+       * @description Starting template (listKnowledgeSpaceTemplates).
+       * @default blank
+       * @enum {string}
+       */
+      templateKey: 'regs' | 'staff' | 'objects' | 'blank';
+      /** @description Indexes of the template nodes to create; absent — all. */
+      templateNodes?: number[];
+    };
+    KnowledgeSpaceList: {
+      items: components['schemas']['KnowledgeSpace'][];
+      nextCursor: string | null;
+    };
+    KnowledgeSpaceMember: {
+      memberId: components['schemas']['Id'];
+      displayName: string;
+      /**
+       * @description invited — «приглашение не принято».
+       * @enum {string}
+       */
+      state: 'active' | 'invited';
+    };
+    KnowledgeSpaceMemberChange: {
+      /**
+       * @description Role of the space; null — remove the employee from the space («Убрать»).
+       * @enum {string|null}
+       */
+      role: 'kb_space_lead' | 'kb_space_editor' | 'kb_space_reader' | null;
+    };
+    KnowledgeSpaceMembers: {
+      spaceId: components['schemas']['Id'];
+      /** @description «Остальные получают доступ по уровню пространства: {описание уровня}». */
+      levelLabel: string;
+      /** @description The lead of the space or the owner of the business. */
+      canManage: boolean;
+      roles: components['schemas']['KnowledgeSpaceRole'][];
+      byLevel?: {
+        /** @description «По уровню «{уровень}»». */
+        label: string;
+        members: {
+          memberId: components['schemas']['Id'];
+          displayName: string;
+          source: string;
+        }[];
+        total: number;
+      };
+      pageAssignments?: {
+        memberId: components['schemas']['Id'];
+        displayName: string;
+        nodeId: components['schemas']['Id'];
+        nodeTitle: string;
+        /** Format: date */
+        until: string | null;
+      }[];
+    };
+    /** @description W4.04. The rights of the member in a space (prototype kbSpaceMy). */
+    KnowledgeSpaceMy: {
+      /** @description The member is an owner of the business: sees and edits everything. */
+      owner: boolean;
+      /** @description The lead of the space (kb_space_lead) or the owner of the business. */
+      lead: boolean;
+      /** @description Reads the space by a role (its area or the space). */
+      view: boolean;
+      /** @description Creates pages at the top level («+», «Новая подстраница»). */
+      create: boolean;
+      /** @description Edits any page of the space by a role. */
+      edit: boolean;
+      /** @description Label of the role of the member on the card: «Владелец бизнеса», the name of the role of the space, «Читатель по уровню «{уровень}»» or empty («Вы: по ссылке на страницу» — a page assignment only). */
+      role: string;
+    };
+    KnowledgeSpacePatch: {
+      name?: string;
+      icon?: string;
+      color?: string;
+      /** Format: uuid */
+      orgUnitId?: string | null;
+      /** @enum {string} */
+      access?: 'open' | 'limited' | 'closed';
+      /** @description Return the impact without changing anything. */
+      dryRun?: boolean;
+    };
+    KnowledgeSpaceRole: {
+      /** @enum {string} */
+      role: 'kb_space_lead' | 'kb_space_editor' | 'kb_space_reader';
+      label: string;
+      description: string;
+      members: components['schemas']['KnowledgeSpaceMember'][];
+    };
+    KnowledgeSpaceTemplate: {
+      /** @enum {string} */
+      key: 'regs' | 'staff' | 'objects' | 'blank';
+      name: string;
+      icon: string;
+      hint: string;
+      nodes: components['schemas']['KnowledgeTemplateNode'][];
+    };
+    KnowledgeSpaceTemplateList: {
+      items: components['schemas']['KnowledgeSpaceTemplate'][];
+    };
+    /** @description W4.04. A table of a page — read-only; rows are added by forms («Строки добавляет форма после принятия ответа; исправления — через ответ формы.»). */
+    KnowledgeTable: {
+      id: components['schemas']['Id'];
+      nodeId: components['schemas']['Id'];
+      title: string;
+      columns: components['schemas']['KnowledgeTableColumn'][];
+      rows: components['schemas']['KnowledgeTableRow'][];
+    };
+    KnowledgeTableColumn: {
+      id: components['schemas']['Id'];
+      name: string;
+      type: string;
+    };
+    KnowledgeTableCreate: {
+      title: string;
+      columns: {
+        name: string;
+        /** @default text */
+        type: string;
+      }[];
+    };
+    KnowledgeTableRow: {
+      id: components['schemas']['Id'];
+      addedAt: components['schemas']['Instant'];
+      source?: components['schemas']['KnowledgeEntrySource'];
+      /** @description Column id → value. */
+      cells: {
+        [key: string]: string;
+      };
+    };
+    KnowledgeTemplateNode: {
+      index: number;
+      /** @enum {string} */
+      kind: 'page' | 'folder' | 'table' | 'diagram' | 'file' | 'link';
+      title: string;
+      parentIndex: number | null;
+      /** @description A folder of a function: the role that reads it («Читают: роль «…»»). */
+      readerRoleLabel: string | null;
+      /** @description «Ознакомиться: все». */
+      requestAck: boolean;
+    };
+    KnowledgeTree: {
+      space: components['schemas']['KnowledgeSpace'];
+      /** @description Visible not archived nodes depth-first in the order of positions. */
+      nodes: components['schemas']['KnowledgeNodeSummary'][];
+    };
+    KnowledgeVersion: {
+      version: number;
+      publishedAt: components['schemas']['Instant'];
+      authorDisplayName: string;
+      /** @description Text with paragraphs separated by an empty line, without Markdown (Q-W4.00-knowledge-16). */
+      body: string;
+    };
+    KnowledgeVersionSummary: {
+      version: number;
+      publishedAt: components['schemas']['Instant'];
+      authorDisplayName: string;
     };
     LogisticsSettings: {
       /**
@@ -7796,6 +9288,10 @@ export interface components {
     memberId: components['schemas']['Id'];
     /** @description Module key from the trusted registry. */
     moduleKey: string;
+    /** @description W4.04. Opaque UUID of a node of the knowledge tree (page, folder, table, diagram, file, CRM record); a node the member does not see — 404 «Страница не найдена или недоступна», as a missing one. */
+    nodeId: components['schemas']['Id'];
+    /** @description W4.04. Number of a version of the node (KnowledgeVersion.version). */
+    nodeVersion: number;
     /** @description W4.07. Opaque UUID of a platform operator (PlatformOperator.id, platform_operators.id). */
     operatorId: components['schemas']['Id'];
     /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
@@ -7816,6 +9312,10 @@ export interface components {
     responseId: components['schemas']['Id'];
     /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
     roleId: components['schemas']['Id'];
+    /** @description W4.04. Opaque UUID of an automation rule of a knowledge space; visible to the lead of the space only. */
+    ruleId: components['schemas']['Id'];
+    /** @description W4.04. Opaque UUID of a knowledge space; a space the member does not see — 404, as a missing one. */
+    spaceId: components['schemas']['Id'];
     /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
     taskId: components['schemas']['Id'];
     /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
@@ -16963,6 +18463,1337 @@ export interface operations {
       413: components['responses']['TooLarge'];
       422: components['responses']['Validation'];
       428: components['responses']['PreconditionRequired'];
+      429: components['responses']['RateLimited'];
+    };
+  };
+  listKnowledgeSpaces: {
+    parameters: {
+      query?: {
+        /** @description Opaque cursor from the preceding response; no offset pagination. */
+        cursor?: components['parameters']['Cursor'];
+        limit?: components['parameters']['Limit'];
+      };
+      header?: never;
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Successful result. */
+      200: {
+        headers: {
+          'X-Request-Id': components['headers']['RequestId'];
+          /** @description Never cache authenticated, confidential or capability-bearing API responses in shared caches. */
+          'Cache-Control'?: 'private, no-store';
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['KnowledgeSpaceList'];
+        };
+      };
+      400: components['responses']['BadRequest'];
+      401: components['responses']['Unauthenticated'];
+      403: components['responses']['Forbidden'];
+      404: components['responses']['NotFound'];
+      422: components['responses']['Validation'];
+      429: components['responses']['RateLimited'];
+    };
+  };
+  createKnowledgeSpace: {
+    parameters: {
+      query?: never;
+      header: {
+        /** @description Stable per intended command. Retain record at least 7 days; financial deduplication also retains a durable tenant+actor+operation+key digest receipt. Key is scoped to tenant+actor+operation. Reuse only for an identical request. */
+        'Idempotency-Key': components['parameters']['IdempotencyKey'];
+        /** @description Required for cookie-authenticated state changes; not required with bearer-only authentication. Invalid/missing token or Origin yields 403. Conditional requirement cannot be represented by OpenAPI required=true. */
+        'X-CSRF-Token'?: components['parameters']['Csrf'];
+        /** @description Required and checked against the deployment allowlist for cookie-authenticated state changes and browser public-form submissions/uploads. Never accept wildcard with credentialed requests. */
+        Origin?: components['parameters']['Origin'];
+      };
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+      };
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['KnowledgeSpaceCreate'];
+      };
+    };
+    responses: {
+      /** @description Successful result. */
+      201: {
+        headers: {
+          'X-Request-Id': components['headers']['RequestId'];
+          ETag: components['headers']['ETag'];
+          'Idempotency-Replayed': components['headers']['IdempotencyReplayed'];
+          /** @description Never cache authenticated, confidential or capability-bearing API responses in shared caches. */
+          'Cache-Control'?: 'private, no-store';
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['KnowledgeSpace'];
+        };
+      };
+      400: components['responses']['BadRequest'];
+      401: components['responses']['Unauthenticated'];
+      403: components['responses']['Forbidden'];
+      404: components['responses']['NotFound'];
+      409: components['responses']['Conflict'];
+      422: components['responses']['Validation'];
+      429: components['responses']['RateLimited'];
+    };
+  };
+  listKnowledgeSpaceTemplates: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Successful result. */
+      200: {
+        headers: {
+          'X-Request-Id': components['headers']['RequestId'];
+          /** @description Never cache authenticated, confidential or capability-bearing API responses in shared caches. */
+          'Cache-Control'?: 'private, no-store';
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['KnowledgeSpaceTemplateList'];
+        };
+      };
+      400: components['responses']['BadRequest'];
+      401: components['responses']['Unauthenticated'];
+      403: components['responses']['Forbidden'];
+      404: components['responses']['NotFound'];
+      422: components['responses']['Validation'];
+      429: components['responses']['RateLimited'];
+    };
+  };
+  updateKnowledgeSpace: {
+    parameters: {
+      query?: never;
+      header: {
+        /** @description Stable per intended command. Retain record at least 7 days; financial deduplication also retains a durable tenant+actor+operation+key digest receipt. Key is scoped to tenant+actor+operation. Reuse only for an identical request. */
+        'Idempotency-Key': components['parameters']['IdempotencyKey'];
+        /** @description Required for cookie-authenticated state changes; not required with bearer-only authentication. Invalid/missing token or Origin yields 403. Conditional requirement cannot be represented by OpenAPI required=true. */
+        'X-CSRF-Token'?: components['parameters']['Csrf'];
+        /** @description Required and checked against the deployment allowlist for cookie-authenticated state changes and browser public-form submissions/uploads. Never accept wildcard with credentialed requests. */
+        Origin?: components['parameters']['Origin'];
+        /** @description Strong ETag obtained from latest GET or mutation response. * is not accepted. Missing=428; stale=412. Idempotent replay is checked before current revision precondition. */
+        'If-Match': components['parameters']['IfMatch'];
+      };
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+        /** @description W4.04. Opaque UUID of a knowledge space; a space the member does not see — 404, as a missing one. */
+        spaceId: components['parameters']['spaceId'];
+      };
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['KnowledgeSpacePatch'];
+      };
+    };
+    responses: {
+      /** @description Successful result. */
+      200: {
+        headers: {
+          'X-Request-Id': components['headers']['RequestId'];
+          ETag: components['headers']['ETag'];
+          'Idempotency-Replayed': components['headers']['IdempotencyReplayed'];
+          /** @description Never cache authenticated, confidential or capability-bearing API responses in shared caches. */
+          'Cache-Control'?: 'private, no-store';
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['KnowledgeSpaceChange'];
+        };
+      };
+      400: components['responses']['BadRequest'];
+      401: components['responses']['Unauthenticated'];
+      403: components['responses']['Forbidden'];
+      404: components['responses']['NotFound'];
+      409: components['responses']['Conflict'];
+      412: components['responses']['PreconditionFailed'];
+      422: components['responses']['Validation'];
+      428: components['responses']['PreconditionRequired'];
+      429: components['responses']['RateLimited'];
+    };
+  };
+  getKnowledgeSpaceTree: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+        /** @description W4.04. Opaque UUID of a knowledge space; a space the member does not see — 404, as a missing one. */
+        spaceId: components['parameters']['spaceId'];
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Successful result. */
+      200: {
+        headers: {
+          'X-Request-Id': components['headers']['RequestId'];
+          /** @description Never cache authenticated, confidential or capability-bearing API responses in shared caches. */
+          'Cache-Control'?: 'private, no-store';
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['KnowledgeTree'];
+        };
+      };
+      400: components['responses']['BadRequest'];
+      401: components['responses']['Unauthenticated'];
+      403: components['responses']['Forbidden'];
+      404: components['responses']['NotFound'];
+      422: components['responses']['Validation'];
+      429: components['responses']['RateLimited'];
+    };
+  };
+  searchKnowledge: {
+    parameters: {
+      query: {
+        /** @description W4.04. Text to find: at least 2 characters after trimming. */
+        q: string;
+        /** @description W4.04. Only the nodes of this space («Найти в пространстве»). */
+        spaceId?: components['schemas']['Id'];
+      };
+      header?: never;
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Successful result. */
+      200: {
+        headers: {
+          'X-Request-Id': components['headers']['RequestId'];
+          /** @description Never cache authenticated, confidential or capability-bearing API responses in shared caches. */
+          'Cache-Control'?: 'private, no-store';
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['KnowledgeSearchResult'];
+        };
+      };
+      400: components['responses']['BadRequest'];
+      401: components['responses']['Unauthenticated'];
+      403: components['responses']['Forbidden'];
+      404: components['responses']['NotFound'];
+      422: components['responses']['Validation'];
+      429: components['responses']['RateLimited'];
+    };
+  };
+  createKnowledgeNode: {
+    parameters: {
+      query?: never;
+      header: {
+        /** @description Stable per intended command. Retain record at least 7 days; financial deduplication also retains a durable tenant+actor+operation+key digest receipt. Key is scoped to tenant+actor+operation. Reuse only for an identical request. */
+        'Idempotency-Key': components['parameters']['IdempotencyKey'];
+        /** @description Required for cookie-authenticated state changes; not required with bearer-only authentication. Invalid/missing token or Origin yields 403. Conditional requirement cannot be represented by OpenAPI required=true. */
+        'X-CSRF-Token'?: components['parameters']['Csrf'];
+        /** @description Required and checked against the deployment allowlist for cookie-authenticated state changes and browser public-form submissions/uploads. Never accept wildcard with credentialed requests. */
+        Origin?: components['parameters']['Origin'];
+      };
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+        /** @description W4.04. Opaque UUID of a knowledge space; a space the member does not see — 404, as a missing one. */
+        spaceId: components['parameters']['spaceId'];
+      };
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['KnowledgeNodeCreate'];
+      };
+    };
+    responses: {
+      /** @description Successful result. */
+      201: {
+        headers: {
+          'X-Request-Id': components['headers']['RequestId'];
+          ETag: components['headers']['ETag'];
+          'Idempotency-Replayed': components['headers']['IdempotencyReplayed'];
+          /** @description Never cache authenticated, confidential or capability-bearing API responses in shared caches. */
+          'Cache-Control'?: 'private, no-store';
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['KnowledgeNode'];
+        };
+      };
+      400: components['responses']['BadRequest'];
+      401: components['responses']['Unauthenticated'];
+      403: components['responses']['Forbidden'];
+      404: components['responses']['NotFound'];
+      409: components['responses']['Conflict'];
+      422: components['responses']['Validation'];
+      429: components['responses']['RateLimited'];
+    };
+  };
+  getKnowledgeNode: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+        /** @description W4.04. Opaque UUID of a node of the knowledge tree (page, folder, table, diagram, file, CRM record); a node the member does not see — 404 «Страница не найдена или недоступна», as a missing one. */
+        nodeId: components['parameters']['nodeId'];
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Successful result. */
+      200: {
+        headers: {
+          'X-Request-Id': components['headers']['RequestId'];
+          ETag: components['headers']['ETag'];
+          /** @description Never cache authenticated, confidential or capability-bearing API responses in shared caches. */
+          'Cache-Control'?: 'private, no-store';
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['KnowledgeNode'];
+        };
+      };
+      400: components['responses']['BadRequest'];
+      401: components['responses']['Unauthenticated'];
+      403: components['responses']['Forbidden'];
+      404: components['responses']['NotFound'];
+      422: components['responses']['Validation'];
+      429: components['responses']['RateLimited'];
+    };
+  };
+  publishKnowledgeNodeVersion: {
+    parameters: {
+      query?: never;
+      header: {
+        /** @description Stable per intended command. Retain record at least 7 days; financial deduplication also retains a durable tenant+actor+operation+key digest receipt. Key is scoped to tenant+actor+operation. Reuse only for an identical request. */
+        'Idempotency-Key': components['parameters']['IdempotencyKey'];
+        /** @description Required for cookie-authenticated state changes; not required with bearer-only authentication. Invalid/missing token or Origin yields 403. Conditional requirement cannot be represented by OpenAPI required=true. */
+        'X-CSRF-Token'?: components['parameters']['Csrf'];
+        /** @description Required and checked against the deployment allowlist for cookie-authenticated state changes and browser public-form submissions/uploads. Never accept wildcard with credentialed requests. */
+        Origin?: components['parameters']['Origin'];
+        /** @description Strong ETag obtained from latest GET or mutation response. * is not accepted. Missing=428; stale=412. Idempotent replay is checked before current revision precondition. */
+        'If-Match': components['parameters']['IfMatch'];
+      };
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+        /** @description W4.04. Opaque UUID of a node of the knowledge tree (page, folder, table, diagram, file, CRM record); a node the member does not see — 404 «Страница не найдена или недоступна», as a missing one. */
+        nodeId: components['parameters']['nodeId'];
+      };
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['KnowledgePublish'];
+      };
+    };
+    responses: {
+      /** @description Successful result. */
+      201: {
+        headers: {
+          'X-Request-Id': components['headers']['RequestId'];
+          ETag: components['headers']['ETag'];
+          'Idempotency-Replayed': components['headers']['IdempotencyReplayed'];
+          /** @description Never cache authenticated, confidential or capability-bearing API responses in shared caches. */
+          'Cache-Control'?: 'private, no-store';
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['KnowledgePublishResult'];
+        };
+      };
+      400: components['responses']['BadRequest'];
+      401: components['responses']['Unauthenticated'];
+      403: components['responses']['Forbidden'];
+      404: components['responses']['NotFound'];
+      409: components['responses']['Conflict'];
+      412: components['responses']['PreconditionFailed'];
+      422: components['responses']['Validation'];
+      428: components['responses']['PreconditionRequired'];
+      429: components['responses']['RateLimited'];
+    };
+  };
+  getKnowledgeNodeVersion: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+        /** @description W4.04. Opaque UUID of a node of the knowledge tree (page, folder, table, diagram, file, CRM record); a node the member does not see — 404 «Страница не найдена или недоступна», as a missing one. */
+        nodeId: components['parameters']['nodeId'];
+        /** @description W4.04. Number of a version of the node (KnowledgeVersion.version). */
+        version: components['parameters']['nodeVersion'];
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Successful result. */
+      200: {
+        headers: {
+          'X-Request-Id': components['headers']['RequestId'];
+          /** @description Never cache authenticated, confidential or capability-bearing API responses in shared caches. */
+          'Cache-Control'?: 'private, no-store';
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['KnowledgeVersion'];
+        };
+      };
+      400: components['responses']['BadRequest'];
+      401: components['responses']['Unauthenticated'];
+      403: components['responses']['Forbidden'];
+      404: components['responses']['NotFound'];
+      422: components['responses']['Validation'];
+      429: components['responses']['RateLimited'];
+    };
+  };
+  setKnowledgeNodeStatus: {
+    parameters: {
+      query?: never;
+      header: {
+        /** @description Stable per intended command. Retain record at least 7 days; financial deduplication also retains a durable tenant+actor+operation+key digest receipt. Key is scoped to tenant+actor+operation. Reuse only for an identical request. */
+        'Idempotency-Key': components['parameters']['IdempotencyKey'];
+        /** @description Required for cookie-authenticated state changes; not required with bearer-only authentication. Invalid/missing token or Origin yields 403. Conditional requirement cannot be represented by OpenAPI required=true. */
+        'X-CSRF-Token'?: components['parameters']['Csrf'];
+        /** @description Required and checked against the deployment allowlist for cookie-authenticated state changes and browser public-form submissions/uploads. Never accept wildcard with credentialed requests. */
+        Origin?: components['parameters']['Origin'];
+      };
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+        /** @description W4.04. Opaque UUID of a node of the knowledge tree (page, folder, table, diagram, file, CRM record); a node the member does not see — 404 «Страница не найдена или недоступна», as a missing one. */
+        nodeId: components['parameters']['nodeId'];
+      };
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['KnowledgeNodeStatusChange'];
+      };
+    };
+    responses: {
+      /** @description Successful result. */
+      200: {
+        headers: {
+          'X-Request-Id': components['headers']['RequestId'];
+          ETag: components['headers']['ETag'];
+          'Idempotency-Replayed': components['headers']['IdempotencyReplayed'];
+          /** @description Never cache authenticated, confidential or capability-bearing API responses in shared caches. */
+          'Cache-Control'?: 'private, no-store';
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['KnowledgeNode'];
+        };
+      };
+      400: components['responses']['BadRequest'];
+      401: components['responses']['Unauthenticated'];
+      403: components['responses']['Forbidden'];
+      404: components['responses']['NotFound'];
+      409: components['responses']['Conflict'];
+      422: components['responses']['Validation'];
+      429: components['responses']['RateLimited'];
+    };
+  };
+  moveKnowledgeNode: {
+    parameters: {
+      query?: never;
+      header: {
+        /** @description Stable per intended command. Retain record at least 7 days; financial deduplication also retains a durable tenant+actor+operation+key digest receipt. Key is scoped to tenant+actor+operation. Reuse only for an identical request. */
+        'Idempotency-Key': components['parameters']['IdempotencyKey'];
+        /** @description Required for cookie-authenticated state changes; not required with bearer-only authentication. Invalid/missing token or Origin yields 403. Conditional requirement cannot be represented by OpenAPI required=true. */
+        'X-CSRF-Token'?: components['parameters']['Csrf'];
+        /** @description Required and checked against the deployment allowlist for cookie-authenticated state changes and browser public-form submissions/uploads. Never accept wildcard with credentialed requests. */
+        Origin?: components['parameters']['Origin'];
+      };
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+        /** @description W4.04. Opaque UUID of a node of the knowledge tree (page, folder, table, diagram, file, CRM record); a node the member does not see — 404 «Страница не найдена или недоступна», as a missing one. */
+        nodeId: components['parameters']['nodeId'];
+      };
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['KnowledgeMove'];
+      };
+    };
+    responses: {
+      /** @description Successful result. */
+      200: {
+        headers: {
+          'X-Request-Id': components['headers']['RequestId'];
+          'Idempotency-Replayed': components['headers']['IdempotencyReplayed'];
+          /** @description Never cache authenticated, confidential or capability-bearing API responses in shared caches. */
+          'Cache-Control'?: 'private, no-store';
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['KnowledgeMoveResult'];
+        };
+      };
+      400: components['responses']['BadRequest'];
+      401: components['responses']['Unauthenticated'];
+      403: components['responses']['Forbidden'];
+      404: components['responses']['NotFound'];
+      409: components['responses']['Conflict'];
+      422: components['responses']['Validation'];
+      429: components['responses']['RateLimited'];
+    };
+  };
+  archiveKnowledgeNode: {
+    parameters: {
+      query?: never;
+      header: {
+        /** @description Stable per intended command. Retain record at least 7 days; financial deduplication also retains a durable tenant+actor+operation+key digest receipt. Key is scoped to tenant+actor+operation. Reuse only for an identical request. */
+        'Idempotency-Key': components['parameters']['IdempotencyKey'];
+        /** @description Required for cookie-authenticated state changes; not required with bearer-only authentication. Invalid/missing token or Origin yields 403. Conditional requirement cannot be represented by OpenAPI required=true. */
+        'X-CSRF-Token'?: components['parameters']['Csrf'];
+        /** @description Required and checked against the deployment allowlist for cookie-authenticated state changes and browser public-form submissions/uploads. Never accept wildcard with credentialed requests. */
+        Origin?: components['parameters']['Origin'];
+      };
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+        /** @description W4.04. Opaque UUID of a node of the knowledge tree (page, folder, table, diagram, file, CRM record); a node the member does not see — 404 «Страница не найдена или недоступна», as a missing one. */
+        nodeId: components['parameters']['nodeId'];
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Successful result. */
+      200: {
+        headers: {
+          'X-Request-Id': components['headers']['RequestId'];
+          'Idempotency-Replayed': components['headers']['IdempotencyReplayed'];
+          /** @description Never cache authenticated, confidential or capability-bearing API responses in shared caches. */
+          'Cache-Control'?: 'private, no-store';
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['KnowledgeArchiveResult'];
+        };
+      };
+      400: components['responses']['BadRequest'];
+      401: components['responses']['Unauthenticated'];
+      403: components['responses']['Forbidden'];
+      404: components['responses']['NotFound'];
+      409: components['responses']['Conflict'];
+      422: components['responses']['Validation'];
+      429: components['responses']['RateLimited'];
+    };
+  };
+  restoreKnowledgeNode: {
+    parameters: {
+      query?: never;
+      header: {
+        /** @description Stable per intended command. Retain record at least 7 days; financial deduplication also retains a durable tenant+actor+operation+key digest receipt. Key is scoped to tenant+actor+operation. Reuse only for an identical request. */
+        'Idempotency-Key': components['parameters']['IdempotencyKey'];
+        /** @description Required for cookie-authenticated state changes; not required with bearer-only authentication. Invalid/missing token or Origin yields 403. Conditional requirement cannot be represented by OpenAPI required=true. */
+        'X-CSRF-Token'?: components['parameters']['Csrf'];
+        /** @description Required and checked against the deployment allowlist for cookie-authenticated state changes and browser public-form submissions/uploads. Never accept wildcard with credentialed requests. */
+        Origin?: components['parameters']['Origin'];
+      };
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+        /** @description W4.04. Opaque UUID of a node of the knowledge tree (page, folder, table, diagram, file, CRM record); a node the member does not see — 404 «Страница не найдена или недоступна», as a missing one. */
+        nodeId: components['parameters']['nodeId'];
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Successful result. */
+      200: {
+        headers: {
+          'X-Request-Id': components['headers']['RequestId'];
+          'Idempotency-Replayed': components['headers']['IdempotencyReplayed'];
+          /** @description Never cache authenticated, confidential or capability-bearing API responses in shared caches. */
+          'Cache-Control'?: 'private, no-store';
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['KnowledgeArchiveResult'];
+        };
+      };
+      400: components['responses']['BadRequest'];
+      401: components['responses']['Unauthenticated'];
+      403: components['responses']['Forbidden'];
+      404: components['responses']['NotFound'];
+      409: components['responses']['Conflict'];
+      422: components['responses']['Validation'];
+      429: components['responses']['RateLimited'];
+    };
+  };
+  listKnowledgeArchive: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+        /** @description W4.04. Opaque UUID of a knowledge space; a space the member does not see — 404, as a missing one. */
+        spaceId: components['parameters']['spaceId'];
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Successful result. */
+      200: {
+        headers: {
+          'X-Request-Id': components['headers']['RequestId'];
+          /** @description Never cache authenticated, confidential or capability-bearing API responses in shared caches. */
+          'Cache-Control'?: 'private, no-store';
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['KnowledgeArchiveList'];
+        };
+      };
+      400: components['responses']['BadRequest'];
+      401: components['responses']['Unauthenticated'];
+      403: components['responses']['Forbidden'];
+      404: components['responses']['NotFound'];
+      422: components['responses']['Validation'];
+      429: components['responses']['RateLimited'];
+    };
+  };
+  ackKnowledgeNode: {
+    parameters: {
+      query?: never;
+      header: {
+        /** @description Stable per intended command. Retain record at least 7 days; financial deduplication also retains a durable tenant+actor+operation+key digest receipt. Key is scoped to tenant+actor+operation. Reuse only for an identical request. */
+        'Idempotency-Key': components['parameters']['IdempotencyKey'];
+        /** @description Required for cookie-authenticated state changes; not required with bearer-only authentication. Invalid/missing token or Origin yields 403. Conditional requirement cannot be represented by OpenAPI required=true. */
+        'X-CSRF-Token'?: components['parameters']['Csrf'];
+        /** @description Required and checked against the deployment allowlist for cookie-authenticated state changes and browser public-form submissions/uploads. Never accept wildcard with credentialed requests. */
+        Origin?: components['parameters']['Origin'];
+      };
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+        /** @description W4.04. Opaque UUID of a node of the knowledge tree (page, folder, table, diagram, file, CRM record); a node the member does not see — 404 «Страница не найдена или недоступна», as a missing one. */
+        nodeId: components['parameters']['nodeId'];
+      };
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['KnowledgeAckCreate'];
+      };
+    };
+    responses: {
+      /** @description Successful result. */
+      200: {
+        headers: {
+          'X-Request-Id': components['headers']['RequestId'];
+          'Idempotency-Replayed': components['headers']['IdempotencyReplayed'];
+          /** @description Never cache authenticated, confidential or capability-bearing API responses in shared caches. */
+          'Cache-Control'?: 'private, no-store';
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['KnowledgeAck'];
+        };
+      };
+      400: components['responses']['BadRequest'];
+      401: components['responses']['Unauthenticated'];
+      403: components['responses']['Forbidden'];
+      404: components['responses']['NotFound'];
+      409: components['responses']['Conflict'];
+      422: components['responses']['Validation'];
+      429: components['responses']['RateLimited'];
+    };
+  };
+  getKnowledgeNodeAccess: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+        /** @description W4.04. Opaque UUID of a node of the knowledge tree (page, folder, table, diagram, file, CRM record); a node the member does not see — 404 «Страница не найдена или недоступна», as a missing one. */
+        nodeId: components['parameters']['nodeId'];
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Successful result. */
+      200: {
+        headers: {
+          'X-Request-Id': components['headers']['RequestId'];
+          ETag: components['headers']['ETag'];
+          /** @description Never cache authenticated, confidential or capability-bearing API responses in shared caches. */
+          'Cache-Control'?: 'private, no-store';
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['KnowledgeNodeAccess'];
+        };
+      };
+      400: components['responses']['BadRequest'];
+      401: components['responses']['Unauthenticated'];
+      403: components['responses']['Forbidden'];
+      404: components['responses']['NotFound'];
+      422: components['responses']['Validation'];
+      429: components['responses']['RateLimited'];
+    };
+  };
+  setKnowledgeNodeAccess: {
+    parameters: {
+      query?: never;
+      header: {
+        /** @description Stable per intended command. Retain record at least 7 days; financial deduplication also retains a durable tenant+actor+operation+key digest receipt. Key is scoped to tenant+actor+operation. Reuse only for an identical request. */
+        'Idempotency-Key': components['parameters']['IdempotencyKey'];
+        /** @description Required for cookie-authenticated state changes; not required with bearer-only authentication. Invalid/missing token or Origin yields 403. Conditional requirement cannot be represented by OpenAPI required=true. */
+        'X-CSRF-Token'?: components['parameters']['Csrf'];
+        /** @description Required and checked against the deployment allowlist for cookie-authenticated state changes and browser public-form submissions/uploads. Never accept wildcard with credentialed requests. */
+        Origin?: components['parameters']['Origin'];
+        /** @description Strong ETag obtained from latest GET or mutation response. * is not accepted. Missing=428; stale=412. Idempotent replay is checked before current revision precondition. */
+        'If-Match': components['parameters']['IfMatch'];
+      };
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+        /** @description W4.04. Opaque UUID of a node of the knowledge tree (page, folder, table, diagram, file, CRM record); a node the member does not see — 404 «Страница не найдена или недоступна», as a missing one. */
+        nodeId: components['parameters']['nodeId'];
+      };
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['KnowledgeAccessChange'];
+      };
+    };
+    responses: {
+      /** @description Successful result. */
+      200: {
+        headers: {
+          'X-Request-Id': components['headers']['RequestId'];
+          ETag: components['headers']['ETag'];
+          'Idempotency-Replayed': components['headers']['IdempotencyReplayed'];
+          /** @description Never cache authenticated, confidential or capability-bearing API responses in shared caches. */
+          'Cache-Control'?: 'private, no-store';
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['KnowledgeAccessImpact'];
+        };
+      };
+      400: components['responses']['BadRequest'];
+      401: components['responses']['Unauthenticated'];
+      403: components['responses']['Forbidden'];
+      404: components['responses']['NotFound'];
+      409: components['responses']['Conflict'];
+      412: components['responses']['PreconditionFailed'];
+      422: components['responses']['Validation'];
+      428: components['responses']['PreconditionRequired'];
+      429: components['responses']['RateLimited'];
+    };
+  };
+  listKnowledgeAccessCandidates: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+        /** @description W4.04. Opaque UUID of a node of the knowledge tree (page, folder, table, diagram, file, CRM record); a node the member does not see — 404 «Страница не найдена или недоступна», as a missing one. */
+        nodeId: components['parameters']['nodeId'];
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Successful result. */
+      200: {
+        headers: {
+          'X-Request-Id': components['headers']['RequestId'];
+          /** @description Never cache authenticated, confidential or capability-bearing API responses in shared caches. */
+          'Cache-Control'?: 'private, no-store';
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['KnowledgeAccessCandidateList'];
+        };
+      };
+      400: components['responses']['BadRequest'];
+      401: components['responses']['Unauthenticated'];
+      403: components['responses']['Forbidden'];
+      404: components['responses']['NotFound'];
+      422: components['responses']['Validation'];
+      429: components['responses']['RateLimited'];
+    };
+  };
+  getKnowledgeAccessMap: {
+    parameters: {
+      query?: {
+        /** @description W4.04. Columns of the map: up to 8 employees, comma-separated; default — the first 8 employees with access. */
+        memberIds?: components['schemas']['Id'][];
+      };
+      header?: never;
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+        /** @description W4.04. Opaque UUID of a knowledge space; a space the member does not see — 404, as a missing one. */
+        spaceId: components['parameters']['spaceId'];
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Successful result. */
+      200: {
+        headers: {
+          'X-Request-Id': components['headers']['RequestId'];
+          /** @description Never cache authenticated, confidential or capability-bearing API responses in shared caches. */
+          'Cache-Control'?: 'private, no-store';
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['KnowledgeAccessMap'];
+        };
+      };
+      400: components['responses']['BadRequest'];
+      401: components['responses']['Unauthenticated'];
+      403: components['responses']['Forbidden'];
+      404: components['responses']['NotFound'];
+      422: components['responses']['Validation'];
+      429: components['responses']['RateLimited'];
+    };
+  };
+  explainKnowledgeAccess: {
+    parameters: {
+      query: {
+        /** @description W4.04. The employee whose access is explained. */
+        memberId: components['schemas']['Id'];
+      };
+      header?: never;
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+        /** @description W4.04. Opaque UUID of a node of the knowledge tree (page, folder, table, diagram, file, CRM record); a node the member does not see — 404 «Страница не найдена или недоступна», as a missing one. */
+        nodeId: components['parameters']['nodeId'];
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Successful result. */
+      200: {
+        headers: {
+          'X-Request-Id': components['headers']['RequestId'];
+          /** @description Never cache authenticated, confidential or capability-bearing API responses in shared caches. */
+          'Cache-Control'?: 'private, no-store';
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['KnowledgeAccessExplanation'];
+        };
+      };
+      400: components['responses']['BadRequest'];
+      401: components['responses']['Unauthenticated'];
+      403: components['responses']['Forbidden'];
+      404: components['responses']['NotFound'];
+      422: components['responses']['Validation'];
+      429: components['responses']['RateLimited'];
+    };
+  };
+  createKnowledgeAccessRequest: {
+    parameters: {
+      query?: never;
+      header: {
+        /** @description Stable per intended command. Retain record at least 7 days; financial deduplication also retains a durable tenant+actor+operation+key digest receipt. Key is scoped to tenant+actor+operation. Reuse only for an identical request. */
+        'Idempotency-Key': components['parameters']['IdempotencyKey'];
+        /** @description Required for cookie-authenticated state changes; not required with bearer-only authentication. Invalid/missing token or Origin yields 403. Conditional requirement cannot be represented by OpenAPI required=true. */
+        'X-CSRF-Token'?: components['parameters']['Csrf'];
+        /** @description Required and checked against the deployment allowlist for cookie-authenticated state changes and browser public-form submissions/uploads. Never accept wildcard with credentialed requests. */
+        Origin?: components['parameters']['Origin'];
+      };
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+        /** @description W4.04. Opaque UUID of a node of the knowledge tree (page, folder, table, diagram, file, CRM record); a node the member does not see — 404 «Страница не найдена или недоступна», as a missing one. */
+        nodeId: components['parameters']['nodeId'];
+      };
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['KnowledgeAccessRequestCreate'];
+      };
+    };
+    responses: {
+      /** @description Successful result. */
+      201: {
+        headers: {
+          'X-Request-Id': components['headers']['RequestId'];
+          'Idempotency-Replayed': components['headers']['IdempotencyReplayed'];
+          /** @description Never cache authenticated, confidential or capability-bearing API responses in shared caches. */
+          'Cache-Control'?: 'private, no-store';
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['KnowledgeAccessRequest'];
+        };
+      };
+      400: components['responses']['BadRequest'];
+      401: components['responses']['Unauthenticated'];
+      403: components['responses']['Forbidden'];
+      404: components['responses']['NotFound'];
+      409: components['responses']['Conflict'];
+      422: components['responses']['Validation'];
+      429: components['responses']['RateLimited'];
+    };
+  };
+  decideKnowledgeAccessRequest: {
+    parameters: {
+      query?: never;
+      header: {
+        /** @description Stable per intended command. Retain record at least 7 days; financial deduplication also retains a durable tenant+actor+operation+key digest receipt. Key is scoped to tenant+actor+operation. Reuse only for an identical request. */
+        'Idempotency-Key': components['parameters']['IdempotencyKey'];
+        /** @description Required for cookie-authenticated state changes; not required with bearer-only authentication. Invalid/missing token or Origin yields 403. Conditional requirement cannot be represented by OpenAPI required=true. */
+        'X-CSRF-Token'?: components['parameters']['Csrf'];
+        /** @description Required and checked against the deployment allowlist for cookie-authenticated state changes and browser public-form submissions/uploads. Never accept wildcard with credentialed requests. */
+        Origin?: components['parameters']['Origin'];
+      };
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        requestId: components['parameters']['requestId'];
+      };
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['KnowledgeAccessRequestDecision'];
+      };
+    };
+    responses: {
+      /** @description Successful result. */
+      200: {
+        headers: {
+          'X-Request-Id': components['headers']['RequestId'];
+          'Idempotency-Replayed': components['headers']['IdempotencyReplayed'];
+          /** @description Never cache authenticated, confidential or capability-bearing API responses in shared caches. */
+          'Cache-Control'?: 'private, no-store';
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['KnowledgeAccessRequest'];
+        };
+      };
+      400: components['responses']['BadRequest'];
+      401: components['responses']['Unauthenticated'];
+      403: components['responses']['Forbidden'];
+      404: components['responses']['NotFound'];
+      409: components['responses']['Conflict'];
+      422: components['responses']['Validation'];
+      429: components['responses']['RateLimited'];
+    };
+  };
+  listKnowledgeAccessRequests: {
+    parameters: {
+      query?: {
+        /** @description W4.04. State of the requests; default open. */
+        status?: 'open' | 'approved' | 'denied';
+      };
+      header?: never;
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+        /** @description W4.04. Opaque UUID of a knowledge space; a space the member does not see — 404, as a missing one. */
+        spaceId: components['parameters']['spaceId'];
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Successful result. */
+      200: {
+        headers: {
+          'X-Request-Id': components['headers']['RequestId'];
+          /** @description Never cache authenticated, confidential or capability-bearing API responses in shared caches. */
+          'Cache-Control'?: 'private, no-store';
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['KnowledgeAccessRequestList'];
+        };
+      };
+      400: components['responses']['BadRequest'];
+      401: components['responses']['Unauthenticated'];
+      403: components['responses']['Forbidden'];
+      404: components['responses']['NotFound'];
+      422: components['responses']['Validation'];
+      429: components['responses']['RateLimited'];
+    };
+  };
+  listKnowledgeSpaceMembers: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+        /** @description W4.04. Opaque UUID of a knowledge space; a space the member does not see — 404, as a missing one. */
+        spaceId: components['parameters']['spaceId'];
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Successful result. */
+      200: {
+        headers: {
+          'X-Request-Id': components['headers']['RequestId'];
+          /** @description Never cache authenticated, confidential or capability-bearing API responses in shared caches. */
+          'Cache-Control'?: 'private, no-store';
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['KnowledgeSpaceMembers'];
+        };
+      };
+      400: components['responses']['BadRequest'];
+      401: components['responses']['Unauthenticated'];
+      403: components['responses']['Forbidden'];
+      404: components['responses']['NotFound'];
+      422: components['responses']['Validation'];
+      429: components['responses']['RateLimited'];
+    };
+  };
+  setKnowledgeSpaceMember: {
+    parameters: {
+      query?: never;
+      header: {
+        /** @description Stable per intended command. Retain record at least 7 days; financial deduplication also retains a durable tenant+actor+operation+key digest receipt. Key is scoped to tenant+actor+operation. Reuse only for an identical request. */
+        'Idempotency-Key': components['parameters']['IdempotencyKey'];
+        /** @description Required for cookie-authenticated state changes; not required with bearer-only authentication. Invalid/missing token or Origin yields 403. Conditional requirement cannot be represented by OpenAPI required=true. */
+        'X-CSRF-Token'?: components['parameters']['Csrf'];
+        /** @description Required and checked against the deployment allowlist for cookie-authenticated state changes and browser public-form submissions/uploads. Never accept wildcard with credentialed requests. */
+        Origin?: components['parameters']['Origin'];
+      };
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+        /** @description W4.04. Opaque UUID of a knowledge space; a space the member does not see — 404, as a missing one. */
+        spaceId: components['parameters']['spaceId'];
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        memberId: components['parameters']['memberId'];
+      };
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['KnowledgeSpaceMemberChange'];
+      };
+    };
+    responses: {
+      /** @description Successful result. */
+      200: {
+        headers: {
+          'X-Request-Id': components['headers']['RequestId'];
+          'Idempotency-Replayed': components['headers']['IdempotencyReplayed'];
+          /** @description Never cache authenticated, confidential or capability-bearing API responses in shared caches. */
+          'Cache-Control'?: 'private, no-store';
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['KnowledgeSpaceMembers'];
+        };
+      };
+      400: components['responses']['BadRequest'];
+      401: components['responses']['Unauthenticated'];
+      403: components['responses']['Forbidden'];
+      404: components['responses']['NotFound'];
+      409: components['responses']['Conflict'];
+      422: components['responses']['Validation'];
+      429: components['responses']['RateLimited'];
+    };
+  };
+  listKnowledgeRules: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+        /** @description W4.04. Opaque UUID of a knowledge space; a space the member does not see — 404, as a missing one. */
+        spaceId: components['parameters']['spaceId'];
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Successful result. */
+      200: {
+        headers: {
+          'X-Request-Id': components['headers']['RequestId'];
+          /** @description Never cache authenticated, confidential or capability-bearing API responses in shared caches. */
+          'Cache-Control'?: 'private, no-store';
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['KnowledgeRuleList'];
+        };
+      };
+      400: components['responses']['BadRequest'];
+      401: components['responses']['Unauthenticated'];
+      403: components['responses']['Forbidden'];
+      404: components['responses']['NotFound'];
+      422: components['responses']['Validation'];
+      429: components['responses']['RateLimited'];
+    };
+  };
+  setKnowledgeRuleEnabled: {
+    parameters: {
+      query?: never;
+      header: {
+        /** @description Stable per intended command. Retain record at least 7 days; financial deduplication also retains a durable tenant+actor+operation+key digest receipt. Key is scoped to tenant+actor+operation. Reuse only for an identical request. */
+        'Idempotency-Key': components['parameters']['IdempotencyKey'];
+        /** @description Required for cookie-authenticated state changes; not required with bearer-only authentication. Invalid/missing token or Origin yields 403. Conditional requirement cannot be represented by OpenAPI required=true. */
+        'X-CSRF-Token'?: components['parameters']['Csrf'];
+        /** @description Required and checked against the deployment allowlist for cookie-authenticated state changes and browser public-form submissions/uploads. Never accept wildcard with credentialed requests. */
+        Origin?: components['parameters']['Origin'];
+      };
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+        /** @description W4.04. Opaque UUID of an automation rule of a knowledge space; visible to the lead of the space only. */
+        ruleId: components['parameters']['ruleId'];
+      };
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['KnowledgeRulePatch'];
+      };
+    };
+    responses: {
+      /** @description Successful result. */
+      200: {
+        headers: {
+          'X-Request-Id': components['headers']['RequestId'];
+          'Idempotency-Replayed': components['headers']['IdempotencyReplayed'];
+          /** @description Never cache authenticated, confidential or capability-bearing API responses in shared caches. */
+          'Cache-Control'?: 'private, no-store';
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['KnowledgeRule'];
+        };
+      };
+      400: components['responses']['BadRequest'];
+      401: components['responses']['Unauthenticated'];
+      403: components['responses']['Forbidden'];
+      404: components['responses']['NotFound'];
+      409: components['responses']['Conflict'];
+      422: components['responses']['Validation'];
+      429: components['responses']['RateLimited'];
+    };
+  };
+  runKnowledgeReviewCheck: {
+    parameters: {
+      query?: never;
+      header: {
+        /** @description Stable per intended command. Retain record at least 7 days; financial deduplication also retains a durable tenant+actor+operation+key digest receipt. Key is scoped to tenant+actor+operation. Reuse only for an identical request. */
+        'Idempotency-Key': components['parameters']['IdempotencyKey'];
+        /** @description Required for cookie-authenticated state changes; not required with bearer-only authentication. Invalid/missing token or Origin yields 403. Conditional requirement cannot be represented by OpenAPI required=true. */
+        'X-CSRF-Token'?: components['parameters']['Csrf'];
+        /** @description Required and checked against the deployment allowlist for cookie-authenticated state changes and browser public-form submissions/uploads. Never accept wildcard with credentialed requests. */
+        Origin?: components['parameters']['Origin'];
+      };
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+        /** @description W4.04. Opaque UUID of a knowledge space; a space the member does not see — 404, as a missing one. */
+        spaceId: components['parameters']['spaceId'];
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Successful result. */
+      200: {
+        headers: {
+          'X-Request-Id': components['headers']['RequestId'];
+          'Idempotency-Replayed': components['headers']['IdempotencyReplayed'];
+          /** @description Never cache authenticated, confidential or capability-bearing API responses in shared caches. */
+          'Cache-Control'?: 'private, no-store';
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['KnowledgeRunReport'];
+        };
+      };
+      400: components['responses']['BadRequest'];
+      401: components['responses']['Unauthenticated'];
+      403: components['responses']['Forbidden'];
+      404: components['responses']['NotFound'];
+      409: components['responses']['Conflict'];
+      422: components['responses']['Validation'];
+      429: components['responses']['RateLimited'];
+    };
+  };
+  runKnowledgeSection: {
+    parameters: {
+      query?: never;
+      header: {
+        /** @description Stable per intended command. Retain record at least 7 days; financial deduplication also retains a durable tenant+actor+operation+key digest receipt. Key is scoped to tenant+actor+operation. Reuse only for an identical request. */
+        'Idempotency-Key': components['parameters']['IdempotencyKey'];
+        /** @description Required for cookie-authenticated state changes; not required with bearer-only authentication. Invalid/missing token or Origin yields 403. Conditional requirement cannot be represented by OpenAPI required=true. */
+        'X-CSRF-Token'?: components['parameters']['Csrf'];
+        /** @description Required and checked against the deployment allowlist for cookie-authenticated state changes and browser public-form submissions/uploads. Never accept wildcard with credentialed requests. */
+        Origin?: components['parameters']['Origin'];
+      };
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+        /** @description W4.04. Opaque UUID of a knowledge space; a space the member does not see — 404, as a missing one. */
+        spaceId: components['parameters']['spaceId'];
+      };
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['KnowledgeSectionCreate'];
+      };
+    };
+    responses: {
+      /** @description Successful result. */
+      200: {
+        headers: {
+          'X-Request-Id': components['headers']['RequestId'];
+          'Idempotency-Replayed': components['headers']['IdempotencyReplayed'];
+          /** @description Never cache authenticated, confidential or capability-bearing API responses in shared caches. */
+          'Cache-Control'?: 'private, no-store';
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['KnowledgeRunReport'];
+        };
+      };
+      400: components['responses']['BadRequest'];
+      401: components['responses']['Unauthenticated'];
+      403: components['responses']['Forbidden'];
+      404: components['responses']['NotFound'];
+      409: components['responses']['Conflict'];
+      422: components['responses']['Validation'];
+      429: components['responses']['RateLimited'];
+    };
+  };
+  listKnowledgeRuns: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+        /** @description W4.04. Opaque UUID of a knowledge space; a space the member does not see — 404, as a missing one. */
+        spaceId: components['parameters']['spaceId'];
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Successful result. */
+      200: {
+        headers: {
+          'X-Request-Id': components['headers']['RequestId'];
+          /** @description Never cache authenticated, confidential or capability-bearing API responses in shared caches. */
+          'Cache-Control'?: 'private, no-store';
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['KnowledgeRunList'];
+        };
+      };
+      400: components['responses']['BadRequest'];
+      401: components['responses']['Unauthenticated'];
+      403: components['responses']['Forbidden'];
+      404: components['responses']['NotFound'];
+      422: components['responses']['Validation'];
+      429: components['responses']['RateLimited'];
+    };
+  };
+  createKnowledgeTable: {
+    parameters: {
+      query?: never;
+      header: {
+        /** @description Stable per intended command. Retain record at least 7 days; financial deduplication also retains a durable tenant+actor+operation+key digest receipt. Key is scoped to tenant+actor+operation. Reuse only for an identical request. */
+        'Idempotency-Key': components['parameters']['IdempotencyKey'];
+        /** @description Required for cookie-authenticated state changes; not required with bearer-only authentication. Invalid/missing token or Origin yields 403. Conditional requirement cannot be represented by OpenAPI required=true. */
+        'X-CSRF-Token'?: components['parameters']['Csrf'];
+        /** @description Required and checked against the deployment allowlist for cookie-authenticated state changes and browser public-form submissions/uploads. Never accept wildcard with credentialed requests. */
+        Origin?: components['parameters']['Origin'];
+      };
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+        /** @description W4.04. Opaque UUID of a node of the knowledge tree (page, folder, table, diagram, file, CRM record); a node the member does not see — 404 «Страница не найдена или недоступна», as a missing one. */
+        nodeId: components['parameters']['nodeId'];
+      };
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['KnowledgeTableCreate'];
+      };
+    };
+    responses: {
+      /** @description Successful result. */
+      201: {
+        headers: {
+          'X-Request-Id': components['headers']['RequestId'];
+          'Idempotency-Replayed': components['headers']['IdempotencyReplayed'];
+          /** @description Never cache authenticated, confidential or capability-bearing API responses in shared caches. */
+          'Cache-Control'?: 'private, no-store';
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['KnowledgeTable'];
+        };
+      };
+      400: components['responses']['BadRequest'];
+      401: components['responses']['Unauthenticated'];
+      403: components['responses']['Forbidden'];
+      404: components['responses']['NotFound'];
+      409: components['responses']['Conflict'];
+      422: components['responses']['Validation'];
       429: components['responses']['RateLimited'];
     };
   };

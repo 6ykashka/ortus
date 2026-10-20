@@ -1,0 +1,46 @@
+{
+  "id": "bb2327dd-1958-5b40-8bb4-54cbb208cb7f",
+  "spaceId": "a3b6bc34-7307-58e7-990a-5513cd630786",
+  "parentId": "685e71a2-4c0b-57fa-9519-2b65031ed715",
+  "position": 3,
+  "kind": "page",
+  "title": "Выезд при критическом дефекте",
+  "status": "active",
+  "accessMode": "inherit",
+  "sensitivity": "normal",
+  "archived": false,
+  "version": 1,
+  "my": {
+    "edit": true,
+    "lead": true,
+    "create": true
+  },
+  "spaceName": "Логистика",
+  "path": [
+    {
+      "id": "685e71a2-4c0b-57fa-9519-2b65031ed715",
+      "title": "Регламенты"
+    }
+  ],
+  "owner": {
+    "memberId": "ac41932c-dbd9-53b1-a84b-42cbc1d6629a",
+    "displayName": "Марина Котова"
+  },
+  "reviewBy": null,
+  "current": {
+    "version": 1,
+    "publishedAt": "2026-09-19T21:00:00Z",
+    "authorDisplayName": "Марина Котова",
+    "body": "Если при осмотре отмечен критический дефект, выезд блокируется. Менеджер разрешает выезд или подтверждает неисправность и отправляет машину в ремонт."
+  },
+  "versions": [
+    {
+      "version": 1,
+      "publishedAt": "2026-09-19T21:00:00Z",
+      "authorDisplayName": "Марина Котова"
+    }
+  ],
+  "tables": [],
+  "entries": [],
+  "revision": 1
+}

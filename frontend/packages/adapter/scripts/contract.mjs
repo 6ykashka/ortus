@@ -28,9 +28,15 @@ export const STAGE2_TAGS = ['Fleet', 'Earnings', 'Home', 'Data'];
 /**
  * Теги экранов этапа 4: у операций этих тегов, которые вызывают экраны этапа 4 (screens.yaml, stage: 4), есть
  * хендлер src/msw/<модуль>/, примеры и кейсы conformance — «Календарь» (W4.06, calendar/), «Оформление» (W4.07,
- * branding/).
+ * branding/), «База знаний» (W4.04, knowledge/).
  */
-export const STAGE4_TAGS = ['Calendar', 'Branding'];
+export const STAGE4_TAGS = ['Calendar', 'Branding', 'Knowledge'];
+
+/**
+ * Операции этапа 4 без экрана в screens.yaml, у которых тоже есть хендлер, примеры и кейсы (W4.04): правка
+ * пространства (Q-W4.00-knowledge-17) и таблица на странице «Базы знаний» (ядро «Форм»).
+ */
+export const STAGE4_OFFSCREEN = ['updateKnowledgeSpace', 'createKnowledgeTable'];
 
 const METHODS = ['get', 'put', 'post', 'delete', 'patch'];
 const SAFE = new Set(['GET', 'HEAD', 'OPTIONS', 'TRACE']);
@@ -120,7 +126,9 @@ function operations(doc, onScreens = new Set(), onStage4 = new Set()) {
         tag: op.tags?.[0] ?? '',
         stage1: STAGE1_TAGS.includes(op.tags?.[0]),
         stage2: STAGE2_TAGS.includes(op.tags?.[0]) && onScreens.has(op.operationId),
-        stage4: STAGE4_TAGS.includes(op.tags?.[0]) && onStage4.has(op.operationId),
+        stage4:
+          STAGE4_TAGS.includes(op.tags?.[0]) &&
+          (onStage4.has(op.operationId) || STAGE4_OFFSCREEN.includes(op.operationId)),
         permissions: op['x-permissions'] ?? [],
         mode: op['x-permissions-mode'] ?? 'all',
         scope: op['x-scope'] ?? '',

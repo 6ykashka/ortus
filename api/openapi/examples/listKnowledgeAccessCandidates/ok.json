@@ -1,0 +1,260 @@
+{
+  "items": [
+    {
+      "entry": {
+        "who": "role",
+        "can": "view",
+        "refId": "ec7feec1-6f4d-54fb-9a58-63ab98c54aca",
+        "orgUnitId": "6de355d2-b019-5bb6-b66a-ddae6a13fb65"
+      },
+      "label": "Роль «Менеджер логистики» · «Север Логистик»",
+      "reach": {
+        "members": 0,
+        "total": 0,
+        "reason": null
+      },
+      "reachLabel": "— сейчас никого"
+    },
+    {
+      "entry": {
+        "who": "role",
+        "can": "view",
+        "refId": "2a857e38-2d94-51a0-81de-406de8b3c772",
+        "orgUnitId": "6de355d2-b019-5bb6-b66a-ddae6a13fb65"
+      },
+      "label": "Роль «Водитель» · «Север Логистик»",
+      "reach": {
+        "members": 1,
+        "total": 1,
+        "reason": null
+      },
+      "reachLabel": ""
+    },
+    {
+      "entry": {
+        "who": "role",
+        "can": "view",
+        "refId": "82ab2491-f90d-5be3-8ae0-5cd0196d94d8",
+        "orgUnitId": "6de355d2-b019-5bb6-b66a-ddae6a13fb65"
+      },
+      "label": "Роль «Массажист» · «Север Логистик»",
+      "reach": {
+        "members": 0,
+        "total": 0,
+        "reason": null
+      },
+      "reachLabel": "— сейчас никого"
+    },
+    {
+      "entry": {
+        "who": "role",
+        "can": "view",
+        "refId": "bbc56a08-74b3-5118-bd78-9e9f85d37f33",
+        "orgUnitId": "6de355d2-b019-5bb6-b66a-ddae6a13fb65"
+      },
+      "label": "Роль «Прораб» · «Север Логистик»",
+      "reach": {
+        "members": 0,
+        "total": 0,
+        "reason": null
+      },
+      "reachLabel": "— сейчас никого"
+    },
+    {
+      "entry": {
+        "who": "role",
+        "can": "view",
+        "refId": "c813124c-4173-52e5-99f6-6ae27d703ec6"
+      },
+      "label": "Роль «Руководитель пространства» в пространстве",
+      "reach": {
+        "members": 1,
+        "total": 1,
+        "reason": null
+      },
+      "reachLabel": ""
+    },
+    {
+      "entry": {
+        "who": "role",
+        "can": "view",
+        "refId": "2688205d-9d70-5eaa-a2a8-cb405fe282cb"
+      },
+      "label": "Роль «Редактор» в пространстве",
+      "reach": {
+        "members": 1,
+        "total": 1,
+        "reason": null
+      },
+      "reachLabel": ""
+    },
+    {
+      "entry": {
+        "who": "role",
+        "can": "view",
+        "refId": "bcc10ec9-6ca5-5075-acb7-5031e06adf97"
+      },
+      "label": "Роль «Читатель» в пространстве",
+      "reach": {
+        "members": 0,
+        "total": 0,
+        "reason": null
+      },
+      "reachLabel": "— сейчас никого"
+    },
+    {
+      "entry": {
+        "who": "group",
+        "can": "view",
+        "refId": "ffdc7501-0a74-5af4-950b-894aeb64d658"
+      },
+      "label": "Группа «Диспетчеры Север»",
+      "reach": {
+        "members": 1,
+        "total": 2,
+        "reason": "нет роли в области «фирма «Север Логистик»» и не участник пространства"
+      },
+      "reachLabel": "— получат 1 из 2"
+    },
+    {
+      "entry": {
+        "who": "group",
+        "can": "view",
+        "refId": "ce9dd6e5-dcb8-5d08-ad94-53c3155b3d14"
+      },
+      "label": "Группа «Водители Север»",
+      "reach": {
+        "members": 1,
+        "total": 1,
+        "reason": null
+      },
+      "reachLabel": ""
+    },
+    {
+      "entry": {
+        "who": "member",
+        "refId": "b8df06ec-317e-5f46-b54c-e76603e41b5b",
+        "can": "view"
+      },
+      "label": "Дарья Зимина",
+      "reach": {
+        "members": 1,
+        "total": 1,
+        "reason": null
+      },
+      "reachLabel": ""
+    },
+    {
+      "entry": {
+        "who": "member",
+        "refId": "ac41932c-dbd9-53b1-a84b-42cbc1d6629a",
+        "can": "view"
+      },
+      "label": "Марина Котова",
+      "reach": {
+        "members": 1,
+        "total": 1,
+        "reason": null
+      },
+      "reachLabel": ""
+    },
+    {
+      "entry": {
+        "who": "member",
+        "refId": "a560b4fe-78b7-585e-b960-f0ab3622570c",
+        "can": "view"
+      },
+      "label": "Илья Васильев",
+      "reach": {
+        "members": 1,
+        "total": 1,
+        "reason": null
+      },
+      "reachLabel": ""
+    },
+    {
+      "entry": {
+        "who": "member",
+        "refId": "25097109-efb6-5471-880f-7a01ee6615a0",
+        "can": "view"
+      },
+      "label": "Анна Морозова",
+      "reach": {
+        "members": 0,
+        "total": 1,
+        "reason": "нет роли в области «фирма «Север Логистик»» и не участник пространства"
+      },
+      "reachLabel": "— не получит доступ: нет роли в области «фирма «Север Логистик»» и не участник пространства"
+    },
+    {
+      "entry": {
+        "who": "member",
+        "refId": "ebdf9767-327e-55cc-8c65-cb5fd313bdf4",
+        "can": "view"
+      },
+      "label": "Алексей Соколов",
+      "reach": {
+        "members": 0,
+        "total": 1,
+        "reason": "нет роли в области «фирма «Север Логистик»» и не участник пространства"
+      },
+      "reachLabel": "— не получит доступ: нет роли в области «фирма «Север Логистик»» и не участник пространства"
+    },
+    {
+      "entry": {
+        "who": "member",
+        "refId": "5f46d721-04b7-5e52-9f86-14c5bdfcf6aa",
+        "can": "view"
+      },
+      "label": "Олеся Петрова",
+      "reach": {
+        "members": 0,
+        "total": 1,
+        "reason": "нет роли в области «фирма «Север Логистик»» и не участник пространства"
+      },
+      "reachLabel": "— не получит доступ: нет роли в области «фирма «Север Логистик»» и не участник пространства"
+    },
+    {
+      "entry": {
+        "who": "member",
+        "refId": "ea845988-640e-5506-9303-1cbfc3dede0d",
+        "can": "view"
+      },
+      "label": "Вера Котельникова",
+      "reach": {
+        "members": 1,
+        "total": 1,
+        "reason": null
+      },
+      "reachLabel": ""
+    },
+    {
+      "entry": {
+        "who": "member",
+        "refId": "1a544c8a-52b8-557b-9720-10b9d94fdd10",
+        "can": "view"
+      },
+      "label": "Тимур Ахмедов",
+      "reach": {
+        "members": 0,
+        "total": 1,
+        "reason": "нет роли в области «фирма «Север Логистик»» и не участник пространства"
+      },
+      "reachLabel": "— не получит доступ: нет роли в области «фирма «Север Логистик»» и не участник пространства"
+    },
+    {
+      "entry": {
+        "who": "member",
+        "refId": "0079e3dc-bef7-5e8b-986a-085809065166",
+        "can": "view"
+      },
+      "label": "Сергей Ильин",
+      "reach": {
+        "members": 0,
+        "total": 1,
+        "reason": "нет роли в области «фирма «Север Логистик»» и не участник пространства"
+      },
+      "reachLabel": "— не получит доступ: нет роли в области «фирма «Север Логистик»» и не участник пространства"
+    }
+  ]
+}

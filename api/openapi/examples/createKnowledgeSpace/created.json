@@ -1,0 +1,28 @@
+{
+  "id": "ae167306-f901-567a-a2fa-842559f2929f",
+  "name": "Охрана труда",
+  "icon": "health_and_safety",
+  "color": "#A13A33",
+  "orgUnitId": null,
+  "areaLabel": "Вся организация",
+  "access": "open",
+  "templateKey": "blank",
+  "homeNodeId": "a8def4a4-65c5-5b67-9148-402f4141bff7",
+  "my": {
+    "owner": true,
+    "lead": true,
+    "view": true,
+    "create": true,
+    "edit": true,
+    "role": "Владелец бизнеса"
+  },
+  "leadNames": [],
+  "pageCount": 1,
+  "revision": 1,
+  "lastUpdate": {
+    "nodeId": "a8def4a4-65c5-5b67-9148-402f4141bff7",
+    "title": "Обзор",
+    "at": "2026-09-30T21:00:00Z"
+  },
+  "openRequestCount": 0
+}

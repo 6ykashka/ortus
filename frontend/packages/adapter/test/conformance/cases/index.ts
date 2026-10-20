@@ -10,6 +10,7 @@ import { dataCases } from './data.ts';
 import { dataW406Cases } from './data-w406.ts';
 import { filesCases } from './files.ts';
 import { fleetCases } from './fleet.ts';
+import { knowledgeCases } from './knowledge.ts';
 import { logisticsCases } from './logistics.ts';
 import { modulesCases } from './modules.ts';
 import { platformCases } from './platform.ts';
@@ -41,4 +42,6 @@ export const ALL_CASES: readonly ConformanceCase[] = [
   ...vehicleOfferCases,
   // W4.07 (0.8.0-stage4): места, тарифная сетка, заявки, «Использование», аккаунты, операторы, оформление.
   ...billingW407Cases,
+  // W4.04 (контрактный PR 3 этапа 4): «База знаний».
+  ...knowledgeCases,
 ];

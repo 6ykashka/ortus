@@ -1,0 +1,319 @@
+{
+  "space": {
+    "id": "a3b6bc34-7307-58e7-990a-5513cd630786",
+    "name": "Логистика",
+    "icon": "local_shipping",
+    "color": "#1F6B52",
+    "orgUnitId": "6de355d2-b019-5bb6-b66a-ddae6a13fb65",
+    "areaLabel": "Фирма «Север Логистик»",
+    "access": "limited",
+    "templateKey": null,
+    "homeNodeId": "5a437a14-2357-5932-ad5e-fa133d3cc218",
+    "my": {
+      "owner": false,
+      "lead": false,
+      "view": true,
+      "create": false,
+      "edit": false,
+      "role": "Читатель по уровню «Ограниченное»"
+    },
+    "leadNames": ["Марина Котова"],
+    "pageCount": 14,
+    "revision": 1,
+    "lastUpdate": {
+      "nodeId": "babd503a-697f-595f-83f8-6501710d0803",
+      "title": "Журнал осмотров машин",
+      "at": "2026-09-23T21:00:00Z"
+    }
+  },
+  "nodes": [
+    {
+      "id": "5a437a14-2357-5932-ad5e-fa133d3cc218",
+      "spaceId": "a3b6bc34-7307-58e7-990a-5513cd630786",
+      "parentId": null,
+      "position": 0,
+      "kind": "page",
+      "title": "Обзор",
+      "status": "active",
+      "accessMode": "inherit",
+      "sensitivity": "normal",
+      "archived": false,
+      "version": 1,
+      "my": {
+        "edit": false,
+        "lead": false,
+        "create": false
+      }
+    },
+    {
+      "id": "685e71a2-4c0b-57fa-9519-2b65031ed715",
+      "spaceId": "a3b6bc34-7307-58e7-990a-5513cd630786",
+      "parentId": null,
+      "position": 1,
+      "kind": "folder",
+      "title": "Регламенты",
+      "status": "active",
+      "accessMode": "inherit",
+      "sensitivity": "normal",
+      "archived": false,
+      "version": 1,
+      "my": {
+        "edit": false,
+        "lead": false,
+        "create": false
+      }
+    },
+    {
+      "id": "917ba039-1d29-5dd1-b922-b0976cc8a7c2",
+      "spaceId": "a3b6bc34-7307-58e7-990a-5513cd630786",
+      "parentId": "685e71a2-4c0b-57fa-9519-2b65031ed715",
+      "position": 1,
+      "kind": "page",
+      "title": "Регламент приёмки смены",
+      "status": "active",
+      "accessMode": "inherit",
+      "sensitivity": "normal",
+      "archived": false,
+      "version": 2,
+      "my": {
+        "edit": false,
+        "lead": false,
+        "create": false
+      }
+    },
+    {
+      "id": "641c9079-5db8-513f-9ce5-59525d87c375",
+      "spaceId": "a3b6bc34-7307-58e7-990a-5513cd630786",
+      "parentId": "917ba039-1d29-5dd1-b922-b0976cc8a7c2",
+      "position": 1,
+      "kind": "page",
+      "title": "Чек-лист приёмки",
+      "status": "active",
+      "accessMode": "inherit",
+      "sensitivity": "normal",
+      "archived": false,
+      "version": 1,
+      "my": {
+        "edit": false,
+        "lead": false,
+        "create": false
+      }
+    },
+    {
+      "id": "2f8e26cb-d191-5b2b-b88e-0e6eade36db5",
+      "spaceId": "a3b6bc34-7307-58e7-990a-5513cd630786",
+      "parentId": "917ba039-1d29-5dd1-b922-b0976cc8a7c2",
+      "position": 2,
+      "kind": "page",
+      "title": "Типовые замечания",
+      "status": "active",
+      "accessMode": "inherit",
+      "sensitivity": "normal",
+      "archived": false,
+      "version": 1,
+      "my": {
+        "edit": false,
+        "lead": false,
+        "create": false
+      }
+    },
+    {
+      "id": "aedda75a-8456-5d8b-94b8-d72a63e1a783",
+      "spaceId": "a3b6bc34-7307-58e7-990a-5513cd630786",
+      "parentId": "685e71a2-4c0b-57fa-9519-2b65031ed715",
+      "position": 2,
+      "kind": "page",
+      "title": "Как фотографировать машину при осмотре",
+      "status": "active",
+      "accessMode": "inherit",
+      "sensitivity": "normal",
+      "archived": false,
+      "version": 1,
+      "my": {
+        "edit": false,
+        "lead": false,
+        "create": false
+      }
+    },
+    {
+      "id": "bb2327dd-1958-5b40-8bb4-54cbb208cb7f",
+      "spaceId": "a3b6bc34-7307-58e7-990a-5513cd630786",
+      "parentId": "685e71a2-4c0b-57fa-9519-2b65031ed715",
+      "position": 3,
+      "kind": "page",
+      "title": "Выезд при критическом дефекте",
+      "status": "review",
+      "accessMode": "inherit",
+      "sensitivity": "normal",
+      "archived": false,
+      "version": 1,
+      "my": {
+        "edit": false,
+        "lead": false,
+        "create": false
+      }
+    },
+    {
+      "id": "babd503a-697f-595f-83f8-6501710d0803",
+      "spaceId": "a3b6bc34-7307-58e7-990a-5513cd630786",
+      "parentId": null,
+      "position": 2,
+      "kind": "table",
+      "title": "Журнал осмотров машин",
+      "status": "active",
+      "accessMode": "inherit",
+      "sensitivity": "normal",
+      "archived": false,
+      "version": 1,
+      "my": {
+        "edit": false,
+        "lead": false,
+        "create": false
+      }
+    },
+    {
+      "id": "ebeaeb8c-54db-5a74-8350-de6bd561c76d",
+      "spaceId": "a3b6bc34-7307-58e7-990a-5513cd630786",
+      "parentId": null,
+      "position": 3,
+      "kind": "diagram",
+      "title": "Схема сдачи смены",
+      "status": "active",
+      "accessMode": "inherit",
+      "sensitivity": "normal",
+      "archived": false,
+      "version": 1,
+      "my": {
+        "edit": false,
+        "lead": false,
+        "create": false
+      }
+    },
+    {
+      "id": "7a369026-5559-5e6c-a4f3-9eca8c7f5b6c",
+      "spaceId": "a3b6bc34-7307-58e7-990a-5513cd630786",
+      "parentId": null,
+      "position": 4,
+      "kind": "folder",
+      "title": "Водителям",
+      "status": "active",
+      "accessMode": "listed",
+      "sensitivity": "normal",
+      "archived": false,
+      "version": 1,
+      "my": {
+        "edit": false,
+        "lead": false,
+        "create": false
+      }
+    },
+    {
+      "id": "89800cc0-ed79-5986-818e-e0168e016798",
+      "spaceId": "a3b6bc34-7307-58e7-990a-5513cd630786",
+      "parentId": "7a369026-5559-5e6c-a4f3-9eca8c7f5b6c",
+      "position": 1,
+      "kind": "page",
+      "title": "Памятка водителя",
+      "status": "active",
+      "accessMode": "inherit",
+      "sensitivity": "normal",
+      "archived": false,
+      "version": 1,
+      "my": {
+        "edit": false,
+        "lead": false,
+        "create": false
+      }
+    },
+    {
+      "id": "2913db05-18a2-538a-aa3c-76c449093462",
+      "spaceId": "a3b6bc34-7307-58e7-990a-5513cd630786",
+      "parentId": "7a369026-5559-5e6c-a4f3-9eca8c7f5b6c",
+      "position": 2,
+      "kind": "page",
+      "title": "ДТП и поломка в пути",
+      "status": "active",
+      "accessMode": "inherit",
+      "sensitivity": "normal",
+      "archived": false,
+      "version": 1,
+      "my": {
+        "edit": false,
+        "lead": false,
+        "create": false
+      }
+    },
+    {
+      "id": "0b79defd-2388-5089-a36c-94a78807432f",
+      "spaceId": "a3b6bc34-7307-58e7-990a-5513cd630786",
+      "parentId": "7a369026-5559-5e6c-a4f3-9eca8c7f5b6c",
+      "position": 3,
+      "kind": "page",
+      "title": "Контакты диспетчеров",
+      "status": "active",
+      "accessMode": "inherit",
+      "sensitivity": "normal",
+      "archived": false,
+      "version": 1,
+      "my": {
+        "edit": false,
+        "lead": false,
+        "create": false
+      }
+    },
+    {
+      "id": "a37b3433-fdfd-584f-b0e4-847197ff6815",
+      "spaceId": "a3b6bc34-7307-58e7-990a-5513cd630786",
+      "parentId": "7a369026-5559-5e6c-a4f3-9eca8c7f5b6c",
+      "position": 4,
+      "kind": "diagram",
+      "title": "Маршруты",
+      "status": "active",
+      "accessMode": "edit_listed",
+      "sensitivity": "normal",
+      "archived": false,
+      "version": 1,
+      "my": {
+        "edit": false,
+        "lead": false,
+        "create": false
+      }
+    },
+    {
+      "id": "70c4493b-75ab-5381-a28d-2ee375259122",
+      "spaceId": "a3b6bc34-7307-58e7-990a-5513cd630786",
+      "parentId": null,
+      "position": 6,
+      "kind": "file",
+      "title": "Договор аренды стоянки.pdf",
+      "status": "active",
+      "accessMode": "inherit",
+      "sensitivity": "normal",
+      "archived": false,
+      "version": 1,
+      "my": {
+        "edit": false,
+        "lead": false,
+        "create": false
+      }
+    },
+    {
+      "id": "01b0d68a-1f9a-5e8e-b0ce-0fd1f5fbab58",
+      "spaceId": "a3b6bc34-7307-58e7-990a-5513cd630786",
+      "parentId": null,
+      "position": 7,
+      "kind": "link",
+      "title": "Форма «Осмотр машины»",
+      "status": "active",
+      "accessMode": "inherit",
+      "sensitivity": "normal",
+      "archived": false,
+      "version": 1,
+      "my": {
+        "edit": false,
+        "lead": false,
+        "create": false
+      }
+    }
+  ]
+}

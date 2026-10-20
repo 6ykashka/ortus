@@ -114,12 +114,12 @@ describe('контракт 0.6.2-stage2 (W2.57): роль «Временный �
     const choose = (k) => k !== 'fleet.reservations.choose';
     assert.deepEqual(catalog.role_templates.driver.actions.filter(choose), DRIVER);
     assert.equal(catalog.role_templates.driver.default_scope, 'self');
-    // W4.07 (0.8.0-stage4) добавил branding.manage — не в шаблоне «Водитель».
-    assert.equal(
-      [...flattenActions(catalog).keys()].filter((k) => choose(k) && k !== 'branding.manage')
-        .length,
-      123,
+    // W4.07 (0.8.0-stage4) добавил branding.manage — не в шаблоне «Водитель»; W4.04 — ключи «Базы знаний»
+    // (core.knowledge): остальных ключей вне БЗ без choose — 119, как в 0.6.x/0.7.0.
+    const own = [...flattenActions(catalog)].filter(
+      ([k, a]) => choose(k) && k !== 'branding.manage' && a.module !== 'core.knowledge',
     );
+    assert.equal(own.length, 119);
     const codes = readYaml(ERRORS_PATH).codes;
     assert.equal(Object.keys(codes).filter((c) => c !== 'offer_closed').length, 52);
   });

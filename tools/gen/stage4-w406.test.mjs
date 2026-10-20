@@ -153,13 +153,16 @@ describe('контракт 0.7.0-stage4 (W4.06): операции и права'
   });
 
   it('новых ключей прав, кодов ошибок, тегов и x-scope нет; права набора — как у queryDataset', () => {
-    // W2.71 (0.7.1-stage4, S2-20) влит позже и добавил fleet.reservations.choose и offer_closed: W4.06 своих не добавлял.
-    const actions = [...flattenActions(loadCatalog()).keys()];
-    // W4.07 (0.8.0-stage4) — право branding.manage и тег Branding.
-    assert.equal(
-      actions.filter((k) => k !== 'fleet.reservations.choose' && k !== 'branding.manage').length,
-      123,
+    // W2.71 (0.7.1-stage4, S2-20) влит позже и добавил fleet.reservations.choose и offer_closed, W4.04 — ключи «Базы
+    // знаний» (core.knowledge), W4.07 (0.8.0-stage4) — право branding.manage и тег Branding: W4.06 своих не
+    // добавлял, остальных ключей вне БЗ без choose — 119, как в 0.7.0.
+    const actions = [...flattenActions(loadCatalog())].filter(
+      ([k, a]) =>
+        k !== 'fleet.reservations.choose' &&
+        k !== 'branding.manage' &&
+        a.module !== 'core.knowledge',
     );
+    assert.equal(actions.length, 119);
     const codes = Object.keys(readYaml(ERRORS_PATH).codes);
     assert.equal(codes.filter((c) => c !== 'offer_closed').length, 52);
     assert.equal(doc.tags.filter((t) => t.name !== 'Branding').length, 20);

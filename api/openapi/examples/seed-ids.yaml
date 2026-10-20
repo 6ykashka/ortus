@@ -67,6 +67,8 @@ ids:
     b-a2: db6412f9-f1f9-5fba-a945-5fdbcb856d9c
     b-a3: ec30fb9f-f6e0-5788-95f6-f8d650e48357
     b-br: 0a269c1f-4dc4-5ded-a908-3d8385793a76
+    c-w1: 404e0d21-f2ee-565c-bef3-3967ac725559
+    c-w2: 2a1e8a00-3cbd-54ae-85ae-b99a3cfeda6f
     checklist:departure:1: 5d6fb3d3-4082-5302-b552-ef2d23223335
     d-104: 6f0d2321-532c-5f7a-8e75-ec1196316a7d
     d-117: ac90c429-0be6-58ff-9486-cb47b14ce96d
@@ -86,6 +88,38 @@ ids:
     fleet: 1380e888-13ac-5357-9a6f-a592a20e8220
     g-disp: ffdc7501-0a74-5af4-950b-894aeb64d658
     g-drv: ce9dd6e5-dcb8-5d08-ad94-53c3155b3d14
+    kb-1: 917ba039-1d29-5dd1-b922-b0976cc8a7c2
+    kb-1a: 641c9079-5db8-513f-9ce5-59525d87c375
+    kb-1b: 2f8e26cb-d191-5b2b-b88e-0e6eade36db5
+    kb-2: aedda75a-8456-5d8b-94b8-d72a63e1a783
+    kb-5: babd503a-697f-595f-83f8-6501710d0803
+    kb-6: bb2327dd-1958-5b40-8bb4-54cbb208cb7f
+    kb-d1: ebeaeb8c-54db-5a74-8350-de6bd561c76d
+    kb-drv-1: 89800cc0-ed79-5986-818e-e0168e016798
+    kb-drv-2: 2913db05-18a2-538a-aa3c-76c449093462
+    kb-drv-3: 0b79defd-2388-5089-a36c-94a78807432f
+    kb-drv-4: a37b3433-fdfd-584f-b0e4-847197ff6815
+    kb-f-drv: 7a369026-5559-5e6c-a4f3-9eca8c7f5b6c
+    kb-f-reg: 685e71a2-4c0b-57fa-9519-2b65031ed715
+    kb-file1: 70c4493b-75ab-5381-a28d-2ee375259122
+    kb-fin: b0c727db-bfc6-5635-ab3c-a3363cd14daa
+    kb-fin-1: 41befb90-5d23-555e-a8e0-19ce76812a75
+    kb-gen-2: b9f5dffd-a4ad-52f1-a0af-7604e4316d81
+    kb-gen-home: 9bc6658a-3711-5605-a18e-ffe93d0edbe3
+    kb-lnk1: 01b0d68a-1f9a-5e8e-b0ce-0fd1f5fbab58
+    kb-log-home: 5a437a14-2357-5932-ad5e-fa133d3cc218
+    kb-o-obj-45: da043a7d-49da-5200-9db4-e5f1109e2df3
+    kb-own-home: 54b78193-0f1b-58a3-9a13-4e6b4d998f78
+    kb-w1: c43260de-a42a-581d-95a4-385dd85a4362
+    kb-w2: a8def4a4-65c5-5b67-9148-402f4141bff7
+    kq-w1: d143b523-a6c4-5dca-ac12-37a0382b3c07
+    kr-1: ef847bf5-5414-537e-9c1f-5941be1e001b
+    kr-2: 0c7659fc-b4d3-5a46-9f5e-5479de804ac9
+    kr-3: 3959df32-3d2e-5a2a-bf21-3c69dc660b78
+    krr-1: bd2162ed-7591-5f0a-be45-a49ac72b9da2
+    krr-2: 9b5bc19f-0c6c-5bc9-be26-77ca6febd86a
+    krr-w1: e278de58-f6af-5b1c-87cf-39e8386794aa
+    kt-w3: 9ed76e4c-0040-582a-948a-16d0e8466008
     m-akhmedov: 1a544c8a-52b8-557b-9720-10b9d94fdd10
     m-gromov: e3e06740-e478-5398-a737-dd89c477cbd7
     m-ilyin: 0079e3dc-bef7-5e8b-986a-085809065166
@@ -102,6 +136,9 @@ ids:
     r-driver: 2a857e38-2d94-51a0-81de-406de8b3c772
     r-exec: a1d32c48-efcb-55cb-a846-3e4e35bc6034
     r-foreman: bbc56a08-74b3-5118-bd78-9e9f85d37f33
+    r-kb-editor: 2688205d-9d70-5eaa-a2a8-cb405fe282cb
+    r-kb-lead: c813124c-4173-52e5-99f6-6ae27d703ec6
+    r-kb-reader: bcc10ec9-6ca5-5075-acb7-5031e06adf97
     r-manager: ec7feec1-6f4d-54fb-9a58-63ab98c54aca
     r-msk: a2801280-868f-57ce-a599-d0e2e969be87
     r-owner: b91d0ed2-e771-56da-b1d2-6f9fbc5c30c3
@@ -115,6 +152,10 @@ ids:
     res-room2: 253914e3-34db-54e1-996e-6eb38b9dd29b
     res-room3: 16627cc9-a5b5-5e15-8d93-5a07e8257b62
     res-table: 960765fa-e4bb-5e74-83a7-b441941a0a35
+    sp-gen: 681f3641-54bc-54c9-9e0d-98f91c079698
+    sp-log: a3b6bc34-7307-58e7-990a-5513cd630786
+    sp-own: 7a758d2b-4550-562b-ba46-38a513cfe88d
+    sp-w1: ae167306-f901-567a-a2fa-842559f2929f
     v1: 94f7eb3d-41d3-5dee-a58d-2053dcb63646
     v5: ca7940cc-9cbe-5487-8b11-8087457d50b9
     v6: b9ef5783-2b1a-5682-8d25-66e89de49b8e

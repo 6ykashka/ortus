@@ -189,13 +189,15 @@ describe('контракт 0.6.1-stage2 (W2.52): операции и права'
 
   it('новых ключей прав и кодов ошибок нет: справочник — настройки модуля, выгрузка — data.export', () => {
     const actions = flattenActions(loadCatalog());
-    // W2.71 (0.6.3-stage2, D-35 комплекта) добавил fleet.reservations.choose и offer_closed, W4.07 — branding.manage: W2.52 своих не добавлял.
-    assert.equal(
-      [...actions.keys()].filter(
-        (k) => k !== 'fleet.reservations.choose' && k !== 'branding.manage',
-      ).length,
-      123,
+    // W2.71 (0.6.3-stage2, D-35 комплекта) добавил fleet.reservations.choose и offer_closed, W4.07 — branding.manage,
+    // W4.04 — ключи «Базы знаний» (core.knowledge): W2.52 своих не добавлял, остальных ключей вне БЗ — 119.
+    const own = [...actions].filter(
+      ([k, a]) =>
+        k !== 'fleet.reservations.choose' &&
+        k !== 'branding.manage' &&
+        a.module !== 'core.knowledge',
     );
+    assert.equal(own.length, 119);
     const codes = readYaml(ERRORS_PATH).codes;
     assert.equal(Object.keys(codes).length - ('offer_closed' in codes ? 1 : 0), 52);
     assert.match(op('exportDataset').description, /data\.export/);

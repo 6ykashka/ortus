@@ -1,0 +1,54 @@
+{
+  "applied": false,
+  "space": {
+    "id": "7a758d2b-4550-562b-ba46-38a513cfe88d",
+    "name": "Руководство",
+    "icon": "shield_person",
+    "color": "#3A4844",
+    "orgUnitId": null,
+    "areaLabel": "Вся организация",
+    "access": "limited",
+    "templateKey": null,
+    "homeNodeId": "54b78193-0f1b-58a3-9a13-4e6b4d998f78",
+    "my": {
+      "owner": true,
+      "lead": true,
+      "view": true,
+      "create": true,
+      "edit": true,
+      "role": "Владелец бизнеса"
+    },
+    "leadNames": [],
+    "pageCount": 2,
+    "revision": 1,
+    "lastUpdate": {
+      "nodeId": "54b78193-0f1b-58a3-9a13-4e6b4d998f78",
+      "title": "Обзор",
+      "at": "2026-09-19T21:00:00Z"
+    },
+    "openRequestCount": 0
+  },
+  "impact": {
+    "pages": 2,
+    "gainView": [
+      {
+        "memberId": "a560b4fe-78b7-585e-b960-f0ab3622570c",
+        "displayName": "Илья Васильев",
+        "pages": 1
+      },
+      {
+        "memberId": "25097109-efb6-5471-880f-7a01ee6615a0",
+        "displayName": "Анна Морозова",
+        "pages": 1
+      },
+      {
+        "memberId": "ebdf9767-327e-55cc-8c65-cb5fd313bdf4",
+        "displayName": "Алексей Соколов",
+        "pages": 1
+      }
+    ],
+    "loseView": [],
+    "gainEdit": [],
+    "loseEdit": []
+  }
+}

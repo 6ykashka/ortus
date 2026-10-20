@@ -1,0 +1,129 @@
+{
+  "spaceId": "a3b6bc34-7307-58e7-990a-5513cd630786",
+  "members": [
+    {
+      "memberId": "ac41932c-dbd9-53b1-a84b-42cbc1d6629a",
+      "displayName": "Марина Котова"
+    },
+    {
+      "memberId": "a560b4fe-78b7-585e-b960-f0ab3622570c",
+      "displayName": "Илья Васильев"
+    },
+    {
+      "memberId": "ea845988-640e-5506-9303-1cbfc3dede0d",
+      "displayName": "Вера Котельникова"
+    }
+  ],
+  "rows": [
+    {
+      "nodeId": "5a437a14-2357-5932-ad5e-fa133d3cc218",
+      "title": "Обзор",
+      "depth": 1
+    },
+    {
+      "nodeId": "685e71a2-4c0b-57fa-9519-2b65031ed715",
+      "title": "Регламенты",
+      "depth": 1
+    },
+    {
+      "nodeId": "917ba039-1d29-5dd1-b922-b0976cc8a7c2",
+      "title": "Регламент приёмки смены",
+      "depth": 2
+    },
+    {
+      "nodeId": "641c9079-5db8-513f-9ce5-59525d87c375",
+      "title": "Чек-лист приёмки",
+      "depth": 3
+    },
+    {
+      "nodeId": "2f8e26cb-d191-5b2b-b88e-0e6eade36db5",
+      "title": "Типовые замечания",
+      "depth": 3
+    },
+    {
+      "nodeId": "aedda75a-8456-5d8b-94b8-d72a63e1a783",
+      "title": "Как фотографировать машину при осмотре",
+      "depth": 2
+    },
+    {
+      "nodeId": "bb2327dd-1958-5b40-8bb4-54cbb208cb7f",
+      "title": "Выезд при критическом дефекте",
+      "depth": 2
+    },
+    {
+      "nodeId": "babd503a-697f-595f-83f8-6501710d0803",
+      "title": "Журнал осмотров машин",
+      "depth": 1
+    },
+    {
+      "nodeId": "ebeaeb8c-54db-5a74-8350-de6bd561c76d",
+      "title": "Схема сдачи смены",
+      "depth": 1
+    },
+    {
+      "nodeId": "7a369026-5559-5e6c-a4f3-9eca8c7f5b6c",
+      "title": "Водителям",
+      "depth": 1
+    },
+    {
+      "nodeId": "89800cc0-ed79-5986-818e-e0168e016798",
+      "title": "Памятка водителя",
+      "depth": 2
+    },
+    {
+      "nodeId": "2913db05-18a2-538a-aa3c-76c449093462",
+      "title": "ДТП и поломка в пути",
+      "depth": 2
+    },
+    {
+      "nodeId": "0b79defd-2388-5089-a36c-94a78807432f",
+      "title": "Контакты диспетчеров",
+      "depth": 2
+    },
+    {
+      "nodeId": "a37b3433-fdfd-584f-b0e4-847197ff6815",
+      "title": "Маршруты",
+      "depth": 2
+    },
+    {
+      "nodeId": "b0c727db-bfc6-5635-ab3c-a3363cd14daa",
+      "title": "Тарифы и начисления",
+      "depth": 1
+    },
+    {
+      "nodeId": "41befb90-5d23-555e-a8e0-19ce76812a75",
+      "title": "Ставки по маршрутам",
+      "depth": 2
+    },
+    {
+      "nodeId": "70c4493b-75ab-5381-a28d-2ee375259122",
+      "title": "Договор аренды стоянки.pdf",
+      "depth": 1
+    },
+    {
+      "nodeId": "01b0d68a-1f9a-5e8e-b0ce-0fd1f5fbab58",
+      "title": "Форма «Осмотр машины»",
+      "depth": 1
+    }
+  ],
+  "cells": [
+    ["edit", "view", "edit"],
+    ["edit", "view", "edit"],
+    ["edit", "view", "edit"],
+    ["edit", "view", "edit"],
+    ["edit", "view", "edit"],
+    ["edit", "view", "edit"],
+    ["edit", "view", "edit"],
+    ["edit", "view", "edit"],
+    ["edit", "view", "edit"],
+    ["edit", "view", "edit"],
+    ["edit", "view", "edit"],
+    ["edit", "view", "edit"],
+    ["edit", "view", "edit"],
+    ["edit", "view", "view"],
+    ["edit", "function", "view"],
+    ["edit", "function", "view"],
+    ["edit", "view", "edit"],
+    ["edit", "view", "edit"]
+  ]
+}

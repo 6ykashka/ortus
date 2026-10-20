@@ -447,6 +447,46 @@
           }
         },
         {
+          "permission": "knowledge.organize",
+          "scope": {
+            "kind": "tenant",
+            "resourceIds": [],
+            "includeDescendants": true
+          }
+        },
+        {
+          "permission": "knowledge.access.manage",
+          "scope": {
+            "kind": "tenant",
+            "resourceIds": [],
+            "includeDescendants": true
+          }
+        },
+        {
+          "permission": "knowledge.members.manage",
+          "scope": {
+            "kind": "tenant",
+            "resourceIds": [],
+            "includeDescendants": true
+          }
+        },
+        {
+          "permission": "knowledge.automation.manage",
+          "scope": {
+            "kind": "tenant",
+            "resourceIds": [],
+            "includeDescendants": true
+          }
+        },
+        {
+          "permission": "knowledge.spaces.manage",
+          "scope": {
+            "kind": "tenant",
+            "resourceIds": [],
+            "includeDescendants": true
+          }
+        },
+        {
           "permission": "inventory.items.read",
           "scope": {
             "kind": "tenant",
