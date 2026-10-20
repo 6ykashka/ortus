@@ -22,13 +22,14 @@ const DetailDelegation = "Нельзя выдать больше, чем ест�
 
 // Targets returns the resources an assignment scoped s reaches, which the assigning actor must cover (AUTH-08):
 // the tenant — the zero resource (only grants of the whole tenant reach it); a unit — the unit and, with
-// descendants, every unit of its subtree; self — the anchor (home unit of the principal; uuid.Nil — tenant-wide);
-// an object — the object (PD-53: only the same object, or a grant of the whole tenant, covers it).
+// descendants, every unit of its subtree; self and relation (records related to the person, W4.01) — the anchor (home
+// unit of the principal; uuid.Nil — tenant-wide); an object — the object (PD-53: only the same object, an object
+// containing it, or a grant of the whole tenant, covers it).
 func Targets(ctx context.Context, q DB, s authz.Scope, anchor uuid.UUID) ([]authz.Resource, error) {
 	switch s.Kind {
 	case authz.KindTenant:
 		return []authz.Resource{{}}, nil
-	case authz.KindSelf:
+	case authz.KindSelf, authz.KindRelation:
 		if anchor == uuid.Nil {
 			return []authz.Resource{{}}, nil
 		}
@@ -88,11 +89,11 @@ func Cover(ctx context.Context, ev *authz.Evaluator, tc tenantctx.TenantContext,
 }
 
 // Reach returns the resources a grant of scope s given to people reaches, which the assigning actor must cover:
-// Targets of s over anchor and, for a self scope, the home unit of each of people too — a self grant acts on every
-// person it reaches (each member of a group in its own unit), not only on the anchor of the principal.
+// Targets of s over anchor and, for a self or relation scope, the home unit of each of people too — such a grant acts
+// on every person it reaches (each member of a group in its own unit), not only on the anchor of the principal.
 func Reach(ctx context.Context, q DB, s authz.Scope, anchor uuid.UUID, people []uuid.UUID) ([]authz.Resource, error) {
 	targets, err := Targets(ctx, q, s, anchor)
-	if err != nil || s.Kind != authz.KindSelf || len(people) == 0 {
+	if err != nil || (s.Kind != authz.KindSelf && s.Kind != authz.KindRelation) || len(people) == 0 {
 		return targets, err
 	}
 	rows, err := q.Query(ctx, `select distinct coalesce(home_unit_id, '00000000-0000-0000-0000-000000000000'::uuid)

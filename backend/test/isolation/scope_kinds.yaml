@@ -1,0 +1,68 @@
+# Матрица изоляции: виды областей этапов 4–7 после регистрации в оценщике (W4.01; контракт 0.7.0-stage4 и tenant 0020
+# W4.02, ADR-0014 п. 3–4, PD-53). Положительные строки, которые до W4.01 не могли быть pending (Q-W4.02-6): объяснение
+# доступа по пространству знаний (до W4.01 — 422), назначение роли на пространство (до W4.01 — 422), возможности
+# /me/context с областью пространства (до W4.01 грант незарегистрированного вида пропускался), каталог «Данных»
+# «Наблюдателя» на объектах следующих этапов (шлюз с x-scope effective-module-and-field-scopes допускает грант
+# зарегистрированного вида любой области, хендлер фильтрует наборы предикатом области — объектов этих видов у наборов
+# нет, каталог пуст; строка перенесена из scope_kinds_gate.yaml). Отказы без объекта остаются в scope_kinds_gate.yaml.
+# Изменяющая строка createAssignment назначает роль a.later-scopes, у которого здесь и в scope_kinds_gate.yaml только
+# отказы шлюза: x-scope тех операций область space не допускает, ответы не меняются.
+# Формат — README.md. После правки: go -C backend generate ./test/isolation
+module: scope_kinds
+endpoints:
+  - op: explainAccess
+    method: GET
+    path: /api/v1/tenants/{tenantId}/access/explanation?memberId={memberId}&permission=knowledge.update&objectModule=knowledge&objectType=space&objectId={objectId}
+    rows:
+      - actor: a.owner
+        params: { tenantId: tenant:a, memberId: person:a.space-lead@a, objectId: space:a.rules }
+        status: 200
+        present: [person:a.space-lead@a, space:a.rules]
+        note: роль пространства «Регламенты» совпадает на своём пространстве (x-explain-objects knowledge/space → space)
+      - actor: a.manager-msk1
+        params: { tenantId: tenant:a, memberId: person:a.space-lead@a, objectId: space:a.rules }
+        status: 404
+        absent: [space:a.rules]
+        note: объект объясняет только актор с roles.read на всю организацию — менеджеру фирмы как несуществующий
+      - actor: b.owner
+        params: { tenantId: tenant:a, memberId: person:a.space-lead@a, objectId: space:a.rules }
+        status: 404
+        absent: [space:a.rules, person:a.space-lead@a]
+  - op: createAssignment
+    method: POST
+    path: /api/v1/tenants/{tenantId}/assignments
+    rows:
+      - actor: a.owner
+        params: { tenantId: tenant:a }
+        status: 201
+        body: '{"principalType": "member", "principalId": "{{person:a.later-scopes@a}}", "roleId": "{{role:a.observer}}", "scope": {"kind": "space", "resourceIds": ["{{space:a.rules}}"], "includeDescendants": false}}'
+        present: [person:a.later-scopes@a, space:a.rules]
+        note: роль на пространство знаний — 201 (до W4.01 — 422 «Такая область назначения на этом этапе недоступна.»)
+      - actor: b.owner
+        params: { tenantId: tenant:a }
+        status: 404
+        body: '{"principalType": "member", "principalId": "{{person:a.later-scopes@a}}", "roleId": "{{role:a.observer}}", "scope": {"kind": "space", "resourceIds": ["{{space:a.rules}}"], "includeDescendants": false}}'
+        absent: [person:a.later-scopes@a, space:a.rules]
+  - op: getMyContext
+    method: GET
+    path: /api/v1/me/context
+    rows:
+      - actor: anonymous
+        status: 401
+      - actor: a.space-lead
+        status: 200
+        present: [tenant:a, space:a.rules]
+        absent: [tenant:b, page:a.rules-intro]
+        note: возможности роли пространства — с областью space и его id (меню и гейты считают canAny, Q-W0.11-1)
+  - op: listDatasets
+    method: GET
+    path: /api/v1/tenants/{tenantId}/datasets
+    rows:
+      - actor: a.later-scopes
+        params: { tenantId: tenant:a }
+        status: 200
+        absent: [page:a.rules-intro, chat:a.trip]
+        note: data.catalog.read «Наблюдателя» на объектах этапов 4–7 проходит шлюз, но наборов этих объектов нет — каталог пуст
+      - actor: b.owner
+        params: { tenantId: tenant:a }
+        status: 404

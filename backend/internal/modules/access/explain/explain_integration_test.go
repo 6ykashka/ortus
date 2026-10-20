@@ -309,3 +309,91 @@ func TestExplainDetailWithoutHiddenGrants(t *testing.T) {
 	x, err = w.explain(w.tenantReader, query{member: person, permission: "fleet.trips.review", unit: &w.f1})
 	expect(t, err == nil && !x.HiddenGrants && lastDetail(x) == "Право есть, но объект находится вне области назначения.", "tenant reader: %+v %v", x, err)
 }
+
+// placeOf is a resolver of knowledge nodes: every node lies in space (W4.31 registers the real one).
+type placeOf struct{ space uuid.UUID }
+
+func (p placeOf) Place(context.Context, uuid.UUID, uuid.UUID) (authz.Place, error) {
+	return authz.Place{Containers: map[string]uuid.UUID{authz.KindSpace: p.space}}, nil
+}
+
+// x-explain-objects этапа 4 (W4.02, W4.01): пространство и узел базы знаний. Роль пространства совпадает на своём
+// пространстве и (по резолверу узлов) на его узлах, на чужом — other_object; роль на узел — на самом узле; без
+// резолвера роль пространства до узла не достаёт — object_scope_without_object (PD-53).
+func TestExplainKnowledgeObjects(t *testing.T) {
+	t.Parallel()
+	w := newWorld(t)
+	space, node := uuid.New(), uuid.New()
+	lead := w.Member("Руководитель пространства", "kb-lead@alta.example", w.f1)
+	reader := w.Member("Читатель страницы", "kb-page@alta.example", w.f1)
+	leadRole := w.Role("Руководитель пространства", "custom", "", "knowledge.read", "knowledge.update")
+	readRole := w.Role("Читатель", "custom", "", "knowledge.read")
+	aLead := w.Assign(accesstest.Grant{Principal: lead, Role: leadRole, Kind: authz.KindSpace, Ref: space})
+	aPage := w.Assign(accesstest.Grant{Principal: reader, Role: readRole, Kind: authz.KindPage, Ref: node})
+	mod, spaceType, nodeType := "knowledge", "space", "node"
+	other := uuid.New()
+	for name, tc := range map[string]struct {
+		q        query
+		grant    uuid.UUID
+		allowed  bool
+		mismatch string
+		kind     accessapi.ScopeKind
+	}{
+		"своё пространство":        {query{member: lead, permission: "knowledge.update", module: &mod, typ: &spaceType, object: &space}, aLead, true, "", accessapi.ScopeKindSpace},
+		"чужое пространство":       {query{member: lead, permission: "knowledge.update", module: &mod, typ: &spaceType, object: &other}, aLead, false, "other_object", accessapi.ScopeKindSpace},
+		"узел без резолвера":       {query{member: lead, permission: "knowledge.read", module: &mod, typ: &nodeType, object: &node}, aLead, false, "object_scope_without_object", accessapi.ScopeKindSpace},
+		"роль на узел":             {query{member: reader, permission: "knowledge.read", module: &mod, typ: &nodeType, object: &node}, aPage, true, "", accessapi.ScopeKindPage},
+		"роль на узел, чужой узел": {query{member: reader, permission: "knowledge.read", module: &mod, typ: &nodeType, object: &other}, aPage, false, "other_object", accessapi.ScopeKindPage},
+	} {
+		x, err := w.explain(w.tenantReader, tc.q)
+		if err != nil {
+			t.Errorf("%s: %v", name, err)
+			continue
+		}
+		g, ok := trace(x, tc.grant)
+		expect(t, ok && x.Allowed == tc.allowed && mismatch(g) == tc.mismatch && g.Scope.Kind == tc.kind, "%s: %+v %+v", name, x, g)
+		expect(t, x.Object != nil && x.Object.ModuleKey == mod, "%s: object %+v", name, x.Object)
+	}
+	d := w.Deps()
+	d.Evaluator.Places = map[string]authz.ObjectResolver{authz.KindPage: placeOf{space: space}}
+	h := explain.New(d)
+	resp, err := h.ExplainAccess(w.Ctx(w.tenantReader), accessapi.ExplainAccessRequestObject{TenantId: w.TenantID, Params: accessapi.ExplainAccessParams{
+		MemberId: lead, Permission: "knowledge.read", ObjectModule: &mod, ObjectType: &nodeType, ObjectId: &node}})
+	r, ok := resp.(accessapi.ExplainAccess200JSONResponse)
+	if err != nil || !ok {
+		t.Fatalf("with the resolver: %T %v", resp, err)
+	}
+	g, _ := trace(r.Body, aLead)
+	expect(t, r.Body.Allowed && g.Matches, "space grant on a node of its space: %+v", r.Body)
+}
+
+// hiddenNode places every node in unit, as a «Только выбранные» node without entries (W4.01 NodeACL).
+type hiddenNode struct{ unit uuid.UUID }
+
+func (h hiddenNode) Place(_ context.Context, _ uuid.UUID, id uuid.UUID) (authz.Place, error) {
+	return authz.Place{Unit: h.unit, Nodes: []authz.Node{{ID: id, Kind: authz.KindPage, Mode: authz.NodeListed}}}, nil
+}
+
+// Грант совпадает, но объект закрыт его настройками (список доступа узла): resource-scope не пройдена, причина —
+// не «вне области назначения», а закрытый объект; трасса гранта — совпала.
+func TestExplainClosedByObject(t *testing.T) {
+	t.Parallel()
+	w := newWorld(t)
+	node := uuid.New()
+	reader := w.Member("Читатель страницы", "kb-hidden@alta.example", w.f1)
+	readRole := w.Role("Читатель", "custom", "", "knowledge.read")
+	aUnit := w.Assign(accesstest.Grant{Principal: reader, Role: readRole, Kind: "unit", Ref: w.f1, Descendants: true})
+	d := w.Deps()
+	d.Evaluator.Places = map[string]authz.ObjectResolver{authz.KindPage: hiddenNode{unit: w.f1}}
+	mod, typ := "knowledge", "node"
+	resp, err := explain.New(d).ExplainAccess(w.Ctx(w.tenantReader), accessapi.ExplainAccessRequestObject{TenantId: w.TenantID,
+		Params: accessapi.ExplainAccessParams{MemberId: reader, Permission: "knowledge.read", ObjectModule: &mod, ObjectType: &typ, ObjectId: &node}})
+	r, ok := resp.(accessapi.ExplainAccess200JSONResponse)
+	if err != nil || !ok {
+		t.Fatalf("%T %v", resp, err)
+	}
+	x := r.Body
+	g, _ := trace(x, aUnit)
+	expect(t, !x.Allowed && x.DecisiveCheck == accessapi.ResourceScope && g.Matches, "decision %+v, grant %+v", x, g)
+	expect(t, lastDetail(x) == "Право есть, но объект закрыт своими настройками доступа (список доступа или правило).", "detail %q", lastDetail(x))
+}

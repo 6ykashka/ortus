@@ -1,12 +1,14 @@
 # Матрица изоляции: виды областей этапов 4–7 (W4.02, контракт 0.7.0-stage4, tenant 0020; ADR-0014 п. 3, PD-53), без
-# pending. Грант вида, который оценщик ещё не зарегистрировал (space, page — W4.01; account — W5.00; repair_project —
-# W6.00; folder, doc, chat, relation — W7.00), не даёт ничего (fail-closed): шлюз отвечает 403 до хендлера, как если
-# бы гранта не было. a.space-lead — knowledge.read и правка только в пространстве «Регламенты» (space:a.rules);
-# a.later-scopes — роль «Наблюдатель» на объектах следующих этапов и на связи (relation). Строки остаются верными, пока
-# вид не зарегистрирован; регистрирующий WS переносит положительные строки в свой файл (с объектом — PD-53), а
-# отказы без объекта оставляет здесь. Строку listKnowledgePages × a.space-lead W4.01 перепроверяет: по DoR (README
-# «Общие механизмы» п. 2) меню и шлюз считают canAny, и после регистрации space список может отвечать 200 с
-# фильтрацией — тогда строка уходит в файл W4.01 с новым ожиданием.
+# pending — отказы шлюза без объекта. W4.01 зарегистрировал все виды (space, page, folder, doc, account, chat,
+# repair_project, relation): грант такого вида засчитывается на шлюзе, только если x-scope операции допускает его вид
+# (иначе 403 до хендлера, как если бы гранта не было), и в хендлере — только на своём объекте (PD-53). Положительные
+# строки и строка listDatasets (x-scope effective-module-and-field-scopes допускает любой зарегистрированный вид:
+# 200 с пустым каталогом) — в scope_kinds.yaml и scope_kinds_node.yaml (W4.01). a.space-lead — knowledge.read и правка
+# только в пространстве «Регламенты» (space:a.rules); a.later-scopes — роль «Наблюдатель» на объектах следующих этапов
+# и на связи (relation). Строку listKnowledgePages × a.space-lead W4.01 перепроверил: x-scope операции
+# (tenant-org-unit-project) область space не допускает — отказ верен до PR knowledge (W4.04), который даст операциям БЗ
+# x-scope с space, page, relation; тогда строка уходит в файл модуля с новым ожиданием (canAny, README DoR «Общие
+# механизмы» п. 2).
 # Формат — README.md. После правки: go -C backend generate ./test/isolation
 module: scope_kinds_gate
 endpoints:
@@ -18,12 +20,12 @@ endpoints:
         params: { tenantId: tenant:a }
         status: 403
         code: forbidden_action
-        note: роль пространства без регистрации вида space (W4.01) не даёт knowledge.read; после регистрации строку перепроверяет W4.01 (canAny, см. шапку)
+        note: x-scope tenant-org-unit-project не допускает область space (W4.01 перепроверил, см. шапку)
       - actor: a.later-scopes
         params: { tenantId: tenant:a }
         status: 403
         code: forbidden_action
-        note: knowledge.read «Наблюдателя» — только в областях page, folder, doc, account, chat, repair_project, relation
+        note: knowledge.read «Наблюдателя» — только в областях page, folder, doc, account, chat, repair_project, relation — x-scope их не допускает
   - op: listTasks
     method: GET
     path: /api/v1/tenants/{tenantId}/tasks
@@ -32,7 +34,7 @@ endpoints:
         params: { tenantId: tenant:a }
         status: 403
         code: forbidden_action
-        note: tasks.read в области relation (исполнитель задачи) до регистрации вида — ничего
+        note: tasks.read в области relation (исполнитель задачи) — x-scope listTasks связь не допускает
       - actor: a.space-lead
         params: { tenantId: tenant:a }
         status: 403
@@ -47,12 +49,3 @@ endpoints:
         status: 403
         code: forbidden_action
         note: fleet.vehicles.read «Наблюдателя» на объекте ремонта, кассе, чате, документе — не машины фирмы
-  - op: listDatasets
-    method: GET
-    path: /api/v1/tenants/{tenantId}/datasets
-    rows:
-      - actor: a.later-scopes
-        params: { tenantId: tenant:a }
-        status: 403
-        code: forbidden_action
-        note: data.catalog.read в областях следующих этапов до регистрации вида — ничего

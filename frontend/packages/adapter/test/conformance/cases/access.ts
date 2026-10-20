@@ -394,26 +394,42 @@ export const accessCases = cases('access')([
   },
   {
     title:
-      'область следующего этапа (space) — 422, пока оценщик не знает вид (W4.02, ADR-0014 п. 3)',
+      'области этапов 4–7 (space, relation, repair_project) назначаются после регистрации вида (W4.01, ADR-0014 п. 3)',
+    operationId: 'createAssignment',
+    expect: 'success',
+    run: async (ctx) => {
+      const s = await ctx.as('owner');
+      for (const kind of ['space', 'relation', 'repair_project'] as const) {
+        const resourceIds = kind === 'relation' ? [] : [ctx.A('fleet')];
+        const r = await s.post(`${ctx.alta}/assignments`, {
+          principalType: 'member',
+          principalId: ctx.A('m-kotova'),
+          roleId: ctx.A('r-viewer'),
+          scope: { kind, resourceIds, includeDescendants: false },
+        });
+        expect(r.status).toBe(201);
+        expect(r.body).toMatchObject({ scope: { kind, resourceIds } });
+      }
+    },
+  },
+  {
+    title: 'область объекта без объекта и связь с объектом — 422 (W4.01, как kit.ScopeFromAPI)',
     operationId: 'createAssignment',
     expect: 'error',
     run: async (ctx) => {
       const s = await ctx.as('owner');
-      for (const kind of ['space', 'relation', 'repair_project']) {
+      for (const scope of [
+        { kind: 'space', resourceIds: [], includeDescendants: false },
+        { kind: 'relation', resourceIds: [ctx.A('fleet')], includeDescendants: false },
+        { kind: 'galaxy', resourceIds: [ctx.A('fleet')], includeDescendants: false },
+      ]) {
         const r = await s.post(`${ctx.alta}/assignments`, {
           principalType: 'member',
           principalId: ctx.A('m-kotova'),
-          roleId: ctx.A('r-manager'),
-          scope: {
-            kind,
-            resourceIds: kind === 'relation' ? [] : [ctx.A('fleet')],
-            includeDescendants: false,
-          },
+          roleId: ctx.A('r-viewer'),
+          scope,
         });
         ctx.expectProblem(r, 'validation_failed');
-        expect(r.body).toMatchObject({
-          detail: 'Такая область назначения на этом этапе недоступна.',
-        });
       }
     },
   },

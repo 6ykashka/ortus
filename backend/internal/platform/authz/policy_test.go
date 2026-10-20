@@ -68,8 +68,8 @@ func collectTenantCatalog(t *testing.T, modules map[string]map[string]catalogAct
 				t.Errorf("ModuleOf(%s) = %q, want %q", action, got, module)
 			}
 			for _, s := range a.Scopes {
-				if _, future := FutureKinds[s]; !future && !isPilotKind(s) {
-					t.Errorf("%s: scope %q is neither in the registry nor in FutureKinds", action, s)
+				if !isRegistered(s) {
+					t.Errorf("%s: scope %q is not in the registry", action, s)
 				}
 			}
 		}

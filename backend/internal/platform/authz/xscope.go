@@ -20,7 +20,7 @@ var (
 // xScopes maps every x-scope of tenant operations (catalog.Operations) to its admission; TestEveryTenant-
 // OperationScopeIsKnown keeps it complete. «assigned», «assigned-driver», «assigned-foreman» are relations of the
 // subject to the object, the kind self; «*-manager-or-owner» — a responsible manager (tenant or unit) or the
-// owner; «account» (cash) comes with its kind in W5.00.
+// owner; «account» — a cash account (W4.01). The kinds of stages 4–7 count only where an x-scope names them (PD-53).
 var xScopes = map[string]admission{
 	"tenant":                                   {kinds: tenantOnly},
 	"tenant-owner":                             {ownerOnly: true},
@@ -35,7 +35,7 @@ var xScopes = map[string]admission{
 	"tenant-org-unit-project-assigned-foreman": {kinds: projectSelf},
 	"tenant-org-unit-resource-pool":            {kinds: []string{KindTenant, KindUnit, KindResource}},
 	"tenant-org-unit-warehouse":                {kinds: []string{KindTenant, KindUnit, KindWarehouse}},
-	"tenant-org-unit-account":                  {kinds: []string{KindTenant, KindUnit, "account"}},
+	"tenant-org-unit-account":                  {kinds: []string{KindTenant, KindUnit, KindAccount}},
 	"responsible-manager-or-owner":             {kinds: territorial},
 	"responsible-manager-or-owner-only":        {kinds: territorial},
 	"source-manager-or-owner":                  {kinds: territorial},

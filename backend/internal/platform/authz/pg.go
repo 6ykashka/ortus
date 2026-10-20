@@ -24,8 +24,9 @@ type Pools interface {
 type PGSource struct{ Pools Pools }
 
 var (
-	_ Source   = PGSource{}
-	_ UnitTree = PGSource{}
+	_ Source      = PGSource{}
+	_ UnitTree    = PGSource{}
+	_ GroupSource = PGSource{}
 )
 
 // grantsSQL: active assignments of live roles at $2, of the person ($1) directly and through groups, with the
@@ -113,6 +114,15 @@ func (s PGSource) Ancestors(ctx context.Context, tenantID, unit uuid.UUID) ([]uu
 	return TxSource{Q: pool}.Ancestors(ctx, tenantID, unit)
 }
 
+// Groups implements GroupSource.
+func (s PGSource) Groups(ctx context.Context, tenantID, person uuid.UUID) ([]uuid.UUID, error) {
+	pool, err := s.pool(ctx, tenantID)
+	if err != nil {
+		return nil, err
+	}
+	return TxSource{Q: pool}.Groups(ctx, tenantID, person)
+}
+
 // Querier runs the reads of a source: a pool, a connection or a transaction of the tenant DB.
 type Querier interface {
 	Query(ctx context.Context, sql string, args ...any) (pgx.Rows, error)
@@ -126,8 +136,9 @@ type Querier interface {
 type TxSource struct{ Q Querier }
 
 var (
-	_ Source   = TxSource{}
-	_ UnitTree = TxSource{}
+	_ Source      = TxSource{}
+	_ UnitTree    = TxSource{}
+	_ GroupSource = TxSource{}
 )
 
 // Subject implements Source.
@@ -166,6 +177,18 @@ func (s TxSource) Ancestors(ctx context.Context, _, unit uuid.UUID) ([]uuid.UUID
 		return []uuid.UUID{unit}, nil
 	}
 	return path, nil
+}
+
+// Groups implements GroupSource: the live (not archived) groups of person, read only when an access list names a
+// group.
+func (s TxSource) Groups(ctx context.Context, _, person uuid.UUID) ([]uuid.UUID, error) {
+	groups, err := queryList[uuid.UUID](ctx, s.Q, `select gm.group_id from access.group_members gm
+		join access.groups g on g.id = gm.group_id and g.archived_at is null
+	 where gm.person_id = $1 order by 1`, person)
+	if err != nil {
+		return nil, fmt.Errorf("groups: %w", err)
+	}
+	return groups, nil
 }
 
 // queryList returns the single column of every row.

@@ -8,18 +8,25 @@ import (
 )
 
 // apiKinds maps Scope.kind of the contract to access.role_assignments.scope_kind (ADR-0014 п.7: org_unit ↔ unit,
-// resource_pool ↔ resource). warehouse has no kind in the contract yet; cash «account» and the kinds of stages 4–7
-// come with their contract PR.
+// resource_pool ↔ resource; the kinds of stages 4–7 have the same name, W4.01). warehouse has no kind in the contract.
 var apiKinds = map[accessapi.ScopeKind]string{
-	accessapi.ScopeKindTenant:       authz.KindTenant,
-	accessapi.ScopeKindOrgUnit:      authz.KindUnit,
-	accessapi.ScopeKindSelf:         authz.KindSelf,
-	accessapi.ScopeKindProject:      authz.KindProject,
-	accessapi.ScopeKindResourcePool: authz.KindResource,
+	accessapi.ScopeKindTenant:        authz.KindTenant,
+	accessapi.ScopeKindOrgUnit:       authz.KindUnit,
+	accessapi.ScopeKindSelf:          authz.KindSelf,
+	accessapi.ScopeKindProject:       authz.KindProject,
+	accessapi.ScopeKindResourcePool:  authz.KindResource,
+	accessapi.ScopeKindSpace:         authz.KindSpace,
+	accessapi.ScopeKindPage:          authz.KindPage,
+	accessapi.ScopeKindFolder:        authz.KindFolder,
+	accessapi.ScopeKindDoc:           authz.KindDoc,
+	accessapi.ScopeKindAccount:       authz.KindAccount,
+	accessapi.ScopeKindChat:          authz.KindChat,
+	accessapi.ScopeKindRepairProject: authz.KindRepairProject,
+	accessapi.ScopeKindRelation:      authz.KindRelation,
 }
 
-// ScopeFromAPI validates a Scope of the contract and returns the scope of the tenant DB: tenant and self take no
-// resourceIds, the other kinds exactly one (a row of access.role_assignments has one scope_ref). Only org_unit
+// ScopeFromAPI validates a Scope of the contract and returns the scope of the tenant DB: tenant, self and relation
+// take no resourceIds, the other kinds exactly one (a row of access.role_assignments has one scope_ref). Only org_unit
 // keeps includeDescendants.
 func ScopeFromAPI(s accessapi.Scope) (authz.Scope, error) {
 	kind, ok := apiKinds[s.Kind]
@@ -27,7 +34,7 @@ func ScopeFromAPI(s accessapi.Scope) (authz.Scope, error) {
 		return authz.Scope{}, Validation("Такая область назначения на этом этапе недоступна.")
 	}
 	switch kind {
-	case authz.KindTenant, authz.KindSelf:
+	case authz.KindTenant, authz.KindSelf, authz.KindRelation:
 		if len(s.ResourceIds) != 0 {
 			return authz.Scope{}, Validation("Для этой области не указывают подразделение или объект.")
 		}
@@ -50,7 +57,7 @@ func ScopeToAPI(s authz.Scope) accessapi.Scope {
 	switch s.Kind {
 	case authz.KindTenant:
 		out.IncludeDescendants = true
-	case authz.KindSelf:
+	case authz.KindSelf, authz.KindRelation:
 		out.IncludeDescendants = false
 	default:
 		out.ResourceIds = []accessapi.Id{s.Ref}

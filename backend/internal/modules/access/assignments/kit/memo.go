@@ -60,3 +60,12 @@ func (m *memoSource) Subject(ctx context.Context, tc tenantctx.TenantContext, at
 func (m *memoSource) InstalledModules(ctx context.Context, tc tenantctx.TenantContext) ([]string, error) {
 	return m.src.InstalledModules(ctx, tc)
 }
+
+// Groups implements authz.GroupSource when the source does (group entries of access lists of nodes, W4.01).
+func (m *memoSource) Groups(ctx context.Context, tenantID, person uuid.UUID) ([]uuid.UUID, error) {
+	gs, ok := m.src.(authz.GroupSource)
+	if !ok {
+		return nil, nil
+	}
+	return gs.Groups(ctx, tenantID, person)
+}

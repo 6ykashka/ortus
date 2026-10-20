@@ -42,9 +42,9 @@ function requireUniqueName(ctx: HandlerContext, name: string, except?: string): 
 }
 
 /**
- * Виды областей, которые знает оценщик (W1.04): организация, подразделение, «своё», проект, ресурсный пул. Виды
- * этапов 4–7 контракта 0.7.0-stage4 (space, page, folder, doc, account, chat, relation, repair_project) назначаются
- * только после регистрации вида (W4.01, W5.00, W6.00, W7.00) — до неё 422, как cmd/api (ADR-0014 п. 3, W4.02).
+ * Виды областей, которые знает оценщик: этапа 1 (W1.04) — организация, подразделение, «своё», проект, ресурсный пул;
+ * этапов 4–7 (W4.01, контракт 0.7.0-stage4) — пространство, страница, папка, документ, касса, чат, объект ремонта и
+ * связь. Незнакомый вид — 422, как cmd/api (kit.ScopeFromAPI, ADR-0014 п. 3).
  */
 const ASSIGNABLE: ReadonlySet<string> = new Set([
   'tenant',
@@ -52,9 +52,20 @@ const ASSIGNABLE: ReadonlySet<string> = new Set([
   'self',
   'project',
   'resource_pool',
+  'space',
+  'page',
+  'folder',
+  'doc',
+  'account',
+  'chat',
+  'repair_project',
+  'relation',
 ]);
 
-/** Скоуп назначения проверен: подразделения существуют, у организации и «своего» нет ресурсов. */
+/** Области без объекта: организация, «своё» и связь (Q-W4.02-1); у остальных — ровно один объект. */
+const WITHOUT_OBJECT: ReadonlySet<string> = new Set(['tenant', 'self', 'relation']);
+
+/** Скоуп назначения проверен: подразделения существуют, у организации, «своего» и связи нет ресурсов. */
 function requireScope(ctx: HandlerContext, scope: S['Scope']): void {
   if (!ASSIGNABLE.has(scope.kind)) {
     fail('validation_failed', 'Такая область назначения на этом этапе недоступна.');
@@ -63,8 +74,10 @@ function requireScope(ctx: HandlerContext, scope: S['Scope']): void {
   const bad =
     (scope.kind === 'org_unit' &&
       (!scope.resourceIds.length || scope.resourceIds.some((id) => !units.has(id)))) ||
-    ((scope.kind === 'tenant' || scope.kind === 'self') && scope.resourceIds.length > 0) ||
-    ((scope.kind === 'project' || scope.kind === 'resource_pool') && !scope.resourceIds.length);
+    (WITHOUT_OBJECT.has(scope.kind) && scope.resourceIds.length > 0) ||
+    (!WITHOUT_OBJECT.has(scope.kind) &&
+      scope.kind !== 'org_unit' &&
+      scope.resourceIds.length !== 1);
   if (bad) {
     fail('validation_failed', 'Проверьте область назначения.', {
       violations: [{ field: 'scope', code: 'invalid', message: 'Недопустимая область' }],

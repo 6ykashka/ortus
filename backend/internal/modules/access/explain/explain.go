@@ -34,6 +34,9 @@ const (
 	detailObjectOnly   = "Право есть только в роли на объект: без этого объекта оно не действует (PD-53)."
 	detailOtherObject  = "Право есть только в роли на другой объект."
 	detailOutOfScope   = "Право есть, но объект находится вне области назначения."
+	detailClosed       = "Право есть, но объект закрыт своими настройками доступа (список доступа или правило)."
+	detailRuled        = "Право есть, но действие запрещено правилом (например, «не автор»)."
+	detailOwnerClosed  = "Закрытый проект: владельцу бизнеса нужна роль в самом проекте."
 	detailUnknownRight = "Такого права нет в каталоге."
 	detailHiddenOnly   = "Среди видимых вам назначений сотрудника нет подходящих: остальные вне вашей области."
 	detailObjectParams = "Объект задают вместе: objectModule, objectType и objectId."
@@ -43,9 +46,13 @@ const (
 
 var permissionRE = regexp.MustCompile(`^[a-z][a-z0-9_]*(\.[a-z][a-z0-9_]*)+$`)
 
-// objectKinds maps objects of the contract (moduleKey/entityType) to the object-bound scope kinds of stage 1.
+// objectKinds maps objects of the contract (moduleKey/entityType) to the object-bound scope kinds whose grants the
+// object answers: x-explain-objects of explainAccess (0.7.0-stage4). A knowledge node is a page: a grant on its space
+// or on an ancestor node matches through the resolver of its module (ADR-0014 п.4).
 var objectKinds = map[[2]string]string{
 	{"tasks", "project"}:           authz.KindProject,
+	{"knowledge", "space"}:         authz.KindSpace,
+	{"knowledge", "node"}:          authz.KindPage,
 	{"inventory", "warehouse"}:     authz.KindWarehouse,
 	{"fleet", "resource_pool"}:     authz.KindResource,
 	{"logistics", "resource_pool"}: authz.KindResource,
@@ -263,7 +270,7 @@ func (h *Handler) permission(x authz.Explanation, r request, seen map[uuid.UUID]
 			pass(accessapi.Permission, "")
 			return
 		}
-		fail(accessapi.Permission, problem.CodeForbiddenAction, reason(x, seen))
+		fail(accessapi.Permission, problem.CodeForbiddenAction, reason(x, seen, false))
 		return
 	}
 	if !x.Owner && len(x.Grants) == 0 {
@@ -275,12 +282,17 @@ func (h *Handler) permission(x authz.Explanation, r request, seen map[uuid.UUID]
 		pass(accessapi.ResourceScope, "")
 		return
 	}
-	fail(accessapi.ResourceScope, problem.CodeForbiddenAction, reason(x, seen))
+	if x.OwnerShut && len(x.Grants) == 0 { // TP-03: the owner without a role in a closed project
+		fail(accessapi.ResourceScope, problem.CodeForbiddenAction, detailOwnerClosed)
+		return
+	}
+	fail(accessapi.ResourceScope, problem.CodeForbiddenAction, reason(x, seen, r.object != nil))
 }
 
 // reason explains a refusal by the mismatches of the grants that carry the permission and that the actor sees: a
 // hidden grant never tells its kind (out of scope, a role on a project or an object) — only hiddenGrants does.
-func reason(x authz.Explanation, seen map[uuid.UUID]bool) string {
+// withObject: the request names an object.
+func reason(x authz.Explanation, seen map[uuid.UUID]bool, withObject bool) string {
 	visible := make([]authz.GrantVerdict, 0, len(x.Grants))
 	for _, v := range x.Grants {
 		if seen[v.Grant.AssignmentID] {
@@ -293,19 +305,32 @@ func reason(x authz.Explanation, seen map[uuid.UUID]bool) string {
 	case len(visible) == 0:
 		return detailNoRole
 	}
-	project, object, other := true, true, false
+	return mismatchDetail(visible, withObject)
+}
+
+// mismatchDetail is the reason of a refusal by the mismatches of visible grants (at least one): a grant reaching the
+// object — the object closed itself (its access list or a rule, W4.01), a matching grant without an object — a rule
+// of the action (NotAuthor); only roles on a project or on an object without that object — PD-53; a role on another
+// object; otherwise out of scope.
+func mismatchDetail(visible []authz.GrantVerdict, withObject bool) string {
+	project, object, other, matched := true, true, false, false
 	for _, v := range visible {
 		switch v.Mismatch {
 		case authz.MismatchObjectWithoutObject:
 			project = project && v.Grant.Scope.Kind == authz.KindProject
+			continue
+		case "":
+			matched = true
 		case authz.MismatchOtherObject:
 			other = true
-			object, project = false, false
-		default:
-			object, project = false, false
 		}
+		object, project = false, false
 	}
 	switch {
+	case matched && withObject:
+		return detailClosed
+	case matched:
+		return detailRuled
 	case project:
 		return detailProjectOnly
 	case object:

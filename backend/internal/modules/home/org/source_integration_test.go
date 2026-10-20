@@ -181,7 +181,8 @@ func execDB(t *testing.T, d *sql.DB, q string, args ...any) {
 }
 
 // PD-53, S2-18 п. 1: the owner of A gets «N сотрудников без роли» with the active members of A that have no grant
-// with the scope of the business, a unit or «своё» now — a project role (a.project-lead), an ended
+// with the scope of the business, a unit or «своё» now — a project role (a.project-lead) or a role on an object of
+// stages 4–7 (a.space-lead, a.later-scopes), an ended
 // (a.manager-expired) or a future (a.manager-future) grant leave a member without a role; a grant through a group
 // counts (a.driver-earnings). The owner is not counted, names are those of the people of A only, sorted as the list
 // of people of the stand (by name); the count is the number of names.
@@ -193,7 +194,9 @@ func TestMembersWithoutRole(t *testing.T) {
 		t.Fatal("owner of A: no card of members without a role")
 	}
 	got := names(card)
-	for _, actor := range []string{"a.project-lead", "a.manager-expired", "a.manager-future"} {
+	// W4.01: a role on an object of stages 4–7 (a.space-lead — a space, a.later-scopes — a page, a chat, a cash
+	// account, a repair object, the relation) reaches no module without its object either (PD-53).
+	for _, actor := range []string{"a.project-lead", "a.manager-expired", "a.manager-future", "a.space-lead", "a.later-scopes"} {
 		if !slices.Contains(got, name(t, actor, "a")) {
 			t.Errorf("%s (%s) is not among %v", actor, name(t, actor, "a"), got)
 		}

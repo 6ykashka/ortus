@@ -18,6 +18,9 @@ const (
 	Admitted
 	// Denied: the object is restricted and the subject is not on its list: the object is invisible (404).
 	Denied
+	// Forbidden: the subject sees the object, but its list refuses this action (an edit node without an «edit» entry
+	// of the subject): 403 forbidden_action.
+	Forbidden
 )
 
 // ObjectACL is the access list of objects (knowledge nodes, document shares, chat sources — W4.01, W7.00). The

@@ -1,0 +1,21 @@
+# Матрица изоляции: объяснение доступа к узлу базы знаний (x-explain-objects knowledge/node → page; W4.01, W4.02,
+# ADR-0014 п. 4). Отдельный файл: у explainAccess в scope_kinds.yaml другой путь (объект — пространство), op в файле
+# уникален. Роль «Наблюдатель» на странице «Регламенты · Введение» совпадает на самом узле; объяснение — только
+# актору с roles.read на всю организацию, чужому тенанту — 404 как несуществующий. До W4.01 — 422.
+# Формат — README.md. После правки: go -C backend generate ./test/isolation
+module: scope_kinds_node
+endpoints:
+  - op: explainAccess
+    method: GET
+    path: /api/v1/tenants/{tenantId}/access/explanation?memberId={memberId}&permission=knowledge.read&objectModule=knowledge&objectType=node&objectId={objectId}
+    rows:
+      - actor: a.owner
+        params:
+          { tenantId: tenant:a, memberId: person:a.later-scopes@a, objectId: page:a.rules-intro }
+        status: 200
+        present: [person:a.later-scopes@a, page:a.rules-intro]
+      - actor: b.owner
+        params:
+          { tenantId: tenant:a, memberId: person:a.later-scopes@a, objectId: page:a.rules-intro }
+        status: 404
+        absent: [page:a.rules-intro]

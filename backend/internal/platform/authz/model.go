@@ -65,11 +65,23 @@ type Resource struct {
 	// forbidden_action; on an object the subject cannot see — 404 not_found, like an id that does not exist (AC-01).
 	// Empty: the action itself decides visibility.
 	ReadAction string
+	// Ancestors are the ancestors of the object of a kind among the objects of the same kind, nearest first (the parent
+	// pages of a page, the parent folders of a folder): a grant on an ancestor reaches the object (ADR-0014 п.4). The
+	// evaluator fills them from the resolver of the kind (Evaluator.Places) when the handler did not.
+	Ancestors map[string][]uuid.UUID
+	// Related are the people a computed relation with the record names now (scope relation, Q-W4.02-1): the foreman of
+	// a repair object, the driver of a trip, the assignee of a task.
+	Related []uuid.UUID
+	// Container is the object whose access level the resource inherits (a task — its project, a page — its space).
+	Container *Container
+	// Nodes is the branch of a tree object with access lists, from the top node to the object itself (knowledge pages,
+	// document folders and documents): NodeACL checks it.
+	Nodes []Node
 }
 
 // IsZero reports whether r names no object.
 func (r Resource) IsZero() bool {
-	return r.Unit == uuid.Nil && len(r.Objects) == 0 && len(r.Persons) == 0
+	return r.Unit == uuid.Nil && len(r.Objects) == 0 && len(r.Persons) == 0 && len(r.Related) == 0
 }
 
 // Object returns the id of the object of kind the resource lies in, uuid.Nil if none.
@@ -80,6 +92,11 @@ type Columns struct {
 	Unit    string            // owning org unit, e.g. "t.unit_id"
 	Objects map[string]string // object-bound kind → column, e.g. "project": "t.project_id"
 	Persons []string          // «own» people (scope self): "t.driver_person_id", "t.created_by"
+	// Paths: object-bound kind → SQL expression of a uuid[] holding the object of the row and its ancestors of the same
+	// kind (a grant on an ancestor page reaches the row); it takes the place of Objects for the kind.
+	Paths     map[string]string
+	Related   []string          // people of the relation with the row (scope relation): "o.foreman_id"
+	Container *ContainerColumns // the access level of the container of the row (a project, a space)
 }
 
 // Predicate is a boolean SQL condition with its positional arguments.

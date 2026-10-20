@@ -186,14 +186,16 @@ select m.person_profile_id from memberships m
                     where o.tenant_id = m.tenant_id and o.membership_id = m.id and o.revoked_at is null)`
 
 // withoutRoleSQL: of the people ($1) those not archived without a grant active now ($2) with the scope of the
-// business, a unit or «своё» — directly or through a group (a project role gives no access to the modules, PD-53),
-// sorted by name as the list of people (listMembers): the first $3 names, each row with the count of all of them.
+// business, a unit, «своё», a warehouse or a resource pool — directly or through a group (a role on a project or on an
+// object of stages 4–7 — space, page, folder, doc, account, chat, repair_project — and on the relation gives no
+// access to the modules without its object, PD-53, W4.01), sorted by name as the list of people (listMembers): the
+// first $3 names, each row with the count of all of them.
 const withoutRoleSQL = `
 select p.full_name, count(*) over () from people.person_profiles p
  where p.id = any($1) and p.archived_at is null
    and not exists (
          select 1 from access.role_assignments a
-          where a.state = 'active' and a.valid @> $2::timestamptz and a.scope_kind <> 'project'
+          where a.state = 'active' and a.valid @> $2::timestamptz and a.scope_kind in ('tenant', 'unit', 'self', 'warehouse', 'resource')
             and ((a.principal_kind = 'person' and a.principal_id = p.id)
               or (a.principal_kind = 'group'
                   and a.principal_id in (select g.group_id from access.group_members g where g.person_id = p.id))))

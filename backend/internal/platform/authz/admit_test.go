@@ -96,18 +96,9 @@ func TestEveryTenantOperationScopeIsKnown(t *testing.T) {
 	}
 	for xs, a := range xScopes {
 		for _, k := range a.kinds {
-			if _, ok := FutureKinds[k]; !ok && !isPilotKind(k) {
+			if !isRegistered(k) {
 				t.Errorf("x-scope %s admits unknown kind %q", xs, k)
 			}
 		}
 	}
-}
-
-func isPilotKind(k string) bool {
-	for _, p := range PilotKinds() {
-		if p.Key() == k {
-			return true
-		}
-	}
-	return false
 }

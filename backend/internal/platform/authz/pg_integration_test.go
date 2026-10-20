@@ -239,3 +239,59 @@ func TestAC10RevokedRoleDuringExport(t *testing.T) {
 		t.Errorf("scope after the revocation: %q %v, want false", p.SQL, err)
 	}
 }
+
+// Группы участника для записей «группа» списков узлов (W4.01): живые группы из access.group_members.
+func TestPGSourceGroups(t *testing.T) {
+	t.Parallel()
+	dir, p := pools(t, world)
+	src := authz.PGSource{Pools: p}
+	de := tc(t, world, dir, "a.driver-earnings")
+	got, err := src.Groups(t.Context(), de.TenantID, de.PersonID)
+	if err != nil || !slices.Equal(got, []uuid.UUID{ref(t, world, "group:a.finance")}) {
+		t.Errorf("groups of a.driver-earnings = %v %v", got, err)
+	}
+	owner := tc(t, world, dir, "a.owner")
+	if got, err := src.Groups(t.Context(), owner.TenantID, owner.PersonID); err != nil || len(got) != 0 {
+		t.Errorf("groups of the owner = %v %v", got, err)
+	}
+	if _, err := src.Groups(t.Context(), uuid.New(), owner.PersonID); !problem.Is(err, problem.CodeDependencyUnavailable) {
+		t.Errorf("unknown tenant: %v, want dependency_unavailable", err)
+	}
+}
+
+// Виды этапов 4–7 на фикстурах W4.02 (tenant 0020): роль пространства — только в своём пространстве (PD-53),
+// «Наблюдатель» на странице, чате и связи; запись «группа» списка узла — по живому составу группы.
+func TestEvaluatorStage4OnFixtures(t *testing.T) {
+	t.Parallel()
+	ev, dir := evaluator(t, world, harness.Now())
+	obj := func(kind, r string) authz.Resource {
+		return authz.Resource{Objects: map[string]uuid.UUID{kind: ref(t, world, r)}, ReadAction: "knowledge.read"}
+	}
+	listed := func(actor string) authz.Resource {
+		return authz.Resource{Persons: []uuid.UUID{ref(t, world, "person:"+actor+"@a")}, ReadAction: "knowledge.read",
+			Nodes: []authz.Node{{ID: uuid.New(), Kind: authz.KindPage, Mode: authz.NodeListed,
+				Entries: []authz.Entry{{Kind: authz.EntryGroup, Ref: ref(t, world, "group:a.finance")}}}}}
+	}
+	later := ref(t, world, "person:a.later-scopes@a")
+	for _, c := range []struct {
+		actor, action string
+		r             authz.Resource
+		code          string
+	}{
+		{"a.space-lead", "knowledge.update", obj(authz.KindSpace, "space:a.rules"), ""},
+		{"a.space-lead", "knowledge.update", authz.Resource{Objects: map[string]uuid.UUID{authz.KindSpace: uuid.New()}}, problem.CodeNotFound},
+		{"a.space-lead", "knowledge.update", authz.Resource{}, problem.CodeForbiddenAction},
+		{"a.later-scopes", "knowledge.read", obj(authz.KindPage, "page:a.rules-intro"), ""},
+		{"a.later-scopes", "knowledge.read", obj(authz.KindChat, "chat:a.trip"), ""},
+		{"a.later-scopes", "knowledge.read", obj(authz.KindRepairProject, "repair_project:a.flat"), ""},
+		{"a.later-scopes", "knowledge.read", obj(authz.KindProject, "repair_project:a.flat"), problem.CodeNotFound},
+		{"a.later-scopes", "knowledge.read", authz.Resource{Related: []uuid.UUID{later}}, ""},
+		{"a.driver-earnings", "knowledge.read", listed("a.driver-earnings"), ""},
+		{"a.driver-msk1", "knowledge.read", listed("a.driver-msk1"), problem.CodeNotFound},
+	} {
+		err := ev.Permit(t.Context(), tc(t, world, dir, c.actor), c.action, c.r)
+		if (c.code == "" && err != nil) || (c.code != "" && !problem.Is(err, c.code)) {
+			t.Errorf("%s %s %+v: %v, want %q", c.actor, c.action, c.r.Objects, err, c.code)
+		}
+	}
+}

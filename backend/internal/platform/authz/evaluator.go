@@ -42,14 +42,23 @@ type Evaluator struct {
 	Policy   Policy
 	Params   []GrantParam      // checked for every grant (LimitAmount)
 	Rules    map[string][]Rule // action → rules (NotAuthor)
-	ACL      ObjectACL         // nil: InheritedACL
+	ACL      ObjectACL         // nil: NodeACL (Resource.Nodes with NodeRules)
 	Now      func() time.Time  // the clock of the application (APP_FIXED_NOW outside prod); nil: time.Now
+	// Places: object kind → its resolver (ADR-0014 п.4), registered by the module that owns the kind's table.
+	Places map[string]ObjectResolver
+	// NodeRules: object kind of a tree node → what its module's actions mean to node access lists.
+	NodeRules map[string]NodeRule
+	// ContainerReads: object kind of a container → the actions a territorial grant keeps in a limited one («только
+	// чтение»), registered by the module of the container (tasks: tasks.projects.read, tasks.read; knowledge:
+	// knowledge.read). A kind without them gives territorial grants nothing in a limited container (fail-closed).
+	ContainerReads map[string][]string
 }
 
-// New returns an evaluator with the kinds of stage 1, the catalog policy, LimitAmount and no object lists.
+// New returns an evaluator with every kind (Kinds: stage 1 and stages 4–7), the catalog policy, LimitAmount and the
+// access lists of tree nodes (NodeACL); resolvers and node rules come from the modules.
 func New(src Source, units UnitTree, now func() time.Time) *Evaluator {
-	reg, err := NewRegistry(PilotKinds()...)
-	if err != nil { // the pilot kinds have distinct non-empty keys (TestPilotKinds)
+	reg, err := NewRegistry(Kinds()...)
+	if err != nil { // the kinds have distinct non-empty keys (TestModuleKinds)
 		panic(err)
 	}
 	return &Evaluator{
@@ -69,7 +78,7 @@ func (e *Evaluator) acl() ObjectACL {
 	if e.ACL != nil {
 		return e.ACL
 	}
-	return InheritedACL{}
+	return NodeACL{E: e}
 }
 
 func forbidden() error { return problem.New(problem.CodeForbiddenAction, "") }
@@ -102,8 +111,12 @@ func (e *Evaluator) Permit(ctx context.Context, tc tenantctx.TenantContext, acti
 	if !e.Policy.Known(action) {
 		return forbidden()
 	}
+	r, err := e.withPlaces(ctx, tc, r)
+	if err != nil {
+		return err
+	}
 	blockable := e.Policy.Blockable(action) || e.Policy.Blockable(r.ReadAction)
-	sub, err := e.subject(ctx, tc, blockable, !tc.Owner)
+	sub, err := e.subject(ctx, tc, blockable, !tc.Owner || r.ownerShut())
 	if err != nil {
 		return err
 	}
@@ -111,22 +124,26 @@ func (e *Evaluator) Permit(ctx context.Context, tc tenantctx.TenantContext, acti
 }
 
 // decide is Permit for a loaded subject (its work functions must be loaded when action or r.ReadAction is
-// blockable). An owner_only action of a member is denied like any other: 403 when the member sees the object or
+// blockable, its grants — for a member or an owner in a container closed to it) and a resource already placed
+// (withPlaces). An owner_only action of a member is denied like any other: 403 when the member sees the object or
 // there is none, 404 when the object is invisible (AC-01).
 func (e *Evaluator) decide(ctx context.Context, tc tenantctx.TenantContext, sub Subject, action string, r Resource) error {
 	if e.Policy.Blocked(action, sub.Functions) {
 		return blockedByFunction()
 	}
-	if !sub.Owner {
+	if !sub.Owner || r.ownerShut() {
 		var err error
 		if r, err = e.withUnitPath(ctx, tc, r); err != nil {
 			return err
 		}
-		if e.Policy.OwnerOnly[action] {
-			return e.deny(ctx, sub, action, r)
-		}
+	}
+	if !sub.Owner && e.Policy.OwnerOnly[action] {
+		return e.deny(ctx, sub, action, r)
 	}
 	ok, err := e.allows(ctx, sub, action, r)
+	if err == nil && !ok {
+		ok, err = e.listGrants(ctx, sub, action, r)
+	}
 	switch {
 	case err != nil:
 		return err
@@ -149,25 +166,43 @@ func (e *Evaluator) withUnitPath(ctx context.Context, tc tenantctx.TenantContext
 	return r, nil
 }
 
-// allows reports whether one grant of sub allows action on r whole; the owner is allowed every action.
+// allows reports whether one grant of sub allows action on r whole; the owner is allowed every action, except in a
+// container closed to it (TP-03), where only its own grants count.
 func (e *Evaluator) allows(ctx context.Context, sub Subject, action string, r Resource) (bool, error) {
-	if sub.Owner {
+	if sub.Owner && !r.ownerShut() {
 		return true, nil
 	}
 	for _, g := range sub.Grants {
 		if !g.Has(action) {
 			continue
 		}
-		if ok, err := e.grantAllows(ctx, sub, g, r); err != nil || ok {
+		if ok, err := e.grantAllows(ctx, sub, g, action, r); err != nil || ok {
 			return ok, err
 		}
 	}
 	return false, nil
 }
 
-// grantAllows checks one grant whole: a registered kind, PD-53 for object-bound kinds, the scope covering r and
-// every parameter admitting r.
-func (e *Evaluator) grantAllows(ctx context.Context, sub Subject, g Grant, r Resource) (bool, error) {
+// listGrants reports whether the access list of the object gives action itself to sub (ACLGrant: an «edit» entry
+// of a node), which needs sub to see the object.
+func (e *Evaluator) listGrants(ctx context.Context, sub Subject, action string, r Resource) (bool, error) {
+	lg, ok := e.acl().(ACLGrant)
+	if !ok || sub.Owner || r.IsZero() || r.ReadAction == "" || r.ReadAction == action {
+		return false, nil
+	}
+	granted, err := lg.Grants(ctx, sub, action, r)
+	if err != nil {
+		return false, dependency(err)
+	}
+	if !granted {
+		return false, nil
+	}
+	return e.sees(ctx, sub, r)
+}
+
+// grantAllows checks one grant whole: a registered kind, PD-53 for object-bound kinds, the scope covering r, the
+// level of the container of r for territorial grants and every parameter admitting r.
+func (e *Evaluator) grantAllows(ctx context.Context, sub Subject, g Grant, action string, r Resource) (bool, error) {
 	kind, ok := e.Registry.Kind(g.Scope.Kind)
 	if !ok {
 		return false, nil // a kind of a later stage gives nothing until it is registered
@@ -176,8 +211,11 @@ func (e *Evaluator) grantAllows(ctx context.Context, sub Subject, g Grant, r Res
 		return false, nil // PD-53: an object grant without its object
 	}
 	covers, err := kind.Covers(ctx, g.Scope, sub, r)
-	if err != nil || !covers {
-		return false, err
+	switch {
+	case err != nil:
+		return false, dependency(err)
+	case !covers, !levelAdmits(e.ContainerReads, sub, kind, action, r):
+		return false, nil
 	}
 	for _, p := range e.Params {
 		if !p.Admits(g, r) {
@@ -214,9 +252,10 @@ func (e *Evaluator) sees(ctx context.Context, sub Subject, r Resource) (bool, er
 	if err != nil || !visible || sub.Owner {
 		return visible, err
 	}
+	// the owner sees through access lists; a member — unless its list hides the object
 	adm, err := e.acl().Admit(ctx, sub, r.ReadAction, read)
 	if err != nil {
-		return false, problem.Wrap(problem.CodeDependencyUnavailable, err)
+		return false, dependency(err)
 	}
 	return adm != Denied, nil
 }
@@ -226,11 +265,13 @@ func (e *Evaluator) sees(ctx context.Context, sub Subject, r Resource) (bool, er
 func (e *Evaluator) admitted(ctx context.Context, sub Subject, action string, r Resource) error {
 	if !sub.Owner && !r.IsZero() {
 		adm, err := e.acl().Admit(ctx, sub, action, r)
-		if err != nil {
-			return problem.Wrap(problem.CodeDependencyUnavailable, err)
-		}
-		if adm == Denied {
+		switch {
+		case err != nil:
+			return dependency(err)
+		case adm == Denied:
 			return notFound()
+		case adm == Forbidden:
+			return forbidden()
 		}
 	}
 	for _, rule := range e.Rules[action] {
@@ -298,17 +339,23 @@ func (e *Evaluator) ScopeQuery(ctx context.Context, tc tenantctx.TenantContext, 
 	if !e.Policy.Known(action) {
 		return none, nil
 	}
-	sub, err := e.subject(ctx, tc, e.Policy.Blockable(action), !tc.Owner)
+	sub, err := e.subject(ctx, tc, e.Policy.Blockable(action), !tc.Owner || c.ownerShut())
 	switch {
 	case err != nil:
 		return Predicate{}, err
 	case e.Policy.Blocked(action, sub.Functions), e.Policy.OwnerOnly[action] && !sub.Owner:
 		return none, nil
-	case sub.Owner:
+	case sub.Owner && !c.ownerShut():
 		return Predicate{SQL: sqlTrue}, nil
 	}
 	args := NewArgs(argStart)
 	sql := e.grantsPredicate(sub, action, c, args)
+	if sub.Owner { // TP-03: every row but those of closed containers, where only the owner's own grants count
+		if sql == sqlFalse {
+			return Predicate{SQL: "(" + c.Container.reachableSQL() + ")"}, nil
+		}
+		return Predicate{SQL: "(" + c.Container.reachableSQL() + " or " + sql + ")", Args: args.Values()}, nil
+	}
 	if sql == sqlFalse {
 		return none, nil
 	}
@@ -320,7 +367,9 @@ func (e *Evaluator) ScopeQuery(ctx context.Context, tc tenantctx.TenantContext, 
 	return Predicate{SQL: sql, Args: args.Values()}, nil
 }
 
-// grantsPredicate is the OR of the predicates of the grants of sub with action; «true» as soon as one is.
+// grantsPredicate is the OR of the predicates of the grants of sub with action; «true» as soon as one is. A
+// territorial grant over rows of containers (Columns.Container) holds only where the level of the container lets
+// it in for action and, when a role on the container replaces it, outside the containers of the roles of sub.
 func (e *Evaluator) grantsPredicate(sub Subject, action string, c Columns, args *Args) string {
 	type part struct {
 		kind ScopeKind
@@ -329,7 +378,7 @@ func (e *Evaluator) grantsPredicate(sub Subject, action string, c Columns, args 
 	var parts []part
 	for _, g := range sub.Grants {
 		if kind, ok := e.Registry.Kind(g.Scope.Kind); ok && g.Has(action) {
-			if kind.Predicate(g.Scope, sub, c, NewArgs(0)) == sqlTrue {
+			if levelSQL(e.ContainerReads, kind, action, c) == "" && kind.Predicate(g.Scope, sub, c, NewArgs(0)) == sqlTrue {
 				return sqlTrue
 			}
 			parts = append(parts, part{kind, g})
@@ -337,7 +386,7 @@ func (e *Evaluator) grantsPredicate(sub Subject, action string, c Columns, args 
 	}
 	var sqls []string
 	for _, p := range parts {
-		if s := p.kind.Predicate(p.g.Scope, sub, c, args); s != sqlFalse {
+		if s := e.grantSQL(sub, p.kind, p.g, action, c, args); s != sqlFalse {
 			sqls = append(sqls, s)
 		}
 	}
@@ -345,6 +394,35 @@ func (e *Evaluator) grantsPredicate(sub Subject, action string, c Columns, args 
 		return sqlFalse
 	}
 	return "(" + strings.Join(sqls, " or ") + ")"
+}
+
+// grantSQL is the predicate of one grant of sub with action over c, with the conditions the containers of the rows
+// put on a territorial grant: their level and the containers where a role of sub replaces it.
+func (e *Evaluator) grantSQL(sub Subject, kind ScopeKind, g Grant, action string, c Columns, args *Args) string {
+	ids, drop := replaced(sub, kind, c)
+	if drop {
+		return sqlFalse
+	}
+	s := kind.Predicate(g.Scope, sub, c, args)
+	if s == sqlFalse {
+		return s
+	}
+	var conds []string
+	if lvl := levelSQL(e.ContainerReads, kind, action, c); lvl != "" {
+		conds = append(conds, lvl)
+	}
+	if len(ids) > 0 {
+		conds = append(conds, replacedSQL(c, ids, args))
+	}
+	switch cond := strings.Join(conds, " and "); {
+	case cond == "":
+		return s
+	case s == sqlTrue && len(conds) == 1:
+		return cond
+	case s == sqlTrue:
+		return "(" + cond + ")"
+	}
+	return "(" + s + " and " + strings.Join(conds, " and ") + ")"
 }
 
 // Capabilities lists what the subject of tc may do, for GET /me/context (hints for the UI; the gateway and the

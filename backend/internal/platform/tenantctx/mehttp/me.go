@@ -163,13 +163,22 @@ func (s *Server) degraded(ctx context.Context, tenant uuid.UUID, err error) {
 	}
 }
 
-// scopeKinds maps scopes of access.role_assignments to Scope.kind of the contract (warehouse has no kind yet).
+// scopeKinds maps scopes of access.role_assignments to Scope.kind of the contract (warehouse has no kind yet); the
+// kinds of stages 4–7 have the same name (W4.01, contract 0.7.0-stage4).
 var scopeKinds = map[string]contextapi.ScopeKind{
-	"tenant":   contextapi.Tenant,
-	"unit":     contextapi.OrgUnit,
-	"project":  contextapi.Project,
-	"self":     contextapi.Self,
-	"resource": contextapi.ResourcePool,
+	"tenant":         contextapi.Tenant,
+	"unit":           contextapi.OrgUnit,
+	"project":        contextapi.Project,
+	"self":           contextapi.Self,
+	"resource":       contextapi.ResourcePool,
+	"space":          contextapi.Space,
+	"page":           contextapi.Page,
+	"folder":         contextapi.Folder,
+	"doc":            contextapi.Doc,
+	"account":        contextapi.Account,
+	"chat":           contextapi.Chat,
+	"repair_project": contextapi.RepairProject,
+	"relation":       contextapi.Relation,
 }
 
 func capabilities(grants []tenantctx.Grant) []contextapi.ScopedCapability {

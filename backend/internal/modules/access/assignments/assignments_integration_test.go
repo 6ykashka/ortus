@@ -301,15 +301,16 @@ func TestCreateAssignmentRefusals(t *testing.T) {
 		body  accessapi.AssignmentCreate
 		code  string
 	}{
-		"нет роли":               {w.owner, member(w.m1, uuid.New(), tenantScope), "not_found"},
-		"нет участника":          {w.owner, member(uuid.New(), w.trips, tenantScope), "not_found"},
-		"участник вне видимости": {w.firmAdmin, member(w.m2, w.trips, unitScope(w.f1, false)), "not_found"},
-		"нет подразделения":      {w.owner, member(w.m1, w.trips, unitScope(uuid.New(), false)), "not_found"},
-		"системная роль":         {w.owner, member(w.m1, w.ownerRole, tenantScope), "invalid_transition"},
-		"касса (этап 5)":         {w.owner, member(w.m1, w.trips, accessapi.Scope{Kind: "account", ResourceIds: []uuid.UUID{uuid.New()}}), "validation_failed"},
-		"срок уже прошёл":        {w.owner, ended, "validation_failed"},
-		"конец раньше начала":    {w.owner, inverted, "validation_failed"},
-		"группа вне видимости":   {w.firmAdmin, accessapi.AssignmentCreate{PrincipalType: accessapi.AssignmentCreatePrincipalTypeGroup, PrincipalId: w.everyone, RoleId: w.trips, Scope: unitScope(w.f1, false)}, "not_found"},
+		"нет роли":                {w.owner, member(w.m1, uuid.New(), tenantScope), "not_found"},
+		"нет участника":           {w.owner, member(uuid.New(), w.trips, tenantScope), "not_found"},
+		"участник вне видимости":  {w.firmAdmin, member(w.m2, w.trips, unitScope(w.f1, false)), "not_found"},
+		"нет подразделения":       {w.owner, member(w.m1, w.trips, unitScope(uuid.New(), false)), "not_found"},
+		"системная роль":          {w.owner, member(w.m1, w.ownerRole, tenantScope), "invalid_transition"},
+		"неизвестный вид области": {w.owner, member(w.m1, w.trips, accessapi.Scope{Kind: "galaxy", ResourceIds: []uuid.UUID{uuid.New()}}), "validation_failed"},
+		"связь с объектом":        {w.owner, member(w.m1, w.trips, accessapi.Scope{Kind: accessapi.ScopeKindRelation, ResourceIds: []uuid.UUID{uuid.New()}}), "validation_failed"},
+		"срок уже прошёл":         {w.owner, ended, "validation_failed"},
+		"конец раньше начала":     {w.owner, inverted, "validation_failed"},
+		"группа вне видимости":    {w.firmAdmin, accessapi.AssignmentCreate{PrincipalType: accessapi.AssignmentCreatePrincipalTypeGroup, PrincipalId: w.everyone, RoleId: w.trips, Scope: unitScope(w.f1, false)}, "not_found"},
 	} {
 		if _, err := w.create(t, tc.actor, tc.body); accesstest.Code(err) != tc.code {
 			t.Errorf("%s: %v, want %s", name, err, tc.code)
@@ -391,5 +392,38 @@ func TestCreateAssignmentGroupSelfByMemberHome(t *testing.T) {
 	body.PrincipalId = w.drivers // Москва-1 only
 	if _, err := w.create(t, w.firmAdmin, body); err != nil {
 		t.Errorf("self role to a group of Москва-1: %v", err)
+	}
+}
+
+// Виды этапов 4–7 (W4.01, контракт 0.7.0-stage4): назначение на пространство и на связь принимается (201), список
+// отдаёт их Scope.kind и объект; объектную область участник выдаёт, только если сам действует на этом объекте или во
+// всей организации (PD-53, AUTH-08), «связь» — как «своё»: по подразделению назначения.
+func TestCreateAssignmentStage4Kinds(t *testing.T) {
+	t.Parallel()
+	w := newWorld(t)
+	space := uuid.New()
+	spaceScope := accessapi.Scope{Kind: accessapi.ScopeKindSpace, ResourceIds: []uuid.UUID{space}}
+	relation := accessapi.Scope{Kind: accessapi.ScopeKindRelation, ResourceIds: []uuid.UUID{}}
+	a, err := w.create(t, w.owner, member(w.m1, w.trips, spaceScope))
+	if err != nil || a.Scope.Kind != accessapi.ScopeKindSpace || !slices.Equal(a.Scope.ResourceIds, []uuid.UUID{space}) {
+		t.Fatalf("space: %+v %v", a, err)
+	}
+	r, err := w.create(t, w.owner, member(w.m2, w.trips, relation))
+	if err != nil || r.Scope.Kind != accessapi.ScopeKindRelation || len(r.Scope.ResourceIds) != 0 || r.Scope.ResourceIds == nil {
+		t.Fatalf("relation: %+v %v", r, err)
+	}
+	all := w.list(t, w.owner)
+	if all[a.Id].Scope.Kind != accessapi.ScopeKindSpace || all[r.Id].Scope.Kind != accessapi.ScopeKindRelation {
+		t.Errorf("list: %+v %+v", all[a.Id].Scope, all[r.Id].Scope)
+	}
+	if _, err := w.create(t, w.firmAdmin, member(w.m1, w.trips, spaceScope)); accesstest.Code(err) != "delegation_exceeds_grant" {
+		t.Errorf("space by the firm admin: %v, want delegation_exceeds_grant", err)
+	}
+	if _, err := w.create(t, w.firmAdmin, member(w.driver, w.trips, relation)); err != nil {
+		t.Errorf("relation by the firm admin in his firm: %v", err)
+	}
+	m1 := w.TC(w.m1)
+	if err := w.Evaluator().Permit(w.Ctx(m1), m1, "fleet.trips.read", authz.Resource{Objects: map[string]uuid.UUID{authz.KindSpace: space}}); err != nil {
+		t.Errorf("the space grant works on its space: %v", err)
 	}
 }

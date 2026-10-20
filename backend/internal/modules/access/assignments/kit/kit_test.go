@@ -141,12 +141,46 @@ func TestScopeFromAPI(t *testing.T) {
 		"фирма без id":        {accessapi.Scope{Kind: accessapi.ScopeKindOrgUnit}, authz.Scope{}, kit.CodeValidation},
 		"две фирмы":           {accessapi.Scope{Kind: accessapi.ScopeKindOrgUnit, ResourceIds: ids(2)}, authz.Scope{}, kit.CodeValidation},
 		"нулевой id":          {accessapi.Scope{Kind: accessapi.ScopeKindProject, ResourceIds: []uuid.UUID{uuid.Nil}}, authz.Scope{}, kit.CodeValidation},
-		"касса (этап 5)":      {accessapi.Scope{Kind: "account", ResourceIds: ids(1)}, authz.Scope{}, kit.CodeValidation},
+		"касса (W4.01)":       {accessapi.Scope{Kind: accessapi.ScopeKindAccount, ResourceIds: []uuid.UUID{id}}, authz.Scope{Kind: authz.KindAccount, Ref: id}, ""},
+		"неизвестный вид":     {accessapi.Scope{Kind: "galaxy", ResourceIds: ids(1)}, authz.Scope{}, kit.CodeValidation},
+		"связь":               {accessapi.Scope{Kind: accessapi.ScopeKindRelation, ResourceIds: []uuid.UUID{}, IncludeDescendants: true}, authz.Scope{Kind: authz.KindRelation}, ""},
+		"связь с id":          {accessapi.Scope{Kind: accessapi.ScopeKindRelation, ResourceIds: ids(1)}, authz.Scope{}, kit.CodeValidation},
+		"пространство без id": {accessapi.Scope{Kind: accessapi.ScopeKindSpace}, authz.Scope{}, kit.CodeValidation},
 	} {
 		got, err := kit.ScopeFromAPI(tc.in)
 		if code(err) != tc.err || (tc.err == "" && got != tc.want) {
 			t.Errorf("%s: %+v %v, want %+v %s", name, got, err, tc.want, tc.err)
 		}
+	}
+	// Объектные виды этапов 4–7 (W4.01): ровно один объект своего вида, без поддерева; имя API = ключ каталога.
+	for _, kind := range []accessapi.ScopeKind{accessapi.ScopeKindSpace, accessapi.ScopeKindPage, accessapi.ScopeKindFolder,
+		accessapi.ScopeKindDoc, accessapi.ScopeKindAccount, accessapi.ScopeKindChat, accessapi.ScopeKindRepairProject} {
+		got, err := kit.ScopeFromAPI(accessapi.Scope{Kind: kind, ResourceIds: []uuid.UUID{id}, IncludeDescendants: true})
+		if err != nil || got != (authz.Scope{Kind: string(kind), Ref: id}) {
+			t.Errorf("%s: %+v %v", kind, got, err)
+		}
+		if back := kit.ScopeToAPI(got); back.Kind != kind || !slices.Equal(back.ResourceIds, []uuid.UUID{id}) || back.IncludeDescendants {
+			t.Errorf("%s back: %+v", kind, back)
+		}
+	}
+}
+
+// Цели делегирования области «связь» — как у «своего»: подразделение назначения (W4.01).
+func TestTargetsRelation(t *testing.T) {
+	t.Parallel()
+	for _, kind := range []string{authz.KindSelf, authz.KindRelation} {
+		got, err := kit.Targets(t.Context(), nil, authz.Scope{Kind: kind}, firm1)
+		if err != nil || len(got) != 1 || got[0].Unit != firm1 || len(got[0].Objects) != 0 {
+			t.Errorf("%s: %+v %v", kind, got, err)
+		}
+	}
+}
+
+func TestScopeToAPIRelation(t *testing.T) {
+	t.Parallel()
+	got := kit.ScopeToAPI(authz.Scope{Kind: authz.KindRelation})
+	if got.Kind != accessapi.ScopeKindRelation || got.ResourceIds == nil || len(got.ResourceIds) != 0 || got.IncludeDescendants {
+		t.Errorf("relation: %+v", got)
 	}
 }
 
@@ -391,5 +425,33 @@ func TestSensitivityMatchesCatalog(t *testing.T) {
 	s, r := kit.SplitSensitivity([]string{"fleet.earnings.read", "members.read", "roles.assign", "chat.pdn.read"})
 	if !slices.Equal(s, []string{"roles.assign"}) || !slices.Equal(r, []string{"fleet.earnings.read", "chat.pdn.read"}) {
 		t.Errorf("SplitSensitivity = %v %v", s, r)
+	}
+}
+
+// groupSource is source with the groups of access lists (authz.GroupSource).
+type groupSource struct {
+	*source
+	groups map[uuid.UUID][]uuid.UUID
+}
+
+func (g groupSource) Groups(_ context.Context, _, person uuid.UUID) ([]uuid.UUID, error) {
+	return g.groups[person], nil
+}
+
+// Копия оценщика на запрос (Request, Within) не теряет групп источника: запись «группа» списка узла (W4.01)
+// совпадает и через запоминающий источник.
+func TestRequestKeepsGroups(t *testing.T) {
+	t.Parallel()
+	person, group := uuid.New(), uuid.New()
+	src := &source{subjects: map[uuid.UUID]authz.Subject{person: {Grants: []authz.Grant{
+		grant(authz.Scope{Kind: authz.KindUnit, Ref: firm1, Descendants: true}, "knowledge.read")}}}}
+	ev := authz.New(groupSource{source: src, groups: map[uuid.UUID][]uuid.UUID{person: {group}}}, tree{}, func() time.Time { return now })
+	page := authz.Resource{Unit: firm1, ReadAction: "knowledge.read", Nodes: []authz.Node{{ID: uuid.New(), Kind: authz.KindPage,
+		Mode: authz.NodeListed, Entries: []authz.Entry{{Kind: authz.EntryGroup, Ref: group}}}}}
+	if err := ev.Permit(t.Context(), tcOf(person, false), "knowledge.read", page); err != nil {
+		t.Fatalf("evaluator: %v", err)
+	}
+	if err := kit.Request(ev).Permit(t.Context(), tcOf(person, false), "knowledge.read", page); err != nil {
+		t.Errorf("Request: %v (the memo source lost the groups)", err)
 	}
 }

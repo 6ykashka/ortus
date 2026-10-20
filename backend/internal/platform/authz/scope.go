@@ -83,20 +83,11 @@ func (r *Registry) Kind(key string) (ScopeKind, bool) {
 // Keys returns the keys of the registered kinds in registration order.
 func (r *Registry) Keys() []string { return append([]string(nil), r.keys...) }
 
-// FutureKinds are the scope kinds of the catalog and the documents that their stages add to the registry
-// (ADR-0014 п.3): until then a grant of such a kind gives nothing (fail-closed).
-var FutureKinds = map[string]string{
-	"space": wsKnowledge, "page": wsKnowledge, "account": wsCash, "repair_object": wsRepairs,
-	"folder": wsStage7, "doc": wsStage7, "chat": wsStage7, "relation": wsStage7, "service_direction": wsStage7,
-}
-
-// Work streams that register the kinds of FutureKinds (plan v2 §4).
-const (
-	wsKnowledge = "W4.01"
-	wsCash      = "W5.00"
-	wsRepairs   = "W6.00"
-	wsStage7    = "W7.00"
-)
+// FutureKinds are the scope kinds of the catalog and the documents that a later stage adds to the registry, with
+// that work stream (ADR-0014 п.3): until then a grant of such a kind gives nothing (fail-closed). W4.01 registered
+// every kind of contract 0.7.0-stage4 (ModuleKinds): repair_project instead of repair_object (Q-W4.00-repair-2), no
+// service_direction — a direction of «Обращения» is a service project of tasks, kind project (Q-W4.02-4).
+var FutureKinds = map[string]string{}
 
 // PilotKinds returns the kinds of stage 1: tenant, unit, self, project, warehouse, resource.
 func PilotKinds() []ScopeKind {
@@ -173,19 +164,24 @@ func (selfKind) Predicate(_ Scope, sub Subject, c Columns, a *Args) string {
 	return "(" + strings.Join(parts, " or ") + ")"
 }
 
-// objectKind: one object (project, warehouse, resource) — PD-53.
+// objectKind: one object and the objects inside it (project, warehouse, resource; space, page, folder, doc,
+// account, chat, repair_project) — PD-53, ADR-0014 п.4.
 type objectKind struct{ key, api string }
 
 func (k objectKind) Key() string     { return k.key }
 func (k objectKind) APIKind() string { return k.api }
 func (objectKind) ObjectBound() bool { return true }
 
+// Covers: the object of the kind of r is the object of the grant or lies inside it (an ancestor of its own kind).
 func (k objectKind) Covers(_ context.Context, s Scope, _ Subject, r Resource) (bool, error) {
 	id := r.Object(k.key)
-	return id != uuid.Nil && id == s.Ref, nil
+	return id != uuid.Nil && (id == s.Ref || slices.Contains(r.Ancestors[k.key], s.Ref)), nil
 }
 
 func (k objectKind) Predicate(s Scope, _ Subject, c Columns, a *Args) string {
+	if path := c.Paths[k.key]; path != "" {
+		return a.Add(s.Ref) + " = any(" + path + ")"
+	}
 	col := c.Objects[k.key]
 	if col == "" {
 		return sqlFalse
