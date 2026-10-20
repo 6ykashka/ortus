@@ -19,7 +19,6 @@ var calendarW406Matrix = matrix.File{
 			Method:  "GET",
 			Path:    "/api/v1/tenants/{tenantId}/calendar/resources",
 			Channel: "http",
-			Pending: "W4.40",
 			Rows: []matrix.Row{
 				{
 					Actor:  "a.owner",
@@ -36,6 +35,13 @@ var calendarW406Matrix = matrix.File{
 					Note:   "чужая организация — как несуществующая",
 				},
 				{
+					Actor:  "b.owner",
+					Params: map[string]string{"tenantId": "tenant:b"},
+					Status: 200,
+					Absent: []string{"tenant:a", "vehicle:a.msk1", "unit:a.msk1"},
+					Note:   "свой календарь B — без машин и подразделений A",
+				},
+				{
 					Actor:  "anonymous",
 					Params: map[string]string{"tenantId": "tenant:a"},
 					Status: 401,
@@ -47,7 +53,6 @@ var calendarW406Matrix = matrix.File{
 			Method:  "GET",
 			Path:    "/api/v1/tenants/{tenantId}/calendar/bookings",
 			Channel: "http",
-			Pending: "W4.40",
 			Rows: []matrix.Row{
 				{
 					Actor:  "a.owner",
@@ -63,6 +68,13 @@ var calendarW406Matrix = matrix.File{
 					Absent: []string{"tenant:a"},
 				},
 				{
+					Actor:  "b.owner",
+					Params: map[string]string{"tenantId": "tenant:b"},
+					Status: 200,
+					Absent: []string{"tenant:a", "unit:a.msk1"},
+					Note:   "брони текущих суток B — без подразделений A",
+				},
+				{
 					Actor:  "anonymous",
 					Params: map[string]string{"tenantId": "tenant:a"},
 					Status: 401,
@@ -74,7 +86,6 @@ var calendarW406Matrix = matrix.File{
 			Method:  "GET",
 			Path:    "/api/v1/tenants/{tenantId}/calendar/bookings/{bookingId}",
 			Channel: "http",
-			Pending: "W4.40",
 			Rows: []matrix.Row{
 				{
 					Actor:  "a.owner",
@@ -102,7 +113,6 @@ var calendarW406Matrix = matrix.File{
 			Method:  "PATCH",
 			Path:    "/api/v1/tenants/{tenantId}/calendar/bookings/{bookingId}",
 			Channel: "http",
-			Pending: "W4.40",
 			Rows: []matrix.Row{
 				{
 					Actor:  "b.owner",
@@ -125,7 +135,6 @@ var calendarW406Matrix = matrix.File{
 			Method:  "POST",
 			Path:    "/api/v1/tenants/{tenantId}/calendar/availability",
 			Channel: "http",
-			Pending: "W4.40",
 			Rows: []matrix.Row{
 				{
 					Actor:  "b.owner",

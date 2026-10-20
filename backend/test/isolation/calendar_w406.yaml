@@ -1,9 +1,9 @@
-# Матрица изоляции: календарь ресурсов контракта 0.7.0-stage4 (W4.06, контрактный PR 5 этапа 4) — до хендлеров W4.40
-# (pending: 501 или совпавший ответ шлюза; в строгом режиме -tags isolation_pending — красные до хендлера).
+# Матрица изоляции: календарь ресурсов контракта 0.7.0-stage4 (W4.06, контрактный PR 5 этапа 4); хендлеры — W4.40 (pending
+# снят: строки проверяют ответы сервера; до W4.40 — красные в строгом режиме -tags isolation_pending, коммит W4.06 cd39e3e6).
 # Ресурсы и брони — в области calendar.bookings.read (self — свои); чужая организация — 404, без сессии — 401.
-# Ресурсов и броней в фикстурах нет (W4.40 добавит строки содержимого: машина и сотрудник Москвы-1, бронь Москвы-2) —
-# положительные строки проверяют только отсутствие другого тенанта. id брони в строках — tenant:missing (такой брони
-# нет ни в одной базе). Перенос (updateCalendarBooking) — команда с If-Match: строки не передают If-Match (README,
+# Ресурсов и броней в фикстурах нет (фикстуры — W1.04; видимость внутри организации — integration-тесты W4.40,
+# internal/modules/sched/calendar) — положительные строки проверяют отсутствие другого тенанта, в том числе
+# владелец B в своей организации (тёзки Москвы-1). id брони в строках — tenant:missing (такой брони нет ни в одной базе). Перенос (updateCalendarBooking) — команда с If-Match: строки не передают If-Match (README,
 # «Цель набора»), поэтому у неё только отказы до хендлера (без сессии — 401, чужая организация — 404 раньше
 # предусловия); перенос невидимой брони своей организации и конфликт — integration-тесты W4.40. Отказы шлюза —
 # calendar_w406_gate.yaml. Формат — README.md. После правки: go -C backend generate ./test/isolation
@@ -12,7 +12,6 @@ endpoints:
   - op: listCalendarResources
     method: GET
     path: /api/v1/tenants/{tenantId}/calendar/resources
-    pending: W4.40
     rows:
       - actor: a.owner
         params: { tenantId: tenant:a }
@@ -24,13 +23,17 @@ endpoints:
         status: 404
         absent: [tenant:a]
         note: чужая организация — как несуществующая
+      - actor: b.owner
+        params: { tenantId: tenant:b }
+        status: 200
+        absent: [tenant:a, vehicle:a.msk1, unit:a.msk1]
+        note: свой календарь B — без машин и подразделений A
       - actor: anonymous
         params: { tenantId: tenant:a }
         status: 401
   - op: listCalendarBookings
     method: GET
     path: /api/v1/tenants/{tenantId}/calendar/bookings
-    pending: W4.40
     rows:
       - actor: a.owner
         params: { tenantId: tenant:a }
@@ -41,13 +44,17 @@ endpoints:
         params: { tenantId: tenant:a }
         status: 404
         absent: [tenant:a]
+      - actor: b.owner
+        params: { tenantId: tenant:b }
+        status: 200
+        absent: [tenant:a, unit:a.msk1]
+        note: брони текущих суток B — без подразделений A
       - actor: anonymous
         params: { tenantId: tenant:a }
         status: 401
   - op: getCalendarBooking
     method: GET
     path: /api/v1/tenants/{tenantId}/calendar/bookings/{bookingId}
-    pending: W4.40
     rows:
       - actor: a.owner
         params: { tenantId: tenant:a, bookingId: tenant:missing }
@@ -65,7 +72,6 @@ endpoints:
   - op: updateCalendarBooking
     method: PATCH
     path: /api/v1/tenants/{tenantId}/calendar/bookings/{bookingId}
-    pending: W4.40
     rows:
       - actor: b.owner
         params: { tenantId: tenant:a, bookingId: tenant:missing }
@@ -80,7 +86,6 @@ endpoints:
   - op: findCalendarAvailability
     method: POST
     path: /api/v1/tenants/{tenantId}/calendar/availability
-    pending: W4.40
     rows:
       - actor: b.owner
         params: { tenantId: tenant:a }

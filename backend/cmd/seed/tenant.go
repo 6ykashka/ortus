@@ -112,6 +112,9 @@ func writeTenant(ctx context.Context, db *sql.DB, td tenantData) (err error) {
 	if err = writeFleetTrips(ctx, tx, td); err != nil { // trips of the demo (fleet_trips.go, W2.05)
 		return err
 	}
+	if err = writeCalendar(ctx, tx, td); err != nil { // the calendar of resources (calendar.go, W4.40)
+		return err
+	}
 	if err = writeStand(ctx, tx, td); err != nil { // «Логистика» of «Альта» on the stand (stand.go, W2.54)
 		return err
 	}
