@@ -9,7 +9,7 @@ import { http, type HttpHandler } from 'msw';
 
 import { example, findOperation, type OperationInfo } from './contract/index.ts';
 import { actionsFor, permits, type TenantAccess } from './core/access.ts';
-import { TAG_MODULE } from './core/catalog.ts';
+import { moduleLabel, TAG_MODULE } from './core/catalog.ts';
 import { devSummary, type DevScenario, scanFiles } from './core/dev.ts';
 import { newId } from './core/people.ts';
 import { applyPreset, isPreset, type PresetName, PRESETS } from './core/presets.ts';
@@ -42,6 +42,7 @@ import { getExportObject, STORAGE_EXPORT_PATH } from './data/exports.ts';
 import { putObject, STORAGE_UPLOAD_PATH } from './files/storage.ts';
 import { operatorPermits } from './platform/roles.ts';
 import { defaultRegistry } from './handlers.ts';
+import { settleOrg } from './settle.ts';
 
 export type { HandlerContext, OperationHandler, Registry } from './core/registry.ts';
 
@@ -68,6 +69,24 @@ const BILLING_ANY_STATE: ReadonlySet<string> = new Set([
   'listSubscriptionChangeRequests',
   'createSubscriptionChangeRequest',
   'cancelSubscriptionChangeRequest',
+]);
+
+/**
+ * Команды, открытые при draining модуля (W2.62; finishOnly modulesreg/gate.go и W2.60): сдача машины, «Завершить
+ * рейс», осмотр при сдаче (осмотр перед выездом хендлер закрывает), расходы в пути, приёмка и её начисление, снятие
+ * брони; завершение визита. Начат ли объект — проверяет хендлер модуля.
+ */
+const FINISH_ONLY: ReadonlySet<string> = new Set([
+  'returnTrip',
+  'finishTripRoute',
+  'submitInspection',
+  'createTripExpense',
+  'reviewTrip',
+  'reviewTripExpense',
+  'setTripEarnings',
+  'releaseReservation',
+  'completeAppointment',
+  'recordAppointmentPerformance',
 ]);
 
 /** Чтение и запись cookie: заголовки (Node, тесты) или document.cookie (браузер, msw/browser). */
@@ -259,8 +278,16 @@ export function createScenarioServer(o: ScenarioServerOptions = {}): ScenarioSer
     const mod = TAG_MODULE[op.tag];
     if (mod) {
       const st = t.org.modules[mod]?.state;
-      if (st === 'read_only' || st === 'draining') {
+      if (st === 'read_only') {
         if (op.mutating) fail('module_read_only');
+      } else if (st === 'draining') {
+        // W2.62 (AC-12, modulesreg/gate.go): при отключении открыто только завершение начатой работы.
+        if (op.mutating && !FINISH_ONLY.has(op.id)) {
+          fail(
+            'module_read_only',
+            `Модуль «${moduleLabel(mod)}» отключается: можно только завершить начатую работу.`,
+          );
+        }
       } else if (st !== 'active') {
         fail('module_not_installed');
       }
@@ -300,6 +327,7 @@ export function createScenarioServer(o: ScenarioServerOptions = {}): ScenarioSer
         if (!operatorPermits(who.operator.role, op.permissions, op.mode)) fail('forbidden_action');
       } else if (op.path.startsWith(TENANT_PREFIX)) {
         tenant = resolveTenant(who, params.tenantId ?? '', op);
+        settleOrg(tenant.org, now());
         authorize(tenant, op);
       }
     } else {

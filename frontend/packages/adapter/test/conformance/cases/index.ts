@@ -19,6 +19,7 @@ import { stage1bCases } from './stage1b.ts';
 import { stage2bCases } from './stage2b.ts';
 import { tasksCases } from './tasks.ts';
 import { vehicleOfferCases } from './vehicle-offer.ts';
+import { w262Cases } from './w262.ts';
 
 export const ALL_CASES: readonly ConformanceCase[] = [
   ...contextCases,
@@ -47,4 +48,6 @@ export const ALL_CASES: readonly ConformanceCase[] = [
   ...knowledgeCases,
   // W4.03 (0.10.0-stage4): «Задачи и проекты».
   ...tasksCases,
+  // W2.62 (Q-W2.32-5, Q-W2.32-6): draining «Логистики» и роль «Временный водитель» как backend.
+  ...w262Cases,
 ];

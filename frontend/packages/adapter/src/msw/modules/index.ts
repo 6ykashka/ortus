@@ -10,6 +10,7 @@ import { FLEET_SETTINGS } from '../core/presets.ts';
 import { fail } from '../core/problem.ts';
 import type { HandlerContext, Registry } from '../core/registry.ts';
 import type { ModuleRow } from '../core/state.ts';
+import { disableTo } from './draining.ts';
 
 type S = components['schemas'];
 
@@ -35,7 +36,12 @@ function withSettings(ctx: HandlerContext): { key: string; row: ModuleRow } {
   const key = ctx.params.moduleKey ?? '';
   const row = ctx.org().org.modules[key];
   if (!row) fail('not_found');
-  if (isInstallable(key) && row.state !== 'active' && row.state !== 'read_only') {
+  if (
+    isInstallable(key) &&
+    row.state !== 'active' &&
+    row.state !== 'read_only' &&
+    row.state !== 'draining'
+  ) {
     fail('module_not_installed', `Модуль «${moduleLabel(key)}» не подключён организацией.`);
   }
   if (!row.settings) fail('not_found');
@@ -64,11 +70,16 @@ export const modulesHandlers: Registry = {
     const { key, row } = installable(ctx);
     const b = ctx.body as S['ModuleInstallationUpdate'];
     ctx.revision(row.revision);
+    // W2.62 (AC-12): отключение при начатых процессах — draining до их завершения (modulesreg target).
     const next = b.enabled
       ? 'active'
-      : b.retainedAccess === 'history_read'
-        ? 'read_only'
-        : 'uninstalled';
+      : disableTo(
+          t.org,
+          key,
+          row,
+          b.retainedAccess === 'history_read' ? 'read_only' : 'uninstalled',
+        );
+    if (b.enabled) delete row.drainTo;
     if (next !== row.state) {
       row.state = next;
       row.revision++;

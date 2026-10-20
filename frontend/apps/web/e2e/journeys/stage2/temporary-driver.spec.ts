@@ -6,8 +6,10 @@
 //            окно перевода короткое, от «сейчас» (≈ 2,5 мин), строка ждёт его начала и конца. Машину рейса временному
 //            водителю бронирует владелец: в роли нет fleet.reservations.create (Q-W2.57-1), а осмотр перед выездом
 //            сервер принимает только по брони водителя (рейс в «inspection») — см. отчёт W2.32, вопрос о брони;
-//   @mock  — часы сценарного сервера (`now`); MSW не выдаёт роль «Временный водитель» при одобрении — у Ахмедова
-//            домашняя роль «Водитель» в «Север Логистик» (как фикстуры изоляции W2.57).
+//   @mock  — часы сценарного сервера (`now`); узкая роль «Временный водитель» без домашней (W2.62, Q-W2.32-6: MSW
+//            выдаёт роль при одобрении и открывает машину рейса в осмотре, как backend). После срока у начатого рейса
+//            сдача — командами водителя, как на стенде: экран «Моя смена» в продолжении требует listVehicles
+//            (Q-W2.32-2 → W2.61).
 import type { Persona } from '@ortus/e2e-kit';
 import type { Browser, Page } from '@playwright/test';
 
@@ -154,14 +156,13 @@ type UnitPlan = Plan & { orgUnitId: string };
 /**
  * Рейсы и машины временного водителя: фирмы-получателя — только рейс перевода и машина рейса; прочие видимые рейсы —
  * только его собственные (водитель — он: рейсы домашней фирмы, прошлые смены, Q-W2.32-8), чужих рейсов нет. Машины —
- * исключительный список: без домашней роли (стенд, узкая роль) — ровно машина рейса; с домашней ролью «Водитель»
- * (`home`, mock) — машина рейса и машины своей фирмы, машин прочих фирм нет.
+ * исключительный список: узкая роль без домашней (стенд и mock, W2.62) — ровно машина рейса.
  */
 async function onlyTripAndVehicle(
   driver: Page,
   tenant: string,
   trip: Plan,
-  o: { vehicle: string; driverId: string; unit: string; home?: string },
+  o: { vehicle: string; driverId: string; unit: string },
 ) {
   const base = `/api/v1/tenants/${tenant}/fleet`;
   const plans = J.expectOk(
@@ -176,14 +177,7 @@ async function onlyTripAndVehicle(
     .body as { items: { displayName: string; orgUnitId: string }[] };
   const names = (items: typeof list.items) => items.map((v) => `${v.displayName}`).sort();
   expect(names(list.items.filter((v) => v.orgUnitId === o.unit))).toEqual([o.vehicle]);
-  if (o.home) {
-    expect(
-      names(list.items.filter((v) => v.orgUnitId !== o.unit && v.orgUnitId !== o.home)),
-      'машины прочих фирм',
-    ).toEqual([]);
-  } else {
-    expect(names(list.items), 'машины временного водителя без домашней роли').toEqual([o.vehicle]);
-  }
+  expect(names(list.items), 'машины временного водителя без домашней роли').toEqual([o.vehicle]);
 }
 
 /**
@@ -274,7 +268,10 @@ test.describe('выход этапа 2 — AC-06 временный водите
     timeZone: MSK,
   };
 
-  /** Ахмедов в «Север Логистик» с домашней ролью «Водитель» (MSW), в пуле; рейс «Юг Транс»; запрос и одобрение. */
+  /**
+   * Ахмедов в «Север Логистик» без своей роли (как в сиде стенда), в пуле; рейс «Юг Транс»; запрос и одобрение — узкая
+   * роль «Временный водитель» (W2.62).
+   */
   async function temporary(app: AppFn, page: Page) {
     await J.mockStorage(page);
     await app('/', { persona: 'owner' });
@@ -294,20 +291,6 @@ test.describe('выход этапа 2 — AC-06 временный водите
         ifMatch: `"rev-${akh.revision}"`,
       }),
       'updateMember',
-    );
-    const roles = J.expectOk(await call(page, 'GET', `${T}/roles?limit=200`), 'listRoles').body as {
-      items: { id: string; name: string }[];
-    };
-    J.expectOk(
-      await call(page, 'POST', `${T}/assignments`, {
-        body: {
-          principalType: 'member',
-          principalId: akh.id,
-          roleId: roles.items.find((r) => r.name === 'Водитель')?.id,
-          scope: { kind: 'org_unit', resourceIds: [sever], includeDescendants: true },
-        },
-      }),
-      'createAssignment',
     );
     const pub = await publish(page, alta, { driver: akh.id, home: sever, free: W });
     const trip = await yugTrip(page, alta, yug, W, 'Сборный груз');
@@ -336,12 +319,12 @@ test.describe('выход этапа 2 — AC-06 временный водите
     return { alta, trip, r208, yug, sever, akh: akh.id, car };
   }
 
-  test('пул: запрос и одобрение на экране; в окне — только рейс «Юг Транс» и машина рейса; после окна — 404 как у несуществующего', async ({
+  test('пул: запрос и одобрение на экране; в окне — только рейс «Юг Транс» и машина рейса; после окна — как у несуществующего', async ({
     app,
     page,
   }) => {
     test.setTimeout(150_000);
-    const { alta, trip, r208, yug, sever, akh } = await temporary(app, page);
+    const { alta, trip, r208, yug, akh } = await temporary(app, page);
     const base = `/api/v1/tenants/${alta}/fleet`;
 
     // В окне перевода (14:30): «Моя смена» — рейс «Юг Транс», чужие рейсы — как несуществующие.
@@ -351,34 +334,31 @@ test.describe('выход этапа 2 — AC-06 временный водите
     await expect(J.h1(page, 'Моя смена')).toBeVisible({ timeout: 15_000 });
     await expect(page.getByText(`${trip.number} · Сборный груз`)).toBeVisible();
     await expect(page.getByText('Машина назначена')).toBeVisible();
-    await onlyTripAndVehicle(page, alta, trip, {
-      vehicle: ELF,
-      driverId: akh,
-      unit: yug,
-      home: sever,
-    });
+    // Узкая роль без домашней (W2.62): машины — исключительный список, ровно машина рейса.
+    await onlyTripAndVehicle(page, alta, trip, { vehicle: ELF, driverId: akh, unit: yug });
     await J.hiddenLikeUnknown(page, (id) => `${base}/trip-plans/${id}`, r208.id, ['Р-208']);
 
-    // После окна (18:10): рейс не начат — назначение кончилось, рейс — как несуществующий (AC-06).
+    // После окна (18:10): рейс не начат — назначение кончилось, своих ролей у Ахмедова нет: список рейсов и рейс
+    // отвечают как на несуществующий id — 403 forbidden_action, как на стенде (Q-W2.32-7); данных рейса нет.
     await J.serverNow(page, '2026-10-01T15:10:00Z');
-    const after = J.expectOk(
-      await call(page, 'GET', `${base}/trip-plans?limit=200`),
-      'listTripPlans',
-    ).body as { items: Plan[] };
-    expect(after.items).toEqual([]);
-    const hidden = await J.hiddenLikeUnknown(page, (id) => `${base}/trip-plans/${id}`, trip.id, [
-      trip.number,
+    const after = await call(page, 'GET', `${base}/trip-plans?limit=200`);
+    expect([after.status, (after.body as { code?: string }).code], 'listTripPlans').toEqual([
+      403,
+      'forbidden_action',
     ]);
-    expect(hidden.status).toBe(404);
+    await hiddenAfterEnd(page, (id) => `${base}/trip-plans/${id}`, trip.id, {
+      leak: trip.number,
+      status: 403,
+      code: 'forbidden_action',
+    });
     await page.reload();
-    await expect(page.getByText('Рейсов на сегодня нет')).toBeVisible({ timeout: 15_000 });
+    await expect(page.locator('#app')).not.toContainText(trip.number, { timeout: 15_000 });
   });
 
-  // Шаги записаны целиком (fixme снимается без правки тела). Сейчас MSW не открывает временному водителю машину рейса
-  // другой фирмы в getInspectionChecklist и submitInspection (vehicleOr404 без loanedVehicles: «Машина не найдена.») —
-  // строка падает на осмотре перед выездом; на стенде путь проходит (строка @stand ниже). Владелец адаптера MSW — W2.62
-  // (Q-W2.32-6). После исправления MSW строку перевести на узкую роль «Временный водитель» без домашней роли.
-  test.fixme('начатый рейс после окна — только сдача; после приёмки — 404', async ({
+  // W2.62 (Q-W2.32-6): MSW выдаёт узкую роль при одобрении и открывает машину рейса другой фирмы в чек-листе и осмотре
+  // (как inspections.Checklist backend) — fixme снят. После срока сдача — командами водителя, как в строке @stand:
+  // «Моя смена» в продолжении требует listVehicles (403, Q-W2.32-2); сдача на экране — после W2.61.
+  test('начатый рейс после окна — только сдача; после приёмки — как несуществующий', async ({
     app,
     page,
   }) => {
@@ -403,19 +383,34 @@ test.describe('выход этапа 2 — AC-06 временный водите
     const file = await J.jpeg(page, 'Ортус · временный водитель');
     await departOnScreen(page, alta, trip, 'mock', file, Number(car.odometerKm) + 10);
 
-    // После окна (18:10): начатый рейс — только продолжение; машина рейса больше не видна, сдача — на экране.
+    // После окна (18:10): начатый рейс — только продолжение; машины рейса нет (403, как на стенде), бронь закрыта;
+    // сдача — командами водителя (finishTripRoute, осмотр при сдаче с пятью фото, returnTrip).
     await J.serverNow(page, '2026-10-01T15:10:00Z');
-    await continuedOnly(page, alta, trip, yug, CARS_HOME);
-    await J.returnOnScreen(page, alta, 'mock', file, Number(car.odometerKm) + 60);
+    await continuedOnly(page, alta, trip, yug, CARS_NARROW);
+    const reserve = await call(page, 'POST', `${base}/reservations`, {
+      body: { vehicleId: car.id, driverMemberId: akh, window: trip.plannedWindow, tripId: trip.id },
+    });
+    expect(
+      [reserve.status, (reserve.body as { code?: string } | null)?.code],
+      'reserveVehicle после срока',
+    ).toEqual([403, 'forbidden_action']);
+    await mockReturn(page, alta, trip, car.id, Number(car.odometerKm) + 60);
+    expect((await plan(page, alta, trip.id)).body).toMatchObject({ state: 'submitted' });
 
-    // Приёмка владельцем — назначение кончилось: рейс — 404 как у несуществующего (AC-06).
+    // Приёмка владельцем — назначение кончилось: рейс отвечает как несуществующий (AC-06; 403, Q-W2.32-7).
     await J.relogin(page, 'owner');
     await J.acceptOnReview(page, alta, trip.number);
     await J.relogin(page, 'acc-9');
-    const hidden = await J.hiddenLikeUnknown(page, (id) => `${base}/trip-plans/${id}`, trip.id, [
-      trip.number,
-    ]);
-    expect(hidden.status).toBe(404);
+    await hiddenAfterEnd(page, (id) => `${base}/trip-plans/${id}`, trip.id, {
+      leak: trip.number,
+      status: 403,
+      code: 'forbidden_action',
+    });
+    await hiddenAfterEnd(page, (id) => `${base}/vehicles/${id}`, car.id, {
+      leak: ELF,
+      status: 404,
+      code: 'not_found',
+    });
   });
 });
 
@@ -440,14 +435,101 @@ async function departOnScreen(
 }
 
 /**
- * Ответ `listVehicles` в продолжении — `[status, code]`: узкая роль «Временный водитель» (стенд) — 403
- * `forbidden_action` (в продолжении D09 у роли нет `fleet.vehicles.read`, Q-W2.32-2; после W2.61 ожидание станет
- * `[200, undefined]` без машины рейса — смена ответа роняет строку и будет замечена); домашняя роль «Водитель» (mock,
- * Q-W2.32-6) — 200 без машины рейса.
+ * Ответ `listVehicles` в продолжении — `[status, code]`: узкая роль «Временный водитель» (стенд и mock, W2.62) — 403
+ * `forbidden_action` (в продолжении D09 строка роли в области resource кончилась, а `fleet.vehicles.read` области self
+ * список машин не открывает, Q-W2.32-2). Если ответ сменится (например, W2.61 или правка шлюза), строка упадёт и
+ * смена будет замечена.
  */
 type CarsAfterEnd = readonly [status: number, code: string | undefined];
 const CARS_NARROW: CarsAfterEnd = [403, 'forbidden_action'];
-const CARS_HOME: CarsAfterEnd = [200, undefined];
+
+/** Ракурсы фото осмотра (requiredPhotoRoles чек-листа). */
+const PHOTO_ROLES = ['front', 'rear', 'left', 'right', 'odometer'] as const;
+
+/**
+ * Mock: пять готовых фото осмотра при сдаче рейса — загрузка (initiateUpload → completeUpload; PUT по билету сценарный
+ * сервер не требует) и проверка файлов dev-маршрутом сценарного сервера (`scanFiles`).
+ */
+async function mockPhotos(driver: Page, tenant: string, tripId: string): Promise<string[]> {
+  const base = `/api/v1/tenants/${tenant}/files/uploads`;
+  const ids: string[] = [];
+  for (const [i, role] of PHOTO_ROLES.entries()) {
+    const sha256 = String(i + 1).repeat(64);
+    const t = J.expectOk(
+      await call(driver, 'POST', base, {
+        body: {
+          fileName: `${role}.jpg`,
+          contentType: 'image/jpeg',
+          sizeBytes: 48_000,
+          sha256,
+          purpose: 'inspection',
+          owner: { moduleKey: 'fleet', entityType: 'trip', entityId: tripId },
+        },
+      }),
+      'initiateUpload',
+    ).body as { uploadId: string; fileId: string };
+    J.expectOk(
+      await call(driver, 'POST', `${base}/${t.uploadId}/complete`, { body: { sha256 } }),
+      'completeUpload',
+    );
+    ids.push(t.fileId);
+  }
+  J.expectOk(
+    await call(driver, 'POST', '/api/v1/dev/scenario', { body: { scanFiles: true } }),
+    'dev/scenario scanFiles',
+  );
+  return ids;
+}
+
+/**
+ * Mock, продолжение после срока: «Завершить рейс» (finishTripRoute), осмотр при сдаче машины рейса с пятью фото
+ * (getInspectionChecklist, submitInspection) и сдача (returnTrip) — командами водителя, как `apiReturn` на стенде.
+ */
+async function mockReturn(
+  driver: Page,
+  tenant: string,
+  trip: Plan,
+  vehicleId: string,
+  odometer: number,
+): Promise<void> {
+  const base = `/api/v1/tenants/${tenant}/fleet`;
+  const etag = async () => (await plan(driver, tenant, trip.id)).headers.etag ?? '';
+  J.expectOk(
+    await call(driver, 'POST', `${base}/trips/${trip.id}/route-completion`, {
+      ifMatch: await etag(),
+    }),
+    'finishTripRoute',
+  );
+  const list = J.expectOk(
+    await call(driver, 'GET', `${base}/inspection-checklist?vehicleId=${vehicleId}&kind=return`),
+    'getInspectionChecklist return',
+  ).body as { versionId: string; items: { key: string }[] };
+  const files = await mockPhotos(driver, tenant, trip.id);
+  const at = '2026-10-01T15:10:00Z';
+  const ret = J.expectOk(
+    await call(driver, 'POST', `${base}/inspections`, {
+      body: {
+        checklistVersionId: list.versionId,
+        vehicleId,
+        kind: 'return',
+        tripId: trip.id,
+        odometerKm: String(odometer),
+        fuelPercent: 50,
+        checks: list.items.map((i) => ({ key: i.key, result: 'pass' })),
+        photos: PHOTO_ROLES.map((role, i) => ({ role, fileId: files[i], capturedAt: at })),
+        capturedAt: at,
+      },
+    }),
+    'submitInspection return',
+  ).body as { id: string };
+  J.expectOk(
+    await call(driver, 'PATCH', `${base}/trips/${trip.id}`, {
+      body: { action: 'return', returnInspectionId: ret.id },
+      ifMatch: await etag(),
+    }),
+    'returnTrip',
+  );
+}
 
 /**
  * После срока у начатого рейса — только продолжение (D09): из фирмы-получателя виден лишь рейс перевода «в пути»;

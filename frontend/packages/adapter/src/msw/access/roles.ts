@@ -9,6 +9,7 @@ import { page } from '../core/page.ts';
 import { fail } from '../core/problem.ts';
 import type { HandlerContext, Registry } from '../core/registry.ts';
 import type { AssignmentRow, RoleRow } from '../core/state.ts';
+import { isTemporaryRole } from '../fleet/temporary.ts';
 import { canDelegate, principalsOf, roleById, SOD_TEXT, sodConflict } from './rules.ts';
 
 type S = components['schemas'];
@@ -189,6 +190,10 @@ export const rolesHandlers: Registry = {
       fail('validation_failed', 'Роль не найдена.', {
         violations: [{ field: 'roleId', code: 'unknown', message: 'Нет такой роли' }],
       });
+    // W2.62 (W2.57 backend access/assignments): системную роль «Временный водитель» назначает только одобрение пула.
+    if (isTemporaryRole(role)) {
+      fail('invalid_transition', 'Системную роль не назначают: владение передаётся отдельно.');
+    }
     requireScope(ctx, b.scope);
     if (!canDelegate(ctx, role, b.scope)) {
       fail(

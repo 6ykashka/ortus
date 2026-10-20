@@ -146,6 +146,8 @@ export interface AssignmentRow {
 
 export interface ModuleRow {
   state: ModuleState;
+  /** W2.62: состояние после draining (read_only — history_read; как finalState modulesreg). */
+  drainTo?: ModuleState;
   revision: number;
   settings?: S['ModuleSettings'];
   settingsRevision: number;

@@ -181,6 +181,15 @@ export function moduleAvailability(
         reason: 'disabled',
       };
     }
+    // W2.62 (AC-12, modulesreg availability): при отключении — только завершение начатой работы.
+    if (own === 'draining') {
+      return {
+        moduleKey: m,
+        state: 'draining',
+        accessMode: mine.length ? 'finish_only' : 'none',
+        reason: 'draining',
+      };
+    }
     if (!mine.length) {
       return { moduleKey: m, state: 'active', accessMode: 'none', reason: 'permission_denied' };
     }

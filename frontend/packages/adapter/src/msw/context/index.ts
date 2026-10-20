@@ -12,6 +12,7 @@ import { fail } from '../core/problem.ts';
 import type { HandlerContext, Registry } from '../core/registry.ts';
 import type { Actor } from '../core/session.ts';
 import { type MembershipRow, type ScenarioState, SEED_NOW } from '../core/state.ts';
+import { settleOrg } from '../settle.ts';
 
 type S = components['schemas'];
 
@@ -69,6 +70,7 @@ function tenantContext(s: ScenarioState, t: TenantAccess, now: string): S['Tenan
     branding: brandingTheme(s, t.tenant),
   };
   if (t.membership.status !== 'active' || !ENRICHED.has(t.tenant.status)) return base;
+  settleOrg(t.org, now);
   const caps = capabilities(t, now);
   const keys = [...new Set(caps.map((c) => c.permission))];
   return { ...base, modules: moduleAvailability(t, keys), capabilities: caps };

@@ -34,6 +34,40 @@ const DEFECT_STATES = ['open', 'in_review', 'resolved', 'confirmed_out_of_servic
 
 const lower = (id: string | undefined): string => (id ?? '').toLowerCase();
 
+/** Рейсы, в которых машина держится за рейсом: водитель такого рейса видит её как «свою» (activeTrips backend). */
+const HOLDING: ReadonlySet<string> = new Set([
+  'assigned',
+  'inspection',
+  'defect_review',
+  'on_route',
+  'returning',
+  'submitted',
+  'rework',
+]);
+
+/**
+ * Машина осмотра (inspections.Checklist backend, W2.62 · Q-W2.32-6): машина области участника или машина его
+ * активного рейса — так временный водитель пула осматривает машину рейса другой фирмы; рейс перевода вне срока
+ * назначения (надстройка пула по праву `key`) машину не открывает. Иначе — 404, как несуществующая.
+ */
+function inspectedVehicle(ctx: HandlerContext, id: string | undefined, key: string) {
+  const t = ctx.org();
+  const f = fleetOf(t.org);
+  const me = asDriver(t, ctx.now());
+  const v = f.vehicles.find((x) => x.id === lower(id));
+  const own =
+    !!v &&
+    !!me &&
+    f.trips.some(
+      (tr) =>
+        tr.vehicleId === v.id &&
+        tr.driverMemberId === me.id &&
+        HOLDING.has(tr.state) &&
+        tripVisible(ctx, tr, key),
+    );
+  return own && v ? v : vehicleOr404(ctx, id);
+}
+
 /** Рейс осмотра: выезд — по брони водителя, сдача — по рейсу. */
 function tripOfInspection(
   ctx: HandlerContext,
@@ -152,7 +186,7 @@ export const inspectionHandlers: Registry = {
   getInspectionChecklist: (ctx) => {
     const kind = ctx.query.get('kind');
     if (kind !== 'departure' && kind !== 'return') fail('malformed_request');
-    vehicleOr404(ctx, uuidParam(ctx.query, 'vehicleId'));
+    inspectedVehicle(ctx, uuidParam(ctx.query, 'vehicleId'), 'fleet.inspections.read');
     const list = fleetOf(ctx.org().org).checklists.find((c) => c.kind === kind);
     if (!list) fail('not_found', 'Чек-лист не опубликован.');
     return { body: structuredClone(list) };
@@ -162,7 +196,14 @@ export const inspectionHandlers: Registry = {
     const t = ctx.org();
     const f = fleetOf(t.org);
     const b = ctx.body as S['InspectionCreate'];
-    const v = vehicleOr404(ctx, b.vehicleId);
+    // W2.62 (AC-12, W2.60): при draining шлюз пропускает осмотр ради сдачи; осмотр перед выездом — новая работа.
+    if (b.kind === 'departure' && t.org.modules.fleet?.state === 'draining') {
+      fail(
+        'module_read_only',
+        'Модуль «Логистика» отключается: можно только завершить начатую работу.',
+      );
+    }
+    const v = inspectedVehicle(ctx, b.vehicleId, 'fleet.inspections.submit');
     const trip = tripOfInspection(ctx, b, v.id);
     const list = f.checklists.find((c) => c.kind === b.kind);
     if (!list || lower(b.checklistVersionId) !== list.versionId) {
