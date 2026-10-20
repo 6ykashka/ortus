@@ -1,0 +1,91 @@
+- generic [ref=f2e3]:
+  - link "К содержимому" [ref=f2e4] [cursor=pointer]:
+    - /url: "#ox-main"
+  - generic [ref=f2e6]:
+    - banner [ref=f2e7]:
+      - generic [ref=f2e8]:
+        - generic [ref=f2e9]: о
+        - generic [ref=f2e492]:
+          - generic [ref=f2e493]: ортус
+          - generic [ref=f2e494]: пространство бизнеса
+      - generic [ref=f2e10]:
+        - generic [ref=f2e11]: domain
+        - generic [ref=f2e12]:
+          - generic [ref=f2e13]: Альта Групп
+          - generic [ref=f2e14]: Мои назначения
+      - button "Уведомления" [ref=f2e15] [cursor=pointer]:
+        - generic [ref=f2e16]: notifications
+      - button "Профиль" [ref=f2e17] [cursor=pointer]: ИВ
+    - generic [ref=f2e18]:
+      - navigation "Основная навигация" [ref=f2e495]:
+        - generic [ref=f2e515]: Работа
+        - button "Сегодня" [ref=f2e497] [cursor=pointer]:
+          - generic [ref=f2e498]: today
+        - button "Автомобили" [ref=f2e500] [cursor=pointer]:
+          - generic [ref=f2e501]: local_shipping
+        - button "Подотчёт" [ref=f2e503] [cursor=pointer]:
+          - generic [ref=f2e504]: account_balance_wallet
+        - button "Чаты" [ref=f2e506] [cursor=pointer]:
+          - generic [ref=f2e507]: forum
+        - button "База знаний" [ref=f2e509] [cursor=pointer]:
+          - generic [ref=f2e510]: menu_book
+        - button "Документы" [ref=f2e512] [cursor=pointer]:
+          - generic [ref=f2e513]: description
+        - generic [ref=f2e517]:
+          - generic [ref=f2e518]: shield
+          - text: Данные других организаций изолированы
+      - main [ref=f2e19]:
+        - region [ref=f2e21]:
+          - generic [ref=f2e22]:
+            - generic [ref=f2e23]: Илья Васильев · четверг, 1 октября
+            - heading "Моя смена" [level=1] [ref=f2e24]
+          - list "Этапы смены" [ref=f2e25]:
+            - listitem [ref=f2e26]:
+              - generic [ref=f2e27]: check
+              - generic [ref=f2e28]: Машина
+            - listitem [ref=f2e29]:
+              - generic [ref=f2e30]: check
+              - generic [ref=f2e31]: Осмотр
+            - listitem [ref=f2e32]:
+              - generic [ref=f2e33]: check
+              - generic [ref=f2e34]: Рейс
+            - listitem [ref=f2e35]:
+              - generic [ref=f2e36]: check
+              - generic [ref=f2e37]: Сдача
+            - listitem [ref=f2e38]:
+              - generic [ref=f2e39]: "5"
+              - generic [ref=f2e40]: Приёмка
+          - generic [ref=f2e41]:
+            - generic [ref=f2e42]:
+              - strong [ref=f2e43]: Р-208 · Северный маршрут
+              - generic [ref=f2e44]:
+                - generic [ref=f2e45]: pending
+                - text: Ожидает приёмки
+            - generic [ref=f2e46]: 01.10.2026 · 09:00–13:00 · 3 точки · 46 км · Сухой груз · 14 паллет-мест
+            - generic [ref=f2e47]:
+              - generic [ref=f2e48]:
+                - generic [ref=f2e49]: scale
+                - text: от 1,1 т
+              - generic [ref=f2e50]:
+                - generic [ref=f2e51]: deployed_code
+                - text: от 12 м³
+              - generic [ref=f2e52]:
+                - generic [ref=f2e53]: straighten
+                - text: кузов от 3 м
+              - generic [ref=f2e54]:
+                - generic [ref=f2e55]: thermostat
+                - text: без охлаждения
+          - status [ref=f2e479]:
+            - generic [ref=f2e480]: hourglass_top
+            - heading "Ожидает приёмки менеджером" [level=2] [ref=f2e482]
+            - paragraph [ref=f2e483]: Сервер принял сдачу. Машина вернётся в пул свободных после приёмки.
+            - generic [ref=f2e484]:
+              - generic [ref=f2e485]:
+                - text: Пройдено
+                - strong [ref=f2e486]: 60 км
+              - generic [ref=f2e487]:
+                - text: Расходы
+                - strong [ref=f2e488]: 1 на 2 500 ₽
+    - status [ref=f2e489]:
+      - generic [ref=f2e490]: check_circle
+      - generic [ref=f2e491]: Сдача принята сервером. Ожидайте приёмки

@@ -1,0 +1,190 @@
+- generic [ref=e4]:
+  - region "Панель демонстрации" [ref=e5]:
+    - generic [ref=e6]:
+      - generic [ref=e7]: science
+      - text: Демо-режим
+    - generic [ref=e8]:
+      - text: Персонаж
+      - combobox "Персонаж" [ref=e9]:
+        - option "Оператор платформы"
+        - option "Владелец · Дарья Зимина"
+        - option "Логист · Марина Котова"
+        - option "Водитель · Илья Васильев" [selected]
+        - option "Массажист · Анна Морозова"
+        - option "Прораб · Алексей Соколов"
+        - option "Владелец · Ирина Белова"
+        - option "Массажист · Анна Морозова"
+    - generic [ref=e10]:
+      - text: Ширина
+      - combobox "Ширина" [ref=e11]:
+        - option "По окну"
+        - option "390 · телефон" [selected]
+        - option "768 · планшет"
+        - option "1440 · компьютер"
+    - generic [ref=e12]:
+      - button "Путь проверки" [ref=e13] [cursor=pointer]:
+        - generic [ref=e14]: checklist
+        - text: Путь проверки
+      - button "Сбросить" [ref=e15] [cursor=pointer]:
+        - generic [ref=e16]: restart_alt
+        - text: Сбросить
+    - generic [ref=e17]:
+      - generic [ref=e18] [cursor=pointer]:
+        - checkbox "Нет связи" [ref=e19]
+        - text: Нет связи
+      - generic [ref=e20] [cursor=pointer]:
+        - checkbox "Конфликт брони" [ref=e21]
+        - text: Конфликт брони
+      - generic [ref=e22] [cursor=pointer]:
+        - checkbox "Сбой загрузки фото" [ref=e23]
+        - text: Сбой загрузки фото
+      - generic [ref=e24]: Переключатель персонажей — демонстрация, не механизм безопасности. Данные вымышлены и живут в памяти страницы.
+  - generic [ref=e26]:
+    - banner [ref=e27]:
+      - generic [ref=e48]: о
+      - generic [ref=e28]:
+        - generic [ref=e29]: domain
+        - generic [ref=e30]:
+          - generic [ref=e31]: Альта Групп
+          - generic [ref=e494]: Москва / Север Логистик · мои назначения
+      - button "Уведомления" [ref=e506] [cursor=pointer]:
+        - generic [ref=e507]: notifications
+      - button "Профиль" [ref=e33] [cursor=pointer]:
+        - generic [ref=e57]: ИВ
+    - main [ref=e40]:
+      - region [ref=e518]:
+        - generic [ref=e519]:
+          - generic [ref=e520]: Илья Васильев · среда, 1 октября
+          - heading "Моя смена" [level=1] [ref=e521]
+        - list "Этапы смены" [ref=e522]:
+          - listitem [ref=e523]:
+            - generic [ref=e524]: check
+            - generic [ref=e526]: Машина
+          - listitem [ref=e527]:
+            - generic [ref=e528]: "2"
+            - generic [ref=e530]: Осмотр
+          - listitem [ref=e531]:
+            - generic [ref=e532]: "3"
+            - generic [ref=e534]: Рейс
+          - listitem [ref=e535]:
+            - generic [ref=e536]: "4"
+            - generic [ref=e538]: Сдача
+          - listitem [ref=e539]:
+            - generic [ref=e540]: "5"
+            - generic [ref=e542]: Приёмка
+        - generic [ref=e543]:
+          - generic [ref=e544]:
+            - strong [ref=e545]: Р-208 · Северный маршрут
+            - generic [ref=e546]:
+              - generic [ref=e547]: fact_check
+              - generic [ref=e548]: Осмотр перед выездом
+          - generic [ref=e549]: 01.10.2026 · 09:00–13:00 · 3 точки · 46 км · Сухой груз · 14 паллет-мест
+          - generic [ref=e550]:
+            - generic [ref=e551]:
+              - generic [ref=e552]: scale
+              - generic [ref=e553]: от 1,1 т
+            - generic [ref=e554]:
+              - generic [ref=e555]: deployed_code
+              - generic [ref=e556]: от 12 м³
+            - generic [ref=e557]:
+              - generic [ref=e558]: straighten
+              - generic [ref=e559]: кузов от 3 м
+            - generic [ref=e560]:
+              - generic [ref=e561]: thermostat
+              - generic [ref=e562]: без охлаждения
+        - status [ref=e663]:
+          - generic [ref=e664]: cloud_done
+          - generic [ref=e665]: Бронь подтверждена сервером · ГАЗель Next А 412 МР 77 · держится до 09:30
+          - button "Отменить бронь" [ref=e666] [cursor=pointer]
+        - generic [ref=e667]:
+          - generic [ref=e668]:
+            - heading "Осмотр перед выездом" [level=2] [ref=e669]
+            - generic [ref=e670]: ГАЗель Next · А 412 МР 77 · фото, пробег, топливо, чек-лист
+          - group "Фото · 5 из 5" [ref=e776]:
+            - generic [ref=e673]:
+              - generic [ref=e674]:
+                - 'button "Спереди: Загружено · демо. Нажмите, чтобы снять или выбрать фото" [ref=e766] [cursor=pointer]':
+                  - generic [ref=e676]: image
+                  - generic [ref=e677]: Спереди
+                  - generic [ref=e767]: check
+                - generic [ref=e678]:
+                  - generic [ref=e679]: cloud_done
+                  - generic [ref=e680]: Загружено · демо
+              - generic [ref=e681]:
+                - 'button "Сзади: Загружено · демо. Нажмите, чтобы снять или выбрать фото" [ref=e769] [cursor=pointer]':
+                  - generic [ref=e683]: image
+                  - generic [ref=e684]: Сзади
+                  - generic [ref=e770]: check
+                - generic [ref=e685]:
+                  - generic [ref=e686]: cloud_done
+                  - generic [ref=e687]: Загружено · демо
+              - generic [ref=e688]:
+                - 'button "Слева: Загружено · демо. Нажмите, чтобы снять или выбрать фото" [ref=e777] [cursor=pointer]':
+                  - generic [ref=e690]: image
+                  - generic [ref=e691]: Слева
+                  - generic [ref=e778]: check
+                - generic [ref=e692]:
+                  - generic [ref=e693]: cloud_done
+                  - generic [ref=e694]: Загружено · демо
+              - generic [ref=e695]:
+                - 'button "Справа: Загружено · демо. Нажмите, чтобы снять или выбрать фото" [ref=e780] [cursor=pointer]':
+                  - generic [ref=e697]: image
+                  - generic [ref=e698]: Справа
+                  - generic [ref=e781]: check
+                - generic [ref=e699]:
+                  - generic [ref=e700]: cloud_done
+                  - generic [ref=e701]: Загружено · демо
+              - generic [ref=e702]:
+                - 'button "Одометр: Загружено · демо. Нажмите, чтобы снять или выбрать фото" [ref=e783] [cursor=pointer]':
+                  - generic [ref=e704]: image
+                  - generic [ref=e705]: Одометр
+                  - generic [ref=e784]: check
+                - generic [ref=e706]:
+                  - generic [ref=e707]: cloud_done
+                  - generic [ref=e708]: Загружено · демо
+            - generic [ref=e709]:
+              - 'button "Демо: добавить фото" [ref=e710] [cursor=pointer]':
+                - generic [ref=e711]: add_photo_alternate
+                - text: "Демо: добавить фото"
+              - generic [ref=e712]: Нажмите на слот, чтобы снять камерой или выбрать файл. Файлы остаются в браузере.
+          - generic [ref=e713]:
+            - generic [ref=e714]:
+              - text: Пробег по одометру, км
+              - 'textbox "Пробег по одометру, км Последний зафиксированный пробег: 84 370 км" [ref=e715]':
+                - /placeholder: 84 370
+                - text: "84500"
+              - generic [ref=e716]: "Последний зафиксированный пробег: 84 370 км"
+            - group "Уровень топлива" [ref=e717]:
+              - generic [ref=e719]:
+                - button "¼" [ref=e720] [cursor=pointer]
+                - button "½" [pressed] [ref=e721] [cursor=pointer]
+                - button "¾" [ref=e722] [cursor=pointer]
+                - button "Полный" [ref=e723] [cursor=pointer]
+          - group "Чек-лист" [ref=e724]:
+            - generic [ref=e726] [cursor=pointer]:
+              - checkbox "Кузов и стёкла осмотрены" [checked] [ref=e727]
+              - generic [ref=e728]: Кузов и стёкла осмотрены
+            - generic [ref=e729] [cursor=pointer]:
+              - checkbox "Шины и световые приборы исправны" [checked] [ref=e730]
+              - generic [ref=e731]: Шины и световые приборы исправны
+            - generic [ref=e732] [cursor=pointer]:
+              - checkbox "Документы и комплект на месте" [checked] [active] [ref=e733]
+              - generic [ref=e734]: Документы и комплект на месте
+          - generic [ref=e735]:
+            - generic [ref=e736]:
+              - generic [ref=e737]: Дефекты
+              - button "Добавить дефект" [ref=e738] [cursor=pointer]:
+                - generic [ref=e739]: add
+                - text: Добавить дефект
+            - generic [ref=e740]: Не отмечены
+        - button "Выехать на маршрут" [ref=e745] [cursor=pointer]:
+          - generic [ref=e746]: play_arrow
+    - navigation "Навигация" [ref=e648]:
+      - button "Сегодня" [ref=e649] [cursor=pointer]:
+        - generic [ref=e650]: today
+      - button "Автомобили" [ref=e652] [cursor=pointer]:
+        - generic [ref=e653]: local_shipping
+      - button "База знаний" [ref=e655] [cursor=pointer]:
+        - generic [ref=e656]: menu_book
+      - button "Ещё" [ref=e658] [cursor=pointer]:
+        - generic [ref=e659]: menu

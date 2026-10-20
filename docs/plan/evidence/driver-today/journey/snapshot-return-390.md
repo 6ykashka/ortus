@@ -1,0 +1,167 @@
+- generic [ref=f2e3]:
+  - link "К содержимому" [ref=f2e4] [cursor=pointer]:
+    - /url: "#ox-main"
+  - generic [ref=f2e6]:
+    - banner [ref=f2e7]:
+      - generic [ref=f2e8]: о
+      - generic [ref=f2e10]:
+        - generic [ref=f2e11]: domain
+        - generic [ref=f2e12]:
+          - generic [ref=f2e13]: Альта Групп
+          - generic [ref=f2e14]: Мои назначения
+      - button "Уведомления" [ref=f2e15] [cursor=pointer]:
+        - generic [ref=f2e16]: notifications
+      - button "Профиль" [ref=f2e17] [cursor=pointer]: ИВ
+    - main [ref=f2e19]:
+      - region [ref=f2e21]:
+        - generic [ref=f2e22]:
+          - generic [ref=f2e23]: Илья Васильев · четверг, 1 октября
+          - heading "Моя смена" [level=1] [ref=f2e24]
+        - list "Этапы смены" [ref=f2e25]:
+          - listitem [ref=f2e26]:
+            - generic [ref=f2e27]: check
+            - generic [ref=f2e28]: Машина
+          - listitem [ref=f2e29]:
+            - generic [ref=f2e30]: check
+            - generic [ref=f2e31]: Осмотр
+          - listitem [ref=f2e32]:
+            - generic [ref=f2e33]: check
+            - generic [ref=f2e34]: Рейс
+          - listitem [ref=f2e35]:
+            - generic [ref=f2e36]: "4"
+            - generic [ref=f2e37]: Сдача
+          - listitem [ref=f2e38]:
+            - generic [ref=f2e39]: "5"
+            - generic [ref=f2e40]: Приёмка
+        - generic [ref=f2e41]:
+          - generic [ref=f2e42]:
+            - strong [ref=f2e43]: Р-208 · Северный маршрут
+            - generic [ref=f2e44]:
+              - generic [ref=f2e45]: assignment_return
+              - text: Сдача машины
+          - generic [ref=f2e46]: 01.10.2026 · 09:00–13:00 · 3 точки · 46 км · Сухой груз · 14 паллет-мест
+          - generic [ref=f2e47]:
+            - generic [ref=f2e48]:
+              - generic [ref=f2e49]: scale
+              - text: от 1,1 т
+            - generic [ref=f2e50]:
+              - generic [ref=f2e51]: deployed_code
+              - text: от 12 м³
+            - generic [ref=f2e52]:
+              - generic [ref=f2e53]: straighten
+              - text: кузов от 3 м
+            - generic [ref=f2e54]:
+              - generic [ref=f2e55]: thermostat
+              - text: без охлаждения
+        - generic [ref=f2e357]:
+          - generic [ref=f2e358]:
+            - heading "Осмотр при сдаче" [level=2] [ref=f2e359]
+            - text: ГАЗель Next · А 412 МР 77 · сравнение с выездом
+          - group "Фото · 0 из 5" [ref=f2e360]:
+            - generic [ref=f2e362]:
+              - generic [ref=f2e363]:
+                - 'button "Спереди: Не снято. Нажмите, чтобы снять или выбрать фото" [ref=f2e364] [cursor=pointer]':
+                  - generic [ref=f2e365]: photo_camera
+                  - generic [ref=f2e366]: Спереди
+                - generic [ref=f2e367]:
+                  - generic [ref=f2e368]: radio_button_unchecked
+                  - text: Не снято
+              - generic [ref=f2e369]:
+                - 'button "Сзади: Не снято. Нажмите, чтобы снять или выбрать фото" [ref=f2e370] [cursor=pointer]':
+                  - generic [ref=f2e371]: photo_camera
+                  - generic [ref=f2e372]: Сзади
+                - generic [ref=f2e373]:
+                  - generic [ref=f2e374]: radio_button_unchecked
+                  - text: Не снято
+              - generic [ref=f2e375]:
+                - 'button "Слева: Не снято. Нажмите, чтобы снять или выбрать фото" [ref=f2e376] [cursor=pointer]':
+                  - generic [ref=f2e377]: photo_camera
+                  - generic [ref=f2e378]: Слева
+                - generic [ref=f2e379]:
+                  - generic [ref=f2e380]: radio_button_unchecked
+                  - text: Не снято
+              - generic [ref=f2e381]:
+                - 'button "Справа: Не снято. Нажмите, чтобы снять или выбрать фото" [ref=f2e382] [cursor=pointer]':
+                  - generic [ref=f2e383]: photo_camera
+                  - generic [ref=f2e384]: Справа
+                - generic [ref=f2e385]:
+                  - generic [ref=f2e386]: radio_button_unchecked
+                  - text: Не снято
+              - generic [ref=f2e387]:
+                - 'button "Одометр: Не снято. Нажмите, чтобы снять или выбрать фото" [ref=f2e388] [cursor=pointer]':
+                  - generic [ref=f2e389]: photo_camera
+                  - generic [ref=f2e390]: Одометр
+                - generic [ref=f2e391]:
+                  - generic [ref=f2e392]: radio_button_unchecked
+                  - text: Не снято
+            - generic [ref=f2e393]: Нажмите на слот, чтобы снять камерой или выбрать файл.
+          - generic [ref=f2e394]:
+            - generic [ref=f2e395]:
+              - text: Пробег по одометру, км
+              - 'textbox "Пробег по одометру, км Пробег при выезде: 84 500 км — значение не может быть меньше" [ref=f2e396]':
+                - /placeholder: 84 500
+              - generic [ref=f2e397]: "Пробег при выезде: 84 500 км — значение не может быть меньше"
+            - group "Уровень топлива" [ref=f2e398]:
+              - generic [ref=f2e400]:
+                - button "¼" [ref=f2e401] [cursor=pointer]
+                - button "½" [ref=f2e402] [cursor=pointer]
+                - button "¾" [ref=f2e403] [cursor=pointer]
+                - button "Полный" [ref=f2e404] [cursor=pointer]
+          - group "Чек-лист" [ref=f2e405]:
+            - generic [ref=f2e407] [cursor=pointer]:
+              - checkbox "Груз выгружен полностью" [ref=f2e408]
+              - generic [ref=f2e409]: Груз выгружен полностью
+            - generic [ref=f2e410] [cursor=pointer]:
+              - checkbox "Личные вещи забраны" [ref=f2e411]
+              - generic [ref=f2e412]: Личные вещи забраны
+            - generic [ref=f2e413] [cursor=pointer]:
+              - checkbox "Ключи и документы на месте" [ref=f2e414]
+              - generic [ref=f2e415]: Ключи и документы на месте
+          - generic [ref=f2e416]:
+            - generic [ref=f2e417]:
+              - generic [ref=f2e418]: Дефекты
+              - button "Добавить дефект" [ref=f2e419] [cursor=pointer]:
+                - generic [ref=f2e420]: add
+                - text: Добавить дефект
+            - generic [ref=f2e421]: Не отмечены
+          - generic [ref=f2e422]:
+            - text: Комментарий для менеджера
+            - textbox "Комментарий для менеджера" [ref=f2e423]:
+              - /placeholder: Необязательно
+        - generic [ref=f2e424]:
+          - generic [ref=f2e425]:
+            - heading "Расходы" [level=2] [ref=f2e426]
+            - button "Добавить расход" [ref=f2e427] [cursor=pointer]:
+              - generic [ref=f2e428]: add
+              - text: Добавить расход
+          - generic [ref=f2e429]:
+            - generic [ref=f2e430]: local_gas_station
+            - generic [ref=f2e432]:
+              - generic [ref=f2e433]: Топливо · 2 500 ₽
+              - generic [ref=f2e434]: 01.10.2026 · чек приложен
+            - generic [ref=f2e435]:
+              - generic [ref=f2e436]: cloud_done
+              - text: Принято сервером
+        - generic [ref=f2e437]:
+          - generic [ref=f2e438]:
+            - generic [ref=f2e439]: pending
+            - generic [ref=f2e440]: "Осталось: 5 фото, пробег, уровень топлива, 3 пункта чек-листа"
+          - button "Сдать машину" [disabled] [ref=f2e441]:
+            - generic [ref=f2e442]: assignment_return
+            - text: Сдать машину
+    - navigation "Навигация" [ref=f2e134]:
+      - button "Сегодня" [ref=f2e135] [cursor=pointer]:
+        - generic [ref=f2e136]: today
+        - text: Сегодня
+      - button "Автомобили" [ref=f2e137] [cursor=pointer]:
+        - generic [ref=f2e138]: local_shipping
+        - text: Автомобили
+      - button "Подотчёт" [ref=f2e139] [cursor=pointer]:
+        - generic [ref=f2e140]: account_balance_wallet
+        - text: Подотчёт
+      - button "Ещё" [ref=f2e141] [cursor=pointer]:
+        - generic [ref=f2e142]: menu
+        - text: Ещё
+    - status [ref=f2e333]:
+      - generic [ref=f2e334]: check_circle
+      - generic [ref=f2e335]: Рейс завершён. Заполните осмотр при сдаче

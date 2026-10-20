@@ -1,0 +1,118 @@
+- generic [ref=e4]:
+  - region "Панель демонстрации" [ref=e5]:
+    - generic [ref=e6]:
+      - generic [ref=e7]: science
+      - text: Демо-режим
+    - generic [ref=e8]:
+      - text: Персонаж
+      - combobox "Персонаж" [ref=e9]:
+        - option "Оператор платформы"
+        - option "Владелец · Дарья Зимина"
+        - option "Логист · Марина Котова"
+        - option "Водитель · Илья Васильев" [selected]
+        - option "Массажист · Анна Морозова"
+        - option "Прораб · Алексей Соколов"
+        - option "Владелец · Ирина Белова"
+        - option "Массажист · Анна Морозова"
+    - generic [ref=e10]:
+      - text: Ширина
+      - combobox "Ширина" [ref=e11]:
+        - option "По окну"
+        - option "390 · телефон" [selected]
+        - option "768 · планшет"
+        - option "1440 · компьютер"
+    - generic [ref=e12]:
+      - button "Путь проверки" [ref=e13] [cursor=pointer]:
+        - generic [ref=e14]: checklist
+        - text: Путь проверки
+      - button "Сбросить" [ref=e15] [cursor=pointer]:
+        - generic [ref=e16]: restart_alt
+        - text: Сбросить
+    - generic [ref=e17]:
+      - generic [ref=e18] [cursor=pointer]:
+        - checkbox "Нет связи" [ref=e19]
+        - text: Нет связи
+      - generic [ref=e20] [cursor=pointer]:
+        - checkbox "Конфликт брони" [ref=e21]
+        - text: Конфликт брони
+      - generic [ref=e22] [cursor=pointer]:
+        - checkbox "Сбой загрузки фото" [ref=e23]
+        - text: Сбой загрузки фото
+      - generic [ref=e24]: Переключатель персонажей — демонстрация, не механизм безопасности. Данные вымышлены и живут в памяти страницы.
+  - generic [ref=e26]:
+    - banner [ref=e27]:
+      - generic [ref=e48]: о
+      - generic [ref=e28]:
+        - generic [ref=e29]: domain
+        - generic [ref=e30]:
+          - generic [ref=e31]: Альта Групп
+          - generic [ref=e494]: Москва / Север Логистик · мои назначения
+      - button "Уведомления" [ref=e506] [cursor=pointer]:
+        - generic [ref=e507]: notifications
+      - button "Профиль" [ref=e33] [cursor=pointer]:
+        - generic [ref=e57]: ИВ
+    - main [ref=e40]:
+      - region [ref=e518]:
+        - generic [ref=e519]:
+          - generic [ref=e520]: Илья Васильев · среда, 1 октября
+          - heading "Моя смена" [level=1] [ref=e521]
+        - list "Этапы смены" [ref=e522]:
+          - listitem [ref=e523]:
+            - generic [ref=e524]: check
+            - generic [ref=e526]: Машина
+          - listitem [ref=e527]:
+            - generic [ref=e528]: check
+            - generic [ref=e530]: Осмотр
+          - listitem [ref=e531]:
+            - generic [ref=e532]: check
+            - generic [ref=e534]: Рейс
+          - listitem [ref=e535]:
+            - generic [ref=e536]: check
+            - generic [ref=e538]: Сдача
+          - listitem [ref=e539]:
+            - generic [ref=e540]: "5"
+            - generic [ref=e542]: Приёмка
+        - generic [ref=e543]:
+          - generic [ref=e544]:
+            - strong [ref=e545]: Р-208 · Северный маршрут
+            - generic [ref=e546]:
+              - generic [ref=e547]: pending
+              - generic [ref=e548]: Ожидает приёмки
+          - generic [ref=e549]: 01.10.2026 · 09:00–13:00 · 3 точки · 46 км · Сухой груз · 14 паллет-мест
+          - generic [ref=e550]:
+            - generic [ref=e551]:
+              - generic [ref=e552]: scale
+              - generic [ref=e553]: от 1,1 т
+            - generic [ref=e554]:
+              - generic [ref=e555]: deployed_code
+              - generic [ref=e556]: от 12 м³
+            - generic [ref=e557]:
+              - generic [ref=e558]: straighten
+              - generic [ref=e559]: кузов от 3 м
+            - generic [ref=e560]:
+              - generic [ref=e561]: thermostat
+              - generic [ref=e562]: без охлаждения
+        - status [ref=e1010]:
+          - generic [ref=e1011]: hourglass_top
+          - heading "Ожидает приёмки менеджером" [level=2] [ref=e1013]
+          - paragraph [ref=e1014]: Сервер принял сдачу. Машина вернётся в пул свободных после приёмки.
+          - generic [ref=e1015]:
+            - generic [ref=e1016]:
+              - generic [ref=e1017]: Пройдено
+              - strong [ref=e1018]: 60 км
+            - generic [ref=e1019]:
+              - generic [ref=e1020]: Расходы
+              - strong [ref=e1021]: 1 на 2 500 ₽
+          - 'button "Демо: открыть как логист" [ref=e1022] [cursor=pointer]'
+    - navigation "Навигация" [ref=e648]:
+      - button "Сегодня" [ref=e649] [cursor=pointer]:
+        - generic [ref=e650]: today
+      - button "Автомобили" [ref=e652] [cursor=pointer]:
+        - generic [ref=e653]: local_shipping
+      - button "База знаний" [ref=e655] [cursor=pointer]:
+        - generic [ref=e656]: menu_book
+      - button "Ещё" [ref=e658] [cursor=pointer]:
+        - generic [ref=e659]: menu
+    - status [ref=e1023]:
+      - generic [ref=e1024]: check_circle
+      - generic [ref=e1025]: Сдача принята сервером. Ожидайте приёмки

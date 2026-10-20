@@ -1,0 +1,73 @@
+- generic [ref=f4e3]:
+  - link "К содержимому" [ref=f4e4] [cursor=pointer]:
+    - /url: "#ox-main"
+  - generic [ref=f4e6]:
+    - banner [ref=f4e7]:
+      - generic [ref=f4e8]: о
+      - generic [ref=f4e10]:
+        - generic [ref=f4e11]: domain
+        - generic [ref=f4e12]:
+          - generic [ref=f4e13]: Альта Групп
+          - generic [ref=f4e14]: Мои назначения
+      - 'button "Уведомления: 1 новых" [ref=f4e15] [cursor=pointer]':
+        - generic [ref=f4e16]: notifications
+        - generic [ref=f4e17]: "1"
+      - button "Профиль" [ref=f4e18] [cursor=pointer]: ИВ
+    - main [ref=f4e20]:
+      - region [ref=f4e22]:
+        - generic [ref=f4e23]:
+          - generic [ref=f4e24]: Илья Васильев · четверг, 1 октября
+          - heading "Моя смена" [level=1] [ref=f4e25]
+        - list "Этапы смены" [ref=f4e26]:
+          - listitem [ref=f4e27]:
+            - generic [ref=f4e28]: check
+            - generic [ref=f4e30]: Машина
+          - listitem [ref=f4e31]:
+            - generic [ref=f4e32]: check
+            - generic [ref=f4e34]: Осмотр
+          - listitem [ref=f4e35]:
+            - generic [ref=f4e36]: check
+            - generic [ref=f4e38]: Рейс
+          - listitem [ref=f4e39]:
+            - generic [ref=f4e40]: check
+            - generic [ref=f4e42]: Сдача
+          - listitem [ref=f4e43]:
+            - generic [ref=f4e44]: check
+            - generic [ref=f4e46]: Приёмка
+        - generic [ref=f4e47]:
+          - generic [ref=f4e48]:
+            - strong [ref=f4e49]: Р-208 · Северный маршрут
+            - generic [ref=f4e50]:
+              - generic [ref=f4e51]: verified
+              - text: Принят
+          - generic [ref=f4e52]: 01.10.2026 · 09:00–13:00 · 3 точки · 46 км · Сухой груз · 14 паллет-мест
+          - generic [ref=f4e53]:
+            - generic [ref=f4e54]:
+              - generic [ref=f4e55]: scale
+              - text: от 1,1 т
+            - generic [ref=f4e56]:
+              - generic [ref=f4e57]: deployed_code
+              - text: от 12 м³
+            - generic [ref=f4e58]:
+              - generic [ref=f4e59]: straighten
+              - text: кузов от 3 м
+            - generic [ref=f4e60]:
+              - generic [ref=f4e61]: thermostat
+              - text: без охлаждения
+        - status [ref=f4e62]:
+          - generic [ref=f4e63]: verified
+          - heading "Смена принята" [level=2] [ref=f4e65]
+          - paragraph [ref=f4e66]: Менеджер подтвердил осмотр и расходы. Машина снова доступна для назначения.
+    - navigation "Навигация" [ref=f4e67]:
+      - button "Сегодня" [ref=f4e68] [cursor=pointer]:
+        - generic [ref=f4e69]: today
+        - text: Сегодня
+      - button "Автомобили" [ref=f4e70] [cursor=pointer]:
+        - generic [ref=f4e71]: local_shipping
+        - text: Автомобили
+      - button "Подотчёт" [ref=f4e72] [cursor=pointer]:
+        - generic [ref=f4e73]: account_balance_wallet
+        - text: Подотчёт
+      - button "Ещё" [ref=f4e74] [cursor=pointer]:
+        - generic [ref=f4e75]: menu
+        - text: Ещё

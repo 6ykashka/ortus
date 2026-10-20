@@ -1,0 +1,109 @@
+- generic [ref=e4]:
+  - region "Панель демонстрации" [ref=e5]:
+    - generic [ref=e6]:
+      - generic [ref=e7]: science
+      - text: Демо-режим
+    - generic [ref=e8]:
+      - text: Персонаж
+      - combobox "Персонаж" [ref=e9]:
+        - option "Оператор платформы"
+        - option "Владелец · Дарья Зимина"
+        - option "Логист · Марина Котова"
+        - option "Водитель · Илья Васильев" [selected]
+        - option "Массажист · Анна Морозова"
+        - option "Прораб · Алексей Соколов"
+        - option "Владелец · Ирина Белова"
+        - option "Массажист · Анна Морозова"
+    - generic [ref=e10]:
+      - text: Ширина
+      - combobox "Ширина" [ref=e11]:
+        - option "По окну"
+        - option "390 · телефон" [selected]
+        - option "768 · планшет"
+        - option "1440 · компьютер"
+    - generic [ref=e12]:
+      - button "Путь проверки" [ref=e13] [cursor=pointer]:
+        - generic [ref=e14]: checklist
+        - text: Путь проверки
+      - button "Сбросить" [ref=e15] [cursor=pointer]:
+        - generic [ref=e16]: restart_alt
+        - text: Сбросить
+    - generic [ref=e17]:
+      - generic [ref=e18] [cursor=pointer]:
+        - checkbox "Нет связи" [ref=e19]
+        - text: Нет связи
+      - generic [ref=e20] [cursor=pointer]:
+        - checkbox "Конфликт брони" [ref=e21]
+        - text: Конфликт брони
+      - generic [ref=e22] [cursor=pointer]:
+        - checkbox "Сбой загрузки фото" [ref=e23]
+        - text: Сбой загрузки фото
+      - generic [ref=e24]: Переключатель персонажей — демонстрация, не механизм безопасности. Данные вымышлены и живут в памяти страницы.
+  - generic [ref=e26]:
+    - banner [ref=e27]:
+      - generic [ref=e48]: о
+      - generic [ref=e28]:
+        - generic [ref=e29]: domain
+        - generic [ref=e30]:
+          - generic [ref=e31]: Альта Групп
+          - generic [ref=e1469]: Москва / Север Логистик · мои назначения
+      - 'button "Уведомления: 1 новых" [ref=e1478] [cursor=pointer]':
+        - generic [ref=e1479]: notifications
+        - generic [ref=e1480]: "1"
+      - button "Профиль" [ref=e33] [cursor=pointer]:
+        - generic [ref=e57]: ИВ
+    - main [ref=e40]:
+      - region [ref=e1482]:
+        - generic [ref=e1483]:
+          - generic [ref=e1484]: Илья Васильев · среда, 1 октября
+          - heading "Моя смена" [level=1] [ref=e1485]
+        - list "Этапы смены" [ref=e1486]:
+          - listitem [ref=e1487]:
+            - generic [ref=e1488]: check
+            - generic [ref=e1490]: Машина
+          - listitem [ref=e1491]:
+            - generic [ref=e1492]: check
+            - generic [ref=e1494]: Осмотр
+          - listitem [ref=e1495]:
+            - generic [ref=e1496]: check
+            - generic [ref=e1498]: Рейс
+          - listitem [ref=e1499]:
+            - generic [ref=e1500]: check
+            - generic [ref=e1502]: Сдача
+          - listitem [ref=e1503]:
+            - generic [ref=e1504]: check
+            - generic [ref=e1506]: Приёмка
+        - generic [ref=e1507]:
+          - generic [ref=e1508]:
+            - strong [ref=e1509]: Р-208 · Северный маршрут
+            - generic [ref=e1510]:
+              - generic [ref=e1511]: verified
+              - generic [ref=e1512]: Принят
+          - generic [ref=e1513]: 01.10.2026 · 09:00–13:00 · 3 точки · 46 км · Сухой груз · 14 паллет-мест
+          - generic [ref=e1514]:
+            - generic [ref=e1515]:
+              - generic [ref=e1516]: scale
+              - generic [ref=e1517]: от 1,1 т
+            - generic [ref=e1518]:
+              - generic [ref=e1519]: deployed_code
+              - generic [ref=e1520]: от 12 м³
+            - generic [ref=e1521]:
+              - generic [ref=e1522]: straighten
+              - generic [ref=e1523]: кузов от 3 м
+            - generic [ref=e1524]:
+              - generic [ref=e1525]: thermostat
+              - generic [ref=e1526]: без охлаждения
+        - status [ref=e1527]:
+          - generic [ref=e1528]: verified
+          - heading "Смена принята" [level=2] [ref=e1530]
+          - paragraph [ref=e1531]: Менеджер подтвердил осмотр и расходы. Машина снова доступна для назначения.
+          - button "Начать новую демо-смену" [ref=e1532] [cursor=pointer]
+    - navigation "Навигация" [ref=e1456]:
+      - button "Сегодня" [ref=e1533] [cursor=pointer]:
+        - generic [ref=e1534]: today
+      - button "Автомобили" [ref=e1536] [cursor=pointer]:
+        - generic [ref=e1537]: local_shipping
+      - button "База знаний" [ref=e1539] [cursor=pointer]:
+        - generic [ref=e1540]: menu_book
+      - button "Ещё" [ref=e1542] [cursor=pointer]:
+        - generic [ref=e1543]: menu

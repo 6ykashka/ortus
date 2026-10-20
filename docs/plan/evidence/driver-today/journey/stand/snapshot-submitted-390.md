@@ -1,0 +1,82 @@
+- generic [ref=f1e24]:
+  - link "К содержимому" [ref=f1e25] [cursor=pointer]:
+    - /url: "#ox-main"
+  - generic [ref=f1e27]:
+    - banner [ref=f1e28]:
+      - generic [ref=f1e29]: о
+      - generic [ref=f1e31]:
+        - generic [ref=f1e32]: domain
+        - generic [ref=f1e33]:
+          - generic [ref=f1e34]: Альта Групп
+          - generic [ref=f1e35]: Мои назначения
+      - button "Уведомления" [ref=f1e36] [cursor=pointer]:
+        - generic [ref=f1e37]: notifications
+      - button "Профиль" [ref=f1e38] [cursor=pointer]: ИВ
+    - main [ref=f1e40]:
+      - region [ref=f1e42]:
+        - generic [ref=f1e43]:
+          - generic [ref=f1e44]: Илья Васильев · понедельник, 19 октября
+          - heading "Моя смена" [level=1] [ref=f1e45]
+        - list "Этапы смены" [ref=f1e46]:
+          - listitem [ref=f1e47]:
+            - generic [ref=f1e48]: check
+            - generic [ref=f1e49]: Машина
+          - listitem [ref=f1e50]:
+            - generic [ref=f1e51]: check
+            - generic [ref=f1e52]: Осмотр
+          - listitem [ref=f1e53]:
+            - generic [ref=f1e54]: check
+            - generic [ref=f1e55]: Рейс
+          - listitem [ref=f1e56]:
+            - generic [ref=f1e57]: check
+            - generic [ref=f1e58]: Сдача
+          - listitem [ref=f1e59]:
+            - generic [ref=f1e60]: "5"
+            - generic [ref=f1e61]: Приёмка
+        - generic [ref=f1e62]:
+          - generic [ref=f1e63]:
+            - strong [ref=f1e64]: Р-208 · Северный маршрут
+            - generic [ref=f1e65]:
+              - generic [ref=f1e66]: pending
+              - text: Ожидает приёмки
+          - generic [ref=f1e67]: 19.10.2026 · 09:00–13:00 · 3 точки · 46 км · Сухой груз · 14 паллет-мест
+          - generic [ref=f1e68]:
+            - generic [ref=f1e69]:
+              - generic [ref=f1e70]: scale
+              - text: от 1,1 т
+            - generic [ref=f1e71]:
+              - generic [ref=f1e72]: deployed_code
+              - text: от 12 м³
+            - generic [ref=f1e73]:
+              - generic [ref=f1e74]: straighten
+              - text: кузов от 3 м
+            - generic [ref=f1e75]:
+              - generic [ref=f1e76]: thermostat
+              - text: без охлаждения
+        - status [ref=f1e499]:
+          - generic [ref=f1e500]: hourglass_top
+          - heading "Ожидает приёмки менеджером" [level=2] [ref=f1e502]
+          - paragraph [ref=f1e503]: Сервер принял сдачу. Машина вернётся в пул свободных после приёмки.
+          - generic [ref=f1e504]:
+            - generic [ref=f1e505]:
+              - text: Пройдено
+              - strong [ref=f1e506]: 60 км
+            - generic [ref=f1e507]:
+              - text: Расходы
+              - strong [ref=f1e508]: 1 на 2 500 ₽
+    - navigation "Навигация" [ref=f1e155]:
+      - button "Сегодня" [ref=f1e156] [cursor=pointer]:
+        - generic [ref=f1e157]: today
+        - text: Сегодня
+      - button "Автомобили" [ref=f1e158] [cursor=pointer]:
+        - generic [ref=f1e159]: local_shipping
+        - text: Автомобили
+      - button "Подотчёт" [ref=f1e160] [cursor=pointer]:
+        - generic [ref=f1e161]: account_balance_wallet
+        - text: Подотчёт
+      - button "Ещё" [ref=f1e162] [cursor=pointer]:
+        - generic [ref=f1e163]: menu
+        - text: Ещё
+    - status [ref=f1e509]:
+      - generic [ref=f1e510]: check_circle
+      - generic [ref=f1e511]: Сдача принята сервером. Ожидайте приёмки

@@ -1,0 +1,151 @@
+- generic [ref=f1e24]:
+  - link "К содержимому" [ref=f1e25] [cursor=pointer]:
+    - /url: "#ox-main"
+  - generic [ref=f1e27]:
+    - banner [ref=f1e28]:
+      - generic [ref=f1e29]: о
+      - generic [ref=f1e31]:
+        - generic [ref=f1e32]: domain
+        - generic [ref=f1e33]:
+          - generic [ref=f1e34]: Альта Групп
+          - generic [ref=f1e35]: Мои назначения
+      - button "Уведомления" [ref=f1e36] [cursor=pointer]:
+        - generic [ref=f1e37]: notifications
+      - button "Профиль" [ref=f1e38] [cursor=pointer]: ИВ
+    - main [ref=f1e40]:
+      - region [ref=f1e42]:
+        - generic [ref=f1e43]:
+          - generic [ref=f1e44]: Илья Васильев · понедельник, 19 октября
+          - heading "Моя смена" [level=1] [ref=f1e45]
+        - list "Этапы смены" [ref=f1e46]:
+          - listitem [ref=f1e47]:
+            - generic [ref=f1e48]: "1"
+            - generic [ref=f1e49]: Машина
+          - listitem [ref=f1e50]:
+            - generic [ref=f1e51]: "2"
+            - generic [ref=f1e52]: Осмотр
+          - listitem [ref=f1e53]:
+            - generic [ref=f1e54]: "3"
+            - generic [ref=f1e55]: Рейс
+          - listitem [ref=f1e56]:
+            - generic [ref=f1e57]: "4"
+            - generic [ref=f1e58]: Сдача
+          - listitem [ref=f1e59]:
+            - generic [ref=f1e60]: "5"
+            - generic [ref=f1e61]: Приёмка
+        - generic [ref=f1e62]:
+          - generic [ref=f1e63]:
+            - strong [ref=f1e64]: Р-208 · Северный маршрут
+            - generic [ref=f1e65]:
+              - generic [ref=f1e66]: event
+              - text: Запланирован
+          - generic [ref=f1e67]: 19.10.2026 · 09:00–13:00 · 3 точки · 46 км · Сухой груз · 14 паллет-мест
+          - generic [ref=f1e68]:
+            - generic [ref=f1e69]:
+              - generic [ref=f1e70]: scale
+              - text: от 1,1 т
+            - generic [ref=f1e71]:
+              - generic [ref=f1e72]: deployed_code
+              - text: от 12 м³
+            - generic [ref=f1e73]:
+              - generic [ref=f1e74]: straighten
+              - text: кузов от 3 м
+            - generic [ref=f1e75]:
+              - generic [ref=f1e76]: thermostat
+              - text: без охлаждения
+        - generic [ref=f1e77]:
+          - heading "Выберите машину" [level=2] [ref=f1e78]
+          - text: Машины вашей фирмы. Неподходящие отмечены с причиной.
+        - article [ref=f1e79]:
+          - generic [ref=f1e80]:
+            - generic [ref=f1e81]: local_shipping
+            - generic [ref=f1e83]:
+              - generic [ref=f1e84]: ГАЗель Next
+              - generic [ref=f1e85]: А 412 МР 77
+              - generic [ref=f1e86]: Тент · 1,5 т · 16 м³ · кузов 4,2 м
+            - generic [ref=f1e87]:
+              - generic [ref=f1e88]: check_circle
+              - text: Свободна
+          - generic [ref=f1e89]:
+            - generic [ref=f1e90]: check_circle
+            - text: "Подходит рейсу: масса, объём, длина и температура"
+          - button "Забронировать" [ref=f1e91] [cursor=pointer]:
+            - generic [ref=f1e92]: event_available
+            - text: Забронировать
+        - article [ref=f1e93]:
+          - generic [ref=f1e94]:
+            - generic [ref=f1e95]: local_shipping
+            - generic [ref=f1e97]:
+              - generic [ref=f1e98]: Mercedes Sprinter
+              - generic [ref=f1e99]: Т 771 ЕХ 77
+              - generic [ref=f1e100]: Фургон · 1,6 т · 14 м³ · кузов 4,3 м
+            - generic [ref=f1e101]:
+              - generic [ref=f1e102]: check_circle
+              - text: Свободна
+          - generic [ref=f1e103]:
+            - generic [ref=f1e104]: check_circle
+            - text: "Подходит рейсу: масса, объём, длина и температура"
+          - button "Забронировать" [ref=f1e105] [cursor=pointer]:
+            - generic [ref=f1e106]: event_available
+            - text: Забронировать
+        - article [ref=f1e107]:
+          - generic [ref=f1e108]:
+            - generic [ref=f1e109]: local_shipping
+            - generic [ref=f1e111]:
+              - generic [ref=f1e112]: ГАЗон Next
+              - generic [ref=f1e113]: Е 905 НА 77
+              - generic [ref=f1e114]: Фургон · 4,5 т · 30 м³ · кузов 5,1 м
+            - generic [ref=f1e115]:
+              - generic [ref=f1e116]: block
+              - text: Недоступна
+          - list [ref=f1e117]:
+            - listitem [ref=f1e118]:
+              - generic [ref=f1e119]: close
+              - generic [ref=f1e120]: "Доступность: Недоступна · Плановое ТО до 03.10"
+          - button "Недоступна" [disabled] [ref=f1e121]
+        - article [ref=f1e122]:
+          - generic [ref=f1e123]:
+            - generic [ref=f1e124]: ac_unit
+            - generic [ref=f1e126]:
+              - generic [ref=f1e127]: Ford Transit
+              - generic [ref=f1e128]: М 608 КТ 77
+              - generic [ref=f1e129]: Рефрижератор · 1,2 т · 11 м³ · кузов 3,4 м · -18…+8 °C
+            - generic [ref=f1e130]:
+              - generic [ref=f1e131]: check_circle
+              - text: Свободна
+          - list [ref=f1e132]:
+            - listitem [ref=f1e133]:
+              - generic [ref=f1e134]: close
+              - generic [ref=f1e135]: "Объём: 11 м³, нужно от 12 м³"
+          - button "Не подходит рейсу" [disabled] [ref=f1e136]
+        - article [ref=f1e137]:
+          - generic [ref=f1e138]:
+            - generic [ref=f1e139]: local_shipping
+            - generic [ref=f1e141]:
+              - generic [ref=f1e142]: Hyundai Porter
+              - generic [ref=f1e143]: В 233 ОС 77
+              - generic [ref=f1e144]: Тент · 0,9 т · 9 м³ · кузов 3,1 м
+            - generic [ref=f1e145]:
+              - generic [ref=f1e146]: check_circle
+              - text: Свободна
+          - list [ref=f1e147]:
+            - listitem [ref=f1e148]:
+              - generic [ref=f1e149]: close
+              - generic [ref=f1e150]: "Грузоподъёмность: 0,9 т, нужно от 1,1 т"
+            - listitem [ref=f1e151]:
+              - generic [ref=f1e152]: close
+              - generic [ref=f1e153]: "Объём: 9 м³, нужно от 12 м³"
+          - button "Не подходит рейсу" [disabled] [ref=f1e154]
+    - navigation "Навигация" [ref=f1e155]:
+      - button "Сегодня" [ref=f1e156] [cursor=pointer]:
+        - generic [ref=f1e157]: today
+        - text: Сегодня
+      - button "Автомобили" [ref=f1e158] [cursor=pointer]:
+        - generic [ref=f1e159]: local_shipping
+        - text: Автомобили
+      - button "Подотчёт" [ref=f1e160] [cursor=pointer]:
+        - generic [ref=f1e161]: account_balance_wallet
+        - text: Подотчёт
+      - button "Ещё" [ref=f1e162] [cursor=pointer]:
+        - generic [ref=f1e163]: menu
+        - text: Ещё

@@ -1,0 +1,184 @@
+- generic [ref=e4]:
+  - region "Панель демонстрации" [ref=e5]:
+    - generic [ref=e6]:
+      - generic [ref=e7]: science
+      - text: Демо-режим
+    - generic [ref=e8]:
+      - text: Персонаж
+      - combobox "Персонаж" [ref=e9]:
+        - option "Оператор платформы"
+        - option "Владелец · Дарья Зимина"
+        - option "Логист · Марина Котова"
+        - option "Водитель · Илья Васильев" [selected]
+        - option "Массажист · Анна Морозова"
+        - option "Прораб · Алексей Соколов"
+        - option "Владелец · Ирина Белова"
+        - option "Массажист · Анна Морозова"
+    - generic [ref=e10]:
+      - text: Ширина
+      - combobox "Ширина" [ref=e11]:
+        - option "По окну"
+        - option "390 · телефон" [selected]
+        - option "768 · планшет"
+        - option "1440 · компьютер"
+    - generic [ref=e12]:
+      - button "Путь проверки" [ref=e13] [cursor=pointer]:
+        - generic [ref=e14]: checklist
+        - text: Путь проверки
+      - button "Сбросить" [ref=e15] [cursor=pointer]:
+        - generic [ref=e16]: restart_alt
+        - text: Сбросить
+    - generic [ref=e17]:
+      - generic [ref=e18] [cursor=pointer]:
+        - checkbox "Нет связи" [ref=e19]
+        - text: Нет связи
+      - generic [ref=e20] [cursor=pointer]:
+        - checkbox "Конфликт брони" [ref=e21]
+        - text: Конфликт брони
+      - generic [ref=e22] [cursor=pointer]:
+        - checkbox "Сбой загрузки фото" [ref=e23]
+        - text: Сбой загрузки фото
+      - generic [ref=e24]: Переключатель персонажей — демонстрация, не механизм безопасности. Данные вымышлены и живут в памяти страницы.
+  - generic [ref=e26]:
+    - banner [ref=e27]:
+      - generic [ref=e48]: о
+      - generic [ref=e28]:
+        - generic [ref=e29]: domain
+        - generic [ref=e30]:
+          - generic [ref=e31]: Альта Групп
+          - generic [ref=e494]: Москва / Север Логистик · мои назначения
+      - button "Уведомления" [ref=e506] [cursor=pointer]:
+        - generic [ref=e507]: notifications
+      - button "Профиль" [ref=e33] [cursor=pointer]:
+        - generic [ref=e57]: ИВ
+    - main [ref=e40]:
+      - region [ref=e518]:
+        - generic [ref=e519]:
+          - generic [ref=e520]: Илья Васильев · среда, 1 октября
+          - heading "Моя смена" [level=1] [ref=e521]
+        - list "Этапы смены" [ref=e522]:
+          - listitem [ref=e523]:
+            - generic [ref=e524]: "1"
+            - generic [ref=e526]: Машина
+          - listitem [ref=e527]:
+            - generic [ref=e528]: "2"
+            - generic [ref=e530]: Осмотр
+          - listitem [ref=e531]:
+            - generic [ref=e532]: "3"
+            - generic [ref=e534]: Рейс
+          - listitem [ref=e535]:
+            - generic [ref=e536]: "4"
+            - generic [ref=e538]: Сдача
+          - listitem [ref=e539]:
+            - generic [ref=e540]: "5"
+            - generic [ref=e542]: Приёмка
+        - generic [ref=e543]:
+          - generic [ref=e544]:
+            - strong [ref=e545]: Р-208 · Северный маршрут
+            - generic [ref=e546]:
+              - generic [ref=e547]: event
+              - generic [ref=e548]: Запланирован
+          - generic [ref=e549]: 01.10.2026 · 09:00–13:00 · 3 точки · 46 км · Сухой груз · 14 паллет-мест
+          - generic [ref=e550]:
+            - generic [ref=e551]:
+              - generic [ref=e552]: scale
+              - generic [ref=e553]: от 1,1 т
+            - generic [ref=e554]:
+              - generic [ref=e555]: deployed_code
+              - generic [ref=e556]: от 12 м³
+            - generic [ref=e557]:
+              - generic [ref=e558]: straighten
+              - generic [ref=e559]: кузов от 3 м
+            - generic [ref=e560]:
+              - generic [ref=e561]: thermostat
+              - generic [ref=e562]: без охлаждения
+        - generic [ref=e563]:
+          - heading "Выберите машину" [level=2] [ref=e564]
+          - text: Машины вашей фирмы. Неподходящие отмечены с причиной.
+        - article [ref=e565]:
+          - generic [ref=e566]:
+            - generic [ref=e567]: local_shipping
+            - generic [ref=e569]:
+              - generic [ref=e570]: ГАЗель Next
+              - generic [ref=e571]: А 412 МР 77
+              - generic [ref=e572]: Тент · 1,5 т · 16 м³ · кузов 4,2 м
+            - generic [ref=e573]:
+              - generic [ref=e574]: check_circle
+              - generic [ref=e575]: Свободна
+          - generic [ref=e576]:
+            - generic [ref=e577]: check_circle
+            - text: "Подходит рейсу: масса, объём, длина и температура"
+          - button "Забронировать" [ref=e578] [cursor=pointer]:
+            - generic [ref=e579]: event_available
+        - article [ref=e581]:
+          - generic [ref=e582]:
+            - generic [ref=e583]: local_shipping
+            - generic [ref=e585]:
+              - generic [ref=e586]: Mercedes Sprinter
+              - generic [ref=e587]: Т 771 ЕХ 77
+              - generic [ref=e588]: Фургон · 1,6 т · 14 м³ · кузов 4,3 м
+            - generic [ref=e589]:
+              - generic [ref=e590]: check_circle
+              - generic [ref=e591]: Свободна
+          - generic [ref=e592]:
+            - generic [ref=e593]: check_circle
+            - text: "Подходит рейсу: масса, объём, длина и температура"
+          - button "Забронировать" [ref=e594] [cursor=pointer]:
+            - generic [ref=e595]: event_available
+        - article [ref=e597]:
+          - generic [ref=e598]:
+            - generic [ref=e599]: local_shipping
+            - generic [ref=e601]:
+              - generic [ref=e602]: ГАЗон Next
+              - generic [ref=e603]: Е 905 НА 77
+              - generic [ref=e604]: Фургон · 4,5 т · 30 м³ · кузов 5,1 м
+            - generic [ref=e605]:
+              - generic [ref=e606]: block
+              - generic [ref=e607]: Недоступна
+          - list [ref=e608]:
+            - listitem [ref=e609]:
+              - generic [ref=e610]: close
+              - generic [ref=e611]: "Доступность: Недоступна · Плановое ТО до 03.10"
+          - button "Недоступна" [disabled] [ref=e612]
+        - article [ref=e613]:
+          - generic [ref=e614]:
+            - generic [ref=e615]: ac_unit
+            - generic [ref=e617]:
+              - generic [ref=e618]: Ford Transit
+              - generic [ref=e619]: М 608 КТ 77
+              - generic [ref=e620]: Рефрижератор · 1,2 т · 11 м³ · кузов 3,4 м · -18…+8 °C
+            - generic [ref=e621]:
+              - generic [ref=e622]: check_circle
+              - generic [ref=e623]: Свободна
+          - list [ref=e624]:
+            - listitem [ref=e625]:
+              - generic [ref=e626]: close
+              - generic [ref=e627]: "Объём: 11 м³, нужно от 12 м³"
+          - button "Не подходит рейсу" [disabled] [ref=e628]
+        - article [ref=e629]:
+          - generic [ref=e630]:
+            - generic [ref=e631]: local_shipping
+            - generic [ref=e633]:
+              - generic [ref=e634]: Hyundai Porter
+              - generic [ref=e635]: В 233 ОС 77
+              - generic [ref=e636]: Тент · 0,9 т · 9 м³ · кузов 3,1 м
+            - generic [ref=e637]:
+              - generic [ref=e638]: check_circle
+              - generic [ref=e639]: Свободна
+          - list [ref=e640]:
+            - listitem [ref=e641]:
+              - generic [ref=e642]: close
+              - generic [ref=e643]: "Грузоподъёмность: 0,9 т, нужно от 1,1 т"
+            - listitem [ref=e644]:
+              - generic [ref=e645]: close
+              - generic [ref=e646]: "Объём: 9 м³, нужно от 12 м³"
+          - button "Не подходит рейсу" [disabled] [ref=e647]
+    - navigation "Навигация" [ref=e648]:
+      - button "Сегодня" [ref=e649] [cursor=pointer]:
+        - generic [ref=e650]: today
+      - button "Автомобили" [ref=e652] [cursor=pointer]:
+        - generic [ref=e653]: local_shipping
+      - button "База знаний" [ref=e655] [cursor=pointer]:
+        - generic [ref=e656]: menu_book
+      - button "Ещё" [ref=e658] [cursor=pointer]:
+        - generic [ref=e659]: menu

@@ -1,0 +1,258 @@
+- generic [ref=e4]:
+  - region "Панель демонстрации" [ref=e5]:
+    - generic [ref=e6]:
+      - generic [ref=e7]: science
+      - text: Демо-режим
+    - generic [ref=e8]:
+      - text: Персонаж
+      - combobox "Персонаж" [ref=e9]:
+        - option "Оператор платформы"
+        - option "Владелец · Дарья Зимина" [selected]
+        - option "Логист · Марина Котова"
+        - option "Водитель · Илья Васильев"
+        - option "Массажист · Анна Морозова"
+        - option "Прораб · Алексей Соколов"
+        - option "Владелец · Ирина Белова"
+        - option "Массажист · Анна Морозова"
+    - generic [ref=e10]:
+      - text: Ширина
+      - combobox "Ширина" [ref=e11]:
+        - option "По окну"
+        - option "390 · телефон"
+        - option "768 · планшет"
+        - option "1440 · компьютер" [selected]
+    - generic [ref=e12]:
+      - button "Путь проверки" [ref=e13] [cursor=pointer]:
+        - generic [ref=e14]: checklist
+        - text: Путь проверки
+      - button "Сбросить" [ref=e15] [cursor=pointer]:
+        - generic [ref=e16]: restart_alt
+        - text: Сбросить
+    - generic [ref=e17]:
+      - generic [ref=e18] [cursor=pointer]:
+        - checkbox "Нет связи" [ref=e19]
+        - text: Нет связи
+      - generic [ref=e20] [cursor=pointer]:
+        - checkbox "Конфликт брони" [ref=e21]
+        - text: Конфликт брони
+      - generic [ref=e22] [cursor=pointer]:
+        - checkbox "Сбой загрузки фото" [ref=e23]
+        - text: Сбой загрузки фото
+      - generic [ref=e24]: Переключатель персонажей — демонстрация, не механизм безопасности. Данные вымышлены и живут в памяти страницы.
+  - generic [ref=e26]:
+    - banner [ref=e27]:
+      - generic [ref=e48]:
+        - generic [ref=e1050]: о
+        - generic [ref=e1052]:
+          - generic [ref=e1053]: ортус
+          - generic [ref=e1054]: пространство бизнеса
+      - generic [ref=e28]:
+        - generic [ref=e29]: domain
+        - generic [ref=e30]: Альта Групп
+        - combobox "Область просмотра" [ref=e1055]:
+          - option [selected]
+          - option
+          - option
+          - option
+          - option
+          - option
+          - option
+          - option
+          - option
+          - option
+          - option
+          - option
+          - option
+          - option
+          - option
+          - option
+      - 'button "Уведомления: 4 новых" [ref=e1056] [cursor=pointer]':
+        - generic [ref=e1057]: notifications
+        - generic [ref=e1058]: "4"
+      - button "Профиль" [ref=e33] [cursor=pointer]:
+        - generic [ref=e57]: ДЗ
+    - generic [ref=e34]:
+      - navigation "Основная навигация" [ref=e1029]:
+        - generic [ref=e1060]: Обзор
+        - button "Главная" [ref=e1061] [cursor=pointer]:
+          - generic [ref=e1062]: home
+        - generic [ref=e1064]: Компания
+        - button "Модули и место" [ref=e1065] [cursor=pointer]:
+          - generic [ref=e1066]: extension
+        - button "Пользователи и роли" [ref=e1068] [cursor=pointer]:
+          - generic [ref=e1069]: group
+        - button "Подписка и места" [ref=e1071] [cursor=pointer]:
+          - generic [ref=e1072]: workspace_premium
+        - button "Оформление" [ref=e1074] [cursor=pointer]:
+          - generic [ref=e1075]: palette
+        - generic [ref=e1077]: Логистика
+        - button "Рабочее место логиста" [ref=e1078] [cursor=pointer]:
+          - generic [ref=e1079]: local_shipping
+        - button "Ресурсный пул" [ref=e1081] [cursor=pointer]:
+          - generic [ref=e1082]: person_search
+        - button "Приёмка смен 1" [ref=e1084] [cursor=pointer]:
+          - generic [ref=e1085]: fact_check
+          - generic [ref=e1086]: Приёмка смен
+          - generic [ref=e1087]: "1"
+        - generic [ref=e1089]: Ремонт и стройка
+        - button "Объекты" [ref=e1090] [cursor=pointer]:
+          - generic [ref=e1091]: home_work
+        - generic [ref=e1093]: Отрасли
+        - button "Салон и SPA" [ref=e1094] [cursor=pointer]:
+          - generic [ref=e1095]: spa
+        - generic [ref=e1097]: Общие модули
+        - button "Задачи" [ref=e1098] [cursor=pointer]:
+          - generic [ref=e1099]: task_alt
+        - button "Формы и опросы" [ref=e1101] [cursor=pointer]:
+          - generic [ref=e1102]: dynamic_form
+        - button "Календарь" [ref=e1104] [cursor=pointer]:
+          - generic [ref=e1105]: calendar_month
+        - button "База знаний" [ref=e1107] [cursor=pointer]:
+          - generic [ref=e1108]: menu_book
+        - button "Данные" [ref=e1110] [cursor=pointer]:
+          - generic [ref=e1111]: table_view
+        - button "Файлы" [ref=e1113] [cursor=pointer]:
+          - generic [ref=e1114]: folder_open
+        - button "Касса" [ref=e1116] [cursor=pointer]:
+          - generic [ref=e1117]: account_balance_wallet
+        - generic [ref=e1041]:
+          - generic [ref=e1042]: shield
+          - generic [ref=e1043]: Данные других организаций изолированы
+      - main [ref=e40]:
+        - region [ref=e1298]:
+          - generic [ref=e1299]:
+            - generic [ref=e1300]: Альта Групп · все подразделения
+            - heading "Приёмка смен" [level=1] [ref=e1301]
+            - paragraph [ref=e1302]: Фото до и после, пробег, дефекты и расходы. Машина возвращается в пул свободных только после приёмки.
+          - generic [ref=e1303]:
+            - button "Р-208 · Илья Васильев Ожидает приёмки ГАЗель Next · А 412 МР 77" [pressed] [ref=e1305] [cursor=pointer]:
+              - generic [ref=e1306]:
+                - strong [ref=e1307]: Р-208 · Илья Васильев
+                - generic [ref=e1308]:
+                  - generic [ref=e1309]: pending
+                  - generic [ref=e1310]: Ожидает приёмки
+              - generic [ref=e1311]: ГАЗель Next · А 412 МР 77
+            - generic [ref=e1312]:
+              - generic [ref=e1313]:
+                - generic [ref=e1314]:
+                  - generic [ref=e1315]:
+                    - generic [ref=e1316]: Илья Васильев · ГАЗель Next А 412 МР 77
+                    - heading "Р-208 · Северный маршрут" [level=2] [ref=e1317]
+                  - generic [ref=e1318]:
+                    - generic [ref=e1319]: pending
+                    - generic [ref=e1320]: Ожидает приёмки
+                - generic [ref=e1321]:
+                  - generic [ref=e1322]:
+                    - generic [ref=e1323]: Пробег при выезде
+                    - generic [ref=e1324]: 84 500 км
+                  - generic [ref=e1325]:
+                    - generic [ref=e1326]: При сдаче
+                    - generic [ref=e1327]: 84 560 км
+                  - generic [ref=e1328]:
+                    - generic [ref=e1329]: Пройдено
+                    - generic [ref=e1330]: 60 км
+                  - generic [ref=e1331]:
+                    - generic [ref=e1332]: Топливо
+                    - generic [ref=e1333]: ½ → ½
+              - generic [ref=e1334]:
+                - heading "Фото до и после" [level=3] [ref=e1335]
+                - generic [ref=e1336]:
+                  - generic [ref=e1338]: Перед выездом
+                  - generic [ref=e1339]: При сдаче
+                - generic [ref=e1340]:
+                  - generic [ref=e1341]: Спереди
+                  - generic [ref=e1342]: демо-фото
+                  - generic [ref=e1344]: демо-фото
+                - generic [ref=e1346]:
+                  - generic [ref=e1347]: Сзади
+                  - generic [ref=e1348]: демо-фото
+                  - generic [ref=e1350]: демо-фото
+                - generic [ref=e1352]:
+                  - generic [ref=e1353]: Слева
+                  - generic [ref=e1354]: демо-фото
+                  - generic [ref=e1356]: демо-фото
+                - generic [ref=e1358]:
+                  - generic [ref=e1359]: Справа
+                  - generic [ref=e1360]: демо-фото
+                  - generic [ref=e1362]: демо-фото
+                - generic [ref=e1364]:
+                  - generic [ref=e1365]: Одометр
+                  - generic [ref=e1366]: демо-фото
+                  - generic [ref=e1368]: демо-фото
+              - generic [ref=e1370]:
+                - generic [ref=e1371]:
+                  - heading "Осмотр и дефекты" [level=3] [ref=e1372]
+                  - generic [ref=e1373]:
+                    - generic [ref=e1374]: check_circle
+                    - generic [ref=e1375]: "Осмотр перед выездом: чек-лист заполнен"
+                  - generic [ref=e1376]:
+                    - generic [ref=e1377]: check_circle
+                    - generic [ref=e1378]: "Осмотр при сдаче: чек-лист заполнен"
+                  - generic [ref=e1379]: Дефекты не отмечены
+                - generic [ref=e1380]:
+                  - heading "Расходы в пути" [level=3] [ref=e1381]
+                  - generic [ref=e1382]:
+                    - generic [ref=e1383]: local_gas_station
+                    - generic [ref=e1384]:
+                      - generic [ref=e1385]: Топливо
+                      - generic [ref=e1386]: 01.10.2026 · чек приложен
+                    - generic [ref=e1387]: 2 500 ₽
+                  - generic [ref=e1388]:
+                    - generic [ref=e1389]: Итого заявлено
+                    - generic [ref=e1390]: 2 500 ₽
+              - generic [ref=e1391]:
+                - generic [ref=e1392]:
+                  - generic [ref=e1393]: lock
+                  - generic [ref=e1394]:
+                    - strong [ref=e1395]: Начисление водителю за рейс
+                    - generic [ref=e1396]: Видно владельцу и менеджеру с правом fleet.earnings.read в своей области. Водителю не показывается и не передаётся.
+                - strong [ref=e1397]: 4 500 ₽
+              - generic [ref=e1398]:
+                - heading "Решение" [level=3] [ref=e1399]
+                - generic [ref=e1400]:
+                  - text: Замечания для водителя
+                  - textbox "Замечания для водителя" [ref=e1401]:
+                    - /placeholder: "Например: переснимите фото слева — не виден бампер"
+                - group "Что вернуть на доработку" [ref=e1402]:
+                  - generic [ref=e1404]:
+                    - generic [ref=e1405] [cursor=pointer]:
+                      - checkbox "Фото при сдаче" [ref=e1406]
+                      - generic [ref=e1407]: Фото при сдаче
+                    - generic [ref=e1408] [cursor=pointer]:
+                      - checkbox "Пробег" [ref=e1409]
+                      - generic [ref=e1410]: Пробег
+                    - generic [ref=e1411] [cursor=pointer]:
+                      - checkbox "Расходы" [ref=e1412]
+                      - generic [ref=e1413]: Расходы
+                    - generic [ref=e1414] [cursor=pointer]:
+                      - checkbox "Чек-лист и дефекты" [ref=e1415]
+                      - generic [ref=e1416]: Чек-лист и дефекты
+                - generic [ref=e1417]:
+                  - button "Вернуть на доработку" [ref=e1418] [cursor=pointer]:
+                    - generic [ref=e1419]: undo
+                    - text: Вернуть на доработку
+                  - button "Принять смену" [active] [ref=e1420] [cursor=pointer]:
+                    - generic [ref=e1421]: check
+                    - text: Принять смену
+    - dialog [ref=e1423]:
+      - generic [ref=e1424]:
+        - generic [ref=e1425]:
+          - generic [ref=e1426]: verified
+          - generic [ref=e1428]:
+            - heading "Принять смену Р-208?" [level=2] [ref=e1429]
+            - paragraph [ref=e1430]: Осмотр, пробег и расходы будут подтверждены.
+        - generic [ref=e1432]:
+          - generic [ref=e1433]: Что произойдёт
+          - list [ref=e1434]:
+            - listitem [ref=e1435]:
+              - generic [ref=e1436]: local_shipping
+              - generic [ref=e1437]: Машина вернётся в пул свободных
+            - listitem [ref=e1438]:
+              - generic [ref=e1439]: receipt_long
+              - generic [ref=e1440]: Расходы станут принятыми; кассовые операции создаются отдельно
+            - listitem [ref=e1441]:
+              - generic [ref=e1442]: lock
+              - generic [ref=e1443]: Будет создано начисление водителю. Его видят владелец и уполномоченный менеджер
+        - generic [ref=e1444]:
+          - button "Отмена" [ref=e1445] [cursor=pointer]
+          - button "Принять смену" [ref=e1446] [cursor=pointer]

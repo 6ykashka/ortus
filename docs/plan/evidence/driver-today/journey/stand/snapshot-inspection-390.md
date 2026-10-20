@@ -1,0 +1,152 @@
+- generic [ref=f1e24]:
+  - link "К содержимому" [ref=f1e25] [cursor=pointer]:
+    - /url: "#ox-main"
+  - generic [ref=f1e27]:
+    - banner [ref=f1e28]:
+      - generic [ref=f1e29]: о
+      - generic [ref=f1e31]:
+        - generic [ref=f1e32]: domain
+        - generic [ref=f1e33]:
+          - generic [ref=f1e34]: Альта Групп
+          - generic [ref=f1e35]: Мои назначения
+      - button "Уведомления" [ref=f1e36] [cursor=pointer]:
+        - generic [ref=f1e37]: notifications
+      - button "Профиль" [ref=f1e38] [cursor=pointer]: ИВ
+    - main [ref=f1e40]:
+      - region [ref=f1e42]:
+        - generic [ref=f1e43]:
+          - generic [ref=f1e44]: Илья Васильев · понедельник, 19 октября
+          - heading "Моя смена" [level=1] [ref=f1e45]
+        - list "Этапы смены" [ref=f1e46]:
+          - listitem [ref=f1e47]:
+            - generic [ref=f1e48]: check
+            - generic [ref=f1e49]: Машина
+          - listitem [ref=f1e50]:
+            - generic [ref=f1e51]: "2"
+            - generic [ref=f1e52]: Осмотр
+          - listitem [ref=f1e53]:
+            - generic [ref=f1e54]: "3"
+            - generic [ref=f1e55]: Рейс
+          - listitem [ref=f1e56]:
+            - generic [ref=f1e57]: "4"
+            - generic [ref=f1e58]: Сдача
+          - listitem [ref=f1e59]:
+            - generic [ref=f1e60]: "5"
+            - generic [ref=f1e61]: Приёмка
+        - generic [ref=f1e62]:
+          - generic [ref=f1e63]:
+            - strong [ref=f1e64]: Р-208 · Северный маршрут
+            - generic [ref=f1e65]:
+              - generic [ref=f1e66]: fact_check
+              - text: Осмотр перед выездом
+          - generic [ref=f1e67]: 19.10.2026 · 09:00–13:00 · 3 точки · 46 км · Сухой груз · 14 паллет-мест
+          - generic [ref=f1e68]:
+            - generic [ref=f1e69]:
+              - generic [ref=f1e70]: scale
+              - text: от 1,1 т
+            - generic [ref=f1e71]:
+              - generic [ref=f1e72]: deployed_code
+              - text: от 12 м³
+            - generic [ref=f1e73]:
+              - generic [ref=f1e74]: straighten
+              - text: кузов от 3 м
+            - generic [ref=f1e75]:
+              - generic [ref=f1e76]: thermostat
+              - text: без охлаждения
+        - status [ref=f1e165]:
+          - generic [ref=f1e166]: cloud_done
+          - generic [ref=f1e167]: Бронь подтверждена сервером · ГАЗель Next А 412 МР 77 · держится до 10:42
+        - generic [ref=f1e168]:
+          - generic [ref=f1e169]:
+            - heading "Осмотр перед выездом" [level=2] [ref=f1e170]
+            - text: ГАЗель Next · А 412 МР 77 · фото, пробег, топливо, чек-лист
+          - group "Фото · 0 из 5" [ref=f1e171]:
+            - generic [ref=f1e173]:
+              - generic [ref=f1e174]:
+                - 'button "Спереди: Не снято. Нажмите, чтобы снять или выбрать фото" [ref=f1e175] [cursor=pointer]':
+                  - generic [ref=f1e176]: photo_camera
+                  - generic [ref=f1e177]: Спереди
+                - generic [ref=f1e178]:
+                  - generic [ref=f1e179]: radio_button_unchecked
+                  - text: Не снято
+              - generic [ref=f1e180]:
+                - 'button "Сзади: Не снято. Нажмите, чтобы снять или выбрать фото" [ref=f1e181] [cursor=pointer]':
+                  - generic [ref=f1e182]: photo_camera
+                  - generic [ref=f1e183]: Сзади
+                - generic [ref=f1e184]:
+                  - generic [ref=f1e185]: radio_button_unchecked
+                  - text: Не снято
+              - generic [ref=f1e186]:
+                - 'button "Слева: Не снято. Нажмите, чтобы снять или выбрать фото" [ref=f1e187] [cursor=pointer]':
+                  - generic [ref=f1e188]: photo_camera
+                  - generic [ref=f1e189]: Слева
+                - generic [ref=f1e190]:
+                  - generic [ref=f1e191]: radio_button_unchecked
+                  - text: Не снято
+              - generic [ref=f1e192]:
+                - 'button "Справа: Не снято. Нажмите, чтобы снять или выбрать фото" [ref=f1e193] [cursor=pointer]':
+                  - generic [ref=f1e194]: photo_camera
+                  - generic [ref=f1e195]: Справа
+                - generic [ref=f1e196]:
+                  - generic [ref=f1e197]: radio_button_unchecked
+                  - text: Не снято
+              - generic [ref=f1e198]:
+                - 'button "Одометр: Не снято. Нажмите, чтобы снять или выбрать фото" [ref=f1e199] [cursor=pointer]':
+                  - generic [ref=f1e200]: photo_camera
+                  - generic [ref=f1e201]: Одометр
+                - generic [ref=f1e202]:
+                  - generic [ref=f1e203]: radio_button_unchecked
+                  - text: Не снято
+            - generic [ref=f1e204]: Нажмите на слот, чтобы снять камерой или выбрать файл.
+          - generic [ref=f1e205]:
+            - generic [ref=f1e206]:
+              - text: Пробег по одометру, км
+              - 'textbox "Пробег по одометру, км Последний зафиксированный пробег: 84 370 км" [ref=f1e207]':
+                - /placeholder: 84 370
+              - generic [ref=f1e208]: "Последний зафиксированный пробег: 84 370 км"
+            - group "Уровень топлива" [ref=f1e209]:
+              - generic [ref=f1e211]:
+                - button "¼" [ref=f1e212] [cursor=pointer]
+                - button "½" [ref=f1e213] [cursor=pointer]
+                - button "¾" [ref=f1e214] [cursor=pointer]
+                - button "Полный" [ref=f1e215] [cursor=pointer]
+          - group "Чек-лист" [ref=f1e216]:
+            - generic [ref=f1e218] [cursor=pointer]:
+              - checkbox "Кузов и стёкла осмотрены" [ref=f1e219]
+              - generic [ref=f1e220]: Кузов и стёкла осмотрены
+            - generic [ref=f1e221] [cursor=pointer]:
+              - checkbox "Шины и световые приборы исправны" [ref=f1e222]
+              - generic [ref=f1e223]: Шины и световые приборы исправны
+            - generic [ref=f1e224] [cursor=pointer]:
+              - checkbox "Документы и комплект на месте" [ref=f1e225]
+              - generic [ref=f1e226]: Документы и комплект на месте
+          - generic [ref=f1e227]:
+            - generic [ref=f1e228]:
+              - generic [ref=f1e229]: Дефекты
+              - button "Добавить дефект" [ref=f1e230] [cursor=pointer]:
+                - generic [ref=f1e231]: add
+                - text: Добавить дефект
+            - generic [ref=f1e232]: Не отмечены
+        - generic [ref=f1e233]:
+          - generic [ref=f1e234]:
+            - generic [ref=f1e235]: pending
+            - generic [ref=f1e236]: "Осталось: 5 фото, пробег, уровень топлива, 3 пункта чек-листа"
+          - button "Выехать на маршрут" [disabled] [ref=f1e237]:
+            - generic [ref=f1e238]: play_arrow
+            - text: Выехать на маршрут
+    - navigation "Навигация" [ref=f1e155]:
+      - button "Сегодня" [ref=f1e156] [cursor=pointer]:
+        - generic [ref=f1e157]: today
+        - text: Сегодня
+      - button "Автомобили" [ref=f1e158] [cursor=pointer]:
+        - generic [ref=f1e159]: local_shipping
+        - text: Автомобили
+      - button "Подотчёт" [ref=f1e160] [cursor=pointer]:
+        - generic [ref=f1e161]: account_balance_wallet
+        - text: Подотчёт
+      - button "Ещё" [ref=f1e162] [cursor=pointer]:
+        - generic [ref=f1e163]: menu
+        - text: Ещё
+    - status [ref=f1e239]:
+      - generic [ref=f1e240]: check_circle
+      - generic [ref=f1e241]: Бронь подтверждена сервером. Начните осмотр

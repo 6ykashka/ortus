@@ -1,0 +1,108 @@
+- generic [ref=f2e3]:
+  - link "К содержимому" [ref=f2e4] [cursor=pointer]:
+    - /url: "#ox-main"
+  - generic [ref=f2e6]:
+    - banner [ref=f2e7]:
+      - generic [ref=f2e8]: о
+      - generic [ref=f2e10]:
+        - generic [ref=f2e11]: domain
+        - generic [ref=f2e12]:
+          - generic [ref=f2e13]: Альта Групп
+          - generic [ref=f2e14]: Мои назначения
+      - button "Уведомления" [ref=f2e15] [cursor=pointer]:
+        - generic [ref=f2e16]: notifications
+      - button "Профиль" [ref=f2e17] [cursor=pointer]: ИВ
+    - main [ref=f2e19]:
+      - region [ref=f2e21]:
+        - generic [ref=f2e22]:
+          - generic [ref=f2e23]: Илья Васильев · четверг, 1 октября
+          - heading "Моя смена" [level=1] [ref=f2e24]
+        - list "Этапы смены" [ref=f2e25]:
+          - listitem [ref=f2e26]:
+            - generic [ref=f2e27]: check
+            - generic [ref=f2e28]: Машина
+          - listitem [ref=f2e29]:
+            - generic [ref=f2e30]: check
+            - generic [ref=f2e31]: Осмотр
+          - listitem [ref=f2e32]:
+            - generic [ref=f2e33]: "3"
+            - generic [ref=f2e34]: Рейс
+          - listitem [ref=f2e35]:
+            - generic [ref=f2e36]: "4"
+            - generic [ref=f2e37]: Сдача
+          - listitem [ref=f2e38]:
+            - generic [ref=f2e39]: "5"
+            - generic [ref=f2e40]: Приёмка
+        - generic [ref=f2e41]:
+          - generic [ref=f2e42]:
+            - strong [ref=f2e43]: Р-208 · Северный маршрут
+            - generic [ref=f2e44]:
+              - generic [ref=f2e45]: route
+              - text: В рейсе
+          - generic [ref=f2e46]: 01.10.2026 · 09:00–13:00 · 3 точки · 46 км · Сухой груз · 14 паллет-мест
+          - generic [ref=f2e47]:
+            - generic [ref=f2e48]:
+              - generic [ref=f2e49]: scale
+              - text: от 1,1 т
+            - generic [ref=f2e50]:
+              - generic [ref=f2e51]: deployed_code
+              - text: от 12 м³
+            - generic [ref=f2e52]:
+              - generic [ref=f2e53]: straighten
+              - text: кузов от 3 м
+            - generic [ref=f2e54]:
+              - generic [ref=f2e55]: thermostat
+              - text: без охлаждения
+        - generic [ref=f2e258]:
+          - generic [ref=f2e259]:
+            - heading "Маршрут" [level=2] [ref=f2e260]
+            - generic [ref=f2e261]: Отмечено 0 из 3
+          - list [ref=f2e262]:
+            - listitem [ref=f2e263]:
+              - generic [ref=f2e264]: "1"
+              - generic [ref=f2e265]:
+                - generic [ref=f2e266]: Склад № 1, Лобня
+                - generic [ref=f2e267]: 09:00 · погрузка 12 м³
+              - button "Прибыл" [ref=f2e268] [cursor=pointer]
+            - listitem [ref=f2e269]:
+              - generic [ref=f2e270]: "2"
+              - generic [ref=f2e271]:
+                - generic [ref=f2e272]: Химки, ул. Заводская, 8
+                - generic [ref=f2e273]: 10:15 · выгрузка 8 м³
+              - button "Прибыл" [ref=f2e274] [cursor=pointer]
+            - listitem [ref=f2e275]:
+              - generic [ref=f2e276]: "3"
+              - generic [ref=f2e277]:
+                - generic [ref=f2e278]: Долгопрудный, Лихачёвский пр., 4
+                - generic [ref=f2e279]: 11:30 · выгрузка 4 м³
+              - button "Прибыл" [ref=f2e280] [cursor=pointer]
+        - generic [ref=f2e281]:
+          - generic [ref=f2e282]:
+            - heading "Расходы" [level=2] [ref=f2e283]
+            - button "Добавить расход" [ref=f2e284] [cursor=pointer]:
+              - generic [ref=f2e285]: add
+              - text: Добавить расход
+          - generic [ref=f2e286]: Расходов пока нет
+        - generic [ref=f2e288]:
+          - generic [ref=f2e289]:
+            - generic [ref=f2e290]: info
+            - generic [ref=f2e291]: После завершения рейса нужен осмотр при сдаче.
+          - button "Завершить рейс" [ref=f2e292] [cursor=pointer]:
+            - generic [ref=f2e293]: flag
+            - text: Завершить рейс
+    - navigation "Навигация" [ref=f2e134]:
+      - button "Сегодня" [ref=f2e135] [cursor=pointer]:
+        - generic [ref=f2e136]: today
+        - text: Сегодня
+      - button "Автомобили" [ref=f2e137] [cursor=pointer]:
+        - generic [ref=f2e138]: local_shipping
+        - text: Автомобили
+      - button "Подотчёт" [ref=f2e139] [cursor=pointer]:
+        - generic [ref=f2e140]: account_balance_wallet
+        - text: Подотчёт
+      - button "Ещё" [ref=f2e141] [cursor=pointer]:
+        - generic [ref=f2e142]: menu
+        - text: Ещё
+    - status [ref=f2e294]:
+      - generic [ref=f2e295]: check_circle
+      - generic [ref=f2e296]: Выезд подтверждён сервером

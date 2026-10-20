@@ -1,0 +1,10 @@
+### Result
+355. [POST] http://127.0.0.1:6101/api/v1/dev/login => [200] 
+356. [GET] http://127.0.0.1:6101/api/v1/me/context => [200] 
+362. [GET] http://127.0.0.1:6101/api/v1/me/notifications/summary => [200] 
+390. [GET] http://127.0.0.1:6101/api/v1/tenants/f04f636e-b66d-509e-ae10-9c27a18e3baa/fleet/trip-plans?limit=100 => [200] 
+391. [GET] http://127.0.0.1:6101/api/v1/tenants/f04f636e-b66d-509e-ae10-9c27a18e3baa/fleet/vehicles?limit=100 => [200] 
+394. [POST] http://127.0.0.1:6101/api/v1/tenants/f04f636e-b66d-509e-ae10-9c27a18e3baa/fleet/reservations => [409] 
+396. [POST] http://127.0.0.1:6101/api/v1/dev/scenario => [200] 
+
+Note: 385 static requests not shown, run with "static" option to see them.

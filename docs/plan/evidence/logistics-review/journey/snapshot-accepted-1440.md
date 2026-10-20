@@ -1,0 +1,155 @@
+- generic [ref=f3e3]:
+  - link "К содержимому" [ref=f3e4] [cursor=pointer]:
+    - /url: "#ox-main"
+  - generic [ref=f3e6]:
+    - banner [ref=f3e7]:
+      - generic [ref=f3e8]:
+        - generic [ref=f3e9]: о
+        - generic [ref=f3e10]:
+          - generic [ref=f3e11]: ортус
+          - generic [ref=f3e12]: пространство бизнеса
+      - generic [ref=f3e13]:
+        - generic [ref=f3e14]: domain
+        - generic [ref=f3e15]:
+          - generic [ref=f3e16]: Альта Групп
+          - generic [ref=f3e17]: Север Логистик
+      - 'button "Уведомления: 2 новых" [ref=f3e18] [cursor=pointer]':
+        - generic [ref=f3e19]: notifications
+        - generic [ref=f3e20]: "2"
+      - button "Профиль" [ref=f3e21] [cursor=pointer]: МК
+    - generic [ref=f3e22]:
+      - navigation "Основная навигация" [ref=f3e23]:
+        - generic [ref=f3e24]: Обзор
+        - button "Главная" [ref=f3e25] [cursor=pointer]:
+          - generic [ref=f3e26]: home
+        - generic [ref=f3e28]: Логистика
+        - button "Рабочее место логиста" [ref=f3e29] [cursor=pointer]:
+          - generic [ref=f3e30]: local_shipping
+        - button "Ресурсный пул" [ref=f3e32] [cursor=pointer]:
+          - generic [ref=f3e33]: person_search
+        - button "Приёмка смен" [ref=f3e35] [cursor=pointer]:
+          - generic [ref=f3e36]: fact_check
+        - generic [ref=f3e38]: Общие модули
+        - button "Чаты" [ref=f3e39] [cursor=pointer]:
+          - generic [ref=f3e40]: forum
+        - button "Задачи" [ref=f3e42] [cursor=pointer]:
+          - generic [ref=f3e43]: task_alt
+        - button "Обращения" [ref=f3e45] [cursor=pointer]:
+          - generic [ref=f3e46]: support_agent
+        - button "Формы и опросы" [ref=f3e48] [cursor=pointer]:
+          - generic [ref=f3e49]: dynamic_form
+        - button "Календарь" [ref=f3e51] [cursor=pointer]:
+          - generic [ref=f3e52]: calendar_month
+        - button "База знаний" [ref=f3e54] [cursor=pointer]:
+          - generic [ref=f3e55]: menu_book
+        - button "Документы" [ref=f3e57] [cursor=pointer]:
+          - generic [ref=f3e58]: description
+        - button "Данные" [ref=f3e60] [cursor=pointer]:
+          - generic [ref=f3e61]: table_view
+        - button "Файлы" [ref=f3e63] [cursor=pointer]:
+          - generic [ref=f3e64]: folder_open
+        - generic [ref=f3e67]:
+          - generic [ref=f3e68]: shield
+          - text: Данные других организаций изолированы
+      - main [ref=f3e69]:
+        - region [ref=f3e71]:
+          - generic [ref=f3e72]:
+            - generic [ref=f3e73]: Север Логистик
+            - heading "Приёмка смен" [level=1] [ref=f3e74]
+            - paragraph [ref=f3e75]: Фото до и после, пробег, дефекты и расходы. Машина возвращается в пул свободных только после приёмки.
+          - navigation "Связанные разделы" [ref=f3e76]:
+            - button "Очередь дефектов" [ref=f3e77] [cursor=pointer]:
+              - generic [ref=f3e78]: report
+              - text: Очередь дефектов
+            - button "Начисления" [ref=f3e79] [cursor=pointer]:
+              - generic [ref=f3e80]: payments
+              - text: Начисления
+          - generic [ref=f3e81]:
+            - button "Р-208 · Илья Васильев Принят ГАЗель Next · А 412 МР 77" [pressed] [ref=f3e217] [cursor=pointer]:
+              - generic [ref=f3e84]:
+                - strong [ref=f3e85]: Р-208 · Илья Васильев
+                - generic [ref=f3e86]:
+                  - generic [ref=f3e87]: verified
+                  - text: Принят
+              - generic [ref=f3e88]: ГАЗель Next · А 412 МР 77
+            - generic [ref=f3e89]:
+              - generic [ref=f3e90]:
+                - generic [ref=f3e91]:
+                  - generic [ref=f3e92]:
+                    - text: Илья Васильев · ГАЗель Next А 412 МР 77
+                    - heading "Р-208 · Северный маршрут" [level=2] [ref=f3e93]
+                  - generic [ref=f3e94]:
+                    - generic [ref=f3e95]: verified
+                    - text: Принят
+                - generic [ref=f3e96]:
+                  - generic [ref=f3e97]:
+                    - generic [ref=f3e98]: Пробег при выезде
+                    - generic [ref=f3e99]: 84 500 км
+                  - generic [ref=f3e100]:
+                    - generic [ref=f3e101]: При сдаче
+                    - generic [ref=f3e102]: 84 560 км
+                  - generic [ref=f3e103]:
+                    - generic [ref=f3e104]: Пройдено
+                    - generic [ref=f3e105]: 60 км
+                  - generic [ref=f3e106]:
+                    - generic [ref=f3e107]: Топливо
+                    - generic [ref=f3e108]: ½ → ½
+              - generic [ref=f3e109]:
+                - heading "Фото до и после" [level=3] [ref=f3e110]
+                - generic [ref=f3e111]:
+                  - generic [ref=f3e112]: Перед выездом
+                  - generic [ref=f3e113]: При сдаче
+                - generic [ref=f3e114]:
+                  - generic [ref=f3e115]: Спереди
+                  - generic [ref=f3e116]: фото
+                  - generic [ref=f3e118]: фото
+                - generic [ref=f3e120]:
+                  - generic [ref=f3e121]: Сзади
+                  - generic [ref=f3e122]: фото
+                  - generic [ref=f3e124]: фото
+                - generic [ref=f3e126]:
+                  - generic [ref=f3e127]: Слева
+                  - generic [ref=f3e128]: фото
+                  - generic [ref=f3e130]: фото
+                - generic [ref=f3e132]:
+                  - generic [ref=f3e133]: Справа
+                  - generic [ref=f3e134]: фото
+                  - generic [ref=f3e136]: фото
+                - generic [ref=f3e138]:
+                  - generic [ref=f3e139]: Одометр
+                  - generic [ref=f3e140]: фото
+                  - generic [ref=f3e142]: фото
+              - generic [ref=f3e144]:
+                - generic [ref=f3e145]:
+                  - heading "Осмотр и дефекты" [level=3] [ref=f3e146]
+                  - generic [ref=f3e147]:
+                    - generic [ref=f3e148]: check_circle
+                    - text: "Осмотр перед выездом: чек-лист заполнен"
+                  - generic [ref=f3e149]:
+                    - generic [ref=f3e150]: check_circle
+                    - text: "Осмотр при сдаче: чек-лист заполнен"
+                  - generic [ref=f3e151]: Дефекты не отмечены
+                - generic [ref=f3e152]:
+                  - heading "Расходы в пути" [level=3] [ref=f3e153]
+                  - generic [ref=f3e154]:
+                    - generic [ref=f3e155]: local_gas_station
+                    - generic [ref=f3e156]:
+                      - generic [ref=f3e157]: Топливо · 40 л
+                      - generic [ref=f3e158]: 01.10.2026 · чек приложен
+                    - generic [ref=f3e159]: 2 500 ₽
+                  - generic [ref=f3e160]:
+                    - generic [ref=f3e161]: Итого заявлено
+                    - generic [ref=f3e162]: 2 500 ₽
+              - generic [ref=f3e218]:
+                - generic [ref=f3e219]:
+                  - generic [ref=f3e220]: lock
+                  - generic [ref=f3e221]:
+                    - strong [ref=f3e222]: Начисление водителю за рейс
+                    - generic [ref=f3e223]: Видно владельцу и менеджеру с правом fleet.earnings.read в своей области. Водителю не показывается и не передаётся.
+                - strong [ref=f3e224]: 4 500 ₽
+              - status [ref=f3e225]:
+                - generic [ref=f3e226]: verified
+                - generic [ref=f3e227]: Смена принята в 10:30. Машина вернулась в пул свободных.
+    - status [ref=f3e228]:
+      - generic [ref=f3e229]: check_circle
+      - generic [ref=f3e230]: Смена принята. Машина вернулась в пул
