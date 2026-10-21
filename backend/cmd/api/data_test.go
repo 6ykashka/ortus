@@ -13,6 +13,7 @@ import (
 	fleetcsv "github.com/ortus/ortus-crm/backend/internal/modules/fleet/csv"
 	"github.com/ortus/ortus-crm/backend/internal/modules/modulesreg"
 	"github.com/ortus/ortus-crm/backend/internal/platform/authz"
+	"github.com/ortus/ortus-crm/backend/internal/platform/storage"
 )
 
 // W2.08: the tag Data is served by the module data — the registry with the datasets of logistics («Автомобили»,
@@ -23,7 +24,8 @@ func TestNewData(t *testing.T) {
 	ev := authz.New(nil, nil, time.Now)
 	at := time.Date(2026, 10, 1, 7, 30, 0, 0, time.UTC)
 	states := moduleStates{S: &modulesreg.Service{}}
-	srv := newData(noPools{}, ev, states, func() time.Time { return at })
+	store := storage.NewMem()
+	srv := newData(noPools{}, ev, states, store, func() time.Time { return at })
 	x, ok := srv.(fleetcsv.DataServer)
 	if !ok || x.Export == nil {
 		t.Fatalf("data server %#v, want the CSV export of W2.50 on top", srv)
@@ -33,7 +35,8 @@ func TestNewData(t *testing.T) {
 		t.Fatalf("under the export %#v, want the server of W2.08", x.StrictServerInterface)
 	}
 
-	if s.S.Pools != (noPools{}) || s.S.Authz != ev || s.S.Modules != states || s.S.Now == nil || !s.S.Now().Equal(at) {
+	// W4.50: the object storage of the export jobs (the link of a download, the deletion of a revoked file).
+	if s.S.Pools != (noPools{}) || s.S.Authz != ev || s.S.Modules != states || s.S.Now == nil || !s.S.Now().Equal(at) || s.S.Files != store {
 		t.Fatalf("service %+v", s.S)
 	}
 	if got := s.S.Registry.IDs(); !slices.Equal(got, []string{"fleet.vehicles", "fleet.trips", "fleet.expenses"}) {
@@ -48,7 +51,7 @@ func TestNewDataExport(t *testing.T) {
 	ev := authz.New(nil, nil, time.Now)
 	at := time.Date(2026, 10, 1, 7, 30, 0, 0, time.UTC)
 	states := moduleStates{S: &modulesreg.Service{}}
-	x, ok := newData(noPools{}, ev, states, func() time.Time { return at }).(fleetcsv.DataServer)
+	x, ok := newData(noPools{}, ev, states, nil, func() time.Time { return at }).(fleetcsv.DataServer)
 	if !ok || x.Export == nil {
 		t.Fatal("want the CSV export of W2.50 on top of the tag Data")
 	}
@@ -64,25 +67,15 @@ func TestNewDataExport(t *testing.T) {
 }
 
 // dataPendingOps are the operations of the tag Data the module does not serve yet: they answer 501 not_implemented.
-// W2.50 serves exportDataset (the CSV export over queryDataset, fleet/csv). W4.06, contract 0.7.0-stage4: the saved
-// views and the export jobs until W4.50.
-var dataPendingOps = map[string]bool{
-	"listDatasetViews":         true,
-	"createDatasetView":        true,
-	"updateDatasetView":        true,
-	"deleteDatasetView":        true,
-	"createDatasetExportJob":   true,
-	"listDatasetExportJobs":    true,
-	"getDatasetExportJob":      true,
-	"getDatasetExportDownload": true,
-	"revokeDatasetExportJob":   true,
-}
+// W2.50 serves exportDataset (the CSV export over queryDataset, fleet/csv), W4.50 the saved views (data/views.go) and
+// the export jobs (data/jobs.go): none is pending.
+var dataPendingOps = map[string]bool{}
 
 // The operations of the tag Data reach the module through the router: without a tenant in the context the module
 // answers 404; the operations of dataPendingOps answer 501 until their owners.
 func TestDataRoutes(t *testing.T) {
 	t.Parallel()
-	h := newRouter(deps{servers: Servers{Data: newData(noPools{}, authz.New(nil, nil, time.Now), nil, time.Now)}})
+	h := newRouter(deps{servers: Servers{Data: newData(noPools{}, authz.New(nil, nil, time.Now), nil, nil, time.Now)}})
 	n := 0
 	for _, op := range catalog.Operations {
 		if op.Tag != "Data" {

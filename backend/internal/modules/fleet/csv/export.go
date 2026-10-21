@@ -222,6 +222,12 @@ func (x *Export) audit(ctx context.Context, tc tenantctx.TenantContext, id strin
 	})
 }
 
+// File is the CSV of exportDataset over rows already read — the same cells, «;», quotes and formula guard (W4.50: the
+// worker of the export jobs of «Данные» writes it, without the 10 000 rows of exportDataset).
+func File(ds dataapi.Dataset, sel []string, rows []dataapi.DatasetRow, loc *time.Location) (string, error) {
+	return file(ds, sel, rows, loc)
+}
+
 // file is the CSV of the contract: a header row of the labels of select, a row per dataset row; «;», CRLF.
 func file(ds dataapi.Dataset, sel []string, rows []dataapi.DatasetRow, loc *time.Location) (string, error) {
 	fields := make(map[string]dataapi.FieldDescriptor, len(ds.Fields))

@@ -1139,5 +1139,6 @@
   "calendar.lock.vehicleCard",
   "calendar.slots",
   "calendar.moved",
-  "calendar.movedTo"
+  "calendar.movedTo",
+  "data.exportQueued"
 ]

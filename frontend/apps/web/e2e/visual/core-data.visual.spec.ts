@@ -10,8 +10,11 @@ import { openOnReference } from './modules.compare.ts';
 import { compareShots, labelsOf } from './shell.compare.ts';
 
 const CHROME = ['header', 'nav'];
-/** Наборы эталона будущих этапов (out-of-stage). */
-const LATER = ['Ответы на осмотр', 'Задачи'];
+/**
+ * Наборы эталона будущих этапов (out-of-stage). W4.50: снимок design-2026-10-19 добавил наборы «Кассы» (этап 5) —
+ * «Кассовые операции», «Смены кассы».
+ */
+const LATER = ['Ответы на осмотр', 'Задачи', 'Кассовые операции', 'Смены кассы'];
 
 const section = (page: Page): Locator => page.locator('section[aria-labelledby="h-data"]');
 

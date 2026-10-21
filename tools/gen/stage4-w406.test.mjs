@@ -601,8 +601,8 @@ describe('строки изоляции W4.06 (backend/test/isolation/*_w406*.ya
     assert.deepEqual(missing, []);
   });
 
-  // W4.40: хендлеры календаря есть — у строк календаря pending снят; строки «Данных» — pending W4.50 или снят (W4.50).
-  it('метод и путь строк — как в контракте; отказ шлюза и календарь — без pending, «Данные» — pending W4.50', () => {
+  // W4.40 и W4.50: хендлеры календаря и «Данных» есть — строки обоих файлов без pending.
+  it('метод и путь строк — как в контракте; отказ шлюза, календарь и «Данные» — без pending', () => {
     const wrong = [];
     for (const e of endpoints) {
       const o = ops.get(e.op);
@@ -616,13 +616,7 @@ describe('строки изоляции W4.06 (backend/test/isolation/*_w406*.ya
       if (e.method.toLowerCase() !== o.method || !re.test(e.path)) {
         wrong.push(`${e.file}/${e.op}: ${e.method} ${e.path} ≠ ${o.method} ${o.path}`);
       }
-      const want =
-        e.file.endsWith('_gate') || e.file.startsWith('calendar')
-          ? [undefined]
-          : ['W4.50', undefined];
-      if (!want.includes(e.pending)) {
-        wrong.push(`${e.file}/${e.op}: pending ${e.pending} ≠ ${want.join(' | ')}`);
-      }
+      if (e.pending !== undefined) wrong.push(`${e.file}/${e.op}: pending ${e.pending} ≠ —`);
     }
     assert.deepEqual(wrong, []);
   });

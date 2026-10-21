@@ -198,6 +198,13 @@ func build(ctx context.Context, cfg config, log *slog.Logger, getenv func(string
 		control.Close()
 		return deps{}, nil, err
 	}
+	exports, err := exportFiles(getenv) // W4.50: the files of the export jobs of «Данные» (data.go)
+	if err != nil {
+		pools.Close()
+		_ = controlSQL.Close()
+		control.Close()
+		return deps{}, nil, fmt.Errorf("object storage: %w", err)
+	}
 	// W1.08: the module registry, the subscription of the control DB and their parts of /me/context.
 	modules, subs := newModules(pools, cfg), subscriptions.Store{DB: controlSQL, Now: cfg.clock()}
 	// W4.60: the billing (price book, tier requests, seats, usage) and the branding of the control DB.
@@ -247,9 +254,9 @@ func build(ctx context.Context, cfg config, log *slog.Logger, getenv func(string
 			Access:   access,                              // W1.05, W1.06, W1.41 (above)
 			// fleet.go: W2.02 vehicles and reservations under the inspections of W2.04; W2.03…W2.07 wire theirs there.
 			Fleet:    newFleet(pools, ev, control, cfg.clock()),
-			Earnings: newEarnings(pools, ev, cfg.clock()),                           // W2.06: earnings by a separate route (earnings.go)
-			Data:     newData(pools, ev, moduleStates{S: modules}, cfg.clock()),     // W2.08: «Данные» (data.go)
-			Calendar: newCalendar(pools, ev, moduleStates{S: modules}, cfg.clock()), // W4.40: календарь ресурсов (calendar.go)
+			Earnings: newEarnings(pools, ev, cfg.clock()),                                // W2.06: earnings by a separate route (earnings.go)
+			Data:     newData(pools, ev, moduleStates{S: modules}, exports, cfg.clock()), // W2.08, W4.50: «Данные» (data.go)
+			Calendar: newCalendar(pools, ev, moduleStates{S: modules}, cfg.clock()),      // W4.40: календарь ресурсов (calendar.go)
 		},
 		replays: map[string]replayFunc{"logout": auth.ReplayLogout},
 		ready:   control.Ping,

@@ -40,6 +40,9 @@ type Service struct {
 	Hidden   Hider            // nil: nothing is hidden
 	Now      func() time.Time // the clock of the application (APP_FIXED_NOW outside prod); nil: time.Now
 	Timeout  time.Duration    // the longest query; 0 — DefaultTimeout
+	// Files is the object storage of the files of the export jobs (W4.50): the link of a download and the deletion of
+	// a revoked file; nil — downloads answer 503 dependency_unavailable.
+	Files ExportFiles
 }
 
 // DefaultTimeout bounds the statements of one query (contract: «Limits query time/rows»).
@@ -114,35 +117,64 @@ func (s *Service) Catalog(ctx context.Context, tc tenantctx.TenantContext) (data
 // 404, a dataset whose permission the member does not hold in any scope — 403; then the query is checked (parse) and
 // run over the rows in the scope of the dataset permission.
 func (s *Service) Query(ctx context.Context, tc tenantctx.TenantContext, id string, q *dataapi.DatasetQuery) (dataapi.DatasetQueryResult, error) {
-	e, ok := s.Registry.lookup(id)
-	if !ok {
-		return dataapi.DatasetQueryResult{}, problem.New(problem.CodeNotFound, textNotFound)
-	}
-	states, err := s.states(ctx, tc.TenantID)
+	v, err := s.open(ctx, tc, id, false)
 	if err != nil {
 		return dataapi.DatasetQueryResult{}, err
 	}
-	if !slices.Contains(openStates, states[e.module]) {
-		return dataapi.DatasetQueryResult{}, problem.New(problem.CodeNotFound, textNotFound)
-	}
-	version, err := s.version(ctx, tc)
-	if err != nil {
-		return dataapi.DatasetQueryResult{}, err
-	}
-	v, ok, err := s.resolve(ctx, tc, e, false, version)
-	if err != nil {
-		return dataapi.DatasetQueryResult{}, err
-	}
-	if !ok {
-		return dataapi.DatasetQueryResult{}, problem.New(problem.CodeForbiddenAction, "")
-	}
-	p, err := parse(v, q, tc.TenantID.String()+"|"+tc.MembershipID.String())
+	p, err := parse(v, q, memberOf(tc))
 	if err != nil {
 		return dataapi.DatasetQueryResult{}, err
 	}
 	ctx, cancel := context.WithTimeout(ctx, s.timeout())
 	defer cancel()
 	return s.run(ctx, tc, p)
+}
+
+// open returns the view of the dataset id for the member of tc: an unknown dataset or one of a closed module is 404
+// (errClosed), a dataset whose permission the member does not hold in any scope — 403. withExport asks data.export
+// of the member for view.export (the catalog flag «Выгрузить»); otherwise it stays false.
+func (s *Service) open(ctx context.Context, tc tenantctx.TenantContext, id string, withExport bool) (view, error) {
+	e, ok := s.Registry.lookup(id)
+	if !ok {
+		return view{}, problem.New(problem.CodeNotFound, textNotFound)
+	}
+	states, err := s.states(ctx, tc.TenantID)
+	if err != nil {
+		return view{}, err
+	}
+	if !slices.Contains(openStates, states[e.module]) {
+		return view{}, &closedError{err: problem.New(problem.CodeNotFound, textNotFound)}
+	}
+	version, err := s.version(ctx, tc)
+	if err != nil {
+		return view{}, err
+	}
+	export := false
+	if withExport {
+		if export, err = s.holds(ctx, tc, actionExport, exportColumns); err != nil {
+			return view{}, err
+		}
+	}
+	v, ok, err := s.resolve(ctx, tc, e, export, version)
+	if err != nil {
+		return view{}, err
+	}
+	if !ok {
+		return view{}, problem.New(problem.CodeForbiddenAction, "")
+	}
+	return v, nil
+}
+
+// closedError is the 404 of a dataset of an installed module that is disabled (or of a module not installed): the
+// export jobs of such a dataset end revoked with module_disabled, not permissions_changed.
+type closedError struct{ err *problem.Error }
+
+func (e *closedError) Error() string { return e.err.Error() }
+func (e *closedError) Unwrap() error { return e.err }
+
+// memberOf is the identity a cursor is bound to: the tenant and the membership.
+func memberOf(tc tenantctx.TenantContext) string {
+	return tc.TenantID.String() + "|" + tc.MembershipID.String()
 }
 
 // hidden asks the Hider which ids it closes to the member of tc — a read of the DB, so only for a spec that compares
@@ -154,32 +186,65 @@ func (s *Service) hidden(ctx context.Context, tc tenantctx.TenantContext, spec S
 	return s.Hidden.Hidden(ctx, tc)
 }
 
-// run executes a checked plan: the page of rows, then visibleCount when asked.
-func (s *Service) run(ctx context.Context, tc tenantctx.TenantContext, p plan) (dataapi.DatasetQueryResult, error) {
+// Snapshot reads for an export job (W4.50) up to limit rows of spec over the dataset id for the member of tc in one
+// statement — past the 10 000 rows a cursor of queryDataset reaches — and the dataset as he sees it; truncated: more
+// rows match. The checks are those of queryDataset (404, 403, 422).
+func (s *Service) Snapshot(ctx context.Context, tc tenantctx.TenantContext, id string, spec dataapi.DatasetExportCreate, limit int) (dataapi.Dataset, []dataapi.DatasetRow, bool, error) {
+	v, err := s.open(ctx, tc, id, true)
+	if err != nil {
+		return dataapi.Dataset{}, nil, false, err
+	}
+	p, err := parse(v, specQuery(spec, 1), memberOf(tc))
+	if err != nil {
+		return dataapi.Dataset{}, nil, false, err
+	}
+	p.limit = limit
+	rows, _, _, err := s.page(ctx, tc, &p)
+	if err != nil {
+		return dataapi.Dataset{}, nil, false, err
+	}
+	if len(rows) > limit {
+		return v.dataset(), rows[:limit], true, nil
+	}
+	return v.dataset(), rows, false, nil
+}
+
+// page reads the rows of a checked plan (one more than its limit) with the connection of the scope and the restrictor
+// of its restricted fields; p gets the ids the Hider closes to the member.
+func (s *Service) page(ctx context.Context, tc tenantctx.TenantContext, p *plan) ([]dataapi.DatasetRow, *scopeddb.Conn, restrictor, error) {
 	conn, err := scopeddb.For(ctx, s.Pools, s.Authz, tc)
 	if err != nil {
-		return dataapi.DatasetQueryResult{}, dependency(err)
+		return nil, nil, nil, dependency(err)
 	}
 	restrict := func(r Restriction, start int) (authz.Predicate, error) {
 		return s.Authz.ScopeQuery(ctx, tc, r.Permission, r.Columns, start)
 	}
 	if p.hidden, err = s.hidden(ctx, tc, p.view.spec); err != nil {
-		return dataapi.DatasetQueryResult{}, dependency(err)
+		return nil, nil, nil, dependency(err)
 	}
-	now := s.now()
 	spec := p.view.spec
-	st, types, err := p.rows(tc.PersonID, now, restrict)
+	st, types, err := p.rows(tc.PersonID, s.now(), restrict)
 	if err != nil {
-		return dataapi.DatasetQueryResult{}, dependency(err)
+		return nil, nil, nil, dependency(err)
 	}
 	rows, err := conn.Query(ctx, spec.Permission, spec.Columns, st.sql, st.args...)
 	if err != nil {
-		return dataapi.DatasetQueryResult{}, dependency(err)
+		return nil, nil, nil, dependency(err)
 	}
-	page, err := collect(rows, p, types)
+	page, err := collect(rows, *p, types)
 	if err != nil {
-		return dataapi.DatasetQueryResult{}, dependency(err)
+		return nil, nil, nil, dependency(err)
 	}
+	return page, conn, restrict, nil
+}
+
+// run executes a checked plan: the page of rows, then visibleCount when asked.
+func (s *Service) run(ctx context.Context, tc tenantctx.TenantContext, p plan) (dataapi.DatasetQueryResult, error) {
+	page, conn, restrict, err := s.page(ctx, tc, &p)
+	if err != nil {
+		return dataapi.DatasetQueryResult{}, err
+	}
+	now, spec := s.now(), p.view.spec
 	out := dataapi.DatasetQueryResult{Rows: page, SchemaVersion: p.view.version}
 	if len(out.Rows) > p.limit {
 		out.Rows = out.Rows[:p.limit]
@@ -343,9 +408,16 @@ func (s *Service) states(ctx context.Context, tenantID uuid.UUID) (map[string]st
 	return states, nil
 }
 
-// dependency keeps a Problem error and reports anything else as dependency_unavailable (the cause stays in the log).
+// dependency keeps a Problem error and a field error (422) and reports anything else as dependency_unavailable (the
+// cause stays in the log); nil stays nil.
 func dependency(err error) error {
+	if err == nil {
+		return nil
+	}
 	if _, ok := errors.AsType[*problem.Error](err); ok {
+		return err
+	}
+	if _, ok := errors.AsType[*fieldError](err); ok {
 		return err
 	}
 	return problem.Wrap(problem.CodeDependencyUnavailable, err)

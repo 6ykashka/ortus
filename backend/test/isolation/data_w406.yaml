@@ -1,6 +1,6 @@
 # Матрица изоляции: сохранённые виды и выгрузка заданием «Данных» контракта 0.7.0-stage4 (W4.06, контрактный PR 5
-# этапа 4) — до хендлеров W4.50 (pending: 501 или совпавший ответ шлюза; в строгом режиме -tags isolation_pending —
-# красные до хендлера). Виды — data.query + право набора: личный вид другого участника и чужая организация — 404;
+# этапа 4); хендлеры — W4.50 (data/views.go, data/jobs.go), pending снят. Виды — data.query + право набора:
+# личный вид другого участника и чужая организация — 404;
 # журнал выгрузок — свои задания (владелец — все), файл — только автору; чужая организация — 404, без сессии — 401.
 # Набор — «Автомобили» (fleet.vehicles: data.query и fleet.vehicles.read есть у «Наблюдателя» фикстур).
 # Видов и заданий в фикстурах нет: id вида и задания в строках — tenant:missing (такого объекта нет ни в одной базе).
@@ -16,7 +16,6 @@ endpoints:
   - op: listDatasetViews
     method: GET
     path: /api/v1/tenants/{tenantId}/datasets/fleet.vehicles/views
-    pending: W4.50
     rows:
       - actor: a.owner
         params: { tenantId: tenant:a }
@@ -38,7 +37,6 @@ endpoints:
   - op: createDatasetView
     method: POST
     path: /api/v1/tenants/{tenantId}/datasets/fleet.vehicles/views
-    pending: W4.50
     rows:
       - actor: a.owner
         params: { tenantId: tenant:a }
@@ -58,7 +56,6 @@ endpoints:
   - op: updateDatasetView
     method: PATCH
     path: /api/v1/tenants/{tenantId}/datasets/fleet.vehicles/views/{viewId}
-    pending: W4.50
     rows:
       - actor: b.owner
         params: { tenantId: tenant:a, viewId: tenant:missing }
@@ -73,7 +70,6 @@ endpoints:
   - op: deleteDatasetView
     method: DELETE
     path: /api/v1/tenants/{tenantId}/datasets/fleet.vehicles/views/{viewId}
-    pending: W4.50
     rows:
       - actor: b.owner
         params: { tenantId: tenant:a, viewId: tenant:missing }
@@ -86,7 +82,6 @@ endpoints:
   - op: createDatasetExportJob
     method: POST
     path: /api/v1/tenants/{tenantId}/datasets/fleet.vehicles/export-jobs
-    pending: W4.50
     rows:
       - actor: b.owner
         params: { tenantId: tenant:a }
@@ -100,7 +95,6 @@ endpoints:
   - op: listDatasetExportJobs
     method: GET
     path: /api/v1/tenants/{tenantId}/data/export-jobs
-    pending: W4.50
     rows:
       - actor: a.owner
         params: { tenantId: tenant:a }
@@ -117,7 +111,6 @@ endpoints:
   - op: getDatasetExportJob
     method: GET
     path: /api/v1/tenants/{tenantId}/data/export-jobs/{exportJobId}
-    pending: W4.50
     rows:
       - actor: a.owner
         params: { tenantId: tenant:a, exportJobId: tenant:missing }
@@ -135,7 +128,6 @@ endpoints:
   - op: getDatasetExportDownload
     method: GET
     path: /api/v1/tenants/{tenantId}/data/export-jobs/{exportJobId}/download
-    pending: W4.50
     rows:
       - actor: a.owner
         params: { tenantId: tenant:a, exportJobId: tenant:missing }
@@ -153,7 +145,6 @@ endpoints:
   - op: revokeDatasetExportJob
     method: POST
     path: /api/v1/tenants/{tenantId}/data/export-jobs/{exportJobId}/revoke
-    pending: W4.50
     rows:
       - actor: b.owner
         params: { tenantId: tenant:a, exportJobId: tenant:missing }

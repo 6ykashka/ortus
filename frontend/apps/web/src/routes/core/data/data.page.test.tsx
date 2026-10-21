@@ -159,9 +159,9 @@ describe('«Данные»: фильтр, вид, сортировка, выгр
     expect(cells(rows()[0] as HTMLTableRowElement)[0]).toBe('Р-211 · Охлаждённая продукция');
     expect(save).toHaveProperty('disabled', false);
     fireEvent.click(save);
-    await waitFor(() => expect(toast()).toBe('Вид сохранён · личный'));
+    await waitFor(() => expect(toast()).toBe('Вид сохранён · личный'), SLOW);
     const view = screen.getByLabelText<HTMLSelectElement>('Вид');
-    expect(view.selectedOptions[0]?.textContent).toBe('Поездки: «211»');
+    await waitFor(() => expect(view.selectedOptions[0]?.textContent).toBe('Поездки: «211»'), SLOW);
     expect([...view.options].map((o) => o.textContent)).toEqual([
       'Без сохранённого вида',
       'Поездки: «211»',
@@ -169,7 +169,9 @@ describe('«Данные»: фильтр, вид, сортировка, выгр
     // Правка фильтра снимает выбранный вид (:4200).
     fireEvent.change(input, { target: { value: '21' } });
     expect(view.value).toBe('');
-    fireEvent.change(view, { target: { value: 'Поездки: «211»' } });
+    // W4.50: значение пункта — id вида сервера.
+    const opt = [...view.options].find((o) => o.textContent === 'Поездки: «211»');
+    fireEvent.change(view, { target: { value: opt?.value } });
     expect((input as HTMLInputElement).value).toBe('211');
     await rowsLoaded(1);
   });
@@ -193,14 +195,14 @@ describe('«Данные»: фильтр, вид, сортировка, выгр
     await waitFor(() => expect(cells(rows()[0] as HTMLTableRowElement)[0]).toBe('ГАЗон Next'));
   });
 
+  // W4.50: выгрузка — задание (createDatasetExportJob), тост эталона без «В демо файл не создаётся».
   it('«Выгрузить» — тост эталона с числом строк выборки', async () => {
     await open();
     await rowsLoaded(2);
     fireEvent.click(screen.getByRole('button', { name: 'Выгрузить' }));
-    await waitFor(() =>
-      expect(toast()).toBe(
-        'Выгрузка «Поездки»: 2 строк, фильтр и права зафиксированы. В демо файл не создаётся',
-      ),
+    await waitFor(
+      () => expect(toast()).toBe('Выгрузка «Поездки»: 2 строк, фильтр и права зафиксированы.'),
+      SLOW,
     );
   });
 

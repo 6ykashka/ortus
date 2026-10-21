@@ -164,11 +164,13 @@ test.describe('core-data — «Данные» @mock', () => {
     await expect(bodyRows(page).first().locator('td').first()).toHaveText('ГАЗон Next');
   });
 
+  // W4.50: выгрузка — задание с журналом (core-data-jobs.spec.ts); тост эталона без «В демо файл не создаётся».
   test('«Выгрузить» — тост эталона с числом строк фильтра', async ({ app, page }) => {
     await open(app, page);
+    await expect(bodyRows(page)).toHaveCount(2);
     await page.getByRole('button', { name: 'Выгрузить' }).click();
     await expect(toast(page)).toHaveText(
-      'Выгрузка «Поездки»: 2 строк, фильтр и права зафиксированы. В демо файл не создаётся',
+      'Выгрузка «Поездки»: 2 строк, фильтр и права зафиксированы.',
     );
   });
 

@@ -3,6 +3,7 @@ package data
 import (
 	"context"
 	"errors"
+	"strconv"
 
 	"github.com/ortus/ortus-crm/backend/internal/api/catalog"
 	dataapi "github.com/ortus/ortus-crm/backend/internal/api/data"
@@ -71,14 +72,98 @@ func (Server) ExportDataset(context.Context, dataapi.ExportDatasetRequestObject)
 
 // validation is the 422 of a field error with its violation.
 func validation(ctx context.Context, e *fieldError) dataapi.QueryDataset422ApplicationProblemPlusJSONResponse {
+	return dataapi.QueryDataset422ApplicationProblemPlusJSONResponse{ValidationApplicationProblemPlusJSONResponse: invalid(ctx, e)}
+}
+
+// invalid is the Problem of a 422 validation_failed with the violation of e (the body of every 422 of the tag).
+func invalid(ctx context.Context, e *fieldError) dataapi.ValidationApplicationProblemPlusJSONResponse {
 	p := catalog.Problems[codeValidation]
 	rid, detail := requestid.FromContext(ctx), e.Detail
 	violations := []dataapi.ProblemViolation{{Field: e.Field, Code: e.Code, Message: e.Message}}
-	return dataapi.QueryDataset422ApplicationProblemPlusJSONResponse{ValidationApplicationProblemPlusJSONResponse: dataapi.ValidationApplicationProblemPlusJSONResponse{
+	return dataapi.ValidationApplicationProblemPlusJSONResponse{
 		Body: dataapi.Problem{
 			Type: problem.TypeBase + codeValidation, Title: p.Title, Status: int64(p.Status), Code: dataapi.ProblemCode(codeValidation),
 			Detail: &detail, RequestId: rid, Violations: &violations,
 		},
 		Headers: dataapi.ValidationResponseHeaders{XRequestId: &rid},
-	}}
+	}
 }
+
+// headers are the Cache-Control and X-Request-Id of an answer of the tag.
+func headers(ctx context.Context) (cache, rid *string) {
+	c, r := noStore, requestid.FromContext(ctx)
+	return &c, &r
+}
+
+// ListDatasetViews implements dataapi.StrictServerInterface (W4.50).
+func (s Server) ListDatasetViews(ctx context.Context, req dataapi.ListDatasetViewsRequestObject) (dataapi.ListDatasetViewsResponseObject, error) {
+	tc, err := tenant(ctx)
+	if err != nil {
+		return nil, err
+	}
+	list, err := s.S.Views(ctx, tc, req.DatasetId)
+	if err != nil {
+		return nil, err
+	}
+	cache, rid := headers(ctx)
+	return dataapi.ListDatasetViews200JSONResponse{Body: list, Headers: dataapi.ListDatasetViews200ResponseHeaders{CacheControl: cache, XRequestId: rid}}, nil
+}
+
+// CreateDatasetView implements dataapi.StrictServerInterface (W4.50): a field error is the 422 with its violation.
+func (s Server) CreateDatasetView(ctx context.Context, req dataapi.CreateDatasetViewRequestObject) (dataapi.CreateDatasetViewResponseObject, error) {
+	tc, err := tenant(ctx)
+	if err != nil {
+		return nil, err
+	}
+	v, err := s.S.CreateView(ctx, tc, req.DatasetId, req.Body)
+	if fe, ok := errors.AsType[*fieldError](err); ok {
+		return dataapi.CreateDatasetView422ApplicationProblemPlusJSONResponse{ValidationApplicationProblemPlusJSONResponse: invalid(ctx, fe)}, nil
+	}
+	if err != nil {
+		return nil, err
+	}
+	cache, rid := headers(ctx)
+	tag, replayed := etag(v.Revision), false
+	return dataapi.CreateDatasetView201JSONResponse{Body: v, Headers: dataapi.CreateDatasetView201ResponseHeaders{
+		CacheControl: cache, ETag: &tag, IdempotencyReplayed: &replayed, XRequestId: rid,
+	}}, nil
+}
+
+// UpdateDatasetView implements dataapi.StrictServerInterface (W4.50).
+func (s Server) UpdateDatasetView(ctx context.Context, req dataapi.UpdateDatasetViewRequestObject) (dataapi.UpdateDatasetViewResponseObject, error) {
+	tc, err := tenant(ctx)
+	if err != nil {
+		return nil, err
+	}
+	v, err := s.S.UpdateView(ctx, tc, req.DatasetId, req.ViewId, req.Params.IfMatch, req.Body)
+	if fe, ok := errors.AsType[*fieldError](err); ok {
+		return dataapi.UpdateDatasetView422ApplicationProblemPlusJSONResponse{ValidationApplicationProblemPlusJSONResponse: invalid(ctx, fe)}, nil
+	}
+	if err != nil {
+		return nil, err
+	}
+	cache, rid := headers(ctx)
+	tag, replayed := etag(v.Revision), false
+	return dataapi.UpdateDatasetView200JSONResponse{Body: v, Headers: dataapi.UpdateDatasetView200ResponseHeaders{
+		CacheControl: cache, ETag: &tag, IdempotencyReplayed: &replayed, XRequestId: rid,
+	}}, nil
+}
+
+// DeleteDatasetView implements dataapi.StrictServerInterface (W4.50).
+func (s Server) DeleteDatasetView(ctx context.Context, req dataapi.DeleteDatasetViewRequestObject) (dataapi.DeleteDatasetViewResponseObject, error) {
+	tc, err := tenant(ctx)
+	if err != nil {
+		return nil, err
+	}
+	if err := s.S.DeleteView(ctx, tc, req.DatasetId, req.ViewId, req.Params.IfMatch); err != nil {
+		return nil, err
+	}
+	cache, rid := headers(ctx)
+	replayed := false
+	return dataapi.DeleteDatasetView204Response{Headers: dataapi.DeleteDatasetView204ResponseHeaders{
+		CacheControl: cache, IdempotencyReplayed: &replayed, XRequestId: rid,
+	}}, nil
+}
+
+// etag is the strong ETag of a revision (kit.ETag).
+func etag(revision int64) string { return `"` + strconv.FormatInt(revision, 10) + `"` }

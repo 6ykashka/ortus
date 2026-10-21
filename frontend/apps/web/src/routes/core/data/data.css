@@ -231,3 +231,79 @@
   font-size: 12px;
   color: var(--ox-text-muted);
 }
+
+/* W4.50 · Журнал «Выгрузки» под подвалом (no-reference, B-6; allowlist/core-data.md): карточка и кнопки — как у
+   таблицы и панели эталона (:1840–1846), строки — набор, время, состояние, строки файла, действия. */
+.ox-dt-jobs {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.ox-dt-jobs-title {
+  margin: 0;
+  font-size: 16px;
+  font-weight: var(--ox-fw-semibold);
+}
+
+.ox-dt-jobs-list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  background: var(--ox-card);
+  border: 1px solid var(--ox-line);
+  border-radius: var(--ox-radius-xl);
+}
+
+.ox-dt-job {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px 12px;
+  padding: 10px 12px;
+  border-bottom: 1px solid var(--ox-dt-cell-line);
+}
+
+.ox-dt-job:last-child {
+  border-bottom: 0;
+}
+
+.ox-dt-job-main {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+  flex: 1 1 240px;
+}
+
+.ox-dt-job-head {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 10px;
+  align-items: baseline;
+}
+
+.ox-dt-job-title {
+  font-weight: var(--ox-fw-semibold);
+}
+
+.ox-dt-job-at,
+.ox-dt-job-detail {
+  font-size: 13px;
+  color: var(--ox-text-muted);
+  font-variant-numeric: tabular-nums;
+}
+
+.ox-dt-job-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 10px;
+  align-items: center;
+}
+
+.ox-dt-job-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}

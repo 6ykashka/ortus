@@ -19,7 +19,6 @@ var dataW406Matrix = matrix.File{
 			Method:  "GET",
 			Path:    "/api/v1/tenants/{tenantId}/datasets/fleet.vehicles/views",
 			Channel: "http",
-			Pending: "W4.50",
 			Rows: []matrix.Row{
 				{
 					Actor:  "a.owner",
@@ -53,7 +52,6 @@ var dataW406Matrix = matrix.File{
 			Method:  "POST",
 			Path:    "/api/v1/tenants/{tenantId}/datasets/fleet.vehicles/views",
 			Channel: "http",
-			Pending: "W4.50",
 			Rows: []matrix.Row{
 				{
 					Actor:  "a.owner",
@@ -83,7 +81,6 @@ var dataW406Matrix = matrix.File{
 			Method:  "PATCH",
 			Path:    "/api/v1/tenants/{tenantId}/datasets/fleet.vehicles/views/{viewId}",
 			Channel: "http",
-			Pending: "W4.50",
 			Rows: []matrix.Row{
 				{
 					Actor:  "b.owner",
@@ -106,7 +103,6 @@ var dataW406Matrix = matrix.File{
 			Method:  "DELETE",
 			Path:    "/api/v1/tenants/{tenantId}/datasets/fleet.vehicles/views/{viewId}",
 			Channel: "http",
-			Pending: "W4.50",
 			Rows: []matrix.Row{
 				{
 					Actor:  "b.owner",
@@ -127,7 +123,6 @@ var dataW406Matrix = matrix.File{
 			Method:  "POST",
 			Path:    "/api/v1/tenants/{tenantId}/datasets/fleet.vehicles/export-jobs",
 			Channel: "http",
-			Pending: "W4.50",
 			Rows: []matrix.Row{
 				{
 					Actor:  "b.owner",
@@ -149,7 +144,6 @@ var dataW406Matrix = matrix.File{
 			Method:  "GET",
 			Path:    "/api/v1/tenants/{tenantId}/data/export-jobs",
 			Channel: "http",
-			Pending: "W4.50",
 			Rows: []matrix.Row{
 				{
 					Actor:  "a.owner",
@@ -176,7 +170,6 @@ var dataW406Matrix = matrix.File{
 			Method:  "GET",
 			Path:    "/api/v1/tenants/{tenantId}/data/export-jobs/{exportJobId}",
 			Channel: "http",
-			Pending: "W4.50",
 			Rows: []matrix.Row{
 				{
 					Actor:  "a.owner",
@@ -204,7 +197,6 @@ var dataW406Matrix = matrix.File{
 			Method:  "GET",
 			Path:    "/api/v1/tenants/{tenantId}/data/export-jobs/{exportJobId}/download",
 			Channel: "http",
-			Pending: "W4.50",
 			Rows: []matrix.Row{
 				{
 					Actor:  "a.owner",
@@ -232,7 +224,6 @@ var dataW406Matrix = matrix.File{
 			Method:  "POST",
 			Path:    "/api/v1/tenants/{tenantId}/data/export-jobs/{exportJobId}/revoke",
 			Channel: "http",
-			Pending: "W4.50",
 			Rows: []matrix.Row{
 				{
 					Actor:  "b.owner",

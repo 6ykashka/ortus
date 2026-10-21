@@ -74,7 +74,7 @@ func TestPoolClosesTripsInFilesAndData(t *testing.T) {
 	}
 	// W2.50: the CSV export on top of the tag Data reads its rows through the same service (Service.run), so the pool
 	// hides the closed trips in the file too (Q-W2.57-14).
-	x, ok := newData(noPools{}, ev, nil, clock).(fleetcsv.DataServer)
+	x, ok := newData(noPools{}, ev, nil, nil, clock).(fleetcsv.DataServer)
 	if !ok || x.Export == nil {
 		t.Fatalf("data server %#v, want the CSV export of W2.50 on top", x)
 	}

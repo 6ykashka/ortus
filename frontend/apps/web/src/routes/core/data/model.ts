@@ -129,7 +129,8 @@ export const emptyText = (q: string): string => (q.trim() ? T.emptyFiltered : T.
 
 export const viewName = (set: string, q: string): string => format(T.viewName, { set, q });
 
-export const exportText = (set: string, n: number): string => format(T.exportToast, { set, n });
+/** Тост «Выгрузить» — задание поставлено (W4.50: без «В демо файл не создаётся»). */
+export const exportText = (set: string, n: number): string => format(T.exportQueued, { set, n });
 
 /** Состояния рейса, которые открывает «Приёмка смен» (:4186). */
 const REVIEW = new Set(['submitted', 'accepted', 'rework', 'defect_review']);

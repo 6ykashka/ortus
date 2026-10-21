@@ -1,26 +1,43 @@
 // W2.26 · Страница «Данные» (`core-data`, S2-16, AC-14; эталон design-stage-2 «Ортус CRM.dc.html» pg.data
 // :1960–1979, dataVM :4179–4208; 06 §7). Наборы и колонки — listDatasets (права набора и полей на сервере: набор без
 // права не приходит, «Начисление» без fleet.earnings.read — только подпись в hiddenFieldLabels), строки — queryDataset
-// с поиском «По любому видимому полю», сортировкой и курсором. Набор — `?set=` (ADR-0001). Личные виды — в браузере
-// участника, выгрузка — тост эталона (Q-W2.51-7). Строка открывает карточку модуля.
-import type { components } from '@ortus/api-client';
+// с поиском «По любому видимому полю», сортировкой и курсором. Набор — `?set=` (ADR-0001). Строка открывает карточку
+// модуля. W4.50 (контракт 0.7.0-stage4 W4.06; эталон design-2026-10-19 pg.data :1837–1856, dataVM :4189–4222): виды —
+// на сервере (listDatasetViews; «Сохранить вид» — createDatasetView или updateDatasetView своего вида с тем же именем),
+// «Выгрузить» — задание (createDatasetExportJob) и журнал «Выгрузки» под подвалом (journal.tsx, no-reference).
+import { type components, ProblemError } from '@ortus/api-client';
 import { data as T, shell } from '@ortus/texts';
 import { Icon } from '@ortus/ui';
+import { useQueryClient } from '@tanstack/react-query';
 import { useLocation, useNavigate } from '@tanstack/react-router';
 import { type KeyboardEvent, type ReactElement, useEffect, useMemo, useRef, useState } from 'react';
 
 import { useApi } from '../../../app/api.tsx';
 import { useShell } from '../../../shell/context.tsx';
-import { useRun } from '../../../shell/run.tsx';
+import { problemCode, problemText, useBusy, useRun } from '../../../shell/run.tsx';
 import { useToast } from '../../../shell/toast.tsx';
 import { LoadFailed, useRetryFocus } from '../../company/modules/ui.tsx';
-import { tripIdByNumber, useCounts, useDatasets, useRows } from './api.ts';
+import {
+  createJob,
+  createView,
+  jobsKey,
+  tripIdByNumber,
+  updateView,
+  useCounts,
+  useDatasets,
+  useRows,
+  useViews,
+  viewsKey,
+} from './api.ts';
+import { ExportJournal } from './journal.tsx';
+import { viewQuery, viewSort } from './jobs.ts';
 import {
   columns,
   countLabel,
   emptyText,
   exportText,
   nextSort,
+  querySort,
   noteText,
   openTarget,
   pickSet,
@@ -32,11 +49,16 @@ import {
   viewName,
 } from './model.ts';
 import { DATA_TEXT } from './texts.ts';
-import { browserStore, loadViews, type SavedView, saveView, viewsKey } from './views.ts';
 import '../../company/modules/modules.css';
 import './data.css';
 
 type S = components['schemas'];
+
+/** Текст контракта отказа: первое нарушение поля 422, иначе Problem.detail. */
+function problemDetail(e: unknown): string | undefined {
+  if (!(e instanceof ProblemError)) return undefined;
+  return e.problem?.violations?.[0]?.message ?? e.problem?.detail;
+}
 
 /** Задержка поиска после ввода (запрос — по паузе, а не на каждую букву). */
 const SEARCH_DELAY = 300;
@@ -64,12 +86,15 @@ function Skeleton({ lines }: { lines: number }): ReactElement {
 function SetView(p: {
   tenantId: string;
   ds: S['Dataset'];
-  views: SavedView[];
-  onSaveView: (v: SavedView) => void;
   onOpen: (t: Target) => void;
 }): ReactElement {
   const { tenantId, ds } = p;
+  const api = useApi();
+  const run = useRun();
+  const qc = useQueryClient();
   const toast = useToast();
+  const saving = useBusy('data:view');
+  const exporting = useBusy('data:export');
   const [q, setQ] = useState('');
   const [view, setView] = useState('');
   const [sort, setSort] = useState<Sort | null>(null);
@@ -81,10 +106,15 @@ function SetView(p: {
   const focusRow = useRef<number | null>(null);
   const [moreDone, setMoreDone] = useState(0);
   const retry = useRetryFocus(rows.isSuccess, () => document.getElementById('h-data'));
-  const views = p.views.filter((v) => v.set === ds.id);
+  const views = useViews(tenantId, ds.id).data ?? [];
   const list = (rows.data?.pages ?? []).flatMap((pg) => pg.rows);
   const cols = columns(ds, sort);
   const visible = rows.data?.pages[0]?.visibleCount ?? list.length;
+  /** Строки выборки на момент ответа сервера: «Выгрузить» до первой страницы не скажет «0 строк». */
+  const visibleNow = useRef(visible);
+  useEffect(() => {
+    visibleNow.current = visible;
+  }, [visible]);
 
   useEffect(() => {
     const from = focusRow.current;
@@ -105,16 +135,60 @@ function SetView(p: {
     void rows.fetchNextPage().finally(() => setMoreDone((n) => n + 1));
   };
 
+  // Своё имя (личный вид с тем же именем без регистра) — новый запрос вида, новое — новый личный вид (:4210).
   const save = (): void => {
     const name = viewName(ds.name, q);
-    p.onSaveView({ name, set: ds.id, q });
-    setView(name);
-    toast(T.viewSaved, 'ok');
+    const query = viewQuery(q, sort);
+    const same = views.find(
+      (v) => v.visibility === 'personal' && v.name.toLowerCase() === name.toLowerCase(),
+    );
+    void run(
+      'data:view',
+      async () => {
+        const v = same
+          ? await updateView(api, tenantId, same, query)
+          : await createView(api, tenantId, ds.id, name, query);
+        await qc.invalidateQueries({ queryKey: viewsKey(tenantId, ds.id) });
+        setView(v.id);
+      },
+      T.viewSaved,
+      { quiet: ['validation_failed'] },
+    ).catch((e: unknown) => {
+      // 422 вида — текст контракта («Вид с таким именем уже есть.», «Не больше 50 личных видов набора.»).
+      if (problemCode(e) === 'validation_failed') toast(problemDetail(e) ?? problemText(e), 'warn');
+      void qc.invalidateQueries({ queryKey: viewsKey(tenantId, ds.id) });
+    });
   };
 
-  const pickView = (name: string): void => {
-    setView(name);
-    setQ(views.find((v) => v.name === name)?.q ?? '');
+  const pickView = (id: string): void => {
+    setView(id);
+    const v = views.find((x) => x.id === id);
+    setQ(v?.query.search ?? '');
+    if (v) setSort(viewSort(v.query));
+  };
+
+  // Выгрузка — задание выборки таблицы (те же колонки, поиск и сортировка); тост эталона (:4211) — после 202.
+  const exportJob = (): void => {
+    void run(
+      'data:export',
+      async () => {
+        await createJob(api, tenantId, ds.id, {
+          select: ds.fields.map((f) => f.key),
+          filters: [],
+          sort: querySort(sort),
+          ...(search ? { search } : {}),
+          ...(view ? { viewId: view } : {}),
+        });
+        await qc.invalidateQueries({ queryKey: jobsKey(tenantId) });
+      },
+      null,
+      { quiet: ['rate_limited'] },
+    ).then(
+      () => toast(exportText(ds.name, visibleNow.current), 'info'),
+      (e: unknown) => {
+        if (problemCode(e) === 'rate_limited') toast(problemDetail(e) ?? problemText(e), 'warn');
+      },
+    );
   };
 
   const open = (row: S['DatasetRow']): void => {
@@ -153,20 +227,20 @@ function SetView(p: {
           <select value={view} onChange={(e) => pickView(e.target.value)}>
             <option value="">{T.noView}</option>
             {views.map((v) => (
-              <option key={v.name} value={v.name}>
+              <option key={v.id} value={v.id}>
                 {v.name}
               </option>
             ))}
           </select>
         </label>
-        <button type="button" className="ox-dt-btn" disabled={!q.trim()} onClick={save}>
+        <button type="button" className="ox-dt-btn" disabled={!q.trim() || saving} onClick={save}>
           {T.saveView}
         </button>
         <button
           type="button"
           className="ox-dt-btn"
-          disabled={!ds.exportAllowed}
-          onClick={() => toast(exportText(ds.name, visible), 'info')}
+          disabled={!ds.exportAllowed || exporting}
+          onClick={exportJob}
         >
           <Icon name="download" size={18} />
           {T.export}
@@ -236,7 +310,7 @@ function SetView(p: {
 }
 
 export default function DataPage(): ReactElement {
-  const { tenantId: id, tenant, me } = useShell();
+  const { tenantId: id } = useShell();
   const tenantId = id ?? '';
   const api = useApi();
   const run = useRun();
@@ -247,13 +321,6 @@ export default function DataPage(): ReactElement {
   const sets = useMemo(() => datasets.data ?? [], [datasets.data]);
   const counts = useCounts(tenantId, sets);
   const ds = pickSet(sets, typeof raw === 'string' ? raw : undefined);
-  const key = viewsKey(tenantId, tenant?.membershipId ?? me.userId);
-  // Виды — свои у каждой пары «организация — участник»: смена организации без перемонтирования читает её виды.
-  const [saved, setSaved] = useState<{ key: string; list: SavedView[] }>(() => ({
-    key,
-    list: loadViews(browserStore(), key),
-  }));
-  const views = saved.key === key ? saved.list : loadViews(browserStore(), key);
   const retry = useRetryFocus(datasets.isSuccess, () => document.getElementById('h-data'));
 
   const go = (page: 'fleet' | 'review', trip?: string): void =>
@@ -315,14 +382,8 @@ export default function DataPage(): ReactElement {
             );
           })}
         </div>
-        <SetView
-          key={ds.id}
-          tenantId={tenantId}
-          ds={ds}
-          views={views}
-          onSaveView={(v) => setSaved({ key, list: saveView(browserStore(), key, v) })}
-          onOpen={onOpen}
-        />
+        <SetView key={ds.id} tenantId={tenantId} ds={ds} onOpen={onOpen} />
+        <ExportJournal tenantId={tenantId} enabled={sets.some((d) => d.exportAllowed === true)} />
       </>
     );
   }
