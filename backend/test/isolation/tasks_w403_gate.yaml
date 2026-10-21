@@ -2,7 +2,8 @@
 # операцию, только если у актора есть грант с действием x-permissions, вид области которого допускает x-scope операции.
 # У шаблона «Менеджер логистики» фикстур (a.manager-msk1) нет ни одного действия core.tasks — 403 до хендлера и после
 # него; «Проверить доступ» (tasks.members.manage или members.read) — водитель a.driver-msk1 (у него только tasks.read в
-# области self). Команды с If-Match получают 403 шлюза раньше предусловия; id объектов — tenant:missing. Отказы шлюза
+# области self). «Согласующий» a.project-approver (tasks.approve, tasks.read, tasks.projects.read, files.read) — 403 на операциях с
+# другими правами (Q-W4.03-15). Команды с If-Match получают 403 шлюза раньше предусловия. Отказы шлюза
 # listTaskProjects и createTaskProject — authz_gate.yaml (W1.04, PD-53). Формат — README.md.
 # После правки: go -C backend generate ./test/isolation
 module: tasks_w403_gate
@@ -35,6 +36,11 @@ endpoints:
         status: 403
         code: forbidden_action
         note: у «Менеджера логистики» нет действий core.tasks — 403 шлюза
+      - actor: a.project-approver
+        params: { tenantId: tenant:a, projectId: project:a.fleet }
+        status: 403
+        code: forbidden_action
+        note: без tasks.workflow.manage «Согласующий» (только tasks.approve) — 403 шлюза (Q-W4.03-15)
   - op: getTaskWorkflow
     method: GET
     path: /api/v1/tenants/{tenantId}/projects/{projectId}/workflow
@@ -91,6 +97,12 @@ endpoints:
         code: forbidden_action
         body: '{"roleId":"{{role:a.project_manager}}"}'
         note: у «Менеджера логистики» нет действий core.tasks — 403 шлюза
+      - actor: a.project-approver
+        params: { tenantId: tenant:a, projectId: project:a.fleet, memberId: person:a.driver-msk1@a }
+        status: 403
+        code: forbidden_action
+        body: '{"roleId":"{{role:a.project_manager}}"}'
+        note: без tasks.members.manage «Согласующий» (только tasks.approve) — 403 шлюза (Q-W4.03-15)
   - op: removeTaskProjectMember
     method: DELETE
     path: /api/v1/tenants/{tenantId}/projects/{projectId}/members/{memberId}
@@ -175,6 +187,12 @@ endpoints:
         code: forbidden_action
         body: '{"projectId":"{{project:a.fleet}}","title":"Проверить тормоза"}'
         note: у «Менеджера логистики» нет действий core.tasks — 403 шлюза
+      - actor: a.project-approver
+        params: { tenantId: tenant:a }
+        status: 403
+        code: forbidden_action
+        body: '{"projectId":"{{project:a.fleet}}","title":"Проверить тормоза"}'
+        note: без tasks.create «Согласующий» (только tasks.approve) — 403 шлюза (Q-W4.03-15)
   - op: getTask
     method: GET
     path: /api/v1/tenants/{tenantId}/tasks/{taskId}
@@ -194,6 +212,12 @@ endpoints:
         code: forbidden_action
         body: '{"priority":"urgent"}'
         note: у «Менеджера логистики» нет действий core.tasks — 403 шлюза
+      - actor: a.project-approver
+        params: { tenantId: tenant:a, taskId: task:a.fleet-2 }
+        status: 403
+        code: forbidden_action
+        body: '{"priority":"urgent"}'
+        note: без tasks.update «Согласующий» (только tasks.approve) — 403 шлюза (Q-W4.03-15)
   - op: transitionTask
     method: POST
     path: /api/v1/tenants/{tenantId}/tasks/{taskId}/transitions
@@ -234,6 +258,12 @@ endpoints:
         code: forbidden_action
         body: '{"parentTaskId":null}'
         note: у «Менеджера логистики» нет действий core.tasks — 403 шлюза
+      - actor: a.project-approver
+        params: { tenantId: tenant:a, taskId: task:a.fleet-2 }
+        status: 403
+        code: forbidden_action
+        body: '{"parentTaskId":null}'
+        note: без tasks.update «Согласующий» (только tasks.approve) — 403 шлюза (Q-W4.03-15)
   - op: attachTaskFiles
     method: POST
     path: /api/v1/tenants/{tenantId}/tasks/{taskId}/files
@@ -244,6 +274,12 @@ endpoints:
         code: forbidden_action
         body: '{"fileIds":["{{file:a.msk1}}"]}'
         note: у «Менеджера логистики» нет действий core.tasks — 403 шлюза
+      - actor: a.project-approver
+        params: { tenantId: tenant:a, taskId: task:a.fleet-2 }
+        status: 403
+        code: forbidden_action
+        body: '{"fileIds":["{{file:a.msk1}}"]}'
+        note: без tasks.update «Согласующий» (только tasks.approve) — 403 шлюза (Q-W4.03-15)
   - op: removeTaskFile
     method: DELETE
     path: /api/v1/tenants/{tenantId}/tasks/{taskId}/files/{fileId}

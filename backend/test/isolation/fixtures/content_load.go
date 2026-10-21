@@ -30,7 +30,7 @@ const (
 
 // contentSteps are the steps of tenantLoader.load that write the content.
 func (l *tenantLoader) contentSteps() []func() error {
-	return []func() error{l.imports, l.vehicles, l.files, l.notifications}
+	return []func() error{l.imports, l.vehicles, l.files, l.notifications, l.tasks} // tasks — W4.11 (content_tasks.go)
 }
 
 func (l *tenantLoader) contentID(kind, key string) uuid.UUID {
@@ -94,10 +94,14 @@ func (l *tenantLoader) vehicles() error {
 }
 
 // files writes checked inspection photos of vehicles (files.objects, state ready). The objects are not in a
-// storage: a download only signs a URL (storage.S3.PresignGet).
+// storage: a download only signs a URL (storage.S3.PresignGet). The attachments of tasks follow their tasks
+// (tenantLoader.taskFiles, content_tasks.go).
 func (l *tenantLoader) files() error {
 	at := l.now.Add(-contentAge)
 	for _, f := range l.t.Content.Files {
+		if f.Task != "" {
+			continue
+		}
 		key := fmt.Sprintf("isolation/%s/%s.jpg", l.t.Key, f.Key)
 		sum := sha256.Sum256([]byte(key))
 		if err := l.exec("file "+f.Key, `insert into files.objects

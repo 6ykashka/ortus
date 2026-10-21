@@ -383,6 +383,8 @@ test.describe('tasks-card — карточка задачи @mock', () => {
 test.describe('tasks-card — стенд @stand', () => {
   test.skip(({ harness }) => harness.mode !== 'stand', 'режим stand');
 
+  // fixme (Q-W4.12-17): не повторяем на трёх ширинах одного стенда — T-65 согласуется один раз,
+  // на 768 и 1440 кнопки «Согласовать» уже нет; нужна своя задача на согласование на каждый прогон.
   test.fixme('согласование T-65 на стенде (W4.11)', async ({ app, page }) => {
     test.slow();
     await openT(app, page, T65);

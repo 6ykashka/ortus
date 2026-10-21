@@ -19,14 +19,22 @@ var tasksW403Matrix = matrix.File{
 			Method:  "GET",
 			Path:    "/api/v1/tenants/{tenantId}/projects",
 			Channel: "http",
-			Pending: "W4.11",
 			Rows: []matrix.Row{
 				{
-					Actor:  "a.owner",
-					Params: map[string]string{"tenantId": "tenant:a"},
-					Status: 200,
-					Absent: []string{"tenant:b"},
-					Note:   "список своей организации; объектов тенанта B нет",
+					Actor:   "a.owner",
+					Params:  map[string]string{"tenantId": "tenant:a"},
+					Status:  200,
+					Present: []string{"project:a.fleet"},
+					Absent:  []string{"tenant:b", "project:a.build"},
+					Note:    "список своей организации; «Стройка» закрыта и владельцу (TP-03), объектов тенанта B нет",
+				},
+				{
+					Actor:   "a.project-lead",
+					Params:  map[string]string{"tenantId": "tenant:a"},
+					Status:  200,
+					Present: []string{"project:a.fleet"},
+					Absent:  []string{"tenant:b", "project:a.build"},
+					Note:    "руководитель «Автопарка» видит только свой проект",
 				},
 				{
 					Actor:  "b.owner",
@@ -47,7 +55,6 @@ var tasksW403Matrix = matrix.File{
 			Method:  "POST",
 			Path:    "/api/v1/tenants/{tenantId}/projects",
 			Channel: "http",
-			Pending: "W4.11",
 			Rows: []matrix.Row{
 				{
 					Actor:  "b.owner",
@@ -70,7 +77,6 @@ var tasksW403Matrix = matrix.File{
 			Method:  "GET",
 			Path:    "/api/v1/tenants/{tenantId}/projects/{projectId}",
 			Channel: "http",
-			Pending: "W4.11",
 			Rows: []matrix.Row{
 				{
 					Actor:  "a.owner",
@@ -78,6 +84,22 @@ var tasksW403Matrix = matrix.File{
 					Status: 404,
 					Absent: []string{"tenant:b"},
 					Note:   "объекта нет в организации — 404 и владельцу",
+				},
+				{
+					Actor:  "a.owner",
+					Params: map[string]string{"projectId": "project:b.fleet", "tenantId": "tenant:a"},
+					Status: 404,
+					Code:   "not_found",
+					Absent: []string{"tenant:b"},
+					Note:   "id проекта организации B в организации A — как несуществующий",
+				},
+				{
+					Actor:   "a.project-lead",
+					Params:  map[string]string{"projectId": "project:a.fleet", "tenantId": "tenant:a"},
+					Status:  200,
+					Present: []string{"project:a.fleet"},
+					Absent:  []string{"tenant:b"},
+					Note:    "руководитель своего проекта",
 				},
 				{
 					Actor:  "b.owner",
@@ -98,7 +120,7 @@ var tasksW403Matrix = matrix.File{
 					Params: map[string]string{"projectId": "project:a.build", "tenantId": "tenant:a"},
 					Status: 404,
 					Code:   "not_found",
-					Note:   "TP-03 — «Стройка» без роли владельца в ней — 404 и владельцу (W4.11 — закрытый проект в содержимом фикстур)",
+					Note:   "TP-03 — закрытая «Стройка» без роли владельца в ней — 404 и владельцу",
 				},
 				{
 					Actor:  "anonymous",
@@ -112,16 +134,7 @@ var tasksW403Matrix = matrix.File{
 			Method:  "PATCH",
 			Path:    "/api/v1/tenants/{tenantId}/projects/{projectId}",
 			Channel: "http",
-			Pending: "W4.11",
 			Rows: []matrix.Row{
-				{
-					Actor:  "a.owner",
-					Params: map[string]string{"projectId": "tenant:missing", "tenantId": "tenant:a"},
-					Status: 404,
-					Absent: []string{"tenant:b"},
-					Body:   "{\"access\":\"open\"}",
-					Note:   "объекта нет в организации — 404 и владельцу",
-				},
 				{
 					Actor:  "b.owner",
 					Params: map[string]string{"projectId": "tenant:missing", "tenantId": "tenant:a"},
@@ -129,22 +142,6 @@ var tasksW403Matrix = matrix.File{
 					Absent: []string{"tenant:a"},
 					Body:   "{\"access\":\"open\"}",
 					Note:   "чужая организация — как несуществующая (AC-02)",
-				},
-				{
-					Actor:  "a.project-lead",
-					Params: map[string]string{"projectId": "project:a.build", "tenantId": "tenant:a"},
-					Status: 404,
-					Code:   "not_found",
-					Body:   "{\"access\":\"open\"}",
-					Note:   "роль проекта «Автопарк» в «Стройке» не даёт ничего — как несуществующий (изоляция между проектами)",
-				},
-				{
-					Actor:  "a.owner",
-					Params: map[string]string{"projectId": "project:a.build", "tenantId": "tenant:a"},
-					Status: 404,
-					Code:   "not_found",
-					Body:   "{\"access\":\"open\"}",
-					Note:   "TP-03 — «Стройка» без роли владельца в ней — 404 и владельцу (W4.11 — закрытый проект в содержимом фикстур)",
 				},
 				{
 					Actor:  "anonymous",
@@ -159,7 +156,6 @@ var tasksW403Matrix = matrix.File{
 			Method:  "POST",
 			Path:    "/api/v1/tenants/{tenantId}/projects/{projectId}/workflow/init",
 			Channel: "http",
-			Pending: "W4.11",
 			Rows: []matrix.Row{
 				{
 					Actor:  "a.owner",
@@ -167,6 +163,14 @@ var tasksW403Matrix = matrix.File{
 					Status: 404,
 					Absent: []string{"tenant:b"},
 					Note:   "объекта нет в организации — 404 и владельцу",
+				},
+				{
+					Actor:  "a.owner",
+					Params: map[string]string{"projectId": "project:a.fleet", "tenantId": "tenant:a"},
+					Status: 409,
+					Code:   "invalid_transition",
+					Absent: []string{"tenant:b"},
+					Note:   "у «Автопарка» процесс уже есть — workflow_exists",
 				},
 				{
 					Actor:  "b.owner",
@@ -194,7 +198,6 @@ var tasksW403Matrix = matrix.File{
 			Method:  "GET",
 			Path:    "/api/v1/tenants/{tenantId}/projects/{projectId}/workflow",
 			Channel: "http",
-			Pending: "W4.11",
 			Rows: []matrix.Row{
 				{
 					Actor:  "a.owner",
@@ -202,6 +205,22 @@ var tasksW403Matrix = matrix.File{
 					Status: 404,
 					Absent: []string{"tenant:b"},
 					Note:   "объекта нет в организации — 404 и владельцу",
+				},
+				{
+					Actor:  "a.owner",
+					Params: map[string]string{"projectId": "project:b.fleet", "tenantId": "tenant:a"},
+					Status: 404,
+					Code:   "not_found",
+					Absent: []string{"tenant:b"},
+					Note:   "id проекта организации B в организации A — как несуществующий",
+				},
+				{
+					Actor:   "a.project-lead",
+					Params:  map[string]string{"projectId": "project:a.fleet", "tenantId": "tenant:a"},
+					Status:  200,
+					Present: []string{"project:a.fleet"},
+					Absent:  []string{"tenant:b"},
+					Note:    "процесс своего проекта",
 				},
 				{
 					Actor:  "b.owner",
@@ -229,16 +248,7 @@ var tasksW403Matrix = matrix.File{
 			Method:  "PUT",
 			Path:    "/api/v1/tenants/{tenantId}/projects/{projectId}/workflow/draft",
 			Channel: "http",
-			Pending: "W4.11",
 			Rows: []matrix.Row{
-				{
-					Actor:  "a.owner",
-					Params: map[string]string{"projectId": "tenant:missing", "tenantId": "tenant:a"},
-					Status: 404,
-					Absent: []string{"tenant:b"},
-					Body:   "{\"statuses\":[{\"id\":\"s1\",\"name\":\"Новая\",\"category\":\"todo\"}],\"transitions\":[]}",
-					Note:   "объекта нет в организации — 404 и владельцу",
-				},
 				{
 					Actor:  "b.owner",
 					Params: map[string]string{"projectId": "tenant:missing", "tenantId": "tenant:a"},
@@ -246,14 +256,6 @@ var tasksW403Matrix = matrix.File{
 					Absent: []string{"tenant:a"},
 					Body:   "{\"statuses\":[{\"id\":\"s1\",\"name\":\"Новая\",\"category\":\"todo\"}],\"transitions\":[]}",
 					Note:   "чужая организация — как несуществующая (AC-02)",
-				},
-				{
-					Actor:  "a.project-lead",
-					Params: map[string]string{"projectId": "project:a.build", "tenantId": "tenant:a"},
-					Status: 404,
-					Code:   "not_found",
-					Body:   "{\"statuses\":[{\"id\":\"s1\",\"name\":\"Новая\",\"category\":\"todo\"}],\"transitions\":[]}",
-					Note:   "роль проекта «Автопарк» в «Стройке» не даёт ничего — как несуществующий (изоляция между проектами)",
 				},
 				{
 					Actor:  "anonymous",
@@ -268,28 +270,13 @@ var tasksW403Matrix = matrix.File{
 			Method:  "DELETE",
 			Path:    "/api/v1/tenants/{tenantId}/projects/{projectId}/workflow/draft",
 			Channel: "http",
-			Pending: "W4.11",
 			Rows: []matrix.Row{
-				{
-					Actor:  "a.owner",
-					Params: map[string]string{"projectId": "tenant:missing", "tenantId": "tenant:a"},
-					Status: 404,
-					Absent: []string{"tenant:b"},
-					Note:   "объекта нет в организации — 404 и владельцу",
-				},
 				{
 					Actor:  "b.owner",
 					Params: map[string]string{"projectId": "tenant:missing", "tenantId": "tenant:a"},
 					Status: 404,
 					Absent: []string{"tenant:a"},
 					Note:   "чужая организация — как несуществующая (AC-02)",
-				},
-				{
-					Actor:  "a.project-lead",
-					Params: map[string]string{"projectId": "project:a.build", "tenantId": "tenant:a"},
-					Status: 404,
-					Code:   "not_found",
-					Note:   "роль проекта «Автопарк» в «Стройке» не даёт ничего — как несуществующий (изоляция между проектами)",
 				},
 				{
 					Actor:  "anonymous",
@@ -303,28 +290,13 @@ var tasksW403Matrix = matrix.File{
 			Method:  "POST",
 			Path:    "/api/v1/tenants/{tenantId}/projects/{projectId}/workflow/draft/publish",
 			Channel: "http",
-			Pending: "W4.11",
 			Rows: []matrix.Row{
-				{
-					Actor:  "a.owner",
-					Params: map[string]string{"projectId": "tenant:missing", "tenantId": "tenant:a"},
-					Status: 404,
-					Absent: []string{"tenant:b"},
-					Note:   "объекта нет в организации — 404 и владельцу",
-				},
 				{
 					Actor:  "b.owner",
 					Params: map[string]string{"projectId": "tenant:missing", "tenantId": "tenant:a"},
 					Status: 404,
 					Absent: []string{"tenant:a"},
 					Note:   "чужая организация — как несуществующая (AC-02)",
-				},
-				{
-					Actor:  "a.project-lead",
-					Params: map[string]string{"projectId": "project:a.build", "tenantId": "tenant:a"},
-					Status: 404,
-					Code:   "not_found",
-					Note:   "роль проекта «Автопарк» в «Стройке» не даёт ничего — как несуществующий (изоляция между проектами)",
 				},
 				{
 					Actor:  "anonymous",
@@ -338,7 +310,6 @@ var tasksW403Matrix = matrix.File{
 			Method:  "GET",
 			Path:    "/api/v1/tenants/{tenantId}/projects/{projectId}/members",
 			Channel: "http",
-			Pending: "W4.11",
 			Rows: []matrix.Row{
 				{
 					Actor:  "a.owner",
@@ -346,6 +317,14 @@ var tasksW403Matrix = matrix.File{
 					Status: 404,
 					Absent: []string{"tenant:b"},
 					Note:   "объекта нет в организации — 404 и владельцу",
+				},
+				{
+					Actor:   "a.project-lead",
+					Params:  map[string]string{"projectId": "project:a.fleet", "tenantId": "tenant:a"},
+					Status:  200,
+					Present: []string{"person:a.project-lead@a", "person:a.project-approver@a"},
+					Absent:  []string{"tenant:b"},
+					Note:    "участники своего проекта — только люди организации A",
 				},
 				{
 					Actor:  "b.owner",
@@ -366,7 +345,7 @@ var tasksW403Matrix = matrix.File{
 					Params: map[string]string{"projectId": "project:a.build", "tenantId": "tenant:a"},
 					Status: 404,
 					Code:   "not_found",
-					Note:   "TP-03 — «Стройка» без роли владельца в ней — 404 и владельцу (W4.11 — закрытый проект в содержимом фикстур)",
+					Note:   "TP-03 — закрытая «Стройка» без роли владельца в ней — 404 и владельцу",
 				},
 				{
 					Actor:  "anonymous",
@@ -380,7 +359,6 @@ var tasksW403Matrix = matrix.File{
 			Method:  "PUT",
 			Path:    "/api/v1/tenants/{tenantId}/projects/{projectId}/members/{memberId}",
 			Channel: "http",
-			Pending: "W4.11",
 			Rows: []matrix.Row{
 				{
 					Actor:  "a.owner",
@@ -419,7 +397,6 @@ var tasksW403Matrix = matrix.File{
 			Method:  "DELETE",
 			Path:    "/api/v1/tenants/{tenantId}/projects/{projectId}/members/{memberId}",
 			Channel: "http",
-			Pending: "W4.11",
 			Rows: []matrix.Row{
 				{
 					Actor:  "a.owner",
@@ -427,6 +404,13 @@ var tasksW403Matrix = matrix.File{
 					Status: 404,
 					Absent: []string{"tenant:b"},
 					Note:   "объекта нет в организации — 404 и владельцу",
+				},
+				{
+					Actor:  "a.project-lead",
+					Params: map[string]string{"memberId": "person:b.driver-msk1@b", "projectId": "project:a.fleet", "tenantId": "tenant:a"},
+					Status: 404,
+					Code:   "not_found",
+					Note:   "сотрудник организации B в проекте A — как несуществующий",
 				},
 				{
 					Actor:  "b.owner",
@@ -454,7 +438,6 @@ var tasksW403Matrix = matrix.File{
 			Method:  "GET",
 			Path:    "/api/v1/tenants/{tenantId}/projects/{projectId}/members/{memberId}/access?action=tasks.read",
 			Channel: "http",
-			Pending: "W4.11",
 			Rows: []matrix.Row{
 				{
 					Actor:  "a.owner",
@@ -462,6 +445,21 @@ var tasksW403Matrix = matrix.File{
 					Status: 404,
 					Absent: []string{"tenant:b"},
 					Note:   "объекта нет в организации — 404 и владельцу",
+				},
+				{
+					Actor:   "a.project-lead",
+					Params:  map[string]string{"memberId": "person:a.driver-msk1@a", "projectId": "project:a.fleet", "tenantId": "tenant:a"},
+					Status:  200,
+					Present: []string{"person:a.driver-msk1@a"},
+					Absent:  []string{"tenant:b"},
+					Note:    "руководитель проверяет доступ сотрудника своей организации",
+				},
+				{
+					Actor:  "a.project-lead",
+					Params: map[string]string{"memberId": "person:b.driver-msk1@b", "projectId": "project:a.fleet", "tenantId": "tenant:a"},
+					Status: 404,
+					Code:   "not_found",
+					Note:   "сотрудник организации B — как несуществующий",
 				},
 				{
 					Actor:  "b.owner",
@@ -482,7 +480,6 @@ var tasksW403Matrix = matrix.File{
 			Method:  "GET",
 			Path:    "/api/v1/tenants/{tenantId}/projects/{projectId}/automations",
 			Channel: "http",
-			Pending: "W4.11",
 			Rows: []matrix.Row{
 				{
 					Actor:  "a.owner",
@@ -490,6 +487,22 @@ var tasksW403Matrix = matrix.File{
 					Status: 404,
 					Absent: []string{"tenant:b"},
 					Note:   "объекта нет в организации — 404 и владельцу",
+				},
+				{
+					Actor:   "a.project-lead",
+					Params:  map[string]string{"projectId": "project:a.fleet", "tenantId": "tenant:a"},
+					Status:  200,
+					Present: []string{"automation:a.fleet-rule"},
+					Absent:  []string{"tenant:b"},
+					Note:    "правила своего проекта",
+				},
+				{
+					Actor:  "a.owner",
+					Params: map[string]string{"projectId": "project:b.fleet", "tenantId": "tenant:a"},
+					Status: 404,
+					Code:   "not_found",
+					Absent: []string{"tenant:b"},
+					Note:   "id проекта организации B в организации A — как несуществующий",
 				},
 				{
 					Actor:  "b.owner",
@@ -517,7 +530,6 @@ var tasksW403Matrix = matrix.File{
 			Method:  "POST",
 			Path:    "/api/v1/tenants/{tenantId}/projects/{projectId}/automations",
 			Channel: "http",
-			Pending: "W4.11",
 			Rows: []matrix.Row{
 				{
 					Actor:  "a.owner",
@@ -556,16 +568,7 @@ var tasksW403Matrix = matrix.File{
 			Method:  "PATCH",
 			Path:    "/api/v1/tenants/{tenantId}/projects/{projectId}/automations/{automationId}",
 			Channel: "http",
-			Pending: "W4.11",
 			Rows: []matrix.Row{
-				{
-					Actor:  "a.owner",
-					Params: map[string]string{"automationId": "tenant:missing", "projectId": "tenant:missing", "tenantId": "tenant:a"},
-					Status: 404,
-					Absent: []string{"tenant:b"},
-					Body:   "{\"enabled\":false}",
-					Note:   "объекта нет в организации — 404 и владельцу",
-				},
 				{
 					Actor:  "b.owner",
 					Params: map[string]string{"automationId": "tenant:missing", "projectId": "tenant:missing", "tenantId": "tenant:a"},
@@ -587,15 +590,7 @@ var tasksW403Matrix = matrix.File{
 			Method:  "DELETE",
 			Path:    "/api/v1/tenants/{tenantId}/projects/{projectId}/automations/{automationId}",
 			Channel: "http",
-			Pending: "W4.11",
 			Rows: []matrix.Row{
-				{
-					Actor:  "a.owner",
-					Params: map[string]string{"automationId": "tenant:missing", "projectId": "tenant:missing", "tenantId": "tenant:a"},
-					Status: 404,
-					Absent: []string{"tenant:b"},
-					Note:   "объекта нет в организации — 404 и владельцу",
-				},
 				{
 					Actor:  "b.owner",
 					Params: map[string]string{"automationId": "tenant:missing", "projectId": "tenant:missing", "tenantId": "tenant:a"},
@@ -615,7 +610,6 @@ var tasksW403Matrix = matrix.File{
 			Method:  "GET",
 			Path:    "/api/v1/tenants/{tenantId}/projects/{projectId}/automation-runs",
 			Channel: "http",
-			Pending: "W4.11",
 			Rows: []matrix.Row{
 				{
 					Actor:  "a.owner",
@@ -623,6 +617,13 @@ var tasksW403Matrix = matrix.File{
 					Status: 404,
 					Absent: []string{"tenant:b"},
 					Note:   "объекта нет в организации — 404 и владельцу",
+				},
+				{
+					Actor:  "a.project-lead",
+					Params: map[string]string{"projectId": "project:a.fleet", "tenantId": "tenant:a"},
+					Status: 200,
+					Absent: []string{"tenant:b"},
+					Note:   "журнал своего проекта",
 				},
 				{
 					Actor:  "b.owner",
@@ -650,14 +651,37 @@ var tasksW403Matrix = matrix.File{
 			Method:  "GET",
 			Path:    "/api/v1/tenants/{tenantId}/tasks",
 			Channel: "http",
-			Pending: "W4.11",
 			Rows: []matrix.Row{
 				{
-					Actor:  "a.owner",
+					Actor:   "a.owner",
+					Params:  map[string]string{"tenantId": "tenant:a"},
+					Status:  200,
+					Present: []string{"task:a.fleet-1", "task:a.fleet-2"},
+					Absent:  []string{"tenant:b", "task:a.build-1"},
+					Note:    "список своей организации; задачи закрытой «Стройки» владельцу не видны (TP-03)",
+				},
+				{
+					Actor:   "a.project-lead",
+					Params:  map[string]string{"tenantId": "tenant:a"},
+					Status:  200,
+					Present: []string{"task:a.fleet-1", "task:a.fleet-2"},
+					Absent:  []string{"tenant:b", "task:a.build-1"},
+					Note:    "задачи своего проекта",
+				},
+				{
+					Actor:   "a.driver-msk1",
+					Params:  map[string]string{"tenantId": "tenant:a"},
+					Status:  200,
+					Present: []string{"task:a.fleet-1", "task:a.build-1"},
+					Absent:  []string{"tenant:b", "task:a.fleet-2"},
+					Note:    "водитель (область self) — только задачи, где он исполнитель, в том числе в закрытом проекте (Q-W4.01-2)",
+				},
+				{
+					Actor:  "a.two-roles",
 					Params: map[string]string{"tenantId": "tenant:a"},
 					Status: 200,
-					Absent: []string{"tenant:b"},
-					Note:   "список своей организации; объектов тенанта B нет",
+					Absent: []string{"tenant:b", "task:a.fleet-1", "task:a.fleet-2", "task:a.build-1"},
+					Note:   "наблюдатель Самары-2 не видит задач проекта Москвы-1",
 				},
 				{
 					Actor:  "b.owner",
@@ -678,8 +702,24 @@ var tasksW403Matrix = matrix.File{
 			Method:  "POST",
 			Path:    "/api/v1/tenants/{tenantId}/tasks",
 			Channel: "http",
-			Pending: "W4.11",
 			Rows: []matrix.Row{
+				{
+					Actor:  "a.owner",
+					Params: map[string]string{"tenantId": "tenant:a"},
+					Status: 404,
+					Code:   "not_found",
+					Absent: []string{"tenant:b"},
+					Body:   "{\"projectId\":\"{{project:b.fleet}}\",\"title\":\"Проверить тормоза\"}",
+					Note:   "проект организации B в теле — как несуществующий",
+				},
+				{
+					Actor:  "a.project-lead",
+					Params: map[string]string{"tenantId": "tenant:a"},
+					Status: 404,
+					Code:   "not_found",
+					Body:   "{\"projectId\":\"{{project:a.build}}\",\"title\":\"Проверить тормоза\"}",
+					Note:   "задача в чужом закрытом проекте — как в несуществующем",
+				},
 				{
 					Actor:  "b.owner",
 					Params: map[string]string{"tenantId": "tenant:a"},
@@ -701,7 +741,6 @@ var tasksW403Matrix = matrix.File{
 			Method:  "GET",
 			Path:    "/api/v1/tenants/{tenantId}/tasks/{taskId}",
 			Channel: "http",
-			Pending: "W4.11",
 			Rows: []matrix.Row{
 				{
 					Actor:  "a.owner",
@@ -709,6 +748,65 @@ var tasksW403Matrix = matrix.File{
 					Status: 404,
 					Absent: []string{"tenant:b"},
 					Note:   "объекта нет в организации — 404 и владельцу",
+				},
+				{
+					Actor:  "a.owner",
+					Params: map[string]string{"taskId": "task:b.fleet-1", "tenantId": "tenant:a"},
+					Status: 404,
+					Code:   "not_found",
+					Absent: []string{"tenant:b"},
+					Note:   "id задачи организации B в организации A — как несуществующий",
+				},
+				{
+					Actor:  "a.owner",
+					Params: map[string]string{"taskId": "task:a.build-1", "tenantId": "tenant:a"},
+					Status: 404,
+					Code:   "not_found",
+					Note:   "TP-03 — задача закрытой «Стройки» без роли владельца в ней",
+				},
+				{
+					Actor:   "a.project-lead",
+					Params:  map[string]string{"taskId": "task:a.fleet-1", "tenantId": "tenant:a"},
+					Status:  200,
+					Present: []string{"task:a.fleet-1"},
+					Absent:  []string{"tenant:b"},
+					Note:    "задача своего проекта",
+				},
+				{
+					Actor:  "a.project-lead",
+					Params: map[string]string{"taskId": "task:a.build-1", "tenantId": "tenant:a"},
+					Status: 404,
+					Code:   "not_found",
+					Note:   "задача «Стройки» руководителю «Автопарка» — как несуществующая (изоляция между проектами)",
+				},
+				{
+					Actor:   "a.driver-msk1",
+					Params:  map[string]string{"taskId": "task:a.build-1", "tenantId": "tenant:a"},
+					Status:  200,
+					Present: []string{"task:a.build-1"},
+					Absent:  []string{"tenant:b"},
+					Note:    "исполнитель (область self) видит свою задачу и в закрытом проекте (Q-W4.01-2)",
+				},
+				{
+					Actor:  "a.driver-msk1",
+					Params: map[string]string{"taskId": "task:a.fleet-2", "tenantId": "tenant:a"},
+					Status: 404,
+					Code:   "not_found",
+					Note:   "чужая задача — водителю как несуществующая",
+				},
+				{
+					Actor:  "a.two-roles",
+					Params: map[string]string{"taskId": "task:a.fleet-1", "tenantId": "tenant:a"},
+					Status: 404,
+					Code:   "not_found",
+					Note:   "наблюдатель Самары-2 — задача проекта Москвы-1 как несуществующая",
+				},
+				{
+					Actor:  "ab.member",
+					Params: map[string]string{"taskId": "task:a.fleet-1", "tenantId": "tenant:a"},
+					Status: 404,
+					Code:   "not_found",
+					Note:   "наблюдатель Москвы-2 — задача проекта Москвы-1 как несуществующая",
 				},
 				{
 					Actor:  "b.owner",
@@ -729,16 +827,7 @@ var tasksW403Matrix = matrix.File{
 			Method:  "PATCH",
 			Path:    "/api/v1/tenants/{tenantId}/tasks/{taskId}",
 			Channel: "http",
-			Pending: "W4.11",
 			Rows: []matrix.Row{
-				{
-					Actor:  "a.owner",
-					Params: map[string]string{"taskId": "tenant:missing", "tenantId": "tenant:a"},
-					Status: 404,
-					Absent: []string{"tenant:b"},
-					Body:   "{\"priority\":\"urgent\"}",
-					Note:   "объекта нет в организации — 404 и владельцу",
-				},
 				{
 					Actor:  "b.owner",
 					Params: map[string]string{"taskId": "tenant:missing", "tenantId": "tenant:a"},
@@ -760,16 +849,7 @@ var tasksW403Matrix = matrix.File{
 			Method:  "POST",
 			Path:    "/api/v1/tenants/{tenantId}/tasks/{taskId}/transitions",
 			Channel: "http",
-			Pending: "W4.11",
 			Rows: []matrix.Row{
-				{
-					Actor:  "a.owner",
-					Params: map[string]string{"taskId": "tenant:missing", "tenantId": "tenant:a"},
-					Status: 404,
-					Absent: []string{"tenant:b"},
-					Body:   "{\"transitionKey\":\"t3\"}",
-					Note:   "объекта нет в организации — 404 и владельцу",
-				},
 				{
 					Actor:  "b.owner",
 					Params: map[string]string{"taskId": "tenant:missing", "tenantId": "tenant:a"},
@@ -777,14 +857,6 @@ var tasksW403Matrix = matrix.File{
 					Absent: []string{"tenant:a"},
 					Body:   "{\"transitionKey\":\"t3\"}",
 					Note:   "чужая организация — как несуществующая (AC-02)",
-				},
-				{
-					Actor:  "a.project-approver",
-					Params: map[string]string{"taskId": "tenant:missing", "tenantId": "tenant:a"},
-					Status: 404,
-					Code:   "not_found",
-					Body:   "{\"transitionKey\":\"t3\"}",
-					Note:   "«Согласующий» без tasks.transition проходит шлюз по tasks.approve (режим any) — до хендлера 501, отказ шлюза 403 роняет строку",
 				},
 				{
 					Actor:  "anonymous",
@@ -799,16 +871,7 @@ var tasksW403Matrix = matrix.File{
 			Method:  "PATCH",
 			Path:    "/api/v1/tenants/{tenantId}/tasks/{taskId}/checklist/ch-1",
 			Channel: "http",
-			Pending: "W4.11",
 			Rows: []matrix.Row{
-				{
-					Actor:  "a.owner",
-					Params: map[string]string{"taskId": "tenant:missing", "tenantId": "tenant:a"},
-					Status: 404,
-					Absent: []string{"tenant:b"},
-					Body:   "{\"done\":true}",
-					Note:   "объекта нет в организации — 404 и владельцу",
-				},
 				{
 					Actor:  "b.owner",
 					Params: map[string]string{"taskId": "tenant:missing", "tenantId": "tenant:a"},
@@ -830,16 +893,7 @@ var tasksW403Matrix = matrix.File{
 			Method:  "POST",
 			Path:    "/api/v1/tenants/{tenantId}/tasks/{taskId}/approvals/t3/reject",
 			Channel: "http",
-			Pending: "W4.11",
 			Rows: []matrix.Row{
-				{
-					Actor:  "a.owner",
-					Params: map[string]string{"taskId": "tenant:missing", "tenantId": "tenant:a"},
-					Status: 404,
-					Absent: []string{"tenant:b"},
-					Body:   "{\"comment\":\"Нужен счёт с НДС\"}",
-					Note:   "объекта нет в организации — 404 и владельцу",
-				},
 				{
 					Actor:  "b.owner",
 					Params: map[string]string{"taskId": "tenant:missing", "tenantId": "tenant:a"},
@@ -861,16 +915,7 @@ var tasksW403Matrix = matrix.File{
 			Method:  "PUT",
 			Path:    "/api/v1/tenants/{tenantId}/tasks/{taskId}/parent",
 			Channel: "http",
-			Pending: "W4.11",
 			Rows: []matrix.Row{
-				{
-					Actor:  "a.owner",
-					Params: map[string]string{"taskId": "tenant:missing", "tenantId": "tenant:a"},
-					Status: 404,
-					Absent: []string{"tenant:b"},
-					Body:   "{\"parentTaskId\":null}",
-					Note:   "объекта нет в организации — 404 и владельцу",
-				},
 				{
 					Actor:  "b.owner",
 					Params: map[string]string{"taskId": "tenant:missing", "tenantId": "tenant:a"},
@@ -892,16 +937,7 @@ var tasksW403Matrix = matrix.File{
 			Method:  "POST",
 			Path:    "/api/v1/tenants/{tenantId}/tasks/{taskId}/files",
 			Channel: "http",
-			Pending: "W4.11",
 			Rows: []matrix.Row{
-				{
-					Actor:  "a.owner",
-					Params: map[string]string{"taskId": "tenant:missing", "tenantId": "tenant:a"},
-					Status: 404,
-					Absent: []string{"tenant:b"},
-					Body:   "{\"fileIds\":[\"{{file:a.msk1}}\"]}",
-					Note:   "объекта нет в организации — 404 и владельцу",
-				},
 				{
 					Actor:  "b.owner",
 					Params: map[string]string{"taskId": "tenant:missing", "tenantId": "tenant:a"},
@@ -923,15 +959,7 @@ var tasksW403Matrix = matrix.File{
 			Method:  "DELETE",
 			Path:    "/api/v1/tenants/{tenantId}/tasks/{taskId}/files/{fileId}",
 			Channel: "http",
-			Pending: "W4.11",
 			Rows: []matrix.Row{
-				{
-					Actor:  "a.owner",
-					Params: map[string]string{"fileId": "file:a.msk1", "taskId": "tenant:missing", "tenantId": "tenant:a"},
-					Status: 404,
-					Absent: []string{"tenant:b"},
-					Note:   "объекта нет в организации — 404 и владельцу",
-				},
 				{
 					Actor:  "b.owner",
 					Params: map[string]string{"fileId": "file:a.msk1", "taskId": "tenant:missing", "tenantId": "tenant:a"},
@@ -951,7 +979,6 @@ var tasksW403Matrix = matrix.File{
 			Method:  "POST",
 			Path:    "/api/v1/tenants/{tenantId}/tasks/{taskId}/comments",
 			Channel: "http",
-			Pending: "W4.11",
 			Rows: []matrix.Row{
 				{
 					Actor:  "a.owner",
@@ -960,6 +987,31 @@ var tasksW403Matrix = matrix.File{
 					Absent: []string{"tenant:b"},
 					Body:   "{\"text\":\"Счёт проверила\"}",
 					Note:   "объекта нет в организации — 404 и владельцу",
+				},
+				{
+					Actor:  "a.owner",
+					Params: map[string]string{"taskId": "task:b.fleet-1", "tenantId": "tenant:a"},
+					Status: 404,
+					Code:   "not_found",
+					Absent: []string{"tenant:b"},
+					Body:   "{\"text\":\"Счёт проверила\"}",
+					Note:   "id задачи организации B в организации A — как несуществующий",
+				},
+				{
+					Actor:  "a.two-roles",
+					Params: map[string]string{"taskId": "task:a.fleet-1", "tenantId": "tenant:a"},
+					Status: 404,
+					Code:   "not_found",
+					Body:   "{\"text\":\"Счёт проверила\"}",
+					Note:   "наблюдатель Самары-2 не комментирует задачу проекта Москвы-1 — как несуществующую",
+				},
+				{
+					Actor:  "a.driver-msk1",
+					Params: map[string]string{"taskId": "task:a.fleet-1", "tenantId": "tenant:a"},
+					Status: 201,
+					Absent: []string{"tenant:b"},
+					Body:   "{\"text\":\"Тормоза проверил\"}",
+					Note:   "исполнитель комментирует свою задачу (комментирует тот, кто читает)",
 				},
 				{
 					Actor:  "b.owner",
@@ -982,7 +1034,6 @@ var tasksW403Matrix = matrix.File{
 			Method:  "GET",
 			Path:    "/api/v1/tenants/{tenantId}/tasks/{taskId}/history",
 			Channel: "http",
-			Pending: "W4.11",
 			Rows: []matrix.Row{
 				{
 					Actor:  "a.owner",
@@ -990,6 +1041,21 @@ var tasksW403Matrix = matrix.File{
 					Status: 404,
 					Absent: []string{"tenant:b"},
 					Note:   "объекта нет в организации — 404 и владельцу",
+				},
+				{
+					Actor:  "a.owner",
+					Params: map[string]string{"taskId": "task:b.fleet-1", "tenantId": "tenant:a"},
+					Status: 404,
+					Code:   "not_found",
+					Absent: []string{"tenant:b"},
+					Note:   "id задачи организации B в организации A — как несуществующий",
+				},
+				{
+					Actor:  "a.project-lead",
+					Params: map[string]string{"taskId": "task:a.fleet-2", "tenantId": "tenant:a"},
+					Status: 200,
+					Absent: []string{"tenant:b"},
+					Note:   "история задачи своего проекта",
 				},
 				{
 					Actor:  "b.owner",

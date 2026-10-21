@@ -74,6 +74,10 @@ type Content struct {
 	Vehicles      []VehicleDef
 	Files         []FileDef
 	Notifications []NotificationDef
+	// W4.11: the rows of tasks.projects of the object projects, tasks and rules of automation (content_tasks.go).
+	Projects []ProjectDef
+	Tasks    []TaskDef
+	Rules    []RuleDef
 }
 
 // ImportDef is a CSV import of people in preview (people.imports): visible to members.manage over its default
@@ -95,10 +99,11 @@ type VehicleDef struct {
 	Key, Unit, Plate string
 }
 
-// FileDef is a checked (ready) inspection photo attached to a vehicle of the tenant (files.objects). Reference
-// file:<tenant>.<key>.
+// FileDef is a checked (ready) file of the tenant (files.objects): an inspection photo attached to a vehicle, or
+// (W4.11) an attachment of a task — Vehicle or Task, one of them. Reference file:<tenant>.<key>.
 type FileDef struct {
 	Key, Vehicle, Name string
+	Task               string // a task key of the content (content_tasks.go)
 }
 
 // NotificationDef is a notification of the inbox (notify.notifications) and its audience: Recipient is an actor with
@@ -268,7 +273,7 @@ const (
 var localKinds = []string{
 	refUnit, refRole, refGroup, ObjectProject, ObjectWarehouse, ObjectResource, ObjectSpace, ObjectPage, ObjectFolder,
 	ObjectDoc, ObjectAccount, ObjectChat, ObjectRepairProject,
-	refImport, refVehicle, refFile, refNotification, refRequest,
+	refImport, refVehicle, refFile, refNotification, refRequest, refTask, refAutomation,
 }
 
 func tenantRef(t string) string              { return refTenant + ":" + t }
@@ -583,7 +588,7 @@ func (t TenantDef) hasLocal(kind, key string) bool {
 		return t.hasRole(key)
 	case refGroup:
 		return t.hasGroup(key)
-	case refImport, refVehicle, refFile, refNotification:
+	case refImport, refVehicle, refFile, refNotification, refTask, refAutomation:
 		return t.Content.has(kind, key)
 	case refRequest:
 		return slices.ContainsFunc(t.Requests, func(r RequestDef) bool { return r.Key == key })

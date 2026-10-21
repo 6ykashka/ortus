@@ -25,12 +25,20 @@ func (c Content) keys(kind string) []string {
 		for _, n := range c.Notifications {
 			out = append(out, n.Key)
 		}
+	case refTask:
+		for _, x := range c.Tasks {
+			out = append(out, x.Key)
+		}
+	case refAutomation:
+		for _, r := range c.Rules {
+			out = append(out, r.Key)
+		}
 	}
 	return out
 }
 
 // contentKinds are the reference kinds of the content, in the order Refs lists them.
-var contentKinds = []string{refImport, refVehicle, refFile, refNotification}
+var contentKinds = []string{refImport, refVehicle, refFile, refNotification, refTask, refAutomation}
 
 // has reports whether the content holds an object of kind with key.
 func (c Content) has(kind, key string) bool { return slices.Contains(c.keys(kind), key) }
@@ -69,6 +77,7 @@ func (c Catalog) validateContent(t TenantDef, fail failFunc) {
 	for _, n := range t.Content.Notifications {
 		validateNotification(t, n, member, fail)
 	}
+	c.validateTasks(t, fail) // W4.11
 }
 
 func validateImport(t TenantDef, i ImportDef, member func(string) bool, fail failFunc) {
@@ -86,7 +95,7 @@ func validateImport(t TenantDef, i ImportDef, member func(string) bool, fail fai
 	}
 }
 
-// validateFiles checks the vehicles of t and the files attached to them.
+// validateFiles checks the vehicles of t and the files attached to them or to a task (W4.11).
 func validateFiles(t TenantDef, fail failFunc) {
 	for _, v := range t.Content.Vehicles {
 		switch {
@@ -98,7 +107,11 @@ func validateFiles(t TenantDef, fail failFunc) {
 	}
 	for _, f := range t.Content.Files {
 		switch {
-		case !t.Content.has(refVehicle, f.Vehicle):
+		case f.Vehicle != "" && f.Task != "":
+			fail("file %s.%s: attached to a vehicle or a task, not both", t.Key, f.Key)
+		case f.Task != "" && !t.Content.has(refTask, f.Task):
+			fail("file %s.%s: unknown task %q", t.Key, f.Key, f.Task)
+		case f.Task == "" && !t.Content.has(refVehicle, f.Vehicle):
 			fail("file %s.%s: unknown vehicle %q", t.Key, f.Key, f.Vehicle)
 		case f.Name == "":
 			fail("file %s.%s: no name", t.Key, f.Key)

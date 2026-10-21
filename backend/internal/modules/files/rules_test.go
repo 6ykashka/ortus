@@ -20,6 +20,14 @@ func upload() files.Upload {
 	}
 }
 
+// task is an attachment of a task of contentType (purpose task_attachment, parent tasks/task).
+func task(contentType string) func(*files.Upload) {
+	return func(u *files.Upload) {
+		u.ContentType, u.Purpose = contentType, files.Purpose("task_attachment")
+		u.Owner = files.Ref{Module: "tasks", Entity: "task", ID: uuid.New()}
+	}
+}
+
 // FILE-02: the server applies the limits of size and MIME; the example of initiateUpload passes.
 func TestValidateUpload(t *testing.T) {
 	t.Parallel()
@@ -41,6 +49,13 @@ func TestValidateUpload(t *testing.T) {
 			u.ContentType = "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
 			u.Purpose = files.PurposeFormAttachment
 		}, ""},
+		// W4.11: вложение задачи — FILE_OK прототипа (фото, PDF, текст, документы Office и OpenDocument, ZIP).
+		{"архив вложения задачи", task("application/zip"), ""},
+		{"документ Word 97 вложения задачи", task("application/msword"), ""},
+		{"таблица Excel 97 вложения задачи", task("application/vnd.ms-excel"), ""},
+		{"документ OpenDocument вложения задачи", task("application/vnd.oasis.opendocument.text"), ""},
+		{"PDF вложения задачи", task("application/pdf"), ""},
+		{"исполняемый файл вложения задачи", task("application/x-msdownload"), "validation_failed"},
 		{"тип с параметрами", func(u *files.Upload) { u.ContentType = "image/jpeg; name=x" }, "validation_failed"},
 		{"неизвестное назначение", func(u *files.Upload) { u.Purpose = "avatar" }, "validation_failed"},
 		{"пустое имя", func(u *files.Upload) { u.FileName = " " }, "validation_failed"},

@@ -138,7 +138,9 @@ type tenantStore struct {
 // newEvaluator is the permission evaluator of W1.04 over source (the permission cache of the realtime channel, W1.42)
 // and the unit tree of the tenant pools, with the clock of the application (APP_FIXED_NOW outside prod).
 func newEvaluator(pools *tenantctx.Pools, source authz.Source, cfg config) *authz.Evaluator {
-	return authz.New(source, authz.PGSource{Pools: pools}, cfg.clock())
+	ev := authz.New(source, authz.PGSource{Pools: pools}, cfg.clock())
+	registerProjects(ev, pools) // W4.11: the container of the projects of tasks (tasks.go)
+	return ev
 }
 
 // build connects the control DB (role ortus_api) and wires the platform: directory, tenant pools (secret_ref +
@@ -257,6 +259,7 @@ func build(ctx context.Context, cfg config, log *slog.Logger, getenv func(string
 			Earnings: newEarnings(pools, ev, cfg.clock()),                                // W2.06: earnings by a separate route (earnings.go)
 			Data:     newData(pools, ev, moduleStates{S: modules}, exports, cfg.clock()), // W2.08, W4.50: «Данные» (data.go)
 			Calendar: newCalendar(pools, ev, moduleStates{S: modules}, cfg.clock()),      // W4.40: календарь ресурсов (calendar.go)
+			Tasks:    newTasks(pools, ev, control, cfg.clock()),                          // W4.11: задачи и проекты (tasks.go)
 		},
 		replays: map[string]replayFunc{"logout": auth.ReplayLogout},
 		ready:   control.Ping,

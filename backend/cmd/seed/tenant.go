@@ -62,8 +62,8 @@ func tenantByProto(proto string) tenantDef {
 }
 
 // seedTenantDB creates (dev) and migrates the tenant database, records the version in tenant_routing and
-// writes the tenant rows in one transaction.
-func seedTenantDB(ctx context.Context, super, control *sql.DB, dsn string, td tenantData) (migrations.Result, error) {
+// writes the tenant rows in one transaction; objs holds the files the seed attaches (nil — none are attached).
+func seedTenantDB(ctx context.Context, super, control *sql.DB, dsn string, td tenantData, objs objectStore) (migrations.Result, error) {
 	if err := migrations.CreateDatabase(ctx, super, td.tenant.database); err != nil {
 		return migrations.Result{}, err
 	}
@@ -80,10 +80,10 @@ func seedTenantDB(ctx context.Context, super, control *sql.DB, dsn string, td te
 		where tenant_id = $1 and schema_version <> $2`, td.tenant.id(), res.To); err != nil {
 		return res, fmt.Errorf("tenant_routing: %w", err)
 	}
-	return res, writeTenant(ctx, db, td)
+	return res, writeTenant(ctx, db, td, objs)
 }
 
-func writeTenant(ctx context.Context, db *sql.DB, td tenantData) (err error) {
+func writeTenant(ctx context.Context, db *sql.DB, td tenantData, objs objectStore) (err error) {
 	tx, err := db.BeginTx(ctx, nil)
 	if err != nil {
 		return err
@@ -113,6 +113,9 @@ func writeTenant(ctx context.Context, db *sql.DB, td tenantData) (err error) {
 		return err
 	}
 	if err = writeCalendar(ctx, tx, td); err != nil { // the calendar of resources (calendar.go, W4.40)
+		return err
+	}
+	if err = writeTasks(ctx, tx, td, objs); err != nil { // projects and tasks (tasks.go, W4.11)
 		return err
 	}
 	if err = writeStand(ctx, tx, td); err != nil { // «Логистика» of «Альта» on the stand (stand.go, W2.54)

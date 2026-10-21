@@ -29,7 +29,7 @@ import (
 // роли «Временный водитель», как их пишет одобрение и досчёт пула (pool.TemporaryDriverActions, tenant 0018). Строки
 // ссылаются на эти объекты своими ссылками ac06:* (строки YAML ссылаются только на фикстуры — README). Тенант B
 // выбран, чтобы назначения водителя не меняли строк тенанта A. Задачи, база знаний и календарь подразделения
-// по HTTP — строки ac06UnitRows (403 шлюза; задачи — pending до W4.11, обработчика этапа 2 нет), и их закрывает
+// по HTTP — строки ac06UnitRows (403 шлюза; задачи — 404 и нет в списке, обработчик W4.11), и их закрывает
 // состав роли (pool TestTemporaryDriverActions, cmd/api TestTemporaryDriverTemplate, integration TestNarrowRoleExposure).
 
 // ac06Refs resolves the references ac06:* of the seeded transfers and delegates the rest to the fixtures.
@@ -62,8 +62,8 @@ var ac06Names = []string{
 	"file-trip", "file-unit", "file-closing", "file-accepted", "file-over", "file-future", "file-expense-accepted",
 	"file-departure",
 	"resource-closing", "reservation-closing", "resource-active", "reservation-active",
-	// Объекты подразделения «Москва-2» в задачах, базе знаний и календаре (ac06UnitRows): таблиц этапа 2 нет — задачу
-	// засеет W4.11 вместе с обработчиком; страница и бронь календаря закрыты шлюзом до чтения.
+	// Объекты подразделения «Москва-2» в задачах, базе знаний и календаре (ac06UnitRows): задачу открытого проекта
+	// «Москвы-2» сеет набор (W4.11); страница и бронь календаря закрыты шлюзом до чтения.
 	"task-msk2", "page-msk2", "booking-msk2",
 }
 
@@ -322,6 +322,15 @@ func seedAC06(t *testing.T) {
 		include_descendants, valid, state, source, granted_by, reason)
 		values ('person', $1, $2, 1, 'tenant', true, tstzrange($3, null, '[)'), 'active', 'manual', $4, 'AC-06')`,
 		d, query, s.at(-30*24*h), s.owner)
+	// Задача подразделения-получателя (W4.11): открытый проект «Москвы-2» (роль фирмы дала бы в нём всё) и его задача
+	// у своего водителя — временному водителю её не видно: роль без tasks.*, домашняя «Водитель» — self.
+	project := ac06ID("project-msk2")
+	s.exec(`insert into tasks.projects (id, key, name, org_unit_id, access, flow, workflow_key, owner_id, current_version)
+		values ($1, 'АСШ', 'Рейсы Москвы-2', $2, 'open', 'tasks', 'simple', $3, 1)`, project, s.target, s.owner)
+	s.exec(`insert into tasks.workflow_versions (project_id, version, statuses, transitions) values ($1, 1, $2::jsonb, '[]')`,
+		project, `[{"id":"s1","name":"Новая","category":"todo"},{"id":"s4","name":"Готово","category":"done"}]`)
+	s.exec(`insert into tasks.tasks (id, project_id, number, title, status_id, workflow_version, assignee_id, author_id)
+		values ($1, $2, 101, 'Подготовить рейс', 's1', 1, $3, $4)`, ac06ID("task-msk2"), project, s.other, s.owner)
 	s.exec(`update access.policy_state set policy_version = policy_version + 1 where $1::uuid is not null`, d)
 }
 
@@ -516,18 +525,18 @@ func ac06Rows() matrix.File {
 // the role «Временный водитель» holds none of their actions. The pages of the knowledge base and the bookings of the
 // calendar are in no role of the driver at all — the gateway answers 403 forbidden_action before any object is read
 // (the order of checks of the contract, the answer is the same for any id; Q-W2.57-10). The tasks are in his home role
-// «Водитель» in scope self only, so a task of «Москва-2» is 404 and out of the list; stage 2 has no handler of the
-// tasks (501), so their rows are pending until W4.11, which seeds task-msk2 of «Москва-2» with its tables.
+// «Водитель» in scope self only, so a task of «Москва-2» is 404 and out of the list (the handler of W4.11, task-msk2 of
+// an open project of «Москва-2» seeded by seedAC06).
 func ac06UnitRows() []matrix.Endpoint {
 	denied := func(params map[string]string, note string) matrix.Row {
 		return ac06Row(params, http.StatusForbidden, "forbidden_action", nil, nil, note)
 	}
 	const base = "/api/v1/tenants/{tenantId}/"
 	return []matrix.Endpoint{
-		{Op: "listTasks", Method: http.MethodGet, Path: base + "tasks", Channel: matrix.ChannelHTTP, Pending: "W4.11",
+		{Op: "listTasks", Method: http.MethodGet, Path: base + "tasks", Channel: matrix.ChannelHTTP,
 			Rows: []matrix.Row{ac06Row(nil, http.StatusOK, "", nil, []string{"ac06:task-msk2"},
 				"задачи подразделения-получателя — нет в списке (роль без tasks.*, домашняя — self)")}},
-		{Op: "getTask", Method: http.MethodGet, Path: base + "tasks/{taskId}", Channel: matrix.ChannelHTTP, Pending: "W4.11",
+		{Op: "getTask", Method: http.MethodGet, Path: base + "tasks/{taskId}", Channel: matrix.ChannelHTTP,
 			Rows: []matrix.Row{ac06Row(map[string]string{"taskId": "ac06:task-msk2"}, http.StatusNotFound, "not_found", nil,
 				[]string{"ac06:task-msk2"}, "задача подразделения-получателя — 404")}},
 		{Op: "listKnowledgePages", Method: http.MethodGet, Path: base + "knowledge/pages", Channel: matrix.ChannelHTTP,

@@ -145,7 +145,9 @@ const (
 //     the same manager (hidden on read: no right there), restricted earnings to a.driver-earnings (hidden, AC-05),
 //     a system notice to the owner, a trip of Москва-2 to ab.member.
 func contentA() Content {
+	projects, tasks, rules := taskContent(TenantA)
 	return Content{
+		Projects: projects, Tasks: tasks, Rules: rules, // W4.11 (content_tasks.go)
 		Imports: []ImportDef{
 			{Key: uMsk1, DefaultUnit: uMsk1, Rows: []ImportRowDef{{Person: "a.driver-msk1", Unit: uMsk1}}},
 			{Key: uMsk2, DefaultUnit: uMsk2, Rows: []ImportRowDef{
@@ -154,10 +156,10 @@ func contentA() Content {
 			}},
 		},
 		Vehicles: []VehicleDef{{Key: uMsk1, Unit: uMsk1, Plate: "ИЗ-101"}, {Key: uSmr2, Unit: uSmr2, Plate: "ИЗ-202"}},
-		Files: []FileDef{
+		Files: slices.Concat([]FileDef{
 			{Key: uMsk1, Vehicle: uMsk1, Name: "Осмотр Москва-1.jpg"},
 			{Key: uSmr2, Vehicle: uSmr2, Name: "Осмотр Самара-2.jpg"},
-		},
+		}, taskFiles()), // W4.11: attachments of tasks (content_tasks.go)
 		Notifications: []NotificationDef{
 			{Key: "trip-msk1", Recipient: "a.manager-msk1", Title: "Рейс Москвы-1 сдан", Permission: permTripsReview, Unit: uMsk1},
 			{Key: "trip-msk2", Recipient: "a.manager-msk1", Title: "Рейс Москвы-2 сдан", Permission: permTripsReview, Unit: uMsk2},
@@ -172,10 +174,12 @@ func contentA() Content {
 // contentB is the content of tenant B: namesakes of Москва-1 (an import, a vehicle with a file, a trip notification
 // to b.manager-msk1) and a notification to ab.member — the same account reads one tenant at a time (BR-T2).
 func contentB() Content {
+	projects, tasks, rules := taskContent(TenantB)
 	return Content{
+		Projects: projects, Tasks: tasks, Rules: rules, // W4.11 (content_tasks.go)
 		Imports:  []ImportDef{{Key: uMsk1, DefaultUnit: uMsk1, Rows: []ImportRowDef{{Person: "b.driver-msk1", Unit: uMsk1}}}},
 		Vehicles: []VehicleDef{{Key: uMsk1, Unit: uMsk1, Plate: "ИЗ-101"}},
-		Files:    []FileDef{{Key: uMsk1, Vehicle: uMsk1, Name: "Осмотр Москва-1.jpg"}},
+		Files:    slices.Concat([]FileDef{{Key: uMsk1, Vehicle: uMsk1, Name: "Осмотр Москва-1.jpg"}}, taskFiles()),
 		Notifications: []NotificationDef{
 			{Key: "trip-msk1", Recipient: "b.manager-msk1", Title: "Рейс Москвы-1 сдан", Permission: permTripsReview, Unit: uMsk1},
 			{Key: "member", Recipient: "ab.member", Title: "Рейс Москвы-2 в пути", Permission: permTripsRead, Unit: uMsk2},

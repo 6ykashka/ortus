@@ -267,7 +267,7 @@ test.describe('tasks-board — «Доска» и «Список» @mock', () => 
 test.describe('tasks-board — стенд @stand', () => {
   test.skip(({ harness }) => harness.mode !== 'stand', 'режим stand');
 
-  test.fixme('доска LOG на стенде (W4.11)', async ({ app, page }) => {
+  test('доска LOG на стенде (W4.11)', async ({ app, page }) => {
     test.slow();
     await openTasks(app, page);
     await openProject(page);

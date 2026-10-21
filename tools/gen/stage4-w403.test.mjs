@@ -884,7 +884,7 @@ describe('строки изоляции W4.03 (backend/test/isolation/tasks_w403
     assert.deepEqual(missing, []);
   });
 
-  it('метод и путь строк — как в контракте; отказ шлюза — без pending, остальное — pending W4.11', () => {
+  it('метод и путь строк — как в контракте; без pending — хендлеры тега Tasks написал W4.11', () => {
     const wrong = [];
     for (const e of endpoints) {
       const o = ops.get(e.op);
@@ -902,8 +902,11 @@ describe('строки изоляции W4.03 (backend/test/isolation/tasks_w403
       if (e.method.toLowerCase() !== o.method || !re.test(e.path)) {
         wrong.push(`${e.file}/${e.op}: ${e.method} ${e.path} ≠ ${o.method} ${o.path}`);
       }
-      const want = e.file.endsWith('_gate') ? undefined : 'W4.11';
-      if (e.pending !== want) wrong.push(`${e.file}/${e.op}: pending ${e.pending} ≠ ${want}`);
+      if (e.pending !== undefined) {
+        wrong.push(
+          `${e.file}/${e.op}: pending ${e.pending} — хендлеры тега Tasks уже есть (W4.11)`,
+        );
+      }
     }
     assert.deepEqual(wrong, []);
   });

@@ -29,12 +29,12 @@ endpoints:
   - op: createTaskProject
     method: POST
     path: /api/v1/tenants/{tenantId}/projects
-    pending: W4.11
     rows:
       - actor: a.owner
         params: { tenantId: tenant:a }
         status: 201
-        body: '{"name": "Новый проект"}'
+        body: '{"name": "Новый проект", "key": "ИЗО", "workflowKey": "simple"}'
+        note: проект всей организации с ключом, которого нет в фикстурах; создатель — его руководитель (W4.11)
       - actor: anonymous
         params: { tenantId: tenant:a }
         status: 401
@@ -42,7 +42,6 @@ endpoints:
   - op: listTaskProjects
     method: GET
     path: /api/v1/tenants/{tenantId}/projects
-    pending: W4.11
     rows:
       - actor: a.project-lead
         params: { tenantId: tenant:a }

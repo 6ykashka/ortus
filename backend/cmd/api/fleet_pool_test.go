@@ -87,7 +87,12 @@ func TestPoolClosesTripsInFilesAndData(t *testing.T) {
 	if !ok || rows.S == nil {
 		t.Fatalf("rows of the export %#v", x.Export.Rows)
 	}
-	for name, h := range map[string]any{"files": f.S.Hidden, "data": ds.S.Hidden, "export": rows.S.Hidden} {
+	// W4.11: the files join the pool with the tasks the subject does not read (closedParents, tasks.go); the pool first.
+	hiders, ok := f.S.Hidden.(closedParents)
+	if !ok || len(hiders) != 2 {
+		t.Fatalf("files hider %#v, want the pool and the hidden tasks", f.S.Hidden)
+	}
+	for name, h := range map[string]any{"files": hiders[0], "data": ds.S.Hidden, "export": rows.S.Hidden} {
 		wantPoolTrips(t, name, h, at)
 	}
 }

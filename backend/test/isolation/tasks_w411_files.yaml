@@ -1,0 +1,97 @@
+# Матрица изоляции: вложения задач через модуль files (W4.11 возврат 1, ревью; бриф §8, §10). Файл задачи читается
+# так же, как задача: tasks.read на задаче (область проекта, уровень доступа TP-03, исполнитель — область self) и
+# files.read; задачи, которые участник не читает, скрыты из listFiles (Hider cmd/api). Фикстуры (content_tasks.go):
+# file:<t>.fleet-1 — вложение задачи fleet-1 «Автопарка» (ограниченный проект Москвы-1, исполнитель — водитель),
+# file:<t>.build-1 — вложение задачи build-1 закрытой «Стройки» (ролей в ней нет ни у кого, исполнитель — водитель).
+# Формат — README.md. После правки: go -C backend generate ./test/isolation
+module: tasks_w411_files
+endpoints:
+  - op: listFiles
+    method: GET
+    path: /api/v1/tenants/{tenantId}/files
+    rows:
+      - actor: a.owner
+        params: { tenantId: tenant:a }
+        status: 200
+        present: [file:a.fleet-1]
+        absent: [file:a.build-1, file:b.fleet-1, file:b.build-1]
+        note: TP-03 — вложение закрытой «Стройки» владельцу не видно, как и сама задача
+      - actor: a.project-lead
+        params: { tenantId: tenant:a }
+        status: 200
+        present: [file:a.fleet-1]
+        absent: [file:a.build-1, file:a.msk1]
+        note: руководитель «Автопарка» — вложения своего проекта; «Стройка» и файлы машин вне его роли
+      - actor: a.driver-msk1
+        params: { tenantId: tenant:a }
+        status: 200
+        present: [file:a.fleet-1, file:a.build-1]
+        note: исполнитель (область self) читает вложения своих задач, в том числе в закрытом проекте (Q-W4.01-2)
+      - actor: a.two-roles
+        params: { tenantId: tenant:a }
+        status: 200
+        absent: [file:a.fleet-1, file:a.build-1]
+        note: задачи проектов Москвы-1 ему не видны — и их вложения
+  - op: getFile
+    method: GET
+    path: /api/v1/tenants/{tenantId}/files/{fileId}
+    rows:
+      - actor: a.owner
+        params: { tenantId: tenant:a, fileId: file:a.fleet-1 }
+        status: 200
+        present: [file:a.fleet-1]
+        absent: [tenant:b]
+      - actor: a.project-lead
+        params: { tenantId: tenant:a, fileId: file:a.fleet-1 }
+        status: 200
+        present: [file:a.fleet-1]
+      - actor: a.project-approver
+        params: { tenantId: tenant:a, fileId: file:a.fleet-1 }
+        status: 200
+        present: [file:a.fleet-1]
+        note: «Согласующий» читает задачи проекта и их файлы
+      - actor: a.owner
+        params: { tenantId: tenant:a, fileId: file:a.build-1 }
+        status: 404
+        code: not_found
+        note: TP-03 — вложение задачи закрытой «Стройки» без роли владельца в ней — как несуществующий файл
+      - actor: a.project-lead
+        params: { tenantId: tenant:a, fileId: file:a.build-1 }
+        status: 404
+        code: not_found
+        note: роль в «Автопарке» не открывает файлы «Стройки» (изоляция между проектами)
+      - actor: a.driver-msk1
+        params: { tenantId: tenant:a, fileId: file:a.build-1 }
+        status: 200
+        present: [file:a.build-1]
+        note: исполнитель задачи закрытого проекта читает её вложение
+      - actor: a.two-roles
+        params: { tenantId: tenant:a, fileId: file:a.fleet-1 }
+        status: 404
+        code: not_found
+      - actor: a.owner
+        params: { tenantId: tenant:a, fileId: file:b.fleet-1 }
+        status: 404
+        code: not_found
+        note: вложение задачи организации B по id в своей — как несуществующий файл (AC-02)
+      - actor: b.owner
+        params: { tenantId: tenant:a, fileId: file:a.fleet-1 }
+        status: 404
+        absent: [file:a.fleet-1]
+  - op: getFileDownload
+    method: GET
+    path: /api/v1/tenants/{tenantId}/files/{fileId}/download
+    rows:
+      - actor: a.project-lead
+        params: { tenantId: tenant:a, fileId: file:a.fleet-1 }
+        status: 200
+        present: [file:a.fleet-1]
+      - actor: a.owner
+        params: { tenantId: tenant:a, fileId: file:a.build-1 }
+        status: 404
+        code: not_found
+        note: ссылки на вложение закрытого проекта нет и владельцу (TP-03)
+      - actor: a.project-lead
+        params: { tenantId: tenant:a, fileId: file:a.build-1 }
+        status: 404
+        code: not_found

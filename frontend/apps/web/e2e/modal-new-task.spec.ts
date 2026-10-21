@@ -249,7 +249,7 @@ test.describe('modal-new-task — «Новая задача» @mock', () => {
 test.describe('modal-new-task — стенд @stand', () => {
   test.skip(({ harness }) => harness.mode !== 'stand', 'режим stand');
 
-  test.fixme('создание задачи с вложением на стенде (W4.11, MinIO)', async ({ app, page }) => {
+  test('создание задачи с вложением на стенде (W4.11, MinIO)', async ({ app, page }) => {
     test.slow();
     await openDialog(app, page);
     await newTask(page).getByLabel('Тема *').fill('Купить антифриз');

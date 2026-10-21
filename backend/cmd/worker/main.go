@@ -102,8 +102,9 @@ func run(ctx context.Context, args []string, getenv func(string) string, stdout,
 	src := authz.PGSource{Pools: pools}
 	ev := authz.New(src, src, cfg.clock())
 	reg := newRegistry(registryDeps{
-		control: control, pools: pools, audience: inbox.AuthzAudience{E: ev}, log: log,
+		control: control, pools: pools, audience: inbox.AuthzAudience{E: projectsIn(ev, pools)}, log: log,
 	})
+	registerTasks(reg, pools, cfg.clock()) // W4.11: the queue of blocking defects → the task of the defect (tasks.go)
 	// W2.72: the offers of vehicles whose deadline of the choice came tell the company of a released vehicle (inbox).
 	offers := &pool.Service{Pools: pools, Authz: ev, Recipients: inbox.PGRecipients{Control: control},
 		Owners: pool.ControlOwners{Control: control}, Audience: inbox.AuthzAudience{E: ev}, Now: cfg.clock(), Log: log}

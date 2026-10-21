@@ -59,6 +59,7 @@ const (
 	PurposeKnowledgeAttachment Purpose = "knowledge_attachment"
 	PurposeFormAttachment      Purpose = "form_attachment"
 	PurposeRepairEvidence      Purpose = "repair_evidence"
+	PurposeTaskAttachment      Purpose = "task_attachment" // W4.11: an attachment of a task (parent tasks/task)
 )
 
 // MIME types accepted by the server (FILE-02): photos, receipts and documents.
@@ -72,12 +73,19 @@ const (
 	mimeXLSX = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
 	mimeText = "text/plain"
 	mimeCSV  = "text/csv"
+	mimeZIP  = "application/zip"
+	mimeDOC  = "application/msword"
+	mimeXLS  = "application/vnd.ms-excel"
+	mimeODT  = "application/vnd.oasis.opendocument.text"
+	mimeODS  = "application/vnd.oasis.opendocument.spreadsheet"
 )
 
 var (
 	photos    = []string{mimeJPEG, mimePNG, mimeWebP, mimeHEIC}
 	receipts  = append(slices.Clone(photos), mimePDF)
 	documents = append(slices.Clone(receipts), mimeDOCX, mimeXLSX, mimeText, mimeCSV)
+	// attachments are FILE_OK of the prototype for a task: the documents, Office 97 and OpenDocument, ZIP.
+	attachments = append(slices.Clone(documents), mimeDOC, mimeXLS, mimeODT, mimeODS, mimeZIP)
 	// allowedMIME lists the declared types each purpose accepts: evidence photos are photos only.
 	allowedMIME = map[Purpose][]string{
 		PurposeInspection:          photos,
@@ -85,6 +93,7 @@ var (
 		PurposeExpenseReceipt:      receipts,
 		PurposeKnowledgeAttachment: documents,
 		PurposeFormAttachment:      documents,
+		PurposeTaskAttachment:      attachments,
 	}
 	sha256RE = regexp.MustCompile(`^[a-f0-9]{64}$`)
 	moduleRE = regexp.MustCompile(`^[a-z][a-z0-9_-]{1,49}$`) // ObjectRef.moduleKey

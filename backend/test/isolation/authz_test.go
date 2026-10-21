@@ -44,13 +44,13 @@ var authzMatrix = matrix.File{
 			Method:  "POST",
 			Path:    "/api/v1/tenants/{tenantId}/projects",
 			Channel: "http",
-			Pending: "W4.11",
 			Rows: []matrix.Row{
 				{
 					Actor:  "a.owner",
 					Params: map[string]string{"tenantId": "tenant:a"},
 					Status: 201,
-					Body:   "{\"name\": \"Новый проект\"}",
+					Body:   "{\"name\": \"Новый проект\", \"key\": \"ИЗО\", \"workflowKey\": \"simple\"}",
+					Note:   "проект всей организации с ключом, которого нет в фикстурах; создатель — его руководитель (W4.11)",
 				},
 				{
 					Actor:  "anonymous",
@@ -65,7 +65,6 @@ var authzMatrix = matrix.File{
 			Method:  "GET",
 			Path:    "/api/v1/tenants/{tenantId}/projects",
 			Channel: "http",
-			Pending: "W4.11",
 			Rows: []matrix.Row{
 				{
 					Actor:  "a.project-lead",

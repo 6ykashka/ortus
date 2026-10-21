@@ -214,11 +214,11 @@ test.describe('tasks-projects — «Проекты» @mock', () => {
   });
 });
 
-// Backend задач — W4.11 (не в main: тег Tasks в cmd/api отвечает 501).
+// Backend задач — W4.11 (Go-сид: проекты LOG и воронка, задача T-65).
 test.describe('tasks-projects — стенд @stand', () => {
   test.skip(({ harness }) => harness.mode !== 'stand', 'режим stand');
 
-  test.fixme('владелец на стенде: проекты Go-сида (W4.11)', async ({ app, page }) => {
+  test('владелец на стенде: проекты Go-сида (W4.11)', async ({ app, page }) => {
     test.slow();
     await openTasks(app, page);
     await projectsReady(page);

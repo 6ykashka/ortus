@@ -8,6 +8,8 @@ import (
 	billingapi "github.com/ortus/ortus-crm/backend/internal/api/billing"
 	filesapi "github.com/ortus/ortus-crm/backend/internal/api/files"
 	"github.com/ortus/ortus-crm/backend/internal/modules/files"
+	"github.com/ortus/ortus-crm/backend/internal/modules/tasks"
+	"github.com/ortus/ortus-crm/backend/internal/platform/authz"
 	"github.com/ortus/ortus-crm/backend/internal/platform/storage"
 )
 
@@ -16,13 +18,15 @@ import (
 // still work and uploads and downloads answer 503 dependency_unavailable; a half-configured storage stops the start.
 // The Billing server is the base of the tag: its subscription operations answer 501 until W1.08 overlays them
 // (subshttp.NewBillingServer(billing, subs) in main.go). W2.57 (AC-06): the parents of a trip leave out the trips the
-// driver pool closes to the subject on the clock of the application (poolTrips, fleet_pool.go).
-func filesServers(pools files.Pools, ev files.Authorizer, getenv func(string) string, log *slog.Logger, now func() time.Time) (filesapi.StrictServerInterface, billingapi.StrictServerInterface, error) {
-	parents, err := files.NewParents(files.FleetParents()...)
+// driver pool closes to the subject on the clock of the application (poolTrips, fleet_pool.go). W4.11: the attachments of
+// tasks (parent tasks/task) leave out the tasks the subject does not read (hiddenTasks, tasks.go).
+func filesServers(pools files.Pools, ev *authz.Evaluator, getenv func(string) string, log *slog.Logger, now func() time.Time) (filesapi.StrictServerInterface, billingapi.StrictServerInterface, error) {
+	parents, err := files.NewParents(append(files.FleetParents(), taskParent())...)
 	if err != nil {
 		return nil, nil, err
 	}
-	svc := &files.Service{Pools: pools, Authz: ev, Parents: parents, Hidden: newPoolTrips(pools, now)}
+	hidden := closedParents{newPoolTrips(pools, now), hiddenTasks{H: tasks.HiddenTasks{Pools: pools, Authz: ev}}}
+	svc := &files.Service{Pools: pools, Authz: ev, Parents: parents, Hidden: hidden}
 	cfg, ok, err := storage.ConfigFromEnv(getenv)
 	switch {
 	case err != nil:

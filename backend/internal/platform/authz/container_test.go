@@ -13,6 +13,11 @@ func task(id uuid.UUID, level Level, persons ...uuid.UUID) Resource {
 		Persons: persons}
 }
 
+// noProject is a task whose resource names the container but not the project (a mistake of the wiring of a module).
+func noProject(level Level) Resource {
+	return Resource{Unit: uMsk1, Container: ProjectContainer(level), ReadAction: aTasksRead}
+}
+
 // projAccess (W4.10, models.js 194–216) в оценщике: роль фирмы наследуется по уровню доступа проекта — открытый даёт
 // все действия роли, ограниченный — только чтение (правка видимой задачи — 403), закрытый — ничего (задача невидима —
 // 404). Своя роль в проекте даёт всё на любом уровне; «своё» (self) не наследуется, а покрывает свои задачи.
@@ -47,6 +52,11 @@ func TestPermitProjectOwnRoleReplacesInherited(t *testing.T) {
 		{"своя роль в закрытом: читать", pObsUnit, aTasksRead, task(projFleet, LevelClosed), ""},
 		{"другой открытый проект: роль фирмы правит", pObsUnit, aTasksUpd, task(projOther, LevelOpen), ""},
 		{"другой ограниченный проект: роль фирмы читает", pObsUnit, aTasksRead, task(projOther, LevelLimited), ""},
+		// Q-W4.01-15: контейнер без Objects[project] — проект строки не узнать; при своей роли в каком-нибудь проекте
+		// территориальный грант не действует (как ScopeQuery без колонки проекта), без ролей в проектах — по уровню.
+		{"контейнер без проекта при своей роли: читать", pObsUnit, aTasksRead, noProject(LevelOpen), codeNotFound},
+		{"контейнер без проекта при своей роли: править", pObsUnit, aTasksUpd, noProject(LevelOpen), codeNotFound},
+		{"контейнер без проекта без ролей в проектах", pUnitTasks, aTasksUpd, noProject(LevelOpen), ""},
 	})
 }
 
@@ -64,9 +74,9 @@ func TestScopeQueryProjectOwnRoleReplacesInherited(t *testing.T) {
 		sql    string
 		args   []any
 	}{
-		{"читать", aTasksRead, cols, "(t.project_id = $1 or (t.unit_id" + closure + "$2) and " + readable + " and t.project_id <> $3))",
+		{"читать", aTasksRead, cols, "(t.project_id = $1 or (t.unit_id" + closure + "$2) and " + readable + " and t.project_id is distinct from $3))",
 			[]any{projFleet, uMsk1, projFleet}},
-		{"править", aTasksUpd, cols, "((t.unit_id" + closure + "$1) and " + open + " and t.project_id <> $2))", []any{uMsk1, projFleet}},
+		{"править", aTasksUpd, cols, "((t.unit_id" + closure + "$1) and " + open + " and t.project_id is distinct from $2))", []any{uMsk1, projFleet}},
 		{"без колонки проекта", aTasksUpd, Columns{Unit: "t.unit_id", Container: ProjectColumns("p.access")}, "false", nil},
 	} {
 		p, err := ev.ScopeQuery(t.Context(), as(pObsUnit, false), tc.action, tc.cols, 0)

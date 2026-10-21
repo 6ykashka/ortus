@@ -171,6 +171,8 @@ test.describe('tasks-project-new — «Новый проект» @mock', () => {
 test.describe('tasks-project-new — стенд @stand', () => {
   test.skip(({ harness }) => harness.mode !== 'stand', 'режим stand');
 
+  // fixme (Q-W4.12-17): не повторяем на трёх ширинах одного стенда — проект «Стенд · проверка» и его ключ
+  // уже созданы прогоном 390, на 768 и 1440 тоста «создан» нет; нужно уникальное название на прогон.
   test.fixme('владелец на стенде создаёт проект (W4.11)', async ({ app, page }) => {
     test.slow();
     await openTasks(app, page);

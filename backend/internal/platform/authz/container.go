@@ -74,8 +74,12 @@ func levelAdmits(reads map[string][]string, sub Subject, kind ScopeKind, action 
 	if c == nil || !isTerritorial(kind) {
 		return true
 	}
-	if c.RoleReplaces && slices.Contains(roleContainers(sub, c.Kind), r.Object(c.Kind)) {
-		return false
+	if c.RoleReplaces {
+		// A role of sub on the container replaces the grant; a resource that does not name its container cannot be told
+		// apart from those (Q-W4.01-15) and the grant gives nothing, as ScopeQuery without the column of the container.
+		if ids := roleContainers(sub, c.Kind); len(ids) > 0 && (r.Object(c.Kind) == uuid.Nil || slices.Contains(ids, r.Object(c.Kind))) {
+			return false
+		}
 	}
 	switch c.Level {
 	case LevelOpen:
@@ -130,12 +134,13 @@ func replaced(sub Subject, kind ScopeKind, c Columns) (ids []uuid.UUID, drop boo
 	return ids, len(ids) > 0 && c.Objects[c.Container.Kind] == ""
 }
 
-// replacedSQL is the condition that keeps a territorial grant out of the rows of the containers ids.
+// replacedSQL is the condition that keeps a territorial grant out of the rows of the containers ids; a row without a
+// container (NULL under a left join) stays, as Permit with no container (Q-W4.01-13).
 func replacedSQL(c Columns, ids []uuid.UUID, args *Args) string {
 	col := c.Objects[c.Container.Kind]
 	conds := make([]string, 0, len(ids))
 	for _, id := range ids {
-		conds = append(conds, col+" <> "+args.Add(id))
+		conds = append(conds, col+" is distinct from "+args.Add(id))
 	}
 	return strings.Join(conds, " and ")
 }

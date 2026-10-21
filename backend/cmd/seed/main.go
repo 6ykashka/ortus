@@ -87,6 +87,13 @@ func seed(ctx context.Context, getenv func(string) string, out io.Writer) error 
 		return configErr("control DB is at version %d, want %d: run `node deploy/compose/stand.mjs migrate` (migrate all up) first", v, latest)
 	}
 
+	objs, err := newObjects(ctx, getenv) // W4.11: the files the seed attaches
+	if err != nil {
+		return err
+	}
+	if objs == nil {
+		fmt.Fprintln(out, "files: S3_ENDPOINT is not set — the seed attaches no files (T-65 without its invoice)")
+	}
 	if err := seedPlatform(ctx, control); err != nil {
 		return err
 	}
@@ -104,7 +111,7 @@ func seed(ctx context.Context, getenv func(string) string, out io.Writer) error 
 		if err != nil {
 			return configErr("MIGRATOR_DB_URL: %v", err)
 		}
-		res, err := seedTenantDB(ctx, super, control, dsn, td)
+		res, err := seedTenantDB(ctx, super, control, dsn, td, objs)
 		if err != nil {
 			return fmt.Errorf("tenant %s (%s): %w", td.tenant.slug, td.tenant.database, err)
 		}

@@ -271,6 +271,14 @@ func TestLoadContent(t *testing.T) {
 			t.Errorf("file:%s on vehicle:%s of unit:%s = %d, want 1", ref, ref, ref, n)
 		}
 	}
+	// W4.11 возврат 1: вложения задач — проверенный файл task_attachment задачи, прикреплённый к ней (tasks.task_files).
+	for _, ref := range []string{"a.fleet-1", "a.build-1"} {
+		if n := count(t, a, `select count(*) from files.objects f join tasks.task_files tf on tf.file_id = f.id and tf.task_id = f.owner_id
+			where f.id = $1 and f.state = 'ready' and f.purpose = 'task_attachment' and f.owner_type = 'tasks.task' and f.owner_id = $2`,
+			id(t, w, "file:"+ref), id(t, w, "task:"+ref)); n != 1 {
+			t.Errorf("file:%s attached to task:%s = %d, want 1", ref, ref, n)
+		}
+	}
 	// Уведомление с аудиторией: начисления — restricted, право и подразделение (Q-W1.10-8, AC-05).
 	if n := count(t, a, `select count(*) from notify.notifications where id = $1 and recipient_person_id = $2
 		and required_permission = 'fleet.earnings.read' and unit_id = $3 and sensitivity = 'restricted'`,
@@ -280,7 +288,7 @@ func TestLoadContent(t *testing.T) {
 	for tn, want := range map[string]struct {
 		db   *sql.DB
 		rows int
-	}{TenantA: {a, 2 + 3 + 2 + 2 + 5}, TenantB: {b, 1 + 1 + 1 + 1 + 2}} {
+	}{TenantA: {a, 2 + 3 + 2 + (2 + 2) + 5}, TenantB: {b, 1 + 1 + 1 + (1 + 2) + 2}} { // files: of vehicles + of tasks (W4.11)
 		if n := count(t, want.db, contentCount); n != want.rows {
 			t.Errorf("content rows of %s = %d, want %d", tn, n, want.rows)
 		}
