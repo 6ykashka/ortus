@@ -33,6 +33,8 @@ export interface InspectionProps {
   minOdo: number;
   onPhoto: (side: SideKey) => void;
   onRetry: (side: SideKey) => void;
+  /** W2.74 (1e): подзаголовок осмотра на выбранной машине «{модель} · {номер} · {ваша обычная / поставил логист}». */
+  sub?: string | undefined;
 }
 
 function DefectForm({
@@ -124,7 +126,7 @@ export function Inspection(p: InspectionProps): ReactElement {
   const [defectOpen, setDefectOpen] = useState(false);
   const hint = odoHint(d.odometer, kind, minOdo);
   const odoId = useId();
-  const sub = inspectionSub(kind, p.model, p.plate);
+  const sub = p.sub ?? inspectionSub(kind, p.model, p.plate);
   return (
     <div className="ox-dr-card ox-dr-insp">
       <div>

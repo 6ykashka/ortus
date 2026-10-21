@@ -1054,3 +1054,99 @@
 .ox-dr-file {
   display: none;
 }
+
+/* W2.74 · Машины на выбор (S2-20, D-35): макет «Временный водитель - варианты.dc.html» 1c :261–300, 1d :332–343,
+   1e :376–379. Выбранная в листе карточка — рамка 2px акцента и кольцо (card :578–581). */
+.ox-dr-offer {
+  border-color: #bfd9c8;
+  gap: 8px;
+}
+
+.ox-dr-offer[data-picked] {
+  border: 2px solid var(--ox-accent);
+  box-shadow: 0 0 0 3px var(--ox-accent-soft);
+}
+
+.ox-dr-offer-place {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+  font-size: 13px;
+  color: #3a4844;
+}
+
+.ox-dr-offer-held {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 10px 12px;
+  border-radius: 10px;
+  background: var(--ox-accent-soft);
+  color: var(--ox-accent);
+  font-size: 13px;
+}
+
+.ox-dr-offer-held-line {
+  display: flex;
+  gap: 8px;
+  text-wrap: pretty;
+}
+
+.ox-dr-offer-held-line[data-muted] {
+  color: #3a4844;
+}
+
+.ox-dr-offer-who {
+  display: flex;
+  gap: 6px;
+  font-size: 13px;
+  color: #5c6964;
+  text-wrap: pretty;
+}
+
+.ox-dr-sheet {
+  gap: 12px;
+  padding: 10px 18px 22px;
+}
+
+.ox-dr-sheet-grip {
+  align-self: center;
+  width: 40px;
+  height: 4px;
+  border-radius: 2px;
+  background: #cdd5cb;
+}
+
+.ox-dr-sheet-title {
+  margin: 0;
+  font-size: 19px;
+  font-weight: 600;
+}
+
+.ox-dr-sheet-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  font-size: 14px;
+  color: #3a4844;
+}
+
+.ox-dr-sheet-list li {
+  display: flex;
+  gap: 10px;
+  text-wrap: pretty;
+}
+
+.ox-dr-sheet-list li[data-tone='warn'] > .material-symbols-rounded {
+  color: #7a5214;
+}
+
+.ox-dr-sheet-back {
+  width: 100%;
+  min-height: 48px;
+  border-radius: 10px;
+  font-size: 15px;
+}

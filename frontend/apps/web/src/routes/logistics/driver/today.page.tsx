@@ -7,7 +7,10 @@
 // расход и сдача — в очередь отправки (outbox/), карточка «Сдача сохранена на устройстве»; бронь и выезд — только
 // онлайн. Повтор команды — тот же Idempotency-Key (idemKeys, Q-W2.22-9).
 // W2.61 (Q-W2.32-2): список машин (listVehicles) нужен только до выезда (needsCars); начатый рейс — без него.
-import { ProblemError } from '@ortus/api-client';
+// W2.74 (S2-20, D-35): машины на выбор — «Выберите машину» из предложенных и лист «Берёте …?», «Машина на сегодня»,
+// «Машину ещё не поставили», осмотр на выбранной машине со статусом брони (offer.tsx); у временного водителя нет
+// «Подтвердить бронь» и «Забронировать».
+import { type components, ProblemError } from '@ortus/api-client';
 import {
   format,
   logisticsDriver as L,
@@ -17,11 +20,20 @@ import {
 } from '@ortus/texts';
 import { Banner, EmptyState, Icon, Skeleton } from '@ortus/ui';
 import { useQueryClient } from '@tanstack/react-query';
-import { type ReactElement, type ReactNode, useCallback, useEffect, useRef, useState } from 'react';
+import {
+  type ReactElement,
+  type ReactNode,
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react';
 
 import { useApi } from '../../../app/api.tsx';
 import { deviceStore } from '../../../pwa/store.ts';
 import { useCan, useShell } from '../../../shell/context.tsx';
+import { useOrgUnits } from '../../../shell/scope.ts';
 import { problemText, useBusy, useRun } from '../../../shell/run.tsx';
 import { useToast } from '../../../shell/toast.tsx';
 import { ConfirmModal } from '../../company/modules/dialog.tsx';
@@ -41,6 +53,7 @@ import {
   useExpenses,
   useInspection,
   useMyTrip,
+  useReservations,
   useVehicles,
 } from './api.ts';
 import { useBook } from './book.ts';
@@ -53,6 +66,7 @@ import { expenseLabel, localExpenseRow, QueuedReturn } from './outbox/parts.tsx'
 import { transport } from './photos.ts';
 import {
   carCards,
+  type Chip as ChipModel,
   type Draft,
   EMPTY_SLOT,
   emptyDraft,
@@ -85,6 +99,20 @@ import {
   type Vehicle,
 } from './model.ts';
 import {
+  firmsOf,
+  isTemporaryTrip,
+  type NameBook,
+  offerBlock,
+  offerChip,
+  offerClosedShown,
+  offerInspectionSub,
+  offerOf,
+  recallNames,
+  sessionStore,
+  whoInspects,
+} from './offer.ts';
+import { OfferChoose, OfferClosed, OfferHeld, OfferNone, OfferOne } from './offer.tsx';
+import {
   type ActLine,
   ActionBar,
   BookCard,
@@ -99,6 +127,8 @@ import {
 import { DRIVER_TEXT as T } from './texts.ts';
 import './driver.css';
 
+type Reservation = components['schemas']['Reservation'];
+
 const TR = toastText.driver;
 const EC = logisticsManager.expenseCategories;
 
@@ -106,12 +136,12 @@ const EC = logisticsManager.expenseCategories;
 const detailOf = (e: unknown): string =>
   e instanceof ProblemError && e.problem?.detail ? e.problem.detail : problemText(e);
 
-function TripCard({ plan }: { plan: Plan }): ReactElement {
+function TripCard({ plan, chip }: { plan: Plan; chip?: ChipModel | undefined }): ReactElement {
   return (
     <div className="ox-dr-card ox-dr-trip">
       <div className="ox-dr-row">
         <strong className="ox-dr-trip-title">{`${plan.number} · ${plan.title}`}</strong>
-        <Chip chip={tripChip(plan.state)} />
+        <Chip chip={chip ?? tripChip(plan.state)} />
       </div>
       <span className="ox-dr-sub">{tripMeta(plan)}</span>
       <div className="ox-dr-reqs">
@@ -130,6 +160,8 @@ interface Ctx {
   tenantId: string;
   plan: Plan;
   vehicles: readonly Vehicle[];
+  /** W2.74: брони водителя — предложение машин на рейс смены (до выезда). */
+  reservations: readonly Reservation[];
   online: boolean;
   /** Очередь отправки водителя (W2.24). */
   outbox: OutboxView;
@@ -314,7 +346,12 @@ function useInspectionFlow({ ctx, kind, draft, update, minOdo, draftKey }: Inspe
 }
 
 function InspectionBlock(
-  p: InspectionFlowProps & { vehicle: Vehicle | undefined; children?: ReactNode },
+  p: InspectionFlowProps & {
+    vehicle: Vehicle | undefined;
+    /** W2.74 (1e): подзаголовок осмотра на выбранной машине. */
+    sub?: string | undefined;
+    children?: ReactNode;
+  },
 ): ReactElement {
   const f = useInspectionFlow(p);
   const isDep = p.kind === 'dep';
@@ -363,6 +400,7 @@ function InspectionBlock(
         kind={p.kind}
         model={p.vehicle?.displayName ?? ''}
         plate={p.vehicle?.registrationNumber ?? ''}
+        sub={p.sub}
         draft={p.draft}
         update={p.update}
         items={f.items}
@@ -671,14 +709,48 @@ function Shift({ ctx }: { ctx: Ctx }): ReactElement {
   const manage = can('fleet.reservations.manage');
 
   const tenantState = tenant?.tenantState?.status;
-  const blocked = reserveBlock(
-    online,
-    tenantState === 'read_only' || tenantState === 'suspended',
-    readOnly,
+  const tenantReadOnly = tenantState === 'read_only' || tenantState === 'suspended';
+  const blocked = reserveBlock(online, tenantReadOnly, readOnly);
+
+  // W2.74 · Предложение машин на рейс (S2-20): брони рейса с offerGroupId; имена машин — и те, что водитель видел до
+  // выбора (sessionStorage), фирмы — по подразделениям, если они ему видны.
+  const caps = tenant?.capabilities;
+  const units = useOrgUnits(tenantId, !!caps?.some((c) => c.permission === 'org_units.read'));
+  const names = useMemo((): NameBook => {
+    const groups = new Set(
+      ctx.reservations.filter((r) => r.tripId === plan.id).map((r) => r.offerGroupId ?? ''),
+    );
+    return Object.assign({}, ...[...groups].map((g) => recallNames(sessionStore(), g))) as NameBook;
+  }, [ctx.reservations, plan.id]);
+  // Предложение — по данным запросов (ссылки стабильны между отрисовками): эффекты 1c не перезапускаются зря.
+  const offer = useMemo(
+    () => offerOf(ctx.reservations, plan, ctx.vehicles, names),
+    [ctx.reservations, plan, ctx.vehicles, names],
   );
+  const firms = firmsOf(units.data, plan, tenant?.orgUnitIds[0]);
+  const pre = st === 'planned' || st === 'assigned';
+  const temporary = isTemporaryTrip(
+    plan,
+    { orgUnitIds: tenant?.orgUnitIds ?? [], caps: caps ?? [] },
+    !!offer,
+  );
+  /** «Начать осмотр» на единственной машине (1c) — до перезагрузки вкладки. */
+  const [started, setStarted] = useState(false);
+  /**
+   * 409 offer_closed: группа закрытого предложения — сообщение переживает перечитывание (та же группа: машина на
+   * сегодня), новое предложение логиста или конец перевода его снимают (возврат 1).
+   */
+  const [closedGroup, setClosedGroup] = useState<string | null>(null);
+  const closed = offerClosedShown(closedGroup, offer);
+  const one = offer?.state === 'one' ? offer : null;
+  const offerInspect = pre && !!one && (one.chosen || started) && !!plan.reservationId;
 
   const kind: Kind | null =
-    st === 'inspection' ? 'dep' : st === 'returning' || st === 'rework' ? 'ret' : null;
+    st === 'inspection' || offerInspect
+      ? 'dep'
+      : st === 'returning' || st === 'rework'
+        ? 'ret'
+        : null;
   const draftKey =
     kind === 'dep'
       ? `${plan.id}:dep:${plan.reservationId ?? ''}`
@@ -770,8 +842,60 @@ function Shift({ ctx }: { ctx: Ctx }): ReactElement {
   const departOnly = st === 'inspection' && !!plan.departureInspectionId;
   const expenses = <ExpensesBlock ctx={ctx} pick={pick} />;
 
+  /** 1e: кто увидит осмотр выбранной машины — под осмотром перед выездом. */
+  const who = one ? (
+    <span className="ox-dr-offer-who">
+      <Sym name="visibility" size={17} />
+      <span>{whoInspects(one.car, plan, firms)}</span>
+    </span>
+  ) : null;
+
   let body: ReactNode = null;
-  if (st === 'planned' || st === 'assigned') {
+  if (pre && offerInspect && !loaded) {
+    body = <Skeleton lines={6} label={shellText.a11y.loading} />;
+  } else if (pre && offerInspect && one) {
+    // 1e: осмотр на выбранной (или единственной) машине — первый снимок закрепляет бронь (assigned → inspection).
+    body = (
+      <InspectionBlock
+        ctx={ctx}
+        kind="dep"
+        draft={draft}
+        update={update}
+        minOdo={minOdo}
+        draftKey={draftKey}
+        pickPhoto={pickPhoto}
+        retryPhoto={retryPhoto}
+        vehicle={vehicle}
+        sub={offerInspectionSub(one.car)}
+      >
+        {who}
+      </InspectionBlock>
+    );
+  } else if (pre && offer?.state === 'two') {
+    body = (
+      <OfferChoose
+        tenantId={tenantId}
+        plan={plan}
+        offer={offer}
+        firms={firms}
+        block={offerBlock(online, tenantReadOnly, readOnly)}
+        onClosed={() => setClosedGroup(offer.groupId)}
+      />
+    );
+  } else if (pre && one) {
+    body = (
+      <OfferOne
+        offer={one}
+        firms={firms}
+        onStart={() => {
+          setClosedGroup(null);
+          setStarted(true);
+        }}
+      />
+    );
+  } else if (pre && temporary) {
+    body = <OfferNone firms={firms} />;
+  } else if (pre) {
     body = <Choose ctx={ctx} blocked={blocked} />;
   } else if (st === 'inspection' && departOnly) {
     body = (
@@ -801,8 +925,9 @@ function Shift({ ctx }: { ctx: Ctx }): ReactElement {
         pickPhoto={pickPhoto}
         retryPhoto={retryPhoto}
         vehicle={vehicle}
+        {...(kind === 'dep' && one ? { sub: offerInspectionSub(one.car) } : {})}
       >
-        {kind === 'ret' ? expenses : null}
+        {kind === 'ret' ? expenses : kind === 'dep' ? who : null}
       </InspectionBlock>
     );
   } else if (st === 'defect_review') {
@@ -843,11 +968,22 @@ function Shift({ ctx }: { ctx: Ctx }): ReactElement {
     );
   }
 
+  // Предложение: чип рейса 1c (c.chip :582–584); осмотр на выбранной машине (1e) — шаг «Осмотр», без карточки рейса.
+  const offerHeld =
+    one && (offerInspect || st === 'inspection') && plan.reservationId === one.car.reservationId;
   return (
     <>
-      <Steps label={L.today.stepsAria} steps={steps(st)} />
-      <TripCard plan={plan} />
-      {st === 'inspection' ? (
+      <Steps label={L.today.stepsAria} steps={steps(offerInspect ? 'inspection' : st)} />
+      {offerInspect ? null : (
+        <TripCard
+          plan={plan}
+          chip={pre && (offer || temporary) ? offerChip(offer?.state ?? 'none') : undefined}
+        />
+      )}
+      {closed && pre && !offerInspect ? <OfferClosed /> : null}
+      {offerHeld && one ? (
+        <OfferHeld offer={one} plan={plan} />
+      ) : st === 'inspection' ? (
         <div role="status" className="ox-dr-held">
           <Sym name="cloud_done" size={20} />
           <span className="ox-dr-held-text">
@@ -930,7 +1066,7 @@ function DepartOnly({
 }
 
 export default function TodayPage(): ReactElement {
-  const { me, tenantId: id } = useShell();
+  const { me, tenant, tenantId: id } = useShell();
   const tenantId = id ?? '';
   const online = useNetwork();
   const outbox = useOutbox(tenantId);
@@ -941,6 +1077,9 @@ export default function TodayPage(): ReactElement {
   // машина и рейс из рейса (у временного водителя в продолжении после срока listVehicles — 403); название машины
   // в осмотре при сдаче — из списка, если он загружен.
   const cars = !!plan && needsCars(plan.state);
+  // W2.74 (S2-20): брони водителя — машины на выбор; нужны до выезда, как список машин. Ошибка списка броней — смена
+  // без предложения (W2.22), у временного рейса — «Не удалось загрузить смену» и «Повторить».
+  const reservations = useReservations(tenantId, cars);
   const tz = plan?.plannedWindow.timeZone || MSK;
   const crumb = todayCrumb(
     me.displayName,
@@ -948,8 +1087,16 @@ export default function TodayPage(): ReactElement {
     tz,
   );
 
+  const foreignTrip =
+    !!plan &&
+    isTemporaryTrip(
+      plan,
+      { orgUnitIds: tenant?.orgUnitIds ?? [], caps: tenant?.capabilities ?? [] },
+      false,
+    );
+
   let body: ReactNode;
-  if (trip.isPending || (cars && vehicles.isPending) || !outbox.ready) {
+  if (trip.isPending || (cars && (vehicles.isPending || reservations.isPending)) || !outbox.ready) {
     body = <Skeleton lines={6} label={shellText.a11y.loading} />;
   } else if (trip.isError) {
     body = (
@@ -969,8 +1116,27 @@ export default function TodayPage(): ReactElement {
         action={{ label: T.retry, onPress: () => void vehicles.refetch() }}
       />
     );
+  } else if (cars && reservations.isError && foreignTrip) {
+    body = (
+      <Banner
+        tone="danger"
+        title={format(T.loadFailed, { error: problemText(reservations.error) })}
+        action={{ label: T.retry, onPress: () => void reservations.refetch() }}
+      />
+    );
   } else {
-    body = <Shift ctx={{ tenantId, plan, vehicles: vehicles.data ?? [], online, outbox }} />;
+    body = (
+      <Shift
+        ctx={{
+          tenantId,
+          plan,
+          vehicles: vehicles.data ?? [],
+          reservations: (cars && reservations.data) || [],
+          online,
+          outbox,
+        }}
+      />
+    );
   }
 
   return (

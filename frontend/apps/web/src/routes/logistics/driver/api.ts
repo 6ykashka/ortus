@@ -80,6 +80,29 @@ export function useVehicles(tenantId: string, enabled = true) {
   });
 }
 
+export const reservationsKey = (tenantId: string) =>
+  [...fleetKey(tenantId), 'reservations'] as const;
+
+/**
+ * W2.74 (S2-20) · Брони водителя (listReservations): предложение машин на рейс смены — `offerGroupId`, `offerKind`,
+ * `chooseUntil`, `releasedAt`. Нужны до выезда, как список машин (needsCars).
+ */
+export function useReservations(tenantId: string, enabled: boolean) {
+  const api = useApi();
+  return useQuery({
+    queryKey: reservationsKey(tenantId),
+    enabled,
+    queryFn: () =>
+      allPages(async (cursor) =>
+        unwrap(
+          await api.GET('/api/v1/tenants/{tenantId}/fleet/reservations', {
+            params: { path: { tenantId }, query: pageQuery(cursor) },
+          }),
+        ),
+      ),
+  });
+}
+
 /** Чек-лист по версии для машины и вида осмотра. */
 export function useChecklist(
   tenantId: string,
@@ -192,6 +215,23 @@ export async function reserve(
         window: plan.plannedWindow,
         tripId: plan.id,
       },
+    }),
+  );
+}
+
+/**
+ * W2.74 (S2-20) · «Взять и начать осмотр»: chooseReservation подтверждает бронь предложения, остальные брони группы
+ * снимаются (TD-04). Только со связью (правило 5); 409 `offer_closed` — срок прошёл или выбор уже сделан.
+ */
+export async function chooseReservation(
+  api: ApiClient,
+  tenantId: string,
+  reservationId: string,
+  key: string,
+): Promise<S['ReservationChoice']> {
+  return unwrap(
+    await api.POST('/api/v1/tenants/{tenantId}/fleet/reservations/{reservationId}/choose', {
+      params: { path: { tenantId, reservationId }, header: header(key) },
     }),
   );
 }
