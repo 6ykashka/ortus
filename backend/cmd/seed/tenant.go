@@ -118,6 +118,9 @@ func writeTenant(ctx context.Context, db *sql.DB, td tenantData, objs objectStor
 	if err = writeTasks(ctx, tx, td, objs); err != nil { // projects and tasks (tasks.go, W4.11)
 		return err
 	}
+	if err = writeKnowledge(ctx, tx, td); err != nil { // the knowledge base (knowledge.go, W4.31)
+		return err
+	}
 	if err = writeStand(ctx, tx, td); err != nil { // «Логистика» of «Альта» on the stand (stand.go, W2.54)
 		return err
 	}

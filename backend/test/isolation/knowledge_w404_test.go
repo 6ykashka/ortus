@@ -19,14 +19,14 @@ var knowledgeW404Matrix = matrix.File{
 			Method:  "GET",
 			Path:    "/api/v1/tenants/{tenantId}/knowledge/spaces",
 			Channel: "http",
-			Pending: "W4.31",
 			Rows: []matrix.Row{
 				{
-					Actor:  "a.owner",
-					Params: map[string]string{"tenantId": "tenant:a"},
-					Status: 200,
-					Absent: []string{"tenant:b"},
-					Note:   "пространства своей организации; пространств тенанта B нет",
+					Actor:   "a.owner",
+					Params:  map[string]string{"tenantId": "tenant:a"},
+					Status:  200,
+					Present: []string{"space:a.rules"},
+					Absent:  []string{"tenant:b", "space:b.rules"},
+					Note:    "пространства своей организации; пространств тенанта B нет",
 				},
 				{
 					Actor:  "b.owner",
@@ -47,7 +47,6 @@ var knowledgeW404Matrix = matrix.File{
 			Method:  "POST",
 			Path:    "/api/v1/tenants/{tenantId}/knowledge/spaces",
 			Channel: "http",
-			Pending: "W4.31",
 			Rows: []matrix.Row{
 				{
 					Actor:  "b.owner",
@@ -70,7 +69,6 @@ var knowledgeW404Matrix = matrix.File{
 			Method:  "GET",
 			Path:    "/api/v1/tenants/{tenantId}/knowledge/space-templates",
 			Channel: "http",
-			Pending: "W4.31",
 			Rows: []matrix.Row{
 				{
 					Actor:  "a.owner",
@@ -97,7 +95,6 @@ var knowledgeW404Matrix = matrix.File{
 			Method:  "PATCH",
 			Path:    "/api/v1/tenants/{tenantId}/knowledge/spaces/{spaceId}",
 			Channel: "http",
-			Pending: "W4.31",
 			Rows: []matrix.Row{
 				{
 					Actor:  "b.owner",
@@ -120,7 +117,6 @@ var knowledgeW404Matrix = matrix.File{
 			Method:  "GET",
 			Path:    "/api/v1/tenants/{tenantId}/knowledge/spaces/{spaceId}/tree",
 			Channel: "http",
-			Pending: "W4.31",
 			Rows: []matrix.Row{
 				{
 					Actor:  "a.owner",
@@ -128,6 +124,13 @@ var knowledgeW404Matrix = matrix.File{
 					Status: 404,
 					Absent: []string{"tenant:b"},
 					Note:   "пространства нет в организации — 404 и владельцу",
+				},
+				{
+					Actor:  "a.owner",
+					Params: map[string]string{"spaceId": "space:b.rules", "tenantId": "tenant:a"},
+					Status: 404,
+					Absent: []string{"tenant:b", "space:b.rules"},
+					Note:   "чужой объект в своём тенанте — пространство организации B в пути A, как несуществующий",
 				},
 				{
 					Actor:  "b.owner",
@@ -148,7 +151,6 @@ var knowledgeW404Matrix = matrix.File{
 			Method:  "GET",
 			Path:    "/api/v1/tenants/{tenantId}/knowledge/search?q=rules",
 			Channel: "http",
-			Pending: "W4.31",
 			Rows: []matrix.Row{
 				{
 					Actor:  "a.owner",
@@ -175,7 +177,6 @@ var knowledgeW404Matrix = matrix.File{
 			Method:  "GET",
 			Path:    "/api/v1/tenants/{tenantId}/knowledge/nodes/{nodeId}",
 			Channel: "http",
-			Pending: "W4.31",
 			Rows: []matrix.Row{
 				{
 					Actor:  "a.owner",
@@ -183,6 +184,13 @@ var knowledgeW404Matrix = matrix.File{
 					Status: 404,
 					Absent: []string{"tenant:b"},
 					Note:   "узла нет в организации — 404 и владельцу",
+				},
+				{
+					Actor:  "a.owner",
+					Params: map[string]string{"nodeId": "page:b.rules-intro", "tenantId": "tenant:a"},
+					Status: 404,
+					Absent: []string{"tenant:b", "page:b.rules-intro"},
+					Note:   "чужой объект в своём тенанте — страница организации B в пути A, как несуществующий",
 				},
 				{
 					Actor:  "b.owner",
@@ -203,13 +211,19 @@ var knowledgeW404Matrix = matrix.File{
 			Method:  "GET",
 			Path:    "/api/v1/tenants/{tenantId}/knowledge/nodes/{nodeId}/versions/1",
 			Channel: "http",
-			Pending: "W4.31",
 			Rows: []matrix.Row{
 				{
 					Actor:  "a.owner",
 					Params: map[string]string{"nodeId": "tenant:missing", "tenantId": "tenant:a"},
 					Status: 404,
 					Absent: []string{"tenant:b"},
+				},
+				{
+					Actor:  "a.owner",
+					Params: map[string]string{"nodeId": "page:b.rules-intro", "tenantId": "tenant:a"},
+					Status: 404,
+					Absent: []string{"tenant:b", "page:b.rules-intro"},
+					Note:   "чужой объект в своём тенанте — страница организации B в пути A, как несуществующий",
 				},
 				{
 					Actor:  "b.owner",
@@ -229,7 +243,6 @@ var knowledgeW404Matrix = matrix.File{
 			Method:  "POST",
 			Path:    "/api/v1/tenants/{tenantId}/knowledge/spaces/{spaceId}/nodes",
 			Channel: "http",
-			Pending: "W4.31",
 			Rows: []matrix.Row{
 				{
 					Actor:  "a.owner",
@@ -238,6 +251,14 @@ var knowledgeW404Matrix = matrix.File{
 					Absent: []string{"tenant:b"},
 					Body:   "{\"kind\": \"page\", \"title\": \"Выезд в непогоду\"}",
 					Note:   "страница в несуществующем пространстве — 404",
+				},
+				{
+					Actor:  "a.owner",
+					Params: map[string]string{"spaceId": "space:b.rules", "tenantId": "tenant:a"},
+					Status: 404,
+					Absent: []string{"tenant:b", "space:b.rules"},
+					Body:   "{\"kind\": \"page\", \"title\": \"Выезд в непогоду\"}",
+					Note:   "чужой объект в своём тенанте — пространство организации B в пути A, как несуществующий",
 				},
 				{
 					Actor:  "a.driver-msk1",
@@ -267,7 +288,6 @@ var knowledgeW404Matrix = matrix.File{
 			Method:  "POST",
 			Path:    "/api/v1/tenants/{tenantId}/knowledge/nodes/{nodeId}/versions",
 			Channel: "http",
-			Pending: "W4.31",
 			Rows: []matrix.Row{
 				{
 					Actor:  "b.owner",
@@ -290,7 +310,6 @@ var knowledgeW404Matrix = matrix.File{
 			Method:  "POST",
 			Path:    "/api/v1/tenants/{tenantId}/knowledge/nodes/{nodeId}/status",
 			Channel: "http",
-			Pending: "W4.31",
 			Rows: []matrix.Row{
 				{
 					Actor:  "a.owner",
@@ -298,6 +317,14 @@ var knowledgeW404Matrix = matrix.File{
 					Status: 404,
 					Absent: []string{"tenant:b"},
 					Body:   "{\"status\": \"active\"}",
+				},
+				{
+					Actor:  "a.owner",
+					Params: map[string]string{"nodeId": "page:b.rules-intro", "tenantId": "tenant:a"},
+					Status: 404,
+					Absent: []string{"tenant:b", "page:b.rules-intro"},
+					Body:   "{\"status\": \"active\"}",
+					Note:   "чужой объект в своём тенанте — страница организации B в пути A, как несуществующий",
 				},
 				{
 					Actor:  "b.owner",
@@ -319,7 +346,6 @@ var knowledgeW404Matrix = matrix.File{
 			Method:  "POST",
 			Path:    "/api/v1/tenants/{tenantId}/knowledge/nodes/{nodeId}/move",
 			Channel: "http",
-			Pending: "W4.31",
 			Rows: []matrix.Row{
 				{
 					Actor:  "a.owner",
@@ -327,6 +353,14 @@ var knowledgeW404Matrix = matrix.File{
 					Status: 404,
 					Absent: []string{"tenant:b"},
 					Body:   "{\"parentId\": null, \"dryRun\": true}",
+				},
+				{
+					Actor:  "a.owner",
+					Params: map[string]string{"nodeId": "page:b.rules-intro", "tenantId": "tenant:a"},
+					Status: 404,
+					Absent: []string{"tenant:b", "page:b.rules-intro"},
+					Body:   "{\"parentId\": null, \"dryRun\": true}",
+					Note:   "чужой объект в своём тенанте — страница организации B в пути A, как несуществующий",
 				},
 				{
 					Actor:  "b.owner",
@@ -348,13 +382,19 @@ var knowledgeW404Matrix = matrix.File{
 			Method:  "POST",
 			Path:    "/api/v1/tenants/{tenantId}/knowledge/nodes/{nodeId}/archive",
 			Channel: "http",
-			Pending: "W4.31",
 			Rows: []matrix.Row{
 				{
 					Actor:  "a.owner",
 					Params: map[string]string{"nodeId": "tenant:missing", "tenantId": "tenant:a"},
 					Status: 404,
 					Absent: []string{"tenant:b"},
+				},
+				{
+					Actor:  "a.owner",
+					Params: map[string]string{"nodeId": "page:b.rules-intro", "tenantId": "tenant:a"},
+					Status: 404,
+					Absent: []string{"tenant:b", "page:b.rules-intro"},
+					Note:   "чужой объект в своём тенанте — страница организации B в пути A, как несуществующий",
 				},
 				{
 					Actor:  "b.owner",
@@ -374,13 +414,19 @@ var knowledgeW404Matrix = matrix.File{
 			Method:  "POST",
 			Path:    "/api/v1/tenants/{tenantId}/knowledge/nodes/{nodeId}/restore",
 			Channel: "http",
-			Pending: "W4.31",
 			Rows: []matrix.Row{
 				{
 					Actor:  "a.owner",
 					Params: map[string]string{"nodeId": "tenant:missing", "tenantId": "tenant:a"},
 					Status: 404,
 					Absent: []string{"tenant:b"},
+				},
+				{
+					Actor:  "a.owner",
+					Params: map[string]string{"nodeId": "page:b.rules-intro", "tenantId": "tenant:a"},
+					Status: 404,
+					Absent: []string{"tenant:b", "page:b.rules-intro"},
+					Note:   "чужой объект в своём тенанте — страница организации B в пути A, как несуществующий",
 				},
 				{
 					Actor:  "b.owner",
@@ -400,13 +446,19 @@ var knowledgeW404Matrix = matrix.File{
 			Method:  "GET",
 			Path:    "/api/v1/tenants/{tenantId}/knowledge/spaces/{spaceId}/archive",
 			Channel: "http",
-			Pending: "W4.31",
 			Rows: []matrix.Row{
 				{
 					Actor:  "a.owner",
 					Params: map[string]string{"spaceId": "tenant:missing", "tenantId": "tenant:a"},
 					Status: 404,
 					Absent: []string{"tenant:b"},
+				},
+				{
+					Actor:  "a.owner",
+					Params: map[string]string{"spaceId": "space:b.rules", "tenantId": "tenant:a"},
+					Status: 404,
+					Absent: []string{"tenant:b", "space:b.rules"},
+					Note:   "чужой объект в своём тенанте — пространство организации B в пути A, как несуществующий",
 				},
 				{
 					Actor:  "b.owner",
@@ -426,7 +478,6 @@ var knowledgeW404Matrix = matrix.File{
 			Method:  "POST",
 			Path:    "/api/v1/tenants/{tenantId}/knowledge/nodes/{nodeId}/ack",
 			Channel: "http",
-			Pending: "W4.31",
 			Rows: []matrix.Row{
 				{
 					Actor:  "a.owner",
@@ -434,6 +485,14 @@ var knowledgeW404Matrix = matrix.File{
 					Status: 404,
 					Absent: []string{"tenant:b"},
 					Body:   "{\"version\": 1}",
+				},
+				{
+					Actor:  "a.owner",
+					Params: map[string]string{"nodeId": "page:b.rules-intro", "tenantId": "tenant:a"},
+					Status: 404,
+					Absent: []string{"tenant:b", "page:b.rules-intro"},
+					Body:   "{\"version\": 1}",
+					Note:   "чужой объект в своём тенанте — страница организации B в пути A, как несуществующий",
 				},
 				{
 					Actor:  "b.owner",
@@ -455,13 +514,19 @@ var knowledgeW404Matrix = matrix.File{
 			Method:  "GET",
 			Path:    "/api/v1/tenants/{tenantId}/knowledge/nodes/{nodeId}/access",
 			Channel: "http",
-			Pending: "W4.31",
 			Rows: []matrix.Row{
 				{
 					Actor:  "a.owner",
 					Params: map[string]string{"nodeId": "tenant:missing", "tenantId": "tenant:a"},
 					Status: 404,
 					Absent: []string{"tenant:b"},
+				},
+				{
+					Actor:  "a.owner",
+					Params: map[string]string{"nodeId": "page:b.rules-intro", "tenantId": "tenant:a"},
+					Status: 404,
+					Absent: []string{"tenant:b", "page:b.rules-intro"},
+					Note:   "чужой объект в своём тенанте — страница организации B в пути A, как несуществующий",
 				},
 				{
 					Actor:  "b.owner",
@@ -482,7 +547,6 @@ var knowledgeW404Matrix = matrix.File{
 			Method:  "PUT",
 			Path:    "/api/v1/tenants/{tenantId}/knowledge/nodes/{nodeId}/access",
 			Channel: "http",
-			Pending: "W4.31",
 			Rows: []matrix.Row{
 				{
 					Actor:  "b.owner",
@@ -505,7 +569,6 @@ var knowledgeW404Matrix = matrix.File{
 			Method:  "GET",
 			Path:    "/api/v1/tenants/{tenantId}/knowledge/nodes/{nodeId}/access/candidates",
 			Channel: "http",
-			Pending: "W4.31",
 			Rows: []matrix.Row{
 				{
 					Actor:  "a.owner",
@@ -513,6 +576,13 @@ var knowledgeW404Matrix = matrix.File{
 					Status: 404,
 					Absent: []string{"tenant:b"},
 					Note:   "кандидаты — люди, роли и группы только своей организации",
+				},
+				{
+					Actor:  "a.owner",
+					Params: map[string]string{"nodeId": "page:b.rules-intro", "tenantId": "tenant:a"},
+					Status: 404,
+					Absent: []string{"tenant:b", "page:b.rules-intro"},
+					Note:   "чужой объект в своём тенанте — страница организации B в пути A, как несуществующий",
 				},
 				{
 					Actor:  "b.owner",
@@ -532,13 +602,19 @@ var knowledgeW404Matrix = matrix.File{
 			Method:  "GET",
 			Path:    "/api/v1/tenants/{tenantId}/knowledge/spaces/{spaceId}/access-map",
 			Channel: "http",
-			Pending: "W4.31",
 			Rows: []matrix.Row{
 				{
 					Actor:  "a.owner",
 					Params: map[string]string{"spaceId": "tenant:missing", "tenantId": "tenant:a"},
 					Status: 404,
 					Absent: []string{"tenant:b"},
+				},
+				{
+					Actor:  "a.owner",
+					Params: map[string]string{"spaceId": "space:b.rules", "tenantId": "tenant:a"},
+					Status: 404,
+					Absent: []string{"tenant:b", "space:b.rules"},
+					Note:   "чужой объект в своём тенанте — пространство организации B в пути A, как несуществующий",
 				},
 				{
 					Actor:  "b.owner",
@@ -558,7 +634,6 @@ var knowledgeW404Matrix = matrix.File{
 			Method:  "GET",
 			Path:    "/api/v1/tenants/{tenantId}/knowledge/nodes/{nodeId}/explain?memberId={memberId}",
 			Channel: "http",
-			Pending: "W4.31",
 			Rows: []matrix.Row{
 				{
 					Actor:  "a.owner",
@@ -566,6 +641,13 @@ var knowledgeW404Matrix = matrix.File{
 					Status: 404,
 					Absent: []string{"tenant:b"},
 					Note:   "объяснение по узлу, которого нет, — 404; человек тенанта B в ответе не раскрывается",
+				},
+				{
+					Actor:  "a.owner",
+					Params: map[string]string{"memberId": "person:b.owner@b", "nodeId": "page:b.rules-intro", "tenantId": "tenant:a"},
+					Status: 404,
+					Absent: []string{"tenant:b", "page:b.rules-intro"},
+					Note:   "чужой объект в своём тенанте — страница организации B в пути A, как несуществующий",
 				},
 				{
 					Actor:  "b.owner",
@@ -585,7 +667,6 @@ var knowledgeW404Matrix = matrix.File{
 			Method:  "POST",
 			Path:    "/api/v1/tenants/{tenantId}/knowledge/nodes/{nodeId}/requests",
 			Channel: "http",
-			Pending: "W4.31",
 			Rows: []matrix.Row{
 				{
 					Actor:  "a.owner",
@@ -593,6 +674,14 @@ var knowledgeW404Matrix = matrix.File{
 					Status: 404,
 					Absent: []string{"tenant:b"},
 					Body:   "{\"can\": \"edit\"}",
+				},
+				{
+					Actor:  "a.owner",
+					Params: map[string]string{"nodeId": "page:b.rules-intro", "tenantId": "tenant:a"},
+					Status: 404,
+					Absent: []string{"tenant:b", "page:b.rules-intro"},
+					Body:   "{\"can\": \"edit\"}",
+					Note:   "чужой объект в своём тенанте — страница организации B в пути A, как несуществующий",
 				},
 				{
 					Actor:  "b.owner",
@@ -614,7 +703,6 @@ var knowledgeW404Matrix = matrix.File{
 			Method:  "POST",
 			Path:    "/api/v1/tenants/{tenantId}/knowledge/requests/{requestId}/decision",
 			Channel: "http",
-			Pending: "W4.31",
 			Rows: []matrix.Row{
 				{
 					Actor:  "a.owner",
@@ -623,6 +711,14 @@ var knowledgeW404Matrix = matrix.File{
 					Absent: []string{"tenant:b"},
 					Body:   "{\"decision\": \"deny\"}",
 					Note:   "запроса нет в организации — 404",
+				},
+				{
+					Actor:  "a.owner",
+					Params: map[string]string{"requestId": "kb_request:b.ask", "tenantId": "tenant:a"},
+					Status: 404,
+					Absent: []string{"tenant:b", "kb_request:b.ask"},
+					Body:   "{\"decision\": \"deny\"}",
+					Note:   "чужой объект в своём тенанте — запрос доступа организации B в пути A, как несуществующий",
 				},
 				{
 					Actor:  "b.owner",
@@ -645,13 +741,19 @@ var knowledgeW404Matrix = matrix.File{
 			Method:  "GET",
 			Path:    "/api/v1/tenants/{tenantId}/knowledge/spaces/{spaceId}/requests",
 			Channel: "http",
-			Pending: "W4.31",
 			Rows: []matrix.Row{
 				{
 					Actor:  "a.owner",
 					Params: map[string]string{"spaceId": "tenant:missing", "tenantId": "tenant:a"},
 					Status: 404,
 					Absent: []string{"tenant:b"},
+				},
+				{
+					Actor:  "a.owner",
+					Params: map[string]string{"spaceId": "space:b.rules", "tenantId": "tenant:a"},
+					Status: 404,
+					Absent: []string{"tenant:b", "space:b.rules"},
+					Note:   "чужой объект в своём тенанте — пространство организации B в пути A, как несуществующий",
 				},
 				{
 					Actor:  "b.owner",
@@ -671,13 +773,19 @@ var knowledgeW404Matrix = matrix.File{
 			Method:  "GET",
 			Path:    "/api/v1/tenants/{tenantId}/knowledge/spaces/{spaceId}/members",
 			Channel: "http",
-			Pending: "W4.31",
 			Rows: []matrix.Row{
 				{
 					Actor:  "a.owner",
 					Params: map[string]string{"spaceId": "tenant:missing", "tenantId": "tenant:a"},
 					Status: 404,
 					Absent: []string{"tenant:b"},
+				},
+				{
+					Actor:  "a.owner",
+					Params: map[string]string{"spaceId": "space:b.rules", "tenantId": "tenant:a"},
+					Status: 404,
+					Absent: []string{"tenant:b", "space:b.rules"},
+					Note:   "чужой объект в своём тенанте — пространство организации B в пути A, как несуществующий",
 				},
 				{
 					Actor:  "b.owner",
@@ -698,7 +806,6 @@ var knowledgeW404Matrix = matrix.File{
 			Method:  "PUT",
 			Path:    "/api/v1/tenants/{tenantId}/knowledge/spaces/{spaceId}/members/{memberId}",
 			Channel: "http",
-			Pending: "W4.31",
 			Rows: []matrix.Row{
 				{
 					Actor:  "a.owner",
@@ -707,6 +814,14 @@ var knowledgeW404Matrix = matrix.File{
 					Absent: []string{"tenant:b"},
 					Body:   "{\"role\": \"kb_space_reader\"}",
 					Note:   "роль в несуществующем пространстве — 404",
+				},
+				{
+					Actor:  "a.owner",
+					Params: map[string]string{"memberId": "person:a.driver-msk1@a", "spaceId": "space:b.rules", "tenantId": "tenant:a"},
+					Status: 404,
+					Absent: []string{"tenant:b", "space:b.rules"},
+					Body:   "{\"role\": \"kb_space_reader\"}",
+					Note:   "чужой объект в своём тенанте — пространство организации B в пути A, как несуществующий",
 				},
 				{
 					Actor:  "b.owner",
@@ -729,13 +844,19 @@ var knowledgeW404Matrix = matrix.File{
 			Method:  "GET",
 			Path:    "/api/v1/tenants/{tenantId}/knowledge/spaces/{spaceId}/rules",
 			Channel: "http",
-			Pending: "W4.31",
 			Rows: []matrix.Row{
 				{
 					Actor:  "a.owner",
 					Params: map[string]string{"spaceId": "tenant:missing", "tenantId": "tenant:a"},
 					Status: 404,
 					Absent: []string{"tenant:b"},
+				},
+				{
+					Actor:  "a.owner",
+					Params: map[string]string{"spaceId": "space:b.rules", "tenantId": "tenant:a"},
+					Status: 404,
+					Absent: []string{"tenant:b", "space:b.rules"},
+					Note:   "чужой объект в своём тенанте — пространство организации B в пути A, как несуществующий",
 				},
 				{
 					Actor:  "b.owner",
@@ -755,7 +876,6 @@ var knowledgeW404Matrix = matrix.File{
 			Method:  "PATCH",
 			Path:    "/api/v1/tenants/{tenantId}/knowledge/rules/{ruleId}",
 			Channel: "http",
-			Pending: "W4.31",
 			Rows: []matrix.Row{
 				{
 					Actor:  "a.owner",
@@ -763,6 +883,14 @@ var knowledgeW404Matrix = matrix.File{
 					Status: 404,
 					Absent: []string{"tenant:b"},
 					Body:   "{\"enabled\": false}",
+				},
+				{
+					Actor:  "a.owner",
+					Params: map[string]string{"ruleId": "kb_rule:b.review", "tenantId": "tenant:a"},
+					Status: 404,
+					Absent: []string{"tenant:b", "kb_rule:b.review"},
+					Body:   "{\"enabled\": false}",
+					Note:   "чужой объект в своём тенанте — правило организации B в пути A, как несуществующий",
 				},
 				{
 					Actor:  "b.owner",
@@ -785,13 +913,19 @@ var knowledgeW404Matrix = matrix.File{
 			Method:  "POST",
 			Path:    "/api/v1/tenants/{tenantId}/knowledge/spaces/{spaceId}/review-check",
 			Channel: "http",
-			Pending: "W4.31",
 			Rows: []matrix.Row{
 				{
 					Actor:  "a.owner",
 					Params: map[string]string{"spaceId": "tenant:missing", "tenantId": "tenant:a"},
 					Status: 404,
 					Absent: []string{"tenant:b"},
+				},
+				{
+					Actor:  "a.owner",
+					Params: map[string]string{"spaceId": "space:b.rules", "tenantId": "tenant:a"},
+					Status: 404,
+					Absent: []string{"tenant:b", "space:b.rules"},
+					Note:   "чужой объект в своём тенанте — пространство организации B в пути A, как несуществующий",
 				},
 				{
 					Actor:  "b.owner",
@@ -811,7 +945,6 @@ var knowledgeW404Matrix = matrix.File{
 			Method:  "POST",
 			Path:    "/api/v1/tenants/{tenantId}/knowledge/spaces/{spaceId}/sections",
 			Channel: "http",
-			Pending: "W4.31",
 			Rows: []matrix.Row{
 				{
 					Actor:  "a.owner",
@@ -820,6 +953,14 @@ var knowledgeW404Matrix = matrix.File{
 					Absent: []string{"tenant:b"},
 					Body:   "{\"projectId\": \"{{repair_project:a.flat}}\"}",
 					Note:   "раздел объекта в несуществующем пространстве — 404",
+				},
+				{
+					Actor:  "a.owner",
+					Params: map[string]string{"spaceId": "space:b.rules", "tenantId": "tenant:a"},
+					Status: 404,
+					Absent: []string{"tenant:b", "space:b.rules"},
+					Body:   "{\"projectId\": \"{{repair_project:a.flat}}\"}",
+					Note:   "чужой объект в своём тенанте — пространство организации B в пути A, как несуществующий",
 				},
 				{
 					Actor:  "b.owner",
@@ -841,13 +982,19 @@ var knowledgeW404Matrix = matrix.File{
 			Method:  "GET",
 			Path:    "/api/v1/tenants/{tenantId}/knowledge/spaces/{spaceId}/runs",
 			Channel: "http",
-			Pending: "W4.31",
 			Rows: []matrix.Row{
 				{
 					Actor:  "a.owner",
 					Params: map[string]string{"spaceId": "tenant:missing", "tenantId": "tenant:a"},
 					Status: 404,
 					Absent: []string{"tenant:b"},
+				},
+				{
+					Actor:  "a.owner",
+					Params: map[string]string{"spaceId": "space:b.rules", "tenantId": "tenant:a"},
+					Status: 404,
+					Absent: []string{"tenant:b", "space:b.rules"},
+					Note:   "чужой объект в своём тенанте — пространство организации B в пути A, как несуществующий",
 				},
 				{
 					Actor:  "b.owner",
@@ -867,7 +1014,6 @@ var knowledgeW404Matrix = matrix.File{
 			Method:  "POST",
 			Path:    "/api/v1/tenants/{tenantId}/knowledge/nodes/{nodeId}/tables",
 			Channel: "http",
-			Pending: "W4.31",
 			Rows: []matrix.Row{
 				{
 					Actor:  "a.owner",
@@ -875,6 +1021,14 @@ var knowledgeW404Matrix = matrix.File{
 					Status: 404,
 					Absent: []string{"tenant:b"},
 					Body:   "{\"title\": \"Расходы в пути\", \"columns\": [{\"name\": \"Дата\"}]}",
+				},
+				{
+					Actor:  "a.owner",
+					Params: map[string]string{"nodeId": "page:b.rules-intro", "tenantId": "tenant:a"},
+					Status: 404,
+					Absent: []string{"tenant:b", "page:b.rules-intro"},
+					Body:   "{\"title\": \"Расходы в пути\", \"columns\": [{\"name\": \"Дата\"}]}",
+					Note:   "чужой объект в своём тенанте — страница организации B в пути A, как несуществующий",
 				},
 				{
 					Actor:  "a.manager-msk1",
@@ -896,6 +1050,117 @@ var knowledgeW404Matrix = matrix.File{
 					Params: map[string]string{"nodeId": "tenant:missing", "tenantId": "tenant:a"},
 					Status: 401,
 					Body:   "{\"title\": \"Расходы в пути\", \"columns\": [{\"name\": \"Дата\"}]}",
+				},
+			},
+		},
+		{
+			Op:      "listKnowledgePages",
+			Method:  "GET",
+			Path:    "/api/v1/tenants/{tenantId}/knowledge/pages",
+			Channel: "http",
+			Rows: []matrix.Row{
+				{
+					Actor:   "a.owner",
+					Params:  map[string]string{"tenantId": "tenant:a"},
+					Status:  200,
+					Present: []string{"page:a.rules-intro"},
+					Absent:  []string{"tenant:b", "page:b.rules-intro"},
+					Note:    "страницы своей организации; страниц тенанта B нет",
+				},
+				{
+					Actor:  "b.owner",
+					Params: map[string]string{"tenantId": "tenant:a"},
+					Status: 404,
+					Absent: []string{"tenant:a"},
+				},
+				{
+					Actor:  "anonymous",
+					Params: map[string]string{"tenantId": "tenant:a"},
+					Status: 401,
+				},
+			},
+		},
+		{
+			Op:      "createKnowledgePage",
+			Method:  "POST",
+			Path:    "/api/v1/tenants/{tenantId}/knowledge/pages",
+			Channel: "http",
+			Rows: []matrix.Row{
+				{
+					Actor:  "a.owner",
+					Params: map[string]string{"tenantId": "tenant:a"},
+					Status: 404,
+					Absent: []string{"tenant:b", "page:b.rules-intro"},
+					Body:   "{\"title\": \"Выезд в непогоду\", \"bodyMarkdown\": \"Текст\", \"parentPageId\": \"{{page:b.rules-intro}}\", \"scope\": {\"kind\": \"tenant\", \"resourceIds\": [], \"includeDescendants\": true}}",
+					Note:   "чужой объект в своём тенанте — родитель из организации B, как несуществующий",
+				},
+				{
+					Actor:  "b.owner",
+					Params: map[string]string{"tenantId": "tenant:a"},
+					Status: 404,
+					Absent: []string{"tenant:a"},
+					Body:   "{\"title\": \"Выезд в непогоду\", \"bodyMarkdown\": \"Текст\", \"scope\": {\"kind\": \"tenant\", \"resourceIds\": [], \"includeDescendants\": true}}",
+				},
+				{
+					Actor:  "anonymous",
+					Params: map[string]string{"tenantId": "tenant:a"},
+					Status: 401,
+					Body:   "{\"title\": \"Выезд в непогоду\", \"bodyMarkdown\": \"Текст\", \"scope\": {\"kind\": \"tenant\", \"resourceIds\": [], \"includeDescendants\": true}}",
+				},
+			},
+		},
+		{
+			Op:      "getKnowledgePage",
+			Method:  "GET",
+			Path:    "/api/v1/tenants/{tenantId}/knowledge/pages/{pageId}",
+			Channel: "http",
+			Rows: []matrix.Row{
+				{
+					Actor:  "a.owner",
+					Params: map[string]string{"pageId": "tenant:missing", "tenantId": "tenant:a"},
+					Status: 404,
+					Absent: []string{"tenant:b"},
+					Note:   "страницы нет в организации — 404 и владельцу",
+				},
+				{
+					Actor:  "a.owner",
+					Params: map[string]string{"pageId": "page:b.rules-intro", "tenantId": "tenant:a"},
+					Status: 404,
+					Absent: []string{"tenant:b", "page:b.rules-intro"},
+					Note:   "чужой объект в своём тенанте — страница организации B в пути A, как несуществующий",
+				},
+				{
+					Actor:  "b.owner",
+					Params: map[string]string{"pageId": "tenant:missing", "tenantId": "tenant:a"},
+					Status: 404,
+					Absent: []string{"tenant:a"},
+				},
+				{
+					Actor:  "anonymous",
+					Params: map[string]string{"pageId": "tenant:missing", "tenantId": "tenant:a"},
+					Status: 401,
+				},
+			},
+		},
+		{
+			Op:      "updateKnowledgePage",
+			Method:  "PATCH",
+			Path:    "/api/v1/tenants/{tenantId}/knowledge/pages/{pageId}",
+			Channel: "http",
+			Rows: []matrix.Row{
+				{
+					Actor:  "b.owner",
+					Params: map[string]string{"pageId": "tenant:missing", "tenantId": "tenant:a"},
+					Status: 404,
+					Absent: []string{"tenant:a"},
+					Body:   "{\"title\": \"Выезд в непогоду\"}",
+					Note:   "правка страницы чужой организации — 404 до предусловия If-Match",
+				},
+				{
+					Actor:  "anonymous",
+					Params: map[string]string{"pageId": "tenant:missing", "tenantId": "tenant:a"},
+					Status: 401,
+					Body:   "{\"title\": \"Выезд в непогоду\"}",
 				},
 			},
 		},

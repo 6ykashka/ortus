@@ -47,28 +47,29 @@ var (
 )
 
 const (
-	roleManager   = "manager"
-	roleDriver    = "driver"
-	roleObserver  = "observer"
-	roleEarnings  = "earnings"
-	roleProject   = "project_manager"
-	roleApprover  = "project_approver"
-	roleAdmin     = "admin"
-	roleStaff     = "staff"
-	roleSpaceLead = "space_lead"
-	fnDriver      = "driver"
-	zoneMoscow    = "Europe/Moscow"
-	zoneSamara    = "Europe/Samara"
-	uMsk          = "msk"
-	uMsk1         = "msk1"
-	uMsk2         = "msk2"
-	uSmr          = "smr"
-	uSmr2         = "smr2"
-	uSpb          = "spb"
-	uSpb1         = "spb1"
-	projectFleet  = "fleet"
-	projectBuild  = "build"
-	spaceRules    = "rules"
+	roleManager    = "manager"
+	roleDriver     = "driver"
+	roleObserver   = "observer"
+	roleEarnings   = "earnings"
+	roleProject    = "project_manager"
+	roleApprover   = "project_approver"
+	roleAdmin      = "admin"
+	roleStaff      = "staff"
+	roleSpaceLead  = "space_lead"
+	fnDriver       = "driver"
+	zoneMoscow     = "Europe/Moscow"
+	zoneSamara     = "Europe/Samara"
+	uMsk           = "msk"
+	uMsk1          = "msk1"
+	uMsk2          = "msk2"
+	uSmr           = "smr"
+	uSmr2          = "smr2"
+	uSpb           = "spb"
+	uSpb1          = "spb1"
+	projectFleet   = "fleet"
+	projectBuild   = "build"
+	spaceRules     = "rules"
+	pageRulesIntro = "rules-intro" // the page of the space «Регламенты»
 )
 
 // roles returns the same role names for every tenant (tenant B mirrors tenant A).
@@ -105,7 +106,7 @@ func objects() []ObjectDef {
 		{Kind: ObjectProject, Key: projectFleet, Name: "Автопарк"},
 		{Kind: ObjectProject, Key: projectBuild, Name: "Стройка"},
 		{Kind: ObjectSpace, Key: spaceRules, Name: "Регламенты"},
-		{Kind: ObjectPage, Key: "rules-intro", Name: "Регламенты · Введение"},
+		{Kind: ObjectPage, Key: pageRulesIntro, Name: "Регламенты · Введение"},
 		{Kind: ObjectFolder, Key: "contracts", Name: "Договоры"},
 		{Kind: ObjectDoc, Key: "contract", Name: "Договор поставки"},
 		{Kind: ObjectAccount, Key: "cash", Name: "Касса Москва-1"},
@@ -168,6 +169,8 @@ func contentA() Content {
 			{Key: "owner", Recipient: "a.owner", Title: "Пробный период продлён"},
 			{Key: "member", Recipient: "ab.member", Title: "Рейс Москвы-2 в пути", Permission: permTripsRead, Unit: uMsk2},
 		},
+		KnowledgeRequests: []KnowledgeRequestDef{{Key: kbAsk, Member: "a.driver-msk2"}},
+		KnowledgeRules:    []KnowledgeRuleDef{{Key: kbReview, Name: "Напоминать о пересмотре"}},
 	}
 }
 
@@ -184,8 +187,18 @@ func contentB() Content {
 			{Key: "trip-msk1", Recipient: "b.manager-msk1", Title: "Рейс Москвы-1 сдан", Permission: permTripsReview, Unit: uMsk1},
 			{Key: "member", Recipient: "ab.member", Title: "Рейс Москвы-2 в пути", Permission: permTripsRead, Unit: uMsk2},
 		},
+		KnowledgeRequests: []KnowledgeRequestDef{{Key: kbAsk, Member: kbAskMemberB}},
+		KnowledgeRules:    []KnowledgeRuleDef{{Key: kbReview, Name: "Напоминать о пересмотре"}},
 	}
 }
+
+// The request and the rule of the knowledge base of every tenant (W4.31): kb_request:<t>.ask, kb_rule:<t>.review.
+const (
+	kbAsk    = "ask"
+	kbReview = "review"
+	// kbAskMemberB asks for the page in tenant B.
+	kbAskMemberB = "b.manager-msk1"
+)
 
 // Default returns a fresh copy of the fixture catalog (callers may change it freely).
 //

@@ -1,0 +1,27 @@
+# Матрица изоляции: поиск «Базы знаний» в одном пространстве (searchKnowledge с spaceId, контракт 0.9.0-stage4, W4.04;
+# хендлер — W4.31, возврат 1). Отдельный файл: в knowledge_w404.yaml у searchKnowledge путь без пространства, а одна
+# операция в файле встречается один раз (README.md). Пространство организации B в запросе организации A — 404 «Пространство
+# не найдено», как несуществующее (AC-01, AC-02). После правки: go -C backend generate ./test/isolation
+module: knowledge_w404_search
+endpoints:
+  - op: searchKnowledge
+    method: GET
+    path: /api/v1/tenants/{tenantId}/knowledge/search?q=rules&spaceId={spaceId}
+    rows:
+      - actor: a.owner
+        params: { tenantId: tenant:a, spaceId: space:a.rules }
+        status: 200
+        absent: [tenant:b, space:b.rules]
+        note: поиск в своём пространстве — только своя организация
+      - actor: a.owner
+        params: { tenantId: tenant:a, spaceId: space:b.rules }
+        status: 404
+        absent: [tenant:b, space:b.rules]
+        note: чужой объект в своём тенанте — пространство организации B в запросе A, как несуществующее
+      - actor: b.owner
+        params: { tenantId: tenant:a, spaceId: tenant:missing }
+        status: 404
+        absent: [tenant:a]
+      - actor: anonymous
+        params: { tenantId: tenant:a, spaceId: tenant:missing }
+        status: 401

@@ -1,29 +1,30 @@
-# Матрица изоляции: «База знаний» контракта 0.9.0-stage4 (W4.04, контрактный PR 3 этапа 4) — до хендлеров W4.31
-# (pending: 501 или совпавший ответ шлюза; в строгом режиме -tags isolation_pending — красные до хендлера).
+# Матрица изоляции: «База знаний» контракта 0.9.0-stage4 (W4.04, контрактный PR 3 этапа 4); хендлеры — W4.31 (pending
+# снят: строки проверяют ответы сервера модуля internal/modules/knowledge).
 # Пространства, узлы, запросы доступа и правила — данные организации (схема kb, tenant 0024): чужая организация — 404,
-# как несуществующая (AC-01, AC-02), без сессии — 401. Пространств и узлов в фикстурах нет (W4.31 добавит строки
-# содержимого: пространство «Регламенты» space:a.rules и страница page:a.rules-intro получат строки kb.*) —
-# положительные строки списков проверяют только отсутствие другого тенанта, id в пути — tenant:missing (такого объекта
-# нет ни в одной базе): владельцу своей организации — 404. Скрытое пространство или узел своей организации — тоже 404
-# (раздел 2.2 разбора knowledge.md, «скрытое не видно нигде») — integration-тесты W4.31 на сиде W4.30. Команды с
-# If-Match (updateKnowledgeSpace, publishKnowledgeNodeVersion, setKnowledgeNodeAccess) строки не передают (README,
-# «Цель набора») — у них только отказы до хендлера (без сессии — 401, чужая организация — 404 раньше предусловия).
-# Изменяющие строки владельца своей организации не пишутся: набор не сеет данные БЗ. Отказы шлюза по правам —
-# knowledge_w404_gate.yaml. Передаётся W4.31 (возврат 1, ревью): с фикстурами kb.* (пространство и узел тенанта B)
-# добавить строки «чужой объект в своём тенанте» — id пространства, узла, запроса и правила организации B в пути
-# организации A — 404 для каждого эндпоинта с {spaceId}, {nodeId}, {requestId}, {ruleId}, и снять pending. Формат — README.md. После правки: go -C backend generate ./test/isolation
+# как несуществующая (AC-01, AC-02), без сессии — 401. Фикстуры с содержимым (W4.31) дают каждому тенанту пространство
+# «Регламенты» space:<t>.rules со страницей page:<t>.rules-intro, открытый запрос kb_request:<t>.ask и правило
+# kb_rule:<t>.review. Строки «чужой объект в своём тенанте»: id пространства, узла, запроса или правила организации B
+# в пути организации A — владельцу A 404, как несуществующий (у каждого эндпоинта с {spaceId}, {nodeId}, {requestId},
+# {ruleId}, кроме команд с If-Match). id tenant:missing — такого объекта нет ни в одной базе: владельцу своей
+# организации — 404. Скрытое пространство или узел своей организации — тоже 404 (раздел 2.2 разбора knowledge.md,
+# «скрытое не видно нигде») — integration-тесты W4.31 на сиде W4.30. Команды с If-Match (updateKnowledgeSpace,
+# publishKnowledgeNodeVersion, setKnowledgeNodeAccess, updateKnowledgePage) строки не передают (README, «Цель набора»)
+# — у них только отказы
+# до хендлера (без сессии — 401, чужая организация — 404 раньше предусловия). Изменяющие строки владельца своей
+# организации над объектами фикстур не пишутся: набор общий для всех матриц. Отказы шлюза по правам —
+# knowledge_w404_gate.yaml. Формат — README.md. После правки: go -C backend generate ./test/isolation
 module: knowledge_w404
 endpoints:
   # Пространства
   - op: listKnowledgeSpaces
     method: GET
     path: /api/v1/tenants/{tenantId}/knowledge/spaces
-    pending: W4.31
     rows:
       - actor: a.owner
         params: { tenantId: tenant:a }
         status: 200
-        absent: [tenant:b]
+        present: [space:a.rules]
+        absent: [tenant:b, space:b.rules]
         note: пространства своей организации; пространств тенанта B нет
       - actor: b.owner
         params: { tenantId: tenant:a }
@@ -36,7 +37,6 @@ endpoints:
   - op: createKnowledgeSpace
     method: POST
     path: /api/v1/tenants/{tenantId}/knowledge/spaces
-    pending: W4.31
     rows:
       - actor: b.owner
         params: { tenantId: tenant:a }
@@ -51,7 +51,6 @@ endpoints:
   - op: listKnowledgeSpaceTemplates
     method: GET
     path: /api/v1/tenants/{tenantId}/knowledge/space-templates
-    pending: W4.31
     rows:
       - actor: a.owner
         params: { tenantId: tenant:a }
@@ -68,7 +67,6 @@ endpoints:
   - op: updateKnowledgeSpace
     method: PATCH
     path: /api/v1/tenants/{tenantId}/knowledge/spaces/{spaceId}
-    pending: W4.31
     rows:
       - actor: b.owner
         params: { tenantId: tenant:a, spaceId: tenant:missing }
@@ -83,13 +81,17 @@ endpoints:
   - op: getKnowledgeSpaceTree
     method: GET
     path: /api/v1/tenants/{tenantId}/knowledge/spaces/{spaceId}/tree
-    pending: W4.31
     rows:
       - actor: a.owner
         params: { tenantId: tenant:a, spaceId: tenant:missing }
         status: 404
         absent: [tenant:b]
         note: пространства нет в организации — 404 и владельцу
+      - actor: a.owner
+        params: { tenantId: tenant:a, spaceId: space:b.rules }
+        status: 404
+        absent: [tenant:b, space:b.rules]
+        note: чужой объект в своём тенанте — пространство организации B в пути A, как несуществующий
       - actor: b.owner
         params: { tenantId: tenant:a, spaceId: tenant:missing }
         status: 404
@@ -101,7 +103,6 @@ endpoints:
   - op: searchKnowledge
     method: GET
     path: /api/v1/tenants/{tenantId}/knowledge/search?q=rules
-    pending: W4.31
     rows:
       - actor: a.owner
         params: { tenantId: tenant:a }
@@ -119,13 +120,17 @@ endpoints:
   - op: getKnowledgeNode
     method: GET
     path: /api/v1/tenants/{tenantId}/knowledge/nodes/{nodeId}
-    pending: W4.31
     rows:
       - actor: a.owner
         params: { tenantId: tenant:a, nodeId: tenant:missing }
         status: 404
         absent: [tenant:b]
         note: узла нет в организации — 404 и владельцу
+      - actor: a.owner
+        params: { tenantId: tenant:a, nodeId: page:b.rules-intro }
+        status: 404
+        absent: [tenant:b, page:b.rules-intro]
+        note: чужой объект в своём тенанте — страница организации B в пути A, как несуществующий
       - actor: b.owner
         params: { tenantId: tenant:a, nodeId: tenant:missing }
         status: 404
@@ -137,12 +142,16 @@ endpoints:
   - op: getKnowledgeNodeVersion
     method: GET
     path: /api/v1/tenants/{tenantId}/knowledge/nodes/{nodeId}/versions/1
-    pending: W4.31
     rows:
       - actor: a.owner
         params: { tenantId: tenant:a, nodeId: tenant:missing }
         status: 404
         absent: [tenant:b]
+      - actor: a.owner
+        params: { tenantId: tenant:a, nodeId: page:b.rules-intro }
+        status: 404
+        absent: [tenant:b, page:b.rules-intro]
+        note: чужой объект в своём тенанте — страница организации B в пути A, как несуществующий
       - actor: b.owner
         params: { tenantId: tenant:a, nodeId: tenant:missing }
         status: 404
@@ -153,7 +162,6 @@ endpoints:
   - op: createKnowledgeNode
     method: POST
     path: /api/v1/tenants/{tenantId}/knowledge/spaces/{spaceId}/nodes
-    pending: W4.31
     rows:
       - actor: a.owner
         params: { tenantId: tenant:a, spaceId: tenant:missing }
@@ -161,6 +169,12 @@ endpoints:
         absent: [tenant:b]
         body: '{"kind": "page", "title": "Выезд в непогоду"}'
         note: страница в несуществующем пространстве — 404
+      - actor: a.owner
+        params: { tenantId: tenant:a, spaceId: space:b.rules }
+        status: 404
+        absent: [tenant:b, space:b.rules]
+        body: '{"kind": "page", "title": "Выезд в непогоду"}'
+        note: чужой объект в своём тенанте — пространство организации B в пути A, как несуществующий
       - actor: a.driver-msk1
         params: { tenantId: tenant:a, spaceId: tenant:missing }
         status: 404
@@ -179,7 +193,6 @@ endpoints:
   - op: publishKnowledgeNodeVersion
     method: POST
     path: /api/v1/tenants/{tenantId}/knowledge/nodes/{nodeId}/versions
-    pending: W4.31
     rows:
       - actor: b.owner
         params: { tenantId: tenant:a, nodeId: tenant:missing }
@@ -194,13 +207,18 @@ endpoints:
   - op: setKnowledgeNodeStatus
     method: POST
     path: /api/v1/tenants/{tenantId}/knowledge/nodes/{nodeId}/status
-    pending: W4.31
     rows:
       - actor: a.owner
         params: { tenantId: tenant:a, nodeId: tenant:missing }
         status: 404
         absent: [tenant:b]
         body: '{"status": "active"}'
+      - actor: a.owner
+        params: { tenantId: tenant:a, nodeId: page:b.rules-intro }
+        status: 404
+        absent: [tenant:b, page:b.rules-intro]
+        body: '{"status": "active"}'
+        note: чужой объект в своём тенанте — страница организации B в пути A, как несуществующий
       - actor: b.owner
         params: { tenantId: tenant:a, nodeId: tenant:missing }
         status: 404
@@ -213,13 +231,18 @@ endpoints:
   - op: moveKnowledgeNode
     method: POST
     path: /api/v1/tenants/{tenantId}/knowledge/nodes/{nodeId}/move
-    pending: W4.31
     rows:
       - actor: a.owner
         params: { tenantId: tenant:a, nodeId: tenant:missing }
         status: 404
         absent: [tenant:b]
         body: '{"parentId": null, "dryRun": true}'
+      - actor: a.owner
+        params: { tenantId: tenant:a, nodeId: page:b.rules-intro }
+        status: 404
+        absent: [tenant:b, page:b.rules-intro]
+        body: '{"parentId": null, "dryRun": true}'
+        note: чужой объект в своём тенанте — страница организации B в пути A, как несуществующий
       - actor: b.owner
         params: { tenantId: tenant:a, nodeId: tenant:missing }
         status: 404
@@ -232,12 +255,16 @@ endpoints:
   - op: archiveKnowledgeNode
     method: POST
     path: /api/v1/tenants/{tenantId}/knowledge/nodes/{nodeId}/archive
-    pending: W4.31
     rows:
       - actor: a.owner
         params: { tenantId: tenant:a, nodeId: tenant:missing }
         status: 404
         absent: [tenant:b]
+      - actor: a.owner
+        params: { tenantId: tenant:a, nodeId: page:b.rules-intro }
+        status: 404
+        absent: [tenant:b, page:b.rules-intro]
+        note: чужой объект в своём тенанте — страница организации B в пути A, как несуществующий
       - actor: b.owner
         params: { tenantId: tenant:a, nodeId: tenant:missing }
         status: 404
@@ -248,12 +275,16 @@ endpoints:
   - op: restoreKnowledgeNode
     method: POST
     path: /api/v1/tenants/{tenantId}/knowledge/nodes/{nodeId}/restore
-    pending: W4.31
     rows:
       - actor: a.owner
         params: { tenantId: tenant:a, nodeId: tenant:missing }
         status: 404
         absent: [tenant:b]
+      - actor: a.owner
+        params: { tenantId: tenant:a, nodeId: page:b.rules-intro }
+        status: 404
+        absent: [tenant:b, page:b.rules-intro]
+        note: чужой объект в своём тенанте — страница организации B в пути A, как несуществующий
       - actor: b.owner
         params: { tenantId: tenant:a, nodeId: tenant:missing }
         status: 404
@@ -264,12 +295,16 @@ endpoints:
   - op: listKnowledgeArchive
     method: GET
     path: /api/v1/tenants/{tenantId}/knowledge/spaces/{spaceId}/archive
-    pending: W4.31
     rows:
       - actor: a.owner
         params: { tenantId: tenant:a, spaceId: tenant:missing }
         status: 404
         absent: [tenant:b]
+      - actor: a.owner
+        params: { tenantId: tenant:a, spaceId: space:b.rules }
+        status: 404
+        absent: [tenant:b, space:b.rules]
+        note: чужой объект в своём тенанте — пространство организации B в пути A, как несуществующий
       - actor: b.owner
         params: { tenantId: tenant:a, spaceId: tenant:missing }
         status: 404
@@ -280,13 +315,18 @@ endpoints:
   - op: ackKnowledgeNode
     method: POST
     path: /api/v1/tenants/{tenantId}/knowledge/nodes/{nodeId}/ack
-    pending: W4.31
     rows:
       - actor: a.owner
         params: { tenantId: tenant:a, nodeId: tenant:missing }
         status: 404
         absent: [tenant:b]
         body: '{"version": 1}'
+      - actor: a.owner
+        params: { tenantId: tenant:a, nodeId: page:b.rules-intro }
+        status: 404
+        absent: [tenant:b, page:b.rules-intro]
+        body: '{"version": 1}'
+        note: чужой объект в своём тенанте — страница организации B в пути A, как несуществующий
       - actor: b.owner
         params: { tenantId: tenant:a, nodeId: tenant:missing }
         status: 404
@@ -300,12 +340,16 @@ endpoints:
   - op: getKnowledgeNodeAccess
     method: GET
     path: /api/v1/tenants/{tenantId}/knowledge/nodes/{nodeId}/access
-    pending: W4.31
     rows:
       - actor: a.owner
         params: { tenantId: tenant:a, nodeId: tenant:missing }
         status: 404
         absent: [tenant:b]
+      - actor: a.owner
+        params: { tenantId: tenant:a, nodeId: page:b.rules-intro }
+        status: 404
+        absent: [tenant:b, page:b.rules-intro]
+        note: чужой объект в своём тенанте — страница организации B в пути A, как несуществующий
       - actor: b.owner
         params: { tenantId: tenant:a, nodeId: tenant:missing }
         status: 404
@@ -317,7 +361,6 @@ endpoints:
   - op: setKnowledgeNodeAccess
     method: PUT
     path: /api/v1/tenants/{tenantId}/knowledge/nodes/{nodeId}/access
-    pending: W4.31
     rows:
       - actor: b.owner
         params: { tenantId: tenant:a, nodeId: tenant:missing }
@@ -332,13 +375,17 @@ endpoints:
   - op: listKnowledgeAccessCandidates
     method: GET
     path: /api/v1/tenants/{tenantId}/knowledge/nodes/{nodeId}/access/candidates
-    pending: W4.31
     rows:
       - actor: a.owner
         params: { tenantId: tenant:a, nodeId: tenant:missing }
         status: 404
         absent: [tenant:b]
         note: кандидаты — люди, роли и группы только своей организации
+      - actor: a.owner
+        params: { tenantId: tenant:a, nodeId: page:b.rules-intro }
+        status: 404
+        absent: [tenant:b, page:b.rules-intro]
+        note: чужой объект в своём тенанте — страница организации B в пути A, как несуществующий
       - actor: b.owner
         params: { tenantId: tenant:a, nodeId: tenant:missing }
         status: 404
@@ -349,12 +396,16 @@ endpoints:
   - op: getKnowledgeAccessMap
     method: GET
     path: /api/v1/tenants/{tenantId}/knowledge/spaces/{spaceId}/access-map
-    pending: W4.31
     rows:
       - actor: a.owner
         params: { tenantId: tenant:a, spaceId: tenant:missing }
         status: 404
         absent: [tenant:b]
+      - actor: a.owner
+        params: { tenantId: tenant:a, spaceId: space:b.rules }
+        status: 404
+        absent: [tenant:b, space:b.rules]
+        note: чужой объект в своём тенанте — пространство организации B в пути A, как несуществующий
       - actor: b.owner
         params: { tenantId: tenant:a, spaceId: tenant:missing }
         status: 404
@@ -365,13 +416,17 @@ endpoints:
   - op: explainKnowledgeAccess
     method: GET
     path: /api/v1/tenants/{tenantId}/knowledge/nodes/{nodeId}/explain?memberId={memberId}
-    pending: W4.31
     rows:
       - actor: a.owner
         params: { tenantId: tenant:a, nodeId: tenant:missing, memberId: person:b.owner@b }
         status: 404
         absent: [tenant:b]
         note: объяснение по узлу, которого нет, — 404; человек тенанта B в ответе не раскрывается
+      - actor: a.owner
+        params: { tenantId: tenant:a, nodeId: page:b.rules-intro, memberId: person:b.owner@b }
+        status: 404
+        absent: [tenant:b, page:b.rules-intro]
+        note: чужой объект в своём тенанте — страница организации B в пути A, как несуществующий
       - actor: b.owner
         params: { tenantId: tenant:a, nodeId: tenant:missing, memberId: person:b.owner@b }
         status: 404
@@ -383,13 +438,18 @@ endpoints:
   - op: createKnowledgeAccessRequest
     method: POST
     path: /api/v1/tenants/{tenantId}/knowledge/nodes/{nodeId}/requests
-    pending: W4.31
     rows:
       - actor: a.owner
         params: { tenantId: tenant:a, nodeId: tenant:missing }
         status: 404
         absent: [tenant:b]
         body: '{"can": "edit"}'
+      - actor: a.owner
+        params: { tenantId: tenant:a, nodeId: page:b.rules-intro }
+        status: 404
+        absent: [tenant:b, page:b.rules-intro]
+        body: '{"can": "edit"}'
+        note: чужой объект в своём тенанте — страница организации B в пути A, как несуществующий
       - actor: b.owner
         params: { tenantId: tenant:a, nodeId: tenant:missing }
         status: 404
@@ -402,7 +462,6 @@ endpoints:
   - op: decideKnowledgeAccessRequest
     method: POST
     path: /api/v1/tenants/{tenantId}/knowledge/requests/{requestId}/decision
-    pending: W4.31
     rows:
       - actor: a.owner
         params: { tenantId: tenant:a, requestId: tenant:missing }
@@ -410,6 +469,12 @@ endpoints:
         absent: [tenant:b]
         body: '{"decision": "deny"}'
         note: запроса нет в организации — 404
+      - actor: a.owner
+        params: { tenantId: tenant:a, requestId: kb_request:b.ask }
+        status: 404
+        absent: [tenant:b, kb_request:b.ask]
+        body: '{"decision": "deny"}'
+        note: чужой объект в своём тенанте — запрос доступа организации B в пути A, как несуществующий
       - actor: b.owner
         params: { tenantId: tenant:a, requestId: tenant:missing }
         status: 404
@@ -423,12 +488,16 @@ endpoints:
   - op: listKnowledgeAccessRequests
     method: GET
     path: /api/v1/tenants/{tenantId}/knowledge/spaces/{spaceId}/requests
-    pending: W4.31
     rows:
       - actor: a.owner
         params: { tenantId: tenant:a, spaceId: tenant:missing }
         status: 404
         absent: [tenant:b]
+      - actor: a.owner
+        params: { tenantId: tenant:a, spaceId: space:b.rules }
+        status: 404
+        absent: [tenant:b, space:b.rules]
+        note: чужой объект в своём тенанте — пространство организации B в пути A, как несуществующий
       - actor: b.owner
         params: { tenantId: tenant:a, spaceId: tenant:missing }
         status: 404
@@ -440,12 +509,16 @@ endpoints:
   - op: listKnowledgeSpaceMembers
     method: GET
     path: /api/v1/tenants/{tenantId}/knowledge/spaces/{spaceId}/members
-    pending: W4.31
     rows:
       - actor: a.owner
         params: { tenantId: tenant:a, spaceId: tenant:missing }
         status: 404
         absent: [tenant:b]
+      - actor: a.owner
+        params: { tenantId: tenant:a, spaceId: space:b.rules }
+        status: 404
+        absent: [tenant:b, space:b.rules]
+        note: чужой объект в своём тенанте — пространство организации B в пути A, как несуществующий
       - actor: b.owner
         params: { tenantId: tenant:a, spaceId: tenant:missing }
         status: 404
@@ -457,7 +530,6 @@ endpoints:
   - op: setKnowledgeSpaceMember
     method: PUT
     path: /api/v1/tenants/{tenantId}/knowledge/spaces/{spaceId}/members/{memberId}
-    pending: W4.31
     rows:
       - actor: a.owner
         params: { tenantId: tenant:a, spaceId: tenant:missing, memberId: person:a.driver-msk1@a }
@@ -465,6 +537,12 @@ endpoints:
         absent: [tenant:b]
         body: '{"role": "kb_space_reader"}'
         note: роль в несуществующем пространстве — 404
+      - actor: a.owner
+        params: { tenantId: tenant:a, spaceId: space:b.rules, memberId: person:a.driver-msk1@a }
+        status: 404
+        absent: [tenant:b, space:b.rules]
+        body: '{"role": "kb_space_reader"}'
+        note: чужой объект в своём тенанте — пространство организации B в пути A, как несуществующий
       - actor: b.owner
         params: { tenantId: tenant:a, spaceId: tenant:missing, memberId: person:a.driver-msk1@a }
         status: 404
@@ -479,12 +557,16 @@ endpoints:
   - op: listKnowledgeRules
     method: GET
     path: /api/v1/tenants/{tenantId}/knowledge/spaces/{spaceId}/rules
-    pending: W4.31
     rows:
       - actor: a.owner
         params: { tenantId: tenant:a, spaceId: tenant:missing }
         status: 404
         absent: [tenant:b]
+      - actor: a.owner
+        params: { tenantId: tenant:a, spaceId: space:b.rules }
+        status: 404
+        absent: [tenant:b, space:b.rules]
+        note: чужой объект в своём тенанте — пространство организации B в пути A, как несуществующий
       - actor: b.owner
         params: { tenantId: tenant:a, spaceId: tenant:missing }
         status: 404
@@ -495,13 +577,18 @@ endpoints:
   - op: setKnowledgeRuleEnabled
     method: PATCH
     path: /api/v1/tenants/{tenantId}/knowledge/rules/{ruleId}
-    pending: W4.31
     rows:
       - actor: a.owner
         params: { tenantId: tenant:a, ruleId: tenant:missing }
         status: 404
         absent: [tenant:b]
         body: '{"enabled": false}'
+      - actor: a.owner
+        params: { tenantId: tenant:a, ruleId: kb_rule:b.review }
+        status: 404
+        absent: [tenant:b, kb_rule:b.review]
+        body: '{"enabled": false}'
+        note: чужой объект в своём тенанте — правило организации B в пути A, как несуществующий
       - actor: b.owner
         params: { tenantId: tenant:a, ruleId: tenant:missing }
         status: 404
@@ -515,12 +602,16 @@ endpoints:
   - op: runKnowledgeReviewCheck
     method: POST
     path: /api/v1/tenants/{tenantId}/knowledge/spaces/{spaceId}/review-check
-    pending: W4.31
     rows:
       - actor: a.owner
         params: { tenantId: tenant:a, spaceId: tenant:missing }
         status: 404
         absent: [tenant:b]
+      - actor: a.owner
+        params: { tenantId: tenant:a, spaceId: space:b.rules }
+        status: 404
+        absent: [tenant:b, space:b.rules]
+        note: чужой объект в своём тенанте — пространство организации B в пути A, как несуществующий
       - actor: b.owner
         params: { tenantId: tenant:a, spaceId: tenant:missing }
         status: 404
@@ -531,7 +622,6 @@ endpoints:
   - op: runKnowledgeSection
     method: POST
     path: /api/v1/tenants/{tenantId}/knowledge/spaces/{spaceId}/sections
-    pending: W4.31
     rows:
       - actor: a.owner
         params: { tenantId: tenant:a, spaceId: tenant:missing }
@@ -539,6 +629,12 @@ endpoints:
         absent: [tenant:b]
         body: '{"projectId": "{{repair_project:a.flat}}"}'
         note: раздел объекта в несуществующем пространстве — 404
+      - actor: a.owner
+        params: { tenantId: tenant:a, spaceId: space:b.rules }
+        status: 404
+        absent: [tenant:b, space:b.rules]
+        body: '{"projectId": "{{repair_project:a.flat}}"}'
+        note: чужой объект в своём тенанте — пространство организации B в пути A, как несуществующий
       - actor: b.owner
         params: { tenantId: tenant:a, spaceId: tenant:missing }
         status: 404
@@ -551,12 +647,16 @@ endpoints:
   - op: listKnowledgeRuns
     method: GET
     path: /api/v1/tenants/{tenantId}/knowledge/spaces/{spaceId}/runs
-    pending: W4.31
     rows:
       - actor: a.owner
         params: { tenantId: tenant:a, spaceId: tenant:missing }
         status: 404
         absent: [tenant:b]
+      - actor: a.owner
+        params: { tenantId: tenant:a, spaceId: space:b.rules }
+        status: 404
+        absent: [tenant:b, space:b.rules]
+        note: чужой объект в своём тенанте — пространство организации B в пути A, как несуществующий
       - actor: b.owner
         params: { tenantId: tenant:a, spaceId: tenant:missing }
         status: 404
@@ -568,13 +668,18 @@ endpoints:
   - op: createKnowledgeTable
     method: POST
     path: /api/v1/tenants/{tenantId}/knowledge/nodes/{nodeId}/tables
-    pending: W4.31
     rows:
       - actor: a.owner
         params: { tenantId: tenant:a, nodeId: tenant:missing }
         status: 404
         absent: [tenant:b]
         body: '{"title": "Расходы в пути", "columns": [{"name": "Дата"}]}'
+      - actor: a.owner
+        params: { tenantId: tenant:a, nodeId: page:b.rules-intro }
+        status: 404
+        absent: [tenant:b, page:b.rules-intro]
+        body: '{"title": "Расходы в пути", "columns": [{"name": "Дата"}]}'
+        note: чужой объект в своём тенанте — страница организации B в пути A, как несуществующий
       - actor: a.manager-msk1
         params: { tenantId: tenant:a, nodeId: tenant:missing }
         status: 404
@@ -590,3 +695,75 @@ endpoints:
         params: { tenantId: tenant:a, nodeId: tenant:missing }
         status: 401
         body: '{"title": "Расходы в пути", "columns": [{"name": "Дата"}]}'
+  # Страницы knowledge/pages (проекция узлов-страниц для ядра «Форм»; W4.31, возврат 1)
+  - op: listKnowledgePages
+    method: GET
+    path: /api/v1/tenants/{tenantId}/knowledge/pages
+    rows:
+      - actor: a.owner
+        params: { tenantId: tenant:a }
+        status: 200
+        present: [page:a.rules-intro]
+        absent: [tenant:b, page:b.rules-intro]
+        note: страницы своей организации; страниц тенанта B нет
+      - actor: b.owner
+        params: { tenantId: tenant:a }
+        status: 404
+        absent: [tenant:a]
+      - actor: anonymous
+        params: { tenantId: tenant:a }
+        status: 401
+  - op: createKnowledgePage
+    method: POST
+    path: /api/v1/tenants/{tenantId}/knowledge/pages
+    rows:
+      - actor: a.owner
+        params: { tenantId: tenant:a }
+        status: 404
+        absent: [tenant:b, page:b.rules-intro]
+        body: '{"title": "Выезд в непогоду", "bodyMarkdown": "Текст", "parentPageId": "{{page:b.rules-intro}}", "scope": {"kind": "tenant", "resourceIds": [], "includeDescendants": true}}'
+        note: чужой объект в своём тенанте — родитель из организации B, как несуществующий
+      - actor: b.owner
+        params: { tenantId: tenant:a }
+        status: 404
+        absent: [tenant:a]
+        body: '{"title": "Выезд в непогоду", "bodyMarkdown": "Текст", "scope": {"kind": "tenant", "resourceIds": [], "includeDescendants": true}}'
+      - actor: anonymous
+        params: { tenantId: tenant:a }
+        status: 401
+        body: '{"title": "Выезд в непогоду", "bodyMarkdown": "Текст", "scope": {"kind": "tenant", "resourceIds": [], "includeDescendants": true}}'
+  - op: getKnowledgePage
+    method: GET
+    path: /api/v1/tenants/{tenantId}/knowledge/pages/{pageId}
+    rows:
+      - actor: a.owner
+        params: { tenantId: tenant:a, pageId: tenant:missing }
+        status: 404
+        absent: [tenant:b]
+        note: страницы нет в организации — 404 и владельцу
+      - actor: a.owner
+        params: { tenantId: tenant:a, pageId: page:b.rules-intro }
+        status: 404
+        absent: [tenant:b, page:b.rules-intro]
+        note: чужой объект в своём тенанте — страница организации B в пути A, как несуществующий
+      - actor: b.owner
+        params: { tenantId: tenant:a, pageId: tenant:missing }
+        status: 404
+        absent: [tenant:a]
+      - actor: anonymous
+        params: { tenantId: tenant:a, pageId: tenant:missing }
+        status: 401
+  - op: updateKnowledgePage
+    method: PATCH
+    path: /api/v1/tenants/{tenantId}/knowledge/pages/{pageId}
+    rows:
+      - actor: b.owner
+        params: { tenantId: tenant:a, pageId: tenant:missing }
+        status: 404
+        absent: [tenant:a]
+        body: '{"title": "Выезд в непогоду"}'
+        note: правка страницы чужой организации — 404 до предусловия If-Match
+      - actor: anonymous
+        params: { tenantId: tenant:a, pageId: tenant:missing }
+        status: 401
+        body: '{"title": "Выезд в непогоду"}'

@@ -78,6 +78,20 @@ type Content struct {
 	Projects []ProjectDef
 	Tasks    []TaskDef
 	Rules    []RuleDef
+	// The knowledge base (W4.31): the space and the page of Objects get rows of kb, with these requests and rules.
+	KnowledgeRequests []KnowledgeRequestDef
+	KnowledgeRules    []KnowledgeRuleDef
+}
+
+// KnowledgeRequestDef is an open request of a member of the tenant to read the page of the objects
+// (kb.requests). Reference kb_request:<tenant>.<key>.
+type KnowledgeRequestDef struct {
+	Key, Member string // Member — an actor with a membership in the tenant
+}
+
+// KnowledgeRuleDef is a rule of the space of the objects (kb.rules, kind review). Reference kb_rule:<tenant>.<key>.
+type KnowledgeRuleDef struct {
+	Key, Name string
 }
 
 // ImportDef is a CSV import of people in preview (people.imports): visible to members.manage over its default
@@ -267,13 +281,16 @@ const (
 	refNotification = "notification"
 	// Tier requests of the control DB (W4.60).
 	refRequest = "subscription_request"
+	// The knowledge base (W4.31).
+	refKnowledgeRequest = "kb_request"
+	refKnowledgeRule    = "kb_rule"
 )
 
 // localKinds are the reference kinds <kind>:<tenant>.<key>.
 var localKinds = []string{
 	refUnit, refRole, refGroup, ObjectProject, ObjectWarehouse, ObjectResource, ObjectSpace, ObjectPage, ObjectFolder,
 	ObjectDoc, ObjectAccount, ObjectChat, ObjectRepairProject,
-	refImport, refVehicle, refFile, refNotification, refRequest, refTask, refAutomation,
+	refImport, refVehicle, refFile, refNotification, refRequest, refTask, refAutomation, refKnowledgeRequest, refKnowledgeRule,
 }
 
 func tenantRef(t string) string              { return refTenant + ":" + t }
@@ -289,6 +306,7 @@ func accountRef(actor string) string         { return refAccount + ":" + actor }
 //	repair_project:<t>.<key>
 //	import:<t>.<key> · vehicle:<t>.<key> · file:<t>.<key> · notification:<t>.<key>
 //	subscription_request:<t>.<key>
+//	kb_request:<t>.<key> · kb_rule:<t>.<key>
 //	account:<actor> · person:<actor>@<t> · membership:<actor>@<t>
 //	tenant:missing (MissingTenant) — a tenant of no database
 //
@@ -588,7 +606,7 @@ func (t TenantDef) hasLocal(kind, key string) bool {
 		return t.hasRole(key)
 	case refGroup:
 		return t.hasGroup(key)
-	case refImport, refVehicle, refFile, refNotification, refTask, refAutomation:
+	case refImport, refVehicle, refFile, refNotification, refTask, refAutomation, refKnowledgeRequest, refKnowledgeRule:
 		return t.Content.has(kind, key)
 	case refRequest:
 		return slices.ContainsFunc(t.Requests, func(r RequestDef) bool { return r.Key == key })

@@ -10,7 +10,8 @@
 // Configuration: CONTROL_DB_URL, TENANT_DB_HOST, the secret named by tenant_routing.secret_ref (TENANT_DB_URL with
 // role ortus_worker), WORKER_POLL_INTERVAL, WORKER_BATCH, WORKER_LEASE, WORKER_MAX_ATTEMPTS, WORKER_PURGE_INTERVAL
 // (1m; 0 — off), WORKER_POOL_INTERVAL (the driver pool, W2.07: 30s; 0 — off), WORKER_EXPORT_INTERVAL (the export
-// jobs of «Данные», W4.50: 2s; 0 — off), S3_* (the files of W1.09 and of the export jobs), APP_FIXED_NOW (not with
+// jobs of «Данные», W4.50: 2s; 0 — off), WORKER_KB_REVIEW_INTERVAL (the review dates of the knowledge base at 09:00
+// Moscow, W4.31: 1m; 0 — off), S3_* (the files of W1.09 and of the export jobs), APP_FIXED_NOW (not with
 // APP_ENV=prod), LOG_LEVEL.
 //
 // Exit codes: 0 — done or stopped by a signal; 1 — failure; 2 — configuration, arguments or database unreachable at
@@ -101,9 +102,8 @@ func run(ctx context.Context, args []string, getenv func(string) string, stdout,
 	// W1.42: the consumers of stage 1; the audience of the inbox is the evaluator of W1.04 on the clock of the application.
 	src := authz.PGSource{Pools: pools}
 	ev := authz.New(src, src, cfg.clock())
-	reg := newRegistry(registryDeps{
-		control: control, pools: pools, audience: inbox.AuthzAudience{E: projectsIn(ev, pools)}, log: log,
-	})
+	audience := inbox.AuthzAudience{E: projectsIn(ev, pools)}
+	reg := newRegistry(registryDeps{control: control, pools: pools, audience: audience, log: log})
 	registerTasks(reg, pools, cfg.clock()) // W4.11: the queue of blocking defects → the task of the defect (tasks.go)
 	// W2.72: the offers of vehicles whose deadline of the choice came tell the company of a released vehicle (inbox).
 	offers := &pool.Service{Pools: pools, Authz: ev, Recipients: inbox.PGRecipients{Control: control},
@@ -112,7 +112,9 @@ func run(ctx context.Context, args []string, getenv func(string) string, stdout,
 	// W4.50: the export jobs of «Данные» (exports.go).
 	runExports, exportErr := exportJob(exportDeps{getenv: getenv, tenants: listTenants(control), control: control, pools: pools,
 		now: cfg.clock(), log: log})
-	if err := errors.Join(registerFiles(reg, pools, getenv, log), poolErr, exportErr); err != nil { // W1.09
+	// W4.31: the review dates of the knowledge base, daily at 09:00 in Moscow (knowledge.go).
+	reviewKB, kbErr := kbReviewJob(getenv, listTenants(control), newKnowledge(pools, control, audience, cfg.clock()), log)
+	if err := errors.Join(registerFiles(reg, pools, getenv, log), poolErr, exportErr, kbErr); err != nil { // W1.09
 		fmt.Fprintf(stderr, "worker: configuration: %v\n", err)
 		return exitConfig
 	}
@@ -130,6 +132,7 @@ func run(ctx context.Context, args []string, getenv func(string) string, stdout,
 	}
 	purging.Go(func() { settlePool(jobs) }) // W2.07: the time of the driver pool (WORKER_POOL_INTERVAL; 0 — returns at once)
 	purging.Go(func() { runExports(jobs) }) // W4.50: the export jobs (WORKER_EXPORT_INTERVAL; 0 — returns at once)
+	purging.Go(func() { reviewKB(jobs) })   // W4.31: WORKER_KB_REVIEW_INTERVAL; 0 — returns at once
 	err = w.Run(ctx)
 	stop()
 	purging.Wait()

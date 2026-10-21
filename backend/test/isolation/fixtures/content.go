@@ -5,40 +5,41 @@ import (
 	"strings"
 )
 
-// keys returns the keys of the content of kind (an import, a vehicle, a file or a notification).
+// keys returns the keys of the content of kind (an import, a vehicle, a file, a notification, a task, a rule of
+// automation, a request or a rule of the knowledge base).
 func (c Content) keys(kind string) []string {
-	var out []string
 	switch kind {
 	case refImport:
-		for _, i := range c.Imports {
-			out = append(out, i.Key)
-		}
+		return keysOf(c.Imports, func(x ImportDef) string { return x.Key })
 	case refVehicle:
-		for _, v := range c.Vehicles {
-			out = append(out, v.Key)
-		}
+		return keysOf(c.Vehicles, func(x VehicleDef) string { return x.Key })
 	case refFile:
-		for _, f := range c.Files {
-			out = append(out, f.Key)
-		}
+		return keysOf(c.Files, func(x FileDef) string { return x.Key })
 	case refNotification:
-		for _, n := range c.Notifications {
-			out = append(out, n.Key)
-		}
+		return keysOf(c.Notifications, func(x NotificationDef) string { return x.Key })
 	case refTask:
-		for _, x := range c.Tasks {
-			out = append(out, x.Key)
-		}
+		return keysOf(c.Tasks, func(x TaskDef) string { return x.Key })
 	case refAutomation:
-		for _, r := range c.Rules {
-			out = append(out, r.Key)
-		}
+		return keysOf(c.Rules, func(x RuleDef) string { return x.Key })
+	case refKnowledgeRequest:
+		return keysOf(c.KnowledgeRequests, func(x KnowledgeRequestDef) string { return x.Key })
+	case refKnowledgeRule:
+		return keysOf(c.KnowledgeRules, func(x KnowledgeRuleDef) string { return x.Key })
+	}
+	return nil
+}
+
+// keysOf returns key of every item of xs, in order.
+func keysOf[T any](xs []T, key func(T) string) []string {
+	var out []string
+	for _, x := range xs {
+		out = append(out, key(x))
 	}
 	return out
 }
 
 // contentKinds are the reference kinds of the content, in the order Refs lists them.
-var contentKinds = []string{refImport, refVehicle, refFile, refNotification, refTask, refAutomation}
+var contentKinds = []string{refImport, refVehicle, refFile, refNotification, refTask, refAutomation, refKnowledgeRequest, refKnowledgeRule}
 
 // has reports whether the content holds an object of kind with key.
 func (c Content) has(kind, key string) bool { return slices.Contains(c.keys(kind), key) }
@@ -78,6 +79,26 @@ func (c Catalog) validateContent(t TenantDef, fail failFunc) {
 		validateNotification(t, n, member, fail)
 	}
 	c.validateTasks(t, fail) // W4.11
+	validateKnowledge(t, member, fail)
+}
+
+// validateKnowledge checks the knowledge base of t: requests and rules need the space and the page of the objects,
+// a request — a member of t, a rule — a name.
+func validateKnowledge(t TenantDef, member func(string) bool, fail failFunc) {
+	kb := len(t.Content.KnowledgeRequests) + len(t.Content.KnowledgeRules)
+	if kb > 0 && (!t.hasObject(ObjectSpace, spaceRules) || !t.hasObject(ObjectPage, pageRulesIntro)) {
+		fail("knowledge %s: requests and rules need the objects %s:%s and %s:%s", t.Key, ObjectSpace, spaceRules, ObjectPage, pageRulesIntro)
+	}
+	for _, r := range t.Content.KnowledgeRequests {
+		if !member(r.Member) {
+			fail("kb_request %s.%s: member %q has no membership in tenant %s", t.Key, r.Key, r.Member, t.Key)
+		}
+	}
+	for _, r := range t.Content.KnowledgeRules {
+		if r.Name == "" {
+			fail("kb_rule %s.%s: no name", t.Key, r.Key)
+		}
+	}
 }
 
 func validateImport(t TenantDef, i ImportDef, member func(string) bool, fail failFunc) {
