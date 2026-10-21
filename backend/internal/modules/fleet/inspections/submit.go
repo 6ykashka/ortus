@@ -42,6 +42,11 @@ type target struct {
 	resState    string
 	resExpires  *time.Time
 	resVehicle  uuid.UUID
+	// W2.72 (S2-20): undecided — the reservation belongs to an offer whose choice is not made; bound — the trip is
+	// assigned by this reservation (reservation_bundle_id), confirmed at the approval or the choice.
+	undecided  bool
+	bound      bool
+	tripBundle *uuid.UUID
 }
 
 // vehicleRow is the vehicle of an inspection.
@@ -68,8 +73,20 @@ select state, hold_expires_at from sched.reservations
 
 const lockTripSQL = `
 select t.id, t.number, t.unit_id, t.state, t.vehicle_id, t.driver_person_id, t.departure_inspection_id,
-       (select i.odometer_km::float8 from fleet.inspections i where i.id = t.departure_inspection_id)
+       (select i.odometer_km::float8 from fleet.inspections i where i.id = t.departure_inspection_id), t.reservation_bundle_id
   from fleet.trips t where t.id = $1 for update`
+
+// undecidedSQL reports whether reservation $1 belongs to an offer whose choice is not made yet (W2.72, S2-20; the same
+// question as startTrip of W2.05): a held row of an offer group without a confirmed or consumed reservation.
+const undecidedSQL = `select exists (select 1 from sched.reservations r
+ where r.bundle_id = (select bundle_id from sched.reservations where id = $1) and r.offer_group_id is not null
+   and r.state = 'hold' and not exists (select 1 from sched.reservations o
+                                         where o.offer_group_id = r.offer_group_id and o.state in ('confirmed', 'consumed'))),
+       (select bundle_id from sched.reservations where id = $1)`
+
+// textChooseFirst is the 409 of a departure inspection by a reservation of an offer before the choice (no reference,
+// Q-W2.70-13: OFFER_TEXT.chooseFirst of the MSW of W2.71).
+const textChooseFirst = "Сначала выберите машину."
 
 const vehicleRowSQL = `
 select id, unit_id, odometer_km::float8, plate, coalesce(display_name, '') from fleet.vehicles where id = $1`
@@ -111,6 +128,9 @@ func (s *Service) Submit(ctx context.Context, tc tenantctx.TenantContext, b flee
 		}
 		id, err := s.record(ctx, tx, tc, t, v, withBlockingAnswers(c, b))
 		if err != nil {
+			return err
+		}
+		if err := releaseUsual(ctx, tx, t, v, b, s.now()); err != nil {
 			return err
 		}
 		if out, err = loadInspection(ctx, tx, id); err != nil {
@@ -164,7 +184,7 @@ func (s *Service) lockTarget(ctx context.Context, tx querier, tc tenantctx.Tenan
 		tripID = *b.TripId
 	}
 	err := tx.QueryRow(ctx, lockTripSQL, tripID).Scan(&t.trip, &t.number, &t.unit, &t.state, &t.vehicle, &t.driver,
-		&t.departure, &t.departureKm)
+		&t.departure, &t.departureKm, &t.tripBundle)
 	switch {
 	case errors.Is(err, pgx.ErrNoRows):
 		return target{}, problem.New(problem.CodeNotFound, "")
@@ -213,27 +233,46 @@ func (t *target) lockBundle(ctx context.Context, q querier) error {
 	if err := rows.Err(); err != nil {
 		return fmt.Errorf("inspections: lock reservation: %w", err)
 	}
+	rows.Close()
+	var bundle uuid.UUID
+	if err := q.QueryRow(ctx, undecidedSQL, t.reservation).Scan(&t.undecided, &bundle); err != nil {
+		return fmt.Errorf("inspections: offer of the reservation: %w", err)
+	}
+	t.bound = t.tripBundle != nil && *t.tripBundle == bundle
 	return nil
+}
+
+// firstPhoto reports whether the departure binds a confirmed reservation of an offer (S2-20, variant (b) of D-35, Q-W2.70-2):
+// the trip is assigned by it and its first inspection moves it to inspection.
+func (t target) firstPhoto() bool {
+	return t.resState == "confirmed" && t.state == "assigned" && t.bound
 }
 
 // ready checks that the trip waits for this inspection.
 func (t target) ready(b fleetapi.InspectionCreate, now time.Time) error {
 	if b.Kind == kindDeparture {
-		switch {
-		case t.resVehicle != b.VehicleId:
-			return problem.New(problem.CodeNotFound, "")
-		case t.resState != "hold" || t.state != "inspection" || t.departure != nil:
-			return problem.New(codeInvalidTransition, "Осмотр перед выездом уже отправлен или бронь снята.")
-		case t.resExpires == nil || !t.resExpires.After(now):
-			return problem.New(codeReservationExpired, "Бронь истекла. Забронируйте машину снова.")
-		}
-		return nil
+		return t.readyDeparture(b, now)
 	}
 	switch {
 	case t.vehicle == nil || *t.vehicle != b.VehicleId:
 		return invalid("Машина осмотра — не машина рейса.")
 	case t.state != "returning" && t.state != "rework":
 		return problem.New(codeInvalidTransition, "Сначала «Завершить рейс».")
+	}
+	return nil
+}
+
+// readyDeparture checks that the trip waits for this departure inspection by its reservation.
+func (t target) readyDeparture(b fleetapi.InspectionCreate, now time.Time) error {
+	switch {
+	case t.resVehicle != b.VehicleId:
+		return problem.New(problem.CodeNotFound, "")
+	case t.undecided:
+		return problem.New(codeInvalidTransition, textChooseFirst)
+	case !t.firstPhoto() && (t.resState != "hold" || t.state != "inspection") || t.departure != nil:
+		return problem.New(codeInvalidTransition, "Осмотр перед выездом уже отправлен или бронь снята.")
+	case t.resExpires == nil || !t.resExpires.After(now):
+		return problem.New(codeReservationExpired, "Бронь истекла. Забронируйте машину снова.")
 	}
 	return nil
 }
@@ -490,13 +529,40 @@ func insertInspection(ctx context.Context, tx querier, tc tenantctx.TenantContex
 	return id, nil
 }
 
+// releaseUsualSQL ends at $3 the consumed reservation of vehicle $2 for trip $1 that still runs — when it is the usual
+// vehicle of the temporary driver approved with the request of the trip (the scope of visibleSQL of the inspections).
+const releaseUsualSQL = `update sched.reservations r
+   set during = tstzrange(lower(r.during), greatest(lower(r.during), $3), '[)'),
+       occupied = tstzrange(lower(r.occupied), greatest(lower(r.occupied), $3), '[)'), revision = r.revision + 1
+  from sched.resources s
+ where s.id = r.resource_id and s.kind = 'vehicle' and s.ref_id = $2 and r.source_type = 'fleet.trip'
+   and r.source_id = $1 and r.state = 'consumed' and upper(r.occupied) > $3
+   and exists (select 1 from fleet.driver_transfers x where x.trip_id = $1 and x.home_vehicle_id = $2
+                 and x.vehicle_decision = 'approved')`
+
+// releaseUsual returns the usual vehicle of a temporary driver of the pool, approved with the request of the trip (W2.72,
+// S2-20 rule 6, Q-W2.70-9; return 1: no other vehicle of another company), to its company at the return inspection:
+// its reservation for the trip ends at now, the acceptance of the shift by the company of the trip is not waited for
+// (a return inspection never holds a blocking defect, the decision of a blocking defect of a departure belongs to the
+// company of the vehicle).
+func releaseUsual(ctx context.Context, tx querier, t target, v vehicleRow, b fleetapi.InspectionCreate, now time.Time) error {
+	if b.Kind != kindReturn || v.unit == t.unit {
+		return nil
+	}
+	if _, err := tx.Exec(ctx, releaseUsualSQL, t.trip, v.id, now); err != nil {
+		return fmt.Errorf("inspections: release the usual vehicle: %w", err)
+	}
+	return nil
+}
+
 // moveTrip points the trip at its latest inspection of the kind; a blocking departure sends it to defect_review.
 func moveTrip(ctx context.Context, tx querier, t target, b fleetapi.InspectionCreate, id uuid.UUID, blocking bool) error {
 	sql := `update fleet.trips set return_inspection_id = $2, revision = revision + 1 where id = $1`
 	args := []any{t.trip, id}
 	if b.Kind == kindDeparture {
 		sql = `update fleet.trips set departure_inspection_id = $2,
-		              state = case when $3 then 'defect_review' else state end, revision = revision + 1 where id = $1`
+		              state = case when $3 then 'defect_review' when state = 'assigned' then 'inspection' else state end,
+		              revision = revision + 1 where id = $1`
 		args = append(args, blocking)
 	}
 	if _, err := tx.Exec(ctx, sql, args...); err != nil {
@@ -524,5 +590,5 @@ func (s *Service) reportBlocking(ctx context.Context, tx querier, tenant uuid.UU
 	if err != nil {
 		return err
 	}
-	return s.notifyManagers(ctx, tx, tenant, t, ev, blockingTitle(v.name, v.plate, zone))
+	return s.notifyManagers(ctx, tx, tenant, t, v.unit, ev, blockingTitle(v.name, v.plate, zone))
 }

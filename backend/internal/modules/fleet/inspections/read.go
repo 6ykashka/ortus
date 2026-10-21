@@ -14,9 +14,17 @@ import (
 	"github.com/ortus/ortus-crm/backend/internal/platform/tenantctx"
 )
 
-// inspectionColumns are the columns the scope of fleet.inspections.read filters inspections on: the unit of the
-// vehicle and the «own» people — the author and the driver of the trip.
-var inspectionColumns = authz.Columns{Unit: "v.unit_id", Persons: []string{"i.submitted_by", "t.driver_person_id"}}
+// inspectionColumns are the columns the scope of fleet.inspections.read filters inspections on: a unit of the
+// inspection (visibleSQL) and the «own» people — the author and the driver of the trip.
+var inspectionColumns = authz.Columns{Unit: "u.unit_id", Persons: []string{"i.submitted_by", "t.driver_person_id"}}
+
+// visibleSQL is the scope of an inspection: the unit of its vehicle and — for the usual vehicle of a temporary driver
+// of the pool, approved with the request of the trip (W2.72, S2-20 rule 6, 1b «Что откроется»: «осмотры этого
+// рейса») — the unit of its trip too. The predicate of the evaluator over u.unit_id inside the exists reads either unit.
+const visibleSQL = `exists (select 1 from (values (v.unit_id), ((select t.unit_id where exists (select 1
+    from fleet.driver_transfers x where x.trip_id = i.trip_id and x.home_vehicle_id = i.vehicle_id
+     and x.vehicle_decision = 'approved')))) u(unit_id)
+  where ` + scopeddb.Placeholder + `)`
 
 const inspectionSelect = `
 select i.id, i.checklist_version_id, i.vehicle_id, i.submitted_by, i.kind, i.state, i.odometer_km::text, i.answers,
@@ -132,7 +140,7 @@ func (s *Service) Inspection(ctx context.Context, tc tenantctx.TenantContext, id
 		var err error
 		out, err = scanInspection(row)
 		return err
-	}, inspectionSelect+` where i.id = $1 and `+scopeddb.Placeholder, id)
+	}, inspectionSelect+` where i.id = $1 and `+visibleSQL, id)
 	if err != nil {
 		return fleetapi.Inspection{}, err
 	}
@@ -170,7 +178,7 @@ func (s *Service) Inspections(ctx context.Context, tc tenantctx.TenantContext, q
 	}
 	rows, err := conn.Query(ctx, actionRead, inspectionColumns, inspectionSelect+`
 	 where ($1::timestamptz is null or (i.submitted_at, i.id) > ($1::timestamptz, $2::uuid))
-	   and `+scopeddb.Placeholder+`
+	   and `+visibleSQL+`
 	 order by i.submitted_at, i.id
 	 limit $3`, at, after, limit+1)
 	if err != nil {

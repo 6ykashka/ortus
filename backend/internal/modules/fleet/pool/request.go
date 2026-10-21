@@ -42,11 +42,21 @@ func (c *cmd) request(ctx context.Context, b fleetapi.DriverTransferCreate, w Wi
 	if err != nil {
 		return fleetapi.DriverTransfer{}, err
 	}
+	v, err := c.requestVehicle(ctx, b, p)
+	if err != nil {
+		return fleetapi.DriverTransfer{}, err
+	}
+	var mode any
+	var home, host *uuid.UUID
+	if v != nil {
+		mode, home, host = v.mode, v.home, v.host
+	}
 	var id uuid.UUID
 	err = c.tx.QueryRow(ctx, `insert into fleet.driver_transfers (publication_id, source_unit_id, target_unit_id, trip_id,
-		period, state, requested_by, reason, created_at)
-		values ($1, $2, $3, $4, tstzrange($5, $6, '[)'), 'requested', $7, $8, $9) returning id`,
-		p.id, b.SourceOrgUnitId, b.TargetOrgUnitId, b.TripId, w.Start, w.End, c.tc.PersonID, b.Reason, c.now).Scan(&id)
+		period, state, requested_by, reason, created_at, vehicle_mode, home_vehicle_id, host_vehicle_id)
+		values ($1, $2, $3, $4, tstzrange($5, $6, '[)'), 'requested', $7, $8, $9, $10, $11, $12) returning id`,
+		p.id, b.SourceOrgUnitId, b.TargetOrgUnitId, b.TripId, w.Start, w.End, c.tc.PersonID, b.Reason, c.now, mode, home,
+		host).Scan(&id)
 	if violates(err, codeUniqueViolation, "driver_transfers_open_uq") {
 		return fleetapi.DriverTransfer{}, kit.Conflict(textRequested)
 	}
@@ -54,15 +64,21 @@ func (c *cmd) request(ctx context.Context, b fleetapi.DriverTransferCreate, w Wi
 		return fleetapi.DriverTransfer{}, fmt.Errorf("pool: request: %w", err)
 	}
 	diff := map[string]any{keyPublication: p.id, keySource: b.SourceOrgUnitId, keyTarget: b.TargetOrgUnitId,
-		"startsAt": w.Start, keyEndsAt: w.End}
+		keyStartsAt: w.Start, keyEndsAt: w.End}
 	if b.TripId != nil {
 		diff["tripId"] = *b.TripId
+	}
+	if v != nil {
+		diff["vehicleMode"] = v.mode
 	}
 	if _, err := c.record(ctx, "fleet.driver_transfer.request", eventRequested, targetTransfer, id, b.TargetOrgUnitId, diff); err != nil {
 		return fleetapi.DriverTransfer{}, err
 	}
 	x, err := loadTransfer(ctx, c.tx, id, "")
 	if err != nil {
+		return fleetapi.DriverTransfer{}, err
+	}
+	if err := attachParts(ctx, c.tx, []*transfer{&x}, c.now); err != nil {
 		return fleetapi.DriverTransfer{}, err
 	}
 	out := x.dto(c.now)

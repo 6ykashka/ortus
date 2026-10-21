@@ -24,7 +24,13 @@ const (
 	       t.reviewed_at, t.vehicle_id, lower(x.period), upper(x.period), x.state, x.assignment_id, x.reason,
 	       x.requested_by, x.created_at, x.decided_by, x.decided_at, x.decision_comment, x.revoked_by, x.completed_at,
 	       x.revision, upper(ra.valid), coalesce(ra.state = 'active' and not isempty(ra.valid), false), ra.role_id,
-	       ra.role_version, x.vehicle_assignment_id, va.scope_ref, upper(va.valid), va.state`
+	       ra.role_version, x.vehicle_assignment_id, va.scope_ref, upper(va.valid), va.state, x.vehicle_mode,
+	       x.home_vehicle_id, x.host_vehicle_id, x.vehicle_decision, x.offer_group_id, ` + prepareSQL
+	// prepareSQL is the flag of the preparation (W2.72, S2-20, Q-W2.71-3): a request with a vehicle, or a reservation of
+	// its trip offered to its driver — before the window the driver reads his trip and chooses.
+	prepareSQL = `(x.vehicle_mode is not null or exists (select 1 from sched.reservations o
+	        where x.trip_id is not null and o.source_type = 'fleet.trip' and o.source_id = x.trip_id
+	          and o.offered_to = p.person_id))`
 	transferFrom = `
 	  from fleet.driver_transfers x
 	  join fleet.pool_publications p on p.id = x.publication_id
@@ -81,6 +87,14 @@ type transfer struct {
 	role                         *uuid.UUID // role and its version of the grant: the assignment of the vehicle takes them
 	roleVersion                  *int
 	vehicle                      *vehicleGrant // the assignment of the vehicle of the trip; nil — none
+	// W2.72 (S2-20, tenant 0023): the vehicle part of the request — the mode, the usual vehicle of the publication and
+	// the vehicle of the trip company, the decision on the usual one, the offer the approval created; prepare — the
+	// driver prepares for the trip before its window (prepareSQL); parts — the vehicles as the DTO shows them.
+	mode, decision    *string
+	home, host, group *uuid.UUID
+	prepare           bool
+	parts             map[uuid.UUID]fleetapi.TransferVehicle
+	chooseUntil       *time.Time
 }
 
 // vehicleGrant is the stored assignment of the vehicle of the trip of a transfer (scope resource, tenant 0018).
@@ -100,7 +114,8 @@ func scanTransfer(row pgx.Row) (transfer, error) {
 	err := row.Scan(&x.id, &x.publication, &x.person, &x.label, &x.source, &x.sourceName, &x.target, &x.targetName, &x.zone,
 		&x.trip, &x.tripNumber, &x.tripState, &x.tripUnit, &x.tripDriver, &x.tripReviewed, &x.tripVehicle, &x.period.Start,
 		&x.period.End, &x.state, &x.assignment, &x.reason, &x.requestedBy, &x.requestedAt, &x.decidedBy, &x.decidedAt,
-		&x.comment, &x.revokedBy, &x.completedAt, &x.revision, &x.grantUpper, &x.grantLive, &x.role, &x.roleVersion, &va, &vr, &vu, &vaState)
+		&x.comment, &x.revokedBy, &x.completedAt, &x.revision, &x.grantUpper, &x.grantLive, &x.role, &x.roleVersion, &va, &vr, &vu, &vaState,
+		&x.mode, &x.home, &x.host, &x.decision, &x.group, &x.prepare)
 	if va != nil && vr != nil {
 		x.vehicle = &vehicleGrant{id: *va, vehicle: *vr, upper: vu, active: vaState != nil && *vaState == "active"}
 	}
@@ -158,6 +173,7 @@ func (x transfer) dto(now time.Time) fleetapi.DriverTransfer {
 	if x.assignment != nil && st.Grant != "" {
 		out.Grant = grantDTO(x, st)
 	}
+	out.Vehicle = x.vehicleDTO()
 	return out
 }
 
@@ -226,6 +242,9 @@ func (s *Service) Transfer(ctx context.Context, tc tenantctx.TenantContext, id u
 		if err != nil {
 			return err
 		}
+		if err := attachParts(ctx, c.tx, []*transfer{&x}, c.now); err != nil {
+			return err
+		}
 		out = x.dto(c.now)
 		return nil
 	})
@@ -276,6 +295,13 @@ func (s *Service) Transfers(ctx context.Context, tc tenantctx.TenantContext, par
 			last := list[limit-1]
 			next := encodeCursor(fp, last.requestedAt.UTC().Format(time.RFC3339Nano), last.id.String())
 			out.NextCursor, list = &next, list[:limit]
+		}
+		ptrs := make([]*transfer, 0, len(list))
+		for i := range list {
+			ptrs = append(ptrs, &list[i])
+		}
+		if err := attachParts(ctx, c.tx, ptrs, c.now); err != nil {
+			return err
 		}
 		for _, x := range list {
 			out.Items = append(out.Items, x.dto(c.now))

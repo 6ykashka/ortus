@@ -67,7 +67,7 @@ func (h Server) ListDriverPoolPublications(ctx context.Context, r fleetapi.ListD
 }
 
 // PublishDriverToPool implements fleetapi.StrictServerInterface.
-func (h Server) PublishDriverToPool(ctx context.Context, r fleetapi.PublishDriverToPoolRequestObject) (fleetapi.PublishDriverToPoolResponseObject, error) {
+func (h Server) PublishDriverToPool(ctx context.Context, r fleetapi.PublishDriverToPoolRequestObject) (fleetapi.PublishDriverToPoolResponseObject, error) { //nolint:dupl // one method per operation of the strict server: the types differ
 	tc, err := kit.Tenant(ctx)
 	if err != nil {
 		return nil, err
@@ -76,6 +76,9 @@ func (h Server) PublishDriverToPool(ctx context.Context, r fleetapi.PublishDrive
 		return nil, malformed()
 	}
 	out, err := h.S.Publish(ctx, tc, *r.Body)
+	if res, ok := validation(ctx, err); ok {
+		return fleetapi.PublishDriverToPool422ApplicationProblemPlusJSONResponse{ValidationApplicationProblemPlusJSONResponse: res}, nil
+	}
 	if err != nil {
 		return nil, err
 	}
@@ -168,7 +171,7 @@ func (h Server) GetDriverTransfer(ctx context.Context, r fleetapi.GetDriverTrans
 }
 
 // RequestDriverTransfer implements fleetapi.StrictServerInterface.
-func (h Server) RequestDriverTransfer(ctx context.Context, r fleetapi.RequestDriverTransferRequestObject) (fleetapi.RequestDriverTransferResponseObject, error) {
+func (h Server) RequestDriverTransfer(ctx context.Context, r fleetapi.RequestDriverTransferRequestObject) (fleetapi.RequestDriverTransferResponseObject, error) { //nolint:dupl // one method per operation of the strict server: the types differ
 	tc, err := kit.Tenant(ctx)
 	if err != nil {
 		return nil, err
@@ -212,9 +215,14 @@ func (h Server) DecideDriverTransfer(ctx context.Context, r fleetapi.DecideDrive
 }
 
 // ReserveVehicle passes the reservation to the base and settles the transfers of its trip after a hold for a trip
-// (the trip goes to inspection: the grant of its temporary driver opens).
+// (the trip goes to inspection: the grant of its temporary driver opens). W2.72 (S2-20, D-35 комплекта, variant (a)
+// rejected): the temporary driver of the trip of a transfer whose grant is active or prepares the trip never creates
+// reservations — 403 forbidden_action; the approval or the logist reserves, he chooses (chooseReservation).
 func (h Server) ReserveVehicle(ctx context.Context, r fleetapi.ReserveVehicleRequestObject) (fleetapi.ReserveVehicleResponseObject, error) {
 	if r.Body != nil && r.Body.TripId != nil {
+		if err := h.noReservation(ctx, *r.Body.TripId); err != nil {
+			return nil, err
+		}
 		if err := h.trip(ctx, "reserveVehicle", "", *r.Body.TripId, textTripNotFound); err != nil {
 			return nil, err
 		}
@@ -226,6 +234,20 @@ func (h Server) ReserveVehicle(ctx context.Context, r fleetapi.ReserveVehicleReq
 	return out, err
 }
 
+// noReservation refuses a reservation for trip to its temporary driver while his transfer is active or prepares the
+// trip (403 forbidden_action, W2.72).
+func (h Server) noReservation(ctx context.Context, trip uuid.UUID) error {
+	g, ok := h.Trips.(GrantGuard)
+	if !ok {
+		return nil
+	}
+	on, err := g.GrantOn(ctx, trip)
+	if err != nil || !on {
+		return err
+	}
+	return problem.New(problem.CodeForbiddenAction, "")
+}
+
 // ReleaseReservation passes the release to the base and settles the transfers of the trip of the hold (a released
 // trip goes back to planning: the grant of its temporary driver ends with the window again).
 func (h Server) ReleaseReservation(ctx context.Context, r fleetapi.ReleaseReservationRequestObject) (fleetapi.ReleaseReservationResponseObject, error) {
@@ -235,8 +257,32 @@ func (h Server) ReleaseReservation(ctx context.Context, r fleetapi.ReleaseReserv
 	out, err := h.StrictServerInterface.ReleaseReservation(ctx, r)
 	if res, ok := out.(fleetapi.ReleaseReservation200JSONResponse); err == nil && ok && res.Body.TripId != nil {
 		h.settleAfter(ctx, "releaseReservation", *res.Body.TripId)
+		if res.Body.OfferGroupId != nil {
+			h.notifyReleased(ctx, *res.Body.TripId, []uuid.UUID{res.Body.Id})
+		}
 	}
 	return out, err
+}
+
+// ChooseReservation implements fleetapi.StrictServerInterface (W2.72, S2-20): the guard of the trip of the
+// reservation — before the window of an S2-20 transfer the choice is open to its driver (AccessPrepare) — then the
+// choice of the service.
+func (h Server) ChooseReservation(ctx context.Context, r fleetapi.ChooseReservationRequestObject) (fleetapi.ChooseReservationResponseObject, error) {
+	tc, err := kit.Tenant(ctx)
+	if err != nil {
+		return nil, err
+	}
+	if err := h.object(ctx, "chooseReservation", "", ObjectReservation, r.ReservationId, textReservationNotFound); err != nil {
+		return nil, err
+	}
+	out, err := h.S.Choose(ctx, tc, r.ReservationId)
+	if err != nil {
+		return nil, err
+	}
+	cc, rid := headers(ctx)
+	replayed := false
+	return fleetapi.ChooseReservation200JSONResponse{Body: out, Headers: fleetapi.ChooseReservation200ResponseHeaders{
+		CacheControl: cc, IdempotencyReplayed: &replayed, XRequestId: rid}}, nil
 }
 
 // StartTrip passes the start to the base and settles the transfers of the started trip.
@@ -264,6 +310,51 @@ func (h Server) ReviewTrip(ctx context.Context, r fleetapi.ReviewTripRequestObje
 		h.settleAfter(ctx, "reviewTrip", r.TripId)
 	}
 	return out, err
+}
+
+// notifyAssigned tells the temporary driver of trip that the logist put a vehicle on it (W2.72, S2-20: «машину
+// поставили» / «выберите машину») after assignTripVehicle committed, within SettleTimeout; a failure is only logged.
+func (h Server) notifyAssigned(ctx context.Context, trip uuid.UUID) {
+	tc, ok := tenantctx.FromContext(ctx)
+	if !ok || h.S == nil {
+		return
+	}
+	sctx, cancel := context.WithTimeout(context.WithoutCancel(ctx), h.S.settleTimeout())
+	defer cancel()
+	if err := h.S.NotifyAssigned(sctx, tc, trip); err != nil && h.S.Log != nil {
+		h.S.Log.WarnContext(ctx, "pool: notify after assignTripVehicle", slog.String("tenant_id", tc.TenantID.String()),
+			slog.String("trip_id", trip.String()), slog.String("error", err.Error()))
+	}
+}
+
+// foreignOffers reads the live reservations of an offer of trip on vehicles of other companies before a command of the
+// base that may release them (W2.72 return 1); a failure is only logged — the command runs, its companies are not told.
+func (h Server) foreignOffers(ctx context.Context, trip uuid.UUID) []uuid.UUID {
+	tc, ok := tenantctx.FromContext(ctx)
+	if !ok || h.S == nil || h.S.Recipients == nil {
+		return nil
+	}
+	live, err := h.S.ForeignOffers(ctx, tc, trip)
+	if err != nil && h.S.Log != nil {
+		h.S.Log.WarnContext(ctx, "pool: offers before assignTripVehicle", slog.String("tenant_id", tc.TenantID.String()),
+			slog.String("trip_id", trip.String()), slog.String("error", err.Error()))
+	}
+	return live
+}
+
+// notifyReleased tells the companies of the vehicles of bundles released by a command of the base that committed
+// «машина освобождена» (W2.72 return 1, docs/29 «События»), within SettleTimeout; a failure is only logged.
+func (h Server) notifyReleased(ctx context.Context, trip uuid.UUID, bundles []uuid.UUID) {
+	tc, ok := tenantctx.FromContext(ctx)
+	if !ok || h.S == nil || len(bundles) == 0 {
+		return
+	}
+	sctx, cancel := context.WithTimeout(context.WithoutCancel(ctx), h.S.settleTimeout())
+	defer cancel()
+	if err := h.S.NotifyReleased(sctx, tc, trip, bundles); err != nil && h.S.Log != nil {
+		h.S.Log.WarnContext(ctx, "pool: notify the released vehicles", slog.String("tenant_id", tc.TenantID.String()),
+			slog.String("trip_id", trip.String()), slog.String("error", err.Error()))
+	}
 }
 
 // settleAfter settles the transfers of trip after a command of the base that committed (SettleTrip), within

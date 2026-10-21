@@ -56,19 +56,25 @@ func (e *env) inCatalog(t *testing.T, tc tenantctx.TenantContext, w pool.Window,
 	return false
 }
 
-// listed reports whether transfer id is in listDriverTransfers of the subject of tc with params.
+// listed reports whether transfer id is in listDriverTransfers of the subject of tc with params, on any page (the
+// tests of the package request many drivers of the same companies).
 func (e *env) listed(t *testing.T, tc tenantctx.TenantContext, params fleetapi.ListDriverTransfersParams, id uuid.UUID) bool {
 	t.Helper()
-	page, err := e.svc.Transfers(t.Context(), tc, params)
-	if err != nil {
-		t.Fatalf("listDriverTransfers: %v", err)
-	}
-	for _, it := range page.Items {
-		if it.Id == id {
-			return true
+	for {
+		page, err := e.svc.Transfers(t.Context(), tc, params)
+		if err != nil {
+			t.Fatalf("listDriverTransfers: %v", err)
 		}
+		for _, it := range page.Items {
+			if it.Id == id {
+				return true
+			}
+		}
+		if page.NextCursor == nil {
+			return false
+		}
+		params.Cursor = page.NextCursor
 	}
-	return false
 }
 
 // wantStored requires the state and the revision of a transfer in the database.

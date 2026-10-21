@@ -39,6 +39,17 @@ select id, trip_id, vehicle_id, kind, state,
 
 const reservationTripSQL = `select source_id from sched.reservations where id = $1 and source_type = 'fleet.trip'`
 
+// UndecidedSQL reports whether reservation $1 belongs to an offer whose choice is not made yet (W2.72, S2-20): a held
+// row of an offer group without a confirmed or consumed reservation. The departure inspection of W2.04 asks the same.
+const UndecidedSQL = `select exists (select 1 from sched.reservations r
+ where r.bundle_id = (select bundle_id from sched.reservations where id = $1) and r.offer_group_id is not null
+   and r.state = 'hold' and not exists (select 1 from sched.reservations o
+                                         where o.offer_group_id = r.offer_group_id and o.state in ('confirmed', 'consumed')))`
+
+// TextChooseFirst is the 409 of a start or a departure inspection by a reservation of an offer before the choice
+// (no reference, Q-W2.70-13: OFFER_TEXT.chooseFirst of the MSW of W2.71).
+const TextChooseFirst = "Сначала выберите машину."
+
 const lockTripSQL = `
 select id, number, unit_id, state, vehicle_id, driver_person_id, reservation_bundle_id, departure_inspection_id,
        return_inspection_id, revision
@@ -149,6 +160,13 @@ func (s *Service) Start(ctx context.Context, tc tenantctx.TenantContext, b fleet
 		}
 		if err := s.authorize(ctx, tx, tc, t, actionStart, textReservationNotFound, textDriverOnlyStart); err != nil {
 			return err
+		}
+		var undecided bool
+		if err := tx.QueryRow(ctx, UndecidedSQL, b.ReservationId).Scan(&undecided); err != nil {
+			return fmt.Errorf("trips: offer of the reservation: %w", err)
+		}
+		if undecided {
+			return problem.New(codeInvalidTransition, TextChooseFirst)
 		}
 		if out, err = s.start(ctx, tx, tc, t, b.ReservationId, insp); err != nil {
 			return err

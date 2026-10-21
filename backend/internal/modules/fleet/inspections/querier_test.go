@@ -92,8 +92,8 @@ func TestCommandsFail(t *testing.T) {
 	checks["reportBlocking"] = s.reportBlocking(ctx, brokenQ{}, tc.TenantID, target{trip: trip}, vehicleRow{}, uuid.New(), "Кузов")
 	checks["apply"] = s.apply(ctx, brokenQ{}, tc, d, fleetapi.DefectDecision{Decision: decisionAllow})
 	checks["allow"] = allow(ctx, brokenQ{}, d, time.Now())
-	checks["confirm"] = confirm(ctx, brokenQ{}, d)
-	checks["notifyManagers"] = (&Service{Recipients: recipientsOff{}, Audience: audienceOff{}}).notifyManagers(ctx, brokenQ{}, tc.TenantID, target{}, uuid.New(), "x")
+	checks["confirm"] = confirm(ctx, brokenQ{}, d, time.Now())
+	checks["notifyManagers"] = (&Service{Recipients: recipientsOff{}, Audience: audienceOff{}}).notifyManagers(ctx, brokenQ{}, tc.TenantID, target{}, uuid.Nil, uuid.New(), "x")
 	for name, err := range checks {
 		if err == nil {
 			t.Errorf("%s: no error", name)

@@ -141,7 +141,7 @@ func (s *Service) apply(ctx context.Context, tx querier, tc tenantctx.TenantCont
 	}
 	var err error
 	if b.Decision == decisionConfirm {
-		err = confirm(ctx, tx, d)
+		err = confirm(ctx, tx, d, now)
 	} else {
 		err = allow(ctx, tx, d, now)
 	}
@@ -196,8 +196,10 @@ func allow(ctx context.Context, tx querier, d decision, now time.Time) error {
 	if err := lockRows(ctx, tx, bundleOfTripSQL+` order by id for update`, *d.trip); err != nil {
 		return fmt.Errorf("inspections: lock the bundle: %w", err)
 	}
+	// A reservation of an offer stays confirmed (W2.72 return 1, docs/29 rule 7): the choice is made — a hold again would
+	// reopen it (reservations_chosen) and the start would wait for a choice that cannot be made.
 	if _, err := tx.Exec(ctx, `update sched.reservations set state = 'hold', hold_expires_at = $2, revision = revision + 1
-	                            where id in (`+bundleOfTripSQL+`)`, *d.trip, now.Add(holdTTL)); err != nil {
+	                            where id in (`+bundleOfTripSQL+`) and offer_group_id is null`, *d.trip, now.Add(holdTTL)); err != nil {
 		return fmt.Errorf("inspections: hold again: %w", err)
 	}
 	if _, err := tx.Exec(ctx, `update fleet.vehicles set service_note = null, revision = revision + 1 where id = $1 and service_note = $2`,
@@ -210,7 +212,7 @@ func allow(ctx context.Context, tx querier, d decision, now time.Time) error {
 // confirm: the fault is confirmed. The vehicle stays out of service («неисправность подтверждена»); a trip in
 // defect_review loses the vehicle and its reservation and goes back to planning (the departure is done again with
 // another vehicle, attempt + 1).
-func confirm(ctx context.Context, tx querier, d decision) error {
+func confirm(ctx context.Context, tx querier, d decision, now time.Time) error {
 	if _, err := tx.Exec(ctx, `update fleet.inspections set revision = revision + 1 where id = $1`, d.inspection); err != nil {
 		return fmt.Errorf("inspections: reject: %w", err)
 	}
@@ -232,8 +234,12 @@ func confirm(ctx context.Context, tx querier, d decision) error {
 	if err := lockRows(ctx, tx, reservationsOfTripSQL+` order by id for update`, *d.trip); err != nil {
 		return fmt.Errorf("inspections: lock the reservations: %w", err)
 	}
-	if _, err := tx.Exec(ctx, `update sched.reservations set state = 'released', revision = revision + 1
-	                            where id in (`+reservationsOfTripSQL+`)`, *d.trip); err != nil {
+	// A reservation of an offer is released as the logist releases it (W2.72 return 1, docs/29 rule 7, tenant 0023):
+	// no longer chosen, with its moment and the reason manager — the logist puts another vehicle.
+	if _, err := tx.Exec(ctx, `update sched.reservations set state = 'released', revision = revision + 1, chosen_at = null,
+	                                   released_at = case when offer_group_id is not null then $2::timestamptz end,
+	                                   release_reason = case when offer_group_id is not null then 'manager' end
+	                            where id in (`+reservationsOfTripSQL+`)`, *d.trip, now); err != nil {
 		return fmt.Errorf("inspections: release: %w", err)
 	}
 	return nil

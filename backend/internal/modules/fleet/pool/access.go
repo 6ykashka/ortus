@@ -36,18 +36,26 @@ func (a Access) String() string {
 		return "continuation"
 	case AccessNone:
 		return "none"
+	case AccessPrepare:
+		return "prepare"
 	}
 	return fmt.Sprintf("Access(%d)", int(a))
 }
 
-// accessOf is the access a settled grant leaves the driver (no grant — the modules of the trip decide).
-func accessOf(st Settled) Access {
+// accessOf is the access a settled grant leaves the driver (no grant — the modules of the trip decide); a scheduled
+// grant of a transfer that prepares its trip (S2-20, prepareSQL) leaves the preparation (AccessPrepare, Q-W2.71-3).
+func accessOf(st Settled, prepare bool) Access {
 	switch st.Grant {
 	case fleetapi.TemporaryDriverGrantStateActive:
 		return AccessBase
 	case fleetapi.TemporaryDriverGrantStateClosing:
 		return AccessContinuation
-	case fleetapi.TemporaryDriverGrantStateScheduled, fleetapi.TemporaryDriverGrantStateEnded:
+	case fleetapi.TemporaryDriverGrantStateScheduled:
+		if prepare {
+			return AccessPrepare
+		}
+		return AccessNone
+	case fleetapi.TemporaryDriverGrantStateEnded:
 		return AccessNone
 	}
 	return AccessBase
@@ -107,7 +115,7 @@ func (s *Service) TripAccess(ctx context.Context, tc tenantctx.TenantContext, tr
 	case err != nil:
 		return AccessBase, problem.Wrap(problem.CodeDependencyUnavailable, fmt.Errorf("pool: access to %s: %w", trip, err))
 	}
-	return accessOf(Settle(x.input(), s.now())), nil
+	return accessOf(Settle(x.input(), s.now()), x.prepare), nil
 }
 
 // TripOf returns the trip of object id of kind o (uuid.Nil: no such object or no trip).
@@ -131,7 +139,8 @@ func (s *Service) TripOf(ctx context.Context, tc tenantctx.TenantContext, o Obje
 	return *trip, nil
 }
 
-// HiddenTrips returns the trips the transfers of the subject of tc close to him now (AccessNone): «Данные» leave them
+// HiddenTrips returns the trips the transfers of the subject of tc close to him now (AccessNone; the preparation of an
+// S2-20 trip before its window, AccessPrepare, opens no data of it): «Данные» leave them
 // out (cmd/api poolTrips); the lists of the tag read TripAccesses (a reservation of a continued trip is out too).
 func (s *Service) HiddenTrips(ctx context.Context, tc tenantctx.TenantContext) (map[uuid.UUID]bool, error) {
 	all, err := s.TripAccesses(ctx, tc)
@@ -140,7 +149,7 @@ func (s *Service) HiddenTrips(ctx context.Context, tc tenantctx.TenantContext) (
 	}
 	out := map[uuid.UUID]bool{}
 	for id, a := range all {
-		if a == AccessNone {
+		if a == AccessNone || a == AccessPrepare {
 			out[id] = true
 		}
 	}
@@ -171,7 +180,7 @@ func (s *Service) TripAccesses(ctx context.Context, tc tenantctx.TenantContext) 
 	}
 	now := s.now()
 	for _, x := range list {
-		out[*x.trip] = accessOf(Settle(x.input(), now))
+		out[*x.trip] = accessOf(Settle(x.input(), now), x.prepare)
 	}
 	for id, a := range out {
 		if a == AccessBase {

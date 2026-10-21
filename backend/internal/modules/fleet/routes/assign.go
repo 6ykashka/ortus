@@ -5,7 +5,6 @@ import (
 	"errors"
 	"maps"
 	"net/http"
-	"strings"
 	"time"
 
 	"github.com/google/uuid"
@@ -60,9 +59,12 @@ func (s *Server) AssignTripVehicle(ctx context.Context, req fleetapi.AssignTripV
 	err = kit.Tx(ctx, s.Pools, tc.TenantID, func(tx pgx.Tx) error {
 		c := command{tx: tx, ev: s.within(tx, now), tc: tc, now: now}
 		var err error
-		out, err = c.assign(ctx, req.TripId, req.Body.VehicleId, req.Params.IfMatch)
+		out, err = c.assign(ctx, req.TripId, req.Body.VehicleId, req.Body.AlternativeVehicleId, req.Params.IfMatch)
 		return err
 	})
+	if res, ok := validation(ctx, err); ok {
+		return fleetapi.AssignTripVehicle422ApplicationProblemPlusJSONResponse{ValidationApplicationProblemPlusJSONResponse: res}, nil
+	}
 	if err != nil {
 		return nil, dbError(err)
 	}
@@ -95,7 +97,7 @@ func (t tripRow) rules() fleetrules.Trip {
 	return fleetrules.Trip{ID: t.id.String(), Cargo: cargo}
 }
 
-func (c command) assign(ctx context.Context, tripID, vehicleID uuid.UUID, ifMatch string) (fleetapi.TripPlan, error) {
+func (c command) assign(ctx context.Context, tripID, vehicleID uuid.UUID, alt *uuid.UUID, ifMatch string) (fleetapi.TripPlan, error) {
 	t, err := c.lockTrip(ctx, tripID)
 	if err != nil {
 		return fleetapi.TripPlan{}, err
@@ -106,25 +108,14 @@ func (c command) assign(ctx context.Context, tripID, vehicleID uuid.UUID, ifMatc
 	if t.state != tripPlanned && t.state != tripAssigned {
 		return fleetapi.TripPlan{}, kit.Conflict(textNotPlanned)
 	}
-	v, err := c.vehicle(ctx, vehicleID)
-	if err != nil {
+	if err := checkAlternative(t, vehicleID, alt); err != nil {
 		return fleetapi.TripPlan{}, err
 	}
-	if fit := fleetrules.Compat(v.Rules(), t.rules()); !fit.Fit {
-		return fleetapi.TripPlan{}, problem.New(codeIncompatible, textIncompatiblePre+strings.Join(misfits(fit), "; "))
-	}
-	if err := c.free(ctx, v, t); err != nil {
-		return fleetapi.TripPlan{}, err
-	}
-	b, err := c.hold(ctx, t, v)
-	if err != nil {
+	if err := c.place(ctx, t, vehicleID, alt); err != nil {
 		return fleetapi.TripPlan{}, err
 	}
 	out, err := Plan(ctx, c.tx, t.id)
 	if err != nil {
-		return fleetapi.TripPlan{}, err
-	}
-	if err := c.recordHold(ctx, b); err != nil {
 		return fleetapi.TripPlan{}, err
 	}
 	return out, kit.Complete(ctx, c.tx, http.StatusOK, kit.ETag(out.Revision), out)
@@ -201,9 +192,14 @@ func (c command) free(ctx context.Context, v vehicles.Row, t tripRow) error {
 		return problem.New(codeOverlap, textVehicleTaken)
 	}
 	var kept bool
-	if err := c.tx.QueryRow(ctx, `select exists (select 1 from fleet.trips
-		 where vehicle_id = $1 and id <> $2 and planned && tstzrange($3, $4, '[)')
-		   and state in ('assigned', 'inspection', 'defect_review', 'on_route', 'returning', 'submitted', 'rework'))`,
+	// W2.72 (S2-20 rule 6, Q-W2.70-9): the usual vehicle of a temporary driver, approved with the request of the trip,
+	// leaves the trip at its return inspection; any other vehicle stays on it until the acceptance.
+	if err := c.tx.QueryRow(ctx, `select exists (select 1 from fleet.trips o join fleet.vehicles v on v.id = o.vehicle_id
+		 where o.vehicle_id = $1 and o.id <> $2 and o.planned && tstzrange($3, $4, '[)')
+		   and o.state in ('assigned', 'inspection', 'defect_review', 'on_route', 'returning', 'submitted', 'rework')
+		   and not (o.state in ('returning', 'submitted', 'rework') and o.return_inspection_id is not null
+		            and exists (select 1 from fleet.driver_transfers x where x.trip_id = o.id and x.home_vehicle_id = v.id
+		                         and x.vehicle_decision = 'approved')))`,
 		v.ID, t.id, t.from, t.until).Scan(&kept); err != nil {
 		return err
 	}

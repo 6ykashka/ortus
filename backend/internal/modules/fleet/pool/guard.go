@@ -36,7 +36,8 @@ func (h Server) guardFor(ctx context.Context) (tenantctx.TenantContext, bool) {
 
 // trip lets operation op (kind — the kind of an inspection) on trip through to the base unless the transfer of the
 // subject closes the trip to him: AccessNone — 404 with detail; AccessContinuation — 404 unless op continues the trip
-// (Continues, D09).
+// (Continues, D09); AccessPrepare — 404 unless op prepares the trip (Prepares: the trip, its reservations, the choice;
+// S2-20, Q-W2.71-3).
 func (h Server) trip(ctx context.Context, op, kind string, trip uuid.UUID, detail string) error {
 	tc, ok := h.guardFor(ctx)
 	if !ok || trip == uuid.Nil {
@@ -46,7 +47,7 @@ func (h Server) trip(ctx context.Context, op, kind string, trip uuid.UUID, detai
 	switch {
 	case err != nil:
 		return err
-	case a == AccessNone, a == AccessContinuation && !Continues(op, kind):
+	case a == AccessNone, a == AccessContinuation && !Continues(op, kind), a == AccessPrepare && !Prepares(op):
 		return problem.New(problem.CodeNotFound, detail)
 	}
 	return nil
@@ -77,7 +78,7 @@ func (h Server) accesses(ctx context.Context) (map[uuid.UUID]Access, error) {
 // shown reports whether an item of a trip at access a stays in a list whose items are read by op: as op itself would
 // answer — a closed trip never, a continued one only when op continues it (a reservation of a started trip does not).
 func shown(a Access, op string) bool {
-	return a == AccessBase || a == AccessContinuation && Continues(op, "")
+	return a == AccessBase || a == AccessContinuation && Continues(op, "") || a == AccessPrepare && Prepares(op)
 }
 
 // listPage is a page of a list of the base: its items, the cursor of the next one and whether the base answered 200.
@@ -195,9 +196,12 @@ func (h Server) AssignTripVehicle(ctx context.Context, r fleetapi.AssignTripVehi
 	if err := h.trip(ctx, "assignTripVehicle", "", r.TripId, textTripNotFound); err != nil {
 		return nil, err
 	}
+	live := h.foreignOffers(ctx, r.TripId)
 	out, err := h.StrictServerInterface.AssignTripVehicle(ctx, r)
-	if err == nil {
+	if _, ok := out.(fleetapi.AssignTripVehicle200JSONResponse); err == nil && ok {
 		h.settleAfter(ctx, "assignTripVehicle", r.TripId)
+		h.notifyAssigned(ctx, r.TripId)
+		h.notifyReleased(ctx, r.TripId, live)
 	}
 	return out, err
 }

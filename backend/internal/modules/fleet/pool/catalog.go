@@ -5,6 +5,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/google/uuid"
 	"github.com/jackc/pgx/v5"
 
 	fleetapi "github.com/ortus/ortus-crm/backend/internal/api/fleet"
@@ -37,6 +38,10 @@ func (s *Service) Catalog(ctx context.Context, tc tenantctx.TenantContext, param
 	}
 	out := fleetapi.DriverAvailabilityPage{Items: []fleetapi.DriverAvailability{}}
 	err = s.run(ctx, tc, func(c *cmd) error {
+		trip, tripKey, err := c.catalogFor(ctx, params.TripId)
+		if err != nil {
+			return err
+		}
 		var a sqlArgs
 		from, until := a.add(want.Start), a.add(want.End)
 		where := []string{
@@ -52,7 +57,7 @@ func (s *Service) Catalog(ctx context.Context, tc tenantctx.TenantContext, param
 			}
 			where = append(where, "not ("+own+")")
 		}
-		fp := c.fingerprint("catalog", want.Start.Format(time.RFC3339Nano), want.End.Format(time.RFC3339Nano))
+		fp := c.fingerprint("catalog", want.Start.Format(time.RFC3339Nano), want.End.Format(time.RFC3339Nano), tripKey)
 		if params.Cursor != nil {
 			at, id, err := keyset(*params.Cursor, fp)
 			if err != nil {
@@ -75,10 +80,33 @@ func (s *Service) Catalog(ctx context.Context, tc tenantctx.TenantContext, param
 			next := encodeCursor(fp, last.free.Start.UTC().Format(time.RFC3339Nano), last.id.String())
 			out.NextCursor, list = &next, list[:limit]
 		}
-		for _, p := range list {
-			out.Items = append(out.Items, p.availability())
-		}
-		return nil
+		out.Items, err = c.cards(ctx, list, trip)
+		return err
 	})
 	return out, err
+}
+
+// catalogFor is the trip the logist reads the catalog for (W2.72, S2-20 rule 2: the fit of the usual vehicles to its
+// cargo and window; an invisible trip — 404) and its key of the cursor; nil — none.
+func (c *cmd) catalogFor(ctx context.Context, id *uuid.UUID) (*tripCargo, string, error) {
+	if id == nil {
+		return nil, "", nil
+	}
+	t, err := c.catalogTrip(ctx, *id)
+	return t, id.String(), err
+}
+
+// cards are the catalog cards of list with the usual vehicle of each publication (for trip, when given).
+func (c *cmd) cards(ctx context.Context, list []publication, trip *tripCargo) ([]fleetapi.DriverAvailability, error) {
+	out := make([]fleetapi.DriverAvailability, 0, len(list))
+	for _, p := range list {
+		item := p.availability()
+		usual, err := c.usualCard(ctx, p, trip)
+		if err != nil {
+			return nil, err
+		}
+		item.UsualVehicle = usual
+		out = append(out, item)
+	}
+	return out, nil
 }

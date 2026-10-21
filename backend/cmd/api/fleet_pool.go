@@ -72,7 +72,7 @@ func (p poolTrips) Closed(ctx context.Context, tc tenantctx.TenantContext) (file
 	out := files.Closed{Hidden: []uuid.UUID{}, Continued: []uuid.UUID{}}
 	for id, a := range all {
 		switch a {
-		case pool.AccessNone:
+		case pool.AccessNone, pool.AccessPrepare: // W2.72: before the window of an S2-20 trip — no files of it
 			out.Hidden = append(out.Hidden, id)
 		case pool.AccessContinuation:
 			out.Continued = append(out.Continued, id)

@@ -176,7 +176,21 @@ func settleOne(ctx context.Context, tx pgx.Tx, x transfer, st Settled, now time.
 	if err := unassignDriver(ctx, tx, x, st, res); err != nil {
 		return false, err
 	}
-	return granted || moved, announceEnd(ctx, tx, x, st)
+	offered, err := settleOffer(ctx, tx, x, st, now)
+	if err != nil {
+		return false, err
+	}
+	return granted || moved || offered, announceEnd(ctx, tx, x, st)
+}
+
+// settleOffer makes the offer of the trip of x follow the time (W2.72, S2-20): a transfer that completed before its
+// driver started the trip releases its offer (transfer_ended) and closes the offered vehicles; otherwise the rows of
+// the vehicles no longer offered to the driver close. changed: a validity moved.
+func settleOffer(ctx context.Context, tx pgx.Tx, x transfer, st Settled, now time.Time) (bool, error) {
+	if st.Changed && st.Status == StatusCompleted && !x.input().started() {
+		return endOffer(ctx, tx, x, now)
+	}
+	return syncOfferGrants(ctx, tx, x, now)
 }
 
 // settleStatusCounted writes the status the time gave x (settleStatus) and counts it in res.
@@ -309,7 +323,7 @@ func boundAssignment(ctx context.Context, tx pgx.Tx, id uuid.UUID, until time.Ti
 // assignment and the window — never the name of the driver.
 func publishTransfer(ctx context.Context, tx pgx.Tx, typ string, x transfer, extra map[string]any) error {
 	payload := map[string]any{"id": x.id, keyPublication: x.publication, keySource: x.source,
-		keyTarget: x.target, "startsAt": x.period.Start, keyEndsAt: x.period.End}
+		keyTarget: x.target, keyStartsAt: x.period.Start, keyEndsAt: x.period.End}
 	if x.trip != nil {
 		payload["tripId"] = *x.trip
 	}

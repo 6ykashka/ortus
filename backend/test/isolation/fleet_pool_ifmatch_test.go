@@ -51,7 +51,8 @@ var fleetPoolIfMatchRows = matrix.File{
 				{Actor: "a.owner", Params: map[string]string{"tenantId": "tenant:a", "requestId": "vehicle:a.msk1"},
 					Status: http.StatusNotFound, Code: "not_found", Body: `{"decision": "approve"}`, Note: "id машины — не запрос (AC-01)"},
 				{Actor: "a.manager-msk2", Params: map[string]string{"tenantId": "tenant:a", "requestId": "vehicle:a.msk1"},
-					Status: http.StatusNotFound, Code: "not_found", Body: `{"decision": "reject"}`,
+					// W2.72 (0.6.3-stage2): reject carries its reason — without one it is 422 before the transfer is read.
+					Status: http.StatusNotFound, Code: "not_found", Body: `{"decision": "reject", "comment": "Водитель нужен своей фирме"}`,
 					Note: "менеджер фирмы-источника: шлюз пропускает (approve), хендлер — 404"},
 				{Actor: "b.owner", Params: map[string]string{"tenantId": "tenant:a", "requestId": "vehicle:a.msk1"},
 					Status: http.StatusNotFound, Absent: []string{"tenant:a", "vehicle:a.msk1"}, Body: `{"decision": "approve"}`},

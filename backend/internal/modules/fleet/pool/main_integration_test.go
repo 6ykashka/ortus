@@ -301,10 +301,16 @@ func (e *env) request(t *testing.T, tc tenantctx.TenantContext, b fleetapi.Drive
 	return x
 }
 
-// decide decides with the ETag of revision and requires success.
+// decide decides with the ETag of revision and requires success; a rejection gives its reason (W2.71, 0.6.3-stage2:
+// reject without a comment is 422).
 func (e *env) decide(t *testing.T, tc tenantctx.TenantContext, x fleetapi.DriverTransfer, d fleetapi.DriverTransferDecisionDecision) fleetapi.DriverTransfer {
 	t.Helper()
-	out, err := e.svc.Decide(t.Context(), tc, x.Id, etag(x.Revision), fleetapi.DriverTransferDecision{Decision: d})
+	b := fleetapi.DriverTransferDecision{Decision: d}
+	if d == fleetapi.DriverTransferDecisionDecisionReject {
+		reason := "Водитель нужен своей фирме"
+		b.Comment = &reason
+	}
+	out, err := e.svc.Decide(t.Context(), tc, x.Id, etag(x.Revision), b)
 	if err != nil {
 		t.Fatalf("decideDriverTransfer %s: %v", d, err)
 	}

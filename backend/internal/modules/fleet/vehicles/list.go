@@ -35,10 +35,13 @@ const listSQL = selectSQL + `
      and not exists (select 1 from fleet.defects d where d.vehicle_id = v.id and d.severity = 'blocking'
                        and d.state in ('open', 'in_review', 'confirmed_out_of_service'))
      and not exists (select 1 from fleet.trips t where t.vehicle_id = v.id
-                       and t.state in ('on_route', 'returning', 'submitted', 'rework'))
+                       and t.state in ('on_route', 'returning', 'submitted', 'rework')
+                       and not (t.state in ('returning', 'submitted', 'rework') and t.return_inspection_id is not null
+                            and exists (select 1 from fleet.driver_transfers x where x.trip_id = t.id
+                                         and x.home_vehicle_id = v.id and x.vehicle_decision = 'approved')))
      and not exists (select 1 from sched.resources s join sched.reservations r on r.resource_id = s.id
                       where s.kind = 'vehicle' and s.ref_id = v.id and r.occupied && tstzrange($5, $6, '[)')
-                        and (r.state in ('confirmed', 'consumed') or (r.state = 'hold' and r.hold_expires_at > $1)))))
+                        and (r.state in ('confirmed', 'consumed') or (r.state = 'hold' and (r.hold_expires_at > $1 or r.offer_group_id is not null))))))
    and ($7::timestamptz is null or (v.created_at, v.id) > ($7::timestamptz, $8::uuid))
  order by v.created_at, v.id
  limit $9`

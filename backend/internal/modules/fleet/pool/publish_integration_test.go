@@ -136,9 +136,11 @@ func TestPublicationsAndWithdrawal(t *testing.T) { //nolint:paralleltest // the 
 		}
 		return false
 	}
-	page, err := e.svc.Publications(ctx, mgr2, fleetapi.ListDriverPoolPublicationsParams{})
+	// A whole page: the other tests of the package publish drivers of Москва-2 with later windows (newest first).
+	all := 200 // kit.MaxLimit
+	page, err := e.svc.Publications(ctx, mgr2, fleetapi.ListDriverPoolPublicationsParams{Limit: &all})
 	expect(t, "publications of Москва-2", page, err == nil, has(page, p.Id))
-	page, err = e.svc.Publications(ctx, mgr1, fleetapi.ListDriverPoolPublicationsParams{})
+	page, err = e.svc.Publications(ctx, mgr1, fleetapi.ListDriverPoolPublicationsParams{Limit: &all})
 	expect(t, "publications seen by Москва-1", page, err == nil, !has(page, p.Id))
 	withdrawn := fleetapi.ListDriverPoolPublicationsParamsStateWithdrawn
 	page, err = e.svc.Publications(ctx, mgr2, fleetapi.ListDriverPoolPublicationsParams{State: &withdrawn})

@@ -301,7 +301,8 @@ func (fleetNotImplemented) GetVehicleImport(context.Context, fleetapi.GetVehicle
 	return nil, errFleetNotImplemented
 }
 
-// ChooseReservation answers 501 until W2.72 (W2.71, contract 0.6.3-stage2: S2-20, the choice of the temporary driver).
+// ChooseReservation answers 501 in the base: the overlay of the pool serves it (W2.72, fleet_pool.go; W2.71, contract
+// 0.6.3-stage2: S2-20, the choice of the temporary driver).
 func (fleetNotImplemented) ChooseReservation(context.Context, fleetapi.ChooseReservationRequestObject) (fleetapi.ChooseReservationResponseObject, error) {
 	return nil, errFleetNotImplemented
 }

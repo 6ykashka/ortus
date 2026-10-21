@@ -25,7 +25,7 @@ import (
 const (
 	publicationCols = `p.id, p.person_id, pp.full_name, coalesce(p.display_name, ''), p.home_unit_id, u.name, u.time_zone,
 	       p.qualifications, lower(p.available), upper(p.available), p.terms, p.published_by, p.created_at,
-	       p.withdrawn_at, p.withdrawn_by, p.withdrawal_comment, p.revision`
+	       p.withdrawn_at, p.withdrawn_by, p.withdrawal_comment, p.revision, p.usual_vehicle_id`
 	publicationFrom = `
 	  from fleet.pool_publications p
 	  join people.person_profiles pp on pp.id = p.person_id
@@ -49,12 +49,13 @@ type publication struct {
 	withdrawnBy           *uuid.UUID
 	withdrawalComment     *string
 	revision              int64
+	usual                 *uuid.UUID // the usual vehicle of the driver (W2.72, S2-20 rule 1, TD-01)
 }
 
 func scanPublication(row pgx.Row) (publication, error) {
 	var p publication
 	err := row.Scan(&p.id, &p.person, &p.name, &p.label, &p.home, &p.homeName, &p.zone, &p.qualifications, &p.free.Start,
-		&p.free.End, &p.terms, &p.publishedBy, &p.publishedAt, &p.withdrawnAt, &p.withdrawnBy, &p.withdrawalComment, &p.revision)
+		&p.free.End, &p.terms, &p.publishedBy, &p.publishedAt, &p.withdrawnAt, &p.withdrawnBy, &p.withdrawalComment, &p.revision, &p.usual)
 	return p, err
 }
 
@@ -75,6 +76,7 @@ func (p publication) dto(now time.Time) fleetapi.DriverPoolPublication {
 		HomeOrgUnitName: &homeName, Qualifications: nonNil(p.qualifications), FreeWindow: p.window(), Terms: p.terms,
 		State: p.state(now), PublishedAt: p.publishedAt.UTC(), WithdrawnAt: utc(p.withdrawnAt),
 		WithdrawnByMemberId: p.withdrawnBy, WithdrawalComment: p.withdrawalComment, Revision: p.revision,
+		UsualVehicleId: p.usual,
 	}
 	if p.publishedBy != uuid.Nil {
 		by := p.publishedBy
@@ -154,6 +156,9 @@ func (c *cmd) publish(ctx context.Context, b fleetapi.DriverPoolPublicationCreat
 	if err := c.publishable(ctx, b.DriverMemberId, b.HomeOrgUnitId, w); err != nil {
 		return fleetapi.DriverPoolPublication{}, err
 	}
+	if err := c.usualVehicle(ctx, b.UsualVehicleId, b.HomeOrgUnitId); err != nil {
+		return fleetapi.DriverPoolPublication{}, err
+	}
 	if err := c.free(ctx, b.DriverMemberId, w); err != nil {
 		return fleetapi.DriverPoolPublication{}, err
 	}
@@ -163,9 +168,10 @@ func (c *cmd) publish(ctx context.Context, b fleetapi.DriverPoolPublicationCreat
 	}
 	var id uuid.UUID
 	err = c.tx.QueryRow(ctx, `insert into fleet.pool_publications (person_id, home_unit_id, qualifications, available,
-		published_by, created_at, display_name, terms)
-		values ($1, $2, $3, tstzrange($4, $5, '[)'), $6, $7, $8, $9) returning id`,
-		b.DriverMemberId, b.HomeOrgUnitId, nonNil(b.Qualifications), w.Start, w.End, c.tc.PersonID, c.now, label, b.Terms).Scan(&id)
+		published_by, created_at, display_name, terms, usual_vehicle_id)
+		values ($1, $2, $3, tstzrange($4, $5, '[)'), $6, $7, $8, $9, $10) returning id`,
+		b.DriverMemberId, b.HomeOrgUnitId, nonNil(b.Qualifications), w.Start, w.End, c.tc.PersonID, c.now, label, b.Terms,
+		b.UsualVehicleId).Scan(&id)
 	if violates(err, codeExclusionViolation, "") {
 		return fleetapi.DriverPoolPublication{}, problem.New(codeUnavailable, textPublished)
 	}
@@ -173,7 +179,10 @@ func (c *cmd) publish(ctx context.Context, b fleetapi.DriverPoolPublicationCreat
 		return fleetapi.DriverPoolPublication{}, fmt.Errorf("pool: publish: %w", err)
 	}
 	diff := map[string]any{"driverMemberId": b.DriverMemberId, "homeOrgUnitId": b.HomeOrgUnitId, "displayName": label,
-		"startsAt": w.Start, keyEndsAt: w.End}
+		keyStartsAt: w.Start, keyEndsAt: w.End}
+	if b.UsualVehicleId != nil {
+		diff["usualVehicleId"] = *b.UsualVehicleId
+	}
 	if _, err := c.record(ctx, "fleet.pool.publish", eventPublished, targetPublication, id, b.HomeOrgUnitId, diff); err != nil {
 		return fleetapi.DriverPoolPublication{}, err
 	}

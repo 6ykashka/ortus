@@ -20,11 +20,11 @@ import (
 // «Приёмка» — дополнения к AC-06). Временный водитель b.driver-msk1 (тенант B, «Москва-1» → «Москва-2», как AC-06)
 // получил предложения машин на рейсы перевода: открытое (машина фирмы рейса и его обычная, срок выбора через 90
 // минут), просроченное (срок прошёл 20 минут назад), уже выбранное (одна confirmed, другая released) и предложение
-// другому водителю; бронь без предложения. Строки ссылаются на объекты s220:*. Обработчика chooseReservation нет до
-// W2.72 — строки pending: W2.72 (501 до хендлера; в строгом режиме isolation_pending — красные). Строка, ответ которой
-// без W2.72 не 501 (бронь временного водителя: сейчас 404 надстройки рейса до окна), — только в строгом режиме: W2.72
-// переносит её в обычный набор, когда она зелёная. Машины водителя до окна — обычная строка (строки области resource
-// на каждую предложенную машину, как их пишет одобрение). Публикация и роль — свои (не пересекаются с засевом AC-06 того же водителя).
+// другому водителю; бронь без предложения. Строки ссылаются на объекты s220:*. W2.72 (обработчик chooseReservation,
+// надстройка пула до окна — AccessPrepare, 403 брони временного водителя): строки без pending, бронь временного водителя
+// — в обычном наборе, её окно — окно рейса предложения по часам харнесса (Q-W2.71-15). Машины водителя до окна —
+// строки области resource на каждую предложенную машину, как их пишет одобрение. Публикация и роль — свои (не
+// пересекаются с засевом AC-06 того же водителя).
 
 var s220Names = []string{
 	"trip-offer", "trip-deadline", "trip-chosen", "trip-other",
@@ -93,8 +93,9 @@ func (s *s220Seed) setup(w *fixtures.World) {
 		s.at(40*24*time.Hour), s.at(50*24*time.Hour), s.owner)
 }
 
-// seedS220 writes the offers (the clock of the suite — harness.Now) and raises policy_version.
-func seedS220(t *testing.T) {
+// seedS220 writes the offers (the clock of the suite — harness.Now), raises policy_version and returns the window of
+// the trip of the open offer.
+func seedS220(t *testing.T) (time.Time, time.Time) {
 	t.Helper()
 	w, ok := suite.Refs.(*fixtures.World)
 	if !ok {
@@ -152,6 +153,7 @@ func seedS220(t *testing.T) {
 	s.reserve("res-other", vOther, other, from, until, "hold", choose, uuid.New(), s.other, "host", choose, none, none, none)
 
 	s.exec(`update access.policy_state set policy_version = policy_version + 1 where $1::uuid is not null`, d)
+	return from, until
 }
 
 const s220Driver = "b.driver-msk1"
@@ -162,12 +164,13 @@ func s220Row(params map[string]string, status int, code string, present, absent 
 	return matrix.Row{Actor: s220Driver, Params: p, Status: status, Code: code, Present: present, Absent: absent, Note: note}
 }
 
-// s220Rows are the rows of S2-20 (docs/29 «Приёмка»; DoR s2-20 §6): pending W2.72 — the handler of chooseReservation.
-func s220Rows(strict bool) matrix.File {
+// s220Rows are the rows of S2-20 (docs/29 «Приёмка»; DoR s2-20 §6) with the window [from, until) of the trip of the
+// open offer.
+func s220Rows(from, until time.Time) matrix.File {
 	const choose = "/api/v1/tenants/{tenantId}/fleet/reservations/{reservationId}/choose"
 	res := func(name string) map[string]string { return map[string]string{"reservationId": "s220:" + name} }
 	f := matrix.File{Module: "fleet_pool_s220", Endpoints: []matrix.Endpoint{
-		{Op: "chooseReservation", Method: http.MethodPost, Path: choose, Channel: matrix.ChannelHTTP, Pending: "W2.72",
+		{Op: "chooseReservation", Method: http.MethodPost, Path: choose, Channel: matrix.ChannelHTTP,
 			Rows: []matrix.Row{
 				s220Row(res("res-plain"), http.StatusNotFound, "not_found", nil, []string{"s220:res-plain"},
 					"бронь рейса без предложения — 404, как несуществующая"),
@@ -188,18 +191,14 @@ func s220Rows(strict bool) matrix.File {
 				[]string{"s220:vehicle-spare", "s220:vehicle-dl-host", "s220:vehicle-ch-host", "s220:vehicle-other"},
 				"до окна — только машины, предложенные ему на рейс; других машин фирм нет"),
 		}})
-	if !strict {
-		return f
-	}
-	// Ответ этой строки без W2.72 — не 501 (обработчик есть, сейчас 404 надстройки рейса до окна): только в строгом
-	// режиме, пока W2.72 не даст 403 временному водителю.
 	f.Endpoints = append(f.Endpoints,
 		matrix.Endpoint{Op: "reserveVehicle", Method: http.MethodPost, Path: "/api/v1/tenants/{tenantId}/fleet/reservations",
-			Channel: matrix.ChannelHTTP, Pending: "W2.72", Rows: []matrix.Row{func() matrix.Row {
+			Channel: matrix.ChannelHTTP, Rows: []matrix.Row{func() matrix.Row {
 				r := s220Row(nil, http.StatusForbidden, "forbidden_action", nil, nil,
 					"временный водитель брони не создаёт — 403 (вариант (a) отклонён)")
 				r.Body = `{"vehicleId": "{{s220:vehicle-spare}}", "driverMemberId": "{{person:b.driver-msk1@b}}", ` +
-					`"tripId": "{{s220:trip-offer}}", "window": {"startsAt": "2026-10-01T09:30:00Z", "endsAt": "2026-10-01T13:30:00Z", ` +
+					`"tripId": "{{s220:trip-offer}}", "window": {"startsAt": "` + from.UTC().Format(time.RFC3339) + `", "endsAt": "` +
+					until.UTC().Format(time.RFC3339) + `", ` +
 					`"timeZone": "Europe/Moscow"}}`
 				return r
 			}()}},
@@ -210,7 +209,7 @@ func s220Rows(strict bool) matrix.File {
 
 func TestIsolationFleetPoolS220(t *testing.T) {
 	t.Parallel()
-	seedS220(t)
+	from, until := seedS220(t)
 	s := &matrix.Suite{Refs: ac06Refs{base: suite.Refs, ids: s220IDs()}, Target: suite.Target, Strict: suite.Strict}
-	matrix.Run(t, s, s220Rows(suite.Strict))
+	matrix.Run(t, s, s220Rows(from, until))
 }

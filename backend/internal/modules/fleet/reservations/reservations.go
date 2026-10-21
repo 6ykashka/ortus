@@ -62,8 +62,8 @@ const (
 const DefaultTTL = 30 * time.Minute
 
 // columns are the columns the scope predicate filters reservations on: the unit of the vehicle and the «own» people
-// — the driver of the bundle and its author.
-var columns = authz.Columns{Unit: "v.unit_id", Persons: []string{"p.ref_id", "rv.created_by"}}
+// — the driver of the bundle, its author and (W2.72, S2-20) the driver it is offered to.
+var columns = authz.Columns{Unit: "v.unit_id", Persons: []string{"p.ref_id", "rv.created_by", "rv.offered_to"}}
 
 // Server implements the reservation operations of the tag Fleet.
 type Server struct {
@@ -108,6 +108,15 @@ type bundle struct {
 	Revision                  int64
 	CreatedBy                 uuid.UUID
 	CreatedAt                 time.Time
+	offer                     offerCols
+}
+
+// offerCols are the columns of a reservation of an offer (W2.72, S2-20, tenant 0023): the group, the driver who
+// chooses, the kind of the vehicle, the deadline of the choice, the choice and the release.
+type offerCols struct {
+	group, to                 *uuid.UUID
+	kind, reason              *string
+	until, chosen, releasedAt *time.Time
 }
 
 // selectSQL reads the reservations of the module — bundles of a vehicle (the row whose id is the bundle) with their
@@ -115,7 +124,8 @@ type bundle struct {
 // adds conditions.
 const selectSQL = `select rv.bundle_id, s.ref_id, p.ref_id, v.unit_id, u.time_zone, lower(rv.during), upper(rv.during),
        rv.state, rv.hold_expires_at, rv.source_type, rv.source_id, greatest(rv.revision, rp.revision), rv.created_by,
-       rv.created_at
+       rv.created_at, rv.offer_group_id, rv.offered_to, rv.offer_kind, rv.release_reason, rv.choose_until, rv.chosen_at,
+       rv.released_at
   from sched.reservations rv
   join sched.resources s on s.id = rv.resource_id and s.kind = 'vehicle'
   join fleet.vehicles v on v.id = s.ref_id
@@ -129,10 +139,15 @@ func scanBundle(row pgx.Row) (bundle, error) {
 		b      bundle
 		driver *uuid.UUID
 	)
+	o := &b.offer
 	err := row.Scan(&b.ID, &b.Vehicle, &driver, &b.Unit, &b.Zone, &b.Start, &b.End, &b.State, &b.Expires, &b.Source,
-		&b.SourceID, &b.Revision, &b.CreatedBy, &b.CreatedAt)
-	if driver != nil {
+		&b.SourceID, &b.Revision, &b.CreatedBy, &b.CreatedAt, &o.group, &o.to, &o.kind, &o.reason, &o.until, &o.chosen,
+		&o.releasedAt)
+	switch {
+	case driver != nil:
 		b.Driver = *driver
+	case o.to != nil: // a reservation of an offer holds the vehicle only: its driver is the one it is offered to
+		b.Driver = *o.to
 	}
 	return b, err
 }
@@ -155,24 +170,53 @@ func readBundle(ctx context.Context, q pgx.Tx, id uuid.UUID, lock bool) (bundle,
 	return b, err
 }
 
-// states maps the state a row reads as (sched.Effective) to Reservation.state.
+// states maps the state a row reads as (sched.Effective) to Reservation.state. A confirmed row outside an offer is the
+// hold a blocking defect keeps while the manager decides (W2.04): it reads as held, as before 0.6.3-stage2.
 var states = map[string]fleetapi.ReservationState{
 	sched.StateHold: fleetapi.ReservationStateHeld, sched.StateConfirmed: fleetapi.ReservationStateHeld,
 	sched.StateConsumed: fleetapi.ReservationStateConsumed, sched.StateReleased: fleetapi.ReservationStateReleased,
 	sched.StateExpired: fleetapi.ReservationStateExpired,
 }
 
-// dto is the Reservation of the contract at now: a hold whose end came reads as expired.
+// State is Reservation.state of a row in state with the end of its hold at now: a hold whose end came reads as
+// expired. A reservation of an offer (S2-20, W2.71 0.6.3-stage2) reads as it is — confirmed of its own, a hold until
+// the choice or the scheduler at the deadline settles the offer (Q-W2.71-14).
+func State(state string, expires *time.Time, offer bool, now time.Time) fleetapi.ReservationState {
+	switch {
+	case offer && state == sched.StateConfirmed:
+		return fleetapi.ReservationStateConfirmed
+	case offer:
+		return states[state]
+	}
+	return states[sched.Effective(state, expires, now)]
+}
+
+// dto is the Reservation of the contract at now: a hold whose end came reads as expired; a confirmed reservation of
+// an offer holds its vehicle until the end of its window (holdExpiresAt = window.endsAt, 0.6.3-stage2).
 func (b bundle) dto(now time.Time) fleetapi.Reservation {
 	expires := b.Start
 	if b.Expires != nil {
 		expires = *b.Expires
 	}
+	if b.State == sched.StateConfirmed && b.offer.group != nil {
+		expires = b.End
+	}
+	o := b.offer
 	out := fleetapi.Reservation{
 		Id: b.ID, VehicleId: b.Vehicle, DriverMemberId: b.Driver,
 		Window:        fleetapi.TimeWindow{StartsAt: b.Start.UTC(), EndsAt: b.End.UTC(), TimeZone: b.Zone},
-		State:         states[sched.Effective(b.State, b.Expires, now)],
+		State:         State(b.State, b.Expires, o.group != nil, now),
 		HoldExpiresAt: expires.UTC(), Revision: b.Revision,
+		OfferGroupId: o.group, OfferedToMemberId: o.to, ChooseUntil: utc(o.until), ChosenAt: utc(o.chosen),
+		ReleasedAt: utc(o.releasedAt),
+	}
+	if o.kind != nil {
+		k := fleetapi.ReservationOfferKind(*o.kind)
+		out.OfferKind = &k
+	}
+	if o.reason != nil {
+		r := fleetapi.ReservationReleaseReason(*o.reason)
+		out.ReleaseReason = &r
 	}
 	if b.Source == SourceTrip {
 		trip := b.SourceID
@@ -181,14 +225,32 @@ func (b bundle) dto(now time.Time) fleetapi.Reservation {
 	return out
 }
 
+func utc(t *time.Time) *time.Time {
+	if t == nil {
+		return nil
+	}
+	u := t.UTC()
+	return &u
+}
+
 // resource is what access to the reservation is decided on: the unit of the vehicle and its «own» people — the
-// driver, if any, and the author.
+// driver, if any (the one it is offered to), and the author.
 func (b bundle) resource(read string) authz.Resource {
 	persons := []uuid.UUID{b.CreatedBy}
 	if b.Driver != uuid.Nil {
 		persons = append(persons, b.Driver)
 	}
 	return authz.Resource{Unit: b.Unit, Persons: persons, ReadAction: read}
+}
+
+// Load reads reservation id through q without a scope (the caller authorized it) as the Reservation of the contract
+// at now; a missing one is 404 «Бронь не найдена.».
+func Load(ctx context.Context, q pgx.Tx, id uuid.UUID, now time.Time) (fleetapi.Reservation, error) {
+	b, err := readBundle(ctx, q, id, false)
+	if err != nil {
+		return fleetapi.Reservation{}, notFound(err)
+	}
+	return b.dto(now), nil
 }
 
 func (s *Server) conn(ctx context.Context, tc tenantctx.TenantContext) (*scopeddb.Conn, error) {

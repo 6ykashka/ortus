@@ -5,6 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"net/http"
+	"strings"
 	"time"
 	"unicode/utf8"
 
@@ -34,10 +35,8 @@ const noticeDecided = "fleet.driver_transfer.decided"
 func (s *Service) Decide(ctx context.Context, tc tenantctx.TenantContext, id uuid.UUID, ifMatch string, b fleetapi.DriverTransferDecision) (fleetapi.DriverTransfer, error) {
 	switch b.Decision {
 	case fleetapi.DriverTransferDecisionDecisionApprove, fleetapi.DriverTransferDecisionDecisionReject,
-		fleetapi.DriverTransferDecisionDecisionRevoke, fleetapi.DriverTransferDecisionDecisionExtend:
-	case fleetapi.DriverTransferDecisionDecisionApproveDriverOnly:
-		// W2.71 (contract 0.6.3-stage2, S2-20): «Только водителя» — 501 until W2.72.
-		return fleetapi.DriverTransfer{}, problem.New(problem.CodeNotImplemented, "")
+		fleetapi.DriverTransferDecisionDecisionRevoke, fleetapi.DriverTransferDecisionDecisionExtend,
+		fleetapi.DriverTransferDecisionDecisionApproveDriverOnly:
 	default:
 		return fleetapi.DriverTransfer{}, problem.New(problem.CodeMalformedRequest, "")
 	}
@@ -46,6 +45,10 @@ func (s *Service) Decide(ctx context.Context, tc tenantctx.TenantContext, id uui
 	}
 	if (b.EndsAt != nil) != (b.Decision == fleetapi.DriverTransferDecisionDecisionExtend) {
 		return fleetapi.DriverTransfer{}, invalid(textWindow, violationExtend)
+	}
+	// W2.72 (S2-20, 1b; Q-W2.70-8, Q-W2.71-1): «Отклонить» — only with the reason in comment, before the other checks.
+	if b.Decision == fleetapi.DriverTransferDecisionDecisionReject && (b.Comment == nil || strings.TrimSpace(*b.Comment) == "") {
+		return fleetapi.DriverTransfer{}, invalid(textRejectReason, violationReason)
 	}
 	var out fleetapi.DriverTransfer
 	err := s.run(ctx, tc, func(c *cmd) error {
@@ -60,6 +63,9 @@ func (c *cmd) decide(ctx context.Context, id uuid.UUID, ifMatch string, b fleeta
 	x, err := c.decidable(ctx, id, ifMatch, b.Decision)
 	if err != nil {
 		return fleetapi.DriverTransfer{}, err
+	}
+	if b.Decision == fleetapi.DriverTransferDecisionDecisionApproveDriverOnly && !x.usualAsked() {
+		return fleetapi.DriverTransfer{}, invalid(textCheckDecision, violationDriverOnly)
 	}
 	comment := b.Comment
 	if comment != nil && *comment == "" {
@@ -77,6 +83,9 @@ func (c *cmd) decide(ctx context.Context, id uuid.UUID, ifMatch string, b fleeta
 	if x, err = loadTransfer(ctx, c.tx, x.id, ""); err != nil {
 		return fleetapi.DriverTransfer{}, err
 	}
+	if err := attachParts(ctx, c.tx, []*transfer{&x}, c.now); err != nil {
+		return fleetapi.DriverTransfer{}, err
+	}
 	if err := c.announce(ctx, x, b.Decision, ev); err != nil {
 		return fleetapi.DriverTransfer{}, err
 	}
@@ -88,8 +97,8 @@ func (c *cmd) decide(ctx context.Context, id uuid.UUID, ifMatch string, b fleeta
 // carry besides the decision.
 func (c *cmd) apply(ctx context.Context, x transfer, b fleetapi.DriverTransferDecision, comment *string, diff map[string]any) error {
 	switch b.Decision {
-	case fleetapi.DriverTransferDecisionDecisionApprove:
-		return c.approve(ctx, x, comment)
+	case fleetapi.DriverTransferDecisionDecisionApprove, fleetapi.DriverTransferDecisionDecisionApproveDriverOnly:
+		return c.approve(ctx, x, comment, b.Decision)
 	case fleetapi.DriverTransferDecisionDecisionReject:
 		_, err := c.tx.Exec(ctx, `update fleet.driver_transfers set state = 'rejected', decided_by = $2, decided_at = $3,
 			decision_comment = $4, revision = revision + 1 where id = $1`, x.id, c.tc.PersonID, c.now, comment)
@@ -103,7 +112,6 @@ func (c *cmd) apply(ctx context.Context, x transfer, b fleetapi.DriverTransferDe
 			diff["comment"] = *comment
 		}
 		return c.extend(ctx, x, until)
-	case fleetapi.DriverTransferDecisionDecisionApproveDriverOnly: // refused by Decide until W2.72
 	}
 	return problem.New(problem.CodeMalformedRequest, "")
 }
@@ -112,14 +120,14 @@ func (c *cmd) apply(ctx context.Context, x transfer, b fleetapi.DriverTransferDe
 // the temporary assignment, the notification of the requesting logists about an approval or a rejection.
 func (c *cmd) announce(ctx context.Context, x transfer, d fleetapi.DriverTransferDecisionDecision, event uuid.UUID) error {
 	switch d {
-	case fleetapi.DriverTransferDecisionDecisionApprove:
+	case fleetapi.DriverTransferDecisionDecisionApprove, fleetapi.DriverTransferDecisionDecisionApproveDriverOnly:
 		if err := publishTransfer(ctx, c.tx, eventApproved, x, nil); err != nil {
 			return err
 		}
 	case fleetapi.DriverTransferDecisionDecisionRevoke:
 		return publishTransfer(ctx, c.tx, eventRevoked, x, map[string]any{"revokedAt": c.now})
 	case fleetapi.DriverTransferDecisionDecisionReject:
-	case fleetapi.DriverTransferDecisionDecisionExtend, fleetapi.DriverTransferDecisionDecisionApproveDriverOnly:
+	case fleetapi.DriverTransferDecisionDecisionExtend:
 		return nil
 	}
 	return c.notifyDecided(ctx, x, d, event)
@@ -169,7 +177,7 @@ func (c *cmd) decidable(ctx context.Context, id uuid.UUID, ifMatch string, d fle
 // in scope self (Q-W2.07-1 «только рейс»: the trips the driver drives, their inspections, expenses, reservations and
 // files), valid for the window, source transfer; the trip gets the driver, its vehicle — the second row of the role in
 // scope resource (settleVehicle); policy_version is raised for him (W1.07).
-func (c *cmd) approve(ctx context.Context, x transfer, comment *string) error {
+func (c *cmd) approve(ctx context.Context, x transfer, comment *string, d fleetapi.DriverTransferDecisionDecision) error {
 	if err := LockDriver(ctx, c.tx, x.person); err != nil {
 		return err
 	}
@@ -185,11 +193,17 @@ func (c *cmd) approve(ctx context.Context, x transfer, comment *string) error {
 	if err != nil {
 		return err
 	}
+	// W2.72 (S2-20, Q-W2.71-3): a request with a vehicle opens the grant at the approval — before the window the driver
+	// reads his trip and chooses (the overlay narrows the trip to its preparation, AccessPrepare).
+	from := x.period.Start
+	if x.mode != nil && c.now.Before(from) {
+		from = c.now
+	}
 	var assignment uuid.UUID
 	if err := c.tx.QueryRow(ctx, `insert into access.role_assignments (principal_kind, principal_id, role_id, role_version,
 		scope_kind, include_descendants, valid, source, granted_by, reason, created_at)
 		values ('person', $1, $2, $3, 'self', false, tstzrange($4, $5, '[)'), $6, $7, $8, $9) returning id`,
-		x.person, role, version, x.period.Start, x.period.End, sourceTransfer, c.tc.PersonID,
+		x.person, role, version, from, x.period.End, sourceTransfer, c.tc.PersonID,
 		"Пул водителей: запрос "+x.id.String(), c.now).Scan(&assignment); err != nil {
 		return fmt.Errorf("pool: grant: %w", err)
 	}
@@ -203,6 +217,10 @@ func (c *cmd) approve(ctx context.Context, x transfer, comment *string) error {
 			*x.trip, x.person); err != nil {
 			return fmt.Errorf("pool: driver of the trip: %w", err)
 		}
+	}
+	x.decidedBy = &c.tc.PersonID
+	if err := c.offer(ctx, x, d, role, version); err != nil {
+		return err
 	}
 	return c.resettle(ctx, x.id, x.person, "fleet.driver_transfer.approve")
 }
@@ -385,6 +403,14 @@ func (c *cmd) revoke(ctx context.Context, x transfer) error {
 			return err
 		}
 	}
+	// W2.72 (S2-20): the offer of a trip not started is released (transfer_ended); the offered vehicles close at once.
+	if !started {
+		if _, err := endOffer(ctx, c.tx, x, c.now); err != nil {
+			return err
+		}
+	} else if _, err := closeOfferGrants(ctx, c.tx, x.person, []uuid.UUID{x.id}, nil, c.now); err != nil {
+		return err
+	}
 	return c.resettle(ctx, x.id, x.person, "fleet.driver_transfer.revoke")
 }
 
@@ -444,6 +470,12 @@ const candidatesSQL = `select p.id from people.person_profiles p
 // candidates returns the people notifyDecided resolves through the control DB: the holders of
 // fleet.driver_transfers.request now and the owners of the tenant — not every person of the tenant.
 func (c *cmd) candidates(ctx context.Context) ([]uuid.UUID, error) {
+	return c.holders(ctx, actionRequest)
+}
+
+// holders returns the holders of action now and the owners of the tenant: the people a notification of the module is
+// resolved for (Enqueue checks each of them over the unit of the notice).
+func (c *cmd) holders(ctx context.Context, action string) ([]uuid.UUID, error) {
 	owners := []uuid.UUID{}
 	if c.s.Owners != nil {
 		list, err := c.s.Owners.Owners(ctx, c.tc.TenantID)
@@ -452,7 +484,7 @@ func (c *cmd) candidates(ctx context.Context) ([]uuid.UUID, error) {
 		}
 		owners = append(owners, list...)
 	}
-	rows, err := c.tx.Query(ctx, candidatesSQL, c.now, actionRequest, owners)
+	rows, err := c.tx.Query(ctx, candidatesSQL, c.now, action, owners)
 	if err != nil {
 		return nil, fmt.Errorf("pool: recipients: %w", err)
 	}
@@ -472,7 +504,7 @@ func (c *cmd) notifyDecided(ctx context.Context, x transfer, d fleetapi.DriverTr
 		return nil
 	}
 	verb := "отклонён"
-	if d == fleetapi.DriverTransferDecisionDecisionApprove {
+	if d == fleetapi.DriverTransferDecisionDecisionApprove || d == fleetapi.DriverTransferDecisionDecisionApproveDriverOnly {
 		verb = "одобрен"
 	}
 	audience := s.Audience

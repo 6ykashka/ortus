@@ -34,6 +34,12 @@ const (
 	actionPlan    = "fleet.routes.manage"      // «Назначить водителя» (W2.03)
 )
 
+// Params of the cards: the number of the trip and the name of its driver.
+const (
+	paramTrip   = "tripNumber"
+	paramDriver = "driverName"
+)
+
 // maxPerKind bounds every query: the queue shows 8 cards, and a business of the pilot has tens of vehicles; total
 // counts at most this many cards of a kind.
 const maxPerKind = 200
@@ -57,7 +63,8 @@ var _ home.Source = Source{}
 func (Source) Module() string { return ModuleKey }
 
 // Cards implements home.Source: blocking defects (danger), shifts handed in (warn), then — while the module is active
-// (planning is closed in read_only and draining) — trips without a driver (info).
+// (planning is closed in read_only and draining) — trips without a driver (info) and the vehicles of the trips of the
+// temporary drivers (S2-20: the choice not made — warn, no vehicle — danger).
 func (s Source) Cards(ctx context.Context, q home.Query) ([]homeapi.DecisionItem, error) {
 	conn, err := scopeddb.For(ctx, s.Pools, s.Authz, q.Tenant)
 	if err != nil {
@@ -79,7 +86,13 @@ func (s Source) Cards(ctx context.Context, q home.Query) ([]homeapi.DecisionItem
 	if err != nil {
 		return nil, err
 	}
-	return append(out, free...), nil
+	out = append(out, free...)
+	// W2.72 (S2-20, 1g): the vehicle of a trip of a temporary driver — the choice not made, the trip without a vehicle.
+	vehicles, err := vehicleCards(ctx, conn, q.Now)
+	if err != nil {
+		return nil, err
+	}
+	return append(out, vehicles...), nil
 }
 
 func tripRef(id uuid.UUID) *homeapi.ObjectRef {
@@ -127,7 +140,7 @@ func blockingDefects(ctx context.Context, conn *scopeddb.Conn) ([]homeapi.Decisi
 		return homeapi.DecisionItem{
 			Key: KindBlockingDefect + ":" + id.String(), Kind: KindBlockingDefect, ModuleKey: ModuleKey, Tone: homeapi.Danger,
 			Object: tripRef(trip), OccurredAt: utc(at),
-			Params: map[string]string{"tripNumber": number, "zone": zone, "description": description, "driverName": driver},
+			Params: map[string]string{paramTrip: number, "zone": zone, "description": description, paramDriver: driver},
 		}, nil
 	})
 }
@@ -152,7 +165,7 @@ func tripReviews(ctx context.Context, conn *scopeddb.Conn) ([]homeapi.DecisionIt
 		}
 		it := homeapi.DecisionItem{
 			Key: KindTripReview + ":" + id.String(), Kind: KindTripReview, ModuleKey: ModuleKey, Tone: homeapi.Warn,
-			Object: tripRef(id), Params: map[string]string{"tripNumber": number, "driverName": driver},
+			Object: tripRef(id), Params: map[string]string{paramTrip: number, paramDriver: driver},
 		}
 		if returned != nil {
 			it.OccurredAt = utc(*returned)
@@ -184,7 +197,7 @@ func tripsWithoutDriver(ctx context.Context, conn *scopeddb.Conn) ([]homeapi.Dec
 		if err := row.Scan(&id, &number, &title, &cargo, &starts, &pool, &home); err != nil {
 			return homeapi.DecisionItem{}, err
 		}
-		params := map[string]string{"tripNumber": number, "title": title, "cargo": cargo, "startsAt": starts.UTC().Format(time.RFC3339)}
+		params := map[string]string{paramTrip: number, "title": title, "cargo": cargo, "startsAt": starts.UTC().Format(time.RFC3339)}
 		if pool {
 			params["poolRequest"], params["poolHome"] = "pending", home
 		}

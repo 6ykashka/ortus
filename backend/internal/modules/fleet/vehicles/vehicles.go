@@ -115,7 +115,9 @@ type Row struct {
 
 // selectSQL reads vehicles with their state at $1 (the clock of the application) and the start of their current
 // company period when they were moved (Vehicle.orgUnitSince: only after a move — a closed period exists, Q-W2.52-6);
-// the caller adds the conditions.
+// the caller adds the conditions. W2.72 (S2-20): the usual vehicle of a temporary driver of the pool, approved with the
+// request of the trip, leaves the trip at its return inspection (rule 6, Q-W2.70-9; any other vehicle stays until the
+// acceptance); a hold of an offer stays live until the choice or the deadline (Q-W2.71-14).
 const selectSQL = `select v.id, v.unit_id, u.time_zone, v.plate, coalesce(v.display_name, v.plate), v.body_type,
        trim_scale(v.payload_kg)::text, trim_scale(v.volume_m3)::text, trim_scale(v.cargo_length_mm / 1000.0)::text,
        coalesce(trim_scale(v.cargo_width_mm / 1000.0)::text, '0'), coalesce(trim_scale(v.cargo_height_mm / 1000.0)::text, '0'),
@@ -137,13 +139,16 @@ const selectSQL = `select v.id, v.unit_id, u.time_zone, v.plate, coalesce(v.disp
   left join lateral (select t.id, t.state from fleet.trips t
                       where t.vehicle_id = v.id
                         and t.state in ('assigned', 'inspection', 'defect_review', 'on_route', 'returning', 'submitted', 'rework')
+                        and not (t.state in ('returning', 'submitted', 'rework') and t.return_inspection_id is not null
+                                 and exists (select 1 from fleet.driver_transfers x where x.trip_id = t.id
+                                              and x.home_vehicle_id = v.id and x.vehicle_decision = 'approved'))
                       order by case t.state when 'on_route' then 0 when 'returning' then 0 when 'submitted' then 1
                                             when 'rework' then 1 else 2 end, t.created_at desc
                       limit 1) tr on true
   left join lateral (select r.id, case when r.source_type = 'fleet.trip' then r.source_id end as trip_id
                        from sched.resources s join sched.reservations r on r.resource_id = s.id
                       where s.kind = 'vehicle' and s.ref_id = v.id and upper(r.occupied) > $1
-                        and (r.state = 'confirmed' or (r.state = 'hold' and r.hold_expires_at > $1))
+                        and (r.state = 'confirmed' or (r.state = 'hold' and (r.hold_expires_at > $1 or r.offer_group_id is not null)))
                       order by lower(r.occupied), r.id
                       limit 1) h on true`
 

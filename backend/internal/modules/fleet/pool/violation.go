@@ -22,8 +22,12 @@ func (e *fieldError) Error() string { return e.detail }
 
 func (e *fieldError) Unwrap() error { return kit.Invalid(e.detail) }
 
-// keyEndsAt is the end of a window: the field of DriverTransferDecision and a key of the payloads of the events.
-const keyEndsAt = "endsAt"
+// keyEndsAt is the end of a window: the field of DriverTransferDecision and a key of the payloads of the events;
+// keyStartsAt — its start.
+const (
+	keyEndsAt   = "endsAt"
+	keyStartsAt = "startsAt"
+)
 
 // Violations of the bodies of the pool (MSW fleet/pool.ts).
 var (

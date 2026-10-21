@@ -11,9 +11,11 @@ import (
 	"github.com/jackc/pgx/v5"
 
 	fleetapi "github.com/ortus/ortus-crm/backend/internal/api/fleet"
-	"github.com/ortus/ortus-crm/backend/internal/modules/org/kit" //nolint:depguard // W2.02: shared command helpers of the modules (Q-W1.05-18)
-	"github.com/ortus/ortus-crm/backend/internal/modules/sched"   //nolint:depguard // W2.02: the scheduling core of the same work stream
+	"github.com/ortus/ortus-crm/backend/internal/modules/fleet/offers" //nolint:depguard // W2.72: the release of a reservation of an offer of the same module
+	"github.com/ortus/ortus-crm/backend/internal/modules/org/kit"      //nolint:depguard // W2.02: shared command helpers of the modules (Q-W1.05-18)
+	"github.com/ortus/ortus-crm/backend/internal/modules/sched"        //nolint:depguard // W2.02: the scheduling core of the same work stream
 	"github.com/ortus/ortus-crm/backend/internal/platform/audit"
+	"github.com/ortus/ortus-crm/backend/internal/platform/authz"
 	"github.com/ortus/ortus-crm/backend/internal/platform/events"
 	"github.com/ortus/ortus-crm/backend/internal/platform/problem"
 )
@@ -76,15 +78,7 @@ func (c command) release(ctx context.Context, id uuid.UUID, ifMatch, reason stri
 	if err := kit.CheckRevision(ifMatch, b.Revision); err != nil {
 		return fleetapi.Reservation{}, err
 	}
-	if _, err := sched.Release(ctx, c.tx, b.ID, c.now); errors.Is(err, sched.ErrNotHeld) {
-		kept, err := c.withdraw(ctx, b)
-		if err != nil {
-			return fleetapi.Reservation{}, err
-		}
-		if !kept {
-			return fleetapi.Reservation{}, kit.Conflict(textNotHeld)
-		}
-	} else if err != nil {
+	if err := c.releaseBundle(ctx, b); err != nil {
 		return fleetapi.Reservation{}, err
 	}
 	if b.Source == SourceTrip {
@@ -113,12 +107,39 @@ func (c command) release(ctx context.Context, id uuid.UUID, ifMatch, reason stri
 	if b.Driver != uuid.Nil {
 		payload["driverMemberId"] = b.Driver
 	}
+	if o := b.offer; o.group != nil {
+		// A reservation of an offer (docs/29 «События», W2.72 return 1): its offer, the trip and the reason.
+		payload["offerGroupId"], payload["tripId"], payload["reason"] = *o.group, b.SourceID, offers.ReasonManager
+		if o.to != nil {
+			payload["offeredToMemberId"] = *o.to
+		}
+		if o.kind != nil {
+			payload["offerKind"] = *o.kind
+		}
+	}
 	if _, err := events.Publish(ctx, c.tx, events.Event{
 		Type: eventReleased, Aggregate: targetReservation, AggregateID: b.ID, Payload: payload,
 	}); err != nil {
 		return fleetapi.Reservation{}, err
 	}
 	return out, kit.Complete(ctx, c.tx, http.StatusOK, kit.ETag(out.Revision), out)
+}
+
+// releaseBundle releases the live hold of b, or the ended hold its trip still keeps (withdraw), else 409; the release
+// carries its reason and moment (W2.72, S2-20 rule 8: the logist released it — releaseReason manager).
+func (c command) releaseBundle(ctx context.Context, b bundle) error {
+	if _, err := sched.Release(ctx, c.tx, b.ID, c.now); errors.Is(err, sched.ErrNotHeld) {
+		kept, err := c.withdraw(ctx, b)
+		if err != nil {
+			return err
+		}
+		if !kept {
+			return kit.Conflict(textNotHeld)
+		}
+	} else if err != nil {
+		return err
+	}
+	return offers.MarkReleased(ctx, c.tx, b.ID, offers.ReasonManager, c.now)
 }
 
 // withdrawSQL releases the ended hold of a bundle ($1) that its trip ($2) still keeps: the trip is not started and
@@ -151,11 +172,17 @@ func (c command) lockReleasable(ctx context.Context, id uuid.UUID) (bundle, erro
 	if err != nil {
 		return bundle{}, err
 	}
-	if err := c.ev.Permit(ctx, c.tc, ActionRead, b.resource("")); err != nil {
-		return bundle{}, err
-	}
-	if err := c.ev.Permit(ctx, c.tc, ActionManage, b.resource(ActionRead)); err != nil {
-		return bundle{}, err
+	if b.offer.group != nil && b.Source == SourceTrip {
+		if err := c.permitOffer(ctx, b); err != nil {
+			return bundle{}, err
+		}
+	} else {
+		if err := c.ev.Permit(ctx, c.tc, ActionRead, b.resource("")); err != nil {
+			return bundle{}, err
+		}
+		if err := c.ev.Permit(ctx, c.tc, ActionManage, b.resource(ActionRead)); err != nil {
+			return bundle{}, err
+		}
 	}
 	if b.Source == SourceTrip {
 		if _, err := c.tx.Exec(ctx, `select 1 from fleet.trips where id = $1 for update`, b.SourceID); err != nil {
@@ -163,4 +190,26 @@ func (c command) lockReleasable(ctx context.Context, id uuid.UUID) (bundle, erro
 		}
 	}
 	return readBundle(ctx, c.tx, id, true)
+}
+
+// permitOffer decides the release of the reservation of an offer b (W2.72 return 1; docs/29 rule 8, «Права»: «Логист
+// фирмы рейса — ставит свою машину: бронь до выбора; меняет машину после выбора»): fleet.reservations.manage over the
+// company of its trip. The company of the vehicle (the usual vehicle of a temporary driver) sees the reservation but
+// does not release it — 403; anyone else who does not see it — 404.
+func (c command) permitOffer(ctx context.Context, b bundle) error {
+	var unit uuid.UUID
+	if err := c.tx.QueryRow(ctx, `select unit_id from fleet.trips where id = $1`, b.SourceID).Scan(&unit); err != nil {
+		if errors.Is(err, pgx.ErrNoRows) {
+			return problem.New(problem.CodeNotFound, "")
+		}
+		return err
+	}
+	err := c.ev.Permit(ctx, c.tc, ActionManage, authz.Resource{Unit: unit})
+	if err == nil || (!problem.Is(err, problem.CodeNotFound) && !problem.Is(err, problem.CodeForbiddenAction)) {
+		return err
+	}
+	if err := c.ev.Permit(ctx, c.tc, ActionRead, b.resource("")); err != nil {
+		return err
+	}
+	return problem.New(problem.CodeForbiddenAction, "")
 }

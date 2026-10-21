@@ -148,7 +148,8 @@ func Hold(ctx context.Context, tx pgx.Tx, r HoldRequest) error {
 		}
 	}
 	if _, err := tx.Exec(ctx, `update sched.reservations set state = 'expired', revision = revision + 1
-		 where resource_id = any($1) and state = 'hold' and hold_expires_at <= $2`, ids, r.Now); err != nil {
+		 where resource_id = any($1) and state = 'hold' and hold_expires_at <= $2
+		   and offer_group_id is null`, ids, r.Now); err != nil {
 		return fmt.Errorf("sched: expire holds: %w", err)
 	}
 	for i, c := range r.Claims {
@@ -225,6 +226,35 @@ func lock(ctx context.Context, tx pgx.Tx, claims []Claim, replaces uuid.UUID) ([
 	return ids, nil
 }
 
+// lockSourceSQL locks the resources of the claims ($1 kinds, $2 refs) and of the live rows of a source ($3 type, $4
+// id): a hold, a confirmed or a consumed row.
+const lockSourceSQL = lockClaimsSQL + `
+    or id in (select resource_id from sched.reservations where source_type = $3 and source_id = $4
+                 and state in ('hold', 'confirmed', 'consumed'))
+ order by id for update`
+
+// LockClaims creates the resources of claims that do not exist yet and locks them, with the resources of the live
+// rows of the source (sourceType, sourceID), in the order of their ids (W2.72, S2-20). A command that writes rows of a
+// source and holds new ones — the offer of a trip: the release of its earlier reservations, one hold per vehicle —
+// takes every lock it needs first, so a parallel Hold of one of the resources never waits for a row of it while it
+// holds a resource the command waits for (the order of Hold). Holds of the same resources later in the transaction
+// take locks it already has.
+func LockClaims(ctx context.Context, tx pgx.Tx, claims []Claim, sourceType string, sourceID uuid.UUID) error {
+	kindsOf, refs, homes := make([]string, len(claims)), make([]uuid.UUID, len(claims)), make([]uuid.UUID, len(claims))
+	for i, c := range claims {
+		kindsOf[i], refs[i], homes[i] = string(c.Kind), c.Ref, c.Home
+	}
+	if _, err := tx.Exec(ctx, `insert into sched.resources (kind, ref_id, home_unit_id)
+		select * from unnest($1::text[], $2::uuid[], $3::uuid[]) on conflict (kind, ref_id) do nothing`,
+		kindsOf, refs, homes); err != nil {
+		return fmt.Errorf("sched: resources: %w", err)
+	}
+	if _, err := tx.Exec(ctx, lockSourceSQL, kindsOf, refs, sourceType, sourceID); err != nil {
+		return fmt.Errorf("sched: lock resources: %w", err)
+	}
+	return nil
+}
+
 // Release releases the live hold of bundle (a hold before its end, or a confirmed reservation) and returns its new
 // revision; ErrNotHeld when the bundle holds nothing live at now.
 func Release(ctx context.Context, tx pgx.Tx, bundle uuid.UUID, now time.Time) (int64, error) {
@@ -265,7 +295,7 @@ const (
 	 where id in (select resource_id from sched.reservations where source_type = $1 and source_id = $2 and state = 'consumed')
 	 order by id for update`
 	endExpireSQL = `update sched.reservations set state = 'expired', revision = revision + 1
-	 where resource_id = any($1) and state = 'hold' and hold_expires_at <= $2`
+	 where resource_id = any($1) and state = 'hold' and hold_expires_at <= $2 and offer_group_id is null`
 	endSQL = `update sched.reservations r
 	   set during = tstzrange(n.lo, $4, '[)'), occupied = tstzrange(least(n.lo, lower(r.occupied)), $4, '[)'),
 	       revision = r.revision + 1
@@ -308,10 +338,16 @@ func End(ctx context.Context, tx pgx.Tx, sourceType string, sourceID uuid.UUID, 
 	return tag.RowsAffected(), nil
 }
 
-// transition moves the live rows of bundle to state and returns the new revision (0: no live row).
+// transition moves the live rows of bundle to state and returns the new revision (0: no live row). A hold of an offer
+// lives until the scheduler settles it (Q-W2.71-14): after the deadline of the choice and before that it is still
+// released (W2.72 return 1), never consumed.
 func transition(ctx context.Context, tx pgx.Tx, bundle uuid.UUID, now time.Time, state string) (int64, error) {
-	rows, err := tx.Query(ctx, `update sched.reservations set state = $3, revision = revision + 1
-		 where bundle_id = $1 and (state = 'confirmed' or (state = 'hold' and hold_expires_at > $2))
+	// A released reservation of an offer is no longer chosen (tenant 0023 reservations_chosen; Q-W2.71-13): the logist
+	// changes the vehicle after the choice (docs/29 rule 8).
+	rows, err := tx.Query(ctx, `update sched.reservations
+		   set state = $3, chosen_at = case when $3 = 'released' then null else chosen_at end, revision = revision + 1
+		 where bundle_id = $1 and (state = 'confirmed' or (state = 'hold'
+		   and (hold_expires_at > $2 or ($3 = 'released' and offer_group_id is not null))))
 		 returning revision`, bundle, now, state)
 	if err != nil {
 		return 0, fmt.Errorf("sched: %s: %w", state, err)

@@ -7,13 +7,17 @@ package main
 // роли «Временный водитель» на машину рейса (область resource) — DML воркера по roles/grants.sql.
 
 import (
+	"context"
 	"database/sql"
 	"testing"
 	"time"
 
 	"github.com/google/uuid"
+	"github.com/jackc/pgx/v5/pgxpool"
 
 	"github.com/ortus/ortus-crm/backend/internal/modules/fleet/pool"
+	"github.com/ortus/ortus-crm/backend/internal/platform/authz"
+	"github.com/ortus/ortus-crm/backend/internal/platform/notify/inbox"
 	"github.com/ortus/ortus-crm/backend/migrations"
 )
 
@@ -72,6 +76,83 @@ func seedPool(t *testing.T, db *sql.DB, now time.Time) poolSeed {
 	q(&s.current, transfer, pub, home, target, currentTrip, now.Add(-time.Hour), now.Add(3*time.Hour), owner,
 		now.Add(-7*time.Hour), grantCurrent)
 	return s
+}
+
+// onePool is the tenant pools of one tenant DB (pool.Pools) for the service of the pool in a test.
+type onePool struct{ p *pgxpool.Pool }
+
+func (o onePool) For(context.Context, uuid.UUID) (*pgxpool.Pool, error) { return o.p, nil }
+
+// W2.72 (S2-20 правило 4): срок выбора прошёл без выбора — досчёт под ролью ortus_worker подтверждает машину фирмы
+// рейса (chosen_at — срок) и снимает обычную (deadline), рейс получает машину.
+func TestPoolOffersAsWorker(t *testing.T) {
+	t.Parallel()
+	super := superDB(t, "t_alta")
+	now := time.Now().UTC().Truncate(time.Second)
+	var home, target, owner uuid.UUID
+	if err := super.QueryRowContext(t.Context(), `select (select id from org.units where name = 'Север Логистик'),
+		(select id from org.units where name = 'Юг Транс'), (select id from people.person_profiles order by id limit 1)`).
+		Scan(&home, &target, &owner); err != nil {
+		t.Fatal(err)
+	}
+	q := func(sql string, args ...any) uuid.UUID {
+		t.Helper()
+		var id uuid.UUID
+		if err := super.QueryRowContext(t.Context(), sql, args...).Scan(&id); err != nil {
+			t.Fatalf("%s: %v", sql, err)
+		}
+		return id
+	}
+	driver := q(`insert into people.person_profiles (full_name, home_unit_id) values ('Водитель предложения', $1) returning id`, home)
+	from := now.Add(20 * time.Minute)
+	deadline := from.Add(-pool.ChooseBefore)
+	trip := q(`insert into fleet.trips (number, unit_id, state, driver_person_id, planned) values ($1, $2, 'planned', $3,
+		tstzrange($4, $5)) returning id`, "Р-W272-"+uuid.NewString()[:6], target, driver, from, from.Add(4*time.Hour))
+	group := uuid.New()
+	offer := func(unit uuid.UUID, kind string) (uuid.UUID, uuid.UUID) {
+		t.Helper()
+		v := q(`insert into fleet.vehicles (unit_id, plate, body_type, payload_kg, volume_m3, cargo_length_mm)
+			values ($1, $2, 'van', 1500, 12, 3200) returning id`, unit, "П "+uuid.NewString()[:6])
+		r := q(`insert into sched.resources (kind, ref_id, home_unit_id) values ('vehicle', $1, $2) returning id`, v, unit)
+		id := uuid.New()
+		if _, err := super.ExecContext(t.Context(), `insert into sched.reservations (id, resource_id, bundle_id, during,
+			occupied, state, hold_expires_at, source_type, source_id, created_by, offer_group_id, offered_to, offer_kind,
+			choose_until) values ($1, $2, $1, tstzrange($3, $4), tstzrange($3, $4), 'hold', $5, 'fleet.trip', $6, $7, $8, $9,
+			$10, $5)`, id, r, from, from.Add(4*time.Hour), deadline, trip, owner, group, driver, kind); err != nil {
+			t.Fatal(err)
+		}
+		return v, id
+	}
+	hostVehicle, host := offer(target, "host")
+	_, usual := offer(home, "usual")
+	// Wired as main.go wires it (W2.72, return 1): the recipients and the owners through the control DB, the audience
+	// and the evaluator through the tenant DB — all as ortus_worker.
+	pools := onePool{tenantPool(t, "t_alta", migrations.RoleWorker)}
+	control := tenantPool(t, controlDB, migrations.RoleWorker)
+	clock := func() time.Time { return now }
+	src := authz.PGSource{Pools: pools}
+	ev := authz.New(src, src, clock)
+	svc := &pool.Service{Pools: pools, Authz: ev, Recipients: inbox.PGRecipients{Control: control},
+		Owners: pool.ControlOwners{Control: control}, Audience: inbox.AuthzAudience{E: ev}, Now: clock}
+	if n, err := svc.SettleOffers(t.Context(), seedAlta); err != nil || n < 1 {
+		t.Fatalf("SettleOffers as ortus_worker: %d %v, want the offer closed", n, err)
+	}
+	if n := count(t, super, `select count(*) from sched.reservations where id = $1 and state = 'confirmed' and chosen_at = $2`,
+		host, deadline); n != 1 {
+		t.Error("the vehicle of the trip company is not confirmed at the deadline")
+	}
+	if n := count(t, super, `select count(*) from sched.reservations where id = $1 and state = 'released'
+		and release_reason = 'deadline'`, usual); n != 1 {
+		t.Error("the usual vehicle is not released at the deadline")
+	}
+	if n := count(t, super, `select count(*) from fleet.trips where id = $1 and vehicle_id = $2 and state = 'assigned'`,
+		trip, hostVehicle); n != 1 {
+		t.Error("the trip has not got the vehicle of the trip company")
+	}
+	if n := count(t, super, `select count(*) from notify.notifications where kind = 'fleet.reservation.released'
+		and entity_id = $1`, trip); n < 1 {
+		t.Error("the company of the usual vehicle is not told «машина освобождена» by the worker")
+	}
 }
 
 func TestPoolSettleAsWorker(t *testing.T) {

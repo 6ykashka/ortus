@@ -24,10 +24,12 @@ const maxNoticeTitle = 300
 // candidatesSQL lists the people of the tenant who may be recipients; the audience decides who is.
 const candidatesSQL = `select id from people.person_profiles where archived_at is null order by id`
 
-// notifyManagers enqueues the notification of a blocking defect for the managers of the area of the trip and the
-// owner: every live person with an active membership whose fleet.inspections.review reaches the unit of the trip now
-// (inbox.Enqueue checks the recipient when it is enqueued, W1.10). event is the outbox event: a repeat adds nothing.
-func (s *Service) notifyManagers(ctx context.Context, tx querier, tenant uuid.UUID, t target, event uuid.UUID, title string) error {
+// notifyManagers enqueues the notification of a blocking defect for the managers of the area of the vehicle — who
+// decide it (fleet.inspections.review over the unit of the vehicle; W2.72 return 1, docs/29 rule 6: the company of the
+// usual vehicle of a temporary driver) — then of the trip, and the owner: every live person with an active membership
+// whose fleet.inspections.review reaches the unit now (inbox.Enqueue checks the recipient when it is enqueued, W1.10).
+// event is the outbox event: a repeat adds nothing, a person reaching both units gets it once.
+func (s *Service) notifyManagers(ctx context.Context, tx querier, tenant uuid.UUID, t target, vehicleUnit, event uuid.UUID, title string) error {
 	if s.Recipients == nil || s.Audience == nil {
 		return nil
 	}
@@ -39,14 +41,20 @@ func (s *Service) notifyManagers(ctx context.Context, tx querier, tenant uuid.UU
 	if err != nil {
 		return fmt.Errorf("inspections: recipients: %w", err)
 	}
-	n := inbox.Notice{
-		Kind: noticeBlocking, Severity: inbox.SeverityCritical, Title: title,
-		Object: &inbox.Object{ModuleKey: "fleet", EntityType: "trip", EntityID: t.trip},
-		Unit:   t.unit, Permission: actionReview, SourceEvent: event,
+	units := []uuid.UUID{t.unit}
+	if vehicleUnit != uuid.Nil && vehicleUnit != t.unit {
+		units = []uuid.UUID{vehicleUnit, t.unit}
 	}
-	for _, p := range people {
-		if err := s.enqueue(ctx, tx, tenant, p, n); err != nil {
-			return err
+	for _, unit := range units {
+		n := inbox.Notice{
+			Kind: noticeBlocking, Severity: inbox.SeverityCritical, Title: title,
+			Object: &inbox.Object{ModuleKey: "fleet", EntityType: "trip", EntityID: t.trip},
+			Unit:   unit, Permission: actionReview, SourceEvent: event,
+		}
+		for _, p := range people {
+			if err := s.enqueue(ctx, tx, tenant, p, n); err != nil {
+				return err
+			}
 		}
 	}
 	return nil

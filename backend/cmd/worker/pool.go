@@ -1,6 +1,7 @@
 package main
 
-// W2.07: the scheduled settlement of the driver pool (S2-14, Q-W2.51-4, Q-W2.51-15): open requests expire at the start
+// W2.07: the scheduled settlement of the driver pool (S2-14, Q-W2.51-4, Q-W2.51-15; W2.72, S2-20: the offers of vehicles
+// whose deadline of the choice came — pool.Service.SettleOffers): open requests expire at the start
 // of their window, approved transfers complete at its end (a started trip keeps its temporary driver until the
 // acceptance), the grant of a temporary driver opens with the start of his trip and closes at its acceptance, a driver
 // leaves a trip he did not start (pool.SettleDB). W2.57 (Q-W2.07-1): the acceptance, the cancellation and taking the
@@ -39,12 +40,12 @@ func poolInterval(getenv func(string) string) (time.Duration, error) {
 // poolJob returns the scheduled settlement of the driver pool over the tenant pools of the worker, or a job that
 // returns at once when WORKER_POOL_INTERVAL is 0; a malformed interval is an error of the configuration.
 func poolJob(getenv func(string) string, tenants func(context.Context) ([]uuid.UUID, error), pools *tenantctx.Pools,
-	now func() time.Time, log *slog.Logger) (func(context.Context), error) {
+	offers func(context.Context, uuid.UUID) (int, error), now func() time.Time, log *slog.Logger) (func(context.Context), error) {
 	every, err := poolInterval(getenv)
 	if err != nil || every == 0 {
 		return func(context.Context) {}, err
 	}
-	s := poolSettle{tenants: tenants, settle: pgSettle(pools), now: now, every: every, log: log}
+	s := poolSettle{tenants: tenants, settle: pgSettle(pools), offers: offers, now: now, every: every, log: log}
 	return s.run, nil
 }
 
@@ -52,9 +53,11 @@ func poolJob(getenv func(string) string, tenants func(context.Context) ([]uuid.U
 type poolSettle struct {
 	tenants func(ctx context.Context) ([]uuid.UUID, error) // the tenants of the outbox delivery (listTenants)
 	settle  func(ctx context.Context, tenantID uuid.UUID, now time.Time) (pool.Result, error)
-	now     func() time.Time // the clock of the application (APP_FIXED_NOW outside prod)
-	every   time.Duration
-	log     *slog.Logger
+	// offers closes the offers of vehicles whose deadline of the choice came (W2.72, S2-20 rule 4); nil — none.
+	offers func(ctx context.Context, tenantID uuid.UUID) (int, error)
+	now    func() time.Time // the clock of the application (APP_FIXED_NOW outside prod)
+	every  time.Duration
+	log    *slog.Logger
 }
 
 // pgSettle is pool.SettleDB in the tenant DB through the pools of the worker (role ortus_worker).
@@ -78,18 +81,43 @@ func (p poolSettle) once(ctx context.Context) error {
 	now := p.now()
 	var errs []error
 	for _, id := range ids {
-		res, err := p.settle(ctx, id, now)
-		if err != nil {
-			errs = append(errs, fmt.Errorf("settle pool of tenant %s: %w", id, err))
-			continue
+		if err := p.settleOne(ctx, id, now); err != nil {
+			errs = append(errs, err)
 		}
-		if res != (pool.Result{}) {
-			p.log.InfoContext(ctx, "worker: pool settled", slog.String("tenant_id", id.String()),
-				slog.Int("expired", res.Expired), slog.Int("completed", res.Completed), slog.Int("opened", res.Opened),
-				slog.Int("closed", res.Closed), slog.Int("unassigned", res.Unassigned))
+		if err := p.closeOffers(ctx, id); err != nil {
+			errs = append(errs, err)
 		}
 	}
 	return errors.Join(errs...)
+}
+
+// settleOne settles the pool of tenant id at now and logs what it wrote.
+func (p poolSettle) settleOne(ctx context.Context, id uuid.UUID, now time.Time) error {
+	res, err := p.settle(ctx, id, now)
+	if err != nil {
+		return fmt.Errorf("settle pool of tenant %s: %w", id, err)
+	}
+	if res != (pool.Result{}) {
+		p.log.InfoContext(ctx, "worker: pool settled", slog.String("tenant_id", id.String()),
+			slog.Int("expired", res.Expired), slog.Int("completed", res.Completed), slog.Int("opened", res.Opened),
+			slog.Int("closed", res.Closed), slog.Int("unassigned", res.Unassigned))
+	}
+	return nil
+}
+
+// closeOffers closes the offers of vehicles of tenant id whose deadline of the choice came (W2.72, S2-20 rule 4).
+func (p poolSettle) closeOffers(ctx context.Context, id uuid.UUID) error {
+	if p.offers == nil {
+		return nil
+	}
+	n, err := p.offers(ctx, id)
+	if n > 0 {
+		p.log.InfoContext(ctx, "worker: offers closed at the deadline", slog.String("tenant_id", id.String()), slog.Int("offers", n))
+	}
+	if err != nil {
+		return fmt.Errorf("offers of tenant %s: %w", id, err)
+	}
+	return nil
 }
 
 // run settles at start and then every interval until ctx ends.

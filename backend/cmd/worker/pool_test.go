@@ -54,6 +54,40 @@ func TestPoolSettleOnce(t *testing.T) {
 	}
 }
 
+// W2.72 (S2-20 правило 4): на каждом проходе досчёта пула закрываются предложения машин, у которых прошёл срок выбора,
+// в каждой организации; сбой одной не останавливает остальные.
+func TestPoolSettleOffers(t *testing.T) {
+	t.Parallel()
+	a, b := uuid.New(), uuid.New()
+	var (
+		mu   sync.Mutex
+		seen []uuid.UUID
+	)
+	s := poolSettle{
+		tenants: func(context.Context) ([]uuid.UUID, error) { return []uuid.UUID{a, b}, nil },
+		settle: func(context.Context, uuid.UUID, time.Time) (pool.Result, error) {
+			return pool.Result{}, nil
+		},
+		offers: func(_ context.Context, tenant uuid.UUID) (int, error) {
+			mu.Lock()
+			defer mu.Unlock()
+			seen = append(seen, tenant)
+			if tenant == a {
+				return 0, errors.New("tenant DB unreachable")
+			}
+			return 1, nil
+		},
+		now: time.Now, every: time.Minute, log: slog.New(slog.DiscardHandler),
+	}
+	err := s.once(t.Context())
+	if err == nil || !strings.Contains(err.Error(), a.String()) {
+		t.Fatalf("once = %v, want the error of the offers of %s", err, a)
+	}
+	if !slices.Equal(seen, []uuid.UUID{a, b}) {
+		t.Fatalf("offers of %v, want every tenant", seen)
+	}
+}
+
 // WORKER_POOL_INTERVAL: 30 s by default, 0 — off, anything else but a Go duration ≥ 0 — an error at start.
 func TestPoolInterval(t *testing.T) {
 	t.Parallel()

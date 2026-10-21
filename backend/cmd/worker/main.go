@@ -34,6 +34,7 @@ import (
 	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgxpool"
 
+	"github.com/ortus/ortus-crm/backend/internal/modules/fleet/pool"
 	"github.com/ortus/ortus-crm/backend/internal/platform/audit"
 	"github.com/ortus/ortus-crm/backend/internal/platform/authz"
 	"github.com/ortus/ortus-crm/backend/internal/platform/events"
@@ -99,10 +100,14 @@ func run(ctx context.Context, args []string, getenv func(string) string, stdout,
 	}
 	// W1.42: the consumers of stage 1; the audience of the inbox is the evaluator of W1.04 on the clock of the application.
 	src := authz.PGSource{Pools: pools}
+	ev := authz.New(src, src, cfg.clock())
 	reg := newRegistry(registryDeps{
-		control: control, pools: pools, audience: inbox.AuthzAudience{E: authz.New(src, src, cfg.clock())}, log: log,
+		control: control, pools: pools, audience: inbox.AuthzAudience{E: ev}, log: log,
 	})
-	settlePool, poolErr := poolJob(getenv, listTenants(control), pools, cfg.clock(), log) // W2.07: the driver pool (pool.go)
+	// W2.72: the offers of vehicles whose deadline of the choice came tell the company of a released vehicle (inbox).
+	offers := &pool.Service{Pools: pools, Authz: ev, Recipients: inbox.PGRecipients{Control: control},
+		Owners: pool.ControlOwners{Control: control}, Audience: inbox.AuthzAudience{E: ev}, Now: cfg.clock(), Log: log}
+	settlePool, poolErr := poolJob(getenv, listTenants(control), pools, offers.SettleOffers, cfg.clock(), log) // W2.07: the driver pool (pool.go)
 	// W4.50: the export jobs of «Данные» (exports.go).
 	runExports, exportErr := exportJob(exportDeps{getenv: getenv, tenants: listTenants(control), control: control, pools: pools,
 		now: cfg.clock(), log: log})

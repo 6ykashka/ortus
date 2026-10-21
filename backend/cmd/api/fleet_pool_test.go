@@ -27,6 +27,7 @@ import (
 var fleetW207 = []string{
 	"listDriverPoolPublications", "publishDriverToPool", "getDriverPoolPublication", "withdrawDriverPoolPublication",
 	"listAvailableDrivers", "listDriverTransfers", "getDriverTransfer", "requestDriverTransfer", "decideDriverTransfer",
+	"chooseReservation", // W2.72 (S2-20): the choice among the vehicles offered for the trip of a temporary driver
 }
 
 // fleetPool overlays the pool of W2.07 on the base of the tag: its operations reach the module, wired on the pools,
