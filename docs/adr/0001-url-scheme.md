@@ -51,7 +51,7 @@
 | `today` | `/t/:tenantId/today` | — | 2.4–2.6 · W2.22 |
 | `cars` | `/t/:tenantId/cars` | `?filter=all\|fit\|free` | 2.4 · W2.22 |
 | `chat` | `/t/:tenantId/chat` | `?chat=` (`chatSel`) | 7.1 · W7.13 |
-| `tasks` | `/t/:tenantId/tasks` | `?project=&view=board\|list&task=&mine=1` (переснять в W4.00) | 4.1 · W4.12 |
+| `tasks` | `/t/:tenantId/tasks` | `?project=&view=board\|list&task=&mine=1&approval=1` (переснять в W4.00) | 4.1 · W4.12 |
 | `leads` (легаси-канбан «Заявки») | `/t/:tenantId/leads` | — (судьбу решает W4.13, A факт 11) | 4.1 · W4.13 |
 | `service` | `/t/:tenantId/service` | `?req=` (`svcSel`) | 7.3 · W7.32 |
 | `forms` | `/t/:tenantId/forms` | `?form=&tab=build\|versions\|responses&resp=&ver=` (переснять в W4.00) | 4.2 · W4.22 |

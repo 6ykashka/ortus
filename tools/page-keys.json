@@ -127,6 +127,36 @@
       "stage": 4,
       "paths": ["frontend/apps/web/src/routes/company/branding/**"],
       "reference": "Ортус CRM.dc.html"
+    },
+    {
+      "key": "tasks-projects",
+      "stage": 4,
+      "paths": ["frontend/apps/web/src/routes/core/tasks/**"],
+      "reference": "Задачи и проекты.dc.html"
+    },
+    {
+      "key": "tasks-project-new",
+      "stage": 4,
+      "paths": ["frontend/apps/web/src/routes/core/tasks/**"],
+      "reference": "Задачи и проекты.dc.html"
+    },
+    {
+      "key": "tasks-board",
+      "stage": 4,
+      "paths": ["frontend/apps/web/src/routes/core/tasks/**"],
+      "reference": "Задачи и проекты.dc.html"
+    },
+    {
+      "key": "modal-new-task",
+      "stage": 4,
+      "paths": ["frontend/apps/web/src/routes/core/tasks/**"],
+      "reference": "Задачи и проекты.dc.html"
+    },
+    {
+      "key": "tasks-card",
+      "stage": 4,
+      "paths": ["frontend/apps/web/src/routes/core/tasks/**"],
+      "reference": "Задачи и проекты.dc.html"
     }
   ]
 }

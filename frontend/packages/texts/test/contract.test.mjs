@@ -21,11 +21,13 @@ const DOMAINS = [
   'platform',
   'screen-labels',
   'shell',
+  // W4.12: домен модуля «Задачи и проекты» (tasks-projects, tasks-board, modal-new-task, tasks-card).
+  'tasks',
   'toast',
 ];
 
 describe('файлы доменов', () => {
-  it('13 доменов этапов 0–4', () =>
+  it('14 доменов этапов 0–4', () =>
     assert.deepEqual(
       domainFiles(),
       DOMAINS.map((d) => `${d}.ts`),
@@ -46,7 +48,7 @@ describe('index.ts', () => {
     assert.equal(readText(join(PKG, 'src', 'index.ts')), renderIndex());
   });
 
-  it('экспортирует 13 пространств, ALL и ICU-функции', () => {
+  it('экспортирует 14 пространств, ALL и ICU-функции', () => {
     for (const d of DOMAINS) assert.ok(texts[camel(`${d}.ts`)], `нет экспорта ${camel(`${d}.ts`)}`);
     assert.deepEqual(Object.keys(texts.ALL).sort(), DOMAINS.map((d) => camel(`${d}.ts`)).sort());
     for (const fn of ['format', 'parseMessage', 'argNames'])

@@ -12,6 +12,7 @@ import { logisticsManager } from './logistics-manager.ts';
 import { platform } from './platform.ts';
 import { screenLabels } from './screen-labels.ts';
 import { shell } from './shell.ts';
+import { tasks } from './tasks.ts';
 import { toast } from './toast.ts';
 
 export {
@@ -27,6 +28,7 @@ export {
   platform,
   screenLabels,
   shell,
+  tasks,
   toast,
 };
 export { IcuSyntaxError, argNames, format, parseMessage } from './icu.ts';
@@ -46,5 +48,6 @@ export const ALL = {
   platform,
   screenLabels,
   shell,
+  tasks,
   toast,
 } as const;

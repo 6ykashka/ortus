@@ -1,6 +1,7 @@
 // W0.14 · Дословность доменов: каждая статическая строка словаря есть в эталоне 14.10,
 // шаблоны дают те же строки, что конкатенации эталона.
 import assert from 'node:assert/strict';
+import { join } from 'node:path';
 import { describe, it } from 'node:test';
 import {
   ALL,
@@ -14,7 +15,9 @@ import {
   platform,
   shell,
 } from '../src/index.ts';
-import { API_JS, MAIN_HTML, MODELS_JS, leaves, readText } from './_util.mjs';
+import { API_JS, DESIGN, MAIN_HTML, MODELS_JS, leaves, readText } from './_util.mjs';
+
+const TASKS_HTML = join(DESIGN, 'Задачи и проекты.dc.html');
 
 /**
  * Листья, которых нет в эталоне дословно: тексты канонических Problem.code и статусов
@@ -50,7 +53,8 @@ const NOT_FROM_DESIGN = [
 const PD37_FROM_DESIGN = ['usage', 'requests', 'accounts', 'plans', 'billing', 'branding'];
 
 describe('каждая статическая строка словаря дословно есть в эталоне', () => {
-  const design = [MAIN_HTML, API_JS, MODELS_JS].map(readText).join('\n');
+  // W4.12: модульный файл «Задачи и проекты» — эталон домена `tasks` (design-2026-10-19, dc-import на pg.tasks).
+  const design = [MAIN_HTML, API_JS, MODELS_JS, TASKS_HTML].map(readText).join('\n');
   const all = Object.entries(ALL).flatMap(([ns, tree]) => leaves(tree, ns));
   for (const [path, value] of all) {
     if (value.includes('{')) continue;

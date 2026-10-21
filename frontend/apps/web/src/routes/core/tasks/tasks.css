@@ -1,0 +1,1816 @@
+/* W4.12 · «Задачи и проекты» по рендеру эталона design-2026-10-19 «Задачи и проекты.dc.html» (шаблон :21–193; PD-28).
+   Цвета, которых нет в токенах, — литералы эталона (STATUS_CAT models.js:184, чипы :39, :134–136, блок согласования
+   :157). Вид «Список» — разметка старой доски «Ортус CRM.dc.html»:1650–1663 (no-reference). На телефоне (< 640 px)
+   области нажатия — не меньше 44 px без изменения вида (verification-protocol §1.3), карточка задачи — на всю ширину
+   с «К доске» (Q-W4.00-tasks-14). */
+
+/* Цвета модуля — и у диалога «Новая задача»: он порталится в .ox-frame, вне .ox-tasks. */
+.ox-tasks,
+.ox-tk-modal {
+  --ox-tk-row-line: #eef1ec; /* :36 линия строки */
+  --ox-tk-board-bg: #f4f6f2; /* :91 фон доски */
+  --ox-tk-faint: #8a968f; /* :173 «подзадач нет» */
+  --ox-tk-label: #6b7873; /* :170 подписи разделов */
+  --ox-tk-violet: #4b4a7a; /* :134 связь и согласование */
+}
+
+.ox-tasks {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  font-size: 14px;
+  line-height: 1.4;
+  color: var(--ox-text);
+}
+
+.ox-tasks button,
+.ox-tasks input,
+.ox-tasks select,
+.ox-tasks textarea {
+  font: inherit;
+  color: inherit;
+}
+
+.ox-tk-spacer {
+  flex: 1;
+}
+
+.ox-tk-muted {
+  color: var(--ox-text-muted);
+}
+
+.ox-tk-muted12 {
+  font-size: 12px;
+  color: var(--ox-text-muted);
+}
+
+/* «подзадач нет», «Описания нет»: --ox-text-muted вместо #8A968F эталона — контраст 3:1 < 4,5:1 (axe serious, PD-28). */
+.ox-tk-faint {
+  color: var(--ox-text-muted);
+}
+
+.ox-tk-mono11 {
+  flex: none;
+  font: 500 11px var(--ox-font-mono);
+  color: var(--ox-text-muted);
+}
+
+.ox-tk-mono12 {
+  font: 500 12px var(--ox-font-mono);
+}
+
+/* Кнопки (:29, :68) */
+.ox-tk-primary {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 40px;
+  padding: 0 16px;
+  border: 0;
+  border-radius: 8px;
+  background: var(--ox-accent);
+  color: var(--ox-on-accent) !important;
+  font-weight: 500 !important;
+  cursor: pointer;
+}
+
+.ox-tk-primary[data-icon] {
+  padding: 0 14px;
+}
+
+.ox-tk-primary:disabled {
+  cursor: default;
+}
+
+.ox-tk-btn {
+  min-height: 40px;
+  padding: 0 14px;
+  border: 1px solid var(--ox-line-control);
+  border-radius: 8px;
+  background: var(--ox-card);
+  font-weight: 500 !important;
+  cursor: pointer;
+}
+
+.ox-tk-icon-btn {
+  display: grid;
+  place-items: center;
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  border: 0;
+  border-radius: 8px;
+  background: transparent;
+  cursor: pointer;
+}
+
+.ox-tk-icon28 {
+  width: 28px;
+  height: 28px;
+  color: var(--ox-text-muted) !important;
+}
+
+.ox-tk-close30 {
+  width: 30px;
+  height: 30px;
+}
+
+.ox-tk-danger {
+  color: var(--ox-danger-fg) !important;
+}
+
+.ox-tk-link-btn {
+  min-height: 40px;
+  padding: 0 8px;
+  border: 0;
+  background: transparent;
+  color: var(--ox-accent) !important;
+  font-weight: 500 !important;
+  cursor: pointer;
+}
+
+/* ── Список проектов :24–47 ── */
+.ox-tk-head {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  align-items: center;
+}
+
+.ox-tk-h2 {
+  margin: 0;
+  font-size: 22px;
+  font-weight: 600;
+}
+
+.ox-tk-h2:focus {
+  outline: none;
+}
+
+.ox-tk-note {
+  font-size: 13px;
+  color: var(--ox-text-muted);
+}
+
+.ox-tk-plist {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  align-items: flex-start;
+}
+
+.ox-tk-pmain {
+  flex: 1 1 560px;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.ox-tk-table {
+  background: var(--ox-card);
+  border: 1px solid var(--ox-line);
+  border-radius: 12px;
+  overflow-x: auto;
+}
+
+.ox-tk-thead,
+.ox-tk-prow {
+  min-width: 620px;
+  display: grid;
+  grid-template-columns: minmax(0, 2.2fr) minmax(0, 1.2fr) 150px 70px 70px;
+  gap: 12px;
+}
+
+.ox-tk-thead {
+  padding: 10px 16px;
+  background: var(--ox-raised);
+  border-bottom: 1px solid var(--ox-line);
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--ox-text-muted);
+}
+
+.ox-tk-prow {
+  width: 100%;
+  align-items: center;
+  padding: 12px 16px;
+  border: 0;
+  border-bottom: 1px solid var(--ox-tk-row-line);
+  background: var(--ox-card);
+  text-align: left;
+  cursor: pointer;
+}
+
+.ox-tk-prow:hover {
+  background: var(--ox-raised);
+}
+
+.ox-tk-pname {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  min-width: 0;
+}
+
+.ox-tk-key {
+  flex: none;
+  display: grid;
+  place-items: center;
+  min-width: 38px;
+  height: 36px;
+  padding: 0 4px;
+  border-radius: 8px;
+  background: var(--ox-accent);
+  color: var(--ox-on-accent);
+  font: 600 11px var(--ox-font-mono);
+}
+
+.ox-tk-key34 {
+  height: 34px;
+}
+
+.ox-tk-pname-text {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.ox-tk-pname-text strong {
+  font-weight: 600;
+}
+
+.ox-tk-pname-text span {
+  font-size: 12px;
+  color: var(--ox-text-muted);
+}
+
+.ox-tk-punit {
+  font-size: 13px;
+}
+
+.ox-tk-acc {
+  justify-self: start;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px 8px 2px 6px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.ox-tk-acc[data-access='open'] {
+  background: var(--ox-ok-bg);
+  color: var(--ox-ok-fg);
+}
+
+.ox-tk-acc[data-access='limited'] {
+  background: var(--ox-info-bg);
+  color: var(--ox-info-fg);
+}
+
+.ox-tk-acc[data-access='closed'] {
+  background: var(--ox-warn-bg);
+  color: var(--ox-warn-fg);
+}
+
+.ox-tk-acc[data-access='funnel'] {
+  background: var(--ox-neutral-bg);
+  color: var(--ox-text-label);
+}
+
+.ox-tk-num {
+  font-variant-numeric: tabular-nums;
+}
+
+.ox-tk-empty {
+  padding: 20px;
+  text-align: center;
+  color: var(--ox-text-muted);
+}
+
+.ox-tk-hint {
+  display: flex;
+  gap: 10px;
+  padding: 12px 14px;
+  border-radius: 10px;
+  background: var(--ox-info-bg);
+  color: var(--ox-info-fg);
+  font-size: 13px;
+}
+
+.ox-tk-hint > span:last-child {
+  text-wrap: pretty;
+}
+
+/* ── Панель «Новый проект» :48–71 ── */
+.ox-tk-wiz {
+  flex: 0 1 440px;
+  min-width: 300px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  padding: 18px;
+  background: var(--ox-card);
+  border: 1.5px solid var(--ox-accent);
+  border-radius: 12px;
+}
+
+.ox-tk-wiz-head {
+  display: flex;
+  align-items: center;
+}
+
+.ox-tk-wiz-title {
+  margin: 0;
+  font-size: 17px;
+  font-weight: 600;
+}
+
+.ox-tk-wiz-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 110px;
+  gap: 10px;
+}
+
+.ox-tk-field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--ox-text-label);
+}
+
+.ox-tk-field-label {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--ox-text-label);
+}
+
+.ox-tk-field-hint {
+  font-weight: 400;
+  font-size: 12px;
+  color: var(--ox-text-muted);
+  text-wrap: pretty;
+}
+
+.ox-tk-input {
+  min-height: 40px;
+  padding: 0 12px;
+  border: 1px solid var(--ox-line-control);
+  border-radius: 8px;
+  font-weight: 400 !important;
+  color: var(--ox-text) !important;
+}
+
+.ox-tk-keyinput {
+  padding: 0 10px;
+  font: 500 14px var(--ox-font-mono) !important;
+  text-transform: uppercase;
+}
+
+.ox-tk-keyhint {
+  margin-top: -8px;
+  font-size: 12px;
+  color: var(--ox-text-muted);
+}
+
+.ox-tk-select {
+  min-height: 40px;
+  padding: 0 8px;
+  border: 1px solid var(--ox-line-control);
+  border-radius: 8px;
+  background: var(--ox-card);
+  font-weight: 400 !important;
+  color: var(--ox-text) !important;
+}
+
+.ox-tk-radios,
+.ox-tk-proc {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.ox-tk-radio {
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+  padding: 9px 12px;
+  border: 1.5px solid var(--ox-line);
+  border-radius: 10px;
+  background: var(--ox-card);
+  text-align: left;
+  cursor: pointer;
+}
+
+.ox-tk-radio[aria-checked='true'] {
+  border-color: var(--ox-accent);
+  background: var(--ox-accent-tint);
+}
+
+.ox-tk-radio > .material-symbols-rounded {
+  color: var(--ox-tk-faint);
+}
+
+.ox-tk-radio[aria-checked='true'] > .material-symbols-rounded {
+  color: var(--ox-accent);
+}
+
+.ox-tk-radio-text {
+  display: flex;
+  flex-direction: column;
+}
+
+.ox-tk-radio-text strong {
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.ox-tk-radio-text span {
+  font-size: 12px;
+  color: var(--ox-text-muted);
+}
+
+.ox-tk-seg {
+  display: flex;
+  gap: 2px;
+  padding: 3px;
+  border-radius: 10px;
+  background: #e5e9e3; /* :63 */
+}
+
+.ox-tk-seg-btn {
+  flex: 1;
+  min-height: 32px;
+  padding: 0 8px;
+  border: 0;
+  border-radius: 8px;
+  background: transparent;
+  font-size: 13px !important;
+  font-weight: 500 !important;
+  cursor: pointer;
+}
+
+.ox-tk-seg-btn[aria-pressed='true'] {
+  background: var(--ox-card);
+  box-shadow: 0 1px 2px rgba(28, 42, 38, 0.14);
+  font-weight: 600 !important;
+}
+
+.ox-tk-err {
+  font-size: 13px;
+  color: var(--ox-danger-fg);
+}
+
+.ox-tk-actions {
+  display: flex;
+  gap: 8px;
+  justify-content: flex-end;
+}
+
+/* ── Проект: шапка и вкладки :76–87 ── */
+.ox-tk-proj {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  background: var(--ox-card);
+  border: 1px solid var(--ox-line);
+  border-radius: 12px;
+}
+
+.ox-tk-phead {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 16px 0;
+}
+
+.ox-tk-back {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  min-height: 32px;
+  padding: 0 8px;
+  border: 0;
+  border-radius: 8px;
+  background: transparent;
+  color: var(--ox-text-muted) !important;
+  cursor: pointer;
+}
+
+.ox-tk-ptitle strong {
+  font-size: 17px;
+  font-weight: 600;
+}
+
+.ox-tk-me {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px 10px 2px 8px;
+  border-radius: 999px;
+  background: var(--ox-danger-bg);
+  color: var(--ox-danger-fg);
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.ox-tk-me[data-ok] {
+  background: var(--ox-ok-bg);
+  color: var(--ox-ok-fg);
+}
+
+.ox-tk-tabs {
+  display: flex;
+  gap: 2px;
+  padding: 0 12px;
+  overflow-x: auto;
+  overflow-y: hidden;
+  box-shadow: inset 0 -1px 0 var(--ox-line);
+}
+
+.ox-tk-tab {
+  flex: none;
+  min-height: 44px;
+  padding: 0 12px;
+  border: 0;
+  border-bottom: 2px solid transparent;
+  background: transparent;
+  color: var(--ox-text-muted) !important;
+  font-weight: 500 !important;
+  cursor: pointer;
+}
+
+.ox-tk-tab[aria-selected='true'] {
+  border-bottom-color: var(--ox-accent);
+  color: var(--ox-text) !important;
+  font-weight: 600 !important;
+}
+
+.ox-tk-nowf {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  align-items: center;
+  padding: 18px;
+}
+
+.ox-tk-nowf-text {
+  flex: 1 1 300px;
+  color: var(--ox-text-label);
+  text-wrap: pretty;
+}
+
+.ox-tk-tabpanel {
+  min-height: 120px;
+  background: var(--ox-tk-board-bg);
+  border-radius: 0 0 12px 12px;
+}
+
+/* ── Доска :89–142 ── */
+.ox-tk-boardwrap {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0;
+  align-items: stretch;
+}
+
+.ox-tk-board {
+  flex: 1 1 560px;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 14px 16px 16px;
+  background: var(--ox-tk-board-bg);
+  border-radius: 0 0 0 12px;
+}
+
+.ox-tk-filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+}
+
+.ox-tk-chip {
+  min-height: 34px;
+  padding: 0 12px;
+  border-radius: 999px;
+  border: 1px solid var(--ox-line);
+  background: var(--ox-card);
+  color: var(--ox-text) !important;
+  font-size: 13px !important;
+  font-weight: 500 !important;
+  cursor: pointer;
+}
+
+.ox-tk-chip[aria-pressed='true'] {
+  border-color: var(--ox-text);
+  background: var(--ox-text);
+  color: var(--ox-on-accent) !important;
+}
+
+.ox-tk-quick {
+  display: flex;
+  gap: 6px;
+  flex: 1 1 280px;
+  max-width: 420px;
+}
+
+.ox-tk-quick-input {
+  flex: 1;
+  min-width: 0;
+  min-height: 36px;
+  padding: 0 10px;
+  border: 1px solid var(--ox-line-control);
+  border-radius: 8px;
+  background: var(--ox-card);
+}
+
+.ox-tk-quick-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  min-height: 36px;
+  padding: 0 12px;
+  border: 0;
+  border-radius: 8px;
+  background: var(--ox-accent);
+  color: var(--ox-on-accent) !important;
+  font-size: 13px !important;
+  font-weight: 500 !important;
+  cursor: pointer;
+}
+
+.ox-tk-cols {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 10px;
+  align-items: start;
+}
+
+.ox-tk-col {
+  --ox-tk-cat-fg: #2b5479;
+  --ox-tk-cat-dot: #9db7d1;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 10px;
+  border-radius: 12px;
+  background: #e9ece6;
+  min-height: 120px;
+}
+
+.ox-tk-col[data-cat='todo'] {
+  --ox-tk-cat-fg: #3a4844;
+  --ox-tk-cat-dot: #b7c0b4;
+}
+
+.ox-tk-col[data-cat='done'] {
+  --ox-tk-cat-fg: #1f6b52;
+  --ox-tk-cat-dot: #9cc3ae;
+}
+
+.ox-tk-col-head {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--ox-tk-cat-fg);
+}
+
+.ox-tk-col-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 2px;
+  background: var(--ox-tk-cat-dot);
+}
+
+.ox-tk-col-count {
+  padding: 0 6px;
+  border-radius: 99px;
+  background: var(--ox-card);
+  color: var(--ox-text-label);
+  font-weight: 500;
+  letter-spacing: 0;
+}
+
+.ox-tk-kcard {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 10px;
+  border-radius: 10px;
+  background: var(--ox-card);
+  border: 1px solid var(--ox-line);
+  box-shadow: 0 1px 2px rgba(28, 42, 38, 0.06);
+  text-align: left;
+  cursor: pointer;
+}
+
+.ox-tk-kcard[data-selected] {
+  border-color: var(--ox-accent);
+  box-shadow: 0 0 0 1.5px var(--ox-accent);
+}
+
+.ox-tk-kcard-title {
+  font-size: 13px;
+  font-weight: 500;
+  text-wrap: pretty;
+}
+
+.ox-tk-rel {
+  align-self: flex-start;
+  max-width: 100%;
+  padding: 1px 8px;
+  border-radius: 999px;
+  background: #f1f3ef;
+  color: var(--ox-tk-violet);
+  font-size: 11px;
+  font-weight: 500;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.ox-tk-apprchip {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  align-self: flex-start;
+  max-width: 100%;
+  padding: 1px 8px 1px 6px;
+  border-radius: 999px;
+  background: #eceaf4;
+  color: var(--ox-tk-violet);
+  font-size: 11px;
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+.ox-tk-apprchip > .material-symbols-rounded {
+  flex: none;
+}
+
+.ox-tk-kcard-foot {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  width: 100%;
+}
+
+.ox-tk-kcard-id {
+  flex: none;
+  font: 500 11px var(--ox-font-mono);
+  color: var(--ox-text-muted);
+  white-space: nowrap;
+}
+
+.ox-tk-prio {
+  padding: 0 6px;
+  border-radius: 99px;
+  background: var(--ox-neutral-bg);
+  color: var(--ox-neutral-fg);
+  font-size: 11px;
+  font-weight: 500;
+}
+
+.ox-tk-prio[data-priority='urgent'] {
+  background: #f7e1de;
+  color: var(--ox-danger-fg);
+}
+
+.ox-tk-prio[data-priority='high'] {
+  background: var(--ox-warn-bg);
+  color: var(--ox-warn-fg);
+}
+
+.ox-tk-kcard-due {
+  font-size: 11px;
+  color: var(--ox-text-muted);
+}
+
+.ox-tk-ini {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: var(--ox-info-fg);
+  color: var(--ox-on-accent);
+  font-size: 9px;
+  font-weight: 600;
+}
+
+/* Вид «Список» — строки старой доски CRM:1650–1663 */
+.ox-tk-list {
+  background: var(--ox-card);
+  border: 1px solid var(--ox-line);
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.ox-tk-lrow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 14px;
+  align-items: center;
+  width: 100%;
+  padding: 12px 16px;
+  border: 0;
+  border-top: 1px solid var(--ox-tk-row-line);
+  border-left: 3px solid transparent;
+  background: var(--ox-card);
+  text-align: left;
+  cursor: pointer;
+}
+
+.ox-tk-lrow:first-child {
+  border-top-color: transparent;
+}
+
+.ox-tk-lrow[aria-pressed='true'] {
+  border-left-color: var(--ox-accent);
+  background: var(--ox-accent-tint);
+}
+
+.ox-tk-lrow-id {
+  flex: 0 0 52px;
+  font-family: var(--ox-font-mono);
+  font-size: 12px;
+  color: var(--ox-text-muted);
+}
+
+.ox-tk-lrow-title {
+  flex: 3 1 220px;
+  min-width: 0;
+  font-weight: 500;
+  text-wrap: pretty;
+}
+
+.ox-tk-lrow-status {
+  flex: 0 0 120px;
+}
+
+.ox-tk-stchip {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 1px 8px 1px 6px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 500;
+  white-space: nowrap;
+  background: var(--ox-info-bg);
+  color: var(--ox-info-fg);
+}
+
+.ox-tk-stchip[data-cat='todo'] {
+  background: var(--ox-neutral-bg);
+  color: var(--ox-text-label);
+}
+
+.ox-tk-stchip[data-cat='done'] {
+  background: var(--ox-ok-bg);
+  color: var(--ox-ok-fg);
+}
+
+.ox-tk-lrow-who {
+  flex: 1 1 130px;
+  font-size: 13px;
+  color: var(--ox-text-label);
+}
+
+.ox-tk-lrow-prio {
+  flex: 0 0 90px;
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  font-size: 13px;
+  color: var(--ox-text-muted);
+}
+
+.ox-tk-lrow-prio[data-priority='urgent'] {
+  color: var(--ox-danger-fg);
+}
+
+.ox-tk-lrow-prio[data-priority='high'] {
+  color: var(--ox-warn-fg);
+}
+
+.ox-tk-lrow-due {
+  flex: 0 0 70px;
+  font-size: 13px;
+  color: var(--ox-text-muted);
+}
+
+.ox-tk-list-empty {
+  padding: 24px;
+  text-align: center;
+  color: var(--ox-text-muted);
+  font-size: 13px;
+}
+
+/* ── Карточка задачи :143–193 ── */
+.ox-tk-card {
+  flex: 0 1 420px;
+  min-width: 300px;
+  display: flex;
+  flex-direction: column;
+  border-left: 1px solid var(--ox-line);
+}
+
+.ox-tk-card-head {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 14px 18px;
+  border-bottom: 1px solid var(--ox-divider);
+}
+
+.ox-tk-card-top {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+  color: var(--ox-text-muted);
+}
+
+.ox-tk-card-title {
+  margin: 0;
+  font-size: 17px;
+  font-weight: 600;
+  text-wrap: pretty;
+}
+
+.ox-tk-back-board {
+  display: none;
+}
+
+.ox-tk-trs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  align-items: center;
+}
+
+.ox-tk-status {
+  display: inline-flex;
+  align-items: center;
+  min-height: 32px;
+  padding: 0 10px;
+  border-radius: 8px;
+  background: var(--ox-info-bg);
+  color: var(--ox-info-fg);
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.ox-tk-status[data-cat='todo'] {
+  background: var(--ox-neutral-bg);
+  color: var(--ox-text-label);
+}
+
+.ox-tk-status[data-cat='done'] {
+  background: var(--ox-ok-bg);
+  color: var(--ox-ok-fg);
+}
+
+.ox-tk-tr {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  min-height: 32px;
+  padding: 0 12px;
+  border-radius: 8px;
+  border: 1px solid var(--ox-line-control);
+  background: var(--ox-card);
+  color: var(--ox-text) !important;
+  font-size: 13px !important;
+  font-weight: 500 !important;
+  cursor: pointer;
+}
+
+.ox-tk-tr[data-approval] {
+  border-color: var(--ox-accent);
+  background: var(--ox-accent);
+  color: var(--ox-on-accent) !important;
+}
+
+.ox-tk-tr:disabled {
+  border-color: #e3e8e0;
+  background: var(--ox-tk-board-bg);
+  color: var(--ox-tk-faint) !important;
+  cursor: not-allowed;
+}
+
+.ox-tk-blocked {
+  display: contents;
+}
+
+.ox-tk-blocked-line {
+  display: flex;
+  gap: 6px;
+  align-items: flex-start;
+  font-size: 12px;
+  color: var(--ox-text-muted);
+}
+
+.ox-tk-blocked-line > span:last-child {
+  text-wrap: pretty;
+}
+
+.ox-tk-route {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 10px 12px;
+  border-radius: 10px;
+  background: var(--ox-info-bg);
+  color: var(--ox-info-fg);
+  font-size: 12.5px;
+}
+
+.ox-tk-route-text {
+  display: flex;
+  gap: 6px;
+  align-items: flex-start;
+}
+
+.ox-tk-route-btn {
+  align-self: flex-start;
+  min-height: 30px;
+  padding: 0 12px;
+  border: 0;
+  border-radius: 7px;
+  background: var(--ox-accent);
+  color: var(--ox-on-accent) !important;
+  font-size: 12.5px !important;
+  font-weight: 500 !important;
+  cursor: pointer;
+}
+
+.ox-tk-cmt {
+  padding: 8px 10px;
+  border: 1px solid var(--ox-line-control);
+  border-radius: 8px;
+  resize: vertical;
+  font-size: 13px !important;
+}
+
+.ox-tk-appr {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 12px 18px;
+  border-bottom: 1px solid var(--ox-divider);
+  background: #f7f6fb;
+}
+
+.ox-tk-appr-title {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--ox-tk-violet);
+}
+
+.ox-tk-appr-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+}
+
+.ox-tk-appr-ini {
+  display: grid;
+  place-items: center;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: var(--ox-tk-violet);
+  color: var(--ox-on-accent);
+  font-size: 10px;
+  font-weight: 600;
+}
+
+.ox-tk-appr-name {
+  flex: 1;
+}
+
+.ox-tk-appr-state {
+  color: var(--ox-warn-fg);
+}
+
+.ox-tk-appr-state[data-state='approved'] {
+  color: var(--ox-ok-fg);
+}
+
+.ox-tk-appr-none {
+  font-size: 12px;
+  color: var(--ox-danger-fg);
+}
+
+.ox-tk-reject {
+  align-self: flex-start;
+  min-height: 32px;
+  padding: 0 12px;
+  border-radius: 8px;
+  border: 1px solid var(--ox-danger-fg);
+  background: var(--ox-card);
+  color: var(--ox-danger-fg) !important;
+  font-size: 13px !important;
+  font-weight: 500 !important;
+  cursor: pointer;
+}
+
+.ox-tk-fields {
+  display: grid;
+  grid-template-columns: 110px minmax(0, 1fr);
+  gap: 8px 12px;
+  align-items: center;
+  padding: 12px 18px;
+  border-bottom: 1px solid var(--ox-divider);
+  font-size: 13px;
+}
+
+.ox-tk-fsel {
+  min-height: 34px;
+  padding: 0 6px;
+  border: 1px solid var(--ox-line-control);
+  border-radius: 8px;
+  background: var(--ox-card);
+}
+
+.ox-tk-fsel13 {
+  font-size: 13px !important;
+}
+
+.ox-tk-sec {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 12px 18px;
+  border-bottom: 1px solid var(--ox-divider);
+}
+
+.ox-tk-sec-label {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--ox-tk-label);
+}
+
+.ox-tk-parent {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  font-size: 13px;
+}
+
+.ox-tk-parent > .ox-tk-muted {
+  flex: none;
+}
+
+.ox-tk-parent-link {
+  flex: 1;
+  min-width: 0;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  text-align: left;
+  color: var(--ox-accent) !important;
+  font-weight: 500 !important;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  cursor: pointer;
+}
+
+.ox-tk-kids-head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+}
+
+.ox-tk-kids-head > .ox-tk-muted {
+  flex: none;
+}
+
+.ox-tk-kids-head > .ox-tk-muted12 {
+  flex: none;
+}
+
+.ox-tk-bar {
+  flex: 1;
+  height: 6px;
+  border-radius: 99px;
+  background: #e5e9e3;
+  overflow: hidden;
+}
+
+.ox-tk-bar-fill {
+  display: block;
+  height: 100%;
+  background: var(--ox-accent);
+}
+
+.ox-tk-kid {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+}
+
+.ox-tk-kid-open {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  padding: 4px 0;
+  border: 0;
+  background: transparent;
+  text-align: left;
+  cursor: pointer;
+}
+
+.ox-tk-kid-title {
+  flex: 1;
+  min-width: 0;
+  font-size: 13px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.ox-tk-kid-status {
+  flex: none;
+  padding: 0 8px;
+  border-radius: 99px;
+  background: var(--ox-info-bg);
+  color: var(--ox-info-fg);
+  font-size: 11px;
+  font-weight: 600;
+}
+
+.ox-tk-kid-status[data-cat='todo'] {
+  background: var(--ox-neutral-bg);
+  color: var(--ox-text-label);
+}
+
+.ox-tk-kid-status[data-cat='done'] {
+  background: var(--ox-ok-bg);
+  color: var(--ox-ok-fg);
+}
+
+.ox-tk-kid-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.ox-tk-sub-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  min-height: 34px;
+  padding: 0 10px;
+  border: 1px solid var(--ox-accent);
+  border-radius: 8px;
+  background: var(--ox-card);
+  color: var(--ox-accent) !important;
+  font-size: 13px !important;
+  font-weight: 500 !important;
+  cursor: pointer;
+}
+
+.ox-tk-kid-add {
+  flex: 1 1 180px;
+}
+
+.ox-tk-desc {
+  font-size: 13px;
+  white-space: pre-wrap;
+  text-wrap: pretty;
+}
+
+.ox-tk-labels {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+
+.ox-tk-label {
+  padding: 1px 8px;
+  border-radius: 999px;
+  background: var(--ox-neutral-bg);
+  color: var(--ox-text-label);
+  font-size: 12px;
+}
+
+.ox-tk-files-head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 4px;
+}
+
+.ox-tk-attach {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  min-height: 30px;
+  padding: 0 10px;
+  border: 1px solid var(--ox-line-control);
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.ox-tk-file-input {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  opacity: 0;
+}
+
+.ox-tk-file {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+.ox-tk-ficon36,
+.ox-tk-ficon40 {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 6px;
+  background: var(--ox-tk-board-bg);
+  color: var(--ox-text-muted);
+}
+
+.ox-tk-ficon40 {
+  width: 40px;
+  height: 40px;
+}
+
+.ox-tk-thumb40 {
+  flex: none;
+  width: 40px;
+  height: 40px;
+  object-fit: cover;
+  border-radius: 6px;
+}
+
+.ox-tk-fname {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.ox-tk-fname-name {
+  font-size: 13px;
+  font-weight: 500;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.ox-tk-fname-meta {
+  font-size: 12px;
+  color: var(--ox-text-muted);
+}
+
+.ox-tk-check {
+  gap: 4px;
+  padding: 10px 18px;
+}
+
+.ox-tk-check-item {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  font-size: 13px;
+  cursor: pointer;
+}
+
+.ox-tk-check-item input {
+  width: 16px;
+  height: 16px;
+  margin: 0;
+  accent-color: var(--ox-accent);
+}
+
+.ox-tk-hist-sec {
+  border-bottom: 0;
+  font-size: 13px;
+}
+
+.ox-tk-hist {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.ox-tk-hist-row {
+  display: flex;
+  gap: 8px;
+}
+
+.ox-tk-hist-at {
+  flex: none;
+  min-width: 42px; /* 42 px эталона; «01.10 10:42» не сегодняшнего дня — в одну строку */
+  white-space: nowrap;
+  color: var(--ox-text-muted);
+}
+
+.ox-tk-hist-text {
+  text-wrap: pretty;
+}
+
+.ox-tk-hist-text b {
+  font-weight: 600;
+}
+
+/* Комментарий в «Истории» — по старой доске CRM:1697 (no-reference, Q-W4.00-tasks-11) */
+.ox-tk-note-row {
+  display: flex;
+  gap: 8px;
+}
+
+.ox-tk-cinput {
+  flex: 1;
+  min-width: 0;
+  min-height: 36px;
+  padding: 0 10px;
+  border: 1px solid var(--ox-line-control);
+  border-radius: 8px;
+  background: var(--ox-card);
+  font-size: 13px !important;
+}
+
+.ox-tk-send {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 8px;
+  border: 1px solid var(--ox-accent);
+  background: var(--ox-accent);
+  color: var(--ox-on-accent) !important;
+  cursor: pointer;
+}
+
+.ox-tk-send:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+
+/* ── Диалог «Новая задача» :97–126 ── */
+.ox-tk-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 60;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  padding: 5vh 16px 16px;
+  background: var(--ox-scrim);
+  overflow-y: auto;
+  font-size: 14px;
+  line-height: 1.4;
+  color: var(--ox-text);
+}
+
+.ox-tk-modal button,
+.ox-tk-modal input,
+.ox-tk-modal select,
+.ox-tk-modal textarea {
+  font: inherit;
+  color: inherit;
+}
+
+.ox-tk-nf {
+  width: min(720px, 100%);
+  display: flex;
+  flex-direction: column;
+  background: var(--ox-card);
+  border-radius: 14px;
+  box-shadow: 0 24px 64px rgba(28, 42, 38, 0.28);
+}
+
+.ox-tk-nf:focus {
+  outline: none;
+}
+
+.ox-tk-nf-head {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 16px 20px;
+  border-bottom: 1px solid var(--ox-divider);
+}
+
+.ox-tk-nf-title {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 600;
+}
+
+.ox-tk-nf-close {
+  width: 34px;
+  height: 34px;
+}
+
+.ox-tk-nf-body {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  padding: 16px 20px;
+  max-height: 68vh;
+  overflow-y: auto;
+}
+
+.ox-tk-nf-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.ox-tk-nf-row-end {
+  align-items: flex-end;
+}
+
+.ox-tk-nf-project {
+  flex: 2 1 260px;
+}
+
+.ox-tk-nf-statusbox {
+  flex: 1 1 160px;
+}
+
+.ox-tk-nf-status {
+  min-height: 40px;
+  display: flex;
+  align-items: center;
+  padding: 0 12px;
+  border-radius: 8px;
+  background: var(--ox-tk-board-bg);
+  font-weight: 500;
+  color: var(--ox-text);
+}
+
+.ox-tk-nf-select {
+  min-height: 40px;
+  padding: 0 10px;
+  border: 1px solid var(--ox-line-control);
+  border-radius: 8px;
+  background: var(--ox-card);
+  font-size: 14px !important;
+  font-weight: 400 !important;
+  color: var(--ox-text) !important;
+}
+
+.ox-tk-nf-subject {
+  min-height: 42px;
+  padding: 0 12px;
+  border: 1.5px solid var(--ox-line-control);
+  border-radius: 8px;
+  font-size: 15px !important;
+  font-weight: 400 !important;
+  color: var(--ox-text) !important;
+}
+
+.ox-tk-nf-subject[data-bad] {
+  border-color: var(--ox-danger-fg);
+}
+
+.ox-tk-nf-desc {
+  padding: 10px 12px;
+  border: 1px solid var(--ox-line-control);
+  border-radius: 8px;
+  font-size: 14px !important;
+  font-weight: 400 !important;
+  line-height: 1.45 !important;
+  color: var(--ox-text) !important;
+  resize: vertical;
+}
+
+.ox-tk-nf-files {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.ox-tk-drop {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  padding: 16px;
+  border: 1.5px dashed #c3ccc1;
+  border-radius: 10px;
+  background: #fafbf9;
+  text-align: center;
+  cursor: pointer;
+}
+
+.ox-tk-drop[data-drag] {
+  border-color: var(--ox-accent);
+  background: #f1f7f3; /* :401 зона при перетаскивании */
+}
+
+.ox-tk-drop > .material-symbols-rounded {
+  color: var(--ox-text-muted);
+}
+
+.ox-tk-drop-text {
+  font-size: 14px;
+}
+
+.ox-tk-drop-link {
+  color: var(--ox-accent);
+  font-weight: 500;
+  text-decoration: underline;
+}
+
+.ox-tk-nf-file {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  padding: 6px 8px;
+  border-radius: 8px;
+  border: 1px solid #e3e8e0;
+}
+
+.ox-tk-nf-file[data-bad] {
+  border-color: #e8b4ae;
+}
+
+.ox-tk-nf-file[data-bad] .ox-tk-fname-meta {
+  color: var(--ox-danger-fg);
+}
+
+.ox-tk-nf-file .ox-tk-icon-btn {
+  width: 30px;
+  height: 30px;
+}
+
+.ox-tk-nf-who {
+  flex: 2 1 220px;
+}
+
+.ox-tk-nf-half {
+  flex: 1 1 150px;
+}
+
+.ox-tk-nf-foot {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+  padding: 14px 20px;
+  border-top: 1px solid var(--ox-divider);
+}
+
+.ox-tk-nf-save {
+  padding: 0 18px;
+}
+
+.ox-tk-more {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  white-space: nowrap;
+  cursor: pointer;
+}
+
+.ox-tk-more input {
+  position: relative;
+  z-index: 1; /* над областью нажатия ::after подписи на телефоне */
+  width: 18px;
+  height: 18px;
+  margin: 0;
+  accent-color: var(--ox-accent);
+}
+
+/* ── Загрузка ── */
+.ox-tk-skel {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 16px;
+}
+
+.ox-tk-skel-line {
+  height: 18px;
+  border-radius: 6px;
+  background: var(--ox-neutral-bg);
+}
+
+/* Фокус клавиатуры виден (verification-protocol §1.3). */
+.ox-tasks :focus-visible,
+.ox-tk-modal :focus-visible {
+  outline: 2px solid var(--ox-focus);
+  outline-offset: 2px;
+}
+
+/* Выбор файла — прозрачный input в подписи («Выбрать файлы», «Прикрепить»): рамку фокуса рисует подпись. */
+.ox-tk-drop:has(.ox-tk-file-input:focus-visible),
+.ox-tk-attach:has(.ox-tk-file-input:focus-visible) {
+  outline: 2px solid var(--ox-focus);
+  outline-offset: 2px;
+}
+
+/* ── Телефон: цели нажатия 44 px и карточка на всю ширину ── */
+@media (max-width: 639px) {
+  .ox-tk-hit {
+    position: relative;
+  }
+
+  .ox-tk-hit::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 50%;
+    height: max(100%, 44px);
+    transform: translateY(-50%);
+  }
+
+  .ox-tk-boardwrap[data-card] > .ox-tk-board {
+    display: none;
+  }
+
+  .ox-tk-boardwrap[data-card] > .ox-tk-card {
+    flex: 1 1 100%;
+    min-width: 0;
+    border-left: 0;
+  }
+
+  .ox-tk-back-board {
+    display: inline-flex;
+    align-self: flex-start;
+    align-items: center;
+    gap: 4px;
+    min-height: 32px;
+    padding: 0 8px;
+    margin-left: -8px;
+    border: 0;
+    border-radius: 8px;
+    background: transparent;
+    color: var(--ox-text-muted) !important;
+    cursor: pointer;
+  }
+
+  .ox-tk-card {
+    min-width: 0;
+  }
+
+  /* «Входит в» и строки чек-листа — 44 px (вид 390 карточки no-reference, Q-W4.00-tasks-14). */
+  .ox-tk-parent-link,
+  .ox-tk-check-item {
+    min-height: 44px;
+  }
+
+  /* Поля ввода и списки — не ниже 44 px (эталон: 34–42 px). */
+  .ox-tk-input,
+  .ox-tk-select,
+  .ox-tk-nf-select,
+  .ox-tk-nf-subject,
+  .ox-tk-fsel,
+  .ox-tk-quick-input,
+  .ox-tk-cinput {
+    min-height: 44px;
+  }
+
+  .ox-tk-send {
+    width: 44px;
+    height: 44px;
+  }
+
+  .ox-tk-wiz {
+    min-width: 0;
+  }
+}
