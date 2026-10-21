@@ -106,6 +106,10 @@
   font-weight: 600;
 }
 
+.ox-org-mark[data-file] {
+  background: center / cover no-repeat;
+}
+
 .ox-org-main {
   flex: 1 1 180px;
   min-width: 0;

@@ -1,0 +1,1054 @@
+/* W4.62 · «Оформление» по рендеру эталона design-2026-10-19 («Ортус CRM.dc.html» :1253–1452; PD-28). Цвета —
+   токены @ortus/tokens; значения рендера без токена — алиасы ниже. Цвета предпросмотра — из черновика (style). */
+
+.ox-br {
+  --ox-br-group: #6b7873; /* :1341 подпись группы меню */
+  --ox-br-danger-line: #e3b5af; /* :1281 рамка «Убрать» */
+  --ox-br-track-off: #c3ccc1; /* :3737 выключенный переключатель */
+  --ox-br-tab-on: #1c2a26; /* :3738 выбранная вкладка предпросмотра */
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+/* ── Шапка :1255–1260 ── */
+.ox-br-head {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.ox-br-head:focus {
+  outline: none;
+}
+
+.ox-br-crumb {
+  font-size: var(--ox-fs-sm);
+  color: var(--ox-text-muted);
+}
+
+.ox-br-h1 {
+  margin: 0;
+  font-size: 26px;
+  line-height: 1.2;
+  font-weight: var(--ox-fw-semibold);
+  letter-spacing: -0.02em;
+}
+
+.ox-br-intro {
+  margin: 0;
+  color: var(--ox-text-muted);
+  max-width: 720px;
+  text-wrap: pretty;
+}
+
+.ox-br-version {
+  font-size: var(--ox-fs-xs);
+  color: var(--ox-text-muted);
+}
+
+/* Загрузка и ошибка (без эталона). */
+.ox-br-skel {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.ox-br-skel > span {
+  display: block;
+  height: 160px;
+  border-radius: var(--ox-radius-xl);
+  background: var(--ox-shell-skeleton-block);
+  animation: ox-pulse 1.4s ease-in-out infinite;
+}
+
+.ox-br-failed {
+  flex-direction: row !important;
+  flex-wrap: wrap;
+  align-items: center;
+  color: var(--ox-danger-fg);
+}
+
+/* ── Колонки :1261–1262, :1373 ── */
+.ox-br-cols {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  align-items: flex-start;
+}
+
+.ox-br-main {
+  flex: 3 1 480px;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.ox-br-card {
+  background: var(--ox-card);
+  border: 1px solid var(--ox-line);
+  border-radius: var(--ox-radius-xl);
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.ox-br-card[data-gap='12'] {
+  gap: 12px;
+}
+
+.ox-br-card[data-flush] {
+  display: block;
+  padding: 0;
+  overflow: hidden;
+}
+
+.ox-br-cardhead {
+  padding: 16px 20px;
+  border-bottom: 1px solid var(--ox-line);
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.ox-br-h2 {
+  margin: 0;
+  font-size: 17px;
+  font-weight: var(--ox-fw-semibold);
+}
+
+.ox-br-titled {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.ox-br-sub {
+  font-size: var(--ox-fs-sm);
+  color: var(--ox-text-muted);
+  text-wrap: pretty;
+}
+
+/* ── Поля :1266–1267 ── */
+.ox-br-field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-size: var(--ox-fs-sm);
+  font-weight: var(--ox-fw-medium);
+  color: var(--ox-text-label);
+}
+
+.ox-br-field-top {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.ox-br-count {
+  font-weight: var(--ox-fw-regular);
+  color: var(--ox-text-muted);
+}
+
+.ox-br-count[data-over] {
+  color: var(--ox-danger-fg);
+}
+
+.ox-br-input {
+  width: 100%;
+  min-height: 44px;
+  padding: 8px 12px;
+  border: 1px solid var(--ox-line-control);
+  border-radius: var(--ox-radius-md);
+  background: var(--ox-card);
+  font: inherit;
+  font-size: 15px;
+  font-weight: var(--ox-fw-regular);
+  color: var(--ox-text);
+}
+
+.ox-br-hint {
+  font-size: var(--ox-fs-xs);
+  font-weight: var(--ox-fw-regular);
+  color: var(--ox-text-muted);
+}
+
+/* ── Логотип и знак :1272–1296 ── */
+.ox-br-files {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 220px), 1fr));
+  gap: 12px;
+}
+
+.ox-br-file {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.ox-br-label {
+  font-size: var(--ox-fs-sm);
+  font-weight: var(--ox-fw-medium);
+  color: var(--ox-text-label);
+}
+
+.ox-br-drop {
+  display: grid;
+  place-items: center;
+  height: 88px;
+  border-radius: var(--ox-radius-lg);
+  border: 1px dashed var(--ox-line-control);
+  background: var(--ox-raised);
+}
+
+.ox-br-drop[data-kind='mark'] {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 0 16px;
+}
+
+.ox-br-drop-empty {
+  font-size: var(--ox-fs-xs);
+  color: var(--ox-text-muted);
+  text-align: center;
+  padding: 0 12px;
+}
+
+.ox-br-drop-note {
+  font-size: var(--ox-fs-xs);
+  color: var(--ox-text-muted);
+  text-wrap: pretty;
+}
+
+.ox-br-logo {
+  display: block;
+  flex: none;
+  height: 48px;
+  width: 80%;
+  background: center / contain no-repeat;
+}
+
+.ox-br-mark {
+  display: block;
+  flex: none;
+  width: 48px;
+  height: 48px;
+  border-radius: var(--ox-radius-xl);
+  background: center / cover no-repeat;
+}
+
+.ox-br-letter {
+  display: grid;
+  place-items: center;
+  flex: none;
+  width: 48px;
+  height: 48px;
+  border-radius: var(--ox-radius-xl);
+  color: var(--ox-on-accent);
+  font-size: 26px;
+  font-weight: var(--ox-fw-semibold);
+  padding-bottom: 3px;
+}
+
+.ox-br-filebtns {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.ox-br-upload {
+  position: relative;
+  gap: 6px;
+  padding: 0 14px;
+  cursor: pointer;
+}
+
+.ox-br-upload:focus-within {
+  outline: 2px solid var(--ox-focus);
+  outline-offset: 2px;
+}
+
+.ox-br-fileinput {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  opacity: 0;
+}
+
+/* ── Кнопки ── */
+.ox-br-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  min-height: 40px;
+  padding: 0 12px;
+  border-radius: var(--ox-radius-md);
+  border: 1px solid var(--ox-line-control);
+  background: var(--ox-card);
+  color: var(--ox-text);
+  font: inherit;
+  font-weight: var(--ox-fw-medium);
+  cursor: pointer;
+}
+
+.ox-br-btn:disabled {
+  color: var(--ox-text-muted);
+}
+
+.ox-br-btn[data-size='sm'] {
+  min-height: 32px;
+  padding: 0 10px;
+  border-radius: var(--ox-radius-sm);
+  font-size: var(--ox-fs-xs);
+  font-weight: var(--ox-fw-regular);
+}
+
+.ox-br-btn[data-size='lg'] {
+  min-height: 44px;
+  padding: 0 16px;
+}
+
+.ox-br-btn[data-variant='danger'] {
+  border-color: var(--ox-br-danger-line);
+  color: var(--ox-danger-fg);
+}
+
+.ox-br-btn[data-variant='text'] {
+  min-height: 44px;
+  padding: 0 14px;
+  border-color: transparent;
+  background: transparent;
+  color: var(--ox-accent);
+}
+
+.ox-br-btn[data-variant='primary'] {
+  padding: 0 18px;
+  border-color: var(--ox-accent);
+  background: var(--ox-accent);
+  color: var(--ox-on-accent);
+}
+
+/* ── Акцентный цвет :1300–1319 ── */
+.ox-br-palette {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.ox-br-swatch {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  font: inherit;
+  cursor: pointer;
+}
+
+.ox-br-swatch-color {
+  display: block;
+  width: 40px;
+  height: 40px;
+  border-radius: var(--ox-radius-lg);
+}
+
+.ox-br-swatch-label {
+  font-size: var(--ox-fs-xs);
+  color: var(--ox-text-label);
+}
+
+.ox-br-hexrow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  align-items: flex-end;
+}
+
+.ox-br-hexfield {
+  flex: 0 1 200px;
+}
+
+.ox-br-hexbox {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 44px;
+  padding: 0 6px 0 12px;
+  border: 1px solid var(--ox-line-control);
+  border-radius: var(--ox-radius-md);
+  background: var(--ox-card);
+}
+
+.ox-br-hex {
+  flex: 1;
+  min-width: 0;
+  border: 0;
+  outline: 0;
+  background: transparent;
+  font-family: var(--ox-font-mono);
+  font-size: var(--ox-fs-md);
+  font-weight: var(--ox-fw-regular);
+  text-transform: uppercase;
+  color: var(--ox-text);
+}
+
+.ox-br-hexbox:focus-within {
+  outline: 2px solid var(--ox-focus);
+  outline-offset: 2px;
+}
+
+.ox-br-picker {
+  width: 34px;
+  height: 34px;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  cursor: pointer;
+}
+
+.ox-br-note {
+  display: flex;
+  gap: 8px;
+  padding: 10px 12px;
+  border-radius: var(--ox-radius-md);
+  font-size: var(--ox-fs-sm);
+}
+
+.ox-br-note[data-tone='ok'] {
+  background: var(--ox-ok-bg);
+  color: var(--ox-ok-fg);
+}
+
+.ox-br-note[data-tone='warn'] {
+  align-items: flex-start;
+  background: var(--ox-warn-bg);
+  color: var(--ox-warn-fg);
+}
+
+.ox-br-note[data-tone='danger'] {
+  background: var(--ox-danger-bg);
+  color: var(--ox-danger-fg);
+}
+
+.ox-br-note-text {
+  flex: 1;
+  text-wrap: pretty;
+}
+
+.ox-br-fixed {
+  flex: none;
+  width: 28px;
+  height: 28px;
+  border-radius: var(--ox-radius-sm);
+}
+
+.ox-br-statuses {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  align-items: center;
+  font-size: var(--ox-fs-xs);
+  color: var(--ox-text-muted);
+}
+
+.ox-br-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px 8px 2px 6px;
+  border-radius: var(--ox-radius-pill);
+  font-weight: var(--ox-fw-medium);
+}
+
+.ox-br-chip[data-tone='ok'] {
+  background: var(--ox-ok-bg);
+  color: var(--ox-ok-fg);
+}
+
+.ox-br-chip[data-tone='warn'] {
+  background: var(--ox-warn-bg);
+  color: var(--ox-warn-fg);
+}
+
+.ox-br-chip[data-tone='danger'] {
+  background: var(--ox-danger-bg);
+  color: var(--ox-danger-fg);
+}
+
+/* ── Термины :1322–1336 ── */
+.ox-br-term {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 14px 20px;
+  border-top: 1px solid var(--ox-divider);
+}
+
+.ox-br-term-top {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 10px;
+  align-items: baseline;
+}
+
+.ox-br-term-label {
+  font-weight: var(--ox-fw-semibold);
+}
+
+.ox-br-term-where {
+  flex: 1;
+  font-size: var(--ox-fs-xs);
+  color: var(--ox-text-muted);
+}
+
+.ox-br-forms {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 120px), 1fr));
+  gap: 8px;
+}
+
+.ox-br-termfield {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-size: var(--ox-fs-xs);
+  color: var(--ox-text-muted);
+}
+
+.ox-br-terminput {
+  min-height: 40px;
+  padding: 0 10px;
+  font-size: var(--ox-fs-md);
+}
+
+.ox-br-example {
+  font-size: var(--ox-fs-xs);
+  color: var(--ox-text-label);
+}
+
+/* ── Меню и иконки :1338–1362 ── */
+.ox-br-group {
+  padding: 10px 20px 4px;
+  font-size: 11px;
+  font-weight: var(--ox-fw-semibold);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--ox-br-group);
+  border-top: 1px solid var(--ox-divider);
+}
+
+.ox-br-row {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 8px 20px;
+  border-top: 1px solid var(--ox-divider);
+}
+
+.ox-br-row[data-first] {
+  border-top-color: transparent;
+}
+
+.ox-br-row[data-hidden] {
+  opacity: 0.55;
+}
+
+.ox-br-row-main {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+}
+
+.ox-br-iconbtn,
+.ox-br-square {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  padding: 0;
+  border-radius: var(--ox-radius-md);
+  border: 1px solid var(--ox-line-control);
+  background: var(--ox-card);
+  color: var(--ox-text);
+  cursor: pointer;
+}
+
+.ox-br-square[data-selected] {
+  border-color: var(--ox-accent);
+  background: var(--ox-accent-soft);
+}
+
+.ox-br-accent-icon {
+  color: var(--ox-accent);
+}
+
+.ox-br-rowlabel {
+  flex: 1 1 180px;
+  min-width: 0;
+  min-height: 40px;
+  padding: 0 10px;
+  font-size: var(--ox-fs-md);
+}
+
+.ox-br-moves {
+  display: flex;
+  gap: 4px;
+}
+
+.ox-br-vis {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 40px;
+  padding: 0 12px;
+  border-radius: var(--ox-radius-md);
+  border: 1px solid var(--ox-line-control);
+  background: var(--ox-card);
+  color: var(--ox-text-label);
+  font: inherit;
+  font-size: var(--ox-fs-sm);
+  font-weight: var(--ox-fw-medium);
+  cursor: pointer;
+}
+
+.ox-br-vis[data-hidden] {
+  color: var(--ox-warn-fg);
+}
+
+.ox-br-locked {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  min-height: 40px;
+  padding: 0 4px;
+  font-size: var(--ox-fs-xs);
+  color: var(--ox-text-muted);
+}
+
+.ox-br-icons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  padding-left: 48px;
+}
+
+/* ── «Работает на Ортус» :1366–1369 ── */
+.ox-br-switch {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  min-height: 48px;
+  padding: 0 12px;
+  border: 1px solid var(--ox-line-control);
+  border-radius: var(--ox-radius-md);
+  background: var(--ox-card);
+  color: var(--ox-text);
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.ox-br-switch-text {
+  display: flex;
+  flex-direction: column;
+}
+
+.ox-br-switch-title {
+  font-weight: var(--ox-fw-medium);
+}
+
+.ox-br-track {
+  position: relative;
+  flex: none;
+  width: 40px;
+  height: 22px;
+  border-radius: var(--ox-radius-pill);
+  background: var(--ox-br-track-off);
+}
+
+.ox-br-track[data-on] {
+  background: var(--ox-accent);
+}
+
+.ox-br-knob {
+  position: absolute;
+  top: 2px;
+  left: 0;
+  margin-left: 2px;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: var(--ox-card);
+}
+
+.ox-br-track[data-on] .ox-br-knob {
+  left: 18px;
+}
+
+/* ── Панель сохранения :1441–1450 ── */
+.ox-br-panel {
+  position: sticky;
+  bottom: 0;
+  z-index: 5;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 12px 16px;
+  border-radius: var(--ox-radius-xl);
+  background: var(--ox-card);
+  border: 1px solid var(--ox-line);
+  box-shadow: var(--ox-shadow-sticky);
+}
+
+.ox-br-errs {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  font-size: var(--ox-fs-sm);
+  color: var(--ox-danger-fg);
+}
+
+.ox-br-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+}
+
+.ox-br-state {
+  flex: 1 1 200px;
+  font-size: var(--ox-fs-sm);
+  color: var(--ox-text-muted);
+}
+
+.ox-br-state[data-dirty] {
+  color: var(--ox-warn-fg);
+}
+
+/* ── Предпросмотр :1373–1438 ── */
+.ox-pv {
+  flex: 2 1 340px;
+  min-width: 0;
+  position: sticky;
+  top: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.ox-pv-top {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.ox-pv-h2 {
+  margin: 0;
+  font-size: var(--ox-fs-lg);
+  font-weight: var(--ox-fw-semibold);
+}
+
+.ox-pv-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.ox-pv-tab {
+  min-height: 34px;
+  padding: 0 12px;
+  border-radius: var(--ox-radius-pill);
+  border: 1px solid var(--ox-line-control);
+  background: var(--ox-card);
+  color: var(--ox-br-tab-on);
+  font: inherit;
+  font-size: var(--ox-fs-sm);
+  font-weight: var(--ox-fw-medium);
+  cursor: pointer;
+}
+
+.ox-pv-tab[aria-pressed='true'] {
+  background: var(--ox-br-tab-on);
+  color: var(--ox-card);
+}
+
+.ox-pv-app {
+  border: 1px solid var(--ox-line);
+  border-radius: var(--ox-radius-xl);
+  overflow: hidden;
+  background: var(--ox-surface);
+}
+
+.ox-pv-bar {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 52px;
+  padding: 8px 12px;
+  background: var(--ox-card);
+  border-bottom: 1px solid var(--ox-line);
+}
+
+.ox-pv-logo {
+  display: block;
+  flex: none;
+  background: center / contain no-repeat;
+}
+
+.ox-pv-mark {
+  display: block;
+  flex: none;
+  width: 28px;
+  height: 28px;
+  border-radius: var(--ox-radius-md);
+  background: center / cover no-repeat;
+}
+
+.ox-pv-letter {
+  display: grid;
+  place-items: center;
+  flex: none;
+  width: 28px;
+  height: 28px;
+  border-radius: var(--ox-radius-md);
+  color: var(--ox-on-accent);
+  font-weight: var(--ox-fw-semibold);
+  padding-bottom: 2px;
+}
+
+.ox-pv-letter[data-size='28'] {
+  font-size: 17px;
+}
+
+.ox-pv-strong {
+  font-weight: var(--ox-fw-semibold);
+}
+
+.ox-pv-org {
+  flex: 1;
+  min-width: 0;
+  padding-left: 10px;
+  border-left: 1px solid var(--ox-line);
+  font-size: var(--ox-fs-sm);
+  font-weight: var(--ox-fw-semibold);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.ox-pv-body {
+  display: flex;
+  min-height: 230px;
+}
+
+.ox-pv-nav {
+  flex: none;
+  width: 44%;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 8px 6px;
+  background: var(--ox-raised);
+  border-right: 1px solid var(--ox-line);
+}
+
+.ox-pv-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 32px;
+  padding: 0 8px;
+  border-radius: var(--ox-radius-sm);
+  color: var(--ox-text-label);
+  font-size: var(--ox-fs-xs);
+  font-weight: var(--ox-fw-regular);
+}
+
+.ox-pv-item[data-active] {
+  font-weight: var(--ox-fw-semibold);
+}
+
+.ox-pv-item-label {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.ox-pv-content {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 12px;
+}
+
+.ox-pv-title {
+  font-size: 15px;
+  font-weight: var(--ox-fw-semibold);
+}
+
+.ox-pv-muted {
+  font-size: var(--ox-fs-xs);
+  color: var(--ox-text-muted);
+}
+
+.ox-pv-card {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 10px;
+  border-radius: var(--ox-radius-md);
+  background: var(--ox-card);
+  border: 1px solid var(--ox-line);
+}
+
+.ox-pv-chip {
+  align-self: flex-start;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px 8px 2px 6px;
+  border-radius: var(--ox-radius-pill);
+  font-size: 11px;
+  font-weight: var(--ox-fw-medium);
+  background: var(--ox-warn-bg);
+  color: var(--ox-warn-fg);
+}
+
+.ox-pv-link {
+  font-size: var(--ox-fs-xs);
+  font-weight: var(--ox-fw-medium);
+}
+
+.ox-pv-accept {
+  align-self: flex-start;
+  display: inline-flex;
+  align-items: center;
+  min-height: 34px;
+  padding: 0 14px;
+  border-radius: var(--ox-radius-md);
+  color: var(--ox-on-accent);
+  font-size: var(--ox-fs-sm);
+  font-weight: var(--ox-fw-medium);
+}
+
+.ox-pv-formwrap {
+  border: 1px solid var(--ox-line);
+  border-radius: var(--ox-radius-xl);
+  padding: 18px;
+  display: flex;
+  justify-content: center;
+}
+
+.ox-pv-form {
+  width: 100%;
+  max-width: 320px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 20px;
+  border-radius: var(--ox-radius-xl);
+  background: var(--ox-card);
+  border: 1px solid var(--ox-line);
+}
+
+.ox-pv-brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.ox-pv-formtitle {
+  font-size: 17px;
+  font-weight: var(--ox-fw-semibold);
+}
+
+.ox-pv-flabel {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-size: var(--ox-fs-xs);
+  color: var(--ox-text-label);
+}
+
+.ox-pv-fbox {
+  display: block;
+  height: 38px;
+  border-radius: var(--ox-radius-md);
+  border: 1px solid var(--ox-line-control);
+}
+
+.ox-pv-submit {
+  display: grid;
+  place-items: center;
+  min-height: 42px;
+  border-radius: var(--ox-radius-md);
+  color: var(--ox-on-accent);
+  font-weight: var(--ox-fw-medium);
+}
+
+.ox-pv-powered {
+  text-align: center;
+  font-size: 11px;
+  color: var(--ox-text-muted);
+}
+
+.ox-pv-mailwrap {
+  border: 1px solid var(--ox-line);
+  border-radius: var(--ox-radius-xl);
+  background: var(--ox-surface);
+  padding: 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.ox-pv-mail {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 20px;
+  border-radius: var(--ox-radius-lg);
+  background: var(--ox-card);
+  border-top: 4px solid;
+}
+
+.ox-pv-mailtext {
+  font-size: var(--ox-fs-md);
+  text-wrap: pretty;
+}
+
+.ox-pv-mailbtn {
+  align-self: flex-start;
+  display: inline-flex;
+  align-items: center;
+  min-height: 40px;
+  padding: 0 16px;
+  border-radius: var(--ox-radius-md);
+  color: var(--ox-on-accent);
+  font-weight: var(--ox-fw-medium);
+}
+
+.ox-pv-small {
+  font-size: 11px;
+  color: var(--ox-text-muted);
+  text-wrap: pretty;
+}
+
+.ox-pv-note {
+  font-size: var(--ox-fs-xs);
+  color: var(--ox-text-muted);
+  text-wrap: pretty;
+}

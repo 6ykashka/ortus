@@ -13,6 +13,7 @@ import { useLocation, useNavigate } from '@tanstack/react-router';
 import { type ReactElement, useState } from 'react';
 
 import { useApi } from '../../../../app/api.tsx';
+import { reviewTitle } from '../../../../shell/brand.ts';
 import { useCan, useShell } from '../../../../shell/context.tsx';
 import { problemCode, problemText, useBusy, useRun } from '../../../../shell/run.tsx';
 import { useToast } from '../../../../shell/toast.tsx';
@@ -470,7 +471,7 @@ function ShiftView(p: {
 }
 
 export default function ReviewPage(): ReactElement {
-  const { tenantId: id, audience, readOnly, go } = useShell();
+  const { tenantId: id, tenant, audience, readOnly, go } = useShell();
   const tenantId = id ?? '';
   const can = useCan();
   const owner = audience === 'owner';
@@ -571,7 +572,7 @@ export default function ReviewPage(): ReactElement {
       <div className="ox-rv-top">
         <div className="ox-rv-crumb">{crumbText}</div>
         <h1 id="h-rev" className="ox-rv-title" tabIndex={-1}>
-          {shell.nav.items.review}
+          {reviewTitle(tenant?.branding)}
         </h1>
         <p className="ox-rv-intro">{L.intro}</p>
       </div>

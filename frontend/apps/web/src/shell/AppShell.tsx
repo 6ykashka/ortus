@@ -33,7 +33,7 @@ import { useStoredQueueStatus } from '../pwa/status.ts';
 import { clearDeviceData } from '../pwa/store.ts';
 import { AccessGate } from './AccessGate.tsx';
 import { Banners, OfflineBootBanner } from './Banners.tsx';
-import { applyBrand } from './brand.ts';
+import { applyBrand, brandHeader, brandNav } from './brand.ts';
 import { ShellContext, type ShellValue } from './context.tsx';
 import { Header, type Popover, ProfilePopover } from './Header.tsx';
 import { InboxButton, InboxPopover, useUnreadCount } from './inbox.tsx';
@@ -169,7 +169,9 @@ export function AppShell({ me, area, tenant, page }: AppShellProps): ReactElemen
     () => navContext(area === 'tenant' ? tenant : null, me.platformOperator),
     [area, tenant, me.platformOperator],
   );
-  const groups = useMemo(() => buildNav(ctx), [ctx]);
+  // W4.62: оформление организации (TenantContext.branding) — меню, знак шапки и акцент; у оператора — Ортус.
+  const theme = area === 'tenant' ? (tenant?.branding ?? null) : null;
+  const groups = useMemo(() => brandNav(buildNav(ctx), theme), [ctx, theme]);
   const access = page ? pageAccess(ctx, page) : ({ kind: 'not_found' } as const);
   const readOnly = access.kind === 'allow' && access.readOnly;
   const owner = ctx.audience === 'owner';
@@ -184,7 +186,8 @@ export function AppShell({ me, area, tenant, page }: AppShellProps): ReactElemen
   // W2.24 (возврат 1): «(ожидают отправки: N)» после перезапуска на любой странице — из очереди на устройстве.
   useStoredQueueStatus(operator ? null : tenantId, me.userId);
 
-  useEffect(() => applyBrand(null), []);
+  const accent = theme?.accentUsed ?? null;
+  useEffect(() => applyBrand(accent), [accent]);
   // Переход закрывает поповеры и лист (setPage :2452–2455), основная область — к началу.
   const where = `${tenantId ?? ''}/${page ?? ''}`;
   const [shown, setShown] = useState(where);
@@ -330,6 +333,7 @@ export function AppShell({ me, area, tenant, page }: AppShellProps): ReactElemen
         header={
           <Header
             chrome={operator ? 'dark' : 'light'}
+            mark={brandHeader(theme)}
             sub={operator ? shell.header.platform : shell.header.business}
             title={operator ? shell.header.platformTitle : (tenant?.name ?? '')}
             scope={scopeView}

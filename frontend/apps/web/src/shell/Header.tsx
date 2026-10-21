@@ -5,6 +5,7 @@ import { format, shell } from '@ortus/texts';
 import { Icon } from '@ortus/ui';
 import type { ReactElement, ReactNode } from 'react';
 
+import type { BrandHeader } from './brand.ts';
 import type { ScopeView } from './scope.ts';
 import { SHELL_TEXT } from './texts.ts';
 
@@ -35,6 +36,8 @@ export interface HeaderProps {
   profile: ReactNode;
   /** Знак и «ортус · пространство бизнеса»; у кадра загрузки их нет (top.noLogo не задан, :97, :2823). */
   brand?: boolean;
+  /** W4.62: знак по оформлению организации (логотип, знак или буква и короткое имя, :96–100). */
+  mark?: BrandHeader;
 }
 
 export function Header(p: HeaderProps): ReactElement {
@@ -43,13 +46,28 @@ export function Header(p: HeaderProps): ReactElement {
   return (
     <header className="ox-header" data-chrome={p.chrome}>
       <div className="ox-brand">
-        {p.brand === false ? null : (
+        {p.brand === false ? null : p.mark?.logoUrl ? (
+          <span
+            role="img"
+            aria-label={p.title}
+            className="ox-brand-logo"
+            style={{ backgroundImage: `url("${p.mark.logoUrl}")` }}
+          />
+        ) : (
           <>
-            <span className="ox-brand-letter" aria-hidden="true">
-              {shell.header.brandLetter}
-            </span>
+            {p.mark?.markUrl ? (
+              <span
+                className="ox-brand-mark"
+                aria-hidden="true"
+                style={{ backgroundImage: `url("${p.mark.markUrl}")` }}
+              />
+            ) : (
+              <span className="ox-brand-letter" aria-hidden="true">
+                {p.mark?.letter ?? shell.header.brandLetter}
+              </span>
+            )}
             <div className="ox-brand-text">
-              <span className="ox-brand-name">{shell.header.brandName}</span>
+              <span className="ox-brand-name">{p.mark?.name ?? shell.header.brandName}</span>
               <span className="ox-brand-sub">{p.sub}</span>
             </div>
           </>

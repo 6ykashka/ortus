@@ -19,10 +19,6 @@
 
 - kind: label · target: .ox-org-trial «Завершён —» у «Ремстрой Плюс» · mode: stand · reason: у read_only после пробного периода стенд не отдаёт trialEndsAt (control/subscriptions W1.08); MSW и эталон — «Завершён 20.09.2026» · decision: PD-22, Q-W1.25-14 · owner: W1.25
 
-## Оформление организации (W4.62)
-
-- kind: out-of-stage · target: .ox-org-mark — буква и цвет знака · mode: both · reason: brand.short и brand.accent — оформление организации этапа 4 (W4.62); знак — первая буква имени на акценте по умолчанию: «SPA «Лотос»» → «S» вместо «Л», фон #1F6B52 у всех; эталон приводится · decision: PD-50, Q-W1.25-9 · owner: W1.25 · expires: stage-4
-
 ## Состояния без эталона
 
 - kind: no-reference · target: text:Организаций пока нет · mode: both · reason: пустого списка в эталоне нет (04 §5.1 «Состояния»); текст — бриф W1.25 §10 п. 8 · decision: PD-22, Q-W1.25-8 · owner: W1.25

@@ -129,6 +129,24 @@
   padding-bottom: 3px;
 }
 
+/* W4.62 · Логотип и знак оформления (:96, :98): фоном блока, не <img>. */
+.ox-brand-logo {
+  display: block;
+  flex: none;
+  height: 32px;
+  width: 160px;
+  background: center / contain no-repeat;
+}
+
+.ox-brand-mark {
+  display: block;
+  flex: none;
+  width: 32px;
+  height: 32px;
+  border-radius: 9px;
+  background: center / cover no-repeat;
+}
+
 .ox-brand-text {
   display: flex;
   flex-direction: column;
@@ -1015,6 +1033,24 @@
 
 /* ── Телефон: < 640 ── */
 @container ox-frame (width < 640px) {
+  /* W4.62 · Логотип и знак оформления (:96, :98): фоном блока, не <img>. */
+  .ox-brand-logo {
+    display: block;
+    flex: none;
+    height: 32px;
+    width: 160px;
+    background: center / contain no-repeat;
+  }
+
+  .ox-brand-mark {
+    display: block;
+    flex: none;
+    width: 32px;
+    height: 32px;
+    border-radius: 9px;
+    background: center / cover no-repeat;
+  }
+
   .ox-brand-text {
     display: none;
   }

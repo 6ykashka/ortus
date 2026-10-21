@@ -96,9 +96,24 @@ function OrgRow({
     <button type="button" className="ox-org-row" aria-pressed={selected} onClick={onSelect}>
       {/* Пробелы между колонками — как в разметке эталона :1840–1853: доступное имя строки читается
           по колонкам (во flex-контейнере пробельный текст не рисуется). */}
-      <span className="ox-org-mark" aria-hidden="true">
-        {markLetter(tenant.name)}
-      </span>{' '}
+      {/* W4.62: знак по оформлению организации (Tenant.brand, :1540–1541) — файл знака или буква короткого имени
+          (иначе названия) на акценте организации; интерфейс оператора остаётся в цветах Ортуса. */}
+      {tenant.brand?.markUrl ? (
+        <span
+          className="ox-org-mark"
+          data-file="true"
+          aria-hidden="true"
+          style={{ backgroundImage: `url("${tenant.brand.markUrl}")` }}
+        />
+      ) : (
+        <span
+          className="ox-org-mark"
+          aria-hidden="true"
+          style={tenant.brand ? { background: tenant.brand.accentUsed } : undefined}
+        >
+          {markLetter(tenant.brand?.shortName || tenant.name)}
+        </span>
+      )}{' '}
       <span className="ox-org-main">
         <span className="ox-org-name">{tenant.name}</span>
         <span className="ox-org-owner" data-loading={loading}>

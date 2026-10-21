@@ -1,7 +1,7 @@
 // W1.20 · Меню оболочки: боковая панель и рейл (:149–170), нижняя навигация телефона (:2165–2174), лист
 // «Все разделы» (:2274–2282; 01-shell.md §9.4–§9.6). Один DOM на все пороги: видимость — container queries
 // (shell.css). Подписи — словарь по ключам домена навигации.
-import { bottomItems, type NavGroup, type NavItem, type PageKey } from '@ortus/domain/nav';
+import { bottomItems, type NavItem, type PageKey } from '@ortus/domain/nav';
 import { shell } from '@ortus/texts';
 import { Icon } from '@ortus/ui';
 import {
@@ -13,10 +13,12 @@ import {
   useRef,
 } from 'react';
 
+import { type BrandedGroup, type BrandedItem, itemText } from './brand.ts';
 import { navLabel } from './labels.ts';
 
 export interface NavProps {
-  groups: readonly NavGroup[];
+  /** Меню по оформлению организации (W4.62: подпись пункта — своя или из словаря). */
+  groups: readonly BrandedGroup[];
   page: PageKey | null;
   onGo: (item: NavItem) => void;
 }
@@ -29,7 +31,7 @@ export function Sidebar({ groups, page, onGo, note }: NavProps & { note: string 
           <div className="ox-nav-title">{navLabel(g.title)}</div>
           <div className="ox-nav-sep" />
           {g.items.map((it) => {
-            const label = navLabel(it.label);
+            const label = itemText(it);
             return (
               <button
                 key={`${g.key}:${it.key}`}
@@ -82,7 +84,7 @@ export function BottomNav({
             onClick={() => onGo(it)}
           >
             <Icon name={it.icon} size={24} fill={active} />
-            {navLabel(it.label)}
+            {itemText(it as BrandedItem)}
             {it.badge ? <span className="ox-bottom-badge">{it.badge}</span> : null}
           </button>
         );
@@ -173,7 +175,7 @@ export function MoreSheet({
                 onClick={() => onGo(it)}
               >
                 <Icon name={it.icon} size={22} />
-                <span className="ox-nav-label">{navLabel(it.label)}</span>
+                <span className="ox-nav-label">{itemText(it)}</span>
                 {it.badge ? <span className="ox-nav-badge">{it.badge}</span> : null}
               </button>
             ))}

@@ -1,14 +1,14 @@
 // W1.25 · Сверка «Организаций» оператора со снимком design-stage-1 (verification-protocol.md §3): область
 // страницы `#ox-main` обеих целей. Перед снимком эталон приводится к данным контракта оператора этапа 1 по
 // записям allowlist/platform-orgs.md (out-of-stage до W4.60–W4.62): владелец, занятые места и место, модули,
-// участники — «—», полосы без заливки, знак — буква имени на акценте по умолчанию, «Квота места» убрана.
+// участники — «—», полосы без заливки, «Квота места» убрана. Знак организации — по оформлению (Tenant.brand, W4.62),
+// как в эталоне: не приводится.
 // Разметка эталона — шаблон pg.tenants «Ортус CRM.dc.html» :1536–1583 (снимок заморожен на этап).
 import { expect, type Locator, type Page } from '@playwright/test';
 
 import type { Target } from '@ortus/e2e-kit';
 
 const DASH = '—';
-const ACCENT = 'rgb(31, 107, 82)';
 
 /** Область страницы: `#ox-main` (шапка и меню — сверка shell W1.20). */
 export const mainTarget = (t: Target): Target => ({ ...t, root: t.page.locator('#ox-main') });
@@ -16,15 +16,9 @@ export const mainTarget = (t: Target): Target => ({ ...t, root: t.page.locator('
 /** Приводит эталон «Организаций» к данным контракта этапа 1 (записи allowlist/platform-orgs.md). */
 export async function normalizeReference(page: Page): Promise<void> {
   await page.locator('section[aria-labelledby="h-ten"]').evaluate(
-    (section, { dash, accent }) => {
-      const firstAlnum = (s: string) => (/[\p{L}\p{N}]/u.exec(s)?.[0] ?? '?').toUpperCase();
+    (section, { dash }) => {
       for (const row of Array.from(section.querySelectorAll<HTMLElement>('button[aria-pressed]'))) {
-        const [mark, main, , storage] = Array.from(row.children) as HTMLElement[];
-        const name = main?.children[0]?.textContent ?? '';
-        if (mark) {
-          mark.textContent = firstAlnum(name);
-          mark.style.background = accent;
-        }
+        const [, main, , storage] = Array.from(row.children) as HTMLElement[];
         const owner = main?.children[1];
         if (owner) {
           owner.textContent = (owner.textContent ?? '').replace(
@@ -66,7 +60,7 @@ export async function normalizeReference(page: Page): Promise<void> {
         if (label.textContent?.startsWith('Квота места')) label.parentElement?.remove();
       }
     },
-    { dash: DASH, accent: ACCENT },
+    { dash: DASH },
   );
 }
 
