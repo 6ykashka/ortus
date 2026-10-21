@@ -895,13 +895,13 @@ export interface paths {
     };
     /**
      * List scoped form definitions
-     * @description List scoped form definitions
+     * @description List scoped form definitions. W4.05 (0.11.0-stage4, «Формы и группы»): forms whose area (Form.orgUnitId; null — the whole organization) is covered by a grant of forms.read of the member, the latest change first. Filters: q — the name contains the text without regard to case («Поиск»); owner=me — «Мои формы»; status — «Черновики» (draft), «Принимают ответы» (open — published), «Приём закрыт» (closed); groupId — the forms of a group. An empty list after filters — «Ничего не найдено».
      */
     get: operations['listForms'];
     put?: never;
     /**
      * Create a form and immutable initial version
-     * @description Create a form and immutable initial version
+     * @description Create a form and immutable initial version. W4.05 (0.11.0-stage4, D-24 комплекта, Q-W4.00-forms-1): the form is created as a draft without versions and rules — responses are accepted after publishForm of v1, which creates the immutable version. forms.create in the area of the form (orgUnitId; null — the organization). Texts of the prototype (api.js:590–595): 422 validation_failed «Укажите название формы — не короче 3 символов», «Форма «{name}» уже есть — измените название» (name), «Шаблон не найден» (templateId), «Область не найдена» (orgUnitId), «Форма не найдена» (sourceFormId the member does not see); 403 module_not_installed «Модуль «{module}» не подключён: шаблон недоступен» (a template of a module that is not active). Answers the form; the screen opens «Конструктор» (getFormDraft) and toasts «Создан черновик «{name}»» / «Создана копия «{name}»». Event forms.form.created.v1 (the owners — «Создан черновик формы «…» из шаблона «…»»).
      */
     post: operations['createForm'];
     delete?: never;
@@ -924,7 +924,7 @@ export interface paths {
     };
     /**
      * Read form metadata and version pointers
-     * @description Read form metadata and version pointers
+     * @description Read form metadata and version pointers. W4.05 (0.11.0-stage4): the form with its settings, counters, links «Поделиться» (FormShare) and the rights of the member on it (FormMy); a form outside the grants of forms.read of the member — 404 «Форма не найдена», as a missing one. The ETag is Form.revision.
      */
     get: operations['getForm'];
     put?: never;
@@ -934,7 +934,7 @@ export interface paths {
     head?: never;
     /**
      * Rename or close submissions
-     * @description Rename or close submissions
+     * @description Rename or close submissions. W4.05 (0.11.0-stage4, C п. 13, FormPatch v2): the name, «Закрыть приём ответов» / «Возобновить приём ответов» (status closed / open — a published form only, otherwise 409 invalid_transition, reason form_not_published «Форма ещё не опубликована»), the area («Область формы изменена»), the group («Переместить в группу», FormGroup.id or null), the settings (FormSettingsPatch). forms.manage in the area of the form (and in the new area). Settings access public additionally requires forms.publish_public (403 «Нужно право «Публичные ссылки»») and a draft and version without CRM questions (422 «Публичный доступ невозможен: вопрос «…» спрашивает данные CRM»). Texts of the prototype: «Название формы — не короче 3 символов», «Форма «…» уже есть», «Лимит ответов — положительное число», «Область не найдена», «Группа не найдена» (422 validation_failed, violations by field). If-Match — Form.revision. Events forms.form.updated.v1, forms.form.closed.v1, forms.form.reopened.v1 («Закрыт приём ответов: «…»» / «Возобновлён приём ответов: «…»»).
      */
     patch: operations['updateForm'];
     trace?: never;
@@ -953,13 +953,14 @@ export interface paths {
     };
     /**
      * List immutable schema versions
-     * @description List immutable schema versions
+     * @description List immutable schema versions. W4.05 (0.11.0-stage4, tab «Версии»): the published versions, the newest first, with the v2 definition («Структура версии N · неизменяема»), the author, «вопросов: N» and the chip «Действует» (current); a form never published — an empty list («Форма ещё не публиковалась»). The client compares neighbouring versions («Добавлено», «Новый тип», «Текст изменён», «Изменено», «Убрано относительно предыдущей версии: «…»»).
      */
     get: operations['listFormVersions'];
     put?: never;
     /**
      * Create a new immutable version from a base version
-     * @description If-Match refers to the parent form metadata revision, preventing concurrent editors from silently moving latestVersionId. After success re-read GET form for the new ETag. Historical response schemas stay unchanged.
+     * @deprecated
+     * @description If-Match refers to the parent form metadata revision, preventing concurrent editors from silently moving latestVersionId. After success re-read GET form for the new ETag. Historical response schemas stay unchanged. W4.05 (0.11.0-stage4, Q-W4.00-forms-1): deprecated — the draft on the server (saveFormDraft) and publishForm replace the pair createFormVersion + publishFormVersion; the server answers 409 invalid_transition, reason form_draft_flow.
      */
     post: operations['createFormVersion'];
     delete?: never;
@@ -986,7 +987,8 @@ export interface paths {
     put?: never;
     /**
      * Publish exactly one validated version
-     * @description If-Match refers to parent form. Public publishing additionally requires forms.publish_public. Validate conditional rule graph and public-safe fields. The returned ETag is the new parent form revision.
+     * @deprecated
+     * @description If-Match refers to parent form. Public publishing additionally requires forms.publish_public. Validate conditional rule graph and public-safe fields. The returned ETag is the new parent form revision. W4.05 (0.11.0-stage4, Q-W4.00-forms-1, -2): deprecated — publishForm publishes the draft; access, deadline, limit and retention are settings of the form (updateForm). The server answers 409 invalid_transition, reason form_draft_flow.
      */
     post: operations['publishFormVersion'];
     delete?: never;
@@ -1009,11 +1011,15 @@ export interface paths {
     };
     /**
      * List visible responses, preserving submitted version
-     * @description List visible responses, preserving submitted version
+     * @description List visible responses, preserving submitted version. W4.05 (0.11.0-stage4, Q-W4.00-forms-9): forms.responses.read in the area of the form — every response; in the scope self — own responses; a response about a CRM object (subject) — also to members who see the object and hold forms.responses.read anywhere (the stub seesLog of the prototype is gone). The latest first; «Лента» and «Таблица» read the same items.
      */
     get: operations['listFormResponses'];
     put?: never;
-    post?: never;
+    /**
+     * Submit a response as an employee
+     * @description W4.05 (0.11.0-stage4, Q-W4.00-forms-8, -19, -25): an employee answers a published form with forms.read in its area (no own key — forms.responses.create stays null). The response is accepted at once (Q-W4.00-forms-18) and runs the rules of triggers submitted and accepted; the score is counted when the form counts scores. Refusals: 409 invalid_transition — reason form_version_changed «Форма обновилась — откройте её заново» (versionId is not the acting version), form_closed «Приём ответов закрыт» (closed, past acceptUntil, responseLimit reached, the module of the form not active — Q-W4.00-forms-16), form_already_answered «Вы уже отвечали на эту форму» (onePerMember); a form never published — 404 «Форма не найдена». 422 validation_failed with violations by question key and the texts of the prototype (pvCheck dc:688–705: «Обязательный вопрос», «Проверьте адрес почты», «Нужно не меньше 10 цифр», «ИНН — 10 или 12 цифр», «Ссылка начинается с http:// или https://», «Нужно число», «Нужно целое число», «Не меньше N», «Не больше N», «Не короче N символов», «Не длиннее N символов», «Выберите не меньше N», «Выберите не больше N»). Event forms.response.submitted.v1. Return 1: «Не больше ответов всего» and «Один ответ от сотрудника» hold under concurrency — the server locks the row of the form (select … for update on forms.forms) in the transaction that counts the responses and inserts the new one, so two parallel submissions neither exceed the limit nor give two responses of one member.
+     */
+    post: operations['submitFormResponse'];
     delete?: never;
     options?: never;
     head?: never;
@@ -1036,7 +1042,7 @@ export interface paths {
     };
     /**
      * Read a response permitted for review
-     * @description Read a response permitted for review
+     * @description Read a response permitted for review. W4.05 (0.11.0-stage4): the card of the feed — answers by the structure of its version, the author, the object, the score and «Журнал действий»; visibility as listFormResponses (a response the member may not read — 404 «Ответ не найден»).
      */
     get: operations['getFormResponse'];
     put?: never;
@@ -1046,7 +1052,7 @@ export interface paths {
     head?: never;
     /**
      * Assign and review an immutable submission
-     * @description x-permissions is empty because requirements are field-dependent: modifying assignee requires forms.responses.assign; review fields require forms.responses.review; modifying both requires both. Server validates every supplied field.
+     * @description x-permissions is empty because requirements are field-dependent: modifying assignee requires forms.responses.assign; review fields require forms.responses.review; modifying both requires both. Server validates every supplied field. W4.05 (0.11.0-stage4, Q-W4.00-forms-18): «Принять» / «Отклонить» of a pending response (a guest of a public form) — accepted runs the rules of trigger accepted. Event forms.response.accepted.v1. Return 1 (Q-W4.05-16): the key of a field (forms.responses.review, forms.responses.assign) is checked in the area of the form, not in any role: a member may change the field when he holds the key in the area of the form, or he is the assignee of the response and holds the key in any role, or the form is «Вся организация» and he holds the key in any role and sees the response by its relation to a CRM object (Q-W4.00-forms-9). A reviewer of another unit who sees a response of a form of a unit only by such a relation gets 403 forbidden_action.
      */
     patch: operations['reviewFormResponse'];
     trace?: never;
@@ -1056,7 +1062,7 @@ export interface paths {
       query?: never;
       header?: never;
       path: {
-        /** @description Unpredictable revocable public-form capability; avoid logs and referrer leakage. */
+        /** @description Unpredictable revocable public-form capability; avoid logs and referrer leakage. W4.05 (0.11.0-stage4, return 2): the token carries no tenant part — the server resolves the tenant by its digest («sha256:» + hex SHA-256 of the token) in the control index public_form_links (control 0009), then the link in forms.public_links of that tenant (FormShare.publicToken). */
         publicToken: components['parameters']['publicToken'];
       };
       cookie?: never;
@@ -1079,7 +1085,7 @@ export interface paths {
       query?: never;
       header?: never;
       path: {
-        /** @description Unpredictable revocable public-form capability; avoid logs and referrer leakage. */
+        /** @description Unpredictable revocable public-form capability; avoid logs and referrer leakage. W4.05 (0.11.0-stage4, return 2): the token carries no tenant part — the server resolves the tenant by its digest («sha256:» + hex SHA-256 of the token) in the control index public_form_links (control 0009), then the link in forms.public_links of that tenant (FormShare.publicToken). */
         publicToken: components['parameters']['publicToken'];
       };
       cookie?: never;
@@ -1102,7 +1108,7 @@ export interface paths {
       query?: never;
       header?: never;
       path: {
-        /** @description Unpredictable revocable public-form capability; avoid logs and referrer leakage. */
+        /** @description Unpredictable revocable public-form capability; avoid logs and referrer leakage. W4.05 (0.11.0-stage4, return 2): the token carries no tenant part — the server resolves the tenant by its digest («sha256:» + hex SHA-256 of the token) in the control index public_form_links (control 0009), then the link in forms.public_links of that tenant (FormShare.publicToken). */
         publicToken: components['parameters']['publicToken'];
       };
       cookie?: never;
@@ -1125,7 +1131,7 @@ export interface paths {
       query?: never;
       header?: never;
       path: {
-        /** @description Unpredictable revocable public-form capability; avoid logs and referrer leakage. */
+        /** @description Unpredictable revocable public-form capability; avoid logs and referrer leakage. W4.05 (0.11.0-stage4, return 2): the token carries no tenant part — the server resolves the tenant by its digest («sha256:» + hex SHA-256 of the token) in the control index public_form_links (control 0009), then the link in forms.public_links of that tenant (FormShare.publicToken). */
         publicToken: components['parameters']['publicToken'];
         /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
         uploadId: components['parameters']['uploadId'];
@@ -1769,7 +1775,7 @@ export interface paths {
       query?: never;
       header?: never;
       path: {
-        /** @description Unpredictable revocable public-form capability; avoid logs and referrer leakage. */
+        /** @description Unpredictable revocable public-form capability; avoid logs and referrer leakage. W4.05 (0.11.0-stage4, return 2): the token carries no tenant part — the server resolves the tenant by its digest («sha256:» + hex SHA-256 of the token) in the control index public_form_links (control 0009), then the link in forms.public_links of that tenant (FormShare.publicToken). */
         publicToken: components['parameters']['publicToken'];
         /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
         uploadId: components['parameters']['uploadId'];
@@ -5073,6 +5079,332 @@ export interface paths {
     patch?: never;
     trace?: never;
   };
+  '/api/v1/tenants/{tenantId}/forms/{formId}/draft': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        formId: components['parameters']['formId'];
+      };
+      cookie?: never;
+    };
+    /**
+     * Read the draft of the questions of a form
+     * @description W4.05 (0.11.0-stage4, Q-W4.00-forms-1, tab «Конструктор»): the draft — the questions being edited, or the acting version when there are no unpublished changes (hasChanges false) — with the issues that block the publication («До публикации исправьте»). Read-only members (forms.read without forms.manage) see the same draft with fields disabled. The ETag is FormDraft.revision.
+     */
+    get: operations['getFormDraft'];
+    /**
+     * Save the whole draft of a form
+     * @description W4.05 (0.11.0-stage4, prototype saveFormDraft, autosave 700 ms — «Сохраняем черновик…», «Черновик сохранён», «Черновик не сохранён: {err}»). Replaces the draft; incomplete questions are issues, not errors. If-Match — FormDraft.revision: the draft changed by another editor — 412 revision_mismatch «Черновик изменил другой редактор — обновите страницу». 422 validation_failed (violations by question key): structure errors — «Такой идентификатор уже есть» (a key repeated), «Страница не найдена» (a question on a missing page), «Идентификатор нельзя изменить: вопрос есть в опубликованной версии.» is a rule of the screen, not of the server (a renamed key is a new question). The subscription in read-only — 403 tenant_read_only (the backend blocks every change, unlike the prototype — Q-65).
+     */
+    put: operations['saveFormDraft'];
+    post?: never;
+    /**
+     * Discard the unpublished changes of a form
+     * @description W4.05 (0.11.0-stage4, prototype discardFormDraft, «Отменить неопубликованные изменения»): the draft becomes the acting version again («Изменения отменены: действует vN»). A form never published — 409 invalid_transition, reason form_not_published «У формы ещё нет опубликованной версии». If-Match — FormDraft.revision. Answers the draft after the discard.
+     */
+    delete: operations['discardFormDraft'];
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/v1/tenants/{tenantId}/forms/{formId}/publish': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        formId: components['parameters']['formId'];
+      };
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /**
+     * Publish the draft as the next immutable version
+     * @description W4.05 (0.11.0-stage4, prototype publishForm, dialog «Опубликовать «{name}» vN?»): the draft of revision draftRevision becomes version N+1 (a question whose type changed gets the key «{key}-v{N}»), the form accepts responses (status published), the draft equals the new version. If-Match — Form.revision; a draft changed since — 412 revision_mismatch «Черновик изменил другой редактор — обновите страницу». Blocking issues — 422 validation_failed, detail «Найдено ошибок: N. Исправьте их в конструкторе.», violations (field — the question key or form, message — the text of issues(); the checks of api.js with their texts come first: «В форме нет ни одного вопроса», «У вопроса нет текста», «У вопроса «…» нет вариантов ответа», «Публичная форма не может спрашивать «…»: справочники CRM гостю не показываются», «Повторяется идентификатор вопроса …» — Q-W4.00-forms-4). Nothing changed — 409 invalid_transition, reason form_no_changes. A public form requires forms.publish_public as well (403). Answers the form (publishedVersionNumber — «Опубликована версия vN формы «…»»). Event forms.version.published.v1 (the owners — «Опубликована форма «…» vN. Старые ответы сохраняют свои версии»); rules keep their own versions.
+     */
+    post: operations['publishForm'];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/v1/tenants/{tenantId}/forms/{formId}/rules': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        formId: components['parameters']['formId'];
+      };
+      cookie?: never;
+    };
+    /**
+     * List the actions after a response
+     * @description W4.05 (0.11.0-stage4, tab «Действия после ответа»): the rules of the form in the order of creation («Действий пока нет.»), with counters and, for kb, the page as the member sees it. Members without forms.manage see the cards with «Включено» disabled and «Открыть страницу» only. Return 1 (Q-W4.05-18): rules of kinds email and http come without their objects to a member without forms.manage in the area of the form — the address of the letter and the URL of the request (a secret of a webhook) stay with the members who configure the form.
+     */
+    get: operations['listFormRules'];
+    put?: never;
+    /**
+     * Add an action after a response
+     * @description W4.05 (0.11.0-stage4, «Новое действие: {вид}», «Действие добавлено»): the author is the requesting member — the action runs on his behalf. 422 validation_failed with the texts of the prototype: «Укажите название задачи», «Выберите, кого уведомить», «Укажите адрес почты», «Адрес запроса должен начинаться с https://», «Выберите страницу Базы знаний», «Выберите таблицу», «Укажите данные хотя бы для одного столбца» / «Выберите, что записать», «У поля нет названия», «Названия полей повторяются», «Подтвердите, что записи увидят все сотрудники с доступом к странице»; a page or a table the member does not see — «Страница не найдена»; a project the member may not create tasks in — «Нет права создавать задачи в проекте». A public form writes to the knowledge base only accepted responses: a kb rule of trigger submitted — 422 «Публичная форма: в Базу знаний попадают только принятые ответы, чтобы туда не попал спам.».
+     */
+    post: operations['createFormRule'];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/v1/tenants/{tenantId}/forms/{formId}/rules/{ruleId}': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        formId: components['parameters']['formId'];
+        /** @description W4.05 (0.11.0-stage4). Opaque UUID of a rule of the form («Действие после ответа», FormRule.id); a rule of another form — 404 «Действие не найдено». */
+        ruleId: components['parameters']['formRuleId'];
+      };
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    post?: never;
+    /**
+     * Delete an action after a response
+     * @description W4.05 (0.11.0-stage4): «Действие удалено» / «Действие удалено. Уже записанные строки остаются в Базе знаний». The journal of responses keeps its lines without «Повторить». If-Match — FormRule.revision; a missing rule — 404 «Действие не найдено».
+     */
+    delete: operations['deleteFormRule'];
+    options?: never;
+    head?: never;
+    /**
+     * Change or switch an action after a response
+     * @description W4.05 (0.11.0-stage4): «Включено» — enabled only, the version stays («Действие включено» / «Действие выключено»); «Изменить» — the version is raised («Действие обновлено · правило vN»), the author becomes the requesting member; the kind does not change (an object of another kind — 422). Validation as createFormRule. If-Match — FormRule.revision; a missing rule — 404 «Действие не найдено».
+     */
+    patch: operations['updateFormRule'];
+    trace?: never;
+  };
+  '/api/v1/tenants/{tenantId}/forms/{formId}/rules/{ruleId}/backfill': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        formId: components['parameters']['formId'];
+        /** @description W4.05 (0.11.0-stage4). Opaque UUID of a rule of the form («Действие после ответа», FormRule.id); a rule of another form — 404 «Действие не найдено». */
+        ruleId: components['parameters']['formRuleId'];
+      };
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /**
+     * Write the earlier responses by a knowledge base action
+     * @description W4.05 (0.11.0-stage4, prototype backfillKbRule, «Перенести прошлые ответы · N»): the responses that fit the enabled kb rule and were not written yet, by number; one result per «response × rule» (forms.response_actions, primary key response_id, rule_id — a new version of the rule does not repeat a done action; a failed one is written by the current version). Concurrency (return 3): each response is written in the same transaction as its row of forms.response_actions, under the lock of that row — insert … on conflict do nothing, then select … for update; a parallel backfill or «Повторить» with another Idempotency-Key waits for the lock and skips a done response — no second row in the table. A rule of another kind — 404 «Действие не найдено»; a disabled rule — 409 invalid_transition, reason form_rule_disabled «Действие выключено — включите его, чтобы перенести ответы».
+     */
+    post: operations['backfillFormRule'];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/v1/tenants/{tenantId}/forms/{formId}/responses/{responseId}/actions/{ruleId}/retry': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        formId: components['parameters']['formId'];
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        responseId: components['parameters']['responseId'];
+        /** @description W4.05 (0.11.0-stage4). Opaque UUID of a rule of the form («Действие после ответа», FormRule.id); a rule of another form — 404 «Действие не найдено». */
+        ruleId: components['parameters']['formRuleId'];
+      };
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /**
+     * Repeat an action for one response
+     * @description W4.05 (0.11.0-stage4, prototype retryFormAction, «Повторить» of «Журнал действий»; Q-W4.00-forms-13): repeats the rule (kb or task) for the response; a done action answers its earlier result («Повторная обработка не создаёт вторую задачу или строку.»). Concurrency (return 3): the action (the task or the knowledge base row) is written in the same transaction as the row of forms.response_actions (primary key response_id, rule_id), under the lock of that row — insert … on conflict do nothing, then select … for update; a parallel «Повторить» or backfill with another Idempotency-Key waits for the lock and answers the done result — no second task or row. A deleted rule — 409 invalid_transition, reason form_rule_deleted «Действие удалено из формы — повторить нельзя»; a failure again — 422 validation_failed «Не выполнено: {err}». Toast «Ответ R-… сохранён в Базу знаний».
+     */
+    post: operations['retryFormResponseAction'];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/v1/tenants/{tenantId}/forms/{formId}/summary': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        formId: components['parameters']['formId'];
+      };
+      cookie?: never;
+    };
+    /**
+     * Summary of the responses by question
+     * @description W4.05 (0.11.0-stage4, «Сводка»): aggregates over the responses the member may read (visibility as listFormResponses): per question of all versions — answered, counts and percents of options, average, minimum and maximum of numbers, three latest texts.
+     */
+    get: operations['getFormResponseSummary'];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/v1/tenants/{tenantId}/forms/{formId}/export': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        formId: components['parameters']['formId'];
+      };
+      cookie?: never;
+    };
+    /**
+     * Export the responses as a CSV file
+     * @description W4.05 (0.11.0-stage4, «Выгрузить CSV»): the responses the member may read as a CSV file (separators «;», BOM, «{форма}.csv»; nobody checks data.export — as the prototype, forms.md §3.1). Without responses — 409 invalid_transition, reason form_no_responses «Ответов пока нет». Up to 100 000 rows. Return 1 — cells as exportDataset: delimiter ;, CRLF, RFC 4180 quoting (a cell with ;, a quote, CR or LF is quoted, quotes doubled). Answers of guests of a public form are free text: against CSV formula injection (OWASP) the text cells — answers of text, choice, reference and file questions, the author, the object, the labels of the questions in the header — starting with =, +, -, @, tab or CR, also after leading whitespace, are prefixed with an apostrophe; numbers, money, dates, «да / нет», the number of the response, the version and the status are never prefixed (-5 stays a number). Writes an audit row forms.responses.exported (the form, the row count — never the content). GET stays (Q-W4.05-15): the export has no filters and no body; the audit is written by the handler.
+     */
+    get: operations['exportFormResponses'];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/v1/tenants/{tenantId}/forms/{formId}/fields/{fieldKey}/options': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        formId: components['parameters']['formId'];
+        /** @description W4.05 (0.11.0-stage4). FormQuestion.key of a CRM question (person, unit, ref) of the acting version of the form. */
+        fieldKey: components['parameters']['formFieldKey'];
+      };
+      cookie?: never;
+    };
+    /**
+     * Choices of a CRM question for the respondent
+     * @description W4.05 (0.11.0-stage4, Q-W4.00-forms-23): the records a CRM question of the acting version offers — members (person), regions and firms (unit, by unitLevel), vehicles, trips, repair objects or tasks (ref, by refKind) — only those the respondent sees by his own rights, up to 50, by label. A question that is not a CRM question or not in the acting version — 404 «Вопрос не найден».
+     */
+    get: operations['listFormFieldOptions'];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/v1/tenants/{tenantId}/form-templates': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+      };
+      cookie?: never;
+    };
+    /**
+     * List the templates of forms
+     * @description W4.05 (0.11.0-stage4, Q-W4.00-forms-14): the 15 templates of the code catalogue in the order of the prototype — tiles «Создать пустую форму», «Анкета», «Форма обратной связи», «Заявка на услугу или работу», «Регистрация на обучение» and «Все шаблоны · 15» by category. A template of a module that is not active is listed with available false.
+     */
+    get: operations['listFormTemplates'];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/v1/tenants/{tenantId}/form-groups': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+      };
+      cookie?: never;
+    };
+    /**
+     * List the groups of forms
+     * @description W4.05 (0.11.0-stage4, FM-03, Q-W4.00-forms-7): groups of the organization by name; formCount counts the forms the member sees (an empty group — «В группе пока нет форм — переместите сюда форму через меню «…».»).
+     */
+    get: operations['listFormGroups'];
+    put?: never;
+    /**
+     * Create a group of forms
+     * @description W4.05 (0.11.0-stage4, Q-W4.00-forms-7): forms.manage in the organization. 422 validation_failed «Название группы — от 2 символов», «Такая группа уже есть» (name). Toast «Группа «{name}» создана. Переместите в неё формы через меню «…»».
+     */
+    post: operations['createFormGroup'];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/v1/tenants/{tenantId}/form-groups/{groupId}': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+        /** @description W4.05 (0.11.0-stage4). Opaque UUID of a group of forms (FormGroup.id). */
+        groupId: components['parameters']['formGroupId'];
+      };
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    post?: never;
+    /**
+     * Delete an empty group of forms
+     * @description W4.05 (0.11.0-stage4, «Удалить пустую группу» — without confirmation): a group with forms (any, including forms the member does not see) — 409 invalid_transition, reason form_group_not_empty «В группе есть формы — сначала переместите их»; a missing group — 404 «Группа не найдена».
+     */
+    delete: operations['deleteFormGroup'];
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -5581,6 +5913,8 @@ export interface components {
        */
       type: 'choices';
       value: string[];
+      /** @description W4.05 (0.11.0-stage4). «Другое — свой вариант» of a question with FormQuestion.otherOption — the text of the respondent; value then carries the key other. */
+      otherText?: string;
     };
     ConsumptionOverride: {
       itemId: components['schemas']['Id'];
@@ -6224,21 +6558,65 @@ export interface components {
       type: 'files';
       value: components['schemas']['Id'][];
     };
+    /** @description W4.05 (0.11.0-stage4). A form (forms.forms): the list «Формы и группы» and the header of the editor show it. A new form is a draft without versions (latestVersionId and publishedVersionId absent, status draft) until the first publishForm (D-24 комплекта); a published form accepts responses (status published) until «Закрыть приём ответов» (status closed). revision — the revision of the form itself (name, area, group, settings, status, publication), the ETag of getForm, updateForm and publishForm; the draft has its own revision (FormDraft.revision). */
     Form: {
       id: components['schemas']['Id'];
-      orgUnitId: components['schemas']['Id'];
+      /**
+       * Format: uuid
+       * @description W4.05 (0.11.0-stage4). The area of the form («Область формы») — an org unit (region or firm) whose roles with core.forms act on the form and its responses; null — the whole organization («Вся организация», Q-W4.00-forms-17).
+       */
+      orgUnitId: string | null;
       name: string;
       /** @enum {string} */
       status: 'draft' | 'published' | 'closed';
-      latestVersionId: components['schemas']['Id'];
+      latestVersionId?: components['schemas']['Id'];
       publishedVersionId?: components['schemas']['Id'];
       /** Format: int64 */
       revision: number;
+      /** @description W4.05 (0.11.0-stage4). The industry module of the form (prototype f.module, «{Модуль} · …» of the row; null — «Общая»). A form of a module that is not active does not accept responses (Q-W4.00-forms-16); it is read as usual. */
+      moduleKey: string | null;
+      /** @description W4.05 (0.11.0-stage4). The template the form was created from (FormTemplate.id); null — an empty form or a copy. */
+      templateId: string | null;
+      /**
+       * Format: uuid
+       * @description W4.05 (0.11.0-stage4). The group of the form («Формы и группы», FM-03 — groups of the organization); null — «Без группы».
+       */
+      groupId: string | null;
+      owner: components['schemas']['FormMemberRef'];
+      updatedAt: components['schemas']['Instant'];
+      /** @description W4.05 (0.11.0-stage4). N of the acting version (chips «Принимает ответы · vN», «Приём закрыт · vN», button «Опубликовать v{N+1}»); null — never published. */
+      publishedVersionNumber: number | null;
+      /** @description W4.05 (0.11.0-stage4). «Версии (N)». */
+      versionCount: number;
+      /** @description W4.05 (0.11.0-stage4). The draft differs from the acting version («vN · есть изменения», «Действует vN · есть неопубликованные изменения»); a form never published — false (its chip is «Черновик»). */
+      hasUnpublishedChanges: boolean;
+      /** @description W4.05 (0.11.0-stage4). Questions of the draft (statements «Текст без вопроса» excluded) — «{N} стр. · {M} вопросов». */
+      questionCount: number;
+      /** @description W4.05 (0.11.0-stage4). Responses the requesting member may read («N ответов», «Ответы · N»); 0 without forms.responses.read. */
+      responseCount: number;
+      /** @description W4.05 (0.11.0-stage4). Enabled rules — the counter of the tab «Действия после ответа». */
+      enabledRuleCount: number;
+      settings: components['schemas']['FormSettings'];
+      share: components['schemas']['FormShare'];
+      my: components['schemas']['FormMy'];
     };
+    /** @description W4.05 (0.11.0-stage4, prototype createForm, D-24 комплекта). Creates a draft without versions and rules: from a template (templateId — FormTemplate.id, «blank» — «Создать пустую форму»), as a copy of a form (sourceFormId — «Дублировать», «{имя} · копия»: the draft or the acting version of the source, its settings and group; rules are not copied) or from a ready definition (definition — e.g. the checklist of an inspection, W4.24). At most one of templateId, sourceFormId, definition; none — an empty form with one page «Страница 1». */
     FormCreate: {
-      orgUnitId: components['schemas']['Id'];
+      /**
+       * Format: uuid
+       * @description W4.05 (0.11.0-stage4). The area of the form; null — the whole organization («Вся организация»).
+       */
+      orgUnitId: string | null;
+      /** @description W4.05 (0.11.0-stage4). 3–200 characters, unique in the organization without regard to case (D-24 комплекта); the client offers «Новая форма» or the name of the template with the suffix « · 2» on a clash. W4.05 (return 3): minLength 1 stays from 0.1 — JSON Schema does not trim spaces, so the server checks the name trimmed, before the insert: shorter than 3 — 422 validation_failed on name «Укажите название формы — не короче 3 символов» (the check length(btrim(name)) of forms.forms is the last guard, never the answer). */
       name: string;
-      definition: components['schemas']['FormDefinition'];
+      definition?: components['schemas']['FormDefinitionV2'];
+      templateId?: string;
+      sourceFormId?: components['schemas']['Id'];
+      /**
+       * Format: uuid
+       * @description W4.05 (0.11.0-stage4). The group of the new form; a copy keeps the group of the source when absent.
+       */
+      groupId?: string | null;
     };
     FormDefinition: {
       title: string;
@@ -6246,6 +6624,28 @@ export interface components {
       fields: components['schemas']['FormField'][];
       visibility: components['schemas']['FieldVisibility'][];
       confirmationText: string;
+    };
+    /** @description W4.05 (0.11.0-stage4). FormDefinition v2 — the questions of a draft or of an immutable version: pages in their order and questions in their order (the page of a question — pageId). At least one page («Удалить страницу» is disabled on the only page). */
+    FormDefinitionV2: {
+      pages: components['schemas']['FormPageDefinition'][];
+      fields: components['schemas']['FormQuestion'][];
+    };
+    /** @description W4.05 (0.11.0-stage4, Q-W4.00-forms-1). The mutable draft of the questions of a form (forms.drafts). Without unpublished changes the draft equals the acting version (hasChanges false). revision — the ETag of getFormDraft and the If-Match of saveFormDraft and discardFormDraft (two editors: 412 «Черновик изменил другой редактор — обновите страницу»). issues — what blocks the publication («До публикации исправьте», the checks of issues() of the prototype with its texts, Q-W4.00-forms-4); publishForm repeats them. */
+    FormDraft: {
+      formId: components['schemas']['Id'];
+      definition: components['schemas']['FormDefinitionV2'];
+      /** Format: int64 */
+      revision: number;
+      hasChanges: boolean;
+      /** @description The version the draft started from; null — the form was never published. */
+      baseVersionNumber: number | null;
+      savedAt?: components['schemas']['Instant'];
+      savedBy?: components['schemas']['FormMemberRef'];
+      issues: components['schemas']['FormIssue'][];
+    };
+    /** @description W4.05 (0.11.0-stage4). The whole draft (autosave 700 ms after an edit, dc:562). Incomplete questions are allowed — they are issues, not errors; the structure (keys, pages, types, sizes) is checked by the schema and the server (422 validation_failed). */
+    FormDraftSave: {
+      definition: components['schemas']['FormDefinitionV2'];
     };
     /** @description Public forms cannot expose arbitrary tenant reference datasets; allowlisted public choices are materialized into the published version. File fields require maxFiles, allowedMimeTypes and maxFileBytes. The effective public limit is the smaller of field, publication, tenant and global safety limits. */
     FormField: {
@@ -6273,16 +6673,104 @@ export interface components {
       /** @description W2.52 (0.6.1-stage2, D-30 комплекта). Option keys (ChoiceOption.key) of a single_choice or multi_choice field whose answer blocks the owning process. The inspection checklist (InspectionChecklist.definition) sets [fail] for an item with failureBlocksRelease: such an answer does not release the vehicle. A form without such a process ignores it. */
       blockingValues?: string[];
     };
+    FormFieldOption: {
+      ref: components['schemas']['ObjectRef'];
+      label: string;
+      hint?: string;
+    };
+    /** @description W4.05 (0.11.0-stage4, Q-W4.00-forms-23). Choices of a CRM question («Сотрудник», «Регион или фирма», «Объект CRM») the respondent may see by his own rights, filtered by q, at most 50. */
+    FormFieldOptionList: {
+      items: components['schemas']['FormFieldOption'][];
+      truncated: boolean;
+    };
+    /** @description W4.05 (0.11.0-stage4, FM-03, Q-W4.00-forms-7). A group of forms of the organization («Формы и группы»); personal grouping is the filter «Мои формы». */
+    FormGroup: {
+      id: components['schemas']['Id'];
+      name: string;
+      /** @description Forms of the group the requesting member sees. */
+      formCount: number;
+    };
+    FormGroupCreate: {
+      /** @description 2–80 characters, unique in the organization without regard to case («Название группы — от 2 символов», «Такая группа уже есть»). W4.05 (return 3): minLength 1 as the name of a form — JSON Schema does not trim spaces, so the server checks the name trimmed, before the insert: shorter than 2 — 422 validation_failed on name «Название группы — от 2 символов» (the check length(btrim(name)) of forms.groups is the last guard, never the answer). */
+      name: string;
+    };
+    FormGroupList: {
+      items: components['schemas']['FormGroup'][];
+    };
+    FormIssue: {
+      /** @description The question of the issue; null — the form as a whole («В форме нет ни одного вопроса»). */
+      fieldKey: string | null;
+      /** @description Text of the prototype (dc:721–738), e.g. «Вопрос 3: нет вариантов ответа», «Идентификатор q-odo повторяется», «…: условие ссылается на вопрос ниже — условие может зависеть только от вопросов выше», «…: скрытый обязательный вопрос без значения по умолчанию». */
+      message: string;
+    };
+    /** @description W4.05 (0.11.0-stage4). A member as the screens of forms show it — the owner of a form, the author of a version, a rule or a response. */
+    FormMemberRef: {
+      /**
+       * Format: uuid
+       * @description null — not a member (a guest of a public form, «Гость»).
+       */
+      memberId: string | null;
+      displayName: string;
+    };
+    /** @description W4.05 (0.11.0-stage4, Q-W4.00-forms-12). What the requesting member may do with this form (grants in its area); without manage the editor shows «Только просмотр · нет права «Настраивать» формы». */
+    FormMy: {
+      /** @description forms.create — «Дублировать». */
+      create: boolean;
+      /** @description forms.manage — the draft, the name, the settings, the group, the rules, «Перенести прошлые ответы», «Повторить». */
+      manage: boolean;
+      /** @description forms.publish — «Опубликовать vN». */
+      publish: boolean;
+      /** @description forms.publish_public — «Все, у кого есть ссылка» (otherwise «Нужно право «Публичные ссылки»»). */
+      publishPublic: boolean;
+      /** @description forms.responses.read in the area of the form — all responses (in the scope self — own ones). */
+      readResponses: boolean;
+      /** @description forms.responses.review — «Принять», «Отклонить» for every visible response of the form: the key in the area of the form, or a form «Вся организация» and the key in any role. W4.05 (return 2): a flag of the form, not of a response — the page shows the buttons of a response by FormResponse.my (an assignee of the response who holds the key in another area may review it while this flag is false, Q-W4.05-16). */
+      reviewResponses: boolean;
+      /** @description The member may submit a response now (forms.read in the area, the form published and accepting, «Один ответ от сотрудника» not used up). */
+      respond: boolean;
+    };
+    FormNumberStats: {
+      average: components['schemas']['Decimal'];
+      min: components['schemas']['Decimal'];
+      max: components['schemas']['Decimal'];
+    };
+    FormOption: {
+      /** @description The stable key of the option («o1»…); answers, conditions and «Только если» of rules compare keys (Q-W4.00-forms-3). other is reserved for «Другое». */
+      key: string;
+      /** @description «Вариант N»; an empty label is an issue of the draft («…: есть пустой вариант»). */
+      label: string;
+      /** @description «баллов» of the option when the form counts scores (FormSettings.scoring). */
+      score?: number;
+    };
+    FormOptionCount: {
+      key: string;
+      label: string;
+      count: number;
+      percent: number;
+    };
     /** @description Opaque cursor is bound to tenant, principal, effective scopes, filters and sort. Permission changes invalidate the cursor. */
     FormPage: {
       items: components['schemas']['Form'][];
       nextCursor: string | null;
     };
-    /** @description To change fields create a new immutable version; PATCH cannot mutate historical schemas or answers. */
+    FormPageDefinition: {
+      id: string;
+      /** @description «Название страницы» («Страница 1»). */
+      title: string;
+      /** @description «Перемешивать вопросы для каждого». */
+      shuffle?: boolean;
+    };
+    /** @description W4.05 (0.11.0-stage4, C п. 13 — reworked, not extended). Changes of the form without a new version (design/docs/20-forms.md «Настройки … меняются без новой версии»): the name, the acceptance of responses (closed — «Закрыть приём ответов», open — «Возобновить приём ответов»; only a published form), the area, the group («Переместить в группу», null — «Без группы») and the settings (FormSettingsPatch — the changed fields only). The questions are changed in the draft (saveFormDraft) and published as a new immutable version (publishForm); PATCH never mutates versions or answers. */
     FormPatch: {
+      /** @description W4.05 (0.11.0-stage4, return 3). 3–200 characters, unique in the organization without regard to case. minLength 1 stays from 0.1 — JSON Schema does not trim spaces, so the server checks the name trimmed, before the insert: shorter than 3 — 422 validation_failed on name «Название формы — не короче 3 символов» (the check length(btrim(name)) of forms.forms is the last guard, never the answer). */
       name?: string;
-      /** @constant */
-      status?: 'closed';
+      /** @enum {string} */
+      status?: 'open' | 'closed';
+      /** Format: uuid */
+      orgUnitId?: string | null;
+      /** Format: uuid */
+      groupId?: string | null;
+      settings?: components['schemas']['FormSettingsPatch'];
     };
     FormPublication: {
       formId: components['schemas']['Id'];
@@ -6307,6 +6795,124 @@ export interface components {
       retainResponsesDays: number;
       reviewerMemberId?: components['schemas']['Id'];
     };
+    /** @description W4.05 (0.11.0-stage4). «Опубликовать vN» — the draft of revision draftRevision becomes the next immutable version. The draft changed after the dialog opened — 412 revision_mismatch. */
+    FormPublishRequest: {
+      /** Format: int64 */
+      draftRevision: number;
+    };
+    /** @description W4.05 (0.11.0-stage4). A question of the builder (dc:571–580, 839–879). The key is the identifier of the question («Идентификатор вопроса», Q-W4.00-forms-6): the server accepts ^[a-zA-Z][a-zA-Z0-9_-]{0,63}$ (the keys of the seed — q-photos — included), the screen checks the rule of the prototype (2–60 characters, «Латиница, цифры, «_» и «-», с буквы, от 2 символов»); a key present in a published version is not renamed. The draft may be incomplete — empty text, no options; publishForm blocks such a draft (FormDraft.issues). */
+    FormQuestion: {
+      key: string;
+      /** @description FormPageDefinition.id of the page of the question. */
+      pageId: string;
+      type: components['schemas']['FormQuestionType'];
+      /** @description «Вопрос» («Текст» for statement). */
+      label: string;
+      /** @description «Обязательный». */
+      required: boolean;
+      /** @description «Пояснение под вопросом». */
+      hint?: string;
+      /** @description «Значение по умолчанию» (not for photo, statement, multi); a hidden required question needs it. */
+      defaultValue?: string;
+      /** @description «Скрытый вопрос не показывается. Значение — по умолчанию или из параметра ссылки ?{key}=…» */
+      hidden?: boolean;
+      /** @description «Ответы» of choice, multi and select. */
+      options?: components['schemas']['FormOption'][];
+      /** @description «Вариант «Другое» с вводом». */
+      otherOption?: boolean;
+      /**
+       * @description «Списком» / «Плиткой» / «В один ряд».
+       * @enum {string}
+       */
+      optionView?: 'list' | 'tiles' | 'row';
+      /**
+       * @description «Как в списке» / «По алфавиту» / «В случайном порядке для каждого».
+       * @enum {string}
+       */
+      optionOrder?: 'as_is' | 'alpha' | 'random';
+      showIf?: components['schemas']['FormShowIf'];
+      /** @description «Длина ответа, символов» — от (text, longtext). */
+      minLength?: number;
+      /** @description «Длина ответа, символов» — до (text, longtext); «от» больше «до» is an issue. */
+      maxLength?: number;
+      /** @description «Допустимое значение» — от (number, int, money). */
+      minValue?: components['schemas']['Decimal'];
+      /** @description «Допустимое значение» — до (number, int, money). */
+      maxValue?: components['schemas']['Decimal'];
+      /** @description «Сколько вариантов выбрать» — не меньше (multi). */
+      minSelected?: number;
+      /** @description «Сколько вариантов выбрать» — не больше (multi). */
+      maxSelected?: number;
+      /**
+       * @description «Шкала» — от (scale; default 1).
+       * @enum {integer}
+       */
+      scaleMin?: 0 | 1;
+      /** @description «Шкала» — до (scale; default 5). */
+      scaleMax?: number;
+      /** @description «Подпись слева». */
+      scaleLeftLabel?: string;
+      /** @description «Подпись справа». */
+      scaleRightLabel?: string;
+      /** @description «Спрашивать время» (date). */
+      withTime?: boolean;
+      /**
+       * @description «Только фото» / «Документы: PDF, Word, Excel» / «Любые файлы» (photo).
+       * @enum {string}
+       */
+      accept?: 'photo' | 'docs' | 'any';
+      /** @description «не больше N файлов» (default 5). */
+      maxFiles?: number;
+      /** @description «до N МБ» (default 20). */
+      maxFileMb?: number;
+      /**
+       * @description «Что можно выбрать»: «Регион или фирму» / «Только регион» / «Только фирму» (unit).
+       * @enum {string}
+       */
+      unitLevel?: 'any' | 'region' | 'firm';
+      /**
+       * @description «Объект CRM»: «Машина» / «Рейс» / «Объект ремонта» / «Задача» (ref).
+       * @enum {string}
+       */
+      refKind?: 'vehicle' | 'trip' | 'object' | 'task';
+    };
+    /** @description W4.05 (0.11.0-stage4). A card «{тип} · ответили X из N» — bars «n · p%» (choice, «Да / нет»), «Среднее … · мин … · макс …» (numbers; absent — «Нет числовых ответов»), three latest texts («Пока без ответов»). */
+    FormQuestionSummary: {
+      fieldKey: string;
+      label: string;
+      type: components['schemas']['FormQuestionType'];
+      answered: number;
+      options?: components['schemas']['FormOptionCount'][];
+      numbers?: components['schemas']['FormNumberStats'];
+      recentTexts?: string[];
+    };
+    /**
+     * @description W4.05 (0.11.0-stage4, Q-W4.00-forms-5). The 21 active types of the prototype (TYPES, dc:474–482) in four groups — «Текст и числа»: text «Короткий текст», longtext «Длинный текст», number «Число», money «Сумма, ₽», email «Почта», phone «Телефон», inn «ИНН», url «Ссылка»; «Выбор»: choice «Один вариант», multi «Несколько вариантов», select «Выпадающий список», bool «Да / нет»; «Данные CRM»: person «Сотрудник», unit «Регион или фирма», ref «Объект CRM»; «Другие»: date «Дата», int «Целое число», scale «Оценка по шкале», rating «Оценка звёздами», photo «Файл или фото», statement «Текст без вопроса» (no answer). series «Серия вопросов» (FORM-06) and payment «Оплата» (FORM-05) are not types of the contract — the screen shows them disabled with the reason. Values of answers (FieldEntry.value): text, longtext, email, phone, inn, url — text; number — decimal; int, scale, rating — decimal (an integer); money — money (RUB); choice, select — choices (one FormOption.key), multi — choices (keys; other with otherText); bool — boolean; date — date (instant with withTime); photo — files (File ids of uploads of the purpose form_attachment, the owner forms/form — the form being answered); person — reference core/member, unit — reference core/org_unit, ref — reference of refKind (vehicle fleet/vehicle, trip fleet/trip, object repairs/repair_object, task tasks/task) with the label; a question not answered — absent or null.
+     * @enum {string}
+     */
+    FormQuestionType:
+      | 'text'
+      | 'longtext'
+      | 'number'
+      | 'money'
+      | 'email'
+      | 'phone'
+      | 'inn'
+      | 'url'
+      | 'choice'
+      | 'multi'
+      | 'select'
+      | 'bool'
+      | 'person'
+      | 'unit'
+      | 'ref'
+      | 'date'
+      | 'int'
+      | 'scale'
+      | 'rating'
+      | 'photo'
+      | 'statement';
+    /** @description W4.05 (0.11.0-stage4). A response (forms.responses), immutable after submission: answers by the structure of its version (versionNumber; the feed shows «показан по структуре версии vN (действует vM)»). Answers — FieldEntry by FormQuestion.key, values typed as described at FormQuestion.type; responses of versions created before stage 4 (the seed of the prototype) may carry a TextValue for any type. reviewStatus — accepted at once for a response of an employee, pending for a guest (Q-W4.00-forms-18); rules «После принятия ответа» run on accepted. */
     FormResponse: {
       id: components['schemas']['Id'];
       formId: components['schemas']['Id'];
@@ -6319,19 +6925,350 @@ export interface components {
       reviewComment?: string;
       /** Format: int64 */
       revision: number;
+      /** @description W4.05 (0.11.0-stage4). The human number of the response («R-1012»), a counter of the organization. */
+      number: string;
+      /** @description W4.05 (0.11.0-stage4). N of the version the response was submitted by (the chip «vN»). */
+      versionNumber: number;
+      author: components['schemas']['FormMemberRef'];
+      subject?: components['schemas']['FormResponseSubject'];
+      /**
+       * @description W4.05 (0.11.0-stage4). member — an employee after sign-in (submitFormResponse); public — a guest by the public link (author memberId null, displayName «Гость»); inspection — the inspection of a trip written as a response (D-30 комплекта, W4.24).
+       * @enum {string}
+       */
+      channel: 'member' | 'public' | 'inspection';
+      score?: components['schemas']['FormResponseScore'];
+      /** @description W4.05 (0.11.0-stage4). «Журнал действий» of the response — one result per rule (the latest attempt); «Для этого ответа действия не выполнялись» — empty. */
+      actions: components['schemas']['FormResponseAction'][];
+      /** @description W4.05 (0.11.0-stage4, Q-W4.00-forms-20). Keys of hidden questions whose value came from a parameter of the link (?key=…), not from the respondent. */
+      linkParamKeys?: string[];
+      my: components['schemas']['FormResponseMy'];
+    };
+    /** @description W4.05 (0.11.0-stage4). A line of «Журнал действий»: «Задача T-… «…» · {исполнитель} · {статус}», «{текст} · {время} · правило vN» + «Открыть страницу», or an error «Не сохранено в Базу знаний: {err} · {время}» + «Повторить» (retryable). */
+    FormResponseAction: {
+      ruleId: components['schemas']['Id'];
+      ruleVersion: number;
+      kind: components['schemas']['FormRuleKind'];
+      ok: boolean;
+      at: components['schemas']['Instant'];
+      /** @description The result, e.g. «Строка в таблице «Осмотры» · страница «Журнал осмотров машин»». */
+      text?: string;
+      /** @description The cause of a failure, e.g. «страница удалена из Базы знаний», «у автора правила … нет права «Создавать» в Базе знаний». */
+      error?: string;
+      /** @description The page written to — «Открыть страницу» (absent when the page is not visible to the requesting member). */
+      node?: components['schemas']['KnowledgeNodeRef'];
+      taskId?: components['schemas']['Id'];
+      /** @description The number of the created task («LOG-101»). */
+      taskKey?: string;
+      /** @description «Повторить» is offered — a failure of a rule that still exists (Q-W4.20-3). */
+      retryable: boolean;
+    };
+    /** @description W4.05 (0.11.0-stage4, Q-W4.00-forms-8, -19). A response of an employee after sign-in («Отправить»). versionId — the acting version shown to the respondent; a changed version — 409 invalid_transition, reason form_version_changed. The server repeats the visibility and required checks of the version and the checks of input («Обязательный вопрос», «Проверьте адрес почты», «ИНН — 10 или 12 цифр»…) — 422 validation_failed with violations by question key. */
+    FormResponseCreate: {
+      versionId: components['schemas']['Id'];
+      /** @description W4.05 (0.11.0-stage4, return 2). Answers by FormQuestion.key. A hidden question is never answered here: a hidden question key in answers — 422 validation_failed (code hidden, «Скрытый вопрос заполняют ссылка и значение по умолчанию»), its value comes from linkParams or defaultValue. A reference answer (person, unit, ref) names only an object the respondent may choose — the same set as listFormFieldOptions by his rights (an active member of the organization, a unit of the level, a CRM object he sees); otherwise 422 «Сотрудник не найден» / «Объект не найден»; the label of the answer is set by the server. */
+      answers: components['schemas']['FieldEntry'][];
+      /** @description W4.05 (0.11.0-stage4, return 2). The CRM object the response is about (FormResponseSubject). The server checks that the respondent sees the object — a trip by the rights of «Логистика» in its area, a task by tasks.read in its project or as its assignee; an object he does not see, or a missing one — 422 validation_failed «Объект не найден» on subject: the response is not attached to a trip or a task of others, and the label set by the server does not leak the object. */
+      subject?: components['schemas']['ObjectRef'];
+      /** @description Values of hidden questions from the parameters of the link (?key=…) — only hidden questions, never CRM and file questions (Q-W4.00-forms-20). W4.05 (return 2) — the value of a hidden question comes only from defaultValue or linkParams. W4.05 (return 3) — a key of another question or an unknown key — 422 validation_failed on linkParams.{key} (code not_hidden, «Параметр ссылки — только для скрытого вопроса»); the same schema as PublicResponseCreate.linkParams of the guest. */
+      linkParams?: {
+        [key: string]: string;
+      };
+    };
+    /** @description W4.05 (0.11.0-stage4, return 2, Q-W4.05-16). What the requesting member may do with this response in reviewFormResponse — the same rule the server applies to the fields: the key in the area of the form; or the member is the assignee of the response and holds the key in any role; or the form «Вся организация», the key in any role and the response visible by the relation to its CRM object. The page shows «Принять», «Отклонить» by review and the choice of the assignee by assign (FormMy.reviewResponses is a flag of the whole form). */
+    FormResponseMy: {
+      /** @description forms.responses.review for this response — reviewStatus and reviewComment. */
+      review: boolean;
+      /** @description forms.responses.assign for this response — assigneeMemberId. */
+      assign: boolean;
     };
     /** @description Opaque cursor is bound to tenant, principal, effective scopes, filters and sort. Permission changes invalidate the cursor. */
     FormResponsePage: {
       items: components['schemas']['FormResponse'][];
       nextCursor: string | null;
     };
+    /** @description W4.05 (0.11.0-stage4, Q-W4.00-forms-24). Scores counted by the server at submission (a form with «Считать баллы»): «Результат: X из Y баллов · тест пройден» / «… · нужно P для зачёта». */
+    FormResponseScore: {
+      points: number;
+      maxPoints: number;
+      /** @description null — «Проходной балл» not set. */
+      passed: boolean | null;
+    };
+    /** @description W4.05 (0.11.0-stage4). The CRM object the response is about («Рейс Р-196 · сдача»); members who see the object and hold forms.responses.read anywhere see the response by this relation (Q-W4.00-forms-9). */
+    FormResponseSubject: {
+      ref: components['schemas']['ObjectRef'];
+      label: string;
+    };
+    /** @description W4.05 (0.11.0-stage4). «Сводка» over the responses the member may read — questions of all versions, the fresh version first (respCols, dc:985). */
+    FormResponseSummary: {
+      formId: components['schemas']['Id'];
+      total: number;
+      questions: components['schemas']['FormQuestionSummary'][];
+    };
+    /** @description W4.05 (0.11.0-stage4, dc:679–683). «Выгрузить CSV» of the responses the member may read: «;» separators, BOM, columns «Ответ;Дата;Автор;Объект;Версия;Статус;…» and the questions of all versions (the table has no «Статус», the file has it — as the prototype). Cells — as exportDataset (exportFormResponses): RFC 4180 quoting, CRLF, protection against CSV formula injection (an apostrophe before a text cell starting with =, +, -, @, tab or CR). */
+    FormResponsesExport: {
+      formId: components['schemas']['Id'];
+      /** @description «{форма}.csv». */
+      fileName: string;
+      /** @constant */
+      contentType: 'text/csv; charset=utf-8';
+      content: string;
+      rowCount: number;
+      generatedAt: components['schemas']['Instant'];
+    };
+    /** @description W4.05 (0.11.0-stage4, forms.rules). «Действие после ответа»: exactly the object of its kind (task, notify, email, http or kb) is present — except email and http for a member without forms.manage in the area of the form: the address of the letter and the URL of the request (it may carry a secret of a webhook) are not shown, the object is absent (Q-W4.05-18). version — «правило vN», raised by the server at each change of the action (not by «Включено»); a response runs a rule once per «response × rule» («Повторная обработка не создаёт вторую задачу или строку.»; forms.response_actions — one row per response and rule): a new version does not repeat an action done by an earlier one, «Повторить» and «Перенести прошлые ответы» run the current version for a failed or missing action, and the journal keeps the version that ran last (FormResponseAction.ruleVersion). */
+    FormRule: {
+      id: components['schemas']['Id'];
+      formId: components['schemas']['Id'];
+      kind: components['schemas']['FormRuleKind'];
+      enabled: boolean;
+      version: number;
+      trigger: components['schemas']['FormRuleTrigger'];
+      condition: components['schemas']['FormRuleCondition'];
+      task?: components['schemas']['FormRuleTask'];
+      notify?: components['schemas']['FormRuleNotify'];
+      email?: components['schemas']['FormRuleEmail'];
+      http?: components['schemas']['FormRuleHttp'];
+      kb?: components['schemas']['FormRuleKb'];
+      author: components['schemas']['FormMemberRef'];
+      /** @description «записано ответов: N». */
+      doneCount: number;
+      /** @description «Не выполнено для N ответов — повторите из ленты ответов». */
+      failedCount: number;
+      /** @description Responses that fit the rule and were not written — «Перенести прошлые ответы · N» (kb only; 0 otherwise). */
+      pendingBackfillCount: number;
+      createdAt: components['schemas']['Instant'];
+      updatedAt: components['schemas']['Instant'];
+      /** Format: int64 */
+      revision: number;
+    };
+    /** @description W4.05 (0.11.0-stage4). «Перенесено в Базу знаний: N ответов. Не удалось: K — {err}» / «Новых ответов для переноса нет». */
+    FormRuleBackfillResult: {
+      added: number;
+      failed: number;
+      error: string | null;
+    };
+    /** @description W4.05 (0.11.0-stage4). «Только если»: the answer to a question of choice or «Да / нет» equals value (FormOption.key; true or false for «Да / нет»; Q-W4.00-forms-3); fieldKey null — «Для всех ответов». */
+    FormRuleCondition: {
+      fieldKey: string | null;
+      value: string | null;
+    };
+    /** @description W4.05 (0.11.0-stage4). «Новое действие: {вид}» — the object of kind is required, the others are absent (422 otherwise). */
+    FormRuleCreate: {
+      kind: components['schemas']['FormRuleKind'];
+      /** @default true */
+      enabled: boolean;
+      trigger: components['schemas']['FormRuleTrigger'];
+      condition?: components['schemas']['FormRuleCondition'];
+      task?: components['schemas']['FormRuleTask'];
+      notify?: components['schemas']['FormRuleNotify'];
+      email?: components['schemas']['FormRuleEmail'];
+      http?: components['schemas']['FormRuleHttp'];
+      kb?: components['schemas']['FormRuleKbInput'];
+    };
+    /** @description W4.05 (0.11.0-stage4, Q-W4.00-forms-15). «Письмо на почту» — stored; on the MVP show letters are not sent («На показе письма не отправляются.»). */
+    FormRuleEmail: {
+      /** Format: email */
+      to: string;
+    };
+    /** @description W4.05 (0.11.0-stage4, Q-W4.00-forms-15). «HTTP-запрос» (POST, JSON with the answers) — stored; on the MVP show it is not executed («В продукте — подписанный вебхук с повтором.»). Return 1: the URL may carry a secret of the webhook — only members with forms.manage see it (FormRule). When requests are executed (after the MVP) the sender protects against SSRF: the host is resolved once and the request goes to that address, private, loopback, link-local, multicast and metadata addresses (10/8, 172.16/12, 192.168/16, 127/8, ::1, 169.254/16, fc00::/7) are refused, redirects are not followed, the timeout and the size of the answer are bounded. */
+    FormRuleHttp: {
+      /**
+       * Format: uri
+       * @description «Адрес запроса должен начинаться с https://».
+       */
+      url: string;
+    };
+    /** @description W4.05 (0.11.0-stage4, D-26 комплекта, FM-05…07). «Сохранить в Базу знаний» — a row in a table of a page (mode table, tableId — KnowledgeTable of W4.04) or a record on a page (mode entry) of the knowledge base (nodeId — a node of W4.04). «＋ Новая страница» and «Новая таблица по вопросам формы» are created first by createKnowledgeNode and createKnowledgeTable (the tag Knowledge), then the rule references them («Сохраняем…» in two steps; «Страница создана, но действие не сохранено: …»). The rule writes on behalf of its author: knowledge.create and the access of the page are checked at each run (PD-53, kbAccess). A public form writes only accepted responses (trigger accepted). */
+    FormRuleKb: {
+      nodeId: components['schemas']['Id'];
+      /** @description The page as the requesting member sees it; absent when the page is not visible to him (the card «… «недоступна вам»»). */
+      node?: components['schemas']['KnowledgeNodeRef'];
+      /**
+       * @description «Строкой в таблицу» / «Записью на страницу».
+       * @enum {string}
+       */
+      mode: 'table' | 'entry';
+      tableId?: components['schemas']['Id'];
+      tableTitle?: string;
+      /** @description «Заголовок записи» (mode entry) — a source as FormRuleKbField.source; default $object. */
+      head?: string;
+      /**
+       * @description «Новые строки | записи»: «В начало» / «В конец».
+       * @enum {string}
+       */
+      position: 'top' | 'bottom';
+      fields: components['schemas']['FormRuleKbField'][];
+      /** @description «Показать ссылку на страницу после отправки» (never for a public form). */
+      showLink: boolean;
+      /** @description «Понимаю: записи увидят все сотрудники с доступом к Базе знаний…» — required for a page seen by all employees («Подтвердите, что записи увидят все сотрудники с доступом к странице»). */
+      allEmployeesConfirmed: boolean;
+    };
+    /** @description W4.05 (0.11.0-stage4). A field «Поле ← источник»: a column of the table (columnId — KnowledgeTableColumn.id of W4.04) or a line of the record (name); source — a variable of FORM_VARS ($at «Дата и время ответа», $author «Автор ответа», $object «Объект CRM», $id «Номер ответа», $form «Название формы», $ver «Версия формы») or the key of a question. */
+    FormRuleKbField: {
+      columnId?: components['schemas']['Id'];
+      name: string;
+      source: string;
+    };
+    /** @description W4.05 (0.11.0-stage4). FormRuleKb as the editor sends it (without the projections node and tableTitle). */
+    FormRuleKbInput: {
+      nodeId: components['schemas']['Id'];
+      /** @enum {string} */
+      mode: 'table' | 'entry';
+      tableId?: components['schemas']['Id'];
+      head?: string;
+      /** @enum {string} */
+      position: 'top' | 'bottom';
+      fields: components['schemas']['FormRuleKbField'][];
+      showLink: boolean;
+      allEmployeesConfirmed: boolean;
+    };
+    /**
+     * @description W4.05 (0.11.0-stage4). «Создать задачу», «Уведомить сотрудника», «Письмо на почту», «HTTP-запрос», «Сохранить в Базу знаний».
+     * @enum {string}
+     */
+    FormRuleKind: 'task' | 'notify' | 'email' | 'http' | 'kb';
+    FormRuleList: {
+      items: components['schemas']['FormRule'][];
+    };
+    /** @description W4.05 (0.11.0-stage4). «Уведомить сотрудника» — a notification in the inbox («Уведомление в CRM → …»). */
+    FormRuleNotify: {
+      memberId: components['schemas']['Id'];
+    };
+    /** @description W4.05 (0.11.0-stage4). «Включено» (enabled only — the version stays) or «Изменить» (trigger, condition and the object of the kind of the rule — the version is raised, «Действие обновлено · правило vN»). The kind of a rule does not change. */
+    FormRulePatch: {
+      enabled?: boolean;
+      trigger?: components['schemas']['FormRuleTrigger'];
+      condition?: components['schemas']['FormRuleCondition'];
+      task?: components['schemas']['FormRuleTask'];
+      notify?: components['schemas']['FormRuleNotify'];
+      email?: components['schemas']['FormRuleEmail'];
+      http?: components['schemas']['FormRuleHttp'];
+      kb?: components['schemas']['FormRuleKbInput'];
+    };
+    /** @description W4.05 (0.11.0-stage4, Q-W4.00-forms-13). «Создать задачу» — a task of the project projectId (Project of W4.03) with the title and the assignee; the description carries the answers and the link to the response. The task is created once per «response × rule» (forms.response_actions — one row per response and rule; a new version of the rule does not repeat a done action) on behalf of the author of the rule (tasks.create in the project is checked at each run). */
+    FormRuleTask: {
+      projectId: components['schemas']['Id'];
+      /** @description «Название задачи» («Укажите название задачи»). */
+      title: string;
+      assigneeMemberId: components['schemas']['Id'];
+    };
+    /**
+     * @description W4.05 (0.11.0-stage4). «Когда»: «После отправки ответа» / «После принятия ответа».
+     * @enum {string}
+     */
+    FormRuleTrigger: 'submitted' | 'accepted';
+    /** @description W4.05 (0.11.0-stage4, Q-W4.00-forms-2). Settings of the form (forms.forms.settings) — changed without a new version (updateForm), applied to every response from the moment of the change. Defaults — FORM_SETTINGS of the prototype (models.js:85): members, no deadline and limit, edit before review allowed, «Спасибо! Ответ отправлен.», without scoring, the progress, the button «Назад» and the logo shown, 365 days. */
+    FormSettings: {
+      /**
+       * @description «Кто может ответить»: members — «Сотрудники организации» (sign-in, forms.read in the area of the form, Q-W4.00-forms-8); public — «Все, у кого есть ссылка» (requires forms.publish_public, Q-W4.00-forms-11; a form with CRM questions — 422 «Публичный доступ невозможен: вопрос «…» спрашивает данные CRM»). «По персональному приглашению» is not in stage 4 (Q-W4.00-forms-10): the screen shows it disabled.
+       * @enum {string}
+       */
+      access: 'members' | 'public';
+      /**
+       * Format: date
+       * @description «Принимать до» — the last day (inclusive, in the time zone of the organization) of accepting responses; null — no deadline.
+       */
+      acceptUntil: string | null;
+      /** @description «Не больше ответов всего» across all versions (Q-W4.00-forms-25); null — «без ограничения». */
+      responseLimit: number | null;
+      /** @description «Один ответ от сотрудника» across all versions (Q-W4.00-forms-25). */
+      onePerMember: boolean;
+      /** @description «Разрешить исправить ответ до проверки — появится ревизия» — stored; revisions of a response come after stage 4 (Q-W4.00-forms-18). */
+      allowEditBeforeReview: boolean;
+      /** @description «Текст после отправки». */
+      confirmationText: string;
+      /** @description «Считать баллы за варианты ответа» (scores — FormOption.score). */
+      scoring: boolean;
+      /** @description «Проходной балл»; null — «не задан». */
+      passScore: number | null;
+      /** @description «Показывать результат после отправки». */
+      showScore: boolean;
+      /** @description «Прогресс по страницам». */
+      progressBar: boolean;
+      /** @description «Кнопка «Назад» между страницами». */
+      backButton: boolean;
+      /** @description «Логотип и название организации». */
+      showLogo: boolean;
+      /**
+       * @description «Хранить ответы» — «90 дней», «1 год», «3 года». A daily job deletes older responses with their files and rows and records of the knowledge base (D-26 комплекта, Q-W4.00-forms-22).
+       * @enum {integer}
+       */
+      retainResponsesDays: 90 | 365 | 1095;
+    };
+    /** @description W4.05 (0.11.0-stage4). The changed settings only; the others stay. Checkboxes and lists are saved at once, text fields on blur (dc:884). */
+    FormSettingsPatch: {
+      /** @enum {string} */
+      access?: 'members' | 'public';
+      /** Format: date */
+      acceptUntil?: string | null;
+      responseLimit?: number | null;
+      onePerMember?: boolean;
+      allowEditBeforeReview?: boolean;
+      confirmationText?: string;
+      scoring?: boolean;
+      passScore?: number | null;
+      showScore?: boolean;
+      progressBar?: boolean;
+      backButton?: boolean;
+      showLogo?: boolean;
+      /** @enum {integer} */
+      retainResponsesDays?: 90 | 365 | 1095;
+    };
+    /** @description W4.05 (0.11.0-stage4, Q-W4.00-forms-21; dialog «Поделиться формой»). Links are routes of the same SPA (D-01 комплекта): «Ссылка для сотрудников» — {origin}/forms/{formId} (after sign-in); «Публичная ссылка» — {origin}/f/{publicToken}, «Код для сайта» — the iframe of {origin}/f/{publicToken}?embed=1. A draft has no links («Ссылка появится после публикации…»). */
+    FormShare: {
+      /** @description The unpredictable revocable capability of the public form (PublicForm, publicToken of the tag PublicForms); null — the form is not published or not public. Shown only to members with forms.publish in the area of the form. W4.05 (0.11.0-stage4, return 1, Q-W4.05-19): the token is not stored — the server derives it each time: base64url without padding of HMAC-SHA256(key, «ortus.forms.public-link.v1» 0x00 tenant id 0x00 forms.public_links.id), the key — the server secret FORMS_PUBLIC_LINK_KEY of the version key_version of the link (base64, at least 32 bytes); the database keeps only token_digest = «sha256:» + hex SHA-256 of the token, by which getPublicForm finds the link. Revocation (after stage 4) — revoked_at and a new link: a new id, a new token. W4.05 (return 2): the route of a guest — the path /api/v1/public/forms/{publicToken} carries no tenant and the token carries no tenant part, while every tenant has its own database (ADR 0006); the server finds the tenant by token_digest in the control index public_form_links (control 0009: token_digest → tenant_id, form_id, link_id, key_version, revoked_at; the precedent — invitations.token_hash), the database of the tenant by tenant_routing, then the link in forms.public_links of that tenant (id = link_id, the same token_digest, not revoked) — the source of truth; no row in either — 404 as an unknown token. Issuing writes the index row first, then the tenant row (a failed tenant write deletes the index row); revocation and a change of the key — the tenant row first, then the index. */
+      publicToken: string | null;
+    };
+    /** @description W4.05 (0.11.0-stage4). «Показывать при условии» — «Все условия выполнены (И)» (all) / «Любое из условий (ИЛИ)» (any). A question shown by no condition is not asked and not required («Не показывался по условию»); the server repeats the evaluation at submission. */
+    FormShowIf: {
+      /** @enum {string} */
+      mode: 'all' | 'any';
+      conditions: components['schemas']['FormShowIfCondition'][];
+    };
+    FormShowIfCondition: {
+      /** @description A question above (an issue otherwise — «условие ссылается на вопрос ниже…», «…на удалённый вопрос»). */
+      fieldKey: string;
+      /**
+       * @description «равно» / «не равно».
+       * @enum {string}
+       */
+      operator: 'equals' | 'not_equals';
+      /** @description FormOption.key for choice, multi and select; true or false for bool; the text otherwise. */
+      value: string;
+    };
+    /** @description W4.05 (0.11.0-stage4, Q-W4.00-forms-14). A template of the code catalogue (the domain FORM_TEMPLATES, 15 templates) — tiles of «Создание формы» and «Все шаблоны · 15»; the organization has no own templates (FM-02). */
+    FormTemplate: {
+      id: string;
+      /**
+       * @description «Основные», «Опросы и оценка», «Сотрудники», «Тесты», «Отраслевые».
+       * @enum {string}
+       */
+      category: 'basic' | 'survey' | 'people' | 'quiz' | 'industry';
+      name: string;
+      icon: string;
+      /** @description The industry module the template needs; null — a template for every organization. */
+      moduleKey: string | null;
+      /** @description false — the module is not active («Модуль «{name}» не подключён», createForm — 403 module_not_installed). */
+      available: boolean;
+      pageCount: number;
+      questionCount: number;
+    };
+    FormTemplateList: {
+      items: components['schemas']['FormTemplate'][];
+    };
+    /** @description W4.05 (0.11.0-stage4). An immutable published version (forms.versions). A question whose type changed against the previous version gets a new key (prototype nextVersionFields: «{key}-v{N}»): answers of earlier versions keep the old key and value («Смена типа создаёт новое поле…»). Return 1: the new key is at most 64 characters (the pattern of FormQuestion.key) — the old key is cut so that «-v{N}» fits; a key taken by another question of the version gets «-v{N}-2», «-v{N}-3»…; conditions «Показывать при условии» of the same version follow the new key. Conditions «Только если» of rules and sources of «Сохранить в Базу знаний» keep the old key — they are not remapped (as the prototype): such a rule stops matching answers of the new version until it is edited. */
     FormVersion: {
       id: components['schemas']['Id'];
       formId: components['schemas']['Id'];
       /** Format: int64 */
       number: number;
-      definition: components['schemas']['FormDefinition'];
+      definition: components['schemas']['FormDefinitionV2'];
       createdAt: components['schemas']['Instant'];
+      createdBy: components['schemas']['FormMemberRef'];
+      /** @description W4.05 (0.11.0-stage4). «вопросов: N» of the tab «Версии». */
+      questionCount: number;
+      /** @description W4.05 (0.11.0-stage4). The acting version — the chip «Действует». */
+      current: boolean;
     };
     FormVersionCreate: {
       baseVersionId: components['schemas']['Id'];
@@ -8304,11 +9241,13 @@ export interface components {
       items: components['schemas']['Project'][];
       nextCursor: string | null;
     };
-    /** @description Only a sanitized published definition. No internal tenant IDs, reviewers, other responses, authenticated reference lookup, directory, dataset or file enumeration. */
+    /** @description Only a sanitized published definition. No internal tenant IDs, reviewers, other responses, authenticated reference lookup, directory, dataset or file enumeration. W4.05 (0.11.0-stage4, return 1): the guest never receives the key of a test or values he does not enter — FormOption.score of every option is removed (the server counts the score at submission, Q-W4.00-forms-24; presentation.showScore only says whether the result is shown after submission), and defaultValue of hidden questions is removed (the server applies it at submission; a hidden question stays in the definition with its key, so that a parameter of the link ?{key}=… can fill it — the page passes the parameters of its address in PublicResponseCreate.linkParams). The link is found by token_digest of forms.public_links (FormShare.publicToken). W4.05 (return 2): the tenant of the guest — by the same token_digest in the control index public_form_links (control 0009), the path carries no tenant. */
     PublicForm: {
       formId: components['schemas']['Id'];
       versionId: components['schemas']['Id'];
-      definition: components['schemas']['FormDefinition'];
+      /** @description W4.05 (0.11.0-stage4, return 1). The acting version cut for a guest — without FormOption.score and without defaultValue of hidden questions (see PublicForm). */
+      definition: components['schemas']['FormDefinitionV2'];
+      presentation?: components['schemas']['PublicFormPresentation'];
       acceptingResponses: boolean;
       uploadAllowed: boolean;
       /** Format: int64 */
@@ -8316,11 +9255,25 @@ export interface components {
       submissionNonce: string;
       nonceExpiresAt: components['schemas']['Instant'];
     };
-    /** @description Nonce is bound to public token+version+browser session; short-lived. Server can require antiAbuseToken at risk thresholds. Uploaded file IDs must belong to the same nonce/form field and be ready. A changed live version yields 409 form_version_changed rather than reinterpreting answers. Nonce is single-use for a committed response. Idempotency replay is checked after capability authorization but before the consumed-nonce rejection. Anonymous idempotency namespace is tenant+publicToken digest+nonce+operation; never one global anonymous actor. */
+    /** @description W4.05 (0.11.0-stage4, Q-W4.00-forms-19). How the public form is drawn — the render of «Предпросмотр» without its panel: the logo and the name of the organization («Логотип и название организации»), the progress by pages, the button «Назад», the text after submission and whether the score is shown (FormSettings of the form). The colours of buttons come from «Оформление» of the organization. */
+    PublicFormPresentation: {
+      /** @description null — the form hides the logo and the name (showLogo false). */
+      organizationName: string | null;
+      progressBar: boolean;
+      backButton: boolean;
+      confirmationText: string;
+      showScore: boolean;
+    };
+    /** @description Nonce is bound to public token+version+browser session; short-lived. Server can require antiAbuseToken at risk thresholds. Uploaded file IDs must belong to the same nonce/form field and be ready. A changed live version yields 409 form_version_changed rather than reinterpreting answers. Nonce is single-use for a committed response. Idempotency replay is checked after capability authorization but before the consumed-nonce rejection. Anonymous idempotency namespace is tenant+publicToken digest+nonce+operation; never one global anonymous actor. W4.05 (0.11.0-stage4, return 3; Q-W4.00-forms-20): the response of the channel public records the keys of hidden questions filled from linkParams in FormResponse.linkParamKeys (forms.responses.link_param_keys) — the value came from the link, not from the guest; a hidden question without a parameter takes its defaultValue on the server. */
     PublicResponseCreate: {
       versionId: components['schemas']['Id'];
       submissionNonce: string;
+      /** @description W4.05 (0.11.0-stage4, return 3). Answers of the guest by FormQuestion.key. A guest is untrusted and never answers a hidden question: a hidden question key in answers — 422 validation_failed (code hidden, «Скрытый вопрос заполняют ссылка и значение по умолчанию»), so the guest cannot override the defaultValue the server applies (cut from PublicForm) or a parameter of the link; the value of a hidden question comes only from linkParams or defaultValue — as FormResponseCreate.answers. */
       answers: components['schemas']['FieldEntry'][];
+      /** @description W4.05 (0.11.0-stage4, return 3; Q-W4.00-forms-20). Values of hidden questions from the parameters of the public link (?key=…): the page of the guest passes the parameters of its address. Only hidden questions of the version, never CRM and file questions; a key of another question or an unknown key — 422 validation_failed on linkParams.{key} (code not_hidden, «Параметр ссылки — только для скрытого вопроса»). The value is text up to 500 characters; the same schema as FormResponseCreate.linkParams. */
+      linkParams?: {
+        [key: string]: string;
+      };
       antiAbuseToken?: string;
     };
     /** @description Receipt is not a response-read capability and must not expose submitted personal data. */
@@ -8426,6 +9379,8 @@ export interface components {
        */
       type: 'reference';
       value: components['schemas']['ObjectRef'];
+      /** @description W4.05 (0.11.0-stage4, Q-W4.00-forms-23). The label of the object at the moment of the answer («Рейс Р-196», «Марина Котова») — kept when the object is renamed or hidden later; set by the server. */
+      label?: string;
     };
     RepairProject: {
       id: components['schemas']['Id'];
@@ -8528,7 +9483,7 @@ export interface components {
       kind: 'member' | 'room' | 'vehicle' | 'equipment';
       resourceId: components['schemas']['Id'];
     };
-    /** @description Changing assignee requires forms.responses.assign; changing review state requires forms.responses.review. No arbitrary editing of original answers. */
+    /** @description Changing assignee requires forms.responses.assign; changing review state requires forms.responses.review. No arbitrary editing of original answers. W4.05 (0.11.0-stage4, return 2): at least one field — an empty body — 422 validation_failed; the revision and the ETag of the response do not change. */
     ResponseReviewPatch: {
       /** Format: uuid */
       assigneeMemberId?: string | null;
@@ -10173,8 +11128,14 @@ export interface components {
     exportJobId: components['schemas']['Id'];
     /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
     fileId: components['schemas']['Id'];
+    /** @description W4.05 (0.11.0-stage4). FormQuestion.key of a CRM question (person, unit, ref) of the acting version of the form. */
+    formFieldKey: string;
+    /** @description W4.05 (0.11.0-stage4). Opaque UUID of a group of forms (FormGroup.id). */
+    formGroupId: components['schemas']['Id'];
     /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
     formId: components['schemas']['Id'];
+    /** @description W4.05 (0.11.0-stage4). Opaque UUID of a rule of the form («Действие после ответа», FormRule.id); a rule of another form — 404 «Действие не найдено». */
+    formRuleId: components['schemas']['Id'];
     /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
     groupId: components['schemas']['Id'];
     /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
@@ -10199,7 +11160,7 @@ export interface components {
     priceVersionNumber: number;
     /** @description W4.03 (0.10.0-stage4). Opaque UUID of a task project (tasks.projects); a project the member may not see (a closed project without a role in it, TP-03) — 404, as a missing one. */
     projectId: components['schemas']['Id'];
-    /** @description Unpredictable revocable public-form capability; avoid logs and referrer leakage. */
+    /** @description Unpredictable revocable public-form capability; avoid logs and referrer leakage. W4.05 (0.11.0-stage4, return 2): the token carries no tenant part — the server resolves the tenant by its digest («sha256:» + hex SHA-256 of the token) in the control index public_form_links (control 0009), then the link in forms.public_links of that tenant (FormShare.publicToken). */
     publicToken: string;
     /** @description W2.51 (0.6.0-stage2). DriverPoolPublication.id — opaque UUID of a fleet.pool_publications row (id, not catalog_ref), the same value as DriverAvailability.publicationId; the publication itself is visible to the source company only. */
     publicationId: components['schemas']['Id'];
@@ -12665,6 +13626,14 @@ export interface operations {
         /** @description Opaque cursor from the preceding response; no offset pagination. */
         cursor?: components['parameters']['Cursor'];
         limit?: components['parameters']['Limit'];
+        /** @description W4.05 (0.11.0-stage4). «Поиск формы» — a part of the name. */
+        q?: string;
+        /** @description W4.05 (0.11.0-stage4). me — «Мои формы» (the owner is the requesting member). */
+        owner?: 'me';
+        /** @description W4.05 (0.11.0-stage4). draft — «Черновики», open — «Принимают ответы», closed — «Приём закрыт». */
+        status?: 'draft' | 'open' | 'closed';
+        /** @description W4.05 (0.11.0-stage4). Forms of the group (FormGroup.id). */
+        groupId?: components['schemas']['Id'];
       };
       header?: never;
       path: {
@@ -13014,6 +13983,56 @@ export interface operations {
       429: components['responses']['RateLimited'];
     };
   };
+  submitFormResponse: {
+    parameters: {
+      query?: never;
+      header: {
+        /** @description Stable per intended command. Retain record at least 7 days; financial deduplication also retains a durable tenant+actor+operation+key digest receipt. Key is scoped to tenant+actor+operation. Reuse only for an identical request. */
+        'Idempotency-Key': components['parameters']['IdempotencyKey'];
+        /** @description Required for cookie-authenticated state changes; not required with bearer-only authentication. Invalid/missing token or Origin yields 403. Conditional requirement cannot be represented by OpenAPI required=true. */
+        'X-CSRF-Token'?: components['parameters']['Csrf'];
+        /** @description Required and checked against the deployment allowlist for cookie-authenticated state changes and browser public-form submissions/uploads. Never accept wildcard with credentialed requests. */
+        Origin?: components['parameters']['Origin'];
+      };
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        formId: components['parameters']['formId'];
+      };
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['FormResponseCreate'];
+      };
+    };
+    responses: {
+      /** @description Successful result. */
+      201: {
+        headers: {
+          'X-Request-Id': components['headers']['RequestId'];
+          ETag: components['headers']['ETag'];
+          'Idempotency-Replayed': components['headers']['IdempotencyReplayed'];
+          /** @description Never cache authenticated, confidential or capability-bearing API responses in shared caches. */
+          'Cache-Control'?: 'private, no-store';
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['FormResponse'];
+        };
+      };
+      400: components['responses']['BadRequest'];
+      401: components['responses']['Unauthenticated'];
+      402: components['responses']['PlanRequired'];
+      403: components['responses']['Forbidden'];
+      404: components['responses']['NotFound'];
+      409: components['responses']['Conflict'];
+      422: components['responses']['Validation'];
+      428: components['responses']['PreconditionRequired'];
+      429: components['responses']['RateLimited'];
+    };
+  };
   getFormResponse: {
     parameters: {
       query?: never;
@@ -13111,7 +14130,7 @@ export interface operations {
       query?: never;
       header?: never;
       path: {
-        /** @description Unpredictable revocable public-form capability; avoid logs and referrer leakage. */
+        /** @description Unpredictable revocable public-form capability; avoid logs and referrer leakage. W4.05 (0.11.0-stage4, return 2): the token carries no tenant part — the server resolves the tenant by its digest («sha256:» + hex SHA-256 of the token) in the control index public_form_links (control 0009), then the link in forms.public_links of that tenant (FormShare.publicToken). */
         publicToken: components['parameters']['publicToken'];
       };
       cookie?: never;
@@ -13148,7 +14167,7 @@ export interface operations {
         Origin?: components['parameters']['Origin'];
       };
       path: {
-        /** @description Unpredictable revocable public-form capability; avoid logs and referrer leakage. */
+        /** @description Unpredictable revocable public-form capability; avoid logs and referrer leakage. W4.05 (0.11.0-stage4, return 2): the token carries no tenant part — the server resolves the tenant by its digest («sha256:» + hex SHA-256 of the token) in the control index public_form_links (control 0009), then the link in forms.public_links of that tenant (FormShare.publicToken). */
         publicToken: components['parameters']['publicToken'];
       };
       cookie?: never;
@@ -13214,7 +14233,7 @@ export interface operations {
         Origin?: components['parameters']['Origin'];
       };
       path: {
-        /** @description Unpredictable revocable public-form capability; avoid logs and referrer leakage. */
+        /** @description Unpredictable revocable public-form capability; avoid logs and referrer leakage. W4.05 (0.11.0-stage4, return 2): the token carries no tenant part — the server resolves the tenant by its digest («sha256:» + hex SHA-256 of the token) in the control index public_form_links (control 0009), then the link in forms.public_links of that tenant (FormShare.publicToken). */
         publicToken: components['parameters']['publicToken'];
       };
       cookie?: never;
@@ -13259,7 +14278,7 @@ export interface operations {
         Origin?: components['parameters']['Origin'];
       };
       path: {
-        /** @description Unpredictable revocable public-form capability; avoid logs and referrer leakage. */
+        /** @description Unpredictable revocable public-form capability; avoid logs and referrer leakage. W4.05 (0.11.0-stage4, return 2): the token carries no tenant part — the server resolves the tenant by its digest («sha256:» + hex SHA-256 of the token) in the control index public_form_links (control 0009), then the link in forms.public_links of that tenant (FormShare.publicToken). */
         publicToken: components['parameters']['publicToken'];
         /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
         uploadId: components['parameters']['uploadId'];
@@ -15149,7 +16168,7 @@ export interface operations {
         Origin?: components['parameters']['Origin'];
       };
       path: {
-        /** @description Unpredictable revocable public-form capability; avoid logs and referrer leakage. */
+        /** @description Unpredictable revocable public-form capability; avoid logs and referrer leakage. W4.05 (0.11.0-stage4, return 2): the token carries no tenant part — the server resolves the tenant by its digest («sha256:» + hex SHA-256 of the token) in the control index public_form_links (control 0009), then the link in forms.public_links of that tenant (FormShare.publicToken). */
         publicToken: components['parameters']['publicToken'];
         /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
         uploadId: components['parameters']['uploadId'];
@@ -21777,6 +22796,741 @@ export interface operations {
       403: components['responses']['Forbidden'];
       404: components['responses']['NotFound'];
       422: components['responses']['Validation'];
+      429: components['responses']['RateLimited'];
+    };
+  };
+  getFormDraft: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        formId: components['parameters']['formId'];
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Successful result. */
+      200: {
+        headers: {
+          'X-Request-Id': components['headers']['RequestId'];
+          ETag: components['headers']['ETag'];
+          /** @description Never cache authenticated, confidential or capability-bearing API responses in shared caches. */
+          'Cache-Control'?: 'private, no-store';
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['FormDraft'];
+        };
+      };
+      400: components['responses']['BadRequest'];
+      401: components['responses']['Unauthenticated'];
+      403: components['responses']['Forbidden'];
+      404: components['responses']['NotFound'];
+      422: components['responses']['Validation'];
+      429: components['responses']['RateLimited'];
+    };
+  };
+  saveFormDraft: {
+    parameters: {
+      query?: never;
+      header: {
+        /** @description Stable per intended command. Retain record at least 7 days; financial deduplication also retains a durable tenant+actor+operation+key digest receipt. Key is scoped to tenant+actor+operation. Reuse only for an identical request. */
+        'Idempotency-Key': components['parameters']['IdempotencyKey'];
+        /** @description Required for cookie-authenticated state changes; not required with bearer-only authentication. Invalid/missing token or Origin yields 403. Conditional requirement cannot be represented by OpenAPI required=true. */
+        'X-CSRF-Token'?: components['parameters']['Csrf'];
+        /** @description Required and checked against the deployment allowlist for cookie-authenticated state changes and browser public-form submissions/uploads. Never accept wildcard with credentialed requests. */
+        Origin?: components['parameters']['Origin'];
+        /** @description Strong ETag obtained from latest GET or mutation response. * is not accepted. Missing=428; stale=412. Idempotent replay is checked before current revision precondition. */
+        'If-Match': components['parameters']['IfMatch'];
+      };
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        formId: components['parameters']['formId'];
+      };
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['FormDraftSave'];
+      };
+    };
+    responses: {
+      /** @description Successful result. */
+      200: {
+        headers: {
+          'X-Request-Id': components['headers']['RequestId'];
+          ETag: components['headers']['ETag'];
+          'Idempotency-Replayed': components['headers']['IdempotencyReplayed'];
+          /** @description Never cache authenticated, confidential or capability-bearing API responses in shared caches. */
+          'Cache-Control'?: 'private, no-store';
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['FormDraft'];
+        };
+      };
+      400: components['responses']['BadRequest'];
+      401: components['responses']['Unauthenticated'];
+      402: components['responses']['PlanRequired'];
+      403: components['responses']['Forbidden'];
+      404: components['responses']['NotFound'];
+      409: components['responses']['Conflict'];
+      412: components['responses']['PreconditionFailed'];
+      422: components['responses']['Validation'];
+      428: components['responses']['PreconditionRequired'];
+      429: components['responses']['RateLimited'];
+    };
+  };
+  discardFormDraft: {
+    parameters: {
+      query?: never;
+      header: {
+        /** @description Stable per intended command. Retain record at least 7 days; financial deduplication also retains a durable tenant+actor+operation+key digest receipt. Key is scoped to tenant+actor+operation. Reuse only for an identical request. */
+        'Idempotency-Key': components['parameters']['IdempotencyKey'];
+        /** @description Required for cookie-authenticated state changes; not required with bearer-only authentication. Invalid/missing token or Origin yields 403. Conditional requirement cannot be represented by OpenAPI required=true. */
+        'X-CSRF-Token'?: components['parameters']['Csrf'];
+        /** @description Required and checked against the deployment allowlist for cookie-authenticated state changes and browser public-form submissions/uploads. Never accept wildcard with credentialed requests. */
+        Origin?: components['parameters']['Origin'];
+        /** @description Strong ETag obtained from latest GET or mutation response. * is not accepted. Missing=428; stale=412. Idempotent replay is checked before current revision precondition. */
+        'If-Match': components['parameters']['IfMatch'];
+      };
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        formId: components['parameters']['formId'];
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Successful result. */
+      200: {
+        headers: {
+          'X-Request-Id': components['headers']['RequestId'];
+          ETag: components['headers']['ETag'];
+          'Idempotency-Replayed': components['headers']['IdempotencyReplayed'];
+          /** @description Never cache authenticated, confidential or capability-bearing API responses in shared caches. */
+          'Cache-Control'?: 'private, no-store';
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['FormDraft'];
+        };
+      };
+      400: components['responses']['BadRequest'];
+      401: components['responses']['Unauthenticated'];
+      402: components['responses']['PlanRequired'];
+      403: components['responses']['Forbidden'];
+      404: components['responses']['NotFound'];
+      409: components['responses']['Conflict'];
+      412: components['responses']['PreconditionFailed'];
+      422: components['responses']['Validation'];
+      428: components['responses']['PreconditionRequired'];
+      429: components['responses']['RateLimited'];
+    };
+  };
+  publishForm: {
+    parameters: {
+      query?: never;
+      header: {
+        /** @description Stable per intended command. Retain record at least 7 days; financial deduplication also retains a durable tenant+actor+operation+key digest receipt. Key is scoped to tenant+actor+operation. Reuse only for an identical request. */
+        'Idempotency-Key': components['parameters']['IdempotencyKey'];
+        /** @description Required for cookie-authenticated state changes; not required with bearer-only authentication. Invalid/missing token or Origin yields 403. Conditional requirement cannot be represented by OpenAPI required=true. */
+        'X-CSRF-Token'?: components['parameters']['Csrf'];
+        /** @description Required and checked against the deployment allowlist for cookie-authenticated state changes and browser public-form submissions/uploads. Never accept wildcard with credentialed requests. */
+        Origin?: components['parameters']['Origin'];
+        /** @description Strong ETag obtained from latest GET or mutation response. * is not accepted. Missing=428; stale=412. Idempotent replay is checked before current revision precondition. */
+        'If-Match': components['parameters']['IfMatch'];
+      };
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        formId: components['parameters']['formId'];
+      };
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['FormPublishRequest'];
+      };
+    };
+    responses: {
+      /** @description Successful result. */
+      200: {
+        headers: {
+          'X-Request-Id': components['headers']['RequestId'];
+          ETag: components['headers']['ETag'];
+          'Idempotency-Replayed': components['headers']['IdempotencyReplayed'];
+          /** @description Never cache authenticated, confidential or capability-bearing API responses in shared caches. */
+          'Cache-Control'?: 'private, no-store';
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['Form'];
+        };
+      };
+      400: components['responses']['BadRequest'];
+      401: components['responses']['Unauthenticated'];
+      402: components['responses']['PlanRequired'];
+      403: components['responses']['Forbidden'];
+      404: components['responses']['NotFound'];
+      409: components['responses']['Conflict'];
+      412: components['responses']['PreconditionFailed'];
+      422: components['responses']['Validation'];
+      428: components['responses']['PreconditionRequired'];
+      429: components['responses']['RateLimited'];
+    };
+  };
+  listFormRules: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        formId: components['parameters']['formId'];
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Successful result. */
+      200: {
+        headers: {
+          'X-Request-Id': components['headers']['RequestId'];
+          /** @description Never cache authenticated, confidential or capability-bearing API responses in shared caches. */
+          'Cache-Control'?: 'private, no-store';
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['FormRuleList'];
+        };
+      };
+      400: components['responses']['BadRequest'];
+      401: components['responses']['Unauthenticated'];
+      403: components['responses']['Forbidden'];
+      404: components['responses']['NotFound'];
+      422: components['responses']['Validation'];
+      429: components['responses']['RateLimited'];
+    };
+  };
+  createFormRule: {
+    parameters: {
+      query?: never;
+      header: {
+        /** @description Stable per intended command. Retain record at least 7 days; financial deduplication also retains a durable tenant+actor+operation+key digest receipt. Key is scoped to tenant+actor+operation. Reuse only for an identical request. */
+        'Idempotency-Key': components['parameters']['IdempotencyKey'];
+        /** @description Required for cookie-authenticated state changes; not required with bearer-only authentication. Invalid/missing token or Origin yields 403. Conditional requirement cannot be represented by OpenAPI required=true. */
+        'X-CSRF-Token'?: components['parameters']['Csrf'];
+        /** @description Required and checked against the deployment allowlist for cookie-authenticated state changes and browser public-form submissions/uploads. Never accept wildcard with credentialed requests. */
+        Origin?: components['parameters']['Origin'];
+      };
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        formId: components['parameters']['formId'];
+      };
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['FormRuleCreate'];
+      };
+    };
+    responses: {
+      /** @description Successful result. */
+      201: {
+        headers: {
+          'X-Request-Id': components['headers']['RequestId'];
+          ETag: components['headers']['ETag'];
+          'Idempotency-Replayed': components['headers']['IdempotencyReplayed'];
+          /** @description Never cache authenticated, confidential or capability-bearing API responses in shared caches. */
+          'Cache-Control'?: 'private, no-store';
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['FormRule'];
+        };
+      };
+      400: components['responses']['BadRequest'];
+      401: components['responses']['Unauthenticated'];
+      402: components['responses']['PlanRequired'];
+      403: components['responses']['Forbidden'];
+      404: components['responses']['NotFound'];
+      409: components['responses']['Conflict'];
+      422: components['responses']['Validation'];
+      428: components['responses']['PreconditionRequired'];
+      429: components['responses']['RateLimited'];
+    };
+  };
+  deleteFormRule: {
+    parameters: {
+      query?: never;
+      header: {
+        /** @description Stable per intended command. Retain record at least 7 days; financial deduplication also retains a durable tenant+actor+operation+key digest receipt. Key is scoped to tenant+actor+operation. Reuse only for an identical request. */
+        'Idempotency-Key': components['parameters']['IdempotencyKey'];
+        /** @description Required for cookie-authenticated state changes; not required with bearer-only authentication. Invalid/missing token or Origin yields 403. Conditional requirement cannot be represented by OpenAPI required=true. */
+        'X-CSRF-Token'?: components['parameters']['Csrf'];
+        /** @description Required and checked against the deployment allowlist for cookie-authenticated state changes and browser public-form submissions/uploads. Never accept wildcard with credentialed requests. */
+        Origin?: components['parameters']['Origin'];
+        /** @description Strong ETag obtained from latest GET or mutation response. * is not accepted. Missing=428; stale=412. Idempotent replay is checked before current revision precondition. */
+        'If-Match': components['parameters']['IfMatch'];
+      };
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        formId: components['parameters']['formId'];
+        /** @description W4.05 (0.11.0-stage4). Opaque UUID of a rule of the form («Действие после ответа», FormRule.id); a rule of another form — 404 «Действие не найдено». */
+        ruleId: components['parameters']['formRuleId'];
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Completed with no response body. */
+      204: {
+        headers: {
+          'X-Request-Id': components['headers']['RequestId'];
+          'Idempotency-Replayed': components['headers']['IdempotencyReplayed'];
+          /** @description Never cache authenticated, confidential or capability-bearing API responses in shared caches. */
+          'Cache-Control'?: 'private, no-store';
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
+      400: components['responses']['BadRequest'];
+      401: components['responses']['Unauthenticated'];
+      402: components['responses']['PlanRequired'];
+      403: components['responses']['Forbidden'];
+      404: components['responses']['NotFound'];
+      409: components['responses']['Conflict'];
+      412: components['responses']['PreconditionFailed'];
+      422: components['responses']['Validation'];
+      428: components['responses']['PreconditionRequired'];
+      429: components['responses']['RateLimited'];
+    };
+  };
+  updateFormRule: {
+    parameters: {
+      query?: never;
+      header: {
+        /** @description Stable per intended command. Retain record at least 7 days; financial deduplication also retains a durable tenant+actor+operation+key digest receipt. Key is scoped to tenant+actor+operation. Reuse only for an identical request. */
+        'Idempotency-Key': components['parameters']['IdempotencyKey'];
+        /** @description Required for cookie-authenticated state changes; not required with bearer-only authentication. Invalid/missing token or Origin yields 403. Conditional requirement cannot be represented by OpenAPI required=true. */
+        'X-CSRF-Token'?: components['parameters']['Csrf'];
+        /** @description Required and checked against the deployment allowlist for cookie-authenticated state changes and browser public-form submissions/uploads. Never accept wildcard with credentialed requests. */
+        Origin?: components['parameters']['Origin'];
+        /** @description Strong ETag obtained from latest GET or mutation response. * is not accepted. Missing=428; stale=412. Idempotent replay is checked before current revision precondition. */
+        'If-Match': components['parameters']['IfMatch'];
+      };
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        formId: components['parameters']['formId'];
+        /** @description W4.05 (0.11.0-stage4). Opaque UUID of a rule of the form («Действие после ответа», FormRule.id); a rule of another form — 404 «Действие не найдено». */
+        ruleId: components['parameters']['formRuleId'];
+      };
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['FormRulePatch'];
+      };
+    };
+    responses: {
+      /** @description Successful result. */
+      200: {
+        headers: {
+          'X-Request-Id': components['headers']['RequestId'];
+          ETag: components['headers']['ETag'];
+          'Idempotency-Replayed': components['headers']['IdempotencyReplayed'];
+          /** @description Never cache authenticated, confidential or capability-bearing API responses in shared caches. */
+          'Cache-Control'?: 'private, no-store';
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['FormRule'];
+        };
+      };
+      400: components['responses']['BadRequest'];
+      401: components['responses']['Unauthenticated'];
+      402: components['responses']['PlanRequired'];
+      403: components['responses']['Forbidden'];
+      404: components['responses']['NotFound'];
+      409: components['responses']['Conflict'];
+      412: components['responses']['PreconditionFailed'];
+      422: components['responses']['Validation'];
+      428: components['responses']['PreconditionRequired'];
+      429: components['responses']['RateLimited'];
+    };
+  };
+  backfillFormRule: {
+    parameters: {
+      query?: never;
+      header: {
+        /** @description Stable per intended command. Retain record at least 7 days; financial deduplication also retains a durable tenant+actor+operation+key digest receipt. Key is scoped to tenant+actor+operation. Reuse only for an identical request. */
+        'Idempotency-Key': components['parameters']['IdempotencyKey'];
+        /** @description Required for cookie-authenticated state changes; not required with bearer-only authentication. Invalid/missing token or Origin yields 403. Conditional requirement cannot be represented by OpenAPI required=true. */
+        'X-CSRF-Token'?: components['parameters']['Csrf'];
+        /** @description Required and checked against the deployment allowlist for cookie-authenticated state changes and browser public-form submissions/uploads. Never accept wildcard with credentialed requests. */
+        Origin?: components['parameters']['Origin'];
+      };
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        formId: components['parameters']['formId'];
+        /** @description W4.05 (0.11.0-stage4). Opaque UUID of a rule of the form («Действие после ответа», FormRule.id); a rule of another form — 404 «Действие не найдено». */
+        ruleId: components['parameters']['formRuleId'];
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Successful result. */
+      200: {
+        headers: {
+          'X-Request-Id': components['headers']['RequestId'];
+          'Idempotency-Replayed': components['headers']['IdempotencyReplayed'];
+          /** @description Never cache authenticated, confidential or capability-bearing API responses in shared caches. */
+          'Cache-Control'?: 'private, no-store';
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['FormRuleBackfillResult'];
+        };
+      };
+      400: components['responses']['BadRequest'];
+      401: components['responses']['Unauthenticated'];
+      402: components['responses']['PlanRequired'];
+      403: components['responses']['Forbidden'];
+      404: components['responses']['NotFound'];
+      409: components['responses']['Conflict'];
+      422: components['responses']['Validation'];
+      428: components['responses']['PreconditionRequired'];
+      429: components['responses']['RateLimited'];
+    };
+  };
+  retryFormResponseAction: {
+    parameters: {
+      query?: never;
+      header: {
+        /** @description Stable per intended command. Retain record at least 7 days; financial deduplication also retains a durable tenant+actor+operation+key digest receipt. Key is scoped to tenant+actor+operation. Reuse only for an identical request. */
+        'Idempotency-Key': components['parameters']['IdempotencyKey'];
+        /** @description Required for cookie-authenticated state changes; not required with bearer-only authentication. Invalid/missing token or Origin yields 403. Conditional requirement cannot be represented by OpenAPI required=true. */
+        'X-CSRF-Token'?: components['parameters']['Csrf'];
+        /** @description Required and checked against the deployment allowlist for cookie-authenticated state changes and browser public-form submissions/uploads. Never accept wildcard with credentialed requests. */
+        Origin?: components['parameters']['Origin'];
+      };
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        formId: components['parameters']['formId'];
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        responseId: components['parameters']['responseId'];
+        /** @description W4.05 (0.11.0-stage4). Opaque UUID of a rule of the form («Действие после ответа», FormRule.id); a rule of another form — 404 «Действие не найдено». */
+        ruleId: components['parameters']['formRuleId'];
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Successful result. */
+      200: {
+        headers: {
+          'X-Request-Id': components['headers']['RequestId'];
+          'Idempotency-Replayed': components['headers']['IdempotencyReplayed'];
+          /** @description Never cache authenticated, confidential or capability-bearing API responses in shared caches. */
+          'Cache-Control'?: 'private, no-store';
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['FormResponseAction'];
+        };
+      };
+      400: components['responses']['BadRequest'];
+      401: components['responses']['Unauthenticated'];
+      402: components['responses']['PlanRequired'];
+      403: components['responses']['Forbidden'];
+      404: components['responses']['NotFound'];
+      409: components['responses']['Conflict'];
+      422: components['responses']['Validation'];
+      428: components['responses']['PreconditionRequired'];
+      429: components['responses']['RateLimited'];
+    };
+  };
+  getFormResponseSummary: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        formId: components['parameters']['formId'];
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Successful result. */
+      200: {
+        headers: {
+          'X-Request-Id': components['headers']['RequestId'];
+          /** @description Never cache authenticated, confidential or capability-bearing API responses in shared caches. */
+          'Cache-Control'?: 'private, no-store';
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['FormResponseSummary'];
+        };
+      };
+      400: components['responses']['BadRequest'];
+      401: components['responses']['Unauthenticated'];
+      403: components['responses']['Forbidden'];
+      404: components['responses']['NotFound'];
+      422: components['responses']['Validation'];
+      429: components['responses']['RateLimited'];
+    };
+  };
+  exportFormResponses: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        formId: components['parameters']['formId'];
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Successful result. */
+      200: {
+        headers: {
+          'X-Request-Id': components['headers']['RequestId'];
+          /** @description Never cache authenticated, confidential or capability-bearing API responses in shared caches. */
+          'Cache-Control'?: 'private, no-store';
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['FormResponsesExport'];
+        };
+      };
+      400: components['responses']['BadRequest'];
+      401: components['responses']['Unauthenticated'];
+      403: components['responses']['Forbidden'];
+      404: components['responses']['NotFound'];
+      409: components['responses']['Conflict'];
+      422: components['responses']['Validation'];
+      429: components['responses']['RateLimited'];
+    };
+  };
+  listFormFieldOptions: {
+    parameters: {
+      query?: {
+        /** @description W4.05 (0.11.0-stage4). Search by the label. */
+        q?: string;
+      };
+      header?: never;
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        formId: components['parameters']['formId'];
+        /** @description W4.05 (0.11.0-stage4). FormQuestion.key of a CRM question (person, unit, ref) of the acting version of the form. */
+        fieldKey: components['parameters']['formFieldKey'];
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Successful result. */
+      200: {
+        headers: {
+          'X-Request-Id': components['headers']['RequestId'];
+          /** @description Never cache authenticated, confidential or capability-bearing API responses in shared caches. */
+          'Cache-Control'?: 'private, no-store';
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['FormFieldOptionList'];
+        };
+      };
+      400: components['responses']['BadRequest'];
+      401: components['responses']['Unauthenticated'];
+      403: components['responses']['Forbidden'];
+      404: components['responses']['NotFound'];
+      422: components['responses']['Validation'];
+      429: components['responses']['RateLimited'];
+    };
+  };
+  listFormTemplates: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Successful result. */
+      200: {
+        headers: {
+          'X-Request-Id': components['headers']['RequestId'];
+          /** @description Never cache authenticated, confidential or capability-bearing API responses in shared caches. */
+          'Cache-Control'?: 'private, no-store';
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['FormTemplateList'];
+        };
+      };
+      400: components['responses']['BadRequest'];
+      401: components['responses']['Unauthenticated'];
+      403: components['responses']['Forbidden'];
+      404: components['responses']['NotFound'];
+      422: components['responses']['Validation'];
+      429: components['responses']['RateLimited'];
+    };
+  };
+  listFormGroups: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Successful result. */
+      200: {
+        headers: {
+          'X-Request-Id': components['headers']['RequestId'];
+          /** @description Never cache authenticated, confidential or capability-bearing API responses in shared caches. */
+          'Cache-Control'?: 'private, no-store';
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['FormGroupList'];
+        };
+      };
+      400: components['responses']['BadRequest'];
+      401: components['responses']['Unauthenticated'];
+      403: components['responses']['Forbidden'];
+      404: components['responses']['NotFound'];
+      422: components['responses']['Validation'];
+      429: components['responses']['RateLimited'];
+    };
+  };
+  createFormGroup: {
+    parameters: {
+      query?: never;
+      header: {
+        /** @description Stable per intended command. Retain record at least 7 days; financial deduplication also retains a durable tenant+actor+operation+key digest receipt. Key is scoped to tenant+actor+operation. Reuse only for an identical request. */
+        'Idempotency-Key': components['parameters']['IdempotencyKey'];
+        /** @description Required for cookie-authenticated state changes; not required with bearer-only authentication. Invalid/missing token or Origin yields 403. Conditional requirement cannot be represented by OpenAPI required=true. */
+        'X-CSRF-Token'?: components['parameters']['Csrf'];
+        /** @description Required and checked against the deployment allowlist for cookie-authenticated state changes and browser public-form submissions/uploads. Never accept wildcard with credentialed requests. */
+        Origin?: components['parameters']['Origin'];
+      };
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+      };
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['FormGroupCreate'];
+      };
+    };
+    responses: {
+      /** @description Successful result. */
+      201: {
+        headers: {
+          'X-Request-Id': components['headers']['RequestId'];
+          'Idempotency-Replayed': components['headers']['IdempotencyReplayed'];
+          /** @description Never cache authenticated, confidential or capability-bearing API responses in shared caches. */
+          'Cache-Control'?: 'private, no-store';
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['FormGroup'];
+        };
+      };
+      400: components['responses']['BadRequest'];
+      401: components['responses']['Unauthenticated'];
+      402: components['responses']['PlanRequired'];
+      403: components['responses']['Forbidden'];
+      404: components['responses']['NotFound'];
+      409: components['responses']['Conflict'];
+      422: components['responses']['Validation'];
+      428: components['responses']['PreconditionRequired'];
+      429: components['responses']['RateLimited'];
+    };
+  };
+  deleteFormGroup: {
+    parameters: {
+      query?: never;
+      header: {
+        /** @description Stable per intended command. Retain record at least 7 days; financial deduplication also retains a durable tenant+actor+operation+key digest receipt. Key is scoped to tenant+actor+operation. Reuse only for an identical request. */
+        'Idempotency-Key': components['parameters']['IdempotencyKey'];
+        /** @description Required for cookie-authenticated state changes; not required with bearer-only authentication. Invalid/missing token or Origin yields 403. Conditional requirement cannot be represented by OpenAPI required=true. */
+        'X-CSRF-Token'?: components['parameters']['Csrf'];
+        /** @description Required and checked against the deployment allowlist for cookie-authenticated state changes and browser public-form submissions/uploads. Never accept wildcard with credentialed requests. */
+        Origin?: components['parameters']['Origin'];
+      };
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+        /** @description W4.05 (0.11.0-stage4). Opaque UUID of a group of forms (FormGroup.id). */
+        groupId: components['parameters']['formGroupId'];
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Completed with no response body. */
+      204: {
+        headers: {
+          'X-Request-Id': components['headers']['RequestId'];
+          'Idempotency-Replayed': components['headers']['IdempotencyReplayed'];
+          /** @description Never cache authenticated, confidential or capability-bearing API responses in shared caches. */
+          'Cache-Control'?: 'private, no-store';
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
+      400: components['responses']['BadRequest'];
+      401: components['responses']['Unauthenticated'];
+      402: components['responses']['PlanRequired'];
+      403: components['responses']['Forbidden'];
+      404: components['responses']['NotFound'];
+      409: components['responses']['Conflict'];
+      422: components['responses']['Validation'];
+      428: components['responses']['PreconditionRequired'];
       429: components['responses']['RateLimited'];
     };
   };

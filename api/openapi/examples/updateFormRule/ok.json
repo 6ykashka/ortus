@@ -1,0 +1,27 @@
+{
+  "id": "534e3740-14f4-58e2-9684-1a31eda0a053",
+  "formId": "3a5f4ca2-f3bf-5b37-819f-a9511aee0211",
+  "kind": "task",
+  "enabled": false,
+  "version": 1,
+  "trigger": "accepted",
+  "condition": {
+    "fieldKey": null,
+    "value": null
+  },
+  "author": {
+    "memberId": "b8df06ec-317e-5f46-b54c-e76603e41b5b",
+    "displayName": "Дарья Зимина"
+  },
+  "doneCount": 0,
+  "failedCount": 0,
+  "pendingBackfillCount": 0,
+  "createdAt": "2026-09-01T21:00:00Z",
+  "updatedAt": "2026-10-01T07:30:00Z",
+  "revision": 2,
+  "task": {
+    "projectId": "1380e888-13ac-5357-9a6f-a592a20e8220",
+    "title": "Проверить осмотр",
+    "assigneeMemberId": "ac41932c-dbd9-53b1-a84b-42cbc1d6629a"
+  }
+}

@@ -1,0 +1,50 @@
+{
+  "id": "3a5f4ca2-f3bf-5b37-819f-a9511aee0211",
+  "orgUnitId": null,
+  "name": "Осмотр машины",
+  "status": "published",
+  "revision": 1,
+  "moduleKey": "fleet",
+  "templateId": null,
+  "groupId": null,
+  "owner": {
+    "memberId": "b8df06ec-317e-5f46-b54c-e76603e41b5b",
+    "displayName": "Дарья Зимина"
+  },
+  "updatedAt": "2026-09-23T21:00:00Z",
+  "publishedVersionNumber": 3,
+  "versionCount": 3,
+  "hasUnpublishedChanges": false,
+  "questionCount": 7,
+  "responseCount": 2,
+  "enabledRuleCount": 2,
+  "settings": {
+    "access": "members",
+    "acceptUntil": null,
+    "responseLimit": null,
+    "onePerMember": false,
+    "allowEditBeforeReview": true,
+    "confirmationText": "Спасибо! Ответ отправлен.",
+    "scoring": false,
+    "passScore": null,
+    "showScore": true,
+    "progressBar": true,
+    "backButton": true,
+    "showLogo": true,
+    "retainResponsesDays": 365
+  },
+  "share": {
+    "publicToken": null
+  },
+  "my": {
+    "create": true,
+    "manage": true,
+    "publish": true,
+    "publishPublic": true,
+    "readResponses": true,
+    "reviewResponses": true,
+    "respond": true
+  },
+  "latestVersionId": "977e10e3-a208-5061-9c01-ec51c56e7ce4",
+  "publishedVersionId": "977e10e3-a208-5061-9c01-ec51c56e7ce4"
+}

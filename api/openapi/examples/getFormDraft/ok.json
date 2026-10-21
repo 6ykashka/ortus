@@ -1,0 +1,53 @@
+{
+  "formId": "7849cddb-8d14-505d-aedb-4d59b6be855b",
+  "definition": {
+    "pages": [
+      {
+        "id": "p1",
+        "title": "Работы"
+      },
+      {
+        "id": "p2",
+        "title": "Фото"
+      }
+    ],
+    "fields": [
+      {
+        "key": "q-volume",
+        "pageId": "p1",
+        "type": "number",
+        "label": "Выполненный объём, м²",
+        "required": true
+      },
+      {
+        "key": "q-crew",
+        "pageId": "p1",
+        "type": "multi",
+        "label": "Явка бригады",
+        "required": true,
+        "options": []
+      },
+      {
+        "key": "q-photo",
+        "pageId": "p2",
+        "type": "photo",
+        "label": "Фотоотчёт",
+        "required": true
+      }
+    ]
+  },
+  "revision": 1,
+  "hasChanges": false,
+  "baseVersionNumber": null,
+  "issues": [
+    {
+      "fieldKey": "q-crew",
+      "message": "«Явка бригады»: нет вариантов ответа"
+    }
+  ],
+  "savedAt": "2026-09-30T07:30:00Z",
+  "savedBy": {
+    "memberId": "b8df06ec-317e-5f46-b54c-e76603e41b5b",
+    "displayName": "Дарья Зимина"
+  }
+}

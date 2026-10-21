@@ -1,0 +1,103 @@
+{
+  "items": [
+    {
+      "id": "534e3740-14f4-58e2-9684-1a31eda0a053",
+      "formId": "3a5f4ca2-f3bf-5b37-819f-a9511aee0211",
+      "kind": "task",
+      "enabled": true,
+      "version": 1,
+      "trigger": "accepted",
+      "condition": {
+        "fieldKey": null,
+        "value": null
+      },
+      "author": {
+        "memberId": "b8df06ec-317e-5f46-b54c-e76603e41b5b",
+        "displayName": "Дарья Зимина"
+      },
+      "doneCount": 0,
+      "failedCount": 0,
+      "pendingBackfillCount": 0,
+      "createdAt": "2026-09-01T21:00:00Z",
+      "updatedAt": "2026-09-01T21:00:00Z",
+      "revision": 1,
+      "task": {
+        "projectId": "1380e888-13ac-5357-9a6f-a592a20e8220",
+        "title": "Проверить осмотр",
+        "assigneeMemberId": "ac41932c-dbd9-53b1-a84b-42cbc1d6629a"
+      }
+    },
+    {
+      "id": "a249c9f4-6e6e-561d-bdc8-40bca93f0500",
+      "formId": "3a5f4ca2-f3bf-5b37-819f-a9511aee0211",
+      "kind": "kb",
+      "enabled": true,
+      "version": 1,
+      "trigger": "accepted",
+      "condition": {
+        "fieldKey": null,
+        "value": null
+      },
+      "author": {
+        "memberId": "b8df06ec-317e-5f46-b54c-e76603e41b5b",
+        "displayName": "Дарья Зимина"
+      },
+      "doneCount": 2,
+      "failedCount": 0,
+      "pendingBackfillCount": 0,
+      "createdAt": "2026-09-01T21:00:00Z",
+      "updatedAt": "2026-09-01T21:00:00Z",
+      "revision": 1,
+      "kb": {
+        "nodeId": "babd503a-697f-595f-83f8-6501710d0803",
+        "mode": "table",
+        "position": "top",
+        "fields": [
+          {
+            "columnId": "f9d1765e-6b10-54b8-985d-67eb224066c9",
+            "name": "Дата",
+            "source": "$at"
+          },
+          {
+            "columnId": "26f118a4-3f77-5f17-b15c-5ef8bcc40001",
+            "name": "Рейс",
+            "source": "$object"
+          },
+          {
+            "columnId": "78f11670-a011-52de-ab61-8232f4bba051",
+            "name": "Водитель",
+            "source": "$author"
+          },
+          {
+            "columnId": "309feb68-f898-5e01-93d6-9a2a638b7848",
+            "name": "Пробег, км",
+            "source": "q-odo"
+          },
+          {
+            "columnId": "d20c56ad-76ab-5787-ab7d-3165ca58d572",
+            "name": "Топливо",
+            "source": "q-fuel"
+          },
+          {
+            "columnId": "d8332e3e-53b9-5fb8-9dc8-73afcc14afc5",
+            "name": "Дефекты",
+            "source": "q-defect"
+          },
+          {
+            "columnId": "9dfbe221-6337-5680-b93c-e724544ca12c",
+            "name": "Ответ",
+            "source": "$id"
+          }
+        ],
+        "showLink": false,
+        "allEmployeesConfirmed": true,
+        "tableId": "a1ef80ec-8553-5feb-868e-0c3618900951",
+        "node": {
+          "id": "babd503a-697f-595f-83f8-6501710d0803",
+          "title": "Журнал осмотров машин"
+        },
+        "tableTitle": "Осмотры"
+      }
+    }
+  ]
+}

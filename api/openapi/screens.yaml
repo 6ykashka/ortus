@@ -769,21 +769,39 @@ screens:
     stage: 4
     ws: W4.22
     reference: design-2026-10-19 · Формы и опросы.dc.html · список форм, плитки шаблонов, группы (forms.md §1, §6)
-    operations: [listForms, createForm]
+    operations:
+      [
+        listForms,
+        createForm,
+        listFormTemplates,
+        listFormGroups,
+        createFormGroup,
+        deleteFormGroup,
+        updateForm,
+      ]
 
   forms-builder:
     title: Конструктор
     stage: 4
     ws: W4.22
     reference: design-2026-10-19 · Формы и опросы.dc.html · редактор, вкладка «Конструктор» (forms.md §1, §6)
-    operations: [getForm, updateForm, createFormVersion]
+    operations:
+      [
+        getForm,
+        getFormDraft,
+        saveFormDraft,
+        discardFormDraft,
+        updateForm,
+        createForm,
+        exportFormResponses,
+      ]
 
   forms-preview:
     title: Предпросмотр
     stage: 4
     ws: W4.22
     reference: design-2026-10-19 · Формы и опросы.dc.html · редактор, вкладка «Предпросмотр» (forms.md §1, §6)
-    operations: [getForm]
+    operations: [getForm, getFormDraft]
     note: Состояние редактора; рендер формы — общий компонент с form-fill и public-form.
 
   modal-form-publish:
@@ -791,7 +809,7 @@ screens:
     stage: 4
     ws: W4.22
     reference: design-2026-10-19 · Формы и опросы.dc.html · диалог «Опубликовать» (forms.md §1, §6)
-    operations: [publishFormVersion]
+    operations: [publishForm, getFormDraft, listFormRules]
 
   forms-settings:
     title: Настройки
@@ -805,7 +823,16 @@ screens:
     stage: 4
     ws: W4.23
     reference: design-2026-10-19 · Формы и опросы.dc.html · редактор, вкладка «Ответы» — сводка, лента, таблица (forms.md §1, §6)
-    operations: [listFormResponses, getFormResponse, reviewFormResponse]
+    operations:
+      [
+        listFormResponses,
+        getFormResponse,
+        reviewFormResponse,
+        getFormResponseSummary,
+        exportFormResponses,
+        retryFormResponseAction,
+        listFormVersions,
+      ]
 
   forms-versions:
     title: Версии
@@ -826,16 +853,39 @@ screens:
     stage: 4
     ws: W4.23
     reference: design-2026-10-19 · Формы и опросы.dc.html · редактор, вкладка «Действия после ответа» (forms.md §1, §6)
-    operations: []
-    note: DoR предлагает отдельный WS W4.27 (кандидат); действия «задача» и «в БЗ» — операции PR tasks и knowledge.
+    operations:
+      [
+        listFormRules,
+        createFormRule,
+        updateFormRule,
+        deleteFormRule,
+        backfillFormRule,
+        getFormDraft,
+        listKnowledgeSpaces,
+        getKnowledgeSpaceTree,
+        getKnowledgeNode,
+        createKnowledgeNode,
+        createKnowledgeTable,
+        listTaskProjects,
+      ]
+    note: DoR предлагает отдельный WS W4.27 (кандидат); «＋ Новая страница» и «Новая таблица» — createKnowledgeNode и createKnowledgeTable (W4.04), затем createFormRule (W4.05); проект задачи — listTaskProjects (W4.03).
 
   form-fill:
     title: Заполнение формы
     stage: 4
     ws: W4.23
     reference: no-reference (forms.md §6 — заполнение сотрудником нет в эталоне); рендер — вкладка «Предпросмотр» design-2026-10-19
-    operations: [getForm, initiateUpload, getUploadSession, completeUpload]
-    note: DoR предлагает отдельный WS W4.28 (кандидат); отправка сотрудником — PR forms.
+    operations:
+      [
+        getForm,
+        listFormVersions,
+        submitFormResponse,
+        listFormFieldOptions,
+        initiateUpload,
+        getUploadSession,
+        completeUpload,
+      ]
+    note: DoR предлагает отдельный WS W4.28 (кандидат); отправка сотрудником — submitFormResponse (W4.05), действующая версия — listFormVersions.
 
   public-form:
     title: Публичная форма

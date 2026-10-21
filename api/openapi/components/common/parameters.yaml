@@ -187,7 +187,7 @@ publicToken:
   name: publicToken
   in: path
   required: true
-  description: Unpredictable revocable public-form capability; avoid logs and referrer leakage.
+  description: "Unpredictable revocable public-form capability; avoid logs and referrer leakage. W4.05 (0.11.0-stage4, return 2): the token carries no tenant part — the server resolves the tenant by its digest («sha256:» + hex SHA-256 of the token) in the control index public_form_links (control 0009), then the link in forms.public_links of that tenant (FormShare.publicToken)."
   schema:
     type: string
     minLength: 32
@@ -379,3 +379,26 @@ transitionKey:
   schema:
     type: string
     pattern: ^[a-z][a-z0-9_-]{0,31}$
+# W4.05 (0.11.0-stage4): правило формы, вопрос формы, группа форм («Формы и опросы»).
+formRuleId:
+  name: ruleId
+  in: path
+  required: true
+  description: W4.05 (0.11.0-stage4). Opaque UUID of a rule of the form («Действие после ответа», FormRule.id); a rule of another form — 404 «Действие не найдено».
+  schema:
+    $ref: ./schemas.yaml#/Id
+formFieldKey:
+  name: fieldKey
+  in: path
+  required: true
+  description: W4.05 (0.11.0-stage4). FormQuestion.key of a CRM question (person, unit, ref) of the acting version of the form.
+  schema:
+    type: string
+    pattern: ^[a-zA-Z][a-zA-Z0-9_-]{0,63}$
+formGroupId:
+  name: groupId
+  in: path
+  required: true
+  description: W4.05 (0.11.0-stage4). Opaque UUID of a group of forms (FormGroup.id).
+  schema:
+    $ref: ./schemas.yaml#/Id

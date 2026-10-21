@@ -601,8 +601,14 @@ describe('контракт этапа 4 (W4.04): аддитивность, эк�
     }
     const all = new Set(Object.values(screens).flatMap((s) => s.operations ?? []));
     const off = NEW.filter((x) => !all.has(x));
-    // Правка пространства (Q-W4.00-knowledge-17) и таблица ядра Форм — без экрана БЗ.
-    assert.deepEqual(off.sort(), ['createKnowledgeTable', 'updateKnowledgeSpace']);
+    // Правка пространства (Q-W4.00-knowledge-17) — без экрана. Таблица ядра Форм — без экрана БЗ: её вызывает экран
+    // «Действия после ответа» форм (W4.05, «Новая таблица по вопросам формы»).
+    assert.deepEqual(off.sort(), ['updateKnowledgeSpace']);
+    assert.ok(screens['forms-actions'].operations.includes('createKnowledgeTable'));
+    const kb = Object.entries(screens).filter(
+      ([k]) => k.startsWith('knowledge-') || k.includes('-kb-'),
+    );
+    assert.ok(!kb.some(([, s]) => (s.operations ?? []).includes('createKnowledgeTable')));
   });
 
   it('примеры валидны; успех и ошибка у каждой новой операции', () => {

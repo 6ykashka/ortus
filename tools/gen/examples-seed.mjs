@@ -21,6 +21,7 @@ import { stage2w271Examples } from './examples-w271.mjs';
 import { stage4w402Examples } from './examples-w402.mjs';
 import { stage4w403Examples } from './examples-w403.mjs';
 import { stage4w404Examples } from './examples-w404.mjs';
+import { stage4w405Examples } from './examples-w405.mjs';
 import { stage4w406Examples } from './examples-w406.mjs';
 import { stage4w407Examples } from './examples-w407.mjs';
 import { seedUuid } from './lib/examples.mjs';
@@ -986,6 +987,11 @@ function build() {
 
   // Контрактный PR 2 этапа 4 (W4.03): «Задачи и проекты» — проекты, участники, процесс, задачи, автоматизация.
   for (const [op, bodies] of Object.entries(stage4w403Examples({ id }))) {
+    for (const [name, body] of Object.entries(bodies)) add(op, name, body);
+  }
+
+  // Контрактный PR 4 этапа 4 (W4.05): «Формы и опросы» — снимки сценарного сервера на сиде W4.20.
+  for (const [op, bodies] of Object.entries(stage4w405Examples({ id }))) {
     for (const [name, body] of Object.entries(bodies)) add(op, name, body);
   }
   return ex;

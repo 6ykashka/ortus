@@ -1,0 +1,30 @@
+{
+  "type": "https://docs.ortus.example/errors/validation_failed",
+  "title": "Ошибки полей",
+  "status": 422,
+  "code": "validation_failed",
+  "detail": "Обязательный вопрос",
+  "requestId": "01J9Z4QK8M6T2V5X7Y9A1B3C5D",
+  "violations": [
+    {
+      "field": "q-photos",
+      "code": "invalid",
+      "message": "Обязательный вопрос"
+    },
+    {
+      "field": "q-fuel",
+      "code": "invalid",
+      "message": "Обязательный вопрос"
+    },
+    {
+      "field": "q-checks",
+      "code": "invalid",
+      "message": "Обязательный вопрос"
+    },
+    {
+      "field": "q-defect",
+      "code": "invalid",
+      "message": "Обязательный вопрос"
+    }
+  ]
+}

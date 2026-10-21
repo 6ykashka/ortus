@@ -10,6 +10,7 @@ import { dataCases } from './data.ts';
 import { dataW406Cases } from './data-w406.ts';
 import { filesCases } from './files.ts';
 import { fleetCases } from './fleet.ts';
+import { formsCases } from './forms.ts';
 import { knowledgeCases } from './knowledge.ts';
 import { logisticsCases } from './logistics.ts';
 import { modulesCases } from './modules.ts';
@@ -50,4 +51,6 @@ export const ALL_CASES: readonly ConformanceCase[] = [
   ...tasksCases,
   // W2.62 (Q-W2.32-5, Q-W2.32-6): draining «Логистики» и роль «Временный водитель» как backend.
   ...w262Cases,
+  // W4.05 (0.11.0-stage4): «Формы и опросы».
+  ...formsCases,
 ];

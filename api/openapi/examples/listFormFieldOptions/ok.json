@@ -1,0 +1,45 @@
+{
+  "items": [
+    {
+      "ref": {
+        "moduleKey": "core",
+        "entityType": "member",
+        "entityId": "ebdf9767-327e-55cc-8c65-cb5fd313bdf4"
+      },
+      "label": "Алексей Соколов"
+    },
+    {
+      "ref": {
+        "moduleKey": "core",
+        "entityType": "member",
+        "entityId": "25097109-efb6-5471-880f-7a01ee6615a0"
+      },
+      "label": "Анна Морозова"
+    },
+    {
+      "ref": {
+        "moduleKey": "core",
+        "entityType": "member",
+        "entityId": "ea845988-640e-5506-9303-1cbfc3dede0d"
+      },
+      "label": "Вера Котельникова"
+    },
+    {
+      "ref": {
+        "moduleKey": "core",
+        "entityType": "member",
+        "entityId": "ac41932c-dbd9-53b1-a84b-42cbc1d6629a"
+      },
+      "label": "Марина Котова"
+    },
+    {
+      "ref": {
+        "moduleKey": "core",
+        "entityType": "member",
+        "entityId": "1a544c8a-52b8-557b-9720-10b9d94fdd10"
+      },
+      "label": "Тимур Ахмедов"
+    }
+  ],
+  "truncated": false
+}

@@ -158,12 +158,15 @@ func (e FormFieldType) Valid() bool {
 // Defines values for FormPatchStatus.
 const (
 	FormPatchStatusClosed FormPatchStatus = "closed"
+	FormPatchStatusOpen   FormPatchStatus = "open"
 )
 
 // Valid indicates whether the value is a known member of the FormPatchStatus enum.
 func (e FormPatchStatus) Valid() bool {
 	switch e {
 	case FormPatchStatusClosed:
+		return true
+	case FormPatchStatusOpen:
 		return true
 	default:
 		return false
@@ -206,6 +209,228 @@ func (e FormPublishAccess) Valid() bool {
 	}
 }
 
+// Defines values for FormQuestionAccept.
+const (
+	FormQuestionAcceptAny   FormQuestionAccept = "any"
+	FormQuestionAcceptDocs  FormQuestionAccept = "docs"
+	FormQuestionAcceptPhoto FormQuestionAccept = "photo"
+)
+
+// Valid indicates whether the value is a known member of the FormQuestionAccept enum.
+func (e FormQuestionAccept) Valid() bool {
+	switch e {
+	case FormQuestionAcceptAny:
+		return true
+	case FormQuestionAcceptDocs:
+		return true
+	case FormQuestionAcceptPhoto:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for FormQuestionOptionOrder.
+const (
+	Alpha  FormQuestionOptionOrder = "alpha"
+	AsIs   FormQuestionOptionOrder = "as_is"
+	Random FormQuestionOptionOrder = "random"
+)
+
+// Valid indicates whether the value is a known member of the FormQuestionOptionOrder enum.
+func (e FormQuestionOptionOrder) Valid() bool {
+	switch e {
+	case Alpha:
+		return true
+	case AsIs:
+		return true
+	case Random:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for FormQuestionOptionView.
+const (
+	List  FormQuestionOptionView = "list"
+	Row   FormQuestionOptionView = "row"
+	Tiles FormQuestionOptionView = "tiles"
+)
+
+// Valid indicates whether the value is a known member of the FormQuestionOptionView enum.
+func (e FormQuestionOptionView) Valid() bool {
+	switch e {
+	case List:
+		return true
+	case Row:
+		return true
+	case Tiles:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for FormQuestionRefKind.
+const (
+	FormQuestionRefKindObject  FormQuestionRefKind = "object"
+	FormQuestionRefKindTask    FormQuestionRefKind = "task"
+	FormQuestionRefKindTrip    FormQuestionRefKind = "trip"
+	FormQuestionRefKindVehicle FormQuestionRefKind = "vehicle"
+)
+
+// Valid indicates whether the value is a known member of the FormQuestionRefKind enum.
+func (e FormQuestionRefKind) Valid() bool {
+	switch e {
+	case FormQuestionRefKindObject:
+		return true
+	case FormQuestionRefKindTask:
+		return true
+	case FormQuestionRefKindTrip:
+		return true
+	case FormQuestionRefKindVehicle:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for FormQuestionScaleMin.
+const (
+	N0 FormQuestionScaleMin = 0
+	N1 FormQuestionScaleMin = 1
+)
+
+// Valid indicates whether the value is a known member of the FormQuestionScaleMin enum.
+func (e FormQuestionScaleMin) Valid() bool {
+	switch e {
+	case N0:
+		return true
+	case N1:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for FormQuestionUnitLevel.
+const (
+	FormQuestionUnitLevelAny    FormQuestionUnitLevel = "any"
+	FormQuestionUnitLevelFirm   FormQuestionUnitLevel = "firm"
+	FormQuestionUnitLevelRegion FormQuestionUnitLevel = "region"
+)
+
+// Valid indicates whether the value is a known member of the FormQuestionUnitLevel enum.
+func (e FormQuestionUnitLevel) Valid() bool {
+	switch e {
+	case FormQuestionUnitLevelAny:
+		return true
+	case FormQuestionUnitLevelFirm:
+		return true
+	case FormQuestionUnitLevelRegion:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for FormQuestionType.
+const (
+	FormQuestionTypeBool      FormQuestionType = "bool"
+	FormQuestionTypeChoice    FormQuestionType = "choice"
+	FormQuestionTypeDate      FormQuestionType = "date"
+	FormQuestionTypeEmail     FormQuestionType = "email"
+	FormQuestionTypeInn       FormQuestionType = "inn"
+	FormQuestionTypeInt       FormQuestionType = "int"
+	FormQuestionTypeLongtext  FormQuestionType = "longtext"
+	FormQuestionTypeMoney     FormQuestionType = "money"
+	FormQuestionTypeMulti     FormQuestionType = "multi"
+	FormQuestionTypeNumber    FormQuestionType = "number"
+	FormQuestionTypePerson    FormQuestionType = "person"
+	FormQuestionTypePhone     FormQuestionType = "phone"
+	FormQuestionTypePhoto     FormQuestionType = "photo"
+	FormQuestionTypeRating    FormQuestionType = "rating"
+	FormQuestionTypeRef       FormQuestionType = "ref"
+	FormQuestionTypeScale     FormQuestionType = "scale"
+	FormQuestionTypeSelect    FormQuestionType = "select"
+	FormQuestionTypeStatement FormQuestionType = "statement"
+	FormQuestionTypeText      FormQuestionType = "text"
+	FormQuestionTypeUnit      FormQuestionType = "unit"
+	FormQuestionTypeUrl       FormQuestionType = "url"
+)
+
+// Valid indicates whether the value is a known member of the FormQuestionType enum.
+func (e FormQuestionType) Valid() bool {
+	switch e {
+	case FormQuestionTypeBool:
+		return true
+	case FormQuestionTypeChoice:
+		return true
+	case FormQuestionTypeDate:
+		return true
+	case FormQuestionTypeEmail:
+		return true
+	case FormQuestionTypeInn:
+		return true
+	case FormQuestionTypeInt:
+		return true
+	case FormQuestionTypeLongtext:
+		return true
+	case FormQuestionTypeMoney:
+		return true
+	case FormQuestionTypeMulti:
+		return true
+	case FormQuestionTypeNumber:
+		return true
+	case FormQuestionTypePerson:
+		return true
+	case FormQuestionTypePhone:
+		return true
+	case FormQuestionTypePhoto:
+		return true
+	case FormQuestionTypeRating:
+		return true
+	case FormQuestionTypeRef:
+		return true
+	case FormQuestionTypeScale:
+		return true
+	case FormQuestionTypeSelect:
+		return true
+	case FormQuestionTypeStatement:
+		return true
+	case FormQuestionTypeText:
+		return true
+	case FormQuestionTypeUnit:
+		return true
+	case FormQuestionTypeUrl:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for FormResponseChannel.
+const (
+	FormResponseChannelInspection FormResponseChannel = "inspection"
+	FormResponseChannelMember     FormResponseChannel = "member"
+	FormResponseChannelPublic     FormResponseChannel = "public"
+)
+
+// Valid indicates whether the value is a known member of the FormResponseChannel enum.
+func (e FormResponseChannel) Valid() bool {
+	switch e {
+	case FormResponseChannelInspection:
+		return true
+	case FormResponseChannelMember:
+		return true
+	case FormResponseChannelPublic:
+		return true
+	default:
+		return false
+	}
+}
+
 // Defines values for FormResponseReviewStatus.
 const (
 	FormResponseReviewStatusAccepted FormResponseReviewStatus = "accepted"
@@ -221,6 +446,279 @@ func (e FormResponseReviewStatus) Valid() bool {
 	case FormResponseReviewStatusPending:
 		return true
 	case FormResponseReviewStatusRejected:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for FormResponsesExportContentType.
+const (
+	TextcsvCharsetUtf8 FormResponsesExportContentType = "text/csv; charset=utf-8"
+)
+
+// Valid indicates whether the value is a known member of the FormResponsesExportContentType enum.
+func (e FormResponsesExportContentType) Valid() bool {
+	switch e {
+	case TextcsvCharsetUtf8:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for FormRuleKbMode.
+const (
+	FormRuleKbModeEntry FormRuleKbMode = "entry"
+	FormRuleKbModeTable FormRuleKbMode = "table"
+)
+
+// Valid indicates whether the value is a known member of the FormRuleKbMode enum.
+func (e FormRuleKbMode) Valid() bool {
+	switch e {
+	case FormRuleKbModeEntry:
+		return true
+	case FormRuleKbModeTable:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for FormRuleKbPosition.
+const (
+	FormRuleKbPositionBottom FormRuleKbPosition = "bottom"
+	FormRuleKbPositionTop    FormRuleKbPosition = "top"
+)
+
+// Valid indicates whether the value is a known member of the FormRuleKbPosition enum.
+func (e FormRuleKbPosition) Valid() bool {
+	switch e {
+	case FormRuleKbPositionBottom:
+		return true
+	case FormRuleKbPositionTop:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for FormRuleKbInputMode.
+const (
+	FormRuleKbInputModeEntry FormRuleKbInputMode = "entry"
+	FormRuleKbInputModeTable FormRuleKbInputMode = "table"
+)
+
+// Valid indicates whether the value is a known member of the FormRuleKbInputMode enum.
+func (e FormRuleKbInputMode) Valid() bool {
+	switch e {
+	case FormRuleKbInputModeEntry:
+		return true
+	case FormRuleKbInputModeTable:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for FormRuleKbInputPosition.
+const (
+	FormRuleKbInputPositionBottom FormRuleKbInputPosition = "bottom"
+	FormRuleKbInputPositionTop    FormRuleKbInputPosition = "top"
+)
+
+// Valid indicates whether the value is a known member of the FormRuleKbInputPosition enum.
+func (e FormRuleKbInputPosition) Valid() bool {
+	switch e {
+	case FormRuleKbInputPositionBottom:
+		return true
+	case FormRuleKbInputPositionTop:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for FormRuleKind.
+const (
+	FormRuleKindEmail  FormRuleKind = "email"
+	FormRuleKindHttp   FormRuleKind = "http"
+	FormRuleKindKb     FormRuleKind = "kb"
+	FormRuleKindNotify FormRuleKind = "notify"
+	FormRuleKindTask   FormRuleKind = "task"
+)
+
+// Valid indicates whether the value is a known member of the FormRuleKind enum.
+func (e FormRuleKind) Valid() bool {
+	switch e {
+	case FormRuleKindEmail:
+		return true
+	case FormRuleKindHttp:
+		return true
+	case FormRuleKindKb:
+		return true
+	case FormRuleKindNotify:
+		return true
+	case FormRuleKindTask:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for FormRuleTrigger.
+const (
+	FormRuleTriggerAccepted  FormRuleTrigger = "accepted"
+	FormRuleTriggerSubmitted FormRuleTrigger = "submitted"
+)
+
+// Valid indicates whether the value is a known member of the FormRuleTrigger enum.
+func (e FormRuleTrigger) Valid() bool {
+	switch e {
+	case FormRuleTriggerAccepted:
+		return true
+	case FormRuleTriggerSubmitted:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for FormSettingsAccess.
+const (
+	FormSettingsAccessMembers FormSettingsAccess = "members"
+	FormSettingsAccessPublic  FormSettingsAccess = "public"
+)
+
+// Valid indicates whether the value is a known member of the FormSettingsAccess enum.
+func (e FormSettingsAccess) Valid() bool {
+	switch e {
+	case FormSettingsAccessMembers:
+		return true
+	case FormSettingsAccessPublic:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for FormSettingsRetainResponsesDays.
+const (
+	FormSettingsRetainResponsesDaysN1095 FormSettingsRetainResponsesDays = 1095
+	FormSettingsRetainResponsesDaysN365  FormSettingsRetainResponsesDays = 365
+	FormSettingsRetainResponsesDaysN90   FormSettingsRetainResponsesDays = 90
+)
+
+// Valid indicates whether the value is a known member of the FormSettingsRetainResponsesDays enum.
+func (e FormSettingsRetainResponsesDays) Valid() bool {
+	switch e {
+	case FormSettingsRetainResponsesDaysN1095:
+		return true
+	case FormSettingsRetainResponsesDaysN365:
+		return true
+	case FormSettingsRetainResponsesDaysN90:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for FormSettingsPatchAccess.
+const (
+	FormSettingsPatchAccessMembers FormSettingsPatchAccess = "members"
+	FormSettingsPatchAccessPublic  FormSettingsPatchAccess = "public"
+)
+
+// Valid indicates whether the value is a known member of the FormSettingsPatchAccess enum.
+func (e FormSettingsPatchAccess) Valid() bool {
+	switch e {
+	case FormSettingsPatchAccessMembers:
+		return true
+	case FormSettingsPatchAccessPublic:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for FormSettingsPatchRetainResponsesDays.
+const (
+	FormSettingsPatchRetainResponsesDaysN1095 FormSettingsPatchRetainResponsesDays = 1095
+	FormSettingsPatchRetainResponsesDaysN365  FormSettingsPatchRetainResponsesDays = 365
+	FormSettingsPatchRetainResponsesDaysN90   FormSettingsPatchRetainResponsesDays = 90
+)
+
+// Valid indicates whether the value is a known member of the FormSettingsPatchRetainResponsesDays enum.
+func (e FormSettingsPatchRetainResponsesDays) Valid() bool {
+	switch e {
+	case FormSettingsPatchRetainResponsesDaysN1095:
+		return true
+	case FormSettingsPatchRetainResponsesDaysN365:
+		return true
+	case FormSettingsPatchRetainResponsesDaysN90:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for FormShowIfMode.
+const (
+	FormShowIfModeAll FormShowIfMode = "all"
+	FormShowIfModeAny FormShowIfMode = "any"
+)
+
+// Valid indicates whether the value is a known member of the FormShowIfMode enum.
+func (e FormShowIfMode) Valid() bool {
+	switch e {
+	case FormShowIfModeAll:
+		return true
+	case FormShowIfModeAny:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for FormShowIfConditionOperator.
+const (
+	FormShowIfConditionOperatorEquals    FormShowIfConditionOperator = "equals"
+	FormShowIfConditionOperatorNotEquals FormShowIfConditionOperator = "not_equals"
+)
+
+// Valid indicates whether the value is a known member of the FormShowIfConditionOperator enum.
+func (e FormShowIfConditionOperator) Valid() bool {
+	switch e {
+	case FormShowIfConditionOperatorEquals:
+		return true
+	case FormShowIfConditionOperatorNotEquals:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for FormTemplateCategory.
+const (
+	Basic    FormTemplateCategory = "basic"
+	Industry FormTemplateCategory = "industry"
+	People   FormTemplateCategory = "people"
+	Quiz     FormTemplateCategory = "quiz"
+	Survey   FormTemplateCategory = "survey"
+)
+
+// Valid indicates whether the value is a known member of the FormTemplateCategory enum.
+func (e FormTemplateCategory) Valid() bool {
+	switch e {
+	case Basic:
+		return true
+	case Industry:
+		return true
+	case People:
+		return true
+	case Quiz:
+		return true
+	case Survey:
 		return true
 	default:
 		return false
@@ -496,19 +994,55 @@ func (e TextValueType) Valid() bool {
 
 // Defines values for VisibilityConditionOperator.
 const (
-	Contains  VisibilityConditionOperator = "contains"
-	Equals    VisibilityConditionOperator = "equals"
-	NotEquals VisibilityConditionOperator = "not_equals"
+	VisibilityConditionOperatorContains  VisibilityConditionOperator = "contains"
+	VisibilityConditionOperatorEquals    VisibilityConditionOperator = "equals"
+	VisibilityConditionOperatorNotEquals VisibilityConditionOperator = "not_equals"
 )
 
 // Valid indicates whether the value is a known member of the VisibilityConditionOperator enum.
 func (e VisibilityConditionOperator) Valid() bool {
 	switch e {
-	case Contains:
+	case VisibilityConditionOperatorContains:
 		return true
-	case Equals:
+	case VisibilityConditionOperatorEquals:
 		return true
-	case NotEquals:
+	case VisibilityConditionOperatorNotEquals:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for ListFormsParamsOwner.
+const (
+	Me ListFormsParamsOwner = "me"
+)
+
+// Valid indicates whether the value is a known member of the ListFormsParamsOwner enum.
+func (e ListFormsParamsOwner) Valid() bool {
+	switch e {
+	case Me:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for ListFormsParamsStatus.
+const (
+	ListFormsParamsStatusClosed ListFormsParamsStatus = "closed"
+	ListFormsParamsStatusDraft  ListFormsParamsStatus = "draft"
+	ListFormsParamsStatusOpen   ListFormsParamsStatus = "open"
+)
+
+// Valid indicates whether the value is a known member of the ListFormsParamsStatus enum.
+func (e ListFormsParamsStatus) Valid() bool {
+	switch e {
+	case ListFormsParamsStatusClosed:
+		return true
+	case ListFormsParamsStatusDraft:
+		return true
+	case ListFormsParamsStatusOpen:
 		return true
 	default:
 		return false
@@ -532,8 +1066,10 @@ type ChoiceOption struct {
 
 // ChoicesValue defines model for ChoicesValue.
 type ChoicesValue struct {
-	Type  ChoicesValueType `json:"type"`
-	Value []string         `json:"value"`
+	// OtherText W4.05 (0.11.0-stage4). «Другое — свой вариант» of a question with FormQuestion.otherOption — the text of the respondent; value then carries the key other.
+	OtherText *string          `json:"otherText,omitempty"`
+	Type      ChoicesValueType `json:"type"`
+	Value     []string         `json:"value"`
 }
 
 // ChoicesValueType defines model for ChoicesValue.Type.
@@ -592,34 +1128,88 @@ type FilesValue struct {
 // FilesValueType defines model for FilesValue.Type.
 type FilesValueType string
 
-// Form defines model for Form.
+// Form W4.05 (0.11.0-stage4). A form (forms.forms): the list «Формы и группы» and the header of the editor show it. A new form is a draft without versions (latestVersionId and publishedVersionId absent, status draft) until the first publishForm (D-24 комплекта); a published form accepts responses (status published) until «Закрыть приём ответов» (status closed). revision — the revision of the form itself (name, area, group, settings, status, publication), the ETag of getForm, updateForm and publishForm; the draft has its own revision (FormDraft.revision).
 type Form struct {
+	// EnabledRuleCount W4.05 (0.11.0-stage4). Enabled rules — the counter of the tab «Действия после ответа».
+	EnabledRuleCount int `json:"enabledRuleCount"`
+
+	// GroupId W4.05 (0.11.0-stage4). The group of the form («Формы и группы», FM-03 — groups of the organization); null — «Без группы».
+	GroupId *openapi_types.UUID `json:"groupId"`
+
+	// HasUnpublishedChanges W4.05 (0.11.0-stage4). The draft differs from the acting version («vN · есть изменения», «Действует vN · есть неопубликованные изменения»); a form never published — false (its chip is «Черновик»).
+	HasUnpublishedChanges bool `json:"hasUnpublishedChanges"`
+
 	// Id Examples: 10000000-0000-4000-8000-000000000001
 	Id Id `json:"id"`
 
 	// LatestVersionId Examples: 10000000-0000-4000-8000-000000000001
-	LatestVersionId Id     `json:"latestVersionId"`
-	Name            string `json:"name"`
+	LatestVersionId *Id `json:"latestVersionId,omitempty"`
 
-	// OrgUnitId Examples: 10000000-0000-4000-8000-000000000001
-	OrgUnitId Id `json:"orgUnitId"`
+	// ModuleKey W4.05 (0.11.0-stage4). The industry module of the form (prototype f.module, «{Модуль} · …» of the row; null — «Общая»). A form of a module that is not active does not accept responses (Q-W4.00-forms-16); it is read as usual.
+	ModuleKey *string `json:"moduleKey"`
+
+	// My W4.05 (0.11.0-stage4, Q-W4.00-forms-12). What the requesting member may do with this form (grants in its area); without manage the editor shows «Только просмотр · нет права «Настраивать» формы».
+	My   FormMy `json:"my"`
+	Name string `json:"name"`
+
+	// OrgUnitId W4.05 (0.11.0-stage4). The area of the form («Область формы») — an org unit (region or firm) whose roles with core.forms act on the form and its responses; null — the whole organization («Вся организация», Q-W4.00-forms-17).
+	OrgUnitId *openapi_types.UUID `json:"orgUnitId"`
+
+	// Owner W4.05 (0.11.0-stage4). A member as the screens of forms show it — the owner of a form, the author of a version, a rule or a response.
+	Owner FormMemberRef `json:"owner"`
 
 	// PublishedVersionId Examples: 10000000-0000-4000-8000-000000000001
-	PublishedVersionId *Id        `json:"publishedVersionId,omitempty"`
-	Revision           int64      `json:"revision"`
-	Status             FormStatus `json:"status"`
+	PublishedVersionId *Id `json:"publishedVersionId,omitempty"`
+
+	// PublishedVersionNumber W4.05 (0.11.0-stage4). N of the acting version (chips «Принимает ответы · vN», «Приём закрыт · vN», button «Опубликовать v{N+1}»); null — never published.
+	PublishedVersionNumber *int `json:"publishedVersionNumber"`
+
+	// QuestionCount W4.05 (0.11.0-stage4). Questions of the draft (statements «Текст без вопроса» excluded) — «{N} стр. · {M} вопросов».
+	QuestionCount int `json:"questionCount"`
+
+	// ResponseCount W4.05 (0.11.0-stage4). Responses the requesting member may read («N ответов», «Ответы · N»); 0 without forms.responses.read.
+	ResponseCount int   `json:"responseCount"`
+	Revision      int64 `json:"revision"`
+
+	// Settings W4.05 (0.11.0-stage4, Q-W4.00-forms-2). Settings of the form (forms.forms.settings) — changed without a new version (updateForm), applied to every response from the moment of the change. Defaults — FORM_SETTINGS of the prototype (models.js:85): members, no deadline and limit, edit before review allowed, «Спасибо! Ответ отправлен.», without scoring, the progress, the button «Назад» and the logo shown, 365 days.
+	Settings FormSettings `json:"settings"`
+
+	// Share W4.05 (0.11.0-stage4, Q-W4.00-forms-21; dialog «Поделиться формой»). Links are routes of the same SPA (D-01 комплекта): «Ссылка для сотрудников» — {origin}/forms/{formId} (after sign-in); «Публичная ссылка» — {origin}/f/{publicToken}, «Код для сайта» — the iframe of {origin}/f/{publicToken}?embed=1. A draft has no links («Ссылка появится после публикации…»).
+	Share  FormShare  `json:"share"`
+	Status FormStatus `json:"status"`
+
+	// TemplateId W4.05 (0.11.0-stage4). The template the form was created from (FormTemplate.id); null — an empty form or a copy.
+	TemplateId *string `json:"templateId"`
+
+	// UpdatedAt UTC RFC3339 instant. Write requests must use the Z suffix; retain the IANA timezone separately for local calendars.
+	//
+	// Examples: 2026-10-05T06:00:00Z
+	UpdatedAt Instant `json:"updatedAt"`
+
+	// VersionCount W4.05 (0.11.0-stage4). «Версии (N)».
+	VersionCount int `json:"versionCount"`
 }
 
 // FormStatus defines model for Form.Status.
 type FormStatus string
 
-// FormCreate defines model for FormCreate.
+// FormCreate W4.05 (0.11.0-stage4, prototype createForm, D-24 комплекта). Creates a draft without versions and rules: from a template (templateId — FormTemplate.id, «blank» — «Создать пустую форму»), as a copy of a form (sourceFormId — «Дублировать», «{имя} · копия»: the draft or the acting version of the source, its settings and group; rules are not copied) or from a ready definition (definition — e.g. the checklist of an inspection, W4.24). At most one of templateId, sourceFormId, definition; none — an empty form with one page «Страница 1».
 type FormCreate struct {
-	Definition FormDefinition `json:"definition"`
-	Name       string         `json:"name"`
+	// Definition W4.05 (0.11.0-stage4). FormDefinition v2 — the questions of a draft or of an immutable version: pages in their order and questions in their order (the page of a question — pageId). At least one page («Удалить страницу» is disabled on the only page).
+	Definition *FormDefinitionV2 `json:"definition,omitempty"`
 
-	// OrgUnitId Examples: 10000000-0000-4000-8000-000000000001
-	OrgUnitId Id `json:"orgUnitId"`
+	// GroupId W4.05 (0.11.0-stage4). The group of the new form; a copy keeps the group of the source when absent.
+	GroupId *openapi_types.UUID `json:"groupId,omitempty"`
+
+	// Name W4.05 (0.11.0-stage4). 3–200 characters, unique in the organization without regard to case (D-24 комплекта); the client offers «Новая форма» or the name of the template with the suffix « · 2» on a clash. W4.05 (return 3): minLength 1 stays from 0.1 — JSON Schema does not trim spaces, so the server checks the name trimmed, before the insert: shorter than 3 — 422 validation_failed on name «Укажите название формы — не короче 3 символов» (the check length(btrim(name)) of forms.forms is the last guard, never the answer).
+	Name string `json:"name"`
+
+	// OrgUnitId W4.05 (0.11.0-stage4). The area of the form; null — the whole organization («Вся организация»).
+	OrgUnitId *openapi_types.UUID `json:"orgUnitId"`
+
+	// SourceFormId Examples: 10000000-0000-4000-8000-000000000001
+	SourceFormId *Id     `json:"sourceFormId,omitempty"`
+	TemplateId   *string `json:"templateId,omitempty"`
 }
 
 // FormDefinition defines model for FormDefinition.
@@ -629,6 +1219,41 @@ type FormDefinition struct {
 	Fields           []FormField       `json:"fields"`
 	Title            string            `json:"title"`
 	Visibility       []FieldVisibility `json:"visibility"`
+}
+
+// FormDefinitionV2 W4.05 (0.11.0-stage4). FormDefinition v2 — the questions of a draft or of an immutable version: pages in their order and questions in their order (the page of a question — pageId). At least one page («Удалить страницу» is disabled on the only page).
+type FormDefinitionV2 struct {
+	Fields []FormQuestion       `json:"fields"`
+	Pages  []FormPageDefinition `json:"pages"`
+}
+
+// FormDraft W4.05 (0.11.0-stage4, Q-W4.00-forms-1). The mutable draft of the questions of a form (forms.drafts). Without unpublished changes the draft equals the acting version (hasChanges false). revision — the ETag of getFormDraft and the If-Match of saveFormDraft and discardFormDraft (two editors: 412 «Черновик изменил другой редактор — обновите страницу»). issues — what blocks the publication («До публикации исправьте», the checks of issues() of the prototype with its texts, Q-W4.00-forms-4); publishForm repeats them.
+type FormDraft struct {
+	// BaseVersionNumber The version the draft started from; null — the form was never published.
+	BaseVersionNumber *int `json:"baseVersionNumber"`
+
+	// Definition W4.05 (0.11.0-stage4). FormDefinition v2 — the questions of a draft or of an immutable version: pages in their order and questions in their order (the page of a question — pageId). At least one page («Удалить страницу» is disabled on the only page).
+	Definition FormDefinitionV2 `json:"definition"`
+
+	// FormId Examples: 10000000-0000-4000-8000-000000000001
+	FormId     Id          `json:"formId"`
+	HasChanges bool        `json:"hasChanges"`
+	Issues     []FormIssue `json:"issues"`
+	Revision   int64       `json:"revision"`
+
+	// SavedAt UTC RFC3339 instant. Write requests must use the Z suffix; retain the IANA timezone separately for local calendars.
+	//
+	// Examples: 2026-10-05T06:00:00Z
+	SavedAt *Instant `json:"savedAt,omitempty"`
+
+	// SavedBy W4.05 (0.11.0-stage4). A member as the screens of forms show it — the owner of a form, the author of a version, a rule or a response.
+	SavedBy *FormMemberRef `json:"savedBy,omitempty"`
+}
+
+// FormDraftSave W4.05 (0.11.0-stage4). The whole draft (autosave 700 ms after an edit, dc:562). Incomplete questions are allowed — they are issues, not errors; the structure (keys, pages, types, sizes) is checked by the schema and the server (422 validation_failed).
+type FormDraftSave struct {
+	// Definition W4.05 (0.11.0-stage4). FormDefinition v2 — the questions of a draft or of an immutable version: pages in their order and questions in their order (the page of a question — pageId). At least one page («Удалить страницу» is disabled on the only page).
+	Definition FormDefinitionV2 `json:"definition"`
 }
 
 // FormField Public forms cannot expose arbitrary tenant reference datasets; allowlisted public choices are materialized into the published version. File fields require maxFiles, allowedMimeTypes and maxFileBytes. The effective public limit is the smaller of field, publication, tenant and global safety limits.
@@ -651,16 +1276,149 @@ type FormField struct {
 // FormFieldType defines model for FormField.Type.
 type FormFieldType string
 
+// FormFieldOption defines model for FormFieldOption.
+type FormFieldOption struct {
+	Hint  *string `json:"hint,omitempty"`
+	Label string  `json:"label"`
+
+	// Ref Server verifies same-tenant ownership and target visibility. A reference never grants access.
+	Ref ObjectRef `json:"ref"`
+}
+
+// FormFieldOptionList W4.05 (0.11.0-stage4, Q-W4.00-forms-23). Choices of a CRM question («Сотрудник», «Регион или фирма», «Объект CRM») the respondent may see by his own rights, filtered by q, at most 50.
+type FormFieldOptionList struct {
+	Items     []FormFieldOption `json:"items"`
+	Truncated bool              `json:"truncated"`
+}
+
+// FormGroup W4.05 (0.11.0-stage4, FM-03, Q-W4.00-forms-7). A group of forms of the organization («Формы и группы»); personal grouping is the filter «Мои формы».
+type FormGroup struct {
+	// FormCount Forms of the group the requesting member sees.
+	FormCount int `json:"formCount"`
+
+	// Id Examples: 10000000-0000-4000-8000-000000000001
+	Id   Id     `json:"id"`
+	Name string `json:"name"`
+}
+
+// FormGroupCreate defines model for FormGroupCreate.
+type FormGroupCreate struct {
+	// Name 2–80 characters, unique in the organization without regard to case («Название группы — от 2 символов», «Такая группа уже есть»). W4.05 (return 3): minLength 1 as the name of a form — JSON Schema does not trim spaces, so the server checks the name trimmed, before the insert: shorter than 2 — 422 validation_failed on name «Название группы — от 2 символов» (the check length(btrim(name)) of forms.groups is the last guard, never the answer).
+	Name string `json:"name"`
+}
+
+// FormGroupList defines model for FormGroupList.
+type FormGroupList struct {
+	Items []FormGroup `json:"items"`
+}
+
+// FormIssue defines model for FormIssue.
+type FormIssue struct {
+	// FieldKey The question of the issue; null — the form as a whole («В форме нет ни одного вопроса»).
+	FieldKey *string `json:"fieldKey"`
+
+	// Message Text of the prototype (dc:721–738), e.g. «Вопрос 3: нет вариантов ответа», «Идентификатор q-odo повторяется», «…: условие ссылается на вопрос ниже — условие может зависеть только от вопросов выше», «…: скрытый обязательный вопрос без значения по умолчанию».
+	Message string `json:"message"`
+}
+
+// FormMemberRef W4.05 (0.11.0-stage4). A member as the screens of forms show it — the owner of a form, the author of a version, a rule or a response.
+type FormMemberRef struct {
+	DisplayName string `json:"displayName"`
+
+	// MemberId null — not a member (a guest of a public form, «Гость»).
+	MemberId *openapi_types.UUID `json:"memberId"`
+}
+
+// FormMy W4.05 (0.11.0-stage4, Q-W4.00-forms-12). What the requesting member may do with this form (grants in its area); without manage the editor shows «Только просмотр · нет права «Настраивать» формы».
+type FormMy struct {
+	// Create forms.create — «Дублировать».
+	Create bool `json:"create"`
+
+	// Manage forms.manage — the draft, the name, the settings, the group, the rules, «Перенести прошлые ответы», «Повторить».
+	Manage bool `json:"manage"`
+
+	// Publish forms.publish — «Опубликовать vN».
+	Publish bool `json:"publish"`
+
+	// PublishPublic forms.publish_public — «Все, у кого есть ссылка» (otherwise «Нужно право «Публичные ссылки»»).
+	PublishPublic bool `json:"publishPublic"`
+
+	// ReadResponses forms.responses.read in the area of the form — all responses (in the scope self — own ones).
+	ReadResponses bool `json:"readResponses"`
+
+	// Respond The member may submit a response now (forms.read in the area, the form published and accepting, «Один ответ от сотрудника» not used up).
+	Respond bool `json:"respond"`
+
+	// ReviewResponses forms.responses.review — «Принять», «Отклонить» for every visible response of the form: the key in the area of the form, or a form «Вся организация» and the key in any role. W4.05 (return 2): a flag of the form, not of a response — the page shows the buttons of a response by FormResponse.my (an assignee of the response who holds the key in another area may review it while this flag is false, Q-W4.05-16).
+	ReviewResponses bool `json:"reviewResponses"`
+}
+
+// FormNumberStats defines model for FormNumberStats.
+type FormNumberStats struct {
+	// Average Exact decimal. Never a binary floating point number.
+	//
+	// Examples: 12.500
+	Average Decimal `json:"average"`
+
+	// Max Exact decimal. Never a binary floating point number.
+	//
+	// Examples: 12.500
+	Max Decimal `json:"max"`
+
+	// Min Exact decimal. Never a binary floating point number.
+	//
+	// Examples: 12.500
+	Min Decimal `json:"min"`
+}
+
+// FormOption defines model for FormOption.
+type FormOption struct {
+	// Key The stable key of the option («o1»…); answers, conditions and «Только если» of rules compare keys (Q-W4.00-forms-3). other is reserved for «Другое».
+	Key string `json:"key"`
+
+	// Label «Вариант N»; an empty label is an issue of the draft («…: есть пустой вариант»).
+	Label string `json:"label"`
+
+	// Score «баллов» of the option when the form counts scores (FormSettings.scoring).
+	Score *int `json:"score,omitempty"`
+}
+
+// FormOptionCount defines model for FormOptionCount.
+type FormOptionCount struct {
+	Count   int    `json:"count"`
+	Key     string `json:"key"`
+	Label   string `json:"label"`
+	Percent int    `json:"percent"`
+}
+
 // FormPage Opaque cursor is bound to tenant, principal, effective scopes, filters and sort. Permission changes invalidate the cursor.
 type FormPage struct {
 	Items      []Form  `json:"items"`
 	NextCursor *string `json:"nextCursor"`
 }
 
-// FormPatch To change fields create a new immutable version; PATCH cannot mutate historical schemas or answers.
+// FormPageDefinition defines model for FormPageDefinition.
+type FormPageDefinition struct {
+	Id string `json:"id"`
+
+	// Shuffle «Перемешивать вопросы для каждого».
+	Shuffle *bool `json:"shuffle,omitempty"`
+
+	// Title «Название страницы» («Страница 1»).
+	Title string `json:"title"`
+}
+
+// FormPatch W4.05 (0.11.0-stage4, C п. 13 — reworked, not extended). Changes of the form without a new version (design/docs/20-forms.md «Настройки … меняются без новой версии»): the name, the acceptance of responses (closed — «Закрыть приём ответов», open — «Возобновить приём ответов»; only a published form), the area, the group («Переместить в группу», null — «Без группы») and the settings (FormSettingsPatch — the changed fields only). The questions are changed in the draft (saveFormDraft) and published as a new immutable version (publishForm); PATCH never mutates versions or answers.
 type FormPatch struct {
-	Name   *string          `json:"name,omitempty"`
-	Status *FormPatchStatus `json:"status,omitempty"`
+	GroupId *openapi_types.UUID `json:"groupId,omitempty"`
+
+	// Name W4.05 (0.11.0-stage4, return 3). 3–200 characters, unique in the organization without regard to case. minLength 1 stays from 0.1 — JSON Schema does not trim spaces, so the server checks the name trimmed, before the insert: shorter than 3 — 422 validation_failed on name «Название формы — не короче 3 символов» (the check length(btrim(name)) of forms.forms is the last guard, never the answer).
+	Name      *string             `json:"name,omitempty"`
+	OrgUnitId *openapi_types.UUID `json:"orgUnitId,omitempty"`
+
+	// Settings W4.05 (0.11.0-stage4). The changed settings only; the others stay. Checkboxes and lists are saved at once, text fields on blur (dc:884).
+	Settings *FormSettingsPatch `json:"settings,omitempty"`
+	Status   *FormPatchStatus   `json:"status,omitempty"`
 }
 
 // FormPatchStatus defines model for FormPatch.Status.
@@ -706,21 +1464,175 @@ type FormPublish struct {
 // FormPublishAccess defines model for FormPublish.Access.
 type FormPublishAccess string
 
-// FormResponse defines model for FormResponse.
+// FormPublishRequest W4.05 (0.11.0-stage4). «Опубликовать vN» — the draft of revision draftRevision becomes the next immutable version. The draft changed after the dialog opened — 412 revision_mismatch.
+type FormPublishRequest struct {
+	DraftRevision int64 `json:"draftRevision"`
+}
+
+// FormQuestion W4.05 (0.11.0-stage4). A question of the builder (dc:571–580, 839–879). The key is the identifier of the question («Идентификатор вопроса», Q-W4.00-forms-6): the server accepts ^[a-zA-Z][a-zA-Z0-9_-]{0,63}$ (the keys of the seed — q-photos — included), the screen checks the rule of the prototype (2–60 characters, «Латиница, цифры, «_» и «-», с буквы, от 2 символов»); a key present in a published version is not renamed. The draft may be incomplete — empty text, no options; publishForm blocks such a draft (FormDraft.issues).
+type FormQuestion struct {
+	// Accept «Только фото» / «Документы: PDF, Word, Excel» / «Любые файлы» (photo).
+	Accept *FormQuestionAccept `json:"accept,omitempty"`
+
+	// DefaultValue «Значение по умолчанию» (not for photo, statement, multi); a hidden required question needs it.
+	DefaultValue *string `json:"defaultValue,omitempty"`
+
+	// Hidden «Скрытый вопрос не показывается. Значение — по умолчанию или из параметра ссылки ?{key}=…»
+	Hidden *bool `json:"hidden,omitempty"`
+
+	// Hint «Пояснение под вопросом».
+	Hint *string `json:"hint,omitempty"`
+	Key  string  `json:"key"`
+
+	// Label «Вопрос» («Текст» for statement).
+	Label string `json:"label"`
+
+	// MaxFileMb «до N МБ» (default 20).
+	MaxFileMb *int `json:"maxFileMb,omitempty"`
+
+	// MaxFiles «не больше N файлов» (default 5).
+	MaxFiles *int `json:"maxFiles,omitempty"`
+
+	// MaxLength «Длина ответа, символов» — до (text, longtext); «от» больше «до» is an issue.
+	MaxLength *int `json:"maxLength,omitempty"`
+
+	// MaxSelected «Сколько вариантов выбрать» — не больше (multi).
+	MaxSelected *int `json:"maxSelected,omitempty"`
+
+	// MaxValue «Допустимое значение» — до (number, int, money).
+	//
+	// Examples: 12.500
+	MaxValue *Decimal `json:"maxValue,omitempty"`
+
+	// MinLength «Длина ответа, символов» — от (text, longtext).
+	MinLength *int `json:"minLength,omitempty"`
+
+	// MinSelected «Сколько вариантов выбрать» — не меньше (multi).
+	MinSelected *int `json:"minSelected,omitempty"`
+
+	// MinValue «Допустимое значение» — от (number, int, money).
+	//
+	// Examples: 12.500
+	MinValue *Decimal `json:"minValue,omitempty"`
+
+	// OptionOrder «Как в списке» / «По алфавиту» / «В случайном порядке для каждого».
+	OptionOrder *FormQuestionOptionOrder `json:"optionOrder,omitempty"`
+
+	// OptionView «Списком» / «Плиткой» / «В один ряд».
+	OptionView *FormQuestionOptionView `json:"optionView,omitempty"`
+
+	// Options «Ответы» of choice, multi and select.
+	Options *[]FormOption `json:"options,omitempty"`
+
+	// OtherOption «Вариант «Другое» с вводом».
+	OtherOption *bool `json:"otherOption,omitempty"`
+
+	// PageId FormPageDefinition.id of the page of the question.
+	PageId string `json:"pageId"`
+
+	// RefKind «Объект CRM»: «Машина» / «Рейс» / «Объект ремонта» / «Задача» (ref).
+	RefKind *FormQuestionRefKind `json:"refKind,omitempty"`
+
+	// Required «Обязательный».
+	Required bool `json:"required"`
+
+	// ScaleLeftLabel «Подпись слева».
+	ScaleLeftLabel *string `json:"scaleLeftLabel,omitempty"`
+
+	// ScaleMax «Шкала» — до (scale; default 5).
+	ScaleMax *int `json:"scaleMax,omitempty"`
+
+	// ScaleMin «Шкала» — от (scale; default 1).
+	ScaleMin *FormQuestionScaleMin `json:"scaleMin,omitempty"`
+
+	// ScaleRightLabel «Подпись справа».
+	ScaleRightLabel *string `json:"scaleRightLabel,omitempty"`
+
+	// ShowIf W4.05 (0.11.0-stage4). «Показывать при условии» — «Все условия выполнены (И)» (all) / «Любое из условий (ИЛИ)» (any). A question shown by no condition is not asked and not required («Не показывался по условию»); the server repeats the evaluation at submission.
+	ShowIf *FormShowIf `json:"showIf,omitempty"`
+
+	// Type W4.05 (0.11.0-stage4, Q-W4.00-forms-5). The 21 active types of the prototype (TYPES, dc:474–482) in four groups — «Текст и числа»: text «Короткий текст», longtext «Длинный текст», number «Число», money «Сумма, ₽», email «Почта», phone «Телефон», inn «ИНН», url «Ссылка»; «Выбор»: choice «Один вариант», multi «Несколько вариантов», select «Выпадающий список», bool «Да / нет»; «Данные CRM»: person «Сотрудник», unit «Регион или фирма», ref «Объект CRM»; «Другие»: date «Дата», int «Целое число», scale «Оценка по шкале», rating «Оценка звёздами», photo «Файл или фото», statement «Текст без вопроса» (no answer). series «Серия вопросов» (FORM-06) and payment «Оплата» (FORM-05) are not types of the contract — the screen shows them disabled with the reason. Values of answers (FieldEntry.value): text, longtext, email, phone, inn, url — text; number — decimal; int, scale, rating — decimal (an integer); money — money (RUB); choice, select — choices (one FormOption.key), multi — choices (keys; other with otherText); bool — boolean; date — date (instant with withTime); photo — files (File ids of uploads of the purpose form_attachment, the owner forms/form — the form being answered); person — reference core/member, unit — reference core/org_unit, ref — reference of refKind (vehicle fleet/vehicle, trip fleet/trip, object repairs/repair_object, task tasks/task) with the label; a question not answered — absent or null.
+	Type FormQuestionType `json:"type"`
+
+	// UnitLevel «Что можно выбрать»: «Регион или фирму» / «Только регион» / «Только фирму» (unit).
+	UnitLevel *FormQuestionUnitLevel `json:"unitLevel,omitempty"`
+
+	// WithTime «Спрашивать время» (date).
+	WithTime *bool `json:"withTime,omitempty"`
+}
+
+// FormQuestionAccept «Только фото» / «Документы: PDF, Word, Excel» / «Любые файлы» (photo).
+type FormQuestionAccept string
+
+// FormQuestionOptionOrder «Как в списке» / «По алфавиту» / «В случайном порядке для каждого».
+type FormQuestionOptionOrder string
+
+// FormQuestionOptionView «Списком» / «Плиткой» / «В один ряд».
+type FormQuestionOptionView string
+
+// FormQuestionRefKind «Объект CRM»: «Машина» / «Рейс» / «Объект ремонта» / «Задача» (ref).
+type FormQuestionRefKind string
+
+// FormQuestionScaleMin «Шкала» — от (scale; default 1).
+type FormQuestionScaleMin int
+
+// FormQuestionUnitLevel «Что можно выбрать»: «Регион или фирму» / «Только регион» / «Только фирму» (unit).
+type FormQuestionUnitLevel string
+
+// FormQuestionSummary W4.05 (0.11.0-stage4). A card «{тип} · ответили X из N» — bars «n · p%» (choice, «Да / нет»), «Среднее … · мин … · макс …» (numbers; absent — «Нет числовых ответов»), three latest texts («Пока без ответов»).
+type FormQuestionSummary struct {
+	Answered    int                `json:"answered"`
+	FieldKey    string             `json:"fieldKey"`
+	Label       string             `json:"label"`
+	Numbers     *FormNumberStats   `json:"numbers,omitempty"`
+	Options     *[]FormOptionCount `json:"options,omitempty"`
+	RecentTexts *[]string          `json:"recentTexts,omitempty"`
+
+	// Type W4.05 (0.11.0-stage4, Q-W4.00-forms-5). The 21 active types of the prototype (TYPES, dc:474–482) in four groups — «Текст и числа»: text «Короткий текст», longtext «Длинный текст», number «Число», money «Сумма, ₽», email «Почта», phone «Телефон», inn «ИНН», url «Ссылка»; «Выбор»: choice «Один вариант», multi «Несколько вариантов», select «Выпадающий список», bool «Да / нет»; «Данные CRM»: person «Сотрудник», unit «Регион или фирма», ref «Объект CRM»; «Другие»: date «Дата», int «Целое число», scale «Оценка по шкале», rating «Оценка звёздами», photo «Файл или фото», statement «Текст без вопроса» (no answer). series «Серия вопросов» (FORM-06) and payment «Оплата» (FORM-05) are not types of the contract — the screen shows them disabled with the reason. Values of answers (FieldEntry.value): text, longtext, email, phone, inn, url — text; number — decimal; int, scale, rating — decimal (an integer); money — money (RUB); choice, select — choices (one FormOption.key), multi — choices (keys; other with otherText); bool — boolean; date — date (instant with withTime); photo — files (File ids of uploads of the purpose form_attachment, the owner forms/form — the form being answered); person — reference core/member, unit — reference core/org_unit, ref — reference of refKind (vehicle fleet/vehicle, trip fleet/trip, object repairs/repair_object, task tasks/task) with the label; a question not answered — absent or null.
+	Type FormQuestionType `json:"type"`
+}
+
+// FormQuestionType W4.05 (0.11.0-stage4, Q-W4.00-forms-5). The 21 active types of the prototype (TYPES, dc:474–482) in four groups — «Текст и числа»: text «Короткий текст», longtext «Длинный текст», number «Число», money «Сумма, ₽», email «Почта», phone «Телефон», inn «ИНН», url «Ссылка»; «Выбор»: choice «Один вариант», multi «Несколько вариантов», select «Выпадающий список», bool «Да / нет»; «Данные CRM»: person «Сотрудник», unit «Регион или фирма», ref «Объект CRM»; «Другие»: date «Дата», int «Целое число», scale «Оценка по шкале», rating «Оценка звёздами», photo «Файл или фото», statement «Текст без вопроса» (no answer). series «Серия вопросов» (FORM-06) and payment «Оплата» (FORM-05) are not types of the contract — the screen shows them disabled with the reason. Values of answers (FieldEntry.value): text, longtext, email, phone, inn, url — text; number — decimal; int, scale, rating — decimal (an integer); money — money (RUB); choice, select — choices (one FormOption.key), multi — choices (keys; other with otherText); bool — boolean; date — date (instant with withTime); photo — files (File ids of uploads of the purpose form_attachment, the owner forms/form — the form being answered); person — reference core/member, unit — reference core/org_unit, ref — reference of refKind (vehicle fleet/vehicle, trip fleet/trip, object repairs/repair_object, task tasks/task) with the label; a question not answered — absent or null.
+type FormQuestionType string
+
+// FormResponse W4.05 (0.11.0-stage4). A response (forms.responses), immutable after submission: answers by the structure of its version (versionNumber; the feed shows «показан по структуре версии vN (действует vM)»). Answers — FieldEntry by FormQuestion.key, values typed as described at FormQuestion.type; responses of versions created before stage 4 (the seed of the prototype) may carry a TextValue for any type. reviewStatus — accepted at once for a response of an employee, pending for a guest (Q-W4.00-forms-18); rules «После принятия ответа» run on accepted.
 type FormResponse struct {
-	Answers []FieldEntry `json:"answers"`
+	// Actions W4.05 (0.11.0-stage4). «Журнал действий» of the response — one result per rule (the latest attempt); «Для этого ответа действия не выполнялись» — empty.
+	Actions []FormResponseAction `json:"actions"`
+	Answers []FieldEntry         `json:"answers"`
 
 	// AssigneeMemberId Examples: 10000000-0000-4000-8000-000000000001
 	AssigneeMemberId *Id `json:"assigneeMemberId,omitempty"`
+
+	// Author W4.05 (0.11.0-stage4). A member as the screens of forms show it — the owner of a form, the author of a version, a rule or a response.
+	Author FormMemberRef `json:"author"`
+
+	// Channel W4.05 (0.11.0-stage4). member — an employee after sign-in (submitFormResponse); public — a guest by the public link (author memberId null, displayName «Гость»); inspection — the inspection of a trip written as a response (D-30 комплекта, W4.24).
+	Channel FormResponseChannel `json:"channel"`
 
 	// FormId Examples: 10000000-0000-4000-8000-000000000001
 	FormId Id `json:"formId"`
 
 	// Id Examples: 10000000-0000-4000-8000-000000000001
-	Id            Id                       `json:"id"`
+	Id Id `json:"id"`
+
+	// LinkParamKeys W4.05 (0.11.0-stage4, Q-W4.00-forms-20). Keys of hidden questions whose value came from a parameter of the link (?key=…), not from the respondent.
+	LinkParamKeys *[]string `json:"linkParamKeys,omitempty"`
+
+	// My W4.05 (0.11.0-stage4, return 2, Q-W4.05-16). What the requesting member may do with this response in reviewFormResponse — the same rule the server applies to the fields: the key in the area of the form; or the member is the assignee of the response and holds the key in any role; or the form «Вся организация», the key in any role and the response visible by the relation to its CRM object. The page shows «Принять», «Отклонить» by review and the choice of the assignee by assign (FormMy.reviewResponses is a flag of the whole form).
+	My FormResponseMy `json:"my"`
+
+	// Number W4.05 (0.11.0-stage4). The human number of the response («R-1012»), a counter of the organization.
+	Number        string                   `json:"number"`
 	ReviewComment *string                  `json:"reviewComment,omitempty"`
 	ReviewStatus  FormResponseReviewStatus `json:"reviewStatus"`
 	Revision      int64                    `json:"revision"`
+
+	// Score W4.05 (0.11.0-stage4, Q-W4.00-forms-24). Scores counted by the server at submission (a form with «Считать баллы»): «Результат: X из Y баллов · тест пройден» / «… · нужно P для зачёта».
+	Score *FormResponseScore `json:"score,omitempty"`
+
+	// Subject W4.05 (0.11.0-stage4). The CRM object the response is about («Рейс Р-196 · сдача»); members who see the object and hold forms.responses.read anywhere see the response by this relation (Q-W4.00-forms-9).
+	Subject *FormResponseSubject `json:"subject,omitempty"`
 
 	// SubmittedAt UTC RFC3339 instant. Write requests must use the Z suffix; retain the IANA timezone separately for local calendars.
 	//
@@ -729,10 +1641,74 @@ type FormResponse struct {
 
 	// VersionId Examples: 10000000-0000-4000-8000-000000000001
 	VersionId Id `json:"versionId"`
+
+	// VersionNumber W4.05 (0.11.0-stage4). N of the version the response was submitted by (the chip «vN»).
+	VersionNumber int `json:"versionNumber"`
 }
+
+// FormResponseChannel W4.05 (0.11.0-stage4). member — an employee after sign-in (submitFormResponse); public — a guest by the public link (author memberId null, displayName «Гость»); inspection — the inspection of a trip written as a response (D-30 комплекта, W4.24).
+type FormResponseChannel string
 
 // FormResponseReviewStatus defines model for FormResponse.ReviewStatus.
 type FormResponseReviewStatus string
+
+// FormResponseAction W4.05 (0.11.0-stage4). A line of «Журнал действий»: «Задача T-… «…» · {исполнитель} · {статус}», «{текст} · {время} · правило vN» + «Открыть страницу», or an error «Не сохранено в Базу знаний: {err} · {время}» + «Повторить» (retryable).
+type FormResponseAction struct {
+	// At UTC RFC3339 instant. Write requests must use the Z suffix; retain the IANA timezone separately for local calendars.
+	//
+	// Examples: 2026-10-05T06:00:00Z
+	At Instant `json:"at"`
+
+	// Error The cause of a failure, e.g. «страница удалена из Базы знаний», «у автора правила … нет права «Создавать» в Базе знаний».
+	Error *string `json:"error,omitempty"`
+
+	// Kind W4.05 (0.11.0-stage4). «Создать задачу», «Уведомить сотрудника», «Письмо на почту», «HTTP-запрос», «Сохранить в Базу знаний».
+	Kind FormRuleKind `json:"kind"`
+
+	// Node The page written to — «Открыть страницу» (absent when the page is not visible to the requesting member).
+	Node *KnowledgeNodeRef `json:"node,omitempty"`
+	Ok   bool              `json:"ok"`
+
+	// Retryable «Повторить» is offered — a failure of a rule that still exists (Q-W4.20-3).
+	Retryable bool `json:"retryable"`
+
+	// RuleId Examples: 10000000-0000-4000-8000-000000000001
+	RuleId      Id  `json:"ruleId"`
+	RuleVersion int `json:"ruleVersion"`
+
+	// TaskId Examples: 10000000-0000-4000-8000-000000000001
+	TaskId *Id `json:"taskId,omitempty"`
+
+	// TaskKey The number of the created task («LOG-101»).
+	TaskKey *string `json:"taskKey,omitempty"`
+
+	// Text The result, e.g. «Строка в таблице «Осмотры» · страница «Журнал осмотров машин»».
+	Text *string `json:"text,omitempty"`
+}
+
+// FormResponseCreate W4.05 (0.11.0-stage4, Q-W4.00-forms-8, -19). A response of an employee after sign-in («Отправить»). versionId — the acting version shown to the respondent; a changed version — 409 invalid_transition, reason form_version_changed. The server repeats the visibility and required checks of the version and the checks of input («Обязательный вопрос», «Проверьте адрес почты», «ИНН — 10 или 12 цифр»…) — 422 validation_failed with violations by question key.
+type FormResponseCreate struct {
+	// Answers W4.05 (0.11.0-stage4, return 2). Answers by FormQuestion.key. A hidden question is never answered here: a hidden question key in answers — 422 validation_failed (code hidden, «Скрытый вопрос заполняют ссылка и значение по умолчанию»), its value comes from linkParams or defaultValue. A reference answer (person, unit, ref) names only an object the respondent may choose — the same set as listFormFieldOptions by his rights (an active member of the organization, a unit of the level, a CRM object he sees); otherwise 422 «Сотрудник не найден» / «Объект не найден»; the label of the answer is set by the server.
+	Answers []FieldEntry `json:"answers"`
+
+	// LinkParams Values of hidden questions from the parameters of the link (?key=…) — only hidden questions, never CRM and file questions (Q-W4.00-forms-20). W4.05 (return 2) — the value of a hidden question comes only from defaultValue or linkParams. W4.05 (return 3) — a key of another question or an unknown key — 422 validation_failed on linkParams.{key} (code not_hidden, «Параметр ссылки — только для скрытого вопроса»); the same schema as PublicResponseCreate.linkParams of the guest.
+	LinkParams *map[string]string `json:"linkParams,omitempty"`
+
+	// Subject W4.05 (0.11.0-stage4, return 2). The CRM object the response is about (FormResponseSubject). The server checks that the respondent sees the object — a trip by the rights of «Логистика» in its area, a task by tasks.read in its project or as its assignee; an object he does not see, or a missing one — 422 validation_failed «Объект не найден» on subject: the response is not attached to a trip or a task of others, and the label set by the server does not leak the object.
+	Subject *ObjectRef `json:"subject,omitempty"`
+
+	// VersionId Examples: 10000000-0000-4000-8000-000000000001
+	VersionId Id `json:"versionId"`
+}
+
+// FormResponseMy W4.05 (0.11.0-stage4, return 2, Q-W4.05-16). What the requesting member may do with this response in reviewFormResponse — the same rule the server applies to the fields: the key in the area of the form; or the member is the assignee of the response and holds the key in any role; or the form «Вся организация», the key in any role and the response visible by the relation to its CRM object. The page shows «Принять», «Отклонить» by review and the choice of the assignee by assign (FormMy.reviewResponses is a flag of the whole form).
+type FormResponseMy struct {
+	// Assign forms.responses.assign for this response — assigneeMemberId.
+	Assign bool `json:"assign"`
+
+	// Review forms.responses.review for this response — reviewStatus and reviewComment.
+	Review bool `json:"review"`
+}
 
 // FormResponsePage Opaque cursor is bound to tenant, principal, effective scopes, filters and sort. Permission changes invalidate the cursor.
 type FormResponsePage struct {
@@ -740,13 +1716,422 @@ type FormResponsePage struct {
 	NextCursor *string        `json:"nextCursor"`
 }
 
-// FormVersion defines model for FormVersion.
+// FormResponseScore W4.05 (0.11.0-stage4, Q-W4.00-forms-24). Scores counted by the server at submission (a form with «Считать баллы»): «Результат: X из Y баллов · тест пройден» / «… · нужно P для зачёта».
+type FormResponseScore struct {
+	MaxPoints int `json:"maxPoints"`
+
+	// Passed null — «Проходной балл» not set.
+	Passed *bool `json:"passed"`
+	Points int   `json:"points"`
+}
+
+// FormResponseSubject W4.05 (0.11.0-stage4). The CRM object the response is about («Рейс Р-196 · сдача»); members who see the object and hold forms.responses.read anywhere see the response by this relation (Q-W4.00-forms-9).
+type FormResponseSubject struct {
+	Label string `json:"label"`
+
+	// Ref Server verifies same-tenant ownership and target visibility. A reference never grants access.
+	Ref ObjectRef `json:"ref"`
+}
+
+// FormResponseSummary W4.05 (0.11.0-stage4). «Сводка» over the responses the member may read — questions of all versions, the fresh version first (respCols, dc:985).
+type FormResponseSummary struct {
+	// FormId Examples: 10000000-0000-4000-8000-000000000001
+	FormId    Id                    `json:"formId"`
+	Questions []FormQuestionSummary `json:"questions"`
+	Total     int                   `json:"total"`
+}
+
+// FormResponsesExport W4.05 (0.11.0-stage4, dc:679–683). «Выгрузить CSV» of the responses the member may read: «;» separators, BOM, columns «Ответ;Дата;Автор;Объект;Версия;Статус;…» and the questions of all versions (the table has no «Статус», the file has it — as the prototype). Cells — as exportDataset (exportFormResponses): RFC 4180 quoting, CRLF, protection against CSV formula injection (an apostrophe before a text cell starting with =, +, -, @, tab or CR).
+type FormResponsesExport struct {
+	Content     string                         `json:"content"`
+	ContentType FormResponsesExportContentType `json:"contentType"`
+
+	// FileName «{форма}.csv».
+	FileName string `json:"fileName"`
+
+	// FormId Examples: 10000000-0000-4000-8000-000000000001
+	FormId Id `json:"formId"`
+
+	// GeneratedAt UTC RFC3339 instant. Write requests must use the Z suffix; retain the IANA timezone separately for local calendars.
+	//
+	// Examples: 2026-10-05T06:00:00Z
+	GeneratedAt Instant `json:"generatedAt"`
+	RowCount    int     `json:"rowCount"`
+}
+
+// FormResponsesExportContentType defines model for FormResponsesExport.ContentType.
+type FormResponsesExportContentType string
+
+// FormRule W4.05 (0.11.0-stage4, forms.rules). «Действие после ответа»: exactly the object of its kind (task, notify, email, http or kb) is present — except email and http for a member without forms.manage in the area of the form: the address of the letter and the URL of the request (it may carry a secret of a webhook) are not shown, the object is absent (Q-W4.05-18). version — «правило vN», raised by the server at each change of the action (not by «Включено»); a response runs a rule once per «response × rule» («Повторная обработка не создаёт вторую задачу или строку.»; forms.response_actions — one row per response and rule): a new version does not repeat an action done by an earlier one, «Повторить» and «Перенести прошлые ответы» run the current version for a failed or missing action, and the journal keeps the version that ran last (FormResponseAction.ruleVersion).
+type FormRule struct {
+	// Author W4.05 (0.11.0-stage4). A member as the screens of forms show it — the owner of a form, the author of a version, a rule or a response.
+	Author FormMemberRef `json:"author"`
+
+	// Condition W4.05 (0.11.0-stage4). «Только если»: the answer to a question of choice or «Да / нет» equals value (FormOption.key; true or false for «Да / нет»; Q-W4.00-forms-3); fieldKey null — «Для всех ответов».
+	Condition FormRuleCondition `json:"condition"`
+
+	// CreatedAt UTC RFC3339 instant. Write requests must use the Z suffix; retain the IANA timezone separately for local calendars.
+	//
+	// Examples: 2026-10-05T06:00:00Z
+	CreatedAt Instant `json:"createdAt"`
+
+	// DoneCount «записано ответов: N».
+	DoneCount int `json:"doneCount"`
+
+	// Email W4.05 (0.11.0-stage4, Q-W4.00-forms-15). «Письмо на почту» — stored; on the MVP show letters are not sent («На показе письма не отправляются.»).
+	Email   *FormRuleEmail `json:"email,omitempty"`
+	Enabled bool           `json:"enabled"`
+
+	// FailedCount «Не выполнено для N ответов — повторите из ленты ответов».
+	FailedCount int `json:"failedCount"`
+
+	// FormId Examples: 10000000-0000-4000-8000-000000000001
+	FormId Id `json:"formId"`
+
+	// Http W4.05 (0.11.0-stage4, Q-W4.00-forms-15). «HTTP-запрос» (POST, JSON with the answers) — stored; on the MVP show it is not executed («В продукте — подписанный вебхук с повтором.»). Return 1: the URL may carry a secret of the webhook — only members with forms.manage see it (FormRule). When requests are executed (after the MVP) the sender protects against SSRF: the host is resolved once and the request goes to that address, private, loopback, link-local, multicast and metadata addresses (10/8, 172.16/12, 192.168/16, 127/8, ::1, 169.254/16, fc00::/7) are refused, redirects are not followed, the timeout and the size of the answer are bounded.
+	Http *FormRuleHttp `json:"http,omitempty"`
+
+	// Id Examples: 10000000-0000-4000-8000-000000000001
+	Id Id `json:"id"`
+
+	// Kb W4.05 (0.11.0-stage4, D-26 комплекта, FM-05…07). «Сохранить в Базу знаний» — a row in a table of a page (mode table, tableId — KnowledgeTable of W4.04) or a record on a page (mode entry) of the knowledge base (nodeId — a node of W4.04). «＋ Новая страница» and «Новая таблица по вопросам формы» are created first by createKnowledgeNode and createKnowledgeTable (the tag Knowledge), then the rule references them («Сохраняем…» in two steps; «Страница создана, но действие не сохранено: …»). The rule writes on behalf of its author: knowledge.create and the access of the page are checked at each run (PD-53, kbAccess). A public form writes only accepted responses (trigger accepted).
+	Kb *FormRuleKb `json:"kb,omitempty"`
+
+	// Kind W4.05 (0.11.0-stage4). «Создать задачу», «Уведомить сотрудника», «Письмо на почту», «HTTP-запрос», «Сохранить в Базу знаний».
+	Kind FormRuleKind `json:"kind"`
+
+	// Notify W4.05 (0.11.0-stage4). «Уведомить сотрудника» — a notification in the inbox («Уведомление в CRM → …»).
+	Notify *FormRuleNotify `json:"notify,omitempty"`
+
+	// PendingBackfillCount Responses that fit the rule and were not written — «Перенести прошлые ответы · N» (kb only; 0 otherwise).
+	PendingBackfillCount int   `json:"pendingBackfillCount"`
+	Revision             int64 `json:"revision"`
+
+	// Task W4.05 (0.11.0-stage4, Q-W4.00-forms-13). «Создать задачу» — a task of the project projectId (Project of W4.03) with the title and the assignee; the description carries the answers and the link to the response. The task is created once per «response × rule» (forms.response_actions — one row per response and rule; a new version of the rule does not repeat a done action) on behalf of the author of the rule (tasks.create in the project is checked at each run).
+	Task *FormRuleTask `json:"task,omitempty"`
+
+	// Trigger W4.05 (0.11.0-stage4). «Когда»: «После отправки ответа» / «После принятия ответа».
+	Trigger FormRuleTrigger `json:"trigger"`
+
+	// UpdatedAt UTC RFC3339 instant. Write requests must use the Z suffix; retain the IANA timezone separately for local calendars.
+	//
+	// Examples: 2026-10-05T06:00:00Z
+	UpdatedAt Instant `json:"updatedAt"`
+	Version   int     `json:"version"`
+}
+
+// FormRuleBackfillResult W4.05 (0.11.0-stage4). «Перенесено в Базу знаний: N ответов. Не удалось: K — {err}» / «Новых ответов для переноса нет».
+type FormRuleBackfillResult struct {
+	Added  int     `json:"added"`
+	Error  *string `json:"error"`
+	Failed int     `json:"failed"`
+}
+
+// FormRuleCondition W4.05 (0.11.0-stage4). «Только если»: the answer to a question of choice or «Да / нет» equals value (FormOption.key; true or false for «Да / нет»; Q-W4.00-forms-3); fieldKey null — «Для всех ответов».
+type FormRuleCondition struct {
+	FieldKey *string `json:"fieldKey"`
+	Value    *string `json:"value"`
+}
+
+// FormRuleCreate W4.05 (0.11.0-stage4). «Новое действие: {вид}» — the object of kind is required, the others are absent (422 otherwise).
+type FormRuleCreate struct {
+	// Condition W4.05 (0.11.0-stage4). «Только если»: the answer to a question of choice or «Да / нет» equals value (FormOption.key; true or false for «Да / нет»; Q-W4.00-forms-3); fieldKey null — «Для всех ответов».
+	Condition *FormRuleCondition `json:"condition,omitempty"`
+
+	// Email W4.05 (0.11.0-stage4, Q-W4.00-forms-15). «Письмо на почту» — stored; on the MVP show letters are not sent («На показе письма не отправляются.»).
+	Email   *FormRuleEmail `json:"email,omitempty"`
+	Enabled *bool          `json:"enabled,omitempty"`
+
+	// Http W4.05 (0.11.0-stage4, Q-W4.00-forms-15). «HTTP-запрос» (POST, JSON with the answers) — stored; on the MVP show it is not executed («В продукте — подписанный вебхук с повтором.»). Return 1: the URL may carry a secret of the webhook — only members with forms.manage see it (FormRule). When requests are executed (after the MVP) the sender protects against SSRF: the host is resolved once and the request goes to that address, private, loopback, link-local, multicast and metadata addresses (10/8, 172.16/12, 192.168/16, 127/8, ::1, 169.254/16, fc00::/7) are refused, redirects are not followed, the timeout and the size of the answer are bounded.
+	Http *FormRuleHttp `json:"http,omitempty"`
+
+	// Kb W4.05 (0.11.0-stage4). FormRuleKb as the editor sends it (without the projections node and tableTitle).
+	Kb *FormRuleKbInput `json:"kb,omitempty"`
+
+	// Kind W4.05 (0.11.0-stage4). «Создать задачу», «Уведомить сотрудника», «Письмо на почту», «HTTP-запрос», «Сохранить в Базу знаний».
+	Kind FormRuleKind `json:"kind"`
+
+	// Notify W4.05 (0.11.0-stage4). «Уведомить сотрудника» — a notification in the inbox («Уведомление в CRM → …»).
+	Notify *FormRuleNotify `json:"notify,omitempty"`
+
+	// Task W4.05 (0.11.0-stage4, Q-W4.00-forms-13). «Создать задачу» — a task of the project projectId (Project of W4.03) with the title and the assignee; the description carries the answers and the link to the response. The task is created once per «response × rule» (forms.response_actions — one row per response and rule; a new version of the rule does not repeat a done action) on behalf of the author of the rule (tasks.create in the project is checked at each run).
+	Task *FormRuleTask `json:"task,omitempty"`
+
+	// Trigger W4.05 (0.11.0-stage4). «Когда»: «После отправки ответа» / «После принятия ответа».
+	Trigger FormRuleTrigger `json:"trigger"`
+}
+
+// FormRuleEmail W4.05 (0.11.0-stage4, Q-W4.00-forms-15). «Письмо на почту» — stored; on the MVP show letters are not sent («На показе письма не отправляются.»).
+type FormRuleEmail struct {
+	To openapi_types.Email `json:"to"`
+}
+
+// FormRuleHttp W4.05 (0.11.0-stage4, Q-W4.00-forms-15). «HTTP-запрос» (POST, JSON with the answers) — stored; on the MVP show it is not executed («В продукте — подписанный вебхук с повтором.»). Return 1: the URL may carry a secret of the webhook — only members with forms.manage see it (FormRule). When requests are executed (after the MVP) the sender protects against SSRF: the host is resolved once and the request goes to that address, private, loopback, link-local, multicast and metadata addresses (10/8, 172.16/12, 192.168/16, 127/8, ::1, 169.254/16, fc00::/7) are refused, redirects are not followed, the timeout and the size of the answer are bounded.
+type FormRuleHttp struct {
+	// Url «Адрес запроса должен начинаться с https://».
+	Url string `json:"url"`
+}
+
+// FormRuleKb W4.05 (0.11.0-stage4, D-26 комплекта, FM-05…07). «Сохранить в Базу знаний» — a row in a table of a page (mode table, tableId — KnowledgeTable of W4.04) or a record on a page (mode entry) of the knowledge base (nodeId — a node of W4.04). «＋ Новая страница» and «Новая таблица по вопросам формы» are created first by createKnowledgeNode and createKnowledgeTable (the tag Knowledge), then the rule references them («Сохраняем…» in two steps; «Страница создана, но действие не сохранено: …»). The rule writes on behalf of its author: knowledge.create and the access of the page are checked at each run (PD-53, kbAccess). A public form writes only accepted responses (trigger accepted).
+type FormRuleKb struct {
+	// AllEmployeesConfirmed «Понимаю: записи увидят все сотрудники с доступом к Базе знаний…» — required for a page seen by all employees («Подтвердите, что записи увидят все сотрудники с доступом к странице»).
+	AllEmployeesConfirmed bool              `json:"allEmployeesConfirmed"`
+	Fields                []FormRuleKbField `json:"fields"`
+
+	// Head «Заголовок записи» (mode entry) — a source as FormRuleKbField.source; default $object.
+	Head *string `json:"head,omitempty"`
+
+	// Mode «Строкой в таблицу» / «Записью на страницу».
+	Mode FormRuleKbMode `json:"mode"`
+
+	// Node The page as the requesting member sees it; absent when the page is not visible to him (the card «… «недоступна вам»»).
+	Node *KnowledgeNodeRef `json:"node,omitempty"`
+
+	// NodeId Examples: 10000000-0000-4000-8000-000000000001
+	NodeId Id `json:"nodeId"`
+
+	// Position «Новые строки | записи»: «В начало» / «В конец».
+	Position FormRuleKbPosition `json:"position"`
+
+	// ShowLink «Показать ссылку на страницу после отправки» (never for a public form).
+	ShowLink bool `json:"showLink"`
+
+	// TableId Examples: 10000000-0000-4000-8000-000000000001
+	TableId    *Id     `json:"tableId,omitempty"`
+	TableTitle *string `json:"tableTitle,omitempty"`
+}
+
+// FormRuleKbMode «Строкой в таблицу» / «Записью на страницу».
+type FormRuleKbMode string
+
+// FormRuleKbPosition «Новые строки | записи»: «В начало» / «В конец».
+type FormRuleKbPosition string
+
+// FormRuleKbField W4.05 (0.11.0-stage4). A field «Поле ← источник»: a column of the table (columnId — KnowledgeTableColumn.id of W4.04) or a line of the record (name); source — a variable of FORM_VARS ($at «Дата и время ответа», $author «Автор ответа», $object «Объект CRM», $id «Номер ответа», $form «Название формы», $ver «Версия формы») or the key of a question.
+type FormRuleKbField struct {
+	// ColumnId Examples: 10000000-0000-4000-8000-000000000001
+	ColumnId *Id    `json:"columnId,omitempty"`
+	Name     string `json:"name"`
+	Source   string `json:"source"`
+}
+
+// FormRuleKbInput W4.05 (0.11.0-stage4). FormRuleKb as the editor sends it (without the projections node and tableTitle).
+type FormRuleKbInput struct {
+	AllEmployeesConfirmed bool                `json:"allEmployeesConfirmed"`
+	Fields                []FormRuleKbField   `json:"fields"`
+	Head                  *string             `json:"head,omitempty"`
+	Mode                  FormRuleKbInputMode `json:"mode"`
+
+	// NodeId Examples: 10000000-0000-4000-8000-000000000001
+	NodeId   Id                      `json:"nodeId"`
+	Position FormRuleKbInputPosition `json:"position"`
+	ShowLink bool                    `json:"showLink"`
+
+	// TableId Examples: 10000000-0000-4000-8000-000000000001
+	TableId *Id `json:"tableId,omitempty"`
+}
+
+// FormRuleKbInputMode defines model for FormRuleKbInput.Mode.
+type FormRuleKbInputMode string
+
+// FormRuleKbInputPosition defines model for FormRuleKbInput.Position.
+type FormRuleKbInputPosition string
+
+// FormRuleKind W4.05 (0.11.0-stage4). «Создать задачу», «Уведомить сотрудника», «Письмо на почту», «HTTP-запрос», «Сохранить в Базу знаний».
+type FormRuleKind string
+
+// FormRuleList defines model for FormRuleList.
+type FormRuleList struct {
+	Items []FormRule `json:"items"`
+}
+
+// FormRuleNotify W4.05 (0.11.0-stage4). «Уведомить сотрудника» — a notification in the inbox («Уведомление в CRM → …»).
+type FormRuleNotify struct {
+	// MemberId Examples: 10000000-0000-4000-8000-000000000001
+	MemberId Id `json:"memberId"`
+}
+
+// FormRulePatch W4.05 (0.11.0-stage4). «Включено» (enabled only — the version stays) or «Изменить» (trigger, condition and the object of the kind of the rule — the version is raised, «Действие обновлено · правило vN»). The kind of a rule does not change.
+type FormRulePatch struct {
+	// Condition W4.05 (0.11.0-stage4). «Только если»: the answer to a question of choice or «Да / нет» equals value (FormOption.key; true or false for «Да / нет»; Q-W4.00-forms-3); fieldKey null — «Для всех ответов».
+	Condition *FormRuleCondition `json:"condition,omitempty"`
+
+	// Email W4.05 (0.11.0-stage4, Q-W4.00-forms-15). «Письмо на почту» — stored; on the MVP show letters are not sent («На показе письма не отправляются.»).
+	Email   *FormRuleEmail `json:"email,omitempty"`
+	Enabled *bool          `json:"enabled,omitempty"`
+
+	// Http W4.05 (0.11.0-stage4, Q-W4.00-forms-15). «HTTP-запрос» (POST, JSON with the answers) — stored; on the MVP show it is not executed («В продукте — подписанный вебхук с повтором.»). Return 1: the URL may carry a secret of the webhook — only members with forms.manage see it (FormRule). When requests are executed (after the MVP) the sender protects against SSRF: the host is resolved once and the request goes to that address, private, loopback, link-local, multicast and metadata addresses (10/8, 172.16/12, 192.168/16, 127/8, ::1, 169.254/16, fc00::/7) are refused, redirects are not followed, the timeout and the size of the answer are bounded.
+	Http *FormRuleHttp `json:"http,omitempty"`
+
+	// Kb W4.05 (0.11.0-stage4). FormRuleKb as the editor sends it (without the projections node and tableTitle).
+	Kb *FormRuleKbInput `json:"kb,omitempty"`
+
+	// Notify W4.05 (0.11.0-stage4). «Уведомить сотрудника» — a notification in the inbox («Уведомление в CRM → …»).
+	Notify *FormRuleNotify `json:"notify,omitempty"`
+
+	// Task W4.05 (0.11.0-stage4, Q-W4.00-forms-13). «Создать задачу» — a task of the project projectId (Project of W4.03) with the title and the assignee; the description carries the answers and the link to the response. The task is created once per «response × rule» (forms.response_actions — one row per response and rule; a new version of the rule does not repeat a done action) on behalf of the author of the rule (tasks.create in the project is checked at each run).
+	Task *FormRuleTask `json:"task,omitempty"`
+
+	// Trigger W4.05 (0.11.0-stage4). «Когда»: «После отправки ответа» / «После принятия ответа».
+	Trigger *FormRuleTrigger `json:"trigger,omitempty"`
+}
+
+// FormRuleTask W4.05 (0.11.0-stage4, Q-W4.00-forms-13). «Создать задачу» — a task of the project projectId (Project of W4.03) with the title and the assignee; the description carries the answers and the link to the response. The task is created once per «response × rule» (forms.response_actions — one row per response and rule; a new version of the rule does not repeat a done action) on behalf of the author of the rule (tasks.create in the project is checked at each run).
+type FormRuleTask struct {
+	// AssigneeMemberId Examples: 10000000-0000-4000-8000-000000000001
+	AssigneeMemberId Id `json:"assigneeMemberId"`
+
+	// ProjectId Examples: 10000000-0000-4000-8000-000000000001
+	ProjectId Id `json:"projectId"`
+
+	// Title «Название задачи» («Укажите название задачи»).
+	Title string `json:"title"`
+}
+
+// FormRuleTrigger W4.05 (0.11.0-stage4). «Когда»: «После отправки ответа» / «После принятия ответа».
+type FormRuleTrigger string
+
+// FormSettings W4.05 (0.11.0-stage4, Q-W4.00-forms-2). Settings of the form (forms.forms.settings) — changed without a new version (updateForm), applied to every response from the moment of the change. Defaults — FORM_SETTINGS of the prototype (models.js:85): members, no deadline and limit, edit before review allowed, «Спасибо! Ответ отправлен.», without scoring, the progress, the button «Назад» and the logo shown, 365 days.
+type FormSettings struct {
+	// AcceptUntil «Принимать до» — the last day (inclusive, in the time zone of the organization) of accepting responses; null — no deadline.
+	AcceptUntil *openapi_types.Date `json:"acceptUntil"`
+
+	// Access «Кто может ответить»: members — «Сотрудники организации» (sign-in, forms.read in the area of the form, Q-W4.00-forms-8); public — «Все, у кого есть ссылка» (requires forms.publish_public, Q-W4.00-forms-11; a form with CRM questions — 422 «Публичный доступ невозможен: вопрос «…» спрашивает данные CRM»). «По персональному приглашению» is not in stage 4 (Q-W4.00-forms-10): the screen shows it disabled.
+	Access FormSettingsAccess `json:"access"`
+
+	// AllowEditBeforeReview «Разрешить исправить ответ до проверки — появится ревизия» — stored; revisions of a response come after stage 4 (Q-W4.00-forms-18).
+	AllowEditBeforeReview bool `json:"allowEditBeforeReview"`
+
+	// BackButton «Кнопка «Назад» между страницами».
+	BackButton bool `json:"backButton"`
+
+	// ConfirmationText «Текст после отправки».
+	ConfirmationText string `json:"confirmationText"`
+
+	// OnePerMember «Один ответ от сотрудника» across all versions (Q-W4.00-forms-25).
+	OnePerMember bool `json:"onePerMember"`
+
+	// PassScore «Проходной балл»; null — «не задан».
+	PassScore *int `json:"passScore"`
+
+	// ProgressBar «Прогресс по страницам».
+	ProgressBar bool `json:"progressBar"`
+
+	// ResponseLimit «Не больше ответов всего» across all versions (Q-W4.00-forms-25); null — «без ограничения».
+	ResponseLimit *int `json:"responseLimit"`
+
+	// RetainResponsesDays «Хранить ответы» — «90 дней», «1 год», «3 года». A daily job deletes older responses with their files and rows and records of the knowledge base (D-26 комплекта, Q-W4.00-forms-22).
+	RetainResponsesDays FormSettingsRetainResponsesDays `json:"retainResponsesDays"`
+
+	// Scoring «Считать баллы за варианты ответа» (scores — FormOption.score).
+	Scoring bool `json:"scoring"`
+
+	// ShowLogo «Логотип и название организации».
+	ShowLogo bool `json:"showLogo"`
+
+	// ShowScore «Показывать результат после отправки».
+	ShowScore bool `json:"showScore"`
+}
+
+// FormSettingsAccess «Кто может ответить»: members — «Сотрудники организации» (sign-in, forms.read in the area of the form, Q-W4.00-forms-8); public — «Все, у кого есть ссылка» (requires forms.publish_public, Q-W4.00-forms-11; a form with CRM questions — 422 «Публичный доступ невозможен: вопрос «…» спрашивает данные CRM»). «По персональному приглашению» is not in stage 4 (Q-W4.00-forms-10): the screen shows it disabled.
+type FormSettingsAccess string
+
+// FormSettingsRetainResponsesDays «Хранить ответы» — «90 дней», «1 год», «3 года». A daily job deletes older responses with their files and rows and records of the knowledge base (D-26 комплекта, Q-W4.00-forms-22).
+type FormSettingsRetainResponsesDays int
+
+// FormSettingsPatch W4.05 (0.11.0-stage4). The changed settings only; the others stay. Checkboxes and lists are saved at once, text fields on blur (dc:884).
+type FormSettingsPatch struct {
+	AcceptUntil           *openapi_types.Date                   `json:"acceptUntil,omitempty"`
+	Access                *FormSettingsPatchAccess              `json:"access,omitempty"`
+	AllowEditBeforeReview *bool                                 `json:"allowEditBeforeReview,omitempty"`
+	BackButton            *bool                                 `json:"backButton,omitempty"`
+	ConfirmationText      *string                               `json:"confirmationText,omitempty"`
+	OnePerMember          *bool                                 `json:"onePerMember,omitempty"`
+	PassScore             *int                                  `json:"passScore,omitempty"`
+	ProgressBar           *bool                                 `json:"progressBar,omitempty"`
+	ResponseLimit         *int                                  `json:"responseLimit,omitempty"`
+	RetainResponsesDays   *FormSettingsPatchRetainResponsesDays `json:"retainResponsesDays,omitempty"`
+	Scoring               *bool                                 `json:"scoring,omitempty"`
+	ShowLogo              *bool                                 `json:"showLogo,omitempty"`
+	ShowScore             *bool                                 `json:"showScore,omitempty"`
+}
+
+// FormSettingsPatchAccess defines model for FormSettingsPatch.Access.
+type FormSettingsPatchAccess string
+
+// FormSettingsPatchRetainResponsesDays defines model for FormSettingsPatch.RetainResponsesDays.
+type FormSettingsPatchRetainResponsesDays int
+
+// FormShare W4.05 (0.11.0-stage4, Q-W4.00-forms-21; dialog «Поделиться формой»). Links are routes of the same SPA (D-01 комплекта): «Ссылка для сотрудников» — {origin}/forms/{formId} (after sign-in); «Публичная ссылка» — {origin}/f/{publicToken}, «Код для сайта» — the iframe of {origin}/f/{publicToken}?embed=1. A draft has no links («Ссылка появится после публикации…»).
+type FormShare struct {
+	// PublicToken The unpredictable revocable capability of the public form (PublicForm, publicToken of the tag PublicForms); null — the form is not published or not public. Shown only to members with forms.publish in the area of the form. W4.05 (0.11.0-stage4, return 1, Q-W4.05-19): the token is not stored — the server derives it each time: base64url without padding of HMAC-SHA256(key, «ortus.forms.public-link.v1» 0x00 tenant id 0x00 forms.public_links.id), the key — the server secret FORMS_PUBLIC_LINK_KEY of the version key_version of the link (base64, at least 32 bytes); the database keeps only token_digest = «sha256:» + hex SHA-256 of the token, by which getPublicForm finds the link. Revocation (after stage 4) — revoked_at and a new link: a new id, a new token. W4.05 (return 2): the route of a guest — the path /api/v1/public/forms/{publicToken} carries no tenant and the token carries no tenant part, while every tenant has its own database (ADR 0006); the server finds the tenant by token_digest in the control index public_form_links (control 0009: token_digest → tenant_id, form_id, link_id, key_version, revoked_at; the precedent — invitations.token_hash), the database of the tenant by tenant_routing, then the link in forms.public_links of that tenant (id = link_id, the same token_digest, not revoked) — the source of truth; no row in either — 404 as an unknown token. Issuing writes the index row first, then the tenant row (a failed tenant write deletes the index row); revocation and a change of the key — the tenant row first, then the index.
+	PublicToken *string `json:"publicToken"`
+}
+
+// FormShowIf W4.05 (0.11.0-stage4). «Показывать при условии» — «Все условия выполнены (И)» (all) / «Любое из условий (ИЛИ)» (any). A question shown by no condition is not asked and not required («Не показывался по условию»); the server repeats the evaluation at submission.
+type FormShowIf struct {
+	Conditions []FormShowIfCondition `json:"conditions"`
+	Mode       FormShowIfMode        `json:"mode"`
+}
+
+// FormShowIfMode defines model for FormShowIf.Mode.
+type FormShowIfMode string
+
+// FormShowIfCondition defines model for FormShowIfCondition.
+type FormShowIfCondition struct {
+	// FieldKey A question above (an issue otherwise — «условие ссылается на вопрос ниже…», «…на удалённый вопрос»).
+	FieldKey string `json:"fieldKey"`
+
+	// Operator «равно» / «не равно».
+	Operator FormShowIfConditionOperator `json:"operator"`
+
+	// Value FormOption.key for choice, multi and select; true or false for bool; the text otherwise.
+	Value string `json:"value"`
+}
+
+// FormShowIfConditionOperator «равно» / «не равно».
+type FormShowIfConditionOperator string
+
+// FormTemplate W4.05 (0.11.0-stage4, Q-W4.00-forms-14). A template of the code catalogue (the domain FORM_TEMPLATES, 15 templates) — tiles of «Создание формы» and «Все шаблоны · 15»; the organization has no own templates (FM-02).
+type FormTemplate struct {
+	// Available false — the module is not active («Модуль «{name}» не подключён», createForm — 403 module_not_installed).
+	Available bool `json:"available"`
+
+	// Category «Основные», «Опросы и оценка», «Сотрудники», «Тесты», «Отраслевые».
+	Category FormTemplateCategory `json:"category"`
+	Icon     string               `json:"icon"`
+	Id       string               `json:"id"`
+
+	// ModuleKey The industry module the template needs; null — a template for every organization.
+	ModuleKey     *string `json:"moduleKey"`
+	Name          string  `json:"name"`
+	PageCount     int     `json:"pageCount"`
+	QuestionCount int     `json:"questionCount"`
+}
+
+// FormTemplateCategory «Основные», «Опросы и оценка», «Сотрудники», «Тесты», «Отраслевые».
+type FormTemplateCategory string
+
+// FormTemplateList defines model for FormTemplateList.
+type FormTemplateList struct {
+	Items []FormTemplate `json:"items"`
+}
+
+// FormVersion W4.05 (0.11.0-stage4). An immutable published version (forms.versions). A question whose type changed against the previous version gets a new key (prototype nextVersionFields: «{key}-v{N}»): answers of earlier versions keep the old key and value («Смена типа создаёт новое поле…»). Return 1: the new key is at most 64 characters (the pattern of FormQuestion.key) — the old key is cut so that «-v{N}» fits; a key taken by another question of the version gets «-v{N}-2», «-v{N}-3»…; conditions «Показывать при условии» of the same version follow the new key. Conditions «Только если» of rules and sources of «Сохранить в Базу знаний» keep the old key — they are not remapped (as the prototype): such a rule stops matching answers of the new version until it is edited.
 type FormVersion struct {
 	// CreatedAt UTC RFC3339 instant. Write requests must use the Z suffix; retain the IANA timezone separately for local calendars.
 	//
 	// Examples: 2026-10-05T06:00:00Z
-	CreatedAt  Instant        `json:"createdAt"`
-	Definition FormDefinition `json:"definition"`
+	CreatedAt Instant `json:"createdAt"`
+
+	// CreatedBy W4.05 (0.11.0-stage4). A member as the screens of forms show it — the owner of a form, the author of a version, a rule or a response.
+	CreatedBy FormMemberRef `json:"createdBy"`
+
+	// Current W4.05 (0.11.0-stage4). The acting version — the chip «Действует».
+	Current bool `json:"current"`
+
+	// Definition W4.05 (0.11.0-stage4). FormDefinition v2 — the questions of a draft or of an immutable version: pages in their order and questions in their order (the page of a question — pageId). At least one page («Удалить страницу» is disabled on the only page).
+	Definition FormDefinitionV2 `json:"definition"`
 
 	// FormId Examples: 10000000-0000-4000-8000-000000000001
 	FormId Id `json:"formId"`
@@ -754,6 +2139,9 @@ type FormVersion struct {
 	// Id Examples: 10000000-0000-4000-8000-000000000001
 	Id     Id    `json:"id"`
 	Number int64 `json:"number"`
+
+	// QuestionCount W4.05 (0.11.0-stage4). «вопросов: N» of the tab «Версии».
+	QuestionCount int `json:"questionCount"`
 }
 
 // FormVersionCreate defines model for FormVersionCreate.
@@ -789,6 +2177,13 @@ type InstantValue struct {
 
 // InstantValueType defines model for InstantValue.Type.
 type InstantValueType string
+
+// KnowledgeNodeRef defines model for KnowledgeNodeRef.
+type KnowledgeNodeRef struct {
+	// Id Examples: 10000000-0000-4000-8000-000000000001
+	Id    Id     `json:"id"`
+	Title string `json:"title"`
+}
 
 // Money defines model for Money.
 type Money struct {
@@ -855,7 +2250,9 @@ type ProblemViolation struct {
 
 // ReferenceValue defines model for ReferenceValue.
 type ReferenceValue struct {
-	Type ReferenceValueType `json:"type"`
+	// Label W4.05 (0.11.0-stage4, Q-W4.00-forms-23). The label of the object at the moment of the answer («Рейс Р-196», «Марина Котова») — kept when the object is renamed or hidden later; set by the server.
+	Label *string            `json:"label,omitempty"`
+	Type  ReferenceValueType `json:"type"`
 
 	// Value Server verifies same-tenant ownership and target visibility. A reference never grants access.
 	Value ObjectRef `json:"value"`
@@ -864,7 +2261,7 @@ type ReferenceValue struct {
 // ReferenceValueType defines model for ReferenceValue.Type.
 type ReferenceValueType string
 
-// ResponseReviewPatch Changing assignee requires forms.responses.assign; changing review state requires forms.responses.review. No arbitrary editing of original answers.
+// ResponseReviewPatch Changing assignee requires forms.responses.assign; changing review state requires forms.responses.review. No arbitrary editing of original answers. W4.05 (0.11.0-stage4, return 2): at least one field — an empty body — 422 validation_failed; the revision and the ETag of the response do not change.
 type ResponseReviewPatch struct {
 	AssigneeMemberId *openapi_types.UUID              `json:"assigneeMemberId,omitempty"`
 	ReviewComment    *string                          `json:"reviewComment,omitempty"`
@@ -950,8 +2347,17 @@ type ExportJobId = Id
 // FileId Examples: 10000000-0000-4000-8000-000000000001
 type FileId = Id
 
+// FormFieldKey defines model for formFieldKey.
+type FormFieldKey = string
+
+// FormGroupId Examples: 10000000-0000-4000-8000-000000000001
+type FormGroupId = Id
+
 // FormId Examples: 10000000-0000-4000-8000-000000000001
 type FormId = Id
+
+// FormRuleId Examples: 10000000-0000-4000-8000-000000000001
+type FormRuleId = Id
 
 // GroupId Examples: 10000000-0000-4000-8000-000000000001
 type GroupId = Id
@@ -1070,12 +2476,54 @@ type Unauthenticated = Problem
 // Validation Problem Details. No cross-tenant IDs, SQL, token values or storage keys in errors. Retryable conflict codes: reservation_overlap, resources_unavailable, idempotency_in_progress; quota errors: quota_exceeded, downgrade_below_usage.
 type Validation = Problem
 
+// CreateFormGroupParams defines parameters for CreateFormGroup.
+type CreateFormGroupParams struct {
+	// IdempotencyKey Stable per intended command. Retain record at least 7 days; financial deduplication also retains a durable tenant+actor+operation+key digest receipt. Key is scoped to tenant+actor+operation. Reuse only for an identical request.
+	IdempotencyKey IdempotencyKey `json:"Idempotency-Key"`
+
+	// XCSRFToken Required for cookie-authenticated state changes; not required with bearer-only authentication. Invalid/missing token or Origin yields 403. Conditional requirement cannot be represented by OpenAPI required=true.
+	XCSRFToken *Csrf `json:"X-CSRF-Token,omitempty"`
+
+	// Origin Required and checked against the deployment allowlist for cookie-authenticated state changes and browser public-form submissions/uploads. Never accept wildcard with credentialed requests.
+	Origin *Origin `json:"Origin,omitempty"`
+}
+
+// DeleteFormGroupParams defines parameters for DeleteFormGroup.
+type DeleteFormGroupParams struct {
+	// IdempotencyKey Stable per intended command. Retain record at least 7 days; financial deduplication also retains a durable tenant+actor+operation+key digest receipt. Key is scoped to tenant+actor+operation. Reuse only for an identical request.
+	IdempotencyKey IdempotencyKey `json:"Idempotency-Key"`
+
+	// XCSRFToken Required for cookie-authenticated state changes; not required with bearer-only authentication. Invalid/missing token or Origin yields 403. Conditional requirement cannot be represented by OpenAPI required=true.
+	XCSRFToken *Csrf `json:"X-CSRF-Token,omitempty"`
+
+	// Origin Required and checked against the deployment allowlist for cookie-authenticated state changes and browser public-form submissions/uploads. Never accept wildcard with credentialed requests.
+	Origin *Origin `json:"Origin,omitempty"`
+}
+
 // ListFormsParams defines parameters for ListForms.
 type ListFormsParams struct {
 	// Cursor Opaque cursor from the preceding response; no offset pagination.
 	Cursor *Cursor `form:"cursor,omitempty" json:"cursor,omitempty"`
 	Limit  *Limit  `form:"limit,omitempty" json:"limit,omitempty"`
+
+	// Q W4.05 (0.11.0-stage4). «Поиск формы» — a part of the name.
+	Q *string `form:"q,omitempty" json:"q,omitempty"`
+
+	// Owner W4.05 (0.11.0-stage4). me — «Мои формы» (the owner is the requesting member).
+	Owner *ListFormsParamsOwner `form:"owner,omitempty" json:"owner,omitempty"`
+
+	// Status W4.05 (0.11.0-stage4). draft — «Черновики», open — «Принимают ответы», closed — «Приём закрыт».
+	Status *ListFormsParamsStatus `form:"status,omitempty" json:"status,omitempty"`
+
+	// GroupId W4.05 (0.11.0-stage4). Forms of the group (FormGroup.id).
+	GroupId *Id `form:"groupId,omitempty" json:"groupId,omitempty"`
 }
+
+// ListFormsParamsOwner defines parameters for ListForms.
+type ListFormsParamsOwner string
+
+// ListFormsParamsStatus defines parameters for ListForms.
+type ListFormsParamsStatus string
 
 // CreateFormParams defines parameters for CreateForm.
 type CreateFormParams struct {
@@ -1104,11 +2552,74 @@ type UpdateFormParams struct {
 	IfMatch IfMatch `json:"If-Match"`
 }
 
+// DiscardFormDraftParams defines parameters for DiscardFormDraft.
+type DiscardFormDraftParams struct {
+	// IdempotencyKey Stable per intended command. Retain record at least 7 days; financial deduplication also retains a durable tenant+actor+operation+key digest receipt. Key is scoped to tenant+actor+operation. Reuse only for an identical request.
+	IdempotencyKey IdempotencyKey `json:"Idempotency-Key"`
+
+	// XCSRFToken Required for cookie-authenticated state changes; not required with bearer-only authentication. Invalid/missing token or Origin yields 403. Conditional requirement cannot be represented by OpenAPI required=true.
+	XCSRFToken *Csrf `json:"X-CSRF-Token,omitempty"`
+
+	// Origin Required and checked against the deployment allowlist for cookie-authenticated state changes and browser public-form submissions/uploads. Never accept wildcard with credentialed requests.
+	Origin *Origin `json:"Origin,omitempty"`
+
+	// IfMatch Strong ETag obtained from latest GET or mutation response. * is not accepted. Missing=428; stale=412. Idempotent replay is checked before current revision precondition.
+	IfMatch IfMatch `json:"If-Match"`
+}
+
+// SaveFormDraftParams defines parameters for SaveFormDraft.
+type SaveFormDraftParams struct {
+	// IdempotencyKey Stable per intended command. Retain record at least 7 days; financial deduplication also retains a durable tenant+actor+operation+key digest receipt. Key is scoped to tenant+actor+operation. Reuse only for an identical request.
+	IdempotencyKey IdempotencyKey `json:"Idempotency-Key"`
+
+	// XCSRFToken Required for cookie-authenticated state changes; not required with bearer-only authentication. Invalid/missing token or Origin yields 403. Conditional requirement cannot be represented by OpenAPI required=true.
+	XCSRFToken *Csrf `json:"X-CSRF-Token,omitempty"`
+
+	// Origin Required and checked against the deployment allowlist for cookie-authenticated state changes and browser public-form submissions/uploads. Never accept wildcard with credentialed requests.
+	Origin *Origin `json:"Origin,omitempty"`
+
+	// IfMatch Strong ETag obtained from latest GET or mutation response. * is not accepted. Missing=428; stale=412. Idempotent replay is checked before current revision precondition.
+	IfMatch IfMatch `json:"If-Match"`
+}
+
+// ListFormFieldOptionsParams defines parameters for ListFormFieldOptions.
+type ListFormFieldOptionsParams struct {
+	// Q W4.05 (0.11.0-stage4). Search by the label.
+	Q *string `form:"q,omitempty" json:"q,omitempty"`
+}
+
+// PublishFormParams defines parameters for PublishForm.
+type PublishFormParams struct {
+	// IdempotencyKey Stable per intended command. Retain record at least 7 days; financial deduplication also retains a durable tenant+actor+operation+key digest receipt. Key is scoped to tenant+actor+operation. Reuse only for an identical request.
+	IdempotencyKey IdempotencyKey `json:"Idempotency-Key"`
+
+	// XCSRFToken Required for cookie-authenticated state changes; not required with bearer-only authentication. Invalid/missing token or Origin yields 403. Conditional requirement cannot be represented by OpenAPI required=true.
+	XCSRFToken *Csrf `json:"X-CSRF-Token,omitempty"`
+
+	// Origin Required and checked against the deployment allowlist for cookie-authenticated state changes and browser public-form submissions/uploads. Never accept wildcard with credentialed requests.
+	Origin *Origin `json:"Origin,omitempty"`
+
+	// IfMatch Strong ETag obtained from latest GET or mutation response. * is not accepted. Missing=428; stale=412. Idempotent replay is checked before current revision precondition.
+	IfMatch IfMatch `json:"If-Match"`
+}
+
 // ListFormResponsesParams defines parameters for ListFormResponses.
 type ListFormResponsesParams struct {
 	// Cursor Opaque cursor from the preceding response; no offset pagination.
 	Cursor *Cursor `form:"cursor,omitempty" json:"cursor,omitempty"`
 	Limit  *Limit  `form:"limit,omitempty" json:"limit,omitempty"`
+}
+
+// SubmitFormResponseParams defines parameters for SubmitFormResponse.
+type SubmitFormResponseParams struct {
+	// IdempotencyKey Stable per intended command. Retain record at least 7 days; financial deduplication also retains a durable tenant+actor+operation+key digest receipt. Key is scoped to tenant+actor+operation. Reuse only for an identical request.
+	IdempotencyKey IdempotencyKey `json:"Idempotency-Key"`
+
+	// XCSRFToken Required for cookie-authenticated state changes; not required with bearer-only authentication. Invalid/missing token or Origin yields 403. Conditional requirement cannot be represented by OpenAPI required=true.
+	XCSRFToken *Csrf `json:"X-CSRF-Token,omitempty"`
+
+	// Origin Required and checked against the deployment allowlist for cookie-authenticated state changes and browser public-form submissions/uploads. Never accept wildcard with credentialed requests.
+	Origin *Origin `json:"Origin,omitempty"`
 }
 
 // ReviewFormResponseParams defines parameters for ReviewFormResponse.
@@ -1124,6 +2635,72 @@ type ReviewFormResponseParams struct {
 
 	// IfMatch Strong ETag obtained from latest GET or mutation response. * is not accepted. Missing=428; stale=412. Idempotent replay is checked before current revision precondition.
 	IfMatch IfMatch `json:"If-Match"`
+}
+
+// RetryFormResponseActionParams defines parameters for RetryFormResponseAction.
+type RetryFormResponseActionParams struct {
+	// IdempotencyKey Stable per intended command. Retain record at least 7 days; financial deduplication also retains a durable tenant+actor+operation+key digest receipt. Key is scoped to tenant+actor+operation. Reuse only for an identical request.
+	IdempotencyKey IdempotencyKey `json:"Idempotency-Key"`
+
+	// XCSRFToken Required for cookie-authenticated state changes; not required with bearer-only authentication. Invalid/missing token or Origin yields 403. Conditional requirement cannot be represented by OpenAPI required=true.
+	XCSRFToken *Csrf `json:"X-CSRF-Token,omitempty"`
+
+	// Origin Required and checked against the deployment allowlist for cookie-authenticated state changes and browser public-form submissions/uploads. Never accept wildcard with credentialed requests.
+	Origin *Origin `json:"Origin,omitempty"`
+}
+
+// CreateFormRuleParams defines parameters for CreateFormRule.
+type CreateFormRuleParams struct {
+	// IdempotencyKey Stable per intended command. Retain record at least 7 days; financial deduplication also retains a durable tenant+actor+operation+key digest receipt. Key is scoped to tenant+actor+operation. Reuse only for an identical request.
+	IdempotencyKey IdempotencyKey `json:"Idempotency-Key"`
+
+	// XCSRFToken Required for cookie-authenticated state changes; not required with bearer-only authentication. Invalid/missing token or Origin yields 403. Conditional requirement cannot be represented by OpenAPI required=true.
+	XCSRFToken *Csrf `json:"X-CSRF-Token,omitempty"`
+
+	// Origin Required and checked against the deployment allowlist for cookie-authenticated state changes and browser public-form submissions/uploads. Never accept wildcard with credentialed requests.
+	Origin *Origin `json:"Origin,omitempty"`
+}
+
+// DeleteFormRuleParams defines parameters for DeleteFormRule.
+type DeleteFormRuleParams struct {
+	// IdempotencyKey Stable per intended command. Retain record at least 7 days; financial deduplication also retains a durable tenant+actor+operation+key digest receipt. Key is scoped to tenant+actor+operation. Reuse only for an identical request.
+	IdempotencyKey IdempotencyKey `json:"Idempotency-Key"`
+
+	// XCSRFToken Required for cookie-authenticated state changes; not required with bearer-only authentication. Invalid/missing token or Origin yields 403. Conditional requirement cannot be represented by OpenAPI required=true.
+	XCSRFToken *Csrf `json:"X-CSRF-Token,omitempty"`
+
+	// Origin Required and checked against the deployment allowlist for cookie-authenticated state changes and browser public-form submissions/uploads. Never accept wildcard with credentialed requests.
+	Origin *Origin `json:"Origin,omitempty"`
+
+	// IfMatch Strong ETag obtained from latest GET or mutation response. * is not accepted. Missing=428; stale=412. Idempotent replay is checked before current revision precondition.
+	IfMatch IfMatch `json:"If-Match"`
+}
+
+// UpdateFormRuleParams defines parameters for UpdateFormRule.
+type UpdateFormRuleParams struct {
+	// IdempotencyKey Stable per intended command. Retain record at least 7 days; financial deduplication also retains a durable tenant+actor+operation+key digest receipt. Key is scoped to tenant+actor+operation. Reuse only for an identical request.
+	IdempotencyKey IdempotencyKey `json:"Idempotency-Key"`
+
+	// XCSRFToken Required for cookie-authenticated state changes; not required with bearer-only authentication. Invalid/missing token or Origin yields 403. Conditional requirement cannot be represented by OpenAPI required=true.
+	XCSRFToken *Csrf `json:"X-CSRF-Token,omitempty"`
+
+	// Origin Required and checked against the deployment allowlist for cookie-authenticated state changes and browser public-form submissions/uploads. Never accept wildcard with credentialed requests.
+	Origin *Origin `json:"Origin,omitempty"`
+
+	// IfMatch Strong ETag obtained from latest GET or mutation response. * is not accepted. Missing=428; stale=412. Idempotent replay is checked before current revision precondition.
+	IfMatch IfMatch `json:"If-Match"`
+}
+
+// BackfillFormRuleParams defines parameters for BackfillFormRule.
+type BackfillFormRuleParams struct {
+	// IdempotencyKey Stable per intended command. Retain record at least 7 days; financial deduplication also retains a durable tenant+actor+operation+key digest receipt. Key is scoped to tenant+actor+operation. Reuse only for an identical request.
+	IdempotencyKey IdempotencyKey `json:"Idempotency-Key"`
+
+	// XCSRFToken Required for cookie-authenticated state changes; not required with bearer-only authentication. Invalid/missing token or Origin yields 403. Conditional requirement cannot be represented by OpenAPI required=true.
+	XCSRFToken *Csrf `json:"X-CSRF-Token,omitempty"`
+
+	// Origin Required and checked against the deployment allowlist for cookie-authenticated state changes and browser public-form submissions/uploads. Never accept wildcard with credentialed requests.
+	Origin *Origin `json:"Origin,omitempty"`
 }
 
 // ListFormVersionsParams defines parameters for ListFormVersions.
@@ -1163,19 +2740,41 @@ type PublishFormVersionParams struct {
 	IfMatch IfMatch `json:"If-Match"`
 }
 
+// CreateFormGroupJSONRequestBody defines body for CreateFormGroup for application/json ContentType.
+type CreateFormGroupJSONRequestBody = FormGroupCreate
+
 // CreateFormJSONRequestBody defines body for CreateForm for application/json ContentType.
 type CreateFormJSONRequestBody = FormCreate
 
 // UpdateFormJSONRequestBody defines body for UpdateForm for application/json ContentType.
 type UpdateFormJSONRequestBody = FormPatch
 
+// SaveFormDraftJSONRequestBody defines body for SaveFormDraft for application/json ContentType.
+type SaveFormDraftJSONRequestBody = FormDraftSave
+
+// PublishFormJSONRequestBody defines body for PublishForm for application/json ContentType.
+type PublishFormJSONRequestBody = FormPublishRequest
+
+// SubmitFormResponseJSONRequestBody defines body for SubmitFormResponse for application/json ContentType.
+type SubmitFormResponseJSONRequestBody = FormResponseCreate
+
 // ReviewFormResponseJSONRequestBody defines body for ReviewFormResponse for application/json ContentType.
 type ReviewFormResponseJSONRequestBody = ResponseReviewPatch
 
+// CreateFormRuleJSONRequestBody defines body for CreateFormRule for application/json ContentType.
+type CreateFormRuleJSONRequestBody = FormRuleCreate
+
+// UpdateFormRuleJSONRequestBody defines body for UpdateFormRule for application/json ContentType.
+type UpdateFormRuleJSONRequestBody = FormRulePatch
+
 // CreateFormVersionJSONRequestBody defines body for CreateFormVersion for application/json ContentType.
+//
+// Deprecated: this type has been marked as deprecated upstream, but no `x-deprecated-reason` was set
 type CreateFormVersionJSONRequestBody = FormVersionCreate
 
 // PublishFormVersionJSONRequestBody defines body for PublishFormVersion for application/json ContentType.
+//
+// Deprecated: this type has been marked as deprecated upstream, but no `x-deprecated-reason` was set
 type PublishFormVersionJSONRequestBody = FormPublish
 
 // AsTextValue returns the union data inside the FieldValue as a TextValue
@@ -1569,6 +3168,18 @@ func (t *FieldValue) UnmarshalJSON(b []byte) error {
 
 // ServerInterface represents all server handlers.
 type ServerInterface interface {
+	// ListFormGroups List the groups of forms
+	// (GET /api/v1/tenants/{tenantId}/form-groups)
+	ListFormGroups(w http.ResponseWriter, r *http.Request, tenantId TenantId)
+	// CreateFormGroup Create a group of forms
+	// (POST /api/v1/tenants/{tenantId}/form-groups)
+	CreateFormGroup(w http.ResponseWriter, r *http.Request, tenantId TenantId, params CreateFormGroupParams)
+	// DeleteFormGroup Delete an empty group of forms
+	// (DELETE /api/v1/tenants/{tenantId}/form-groups/{groupId})
+	DeleteFormGroup(w http.ResponseWriter, r *http.Request, tenantId TenantId, groupId FormGroupId, params DeleteFormGroupParams)
+	// ListFormTemplates List the templates of forms
+	// (GET /api/v1/tenants/{tenantId}/form-templates)
+	ListFormTemplates(w http.ResponseWriter, r *http.Request, tenantId TenantId)
 	// ListForms List scoped form definitions
 	// (GET /api/v1/tenants/{tenantId}/forms)
 	ListForms(w http.ResponseWriter, r *http.Request, tenantId TenantId, params ListFormsParams)
@@ -1581,29 +3192,99 @@ type ServerInterface interface {
 	// UpdateForm Rename or close submissions
 	// (PATCH /api/v1/tenants/{tenantId}/forms/{formId})
 	UpdateForm(w http.ResponseWriter, r *http.Request, tenantId TenantId, formId FormId, params UpdateFormParams)
+	// DiscardFormDraft Discard the unpublished changes of a form
+	// (DELETE /api/v1/tenants/{tenantId}/forms/{formId}/draft)
+	DiscardFormDraft(w http.ResponseWriter, r *http.Request, tenantId TenantId, formId FormId, params DiscardFormDraftParams)
+	// GetFormDraft Read the draft of the questions of a form
+	// (GET /api/v1/tenants/{tenantId}/forms/{formId}/draft)
+	GetFormDraft(w http.ResponseWriter, r *http.Request, tenantId TenantId, formId FormId)
+	// SaveFormDraft Save the whole draft of a form
+	// (PUT /api/v1/tenants/{tenantId}/forms/{formId}/draft)
+	SaveFormDraft(w http.ResponseWriter, r *http.Request, tenantId TenantId, formId FormId, params SaveFormDraftParams)
+	// ExportFormResponses Export the responses as a CSV file
+	// (GET /api/v1/tenants/{tenantId}/forms/{formId}/export)
+	ExportFormResponses(w http.ResponseWriter, r *http.Request, tenantId TenantId, formId FormId)
+	// ListFormFieldOptions Choices of a CRM question for the respondent
+	// (GET /api/v1/tenants/{tenantId}/forms/{formId}/fields/{fieldKey}/options)
+	ListFormFieldOptions(w http.ResponseWriter, r *http.Request, tenantId TenantId, formId FormId, fieldKey FormFieldKey, params ListFormFieldOptionsParams)
+	// PublishForm Publish the draft as the next immutable version
+	// (POST /api/v1/tenants/{tenantId}/forms/{formId}/publish)
+	PublishForm(w http.ResponseWriter, r *http.Request, tenantId TenantId, formId FormId, params PublishFormParams)
 	// ListFormResponses List visible responses, preserving submitted version
 	// (GET /api/v1/tenants/{tenantId}/forms/{formId}/responses)
 	ListFormResponses(w http.ResponseWriter, r *http.Request, tenantId TenantId, formId FormId, params ListFormResponsesParams)
+	// SubmitFormResponse Submit a response as an employee
+	// (POST /api/v1/tenants/{tenantId}/forms/{formId}/responses)
+	SubmitFormResponse(w http.ResponseWriter, r *http.Request, tenantId TenantId, formId FormId, params SubmitFormResponseParams)
 	// GetFormResponse Read a response permitted for review
 	// (GET /api/v1/tenants/{tenantId}/forms/{formId}/responses/{responseId})
 	GetFormResponse(w http.ResponseWriter, r *http.Request, tenantId TenantId, formId FormId, responseId ResponseId)
 	// ReviewFormResponse Assign and review an immutable submission
 	// (PATCH /api/v1/tenants/{tenantId}/forms/{formId}/responses/{responseId})
 	ReviewFormResponse(w http.ResponseWriter, r *http.Request, tenantId TenantId, formId FormId, responseId ResponseId, params ReviewFormResponseParams)
+	// RetryFormResponseAction Repeat an action for one response
+	// (POST /api/v1/tenants/{tenantId}/forms/{formId}/responses/{responseId}/actions/{ruleId}/retry)
+	RetryFormResponseAction(w http.ResponseWriter, r *http.Request, tenantId TenantId, formId FormId, responseId ResponseId, ruleId FormRuleId, params RetryFormResponseActionParams)
+	// ListFormRules List the actions after a response
+	// (GET /api/v1/tenants/{tenantId}/forms/{formId}/rules)
+	ListFormRules(w http.ResponseWriter, r *http.Request, tenantId TenantId, formId FormId)
+	// CreateFormRule Add an action after a response
+	// (POST /api/v1/tenants/{tenantId}/forms/{formId}/rules)
+	CreateFormRule(w http.ResponseWriter, r *http.Request, tenantId TenantId, formId FormId, params CreateFormRuleParams)
+	// DeleteFormRule Delete an action after a response
+	// (DELETE /api/v1/tenants/{tenantId}/forms/{formId}/rules/{ruleId})
+	DeleteFormRule(w http.ResponseWriter, r *http.Request, tenantId TenantId, formId FormId, ruleId FormRuleId, params DeleteFormRuleParams)
+	// UpdateFormRule Change or switch an action after a response
+	// (PATCH /api/v1/tenants/{tenantId}/forms/{formId}/rules/{ruleId})
+	UpdateFormRule(w http.ResponseWriter, r *http.Request, tenantId TenantId, formId FormId, ruleId FormRuleId, params UpdateFormRuleParams)
+	// BackfillFormRule Write the earlier responses by a knowledge base action
+	// (POST /api/v1/tenants/{tenantId}/forms/{formId}/rules/{ruleId}/backfill)
+	BackfillFormRule(w http.ResponseWriter, r *http.Request, tenantId TenantId, formId FormId, ruleId FormRuleId, params BackfillFormRuleParams)
+	// GetFormResponseSummary Summary of the responses by question
+	// (GET /api/v1/tenants/{tenantId}/forms/{formId}/summary)
+	GetFormResponseSummary(w http.ResponseWriter, r *http.Request, tenantId TenantId, formId FormId)
 	// ListFormVersions List immutable schema versions
 	// (GET /api/v1/tenants/{tenantId}/forms/{formId}/versions)
 	ListFormVersions(w http.ResponseWriter, r *http.Request, tenantId TenantId, formId FormId, params ListFormVersionsParams)
 	// CreateFormVersion Create a new immutable version from a base version
 	// (POST /api/v1/tenants/{tenantId}/forms/{formId}/versions)
+	//
+	// Deprecated: this operation has been marked as deprecated upstream, but no `x-deprecated-reason` was set
 	CreateFormVersion(w http.ResponseWriter, r *http.Request, tenantId TenantId, formId FormId, params CreateFormVersionParams)
 	// PublishFormVersion Publish exactly one validated version
 	// (POST /api/v1/tenants/{tenantId}/forms/{formId}/versions/{versionId}/publish)
+	//
+	// Deprecated: this operation has been marked as deprecated upstream, but no `x-deprecated-reason` was set
 	PublishFormVersion(w http.ResponseWriter, r *http.Request, tenantId TenantId, formId FormId, versionId VersionId, params PublishFormVersionParams)
 }
 
 // Unimplemented server implementation that returns http.StatusNotImplemented for each endpoint.
 
 type Unimplemented struct{}
+
+// ListFormGroups List the groups of forms
+// (GET /api/v1/tenants/{tenantId}/form-groups)
+func (_ Unimplemented) ListFormGroups(w http.ResponseWriter, r *http.Request, tenantId TenantId) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// CreateFormGroup Create a group of forms
+// (POST /api/v1/tenants/{tenantId}/form-groups)
+func (_ Unimplemented) CreateFormGroup(w http.ResponseWriter, r *http.Request, tenantId TenantId, params CreateFormGroupParams) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// DeleteFormGroup Delete an empty group of forms
+// (DELETE /api/v1/tenants/{tenantId}/form-groups/{groupId})
+func (_ Unimplemented) DeleteFormGroup(w http.ResponseWriter, r *http.Request, tenantId TenantId, groupId FormGroupId, params DeleteFormGroupParams) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// ListFormTemplates List the templates of forms
+// (GET /api/v1/tenants/{tenantId}/form-templates)
+func (_ Unimplemented) ListFormTemplates(w http.ResponseWriter, r *http.Request, tenantId TenantId) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
 
 // ListForms List scoped form definitions
 // (GET /api/v1/tenants/{tenantId}/forms)
@@ -1629,9 +3310,51 @@ func (_ Unimplemented) UpdateForm(w http.ResponseWriter, r *http.Request, tenant
 	w.WriteHeader(http.StatusNotImplemented)
 }
 
+// DiscardFormDraft Discard the unpublished changes of a form
+// (DELETE /api/v1/tenants/{tenantId}/forms/{formId}/draft)
+func (_ Unimplemented) DiscardFormDraft(w http.ResponseWriter, r *http.Request, tenantId TenantId, formId FormId, params DiscardFormDraftParams) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// GetFormDraft Read the draft of the questions of a form
+// (GET /api/v1/tenants/{tenantId}/forms/{formId}/draft)
+func (_ Unimplemented) GetFormDraft(w http.ResponseWriter, r *http.Request, tenantId TenantId, formId FormId) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// SaveFormDraft Save the whole draft of a form
+// (PUT /api/v1/tenants/{tenantId}/forms/{formId}/draft)
+func (_ Unimplemented) SaveFormDraft(w http.ResponseWriter, r *http.Request, tenantId TenantId, formId FormId, params SaveFormDraftParams) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// ExportFormResponses Export the responses as a CSV file
+// (GET /api/v1/tenants/{tenantId}/forms/{formId}/export)
+func (_ Unimplemented) ExportFormResponses(w http.ResponseWriter, r *http.Request, tenantId TenantId, formId FormId) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// ListFormFieldOptions Choices of a CRM question for the respondent
+// (GET /api/v1/tenants/{tenantId}/forms/{formId}/fields/{fieldKey}/options)
+func (_ Unimplemented) ListFormFieldOptions(w http.ResponseWriter, r *http.Request, tenantId TenantId, formId FormId, fieldKey FormFieldKey, params ListFormFieldOptionsParams) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// PublishForm Publish the draft as the next immutable version
+// (POST /api/v1/tenants/{tenantId}/forms/{formId}/publish)
+func (_ Unimplemented) PublishForm(w http.ResponseWriter, r *http.Request, tenantId TenantId, formId FormId, params PublishFormParams) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
 // ListFormResponses List visible responses, preserving submitted version
 // (GET /api/v1/tenants/{tenantId}/forms/{formId}/responses)
 func (_ Unimplemented) ListFormResponses(w http.ResponseWriter, r *http.Request, tenantId TenantId, formId FormId, params ListFormResponsesParams) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// SubmitFormResponse Submit a response as an employee
+// (POST /api/v1/tenants/{tenantId}/forms/{formId}/responses)
+func (_ Unimplemented) SubmitFormResponse(w http.ResponseWriter, r *http.Request, tenantId TenantId, formId FormId, params SubmitFormResponseParams) {
 	w.WriteHeader(http.StatusNotImplemented)
 }
 
@@ -1647,6 +3370,48 @@ func (_ Unimplemented) ReviewFormResponse(w http.ResponseWriter, r *http.Request
 	w.WriteHeader(http.StatusNotImplemented)
 }
 
+// RetryFormResponseAction Repeat an action for one response
+// (POST /api/v1/tenants/{tenantId}/forms/{formId}/responses/{responseId}/actions/{ruleId}/retry)
+func (_ Unimplemented) RetryFormResponseAction(w http.ResponseWriter, r *http.Request, tenantId TenantId, formId FormId, responseId ResponseId, ruleId FormRuleId, params RetryFormResponseActionParams) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// ListFormRules List the actions after a response
+// (GET /api/v1/tenants/{tenantId}/forms/{formId}/rules)
+func (_ Unimplemented) ListFormRules(w http.ResponseWriter, r *http.Request, tenantId TenantId, formId FormId) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// CreateFormRule Add an action after a response
+// (POST /api/v1/tenants/{tenantId}/forms/{formId}/rules)
+func (_ Unimplemented) CreateFormRule(w http.ResponseWriter, r *http.Request, tenantId TenantId, formId FormId, params CreateFormRuleParams) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// DeleteFormRule Delete an action after a response
+// (DELETE /api/v1/tenants/{tenantId}/forms/{formId}/rules/{ruleId})
+func (_ Unimplemented) DeleteFormRule(w http.ResponseWriter, r *http.Request, tenantId TenantId, formId FormId, ruleId FormRuleId, params DeleteFormRuleParams) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// UpdateFormRule Change or switch an action after a response
+// (PATCH /api/v1/tenants/{tenantId}/forms/{formId}/rules/{ruleId})
+func (_ Unimplemented) UpdateFormRule(w http.ResponseWriter, r *http.Request, tenantId TenantId, formId FormId, ruleId FormRuleId, params UpdateFormRuleParams) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// BackfillFormRule Write the earlier responses by a knowledge base action
+// (POST /api/v1/tenants/{tenantId}/forms/{formId}/rules/{ruleId}/backfill)
+func (_ Unimplemented) BackfillFormRule(w http.ResponseWriter, r *http.Request, tenantId TenantId, formId FormId, ruleId FormRuleId, params BackfillFormRuleParams) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// GetFormResponseSummary Summary of the responses by question
+// (GET /api/v1/tenants/{tenantId}/forms/{formId}/summary)
+func (_ Unimplemented) GetFormResponseSummary(w http.ResponseWriter, r *http.Request, tenantId TenantId, formId FormId) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
 // ListFormVersions List immutable schema versions
 // (GET /api/v1/tenants/{tenantId}/forms/{formId}/versions)
 func (_ Unimplemented) ListFormVersions(w http.ResponseWriter, r *http.Request, tenantId TenantId, formId FormId, params ListFormVersionsParams) {
@@ -1655,12 +3420,16 @@ func (_ Unimplemented) ListFormVersions(w http.ResponseWriter, r *http.Request, 
 
 // CreateFormVersion Create a new immutable version from a base version
 // (POST /api/v1/tenants/{tenantId}/forms/{formId}/versions)
+//
+// Deprecated: this operation has been marked as deprecated upstream, but no `x-deprecated-reason` was set
 func (_ Unimplemented) CreateFormVersion(w http.ResponseWriter, r *http.Request, tenantId TenantId, formId FormId, params CreateFormVersionParams) {
 	w.WriteHeader(http.StatusNotImplemented)
 }
 
 // PublishFormVersion Publish exactly one validated version
 // (POST /api/v1/tenants/{tenantId}/forms/{formId}/versions/{versionId}/publish)
+//
+// Deprecated: this operation has been marked as deprecated upstream, but no `x-deprecated-reason` was set
 func (_ Unimplemented) PublishFormVersion(w http.ResponseWriter, r *http.Request, tenantId TenantId, formId FormId, versionId VersionId, params PublishFormVersionParams) {
 	w.WriteHeader(http.StatusNotImplemented)
 }
@@ -1673,6 +3442,251 @@ type ServerInterfaceWrapper struct {
 }
 
 type MiddlewareFunc func(http.Handler) http.Handler
+
+// ListFormGroups operation middleware
+func (siw *ServerInterfaceWrapper) ListFormGroups(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+	_ = err
+
+	// ------------- Path parameter "tenantId" -------------
+	var tenantId TenantId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "tenantId", chi.URLParam(r, "tenantId"), &tenantId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "tenantId", Err: err})
+		return
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.ListFormGroups(w, r, tenantId)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// CreateFormGroup operation middleware
+func (siw *ServerInterfaceWrapper) CreateFormGroup(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+	_ = err
+
+	// ------------- Path parameter "tenantId" -------------
+	var tenantId TenantId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "tenantId", chi.URLParam(r, "tenantId"), &tenantId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "tenantId", Err: err})
+		return
+	}
+
+	// Parameter object where we will unmarshal all parameters from the context
+	var params CreateFormGroupParams
+
+	headers := r.Header
+
+	// ------------- Required header parameter "Idempotency-Key" -------------
+	if valueList, found := headers[http.CanonicalHeaderKey("Idempotency-Key")]; found {
+		var IdempotencyKey IdempotencyKey
+		n := len(valueList)
+		if n != 1 {
+			siw.ErrorHandlerFunc(w, r, &TooManyValuesForParamError{ParamName: "Idempotency-Key", Count: n})
+			return
+		}
+
+		err = runtime.BindStyledParameterWithOptions("simple", "Idempotency-Key", valueList[0], &IdempotencyKey, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: true, Type: "string", Format: ""})
+		if err != nil {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "Idempotency-Key", Err: err})
+			return
+		}
+
+		params.IdempotencyKey = IdempotencyKey
+
+	} else {
+		err := fmt.Errorf("Header parameter Idempotency-Key is required, but not found")
+		siw.ErrorHandlerFunc(w, r, &RequiredHeaderError{ParamName: "Idempotency-Key", Err: err})
+		return
+	}
+
+	// ------------- Optional header parameter "X-CSRF-Token" -------------
+	if valueList, found := headers[http.CanonicalHeaderKey("X-CSRF-Token")]; found {
+		var XCSRFToken Csrf
+		n := len(valueList)
+		if n != 1 {
+			siw.ErrorHandlerFunc(w, r, &TooManyValuesForParamError{ParamName: "X-CSRF-Token", Count: n})
+			return
+		}
+
+		err = runtime.BindStyledParameterWithOptions("simple", "X-CSRF-Token", valueList[0], &XCSRFToken, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: false, Type: "string", Format: ""})
+		if err != nil {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "X-CSRF-Token", Err: err})
+			return
+		}
+
+		params.XCSRFToken = &XCSRFToken
+
+	}
+
+	// ------------- Optional header parameter "Origin" -------------
+	if valueList, found := headers[http.CanonicalHeaderKey("Origin")]; found {
+		var Origin Origin
+		n := len(valueList)
+		if n != 1 {
+			siw.ErrorHandlerFunc(w, r, &TooManyValuesForParamError{ParamName: "Origin", Count: n})
+			return
+		}
+
+		err = runtime.BindStyledParameterWithOptions("simple", "Origin", valueList[0], &Origin, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: false, Type: "string", Format: "uri"})
+		if err != nil {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "Origin", Err: err})
+			return
+		}
+
+		params.Origin = &Origin
+
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.CreateFormGroup(w, r, tenantId, params)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// DeleteFormGroup operation middleware
+func (siw *ServerInterfaceWrapper) DeleteFormGroup(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+	_ = err
+
+	// ------------- Path parameter "tenantId" -------------
+	var tenantId TenantId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "tenantId", chi.URLParam(r, "tenantId"), &tenantId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "tenantId", Err: err})
+		return
+	}
+
+	// ------------- Path parameter "groupId" -------------
+	var groupId FormGroupId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "groupId", chi.URLParam(r, "groupId"), &groupId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "groupId", Err: err})
+		return
+	}
+
+	// Parameter object where we will unmarshal all parameters from the context
+	var params DeleteFormGroupParams
+
+	headers := r.Header
+
+	// ------------- Required header parameter "Idempotency-Key" -------------
+	if valueList, found := headers[http.CanonicalHeaderKey("Idempotency-Key")]; found {
+		var IdempotencyKey IdempotencyKey
+		n := len(valueList)
+		if n != 1 {
+			siw.ErrorHandlerFunc(w, r, &TooManyValuesForParamError{ParamName: "Idempotency-Key", Count: n})
+			return
+		}
+
+		err = runtime.BindStyledParameterWithOptions("simple", "Idempotency-Key", valueList[0], &IdempotencyKey, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: true, Type: "string", Format: ""})
+		if err != nil {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "Idempotency-Key", Err: err})
+			return
+		}
+
+		params.IdempotencyKey = IdempotencyKey
+
+	} else {
+		err := fmt.Errorf("Header parameter Idempotency-Key is required, but not found")
+		siw.ErrorHandlerFunc(w, r, &RequiredHeaderError{ParamName: "Idempotency-Key", Err: err})
+		return
+	}
+
+	// ------------- Optional header parameter "X-CSRF-Token" -------------
+	if valueList, found := headers[http.CanonicalHeaderKey("X-CSRF-Token")]; found {
+		var XCSRFToken Csrf
+		n := len(valueList)
+		if n != 1 {
+			siw.ErrorHandlerFunc(w, r, &TooManyValuesForParamError{ParamName: "X-CSRF-Token", Count: n})
+			return
+		}
+
+		err = runtime.BindStyledParameterWithOptions("simple", "X-CSRF-Token", valueList[0], &XCSRFToken, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: false, Type: "string", Format: ""})
+		if err != nil {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "X-CSRF-Token", Err: err})
+			return
+		}
+
+		params.XCSRFToken = &XCSRFToken
+
+	}
+
+	// ------------- Optional header parameter "Origin" -------------
+	if valueList, found := headers[http.CanonicalHeaderKey("Origin")]; found {
+		var Origin Origin
+		n := len(valueList)
+		if n != 1 {
+			siw.ErrorHandlerFunc(w, r, &TooManyValuesForParamError{ParamName: "Origin", Count: n})
+			return
+		}
+
+		err = runtime.BindStyledParameterWithOptions("simple", "Origin", valueList[0], &Origin, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: false, Type: "string", Format: "uri"})
+		if err != nil {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "Origin", Err: err})
+			return
+		}
+
+		params.Origin = &Origin
+
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.DeleteFormGroup(w, r, tenantId, groupId, params)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// ListFormTemplates operation middleware
+func (siw *ServerInterfaceWrapper) ListFormTemplates(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+	_ = err
+
+	// ------------- Path parameter "tenantId" -------------
+	var tenantId TenantId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "tenantId", chi.URLParam(r, "tenantId"), &tenantId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "tenantId", Err: err})
+		return
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.ListFormTemplates(w, r, tenantId)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
 
 // ListForms operation middleware
 func (siw *ServerInterfaceWrapper) ListForms(w http.ResponseWriter, r *http.Request) {
@@ -1714,6 +3728,58 @@ func (siw *ServerInterfaceWrapper) ListForms(w http.ResponseWriter, r *http.Requ
 			siw.ErrorHandlerFunc(w, r, &RequiredParamError{ParamName: "limit"})
 		} else {
 			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "limit", Err: err})
+		}
+		return
+	}
+
+	// ------------- Optional query parameter "q" -------------
+
+	err = runtime.BindQueryParameterWithOptions("form", true, false, "q", r.URL.Query(), &params.Q, runtime.BindQueryParameterOptions{Type: "string", Format: ""})
+	if err != nil {
+		var requiredError *runtime.RequiredParameterError
+		if errors.As(err, &requiredError) {
+			siw.ErrorHandlerFunc(w, r, &RequiredParamError{ParamName: "q"})
+		} else {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "q", Err: err})
+		}
+		return
+	}
+
+	// ------------- Optional query parameter "owner" -------------
+
+	err = runtime.BindQueryParameterWithOptions("form", true, false, "owner", r.URL.Query(), &params.Owner, runtime.BindQueryParameterOptions{Type: "string", Format: ""})
+	if err != nil {
+		var requiredError *runtime.RequiredParameterError
+		if errors.As(err, &requiredError) {
+			siw.ErrorHandlerFunc(w, r, &RequiredParamError{ParamName: "owner"})
+		} else {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "owner", Err: err})
+		}
+		return
+	}
+
+	// ------------- Optional query parameter "status" -------------
+
+	err = runtime.BindQueryParameterWithOptions("form", true, false, "status", r.URL.Query(), &params.Status, runtime.BindQueryParameterOptions{Type: "string", Format: ""})
+	if err != nil {
+		var requiredError *runtime.RequiredParameterError
+		if errors.As(err, &requiredError) {
+			siw.ErrorHandlerFunc(w, r, &RequiredParamError{ParamName: "status"})
+		} else {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "status", Err: err})
+		}
+		return
+	}
+
+	// ------------- Optional query parameter "groupId" -------------
+
+	err = runtime.BindQueryParameterWithOptions("form", true, false, "groupId", r.URL.Query(), &params.GroupId, runtime.BindQueryParameterOptions{Type: "string", Format: "uuid"})
+	if err != nil {
+		var requiredError *runtime.RequiredParameterError
+		if errors.As(err, &requiredError) {
+			siw.ErrorHandlerFunc(w, r, &RequiredParamError{ParamName: "groupId"})
+		} else {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "groupId", Err: err})
 		}
 		return
 	}
@@ -1980,6 +4046,508 @@ func (siw *ServerInterfaceWrapper) UpdateForm(w http.ResponseWriter, r *http.Req
 	handler.ServeHTTP(w, r)
 }
 
+// DiscardFormDraft operation middleware
+func (siw *ServerInterfaceWrapper) DiscardFormDraft(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+	_ = err
+
+	// ------------- Path parameter "tenantId" -------------
+	var tenantId TenantId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "tenantId", chi.URLParam(r, "tenantId"), &tenantId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "tenantId", Err: err})
+		return
+	}
+
+	// ------------- Path parameter "formId" -------------
+	var formId FormId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "formId", chi.URLParam(r, "formId"), &formId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "formId", Err: err})
+		return
+	}
+
+	// Parameter object where we will unmarshal all parameters from the context
+	var params DiscardFormDraftParams
+
+	headers := r.Header
+
+	// ------------- Required header parameter "Idempotency-Key" -------------
+	if valueList, found := headers[http.CanonicalHeaderKey("Idempotency-Key")]; found {
+		var IdempotencyKey IdempotencyKey
+		n := len(valueList)
+		if n != 1 {
+			siw.ErrorHandlerFunc(w, r, &TooManyValuesForParamError{ParamName: "Idempotency-Key", Count: n})
+			return
+		}
+
+		err = runtime.BindStyledParameterWithOptions("simple", "Idempotency-Key", valueList[0], &IdempotencyKey, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: true, Type: "string", Format: ""})
+		if err != nil {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "Idempotency-Key", Err: err})
+			return
+		}
+
+		params.IdempotencyKey = IdempotencyKey
+
+	} else {
+		err := fmt.Errorf("Header parameter Idempotency-Key is required, but not found")
+		siw.ErrorHandlerFunc(w, r, &RequiredHeaderError{ParamName: "Idempotency-Key", Err: err})
+		return
+	}
+
+	// ------------- Optional header parameter "X-CSRF-Token" -------------
+	if valueList, found := headers[http.CanonicalHeaderKey("X-CSRF-Token")]; found {
+		var XCSRFToken Csrf
+		n := len(valueList)
+		if n != 1 {
+			siw.ErrorHandlerFunc(w, r, &TooManyValuesForParamError{ParamName: "X-CSRF-Token", Count: n})
+			return
+		}
+
+		err = runtime.BindStyledParameterWithOptions("simple", "X-CSRF-Token", valueList[0], &XCSRFToken, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: false, Type: "string", Format: ""})
+		if err != nil {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "X-CSRF-Token", Err: err})
+			return
+		}
+
+		params.XCSRFToken = &XCSRFToken
+
+	}
+
+	// ------------- Optional header parameter "Origin" -------------
+	if valueList, found := headers[http.CanonicalHeaderKey("Origin")]; found {
+		var Origin Origin
+		n := len(valueList)
+		if n != 1 {
+			siw.ErrorHandlerFunc(w, r, &TooManyValuesForParamError{ParamName: "Origin", Count: n})
+			return
+		}
+
+		err = runtime.BindStyledParameterWithOptions("simple", "Origin", valueList[0], &Origin, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: false, Type: "string", Format: "uri"})
+		if err != nil {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "Origin", Err: err})
+			return
+		}
+
+		params.Origin = &Origin
+
+	}
+
+	// ------------- Required header parameter "If-Match" -------------
+	if valueList, found := headers[http.CanonicalHeaderKey("If-Match")]; found {
+		var IfMatch IfMatch
+		n := len(valueList)
+		if n != 1 {
+			siw.ErrorHandlerFunc(w, r, &TooManyValuesForParamError{ParamName: "If-Match", Count: n})
+			return
+		}
+
+		err = runtime.BindStyledParameterWithOptions("simple", "If-Match", valueList[0], &IfMatch, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: true, Type: "string", Format: ""})
+		if err != nil {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "If-Match", Err: err})
+			return
+		}
+
+		params.IfMatch = IfMatch
+
+	} else {
+		err := fmt.Errorf("Header parameter If-Match is required, but not found")
+		siw.ErrorHandlerFunc(w, r, &RequiredHeaderError{ParamName: "If-Match", Err: err})
+		return
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.DiscardFormDraft(w, r, tenantId, formId, params)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// GetFormDraft operation middleware
+func (siw *ServerInterfaceWrapper) GetFormDraft(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+	_ = err
+
+	// ------------- Path parameter "tenantId" -------------
+	var tenantId TenantId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "tenantId", chi.URLParam(r, "tenantId"), &tenantId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "tenantId", Err: err})
+		return
+	}
+
+	// ------------- Path parameter "formId" -------------
+	var formId FormId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "formId", chi.URLParam(r, "formId"), &formId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "formId", Err: err})
+		return
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.GetFormDraft(w, r, tenantId, formId)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// SaveFormDraft operation middleware
+func (siw *ServerInterfaceWrapper) SaveFormDraft(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+	_ = err
+
+	// ------------- Path parameter "tenantId" -------------
+	var tenantId TenantId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "tenantId", chi.URLParam(r, "tenantId"), &tenantId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "tenantId", Err: err})
+		return
+	}
+
+	// ------------- Path parameter "formId" -------------
+	var formId FormId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "formId", chi.URLParam(r, "formId"), &formId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "formId", Err: err})
+		return
+	}
+
+	// Parameter object where we will unmarshal all parameters from the context
+	var params SaveFormDraftParams
+
+	headers := r.Header
+
+	// ------------- Required header parameter "Idempotency-Key" -------------
+	if valueList, found := headers[http.CanonicalHeaderKey("Idempotency-Key")]; found {
+		var IdempotencyKey IdempotencyKey
+		n := len(valueList)
+		if n != 1 {
+			siw.ErrorHandlerFunc(w, r, &TooManyValuesForParamError{ParamName: "Idempotency-Key", Count: n})
+			return
+		}
+
+		err = runtime.BindStyledParameterWithOptions("simple", "Idempotency-Key", valueList[0], &IdempotencyKey, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: true, Type: "string", Format: ""})
+		if err != nil {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "Idempotency-Key", Err: err})
+			return
+		}
+
+		params.IdempotencyKey = IdempotencyKey
+
+	} else {
+		err := fmt.Errorf("Header parameter Idempotency-Key is required, but not found")
+		siw.ErrorHandlerFunc(w, r, &RequiredHeaderError{ParamName: "Idempotency-Key", Err: err})
+		return
+	}
+
+	// ------------- Optional header parameter "X-CSRF-Token" -------------
+	if valueList, found := headers[http.CanonicalHeaderKey("X-CSRF-Token")]; found {
+		var XCSRFToken Csrf
+		n := len(valueList)
+		if n != 1 {
+			siw.ErrorHandlerFunc(w, r, &TooManyValuesForParamError{ParamName: "X-CSRF-Token", Count: n})
+			return
+		}
+
+		err = runtime.BindStyledParameterWithOptions("simple", "X-CSRF-Token", valueList[0], &XCSRFToken, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: false, Type: "string", Format: ""})
+		if err != nil {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "X-CSRF-Token", Err: err})
+			return
+		}
+
+		params.XCSRFToken = &XCSRFToken
+
+	}
+
+	// ------------- Optional header parameter "Origin" -------------
+	if valueList, found := headers[http.CanonicalHeaderKey("Origin")]; found {
+		var Origin Origin
+		n := len(valueList)
+		if n != 1 {
+			siw.ErrorHandlerFunc(w, r, &TooManyValuesForParamError{ParamName: "Origin", Count: n})
+			return
+		}
+
+		err = runtime.BindStyledParameterWithOptions("simple", "Origin", valueList[0], &Origin, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: false, Type: "string", Format: "uri"})
+		if err != nil {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "Origin", Err: err})
+			return
+		}
+
+		params.Origin = &Origin
+
+	}
+
+	// ------------- Required header parameter "If-Match" -------------
+	if valueList, found := headers[http.CanonicalHeaderKey("If-Match")]; found {
+		var IfMatch IfMatch
+		n := len(valueList)
+		if n != 1 {
+			siw.ErrorHandlerFunc(w, r, &TooManyValuesForParamError{ParamName: "If-Match", Count: n})
+			return
+		}
+
+		err = runtime.BindStyledParameterWithOptions("simple", "If-Match", valueList[0], &IfMatch, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: true, Type: "string", Format: ""})
+		if err != nil {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "If-Match", Err: err})
+			return
+		}
+
+		params.IfMatch = IfMatch
+
+	} else {
+		err := fmt.Errorf("Header parameter If-Match is required, but not found")
+		siw.ErrorHandlerFunc(w, r, &RequiredHeaderError{ParamName: "If-Match", Err: err})
+		return
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.SaveFormDraft(w, r, tenantId, formId, params)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// ExportFormResponses operation middleware
+func (siw *ServerInterfaceWrapper) ExportFormResponses(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+	_ = err
+
+	// ------------- Path parameter "tenantId" -------------
+	var tenantId TenantId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "tenantId", chi.URLParam(r, "tenantId"), &tenantId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "tenantId", Err: err})
+		return
+	}
+
+	// ------------- Path parameter "formId" -------------
+	var formId FormId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "formId", chi.URLParam(r, "formId"), &formId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "formId", Err: err})
+		return
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.ExportFormResponses(w, r, tenantId, formId)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// ListFormFieldOptions operation middleware
+func (siw *ServerInterfaceWrapper) ListFormFieldOptions(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+	_ = err
+
+	// ------------- Path parameter "tenantId" -------------
+	var tenantId TenantId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "tenantId", chi.URLParam(r, "tenantId"), &tenantId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "tenantId", Err: err})
+		return
+	}
+
+	// ------------- Path parameter "formId" -------------
+	var formId FormId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "formId", chi.URLParam(r, "formId"), &formId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "formId", Err: err})
+		return
+	}
+
+	// ------------- Path parameter "fieldKey" -------------
+	var fieldKey FormFieldKey
+
+	err = runtime.BindStyledParameterWithOptions("simple", "fieldKey", chi.URLParam(r, "fieldKey"), &fieldKey, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "fieldKey", Err: err})
+		return
+	}
+
+	// Parameter object where we will unmarshal all parameters from the context
+	var params ListFormFieldOptionsParams
+
+	// ------------- Optional query parameter "q" -------------
+
+	err = runtime.BindQueryParameterWithOptions("form", true, false, "q", r.URL.Query(), &params.Q, runtime.BindQueryParameterOptions{Type: "string", Format: ""})
+	if err != nil {
+		var requiredError *runtime.RequiredParameterError
+		if errors.As(err, &requiredError) {
+			siw.ErrorHandlerFunc(w, r, &RequiredParamError{ParamName: "q"})
+		} else {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "q", Err: err})
+		}
+		return
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.ListFormFieldOptions(w, r, tenantId, formId, fieldKey, params)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// PublishForm operation middleware
+func (siw *ServerInterfaceWrapper) PublishForm(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+	_ = err
+
+	// ------------- Path parameter "tenantId" -------------
+	var tenantId TenantId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "tenantId", chi.URLParam(r, "tenantId"), &tenantId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "tenantId", Err: err})
+		return
+	}
+
+	// ------------- Path parameter "formId" -------------
+	var formId FormId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "formId", chi.URLParam(r, "formId"), &formId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "formId", Err: err})
+		return
+	}
+
+	// Parameter object where we will unmarshal all parameters from the context
+	var params PublishFormParams
+
+	headers := r.Header
+
+	// ------------- Required header parameter "Idempotency-Key" -------------
+	if valueList, found := headers[http.CanonicalHeaderKey("Idempotency-Key")]; found {
+		var IdempotencyKey IdempotencyKey
+		n := len(valueList)
+		if n != 1 {
+			siw.ErrorHandlerFunc(w, r, &TooManyValuesForParamError{ParamName: "Idempotency-Key", Count: n})
+			return
+		}
+
+		err = runtime.BindStyledParameterWithOptions("simple", "Idempotency-Key", valueList[0], &IdempotencyKey, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: true, Type: "string", Format: ""})
+		if err != nil {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "Idempotency-Key", Err: err})
+			return
+		}
+
+		params.IdempotencyKey = IdempotencyKey
+
+	} else {
+		err := fmt.Errorf("Header parameter Idempotency-Key is required, but not found")
+		siw.ErrorHandlerFunc(w, r, &RequiredHeaderError{ParamName: "Idempotency-Key", Err: err})
+		return
+	}
+
+	// ------------- Optional header parameter "X-CSRF-Token" -------------
+	if valueList, found := headers[http.CanonicalHeaderKey("X-CSRF-Token")]; found {
+		var XCSRFToken Csrf
+		n := len(valueList)
+		if n != 1 {
+			siw.ErrorHandlerFunc(w, r, &TooManyValuesForParamError{ParamName: "X-CSRF-Token", Count: n})
+			return
+		}
+
+		err = runtime.BindStyledParameterWithOptions("simple", "X-CSRF-Token", valueList[0], &XCSRFToken, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: false, Type: "string", Format: ""})
+		if err != nil {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "X-CSRF-Token", Err: err})
+			return
+		}
+
+		params.XCSRFToken = &XCSRFToken
+
+	}
+
+	// ------------- Optional header parameter "Origin" -------------
+	if valueList, found := headers[http.CanonicalHeaderKey("Origin")]; found {
+		var Origin Origin
+		n := len(valueList)
+		if n != 1 {
+			siw.ErrorHandlerFunc(w, r, &TooManyValuesForParamError{ParamName: "Origin", Count: n})
+			return
+		}
+
+		err = runtime.BindStyledParameterWithOptions("simple", "Origin", valueList[0], &Origin, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: false, Type: "string", Format: "uri"})
+		if err != nil {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "Origin", Err: err})
+			return
+		}
+
+		params.Origin = &Origin
+
+	}
+
+	// ------------- Required header parameter "If-Match" -------------
+	if valueList, found := headers[http.CanonicalHeaderKey("If-Match")]; found {
+		var IfMatch IfMatch
+		n := len(valueList)
+		if n != 1 {
+			siw.ErrorHandlerFunc(w, r, &TooManyValuesForParamError{ParamName: "If-Match", Count: n})
+			return
+		}
+
+		err = runtime.BindStyledParameterWithOptions("simple", "If-Match", valueList[0], &IfMatch, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: true, Type: "string", Format: ""})
+		if err != nil {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "If-Match", Err: err})
+			return
+		}
+
+		params.IfMatch = IfMatch
+
+	} else {
+		err := fmt.Errorf("Header parameter If-Match is required, but not found")
+		siw.ErrorHandlerFunc(w, r, &RequiredHeaderError{ParamName: "If-Match", Err: err})
+		return
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.PublishForm(w, r, tenantId, formId, params)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
 // ListFormResponses operation middleware
 func (siw *ServerInterfaceWrapper) ListFormResponses(w http.ResponseWriter, r *http.Request) {
 
@@ -2035,6 +4603,107 @@ func (siw *ServerInterfaceWrapper) ListFormResponses(w http.ResponseWriter, r *h
 
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		siw.Handler.ListFormResponses(w, r, tenantId, formId, params)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// SubmitFormResponse operation middleware
+func (siw *ServerInterfaceWrapper) SubmitFormResponse(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+	_ = err
+
+	// ------------- Path parameter "tenantId" -------------
+	var tenantId TenantId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "tenantId", chi.URLParam(r, "tenantId"), &tenantId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "tenantId", Err: err})
+		return
+	}
+
+	// ------------- Path parameter "formId" -------------
+	var formId FormId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "formId", chi.URLParam(r, "formId"), &formId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "formId", Err: err})
+		return
+	}
+
+	// Parameter object where we will unmarshal all parameters from the context
+	var params SubmitFormResponseParams
+
+	headers := r.Header
+
+	// ------------- Required header parameter "Idempotency-Key" -------------
+	if valueList, found := headers[http.CanonicalHeaderKey("Idempotency-Key")]; found {
+		var IdempotencyKey IdempotencyKey
+		n := len(valueList)
+		if n != 1 {
+			siw.ErrorHandlerFunc(w, r, &TooManyValuesForParamError{ParamName: "Idempotency-Key", Count: n})
+			return
+		}
+
+		err = runtime.BindStyledParameterWithOptions("simple", "Idempotency-Key", valueList[0], &IdempotencyKey, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: true, Type: "string", Format: ""})
+		if err != nil {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "Idempotency-Key", Err: err})
+			return
+		}
+
+		params.IdempotencyKey = IdempotencyKey
+
+	} else {
+		err := fmt.Errorf("Header parameter Idempotency-Key is required, but not found")
+		siw.ErrorHandlerFunc(w, r, &RequiredHeaderError{ParamName: "Idempotency-Key", Err: err})
+		return
+	}
+
+	// ------------- Optional header parameter "X-CSRF-Token" -------------
+	if valueList, found := headers[http.CanonicalHeaderKey("X-CSRF-Token")]; found {
+		var XCSRFToken Csrf
+		n := len(valueList)
+		if n != 1 {
+			siw.ErrorHandlerFunc(w, r, &TooManyValuesForParamError{ParamName: "X-CSRF-Token", Count: n})
+			return
+		}
+
+		err = runtime.BindStyledParameterWithOptions("simple", "X-CSRF-Token", valueList[0], &XCSRFToken, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: false, Type: "string", Format: ""})
+		if err != nil {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "X-CSRF-Token", Err: err})
+			return
+		}
+
+		params.XCSRFToken = &XCSRFToken
+
+	}
+
+	// ------------- Optional header parameter "Origin" -------------
+	if valueList, found := headers[http.CanonicalHeaderKey("Origin")]; found {
+		var Origin Origin
+		n := len(valueList)
+		if n != 1 {
+			siw.ErrorHandlerFunc(w, r, &TooManyValuesForParamError{ParamName: "Origin", Count: n})
+			return
+		}
+
+		err = runtime.BindStyledParameterWithOptions("simple", "Origin", valueList[0], &Origin, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: false, Type: "string", Format: "uri"})
+		if err != nil {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "Origin", Err: err})
+			return
+		}
+
+		params.Origin = &Origin
+
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.SubmitFormResponse(w, r, tenantId, formId, params)
 	}))
 
 	for _, middleware := range siw.HandlerMiddlewares {
@@ -2212,6 +4881,672 @@ func (siw *ServerInterfaceWrapper) ReviewFormResponse(w http.ResponseWriter, r *
 
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		siw.Handler.ReviewFormResponse(w, r, tenantId, formId, responseId, params)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// RetryFormResponseAction operation middleware
+func (siw *ServerInterfaceWrapper) RetryFormResponseAction(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+	_ = err
+
+	// ------------- Path parameter "tenantId" -------------
+	var tenantId TenantId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "tenantId", chi.URLParam(r, "tenantId"), &tenantId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "tenantId", Err: err})
+		return
+	}
+
+	// ------------- Path parameter "formId" -------------
+	var formId FormId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "formId", chi.URLParam(r, "formId"), &formId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "formId", Err: err})
+		return
+	}
+
+	// ------------- Path parameter "responseId" -------------
+	var responseId ResponseId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "responseId", chi.URLParam(r, "responseId"), &responseId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "responseId", Err: err})
+		return
+	}
+
+	// ------------- Path parameter "ruleId" -------------
+	var ruleId FormRuleId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "ruleId", chi.URLParam(r, "ruleId"), &ruleId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "ruleId", Err: err})
+		return
+	}
+
+	// Parameter object where we will unmarshal all parameters from the context
+	var params RetryFormResponseActionParams
+
+	headers := r.Header
+
+	// ------------- Required header parameter "Idempotency-Key" -------------
+	if valueList, found := headers[http.CanonicalHeaderKey("Idempotency-Key")]; found {
+		var IdempotencyKey IdempotencyKey
+		n := len(valueList)
+		if n != 1 {
+			siw.ErrorHandlerFunc(w, r, &TooManyValuesForParamError{ParamName: "Idempotency-Key", Count: n})
+			return
+		}
+
+		err = runtime.BindStyledParameterWithOptions("simple", "Idempotency-Key", valueList[0], &IdempotencyKey, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: true, Type: "string", Format: ""})
+		if err != nil {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "Idempotency-Key", Err: err})
+			return
+		}
+
+		params.IdempotencyKey = IdempotencyKey
+
+	} else {
+		err := fmt.Errorf("Header parameter Idempotency-Key is required, but not found")
+		siw.ErrorHandlerFunc(w, r, &RequiredHeaderError{ParamName: "Idempotency-Key", Err: err})
+		return
+	}
+
+	// ------------- Optional header parameter "X-CSRF-Token" -------------
+	if valueList, found := headers[http.CanonicalHeaderKey("X-CSRF-Token")]; found {
+		var XCSRFToken Csrf
+		n := len(valueList)
+		if n != 1 {
+			siw.ErrorHandlerFunc(w, r, &TooManyValuesForParamError{ParamName: "X-CSRF-Token", Count: n})
+			return
+		}
+
+		err = runtime.BindStyledParameterWithOptions("simple", "X-CSRF-Token", valueList[0], &XCSRFToken, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: false, Type: "string", Format: ""})
+		if err != nil {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "X-CSRF-Token", Err: err})
+			return
+		}
+
+		params.XCSRFToken = &XCSRFToken
+
+	}
+
+	// ------------- Optional header parameter "Origin" -------------
+	if valueList, found := headers[http.CanonicalHeaderKey("Origin")]; found {
+		var Origin Origin
+		n := len(valueList)
+		if n != 1 {
+			siw.ErrorHandlerFunc(w, r, &TooManyValuesForParamError{ParamName: "Origin", Count: n})
+			return
+		}
+
+		err = runtime.BindStyledParameterWithOptions("simple", "Origin", valueList[0], &Origin, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: false, Type: "string", Format: "uri"})
+		if err != nil {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "Origin", Err: err})
+			return
+		}
+
+		params.Origin = &Origin
+
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.RetryFormResponseAction(w, r, tenantId, formId, responseId, ruleId, params)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// ListFormRules operation middleware
+func (siw *ServerInterfaceWrapper) ListFormRules(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+	_ = err
+
+	// ------------- Path parameter "tenantId" -------------
+	var tenantId TenantId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "tenantId", chi.URLParam(r, "tenantId"), &tenantId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "tenantId", Err: err})
+		return
+	}
+
+	// ------------- Path parameter "formId" -------------
+	var formId FormId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "formId", chi.URLParam(r, "formId"), &formId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "formId", Err: err})
+		return
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.ListFormRules(w, r, tenantId, formId)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// CreateFormRule operation middleware
+func (siw *ServerInterfaceWrapper) CreateFormRule(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+	_ = err
+
+	// ------------- Path parameter "tenantId" -------------
+	var tenantId TenantId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "tenantId", chi.URLParam(r, "tenantId"), &tenantId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "tenantId", Err: err})
+		return
+	}
+
+	// ------------- Path parameter "formId" -------------
+	var formId FormId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "formId", chi.URLParam(r, "formId"), &formId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "formId", Err: err})
+		return
+	}
+
+	// Parameter object where we will unmarshal all parameters from the context
+	var params CreateFormRuleParams
+
+	headers := r.Header
+
+	// ------------- Required header parameter "Idempotency-Key" -------------
+	if valueList, found := headers[http.CanonicalHeaderKey("Idempotency-Key")]; found {
+		var IdempotencyKey IdempotencyKey
+		n := len(valueList)
+		if n != 1 {
+			siw.ErrorHandlerFunc(w, r, &TooManyValuesForParamError{ParamName: "Idempotency-Key", Count: n})
+			return
+		}
+
+		err = runtime.BindStyledParameterWithOptions("simple", "Idempotency-Key", valueList[0], &IdempotencyKey, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: true, Type: "string", Format: ""})
+		if err != nil {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "Idempotency-Key", Err: err})
+			return
+		}
+
+		params.IdempotencyKey = IdempotencyKey
+
+	} else {
+		err := fmt.Errorf("Header parameter Idempotency-Key is required, but not found")
+		siw.ErrorHandlerFunc(w, r, &RequiredHeaderError{ParamName: "Idempotency-Key", Err: err})
+		return
+	}
+
+	// ------------- Optional header parameter "X-CSRF-Token" -------------
+	if valueList, found := headers[http.CanonicalHeaderKey("X-CSRF-Token")]; found {
+		var XCSRFToken Csrf
+		n := len(valueList)
+		if n != 1 {
+			siw.ErrorHandlerFunc(w, r, &TooManyValuesForParamError{ParamName: "X-CSRF-Token", Count: n})
+			return
+		}
+
+		err = runtime.BindStyledParameterWithOptions("simple", "X-CSRF-Token", valueList[0], &XCSRFToken, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: false, Type: "string", Format: ""})
+		if err != nil {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "X-CSRF-Token", Err: err})
+			return
+		}
+
+		params.XCSRFToken = &XCSRFToken
+
+	}
+
+	// ------------- Optional header parameter "Origin" -------------
+	if valueList, found := headers[http.CanonicalHeaderKey("Origin")]; found {
+		var Origin Origin
+		n := len(valueList)
+		if n != 1 {
+			siw.ErrorHandlerFunc(w, r, &TooManyValuesForParamError{ParamName: "Origin", Count: n})
+			return
+		}
+
+		err = runtime.BindStyledParameterWithOptions("simple", "Origin", valueList[0], &Origin, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: false, Type: "string", Format: "uri"})
+		if err != nil {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "Origin", Err: err})
+			return
+		}
+
+		params.Origin = &Origin
+
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.CreateFormRule(w, r, tenantId, formId, params)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// DeleteFormRule operation middleware
+func (siw *ServerInterfaceWrapper) DeleteFormRule(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+	_ = err
+
+	// ------------- Path parameter "tenantId" -------------
+	var tenantId TenantId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "tenantId", chi.URLParam(r, "tenantId"), &tenantId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "tenantId", Err: err})
+		return
+	}
+
+	// ------------- Path parameter "formId" -------------
+	var formId FormId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "formId", chi.URLParam(r, "formId"), &formId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "formId", Err: err})
+		return
+	}
+
+	// ------------- Path parameter "ruleId" -------------
+	var ruleId FormRuleId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "ruleId", chi.URLParam(r, "ruleId"), &ruleId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "ruleId", Err: err})
+		return
+	}
+
+	// Parameter object where we will unmarshal all parameters from the context
+	var params DeleteFormRuleParams
+
+	headers := r.Header
+
+	// ------------- Required header parameter "Idempotency-Key" -------------
+	if valueList, found := headers[http.CanonicalHeaderKey("Idempotency-Key")]; found {
+		var IdempotencyKey IdempotencyKey
+		n := len(valueList)
+		if n != 1 {
+			siw.ErrorHandlerFunc(w, r, &TooManyValuesForParamError{ParamName: "Idempotency-Key", Count: n})
+			return
+		}
+
+		err = runtime.BindStyledParameterWithOptions("simple", "Idempotency-Key", valueList[0], &IdempotencyKey, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: true, Type: "string", Format: ""})
+		if err != nil {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "Idempotency-Key", Err: err})
+			return
+		}
+
+		params.IdempotencyKey = IdempotencyKey
+
+	} else {
+		err := fmt.Errorf("Header parameter Idempotency-Key is required, but not found")
+		siw.ErrorHandlerFunc(w, r, &RequiredHeaderError{ParamName: "Idempotency-Key", Err: err})
+		return
+	}
+
+	// ------------- Optional header parameter "X-CSRF-Token" -------------
+	if valueList, found := headers[http.CanonicalHeaderKey("X-CSRF-Token")]; found {
+		var XCSRFToken Csrf
+		n := len(valueList)
+		if n != 1 {
+			siw.ErrorHandlerFunc(w, r, &TooManyValuesForParamError{ParamName: "X-CSRF-Token", Count: n})
+			return
+		}
+
+		err = runtime.BindStyledParameterWithOptions("simple", "X-CSRF-Token", valueList[0], &XCSRFToken, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: false, Type: "string", Format: ""})
+		if err != nil {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "X-CSRF-Token", Err: err})
+			return
+		}
+
+		params.XCSRFToken = &XCSRFToken
+
+	}
+
+	// ------------- Optional header parameter "Origin" -------------
+	if valueList, found := headers[http.CanonicalHeaderKey("Origin")]; found {
+		var Origin Origin
+		n := len(valueList)
+		if n != 1 {
+			siw.ErrorHandlerFunc(w, r, &TooManyValuesForParamError{ParamName: "Origin", Count: n})
+			return
+		}
+
+		err = runtime.BindStyledParameterWithOptions("simple", "Origin", valueList[0], &Origin, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: false, Type: "string", Format: "uri"})
+		if err != nil {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "Origin", Err: err})
+			return
+		}
+
+		params.Origin = &Origin
+
+	}
+
+	// ------------- Required header parameter "If-Match" -------------
+	if valueList, found := headers[http.CanonicalHeaderKey("If-Match")]; found {
+		var IfMatch IfMatch
+		n := len(valueList)
+		if n != 1 {
+			siw.ErrorHandlerFunc(w, r, &TooManyValuesForParamError{ParamName: "If-Match", Count: n})
+			return
+		}
+
+		err = runtime.BindStyledParameterWithOptions("simple", "If-Match", valueList[0], &IfMatch, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: true, Type: "string", Format: ""})
+		if err != nil {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "If-Match", Err: err})
+			return
+		}
+
+		params.IfMatch = IfMatch
+
+	} else {
+		err := fmt.Errorf("Header parameter If-Match is required, but not found")
+		siw.ErrorHandlerFunc(w, r, &RequiredHeaderError{ParamName: "If-Match", Err: err})
+		return
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.DeleteFormRule(w, r, tenantId, formId, ruleId, params)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// UpdateFormRule operation middleware
+func (siw *ServerInterfaceWrapper) UpdateFormRule(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+	_ = err
+
+	// ------------- Path parameter "tenantId" -------------
+	var tenantId TenantId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "tenantId", chi.URLParam(r, "tenantId"), &tenantId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "tenantId", Err: err})
+		return
+	}
+
+	// ------------- Path parameter "formId" -------------
+	var formId FormId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "formId", chi.URLParam(r, "formId"), &formId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "formId", Err: err})
+		return
+	}
+
+	// ------------- Path parameter "ruleId" -------------
+	var ruleId FormRuleId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "ruleId", chi.URLParam(r, "ruleId"), &ruleId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "ruleId", Err: err})
+		return
+	}
+
+	// Parameter object where we will unmarshal all parameters from the context
+	var params UpdateFormRuleParams
+
+	headers := r.Header
+
+	// ------------- Required header parameter "Idempotency-Key" -------------
+	if valueList, found := headers[http.CanonicalHeaderKey("Idempotency-Key")]; found {
+		var IdempotencyKey IdempotencyKey
+		n := len(valueList)
+		if n != 1 {
+			siw.ErrorHandlerFunc(w, r, &TooManyValuesForParamError{ParamName: "Idempotency-Key", Count: n})
+			return
+		}
+
+		err = runtime.BindStyledParameterWithOptions("simple", "Idempotency-Key", valueList[0], &IdempotencyKey, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: true, Type: "string", Format: ""})
+		if err != nil {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "Idempotency-Key", Err: err})
+			return
+		}
+
+		params.IdempotencyKey = IdempotencyKey
+
+	} else {
+		err := fmt.Errorf("Header parameter Idempotency-Key is required, but not found")
+		siw.ErrorHandlerFunc(w, r, &RequiredHeaderError{ParamName: "Idempotency-Key", Err: err})
+		return
+	}
+
+	// ------------- Optional header parameter "X-CSRF-Token" -------------
+	if valueList, found := headers[http.CanonicalHeaderKey("X-CSRF-Token")]; found {
+		var XCSRFToken Csrf
+		n := len(valueList)
+		if n != 1 {
+			siw.ErrorHandlerFunc(w, r, &TooManyValuesForParamError{ParamName: "X-CSRF-Token", Count: n})
+			return
+		}
+
+		err = runtime.BindStyledParameterWithOptions("simple", "X-CSRF-Token", valueList[0], &XCSRFToken, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: false, Type: "string", Format: ""})
+		if err != nil {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "X-CSRF-Token", Err: err})
+			return
+		}
+
+		params.XCSRFToken = &XCSRFToken
+
+	}
+
+	// ------------- Optional header parameter "Origin" -------------
+	if valueList, found := headers[http.CanonicalHeaderKey("Origin")]; found {
+		var Origin Origin
+		n := len(valueList)
+		if n != 1 {
+			siw.ErrorHandlerFunc(w, r, &TooManyValuesForParamError{ParamName: "Origin", Count: n})
+			return
+		}
+
+		err = runtime.BindStyledParameterWithOptions("simple", "Origin", valueList[0], &Origin, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: false, Type: "string", Format: "uri"})
+		if err != nil {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "Origin", Err: err})
+			return
+		}
+
+		params.Origin = &Origin
+
+	}
+
+	// ------------- Required header parameter "If-Match" -------------
+	if valueList, found := headers[http.CanonicalHeaderKey("If-Match")]; found {
+		var IfMatch IfMatch
+		n := len(valueList)
+		if n != 1 {
+			siw.ErrorHandlerFunc(w, r, &TooManyValuesForParamError{ParamName: "If-Match", Count: n})
+			return
+		}
+
+		err = runtime.BindStyledParameterWithOptions("simple", "If-Match", valueList[0], &IfMatch, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: true, Type: "string", Format: ""})
+		if err != nil {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "If-Match", Err: err})
+			return
+		}
+
+		params.IfMatch = IfMatch
+
+	} else {
+		err := fmt.Errorf("Header parameter If-Match is required, but not found")
+		siw.ErrorHandlerFunc(w, r, &RequiredHeaderError{ParamName: "If-Match", Err: err})
+		return
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.UpdateFormRule(w, r, tenantId, formId, ruleId, params)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// BackfillFormRule operation middleware
+func (siw *ServerInterfaceWrapper) BackfillFormRule(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+	_ = err
+
+	// ------------- Path parameter "tenantId" -------------
+	var tenantId TenantId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "tenantId", chi.URLParam(r, "tenantId"), &tenantId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "tenantId", Err: err})
+		return
+	}
+
+	// ------------- Path parameter "formId" -------------
+	var formId FormId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "formId", chi.URLParam(r, "formId"), &formId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "formId", Err: err})
+		return
+	}
+
+	// ------------- Path parameter "ruleId" -------------
+	var ruleId FormRuleId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "ruleId", chi.URLParam(r, "ruleId"), &ruleId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "ruleId", Err: err})
+		return
+	}
+
+	// Parameter object where we will unmarshal all parameters from the context
+	var params BackfillFormRuleParams
+
+	headers := r.Header
+
+	// ------------- Required header parameter "Idempotency-Key" -------------
+	if valueList, found := headers[http.CanonicalHeaderKey("Idempotency-Key")]; found {
+		var IdempotencyKey IdempotencyKey
+		n := len(valueList)
+		if n != 1 {
+			siw.ErrorHandlerFunc(w, r, &TooManyValuesForParamError{ParamName: "Idempotency-Key", Count: n})
+			return
+		}
+
+		err = runtime.BindStyledParameterWithOptions("simple", "Idempotency-Key", valueList[0], &IdempotencyKey, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: true, Type: "string", Format: ""})
+		if err != nil {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "Idempotency-Key", Err: err})
+			return
+		}
+
+		params.IdempotencyKey = IdempotencyKey
+
+	} else {
+		err := fmt.Errorf("Header parameter Idempotency-Key is required, but not found")
+		siw.ErrorHandlerFunc(w, r, &RequiredHeaderError{ParamName: "Idempotency-Key", Err: err})
+		return
+	}
+
+	// ------------- Optional header parameter "X-CSRF-Token" -------------
+	if valueList, found := headers[http.CanonicalHeaderKey("X-CSRF-Token")]; found {
+		var XCSRFToken Csrf
+		n := len(valueList)
+		if n != 1 {
+			siw.ErrorHandlerFunc(w, r, &TooManyValuesForParamError{ParamName: "X-CSRF-Token", Count: n})
+			return
+		}
+
+		err = runtime.BindStyledParameterWithOptions("simple", "X-CSRF-Token", valueList[0], &XCSRFToken, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: false, Type: "string", Format: ""})
+		if err != nil {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "X-CSRF-Token", Err: err})
+			return
+		}
+
+		params.XCSRFToken = &XCSRFToken
+
+	}
+
+	// ------------- Optional header parameter "Origin" -------------
+	if valueList, found := headers[http.CanonicalHeaderKey("Origin")]; found {
+		var Origin Origin
+		n := len(valueList)
+		if n != 1 {
+			siw.ErrorHandlerFunc(w, r, &TooManyValuesForParamError{ParamName: "Origin", Count: n})
+			return
+		}
+
+		err = runtime.BindStyledParameterWithOptions("simple", "Origin", valueList[0], &Origin, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: false, Type: "string", Format: "uri"})
+		if err != nil {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "Origin", Err: err})
+			return
+		}
+
+		params.Origin = &Origin
+
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.BackfillFormRule(w, r, tenantId, formId, ruleId, params)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// GetFormResponseSummary operation middleware
+func (siw *ServerInterfaceWrapper) GetFormResponseSummary(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+	_ = err
+
+	// ------------- Path parameter "tenantId" -------------
+	var tenantId TenantId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "tenantId", chi.URLParam(r, "tenantId"), &tenantId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "tenantId", Err: err})
+		return
+	}
+
+	// ------------- Path parameter "formId" -------------
+	var formId FormId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "formId", chi.URLParam(r, "formId"), &formId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "formId", Err: err})
+		return
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.GetFormResponseSummary(w, r, tenantId, formId)
 	}))
 
 	for _, middleware := range siw.HandlerMiddlewares {
@@ -2680,10 +6015,64 @@ func HandlerWithOptions(si ServerInterface, options ChiServerOptions) http.Handl
 		r.Get(options.BaseURL+"/api/v1/tenants/{tenantId}/forms/{formId}/responses", wrapper.ListFormResponses)
 	})
 	r.Group(func(r chi.Router) {
+		r.Post(options.BaseURL+"/api/v1/tenants/{tenantId}/forms/{formId}/responses", wrapper.SubmitFormResponse)
+	})
+	r.Group(func(r chi.Router) {
 		r.Get(options.BaseURL+"/api/v1/tenants/{tenantId}/forms/{formId}/responses/{responseId}", wrapper.GetFormResponse)
 	})
 	r.Group(func(r chi.Router) {
 		r.Patch(options.BaseURL+"/api/v1/tenants/{tenantId}/forms/{formId}/responses/{responseId}", wrapper.ReviewFormResponse)
+	})
+	r.Group(func(r chi.Router) {
+		r.Delete(options.BaseURL+"/api/v1/tenants/{tenantId}/forms/{formId}/draft", wrapper.DiscardFormDraft)
+	})
+	r.Group(func(r chi.Router) {
+		r.Get(options.BaseURL+"/api/v1/tenants/{tenantId}/forms/{formId}/draft", wrapper.GetFormDraft)
+	})
+	r.Group(func(r chi.Router) {
+		r.Put(options.BaseURL+"/api/v1/tenants/{tenantId}/forms/{formId}/draft", wrapper.SaveFormDraft)
+	})
+	r.Group(func(r chi.Router) {
+		r.Post(options.BaseURL+"/api/v1/tenants/{tenantId}/forms/{formId}/publish", wrapper.PublishForm)
+	})
+	r.Group(func(r chi.Router) {
+		r.Get(options.BaseURL+"/api/v1/tenants/{tenantId}/forms/{formId}/rules", wrapper.ListFormRules)
+	})
+	r.Group(func(r chi.Router) {
+		r.Post(options.BaseURL+"/api/v1/tenants/{tenantId}/forms/{formId}/rules", wrapper.CreateFormRule)
+	})
+	r.Group(func(r chi.Router) {
+		r.Delete(options.BaseURL+"/api/v1/tenants/{tenantId}/forms/{formId}/rules/{ruleId}", wrapper.DeleteFormRule)
+	})
+	r.Group(func(r chi.Router) {
+		r.Patch(options.BaseURL+"/api/v1/tenants/{tenantId}/forms/{formId}/rules/{ruleId}", wrapper.UpdateFormRule)
+	})
+	r.Group(func(r chi.Router) {
+		r.Post(options.BaseURL+"/api/v1/tenants/{tenantId}/forms/{formId}/rules/{ruleId}/backfill", wrapper.BackfillFormRule)
+	})
+	r.Group(func(r chi.Router) {
+		r.Post(options.BaseURL+"/api/v1/tenants/{tenantId}/forms/{formId}/responses/{responseId}/actions/{ruleId}/retry", wrapper.RetryFormResponseAction)
+	})
+	r.Group(func(r chi.Router) {
+		r.Get(options.BaseURL+"/api/v1/tenants/{tenantId}/forms/{formId}/summary", wrapper.GetFormResponseSummary)
+	})
+	r.Group(func(r chi.Router) {
+		r.Get(options.BaseURL+"/api/v1/tenants/{tenantId}/forms/{formId}/export", wrapper.ExportFormResponses)
+	})
+	r.Group(func(r chi.Router) {
+		r.Get(options.BaseURL+"/api/v1/tenants/{tenantId}/forms/{formId}/fields/{fieldKey}/options", wrapper.ListFormFieldOptions)
+	})
+	r.Group(func(r chi.Router) {
+		r.Get(options.BaseURL+"/api/v1/tenants/{tenantId}/form-templates", wrapper.ListFormTemplates)
+	})
+	r.Group(func(r chi.Router) {
+		r.Get(options.BaseURL+"/api/v1/tenants/{tenantId}/form-groups", wrapper.ListFormGroups)
+	})
+	r.Group(func(r chi.Router) {
+		r.Post(options.BaseURL+"/api/v1/tenants/{tenantId}/form-groups", wrapper.CreateFormGroup)
+	})
+	r.Group(func(r chi.Router) {
+		r.Delete(options.BaseURL+"/api/v1/tenants/{tenantId}/form-groups/{groupId}", wrapper.DeleteFormGroup)
 	})
 
 	return r
@@ -2779,6 +6168,742 @@ type ValidationApplicationProblemPlusJSONResponse struct {
 	Body Problem
 
 	Headers ValidationResponseHeaders
+}
+
+type ListFormGroupsRequestObject struct {
+	TenantId TenantId `json:"tenantId"`
+}
+
+type ListFormGroupsResponseObject interface {
+	VisitListFormGroupsResponse(w http.ResponseWriter) error
+}
+
+type ListFormGroups200ResponseHeaders struct {
+	CacheControl *string
+	XRequestId   *string
+}
+
+type ListFormGroups200JSONResponse struct {
+	Body    FormGroupList
+	Headers ListFormGroups200ResponseHeaders
+}
+
+func (response ListFormGroups200JSONResponse) VisitListFormGroupsResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	if response.Headers.CacheControl != nil {
+		w.Header().Set("Cache-Control", fmt.Sprint(*response.Headers.CacheControl))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(200)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type ListFormGroups400ApplicationProblemPlusJSONResponse struct {
+	BadRequestApplicationProblemPlusJSONResponse
+}
+
+func (response ListFormGroups400ApplicationProblemPlusJSONResponse) VisitListFormGroupsResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(400)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type ListFormGroups401ApplicationProblemPlusJSONResponse struct {
+	UnauthenticatedApplicationProblemPlusJSONResponse
+}
+
+func (response ListFormGroups401ApplicationProblemPlusJSONResponse) VisitListFormGroupsResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(401)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type ListFormGroups403ApplicationProblemPlusJSONResponse struct {
+	ForbiddenApplicationProblemPlusJSONResponse
+}
+
+func (response ListFormGroups403ApplicationProblemPlusJSONResponse) VisitListFormGroupsResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(403)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type ListFormGroups404ApplicationProblemPlusJSONResponse struct {
+	NotFoundApplicationProblemPlusJSONResponse
+}
+
+func (response ListFormGroups404ApplicationProblemPlusJSONResponse) VisitListFormGroupsResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(404)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type ListFormGroups422ApplicationProblemPlusJSONResponse struct {
+	ValidationApplicationProblemPlusJSONResponse
+}
+
+func (response ListFormGroups422ApplicationProblemPlusJSONResponse) VisitListFormGroupsResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(422)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type ListFormGroups429ApplicationProblemPlusJSONResponse struct {
+	RateLimitedApplicationProblemPlusJSONResponse
+}
+
+func (response ListFormGroups429ApplicationProblemPlusJSONResponse) VisitListFormGroupsResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.RetryAfter != nil {
+		w.Header().Set("Retry-After", fmt.Sprint(*response.Headers.RetryAfter))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(429)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type CreateFormGroupRequestObject struct {
+	TenantId TenantId `json:"tenantId"`
+	Params   CreateFormGroupParams
+	Body     *CreateFormGroupJSONRequestBody
+}
+
+type CreateFormGroupResponseObject interface {
+	VisitCreateFormGroupResponse(w http.ResponseWriter) error
+}
+
+type CreateFormGroup201ResponseHeaders struct {
+	CacheControl        *string
+	IdempotencyReplayed *bool
+	XRequestId          *string
+}
+
+type CreateFormGroup201JSONResponse struct {
+	Body    FormGroup
+	Headers CreateFormGroup201ResponseHeaders
+}
+
+func (response CreateFormGroup201JSONResponse) VisitCreateFormGroupResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	if response.Headers.CacheControl != nil {
+		w.Header().Set("Cache-Control", fmt.Sprint(*response.Headers.CacheControl))
+	}
+	if response.Headers.IdempotencyReplayed != nil {
+		w.Header().Set("Idempotency-Replayed", fmt.Sprint(*response.Headers.IdempotencyReplayed))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(201)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type CreateFormGroup400ApplicationProblemPlusJSONResponse struct {
+	BadRequestApplicationProblemPlusJSONResponse
+}
+
+func (response CreateFormGroup400ApplicationProblemPlusJSONResponse) VisitCreateFormGroupResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(400)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type CreateFormGroup401ApplicationProblemPlusJSONResponse struct {
+	UnauthenticatedApplicationProblemPlusJSONResponse
+}
+
+func (response CreateFormGroup401ApplicationProblemPlusJSONResponse) VisitCreateFormGroupResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(401)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type CreateFormGroup402ApplicationProblemPlusJSONResponse struct {
+	PlanRequiredApplicationProblemPlusJSONResponse
+}
+
+func (response CreateFormGroup402ApplicationProblemPlusJSONResponse) VisitCreateFormGroupResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(402)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type CreateFormGroup403ApplicationProblemPlusJSONResponse struct {
+	ForbiddenApplicationProblemPlusJSONResponse
+}
+
+func (response CreateFormGroup403ApplicationProblemPlusJSONResponse) VisitCreateFormGroupResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(403)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type CreateFormGroup404ApplicationProblemPlusJSONResponse struct {
+	NotFoundApplicationProblemPlusJSONResponse
+}
+
+func (response CreateFormGroup404ApplicationProblemPlusJSONResponse) VisitCreateFormGroupResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(404)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type CreateFormGroup409ApplicationProblemPlusJSONResponse struct {
+	ConflictApplicationProblemPlusJSONResponse
+}
+
+func (response CreateFormGroup409ApplicationProblemPlusJSONResponse) VisitCreateFormGroupResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.RetryAfter != nil {
+		w.Header().Set("Retry-After", fmt.Sprint(*response.Headers.RetryAfter))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(409)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type CreateFormGroup422ApplicationProblemPlusJSONResponse struct {
+	ValidationApplicationProblemPlusJSONResponse
+}
+
+func (response CreateFormGroup422ApplicationProblemPlusJSONResponse) VisitCreateFormGroupResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(422)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type CreateFormGroup428ApplicationProblemPlusJSONResponse struct {
+	PreconditionRequiredApplicationProblemPlusJSONResponse
+}
+
+func (response CreateFormGroup428ApplicationProblemPlusJSONResponse) VisitCreateFormGroupResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(428)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type CreateFormGroup429ApplicationProblemPlusJSONResponse struct {
+	RateLimitedApplicationProblemPlusJSONResponse
+}
+
+func (response CreateFormGroup429ApplicationProblemPlusJSONResponse) VisitCreateFormGroupResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.RetryAfter != nil {
+		w.Header().Set("Retry-After", fmt.Sprint(*response.Headers.RetryAfter))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(429)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type DeleteFormGroupRequestObject struct {
+	TenantId TenantId    `json:"tenantId"`
+	GroupId  FormGroupId `json:"groupId"`
+	Params   DeleteFormGroupParams
+}
+
+type DeleteFormGroupResponseObject interface {
+	VisitDeleteFormGroupResponse(w http.ResponseWriter) error
+}
+
+type DeleteFormGroup204ResponseHeaders struct {
+	CacheControl        *string
+	IdempotencyReplayed *bool
+	XRequestId          *string
+}
+
+type DeleteFormGroup204Response struct {
+	Headers DeleteFormGroup204ResponseHeaders
+}
+
+func (response DeleteFormGroup204Response) VisitDeleteFormGroupResponse(w http.ResponseWriter) error {
+	if response.Headers.CacheControl != nil {
+		w.Header().Set("Cache-Control", fmt.Sprint(*response.Headers.CacheControl))
+	}
+	if response.Headers.IdempotencyReplayed != nil {
+		w.Header().Set("Idempotency-Replayed", fmt.Sprint(*response.Headers.IdempotencyReplayed))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(204)
+	return nil
+}
+
+type DeleteFormGroup400ApplicationProblemPlusJSONResponse struct {
+	BadRequestApplicationProblemPlusJSONResponse
+}
+
+func (response DeleteFormGroup400ApplicationProblemPlusJSONResponse) VisitDeleteFormGroupResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(400)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type DeleteFormGroup401ApplicationProblemPlusJSONResponse struct {
+	UnauthenticatedApplicationProblemPlusJSONResponse
+}
+
+func (response DeleteFormGroup401ApplicationProblemPlusJSONResponse) VisitDeleteFormGroupResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(401)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type DeleteFormGroup402ApplicationProblemPlusJSONResponse struct {
+	PlanRequiredApplicationProblemPlusJSONResponse
+}
+
+func (response DeleteFormGroup402ApplicationProblemPlusJSONResponse) VisitDeleteFormGroupResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(402)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type DeleteFormGroup403ApplicationProblemPlusJSONResponse struct {
+	ForbiddenApplicationProblemPlusJSONResponse
+}
+
+func (response DeleteFormGroup403ApplicationProblemPlusJSONResponse) VisitDeleteFormGroupResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(403)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type DeleteFormGroup404ApplicationProblemPlusJSONResponse struct {
+	NotFoundApplicationProblemPlusJSONResponse
+}
+
+func (response DeleteFormGroup404ApplicationProblemPlusJSONResponse) VisitDeleteFormGroupResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(404)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type DeleteFormGroup409ApplicationProblemPlusJSONResponse struct {
+	ConflictApplicationProblemPlusJSONResponse
+}
+
+func (response DeleteFormGroup409ApplicationProblemPlusJSONResponse) VisitDeleteFormGroupResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.RetryAfter != nil {
+		w.Header().Set("Retry-After", fmt.Sprint(*response.Headers.RetryAfter))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(409)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type DeleteFormGroup422ApplicationProblemPlusJSONResponse struct {
+	ValidationApplicationProblemPlusJSONResponse
+}
+
+func (response DeleteFormGroup422ApplicationProblemPlusJSONResponse) VisitDeleteFormGroupResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(422)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type DeleteFormGroup428ApplicationProblemPlusJSONResponse struct {
+	PreconditionRequiredApplicationProblemPlusJSONResponse
+}
+
+func (response DeleteFormGroup428ApplicationProblemPlusJSONResponse) VisitDeleteFormGroupResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(428)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type DeleteFormGroup429ApplicationProblemPlusJSONResponse struct {
+	RateLimitedApplicationProblemPlusJSONResponse
+}
+
+func (response DeleteFormGroup429ApplicationProblemPlusJSONResponse) VisitDeleteFormGroupResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.RetryAfter != nil {
+		w.Header().Set("Retry-After", fmt.Sprint(*response.Headers.RetryAfter))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(429)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type ListFormTemplatesRequestObject struct {
+	TenantId TenantId `json:"tenantId"`
+}
+
+type ListFormTemplatesResponseObject interface {
+	VisitListFormTemplatesResponse(w http.ResponseWriter) error
+}
+
+type ListFormTemplates200ResponseHeaders struct {
+	CacheControl *string
+	XRequestId   *string
+}
+
+type ListFormTemplates200JSONResponse struct {
+	Body    FormTemplateList
+	Headers ListFormTemplates200ResponseHeaders
+}
+
+func (response ListFormTemplates200JSONResponse) VisitListFormTemplatesResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	if response.Headers.CacheControl != nil {
+		w.Header().Set("Cache-Control", fmt.Sprint(*response.Headers.CacheControl))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(200)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type ListFormTemplates400ApplicationProblemPlusJSONResponse struct {
+	BadRequestApplicationProblemPlusJSONResponse
+}
+
+func (response ListFormTemplates400ApplicationProblemPlusJSONResponse) VisitListFormTemplatesResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(400)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type ListFormTemplates401ApplicationProblemPlusJSONResponse struct {
+	UnauthenticatedApplicationProblemPlusJSONResponse
+}
+
+func (response ListFormTemplates401ApplicationProblemPlusJSONResponse) VisitListFormTemplatesResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(401)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type ListFormTemplates403ApplicationProblemPlusJSONResponse struct {
+	ForbiddenApplicationProblemPlusJSONResponse
+}
+
+func (response ListFormTemplates403ApplicationProblemPlusJSONResponse) VisitListFormTemplatesResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(403)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type ListFormTemplates404ApplicationProblemPlusJSONResponse struct {
+	NotFoundApplicationProblemPlusJSONResponse
+}
+
+func (response ListFormTemplates404ApplicationProblemPlusJSONResponse) VisitListFormTemplatesResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(404)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type ListFormTemplates422ApplicationProblemPlusJSONResponse struct {
+	ValidationApplicationProblemPlusJSONResponse
+}
+
+func (response ListFormTemplates422ApplicationProblemPlusJSONResponse) VisitListFormTemplatesResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(422)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type ListFormTemplates429ApplicationProblemPlusJSONResponse struct {
+	RateLimitedApplicationProblemPlusJSONResponse
+}
+
+func (response ListFormTemplates429ApplicationProblemPlusJSONResponse) VisitListFormTemplatesResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.RetryAfter != nil {
+		w.Header().Set("Retry-After", fmt.Sprint(*response.Headers.RetryAfter))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(429)
+	_, err := buf.WriteTo(w)
+	return err
 }
 
 type ListFormsRequestObject struct {
@@ -3559,6 +7684,1224 @@ func (response UpdateForm429ApplicationProblemPlusJSONResponse) VisitUpdateFormR
 	return err
 }
 
+type DiscardFormDraftRequestObject struct {
+	TenantId TenantId `json:"tenantId"`
+	FormId   FormId   `json:"formId"`
+	Params   DiscardFormDraftParams
+}
+
+type DiscardFormDraftResponseObject interface {
+	VisitDiscardFormDraftResponse(w http.ResponseWriter) error
+}
+
+type DiscardFormDraft200ResponseHeaders struct {
+	CacheControl        *string
+	ETag                *string
+	IdempotencyReplayed *bool
+	XRequestId          *string
+}
+
+type DiscardFormDraft200JSONResponse struct {
+	Body    FormDraft
+	Headers DiscardFormDraft200ResponseHeaders
+}
+
+func (response DiscardFormDraft200JSONResponse) VisitDiscardFormDraftResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	if response.Headers.CacheControl != nil {
+		w.Header().Set("Cache-Control", fmt.Sprint(*response.Headers.CacheControl))
+	}
+	if response.Headers.ETag != nil {
+		w.Header().Set("ETag", fmt.Sprint(*response.Headers.ETag))
+	}
+	if response.Headers.IdempotencyReplayed != nil {
+		w.Header().Set("Idempotency-Replayed", fmt.Sprint(*response.Headers.IdempotencyReplayed))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(200)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type DiscardFormDraft400ApplicationProblemPlusJSONResponse struct {
+	BadRequestApplicationProblemPlusJSONResponse
+}
+
+func (response DiscardFormDraft400ApplicationProblemPlusJSONResponse) VisitDiscardFormDraftResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(400)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type DiscardFormDraft401ApplicationProblemPlusJSONResponse struct {
+	UnauthenticatedApplicationProblemPlusJSONResponse
+}
+
+func (response DiscardFormDraft401ApplicationProblemPlusJSONResponse) VisitDiscardFormDraftResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(401)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type DiscardFormDraft402ApplicationProblemPlusJSONResponse struct {
+	PlanRequiredApplicationProblemPlusJSONResponse
+}
+
+func (response DiscardFormDraft402ApplicationProblemPlusJSONResponse) VisitDiscardFormDraftResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(402)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type DiscardFormDraft403ApplicationProblemPlusJSONResponse struct {
+	ForbiddenApplicationProblemPlusJSONResponse
+}
+
+func (response DiscardFormDraft403ApplicationProblemPlusJSONResponse) VisitDiscardFormDraftResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(403)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type DiscardFormDraft404ApplicationProblemPlusJSONResponse struct {
+	NotFoundApplicationProblemPlusJSONResponse
+}
+
+func (response DiscardFormDraft404ApplicationProblemPlusJSONResponse) VisitDiscardFormDraftResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(404)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type DiscardFormDraft409ApplicationProblemPlusJSONResponse struct {
+	ConflictApplicationProblemPlusJSONResponse
+}
+
+func (response DiscardFormDraft409ApplicationProblemPlusJSONResponse) VisitDiscardFormDraftResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.RetryAfter != nil {
+		w.Header().Set("Retry-After", fmt.Sprint(*response.Headers.RetryAfter))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(409)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type DiscardFormDraft412ApplicationProblemPlusJSONResponse struct {
+	PreconditionFailedApplicationProblemPlusJSONResponse
+}
+
+func (response DiscardFormDraft412ApplicationProblemPlusJSONResponse) VisitDiscardFormDraftResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(412)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type DiscardFormDraft422ApplicationProblemPlusJSONResponse struct {
+	ValidationApplicationProblemPlusJSONResponse
+}
+
+func (response DiscardFormDraft422ApplicationProblemPlusJSONResponse) VisitDiscardFormDraftResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(422)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type DiscardFormDraft428ApplicationProblemPlusJSONResponse struct {
+	PreconditionRequiredApplicationProblemPlusJSONResponse
+}
+
+func (response DiscardFormDraft428ApplicationProblemPlusJSONResponse) VisitDiscardFormDraftResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(428)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type DiscardFormDraft429ApplicationProblemPlusJSONResponse struct {
+	RateLimitedApplicationProblemPlusJSONResponse
+}
+
+func (response DiscardFormDraft429ApplicationProblemPlusJSONResponse) VisitDiscardFormDraftResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.RetryAfter != nil {
+		w.Header().Set("Retry-After", fmt.Sprint(*response.Headers.RetryAfter))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(429)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type GetFormDraftRequestObject struct {
+	TenantId TenantId `json:"tenantId"`
+	FormId   FormId   `json:"formId"`
+}
+
+type GetFormDraftResponseObject interface {
+	VisitGetFormDraftResponse(w http.ResponseWriter) error
+}
+
+type GetFormDraft200ResponseHeaders struct {
+	CacheControl *string
+	ETag         *string
+	XRequestId   *string
+}
+
+type GetFormDraft200JSONResponse struct {
+	Body    FormDraft
+	Headers GetFormDraft200ResponseHeaders
+}
+
+func (response GetFormDraft200JSONResponse) VisitGetFormDraftResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	if response.Headers.CacheControl != nil {
+		w.Header().Set("Cache-Control", fmt.Sprint(*response.Headers.CacheControl))
+	}
+	if response.Headers.ETag != nil {
+		w.Header().Set("ETag", fmt.Sprint(*response.Headers.ETag))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(200)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type GetFormDraft400ApplicationProblemPlusJSONResponse struct {
+	BadRequestApplicationProblemPlusJSONResponse
+}
+
+func (response GetFormDraft400ApplicationProblemPlusJSONResponse) VisitGetFormDraftResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(400)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type GetFormDraft401ApplicationProblemPlusJSONResponse struct {
+	UnauthenticatedApplicationProblemPlusJSONResponse
+}
+
+func (response GetFormDraft401ApplicationProblemPlusJSONResponse) VisitGetFormDraftResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(401)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type GetFormDraft403ApplicationProblemPlusJSONResponse struct {
+	ForbiddenApplicationProblemPlusJSONResponse
+}
+
+func (response GetFormDraft403ApplicationProblemPlusJSONResponse) VisitGetFormDraftResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(403)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type GetFormDraft404ApplicationProblemPlusJSONResponse struct {
+	NotFoundApplicationProblemPlusJSONResponse
+}
+
+func (response GetFormDraft404ApplicationProblemPlusJSONResponse) VisitGetFormDraftResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(404)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type GetFormDraft422ApplicationProblemPlusJSONResponse struct {
+	ValidationApplicationProblemPlusJSONResponse
+}
+
+func (response GetFormDraft422ApplicationProblemPlusJSONResponse) VisitGetFormDraftResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(422)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type GetFormDraft429ApplicationProblemPlusJSONResponse struct {
+	RateLimitedApplicationProblemPlusJSONResponse
+}
+
+func (response GetFormDraft429ApplicationProblemPlusJSONResponse) VisitGetFormDraftResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.RetryAfter != nil {
+		w.Header().Set("Retry-After", fmt.Sprint(*response.Headers.RetryAfter))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(429)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type SaveFormDraftRequestObject struct {
+	TenantId TenantId `json:"tenantId"`
+	FormId   FormId   `json:"formId"`
+	Params   SaveFormDraftParams
+	Body     *SaveFormDraftJSONRequestBody
+}
+
+type SaveFormDraftResponseObject interface {
+	VisitSaveFormDraftResponse(w http.ResponseWriter) error
+}
+
+type SaveFormDraft200ResponseHeaders struct {
+	CacheControl        *string
+	ETag                *string
+	IdempotencyReplayed *bool
+	XRequestId          *string
+}
+
+type SaveFormDraft200JSONResponse struct {
+	Body    FormDraft
+	Headers SaveFormDraft200ResponseHeaders
+}
+
+func (response SaveFormDraft200JSONResponse) VisitSaveFormDraftResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	if response.Headers.CacheControl != nil {
+		w.Header().Set("Cache-Control", fmt.Sprint(*response.Headers.CacheControl))
+	}
+	if response.Headers.ETag != nil {
+		w.Header().Set("ETag", fmt.Sprint(*response.Headers.ETag))
+	}
+	if response.Headers.IdempotencyReplayed != nil {
+		w.Header().Set("Idempotency-Replayed", fmt.Sprint(*response.Headers.IdempotencyReplayed))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(200)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type SaveFormDraft400ApplicationProblemPlusJSONResponse struct {
+	BadRequestApplicationProblemPlusJSONResponse
+}
+
+func (response SaveFormDraft400ApplicationProblemPlusJSONResponse) VisitSaveFormDraftResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(400)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type SaveFormDraft401ApplicationProblemPlusJSONResponse struct {
+	UnauthenticatedApplicationProblemPlusJSONResponse
+}
+
+func (response SaveFormDraft401ApplicationProblemPlusJSONResponse) VisitSaveFormDraftResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(401)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type SaveFormDraft402ApplicationProblemPlusJSONResponse struct {
+	PlanRequiredApplicationProblemPlusJSONResponse
+}
+
+func (response SaveFormDraft402ApplicationProblemPlusJSONResponse) VisitSaveFormDraftResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(402)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type SaveFormDraft403ApplicationProblemPlusJSONResponse struct {
+	ForbiddenApplicationProblemPlusJSONResponse
+}
+
+func (response SaveFormDraft403ApplicationProblemPlusJSONResponse) VisitSaveFormDraftResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(403)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type SaveFormDraft404ApplicationProblemPlusJSONResponse struct {
+	NotFoundApplicationProblemPlusJSONResponse
+}
+
+func (response SaveFormDraft404ApplicationProblemPlusJSONResponse) VisitSaveFormDraftResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(404)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type SaveFormDraft409ApplicationProblemPlusJSONResponse struct {
+	ConflictApplicationProblemPlusJSONResponse
+}
+
+func (response SaveFormDraft409ApplicationProblemPlusJSONResponse) VisitSaveFormDraftResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.RetryAfter != nil {
+		w.Header().Set("Retry-After", fmt.Sprint(*response.Headers.RetryAfter))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(409)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type SaveFormDraft412ApplicationProblemPlusJSONResponse struct {
+	PreconditionFailedApplicationProblemPlusJSONResponse
+}
+
+func (response SaveFormDraft412ApplicationProblemPlusJSONResponse) VisitSaveFormDraftResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(412)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type SaveFormDraft422ApplicationProblemPlusJSONResponse struct {
+	ValidationApplicationProblemPlusJSONResponse
+}
+
+func (response SaveFormDraft422ApplicationProblemPlusJSONResponse) VisitSaveFormDraftResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(422)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type SaveFormDraft428ApplicationProblemPlusJSONResponse struct {
+	PreconditionRequiredApplicationProblemPlusJSONResponse
+}
+
+func (response SaveFormDraft428ApplicationProblemPlusJSONResponse) VisitSaveFormDraftResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(428)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type SaveFormDraft429ApplicationProblemPlusJSONResponse struct {
+	RateLimitedApplicationProblemPlusJSONResponse
+}
+
+func (response SaveFormDraft429ApplicationProblemPlusJSONResponse) VisitSaveFormDraftResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.RetryAfter != nil {
+		w.Header().Set("Retry-After", fmt.Sprint(*response.Headers.RetryAfter))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(429)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type ExportFormResponsesRequestObject struct {
+	TenantId TenantId `json:"tenantId"`
+	FormId   FormId   `json:"formId"`
+}
+
+type ExportFormResponsesResponseObject interface {
+	VisitExportFormResponsesResponse(w http.ResponseWriter) error
+}
+
+type ExportFormResponses200ResponseHeaders struct {
+	CacheControl *string
+	XRequestId   *string
+}
+
+type ExportFormResponses200JSONResponse struct {
+	Body    FormResponsesExport
+	Headers ExportFormResponses200ResponseHeaders
+}
+
+func (response ExportFormResponses200JSONResponse) VisitExportFormResponsesResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	if response.Headers.CacheControl != nil {
+		w.Header().Set("Cache-Control", fmt.Sprint(*response.Headers.CacheControl))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(200)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type ExportFormResponses400ApplicationProblemPlusJSONResponse struct {
+	BadRequestApplicationProblemPlusJSONResponse
+}
+
+func (response ExportFormResponses400ApplicationProblemPlusJSONResponse) VisitExportFormResponsesResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(400)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type ExportFormResponses401ApplicationProblemPlusJSONResponse struct {
+	UnauthenticatedApplicationProblemPlusJSONResponse
+}
+
+func (response ExportFormResponses401ApplicationProblemPlusJSONResponse) VisitExportFormResponsesResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(401)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type ExportFormResponses403ApplicationProblemPlusJSONResponse struct {
+	ForbiddenApplicationProblemPlusJSONResponse
+}
+
+func (response ExportFormResponses403ApplicationProblemPlusJSONResponse) VisitExportFormResponsesResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(403)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type ExportFormResponses404ApplicationProblemPlusJSONResponse struct {
+	NotFoundApplicationProblemPlusJSONResponse
+}
+
+func (response ExportFormResponses404ApplicationProblemPlusJSONResponse) VisitExportFormResponsesResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(404)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type ExportFormResponses409ApplicationProblemPlusJSONResponse struct {
+	ConflictApplicationProblemPlusJSONResponse
+}
+
+func (response ExportFormResponses409ApplicationProblemPlusJSONResponse) VisitExportFormResponsesResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.RetryAfter != nil {
+		w.Header().Set("Retry-After", fmt.Sprint(*response.Headers.RetryAfter))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(409)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type ExportFormResponses422ApplicationProblemPlusJSONResponse struct {
+	ValidationApplicationProblemPlusJSONResponse
+}
+
+func (response ExportFormResponses422ApplicationProblemPlusJSONResponse) VisitExportFormResponsesResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(422)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type ExportFormResponses429ApplicationProblemPlusJSONResponse struct {
+	RateLimitedApplicationProblemPlusJSONResponse
+}
+
+func (response ExportFormResponses429ApplicationProblemPlusJSONResponse) VisitExportFormResponsesResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.RetryAfter != nil {
+		w.Header().Set("Retry-After", fmt.Sprint(*response.Headers.RetryAfter))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(429)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type ListFormFieldOptionsRequestObject struct {
+	TenantId TenantId     `json:"tenantId"`
+	FormId   FormId       `json:"formId"`
+	FieldKey FormFieldKey `json:"fieldKey"`
+	Params   ListFormFieldOptionsParams
+}
+
+type ListFormFieldOptionsResponseObject interface {
+	VisitListFormFieldOptionsResponse(w http.ResponseWriter) error
+}
+
+type ListFormFieldOptions200ResponseHeaders struct {
+	CacheControl *string
+	XRequestId   *string
+}
+
+type ListFormFieldOptions200JSONResponse struct {
+	Body    FormFieldOptionList
+	Headers ListFormFieldOptions200ResponseHeaders
+}
+
+func (response ListFormFieldOptions200JSONResponse) VisitListFormFieldOptionsResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	if response.Headers.CacheControl != nil {
+		w.Header().Set("Cache-Control", fmt.Sprint(*response.Headers.CacheControl))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(200)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type ListFormFieldOptions400ApplicationProblemPlusJSONResponse struct {
+	BadRequestApplicationProblemPlusJSONResponse
+}
+
+func (response ListFormFieldOptions400ApplicationProblemPlusJSONResponse) VisitListFormFieldOptionsResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(400)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type ListFormFieldOptions401ApplicationProblemPlusJSONResponse struct {
+	UnauthenticatedApplicationProblemPlusJSONResponse
+}
+
+func (response ListFormFieldOptions401ApplicationProblemPlusJSONResponse) VisitListFormFieldOptionsResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(401)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type ListFormFieldOptions403ApplicationProblemPlusJSONResponse struct {
+	ForbiddenApplicationProblemPlusJSONResponse
+}
+
+func (response ListFormFieldOptions403ApplicationProblemPlusJSONResponse) VisitListFormFieldOptionsResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(403)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type ListFormFieldOptions404ApplicationProblemPlusJSONResponse struct {
+	NotFoundApplicationProblemPlusJSONResponse
+}
+
+func (response ListFormFieldOptions404ApplicationProblemPlusJSONResponse) VisitListFormFieldOptionsResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(404)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type ListFormFieldOptions422ApplicationProblemPlusJSONResponse struct {
+	ValidationApplicationProblemPlusJSONResponse
+}
+
+func (response ListFormFieldOptions422ApplicationProblemPlusJSONResponse) VisitListFormFieldOptionsResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(422)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type ListFormFieldOptions429ApplicationProblemPlusJSONResponse struct {
+	RateLimitedApplicationProblemPlusJSONResponse
+}
+
+func (response ListFormFieldOptions429ApplicationProblemPlusJSONResponse) VisitListFormFieldOptionsResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.RetryAfter != nil {
+		w.Header().Set("Retry-After", fmt.Sprint(*response.Headers.RetryAfter))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(429)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type PublishFormRequestObject struct {
+	TenantId TenantId `json:"tenantId"`
+	FormId   FormId   `json:"formId"`
+	Params   PublishFormParams
+	Body     *PublishFormJSONRequestBody
+}
+
+type PublishFormResponseObject interface {
+	VisitPublishFormResponse(w http.ResponseWriter) error
+}
+
+type PublishForm200ResponseHeaders struct {
+	CacheControl        *string
+	ETag                *string
+	IdempotencyReplayed *bool
+	XRequestId          *string
+}
+
+type PublishForm200JSONResponse struct {
+	Body    Form
+	Headers PublishForm200ResponseHeaders
+}
+
+func (response PublishForm200JSONResponse) VisitPublishFormResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	if response.Headers.CacheControl != nil {
+		w.Header().Set("Cache-Control", fmt.Sprint(*response.Headers.CacheControl))
+	}
+	if response.Headers.ETag != nil {
+		w.Header().Set("ETag", fmt.Sprint(*response.Headers.ETag))
+	}
+	if response.Headers.IdempotencyReplayed != nil {
+		w.Header().Set("Idempotency-Replayed", fmt.Sprint(*response.Headers.IdempotencyReplayed))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(200)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type PublishForm400ApplicationProblemPlusJSONResponse struct {
+	BadRequestApplicationProblemPlusJSONResponse
+}
+
+func (response PublishForm400ApplicationProblemPlusJSONResponse) VisitPublishFormResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(400)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type PublishForm401ApplicationProblemPlusJSONResponse struct {
+	UnauthenticatedApplicationProblemPlusJSONResponse
+}
+
+func (response PublishForm401ApplicationProblemPlusJSONResponse) VisitPublishFormResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(401)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type PublishForm402ApplicationProblemPlusJSONResponse struct {
+	PlanRequiredApplicationProblemPlusJSONResponse
+}
+
+func (response PublishForm402ApplicationProblemPlusJSONResponse) VisitPublishFormResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(402)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type PublishForm403ApplicationProblemPlusJSONResponse struct {
+	ForbiddenApplicationProblemPlusJSONResponse
+}
+
+func (response PublishForm403ApplicationProblemPlusJSONResponse) VisitPublishFormResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(403)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type PublishForm404ApplicationProblemPlusJSONResponse struct {
+	NotFoundApplicationProblemPlusJSONResponse
+}
+
+func (response PublishForm404ApplicationProblemPlusJSONResponse) VisitPublishFormResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(404)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type PublishForm409ApplicationProblemPlusJSONResponse struct {
+	ConflictApplicationProblemPlusJSONResponse
+}
+
+func (response PublishForm409ApplicationProblemPlusJSONResponse) VisitPublishFormResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.RetryAfter != nil {
+		w.Header().Set("Retry-After", fmt.Sprint(*response.Headers.RetryAfter))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(409)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type PublishForm412ApplicationProblemPlusJSONResponse struct {
+	PreconditionFailedApplicationProblemPlusJSONResponse
+}
+
+func (response PublishForm412ApplicationProblemPlusJSONResponse) VisitPublishFormResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(412)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type PublishForm422ApplicationProblemPlusJSONResponse struct {
+	ValidationApplicationProblemPlusJSONResponse
+}
+
+func (response PublishForm422ApplicationProblemPlusJSONResponse) VisitPublishFormResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(422)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type PublishForm428ApplicationProblemPlusJSONResponse struct {
+	PreconditionRequiredApplicationProblemPlusJSONResponse
+}
+
+func (response PublishForm428ApplicationProblemPlusJSONResponse) VisitPublishFormResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(428)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type PublishForm429ApplicationProblemPlusJSONResponse struct {
+	RateLimitedApplicationProblemPlusJSONResponse
+}
+
+func (response PublishForm429ApplicationProblemPlusJSONResponse) VisitPublishFormResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.RetryAfter != nil {
+		w.Header().Set("Retry-After", fmt.Sprint(*response.Headers.RetryAfter))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(429)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
 type ListFormResponsesRequestObject struct {
 	TenantId TenantId `json:"tenantId"`
 	FormId   FormId   `json:"formId"`
@@ -3697,6 +9040,230 @@ type ListFormResponses429ApplicationProblemPlusJSONResponse struct {
 }
 
 func (response ListFormResponses429ApplicationProblemPlusJSONResponse) VisitListFormResponsesResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.RetryAfter != nil {
+		w.Header().Set("Retry-After", fmt.Sprint(*response.Headers.RetryAfter))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(429)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type SubmitFormResponseRequestObject struct {
+	TenantId TenantId `json:"tenantId"`
+	FormId   FormId   `json:"formId"`
+	Params   SubmitFormResponseParams
+	Body     *SubmitFormResponseJSONRequestBody
+}
+
+type SubmitFormResponseResponseObject interface {
+	VisitSubmitFormResponseResponse(w http.ResponseWriter) error
+}
+
+type SubmitFormResponse201ResponseHeaders struct {
+	CacheControl        *string
+	ETag                *string
+	IdempotencyReplayed *bool
+	XRequestId          *string
+}
+
+type SubmitFormResponse201JSONResponse struct {
+	Body    FormResponse
+	Headers SubmitFormResponse201ResponseHeaders
+}
+
+func (response SubmitFormResponse201JSONResponse) VisitSubmitFormResponseResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	if response.Headers.CacheControl != nil {
+		w.Header().Set("Cache-Control", fmt.Sprint(*response.Headers.CacheControl))
+	}
+	if response.Headers.ETag != nil {
+		w.Header().Set("ETag", fmt.Sprint(*response.Headers.ETag))
+	}
+	if response.Headers.IdempotencyReplayed != nil {
+		w.Header().Set("Idempotency-Replayed", fmt.Sprint(*response.Headers.IdempotencyReplayed))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(201)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type SubmitFormResponse400ApplicationProblemPlusJSONResponse struct {
+	BadRequestApplicationProblemPlusJSONResponse
+}
+
+func (response SubmitFormResponse400ApplicationProblemPlusJSONResponse) VisitSubmitFormResponseResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(400)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type SubmitFormResponse401ApplicationProblemPlusJSONResponse struct {
+	UnauthenticatedApplicationProblemPlusJSONResponse
+}
+
+func (response SubmitFormResponse401ApplicationProblemPlusJSONResponse) VisitSubmitFormResponseResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(401)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type SubmitFormResponse402ApplicationProblemPlusJSONResponse struct {
+	PlanRequiredApplicationProblemPlusJSONResponse
+}
+
+func (response SubmitFormResponse402ApplicationProblemPlusJSONResponse) VisitSubmitFormResponseResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(402)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type SubmitFormResponse403ApplicationProblemPlusJSONResponse struct {
+	ForbiddenApplicationProblemPlusJSONResponse
+}
+
+func (response SubmitFormResponse403ApplicationProblemPlusJSONResponse) VisitSubmitFormResponseResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(403)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type SubmitFormResponse404ApplicationProblemPlusJSONResponse struct {
+	NotFoundApplicationProblemPlusJSONResponse
+}
+
+func (response SubmitFormResponse404ApplicationProblemPlusJSONResponse) VisitSubmitFormResponseResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(404)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type SubmitFormResponse409ApplicationProblemPlusJSONResponse struct {
+	ConflictApplicationProblemPlusJSONResponse
+}
+
+func (response SubmitFormResponse409ApplicationProblemPlusJSONResponse) VisitSubmitFormResponseResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.RetryAfter != nil {
+		w.Header().Set("Retry-After", fmt.Sprint(*response.Headers.RetryAfter))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(409)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type SubmitFormResponse422ApplicationProblemPlusJSONResponse struct {
+	ValidationApplicationProblemPlusJSONResponse
+}
+
+func (response SubmitFormResponse422ApplicationProblemPlusJSONResponse) VisitSubmitFormResponseResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(422)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type SubmitFormResponse428ApplicationProblemPlusJSONResponse struct {
+	PreconditionRequiredApplicationProblemPlusJSONResponse
+}
+
+func (response SubmitFormResponse428ApplicationProblemPlusJSONResponse) VisitSubmitFormResponseResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(428)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type SubmitFormResponse429ApplicationProblemPlusJSONResponse struct {
+	RateLimitedApplicationProblemPlusJSONResponse
+}
+
+func (response SubmitFormResponse429ApplicationProblemPlusJSONResponse) VisitSubmitFormResponseResponse(w http.ResponseWriter) error {
 
 	var buf bytes.Buffer
 	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
@@ -4100,6 +9667,1454 @@ type ReviewFormResponse429ApplicationProblemPlusJSONResponse struct {
 }
 
 func (response ReviewFormResponse429ApplicationProblemPlusJSONResponse) VisitReviewFormResponseResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.RetryAfter != nil {
+		w.Header().Set("Retry-After", fmt.Sprint(*response.Headers.RetryAfter))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(429)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type RetryFormResponseActionRequestObject struct {
+	TenantId   TenantId   `json:"tenantId"`
+	FormId     FormId     `json:"formId"`
+	ResponseId ResponseId `json:"responseId"`
+	RuleId     FormRuleId `json:"ruleId"`
+	Params     RetryFormResponseActionParams
+}
+
+type RetryFormResponseActionResponseObject interface {
+	VisitRetryFormResponseActionResponse(w http.ResponseWriter) error
+}
+
+type RetryFormResponseAction200ResponseHeaders struct {
+	CacheControl        *string
+	IdempotencyReplayed *bool
+	XRequestId          *string
+}
+
+type RetryFormResponseAction200JSONResponse struct {
+	Body    FormResponseAction
+	Headers RetryFormResponseAction200ResponseHeaders
+}
+
+func (response RetryFormResponseAction200JSONResponse) VisitRetryFormResponseActionResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	if response.Headers.CacheControl != nil {
+		w.Header().Set("Cache-Control", fmt.Sprint(*response.Headers.CacheControl))
+	}
+	if response.Headers.IdempotencyReplayed != nil {
+		w.Header().Set("Idempotency-Replayed", fmt.Sprint(*response.Headers.IdempotencyReplayed))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(200)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type RetryFormResponseAction400ApplicationProblemPlusJSONResponse struct {
+	BadRequestApplicationProblemPlusJSONResponse
+}
+
+func (response RetryFormResponseAction400ApplicationProblemPlusJSONResponse) VisitRetryFormResponseActionResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(400)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type RetryFormResponseAction401ApplicationProblemPlusJSONResponse struct {
+	UnauthenticatedApplicationProblemPlusJSONResponse
+}
+
+func (response RetryFormResponseAction401ApplicationProblemPlusJSONResponse) VisitRetryFormResponseActionResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(401)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type RetryFormResponseAction402ApplicationProblemPlusJSONResponse struct {
+	PlanRequiredApplicationProblemPlusJSONResponse
+}
+
+func (response RetryFormResponseAction402ApplicationProblemPlusJSONResponse) VisitRetryFormResponseActionResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(402)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type RetryFormResponseAction403ApplicationProblemPlusJSONResponse struct {
+	ForbiddenApplicationProblemPlusJSONResponse
+}
+
+func (response RetryFormResponseAction403ApplicationProblemPlusJSONResponse) VisitRetryFormResponseActionResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(403)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type RetryFormResponseAction404ApplicationProblemPlusJSONResponse struct {
+	NotFoundApplicationProblemPlusJSONResponse
+}
+
+func (response RetryFormResponseAction404ApplicationProblemPlusJSONResponse) VisitRetryFormResponseActionResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(404)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type RetryFormResponseAction409ApplicationProblemPlusJSONResponse struct {
+	ConflictApplicationProblemPlusJSONResponse
+}
+
+func (response RetryFormResponseAction409ApplicationProblemPlusJSONResponse) VisitRetryFormResponseActionResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.RetryAfter != nil {
+		w.Header().Set("Retry-After", fmt.Sprint(*response.Headers.RetryAfter))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(409)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type RetryFormResponseAction422ApplicationProblemPlusJSONResponse struct {
+	ValidationApplicationProblemPlusJSONResponse
+}
+
+func (response RetryFormResponseAction422ApplicationProblemPlusJSONResponse) VisitRetryFormResponseActionResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(422)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type RetryFormResponseAction428ApplicationProblemPlusJSONResponse struct {
+	PreconditionRequiredApplicationProblemPlusJSONResponse
+}
+
+func (response RetryFormResponseAction428ApplicationProblemPlusJSONResponse) VisitRetryFormResponseActionResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(428)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type RetryFormResponseAction429ApplicationProblemPlusJSONResponse struct {
+	RateLimitedApplicationProblemPlusJSONResponse
+}
+
+func (response RetryFormResponseAction429ApplicationProblemPlusJSONResponse) VisitRetryFormResponseActionResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.RetryAfter != nil {
+		w.Header().Set("Retry-After", fmt.Sprint(*response.Headers.RetryAfter))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(429)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type ListFormRulesRequestObject struct {
+	TenantId TenantId `json:"tenantId"`
+	FormId   FormId   `json:"formId"`
+}
+
+type ListFormRulesResponseObject interface {
+	VisitListFormRulesResponse(w http.ResponseWriter) error
+}
+
+type ListFormRules200ResponseHeaders struct {
+	CacheControl *string
+	XRequestId   *string
+}
+
+type ListFormRules200JSONResponse struct {
+	Body    FormRuleList
+	Headers ListFormRules200ResponseHeaders
+}
+
+func (response ListFormRules200JSONResponse) VisitListFormRulesResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	if response.Headers.CacheControl != nil {
+		w.Header().Set("Cache-Control", fmt.Sprint(*response.Headers.CacheControl))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(200)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type ListFormRules400ApplicationProblemPlusJSONResponse struct {
+	BadRequestApplicationProblemPlusJSONResponse
+}
+
+func (response ListFormRules400ApplicationProblemPlusJSONResponse) VisitListFormRulesResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(400)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type ListFormRules401ApplicationProblemPlusJSONResponse struct {
+	UnauthenticatedApplicationProblemPlusJSONResponse
+}
+
+func (response ListFormRules401ApplicationProblemPlusJSONResponse) VisitListFormRulesResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(401)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type ListFormRules403ApplicationProblemPlusJSONResponse struct {
+	ForbiddenApplicationProblemPlusJSONResponse
+}
+
+func (response ListFormRules403ApplicationProblemPlusJSONResponse) VisitListFormRulesResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(403)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type ListFormRules404ApplicationProblemPlusJSONResponse struct {
+	NotFoundApplicationProblemPlusJSONResponse
+}
+
+func (response ListFormRules404ApplicationProblemPlusJSONResponse) VisitListFormRulesResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(404)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type ListFormRules422ApplicationProblemPlusJSONResponse struct {
+	ValidationApplicationProblemPlusJSONResponse
+}
+
+func (response ListFormRules422ApplicationProblemPlusJSONResponse) VisitListFormRulesResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(422)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type ListFormRules429ApplicationProblemPlusJSONResponse struct {
+	RateLimitedApplicationProblemPlusJSONResponse
+}
+
+func (response ListFormRules429ApplicationProblemPlusJSONResponse) VisitListFormRulesResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.RetryAfter != nil {
+		w.Header().Set("Retry-After", fmt.Sprint(*response.Headers.RetryAfter))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(429)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type CreateFormRuleRequestObject struct {
+	TenantId TenantId `json:"tenantId"`
+	FormId   FormId   `json:"formId"`
+	Params   CreateFormRuleParams
+	Body     *CreateFormRuleJSONRequestBody
+}
+
+type CreateFormRuleResponseObject interface {
+	VisitCreateFormRuleResponse(w http.ResponseWriter) error
+}
+
+type CreateFormRule201ResponseHeaders struct {
+	CacheControl        *string
+	ETag                *string
+	IdempotencyReplayed *bool
+	XRequestId          *string
+}
+
+type CreateFormRule201JSONResponse struct {
+	Body    FormRule
+	Headers CreateFormRule201ResponseHeaders
+}
+
+func (response CreateFormRule201JSONResponse) VisitCreateFormRuleResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	if response.Headers.CacheControl != nil {
+		w.Header().Set("Cache-Control", fmt.Sprint(*response.Headers.CacheControl))
+	}
+	if response.Headers.ETag != nil {
+		w.Header().Set("ETag", fmt.Sprint(*response.Headers.ETag))
+	}
+	if response.Headers.IdempotencyReplayed != nil {
+		w.Header().Set("Idempotency-Replayed", fmt.Sprint(*response.Headers.IdempotencyReplayed))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(201)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type CreateFormRule400ApplicationProblemPlusJSONResponse struct {
+	BadRequestApplicationProblemPlusJSONResponse
+}
+
+func (response CreateFormRule400ApplicationProblemPlusJSONResponse) VisitCreateFormRuleResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(400)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type CreateFormRule401ApplicationProblemPlusJSONResponse struct {
+	UnauthenticatedApplicationProblemPlusJSONResponse
+}
+
+func (response CreateFormRule401ApplicationProblemPlusJSONResponse) VisitCreateFormRuleResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(401)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type CreateFormRule402ApplicationProblemPlusJSONResponse struct {
+	PlanRequiredApplicationProblemPlusJSONResponse
+}
+
+func (response CreateFormRule402ApplicationProblemPlusJSONResponse) VisitCreateFormRuleResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(402)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type CreateFormRule403ApplicationProblemPlusJSONResponse struct {
+	ForbiddenApplicationProblemPlusJSONResponse
+}
+
+func (response CreateFormRule403ApplicationProblemPlusJSONResponse) VisitCreateFormRuleResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(403)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type CreateFormRule404ApplicationProblemPlusJSONResponse struct {
+	NotFoundApplicationProblemPlusJSONResponse
+}
+
+func (response CreateFormRule404ApplicationProblemPlusJSONResponse) VisitCreateFormRuleResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(404)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type CreateFormRule409ApplicationProblemPlusJSONResponse struct {
+	ConflictApplicationProblemPlusJSONResponse
+}
+
+func (response CreateFormRule409ApplicationProblemPlusJSONResponse) VisitCreateFormRuleResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.RetryAfter != nil {
+		w.Header().Set("Retry-After", fmt.Sprint(*response.Headers.RetryAfter))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(409)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type CreateFormRule422ApplicationProblemPlusJSONResponse struct {
+	ValidationApplicationProblemPlusJSONResponse
+}
+
+func (response CreateFormRule422ApplicationProblemPlusJSONResponse) VisitCreateFormRuleResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(422)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type CreateFormRule428ApplicationProblemPlusJSONResponse struct {
+	PreconditionRequiredApplicationProblemPlusJSONResponse
+}
+
+func (response CreateFormRule428ApplicationProblemPlusJSONResponse) VisitCreateFormRuleResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(428)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type CreateFormRule429ApplicationProblemPlusJSONResponse struct {
+	RateLimitedApplicationProblemPlusJSONResponse
+}
+
+func (response CreateFormRule429ApplicationProblemPlusJSONResponse) VisitCreateFormRuleResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.RetryAfter != nil {
+		w.Header().Set("Retry-After", fmt.Sprint(*response.Headers.RetryAfter))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(429)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type DeleteFormRuleRequestObject struct {
+	TenantId TenantId   `json:"tenantId"`
+	FormId   FormId     `json:"formId"`
+	RuleId   FormRuleId `json:"ruleId"`
+	Params   DeleteFormRuleParams
+}
+
+type DeleteFormRuleResponseObject interface {
+	VisitDeleteFormRuleResponse(w http.ResponseWriter) error
+}
+
+type DeleteFormRule204ResponseHeaders struct {
+	CacheControl        *string
+	IdempotencyReplayed *bool
+	XRequestId          *string
+}
+
+type DeleteFormRule204Response struct {
+	Headers DeleteFormRule204ResponseHeaders
+}
+
+func (response DeleteFormRule204Response) VisitDeleteFormRuleResponse(w http.ResponseWriter) error {
+	if response.Headers.CacheControl != nil {
+		w.Header().Set("Cache-Control", fmt.Sprint(*response.Headers.CacheControl))
+	}
+	if response.Headers.IdempotencyReplayed != nil {
+		w.Header().Set("Idempotency-Replayed", fmt.Sprint(*response.Headers.IdempotencyReplayed))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(204)
+	return nil
+}
+
+type DeleteFormRule400ApplicationProblemPlusJSONResponse struct {
+	BadRequestApplicationProblemPlusJSONResponse
+}
+
+func (response DeleteFormRule400ApplicationProblemPlusJSONResponse) VisitDeleteFormRuleResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(400)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type DeleteFormRule401ApplicationProblemPlusJSONResponse struct {
+	UnauthenticatedApplicationProblemPlusJSONResponse
+}
+
+func (response DeleteFormRule401ApplicationProblemPlusJSONResponse) VisitDeleteFormRuleResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(401)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type DeleteFormRule402ApplicationProblemPlusJSONResponse struct {
+	PlanRequiredApplicationProblemPlusJSONResponse
+}
+
+func (response DeleteFormRule402ApplicationProblemPlusJSONResponse) VisitDeleteFormRuleResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(402)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type DeleteFormRule403ApplicationProblemPlusJSONResponse struct {
+	ForbiddenApplicationProblemPlusJSONResponse
+}
+
+func (response DeleteFormRule403ApplicationProblemPlusJSONResponse) VisitDeleteFormRuleResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(403)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type DeleteFormRule404ApplicationProblemPlusJSONResponse struct {
+	NotFoundApplicationProblemPlusJSONResponse
+}
+
+func (response DeleteFormRule404ApplicationProblemPlusJSONResponse) VisitDeleteFormRuleResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(404)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type DeleteFormRule409ApplicationProblemPlusJSONResponse struct {
+	ConflictApplicationProblemPlusJSONResponse
+}
+
+func (response DeleteFormRule409ApplicationProblemPlusJSONResponse) VisitDeleteFormRuleResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.RetryAfter != nil {
+		w.Header().Set("Retry-After", fmt.Sprint(*response.Headers.RetryAfter))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(409)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type DeleteFormRule412ApplicationProblemPlusJSONResponse struct {
+	PreconditionFailedApplicationProblemPlusJSONResponse
+}
+
+func (response DeleteFormRule412ApplicationProblemPlusJSONResponse) VisitDeleteFormRuleResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(412)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type DeleteFormRule422ApplicationProblemPlusJSONResponse struct {
+	ValidationApplicationProblemPlusJSONResponse
+}
+
+func (response DeleteFormRule422ApplicationProblemPlusJSONResponse) VisitDeleteFormRuleResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(422)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type DeleteFormRule428ApplicationProblemPlusJSONResponse struct {
+	PreconditionRequiredApplicationProblemPlusJSONResponse
+}
+
+func (response DeleteFormRule428ApplicationProblemPlusJSONResponse) VisitDeleteFormRuleResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(428)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type DeleteFormRule429ApplicationProblemPlusJSONResponse struct {
+	RateLimitedApplicationProblemPlusJSONResponse
+}
+
+func (response DeleteFormRule429ApplicationProblemPlusJSONResponse) VisitDeleteFormRuleResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.RetryAfter != nil {
+		w.Header().Set("Retry-After", fmt.Sprint(*response.Headers.RetryAfter))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(429)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type UpdateFormRuleRequestObject struct {
+	TenantId TenantId   `json:"tenantId"`
+	FormId   FormId     `json:"formId"`
+	RuleId   FormRuleId `json:"ruleId"`
+	Params   UpdateFormRuleParams
+	Body     *UpdateFormRuleJSONRequestBody
+}
+
+type UpdateFormRuleResponseObject interface {
+	VisitUpdateFormRuleResponse(w http.ResponseWriter) error
+}
+
+type UpdateFormRule200ResponseHeaders struct {
+	CacheControl        *string
+	ETag                *string
+	IdempotencyReplayed *bool
+	XRequestId          *string
+}
+
+type UpdateFormRule200JSONResponse struct {
+	Body    FormRule
+	Headers UpdateFormRule200ResponseHeaders
+}
+
+func (response UpdateFormRule200JSONResponse) VisitUpdateFormRuleResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	if response.Headers.CacheControl != nil {
+		w.Header().Set("Cache-Control", fmt.Sprint(*response.Headers.CacheControl))
+	}
+	if response.Headers.ETag != nil {
+		w.Header().Set("ETag", fmt.Sprint(*response.Headers.ETag))
+	}
+	if response.Headers.IdempotencyReplayed != nil {
+		w.Header().Set("Idempotency-Replayed", fmt.Sprint(*response.Headers.IdempotencyReplayed))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(200)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type UpdateFormRule400ApplicationProblemPlusJSONResponse struct {
+	BadRequestApplicationProblemPlusJSONResponse
+}
+
+func (response UpdateFormRule400ApplicationProblemPlusJSONResponse) VisitUpdateFormRuleResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(400)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type UpdateFormRule401ApplicationProblemPlusJSONResponse struct {
+	UnauthenticatedApplicationProblemPlusJSONResponse
+}
+
+func (response UpdateFormRule401ApplicationProblemPlusJSONResponse) VisitUpdateFormRuleResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(401)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type UpdateFormRule402ApplicationProblemPlusJSONResponse struct {
+	PlanRequiredApplicationProblemPlusJSONResponse
+}
+
+func (response UpdateFormRule402ApplicationProblemPlusJSONResponse) VisitUpdateFormRuleResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(402)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type UpdateFormRule403ApplicationProblemPlusJSONResponse struct {
+	ForbiddenApplicationProblemPlusJSONResponse
+}
+
+func (response UpdateFormRule403ApplicationProblemPlusJSONResponse) VisitUpdateFormRuleResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(403)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type UpdateFormRule404ApplicationProblemPlusJSONResponse struct {
+	NotFoundApplicationProblemPlusJSONResponse
+}
+
+func (response UpdateFormRule404ApplicationProblemPlusJSONResponse) VisitUpdateFormRuleResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(404)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type UpdateFormRule409ApplicationProblemPlusJSONResponse struct {
+	ConflictApplicationProblemPlusJSONResponse
+}
+
+func (response UpdateFormRule409ApplicationProblemPlusJSONResponse) VisitUpdateFormRuleResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.RetryAfter != nil {
+		w.Header().Set("Retry-After", fmt.Sprint(*response.Headers.RetryAfter))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(409)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type UpdateFormRule412ApplicationProblemPlusJSONResponse struct {
+	PreconditionFailedApplicationProblemPlusJSONResponse
+}
+
+func (response UpdateFormRule412ApplicationProblemPlusJSONResponse) VisitUpdateFormRuleResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(412)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type UpdateFormRule422ApplicationProblemPlusJSONResponse struct {
+	ValidationApplicationProblemPlusJSONResponse
+}
+
+func (response UpdateFormRule422ApplicationProblemPlusJSONResponse) VisitUpdateFormRuleResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(422)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type UpdateFormRule428ApplicationProblemPlusJSONResponse struct {
+	PreconditionRequiredApplicationProblemPlusJSONResponse
+}
+
+func (response UpdateFormRule428ApplicationProblemPlusJSONResponse) VisitUpdateFormRuleResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(428)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type UpdateFormRule429ApplicationProblemPlusJSONResponse struct {
+	RateLimitedApplicationProblemPlusJSONResponse
+}
+
+func (response UpdateFormRule429ApplicationProblemPlusJSONResponse) VisitUpdateFormRuleResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.RetryAfter != nil {
+		w.Header().Set("Retry-After", fmt.Sprint(*response.Headers.RetryAfter))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(429)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type BackfillFormRuleRequestObject struct {
+	TenantId TenantId   `json:"tenantId"`
+	FormId   FormId     `json:"formId"`
+	RuleId   FormRuleId `json:"ruleId"`
+	Params   BackfillFormRuleParams
+}
+
+type BackfillFormRuleResponseObject interface {
+	VisitBackfillFormRuleResponse(w http.ResponseWriter) error
+}
+
+type BackfillFormRule200ResponseHeaders struct {
+	CacheControl        *string
+	IdempotencyReplayed *bool
+	XRequestId          *string
+}
+
+type BackfillFormRule200JSONResponse struct {
+	Body    FormRuleBackfillResult
+	Headers BackfillFormRule200ResponseHeaders
+}
+
+func (response BackfillFormRule200JSONResponse) VisitBackfillFormRuleResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	if response.Headers.CacheControl != nil {
+		w.Header().Set("Cache-Control", fmt.Sprint(*response.Headers.CacheControl))
+	}
+	if response.Headers.IdempotencyReplayed != nil {
+		w.Header().Set("Idempotency-Replayed", fmt.Sprint(*response.Headers.IdempotencyReplayed))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(200)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type BackfillFormRule400ApplicationProblemPlusJSONResponse struct {
+	BadRequestApplicationProblemPlusJSONResponse
+}
+
+func (response BackfillFormRule400ApplicationProblemPlusJSONResponse) VisitBackfillFormRuleResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(400)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type BackfillFormRule401ApplicationProblemPlusJSONResponse struct {
+	UnauthenticatedApplicationProblemPlusJSONResponse
+}
+
+func (response BackfillFormRule401ApplicationProblemPlusJSONResponse) VisitBackfillFormRuleResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(401)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type BackfillFormRule402ApplicationProblemPlusJSONResponse struct {
+	PlanRequiredApplicationProblemPlusJSONResponse
+}
+
+func (response BackfillFormRule402ApplicationProblemPlusJSONResponse) VisitBackfillFormRuleResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(402)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type BackfillFormRule403ApplicationProblemPlusJSONResponse struct {
+	ForbiddenApplicationProblemPlusJSONResponse
+}
+
+func (response BackfillFormRule403ApplicationProblemPlusJSONResponse) VisitBackfillFormRuleResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(403)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type BackfillFormRule404ApplicationProblemPlusJSONResponse struct {
+	NotFoundApplicationProblemPlusJSONResponse
+}
+
+func (response BackfillFormRule404ApplicationProblemPlusJSONResponse) VisitBackfillFormRuleResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(404)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type BackfillFormRule409ApplicationProblemPlusJSONResponse struct {
+	ConflictApplicationProblemPlusJSONResponse
+}
+
+func (response BackfillFormRule409ApplicationProblemPlusJSONResponse) VisitBackfillFormRuleResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.RetryAfter != nil {
+		w.Header().Set("Retry-After", fmt.Sprint(*response.Headers.RetryAfter))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(409)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type BackfillFormRule422ApplicationProblemPlusJSONResponse struct {
+	ValidationApplicationProblemPlusJSONResponse
+}
+
+func (response BackfillFormRule422ApplicationProblemPlusJSONResponse) VisitBackfillFormRuleResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(422)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type BackfillFormRule428ApplicationProblemPlusJSONResponse struct {
+	PreconditionRequiredApplicationProblemPlusJSONResponse
+}
+
+func (response BackfillFormRule428ApplicationProblemPlusJSONResponse) VisitBackfillFormRuleResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(428)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type BackfillFormRule429ApplicationProblemPlusJSONResponse struct {
+	RateLimitedApplicationProblemPlusJSONResponse
+}
+
+func (response BackfillFormRule429ApplicationProblemPlusJSONResponse) VisitBackfillFormRuleResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.RetryAfter != nil {
+		w.Header().Set("Retry-After", fmt.Sprint(*response.Headers.RetryAfter))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(429)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type GetFormResponseSummaryRequestObject struct {
+	TenantId TenantId `json:"tenantId"`
+	FormId   FormId   `json:"formId"`
+}
+
+type GetFormResponseSummaryResponseObject interface {
+	VisitGetFormResponseSummaryResponse(w http.ResponseWriter) error
+}
+
+type GetFormResponseSummary200ResponseHeaders struct {
+	CacheControl *string
+	XRequestId   *string
+}
+
+type GetFormResponseSummary200JSONResponse struct {
+	Body    FormResponseSummary
+	Headers GetFormResponseSummary200ResponseHeaders
+}
+
+func (response GetFormResponseSummary200JSONResponse) VisitGetFormResponseSummaryResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	if response.Headers.CacheControl != nil {
+		w.Header().Set("Cache-Control", fmt.Sprint(*response.Headers.CacheControl))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(200)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type GetFormResponseSummary400ApplicationProblemPlusJSONResponse struct {
+	BadRequestApplicationProblemPlusJSONResponse
+}
+
+func (response GetFormResponseSummary400ApplicationProblemPlusJSONResponse) VisitGetFormResponseSummaryResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(400)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type GetFormResponseSummary401ApplicationProblemPlusJSONResponse struct {
+	UnauthenticatedApplicationProblemPlusJSONResponse
+}
+
+func (response GetFormResponseSummary401ApplicationProblemPlusJSONResponse) VisitGetFormResponseSummaryResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(401)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type GetFormResponseSummary403ApplicationProblemPlusJSONResponse struct {
+	ForbiddenApplicationProblemPlusJSONResponse
+}
+
+func (response GetFormResponseSummary403ApplicationProblemPlusJSONResponse) VisitGetFormResponseSummaryResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(403)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type GetFormResponseSummary404ApplicationProblemPlusJSONResponse struct {
+	NotFoundApplicationProblemPlusJSONResponse
+}
+
+func (response GetFormResponseSummary404ApplicationProblemPlusJSONResponse) VisitGetFormResponseSummaryResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(404)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type GetFormResponseSummary422ApplicationProblemPlusJSONResponse struct {
+	ValidationApplicationProblemPlusJSONResponse
+}
+
+func (response GetFormResponseSummary422ApplicationProblemPlusJSONResponse) VisitGetFormResponseSummaryResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(422)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type GetFormResponseSummary429ApplicationProblemPlusJSONResponse struct {
+	RateLimitedApplicationProblemPlusJSONResponse
+}
+
+func (response GetFormResponseSummary429ApplicationProblemPlusJSONResponse) VisitGetFormResponseSummaryResponse(w http.ResponseWriter) error {
 
 	var buf bytes.Buffer
 	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
@@ -4757,6 +11772,18 @@ func (response PublishFormVersion429ApplicationProblemPlusJSONResponse) VisitPub
 
 // StrictServerInterface represents all server handlers.
 type StrictServerInterface interface {
+	// ListFormGroups List the groups of forms
+	// (GET /api/v1/tenants/{tenantId}/form-groups)
+	ListFormGroups(ctx context.Context, request ListFormGroupsRequestObject) (ListFormGroupsResponseObject, error)
+	// CreateFormGroup Create a group of forms
+	// (POST /api/v1/tenants/{tenantId}/form-groups)
+	CreateFormGroup(ctx context.Context, request CreateFormGroupRequestObject) (CreateFormGroupResponseObject, error)
+	// DeleteFormGroup Delete an empty group of forms
+	// (DELETE /api/v1/tenants/{tenantId}/form-groups/{groupId})
+	DeleteFormGroup(ctx context.Context, request DeleteFormGroupRequestObject) (DeleteFormGroupResponseObject, error)
+	// ListFormTemplates List the templates of forms
+	// (GET /api/v1/tenants/{tenantId}/form-templates)
+	ListFormTemplates(ctx context.Context, request ListFormTemplatesRequestObject) (ListFormTemplatesResponseObject, error)
 	// ListForms List scoped form definitions
 	// (GET /api/v1/tenants/{tenantId}/forms)
 	ListForms(ctx context.Context, request ListFormsRequestObject) (ListFormsResponseObject, error)
@@ -4769,23 +11796,69 @@ type StrictServerInterface interface {
 	// UpdateForm Rename or close submissions
 	// (PATCH /api/v1/tenants/{tenantId}/forms/{formId})
 	UpdateForm(ctx context.Context, request UpdateFormRequestObject) (UpdateFormResponseObject, error)
+	// DiscardFormDraft Discard the unpublished changes of a form
+	// (DELETE /api/v1/tenants/{tenantId}/forms/{formId}/draft)
+	DiscardFormDraft(ctx context.Context, request DiscardFormDraftRequestObject) (DiscardFormDraftResponseObject, error)
+	// GetFormDraft Read the draft of the questions of a form
+	// (GET /api/v1/tenants/{tenantId}/forms/{formId}/draft)
+	GetFormDraft(ctx context.Context, request GetFormDraftRequestObject) (GetFormDraftResponseObject, error)
+	// SaveFormDraft Save the whole draft of a form
+	// (PUT /api/v1/tenants/{tenantId}/forms/{formId}/draft)
+	SaveFormDraft(ctx context.Context, request SaveFormDraftRequestObject) (SaveFormDraftResponseObject, error)
+	// ExportFormResponses Export the responses as a CSV file
+	// (GET /api/v1/tenants/{tenantId}/forms/{formId}/export)
+	ExportFormResponses(ctx context.Context, request ExportFormResponsesRequestObject) (ExportFormResponsesResponseObject, error)
+	// ListFormFieldOptions Choices of a CRM question for the respondent
+	// (GET /api/v1/tenants/{tenantId}/forms/{formId}/fields/{fieldKey}/options)
+	ListFormFieldOptions(ctx context.Context, request ListFormFieldOptionsRequestObject) (ListFormFieldOptionsResponseObject, error)
+	// PublishForm Publish the draft as the next immutable version
+	// (POST /api/v1/tenants/{tenantId}/forms/{formId}/publish)
+	PublishForm(ctx context.Context, request PublishFormRequestObject) (PublishFormResponseObject, error)
 	// ListFormResponses List visible responses, preserving submitted version
 	// (GET /api/v1/tenants/{tenantId}/forms/{formId}/responses)
 	ListFormResponses(ctx context.Context, request ListFormResponsesRequestObject) (ListFormResponsesResponseObject, error)
+	// SubmitFormResponse Submit a response as an employee
+	// (POST /api/v1/tenants/{tenantId}/forms/{formId}/responses)
+	SubmitFormResponse(ctx context.Context, request SubmitFormResponseRequestObject) (SubmitFormResponseResponseObject, error)
 	// GetFormResponse Read a response permitted for review
 	// (GET /api/v1/tenants/{tenantId}/forms/{formId}/responses/{responseId})
 	GetFormResponse(ctx context.Context, request GetFormResponseRequestObject) (GetFormResponseResponseObject, error)
 	// ReviewFormResponse Assign and review an immutable submission
 	// (PATCH /api/v1/tenants/{tenantId}/forms/{formId}/responses/{responseId})
 	ReviewFormResponse(ctx context.Context, request ReviewFormResponseRequestObject) (ReviewFormResponseResponseObject, error)
+	// RetryFormResponseAction Repeat an action for one response
+	// (POST /api/v1/tenants/{tenantId}/forms/{formId}/responses/{responseId}/actions/{ruleId}/retry)
+	RetryFormResponseAction(ctx context.Context, request RetryFormResponseActionRequestObject) (RetryFormResponseActionResponseObject, error)
+	// ListFormRules List the actions after a response
+	// (GET /api/v1/tenants/{tenantId}/forms/{formId}/rules)
+	ListFormRules(ctx context.Context, request ListFormRulesRequestObject) (ListFormRulesResponseObject, error)
+	// CreateFormRule Add an action after a response
+	// (POST /api/v1/tenants/{tenantId}/forms/{formId}/rules)
+	CreateFormRule(ctx context.Context, request CreateFormRuleRequestObject) (CreateFormRuleResponseObject, error)
+	// DeleteFormRule Delete an action after a response
+	// (DELETE /api/v1/tenants/{tenantId}/forms/{formId}/rules/{ruleId})
+	DeleteFormRule(ctx context.Context, request DeleteFormRuleRequestObject) (DeleteFormRuleResponseObject, error)
+	// UpdateFormRule Change or switch an action after a response
+	// (PATCH /api/v1/tenants/{tenantId}/forms/{formId}/rules/{ruleId})
+	UpdateFormRule(ctx context.Context, request UpdateFormRuleRequestObject) (UpdateFormRuleResponseObject, error)
+	// BackfillFormRule Write the earlier responses by a knowledge base action
+	// (POST /api/v1/tenants/{tenantId}/forms/{formId}/rules/{ruleId}/backfill)
+	BackfillFormRule(ctx context.Context, request BackfillFormRuleRequestObject) (BackfillFormRuleResponseObject, error)
+	// GetFormResponseSummary Summary of the responses by question
+	// (GET /api/v1/tenants/{tenantId}/forms/{formId}/summary)
+	GetFormResponseSummary(ctx context.Context, request GetFormResponseSummaryRequestObject) (GetFormResponseSummaryResponseObject, error)
 	// ListFormVersions List immutable schema versions
 	// (GET /api/v1/tenants/{tenantId}/forms/{formId}/versions)
 	ListFormVersions(ctx context.Context, request ListFormVersionsRequestObject) (ListFormVersionsResponseObject, error)
 	// CreateFormVersion Create a new immutable version from a base version
 	// (POST /api/v1/tenants/{tenantId}/forms/{formId}/versions)
+	//
+	// Deprecated: this operation has been marked as deprecated upstream, but no `x-deprecated-reason` was set
 	CreateFormVersion(ctx context.Context, request CreateFormVersionRequestObject) (CreateFormVersionResponseObject, error)
 	// PublishFormVersion Publish exactly one validated version
 	// (POST /api/v1/tenants/{tenantId}/forms/{formId}/versions/{versionId}/publish)
+	//
+	// Deprecated: this operation has been marked as deprecated upstream, but no `x-deprecated-reason` was set
 	PublishFormVersion(ctx context.Context, request PublishFormVersionRequestObject) (PublishFormVersionResponseObject, error)
 }
 
@@ -4826,6 +11899,120 @@ type strictHandler struct {
 	ssi         StrictServerInterface
 	middlewares []StrictMiddlewareFunc
 	options     StrictHTTPServerOptions
+}
+
+// ListFormGroups operation middleware
+func (sh *strictHandler) ListFormGroups(w http.ResponseWriter, r *http.Request, tenantId TenantId) {
+	var request ListFormGroupsRequestObject
+
+	request.TenantId = tenantId
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.ListFormGroups(ctx, request.(ListFormGroupsRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "ListFormGroups")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(ListFormGroupsResponseObject); ok {
+		if err := validResponse.VisitListFormGroupsResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// CreateFormGroup operation middleware
+func (sh *strictHandler) CreateFormGroup(w http.ResponseWriter, r *http.Request, tenantId TenantId, params CreateFormGroupParams) {
+	var request CreateFormGroupRequestObject
+
+	request.TenantId = tenantId
+	request.Params = params
+
+	var body CreateFormGroupJSONRequestBody
+	if err := json.NewDecoder(r.Body).Decode(&body); err != nil {
+		sh.options.RequestErrorHandlerFunc(w, r, fmt.Errorf("can't decode JSON body: %w", err))
+		return
+	}
+	request.Body = &body
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.CreateFormGroup(ctx, request.(CreateFormGroupRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "CreateFormGroup")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(CreateFormGroupResponseObject); ok {
+		if err := validResponse.VisitCreateFormGroupResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// DeleteFormGroup operation middleware
+func (sh *strictHandler) DeleteFormGroup(w http.ResponseWriter, r *http.Request, tenantId TenantId, groupId FormGroupId, params DeleteFormGroupParams) {
+	var request DeleteFormGroupRequestObject
+
+	request.TenantId = tenantId
+	request.GroupId = groupId
+	request.Params = params
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.DeleteFormGroup(ctx, request.(DeleteFormGroupRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "DeleteFormGroup")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(DeleteFormGroupResponseObject); ok {
+		if err := validResponse.VisitDeleteFormGroupResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// ListFormTemplates operation middleware
+func (sh *strictHandler) ListFormTemplates(w http.ResponseWriter, r *http.Request, tenantId TenantId) {
+	var request ListFormTemplatesRequestObject
+
+	request.TenantId = tenantId
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.ListFormTemplates(ctx, request.(ListFormTemplatesRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "ListFormTemplates")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(ListFormTemplatesResponseObject); ok {
+		if err := validResponse.VisitListFormTemplatesResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
 }
 
 // ListForms operation middleware
@@ -4951,6 +12138,187 @@ func (sh *strictHandler) UpdateForm(w http.ResponseWriter, r *http.Request, tena
 	}
 }
 
+// DiscardFormDraft operation middleware
+func (sh *strictHandler) DiscardFormDraft(w http.ResponseWriter, r *http.Request, tenantId TenantId, formId FormId, params DiscardFormDraftParams) {
+	var request DiscardFormDraftRequestObject
+
+	request.TenantId = tenantId
+	request.FormId = formId
+	request.Params = params
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.DiscardFormDraft(ctx, request.(DiscardFormDraftRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "DiscardFormDraft")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(DiscardFormDraftResponseObject); ok {
+		if err := validResponse.VisitDiscardFormDraftResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// GetFormDraft operation middleware
+func (sh *strictHandler) GetFormDraft(w http.ResponseWriter, r *http.Request, tenantId TenantId, formId FormId) {
+	var request GetFormDraftRequestObject
+
+	request.TenantId = tenantId
+	request.FormId = formId
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.GetFormDraft(ctx, request.(GetFormDraftRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "GetFormDraft")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(GetFormDraftResponseObject); ok {
+		if err := validResponse.VisitGetFormDraftResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// SaveFormDraft operation middleware
+func (sh *strictHandler) SaveFormDraft(w http.ResponseWriter, r *http.Request, tenantId TenantId, formId FormId, params SaveFormDraftParams) {
+	var request SaveFormDraftRequestObject
+
+	request.TenantId = tenantId
+	request.FormId = formId
+	request.Params = params
+
+	var body SaveFormDraftJSONRequestBody
+	if err := json.NewDecoder(r.Body).Decode(&body); err != nil {
+		sh.options.RequestErrorHandlerFunc(w, r, fmt.Errorf("can't decode JSON body: %w", err))
+		return
+	}
+	request.Body = &body
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.SaveFormDraft(ctx, request.(SaveFormDraftRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "SaveFormDraft")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(SaveFormDraftResponseObject); ok {
+		if err := validResponse.VisitSaveFormDraftResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// ExportFormResponses operation middleware
+func (sh *strictHandler) ExportFormResponses(w http.ResponseWriter, r *http.Request, tenantId TenantId, formId FormId) {
+	var request ExportFormResponsesRequestObject
+
+	request.TenantId = tenantId
+	request.FormId = formId
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.ExportFormResponses(ctx, request.(ExportFormResponsesRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "ExportFormResponses")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(ExportFormResponsesResponseObject); ok {
+		if err := validResponse.VisitExportFormResponsesResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// ListFormFieldOptions operation middleware
+func (sh *strictHandler) ListFormFieldOptions(w http.ResponseWriter, r *http.Request, tenantId TenantId, formId FormId, fieldKey FormFieldKey, params ListFormFieldOptionsParams) {
+	var request ListFormFieldOptionsRequestObject
+
+	request.TenantId = tenantId
+	request.FormId = formId
+	request.FieldKey = fieldKey
+	request.Params = params
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.ListFormFieldOptions(ctx, request.(ListFormFieldOptionsRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "ListFormFieldOptions")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(ListFormFieldOptionsResponseObject); ok {
+		if err := validResponse.VisitListFormFieldOptionsResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// PublishForm operation middleware
+func (sh *strictHandler) PublishForm(w http.ResponseWriter, r *http.Request, tenantId TenantId, formId FormId, params PublishFormParams) {
+	var request PublishFormRequestObject
+
+	request.TenantId = tenantId
+	request.FormId = formId
+	request.Params = params
+
+	var body PublishFormJSONRequestBody
+	if err := json.NewDecoder(r.Body).Decode(&body); err != nil {
+		sh.options.RequestErrorHandlerFunc(w, r, fmt.Errorf("can't decode JSON body: %w", err))
+		return
+	}
+	request.Body = &body
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.PublishForm(ctx, request.(PublishFormRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "PublishForm")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(PublishFormResponseObject); ok {
+		if err := validResponse.VisitPublishFormResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
 // ListFormResponses operation middleware
 func (sh *strictHandler) ListFormResponses(w http.ResponseWriter, r *http.Request, tenantId TenantId, formId FormId, params ListFormResponsesParams) {
 	var request ListFormResponsesRequestObject
@@ -4972,6 +12340,41 @@ func (sh *strictHandler) ListFormResponses(w http.ResponseWriter, r *http.Reques
 		sh.options.ResponseErrorHandlerFunc(w, r, err)
 	} else if validResponse, ok := response.(ListFormResponsesResponseObject); ok {
 		if err := validResponse.VisitListFormResponsesResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// SubmitFormResponse operation middleware
+func (sh *strictHandler) SubmitFormResponse(w http.ResponseWriter, r *http.Request, tenantId TenantId, formId FormId, params SubmitFormResponseParams) {
+	var request SubmitFormResponseRequestObject
+
+	request.TenantId = tenantId
+	request.FormId = formId
+	request.Params = params
+
+	var body SubmitFormResponseJSONRequestBody
+	if err := json.NewDecoder(r.Body).Decode(&body); err != nil {
+		sh.options.RequestErrorHandlerFunc(w, r, fmt.Errorf("can't decode JSON body: %w", err))
+		return
+	}
+	request.Body = &body
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.SubmitFormResponse(ctx, request.(SubmitFormResponseRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "SubmitFormResponse")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(SubmitFormResponseResponseObject); ok {
+		if err := validResponse.VisitSubmitFormResponseResponse(w); err != nil {
 			sh.options.ResponseErrorHandlerFunc(w, r, err)
 		}
 	} else if response != nil {
@@ -5036,6 +12439,219 @@ func (sh *strictHandler) ReviewFormResponse(w http.ResponseWriter, r *http.Reque
 		sh.options.ResponseErrorHandlerFunc(w, r, err)
 	} else if validResponse, ok := response.(ReviewFormResponseResponseObject); ok {
 		if err := validResponse.VisitReviewFormResponseResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// RetryFormResponseAction operation middleware
+func (sh *strictHandler) RetryFormResponseAction(w http.ResponseWriter, r *http.Request, tenantId TenantId, formId FormId, responseId ResponseId, ruleId FormRuleId, params RetryFormResponseActionParams) {
+	var request RetryFormResponseActionRequestObject
+
+	request.TenantId = tenantId
+	request.FormId = formId
+	request.ResponseId = responseId
+	request.RuleId = ruleId
+	request.Params = params
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.RetryFormResponseAction(ctx, request.(RetryFormResponseActionRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "RetryFormResponseAction")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(RetryFormResponseActionResponseObject); ok {
+		if err := validResponse.VisitRetryFormResponseActionResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// ListFormRules operation middleware
+func (sh *strictHandler) ListFormRules(w http.ResponseWriter, r *http.Request, tenantId TenantId, formId FormId) {
+	var request ListFormRulesRequestObject
+
+	request.TenantId = tenantId
+	request.FormId = formId
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.ListFormRules(ctx, request.(ListFormRulesRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "ListFormRules")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(ListFormRulesResponseObject); ok {
+		if err := validResponse.VisitListFormRulesResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// CreateFormRule operation middleware
+func (sh *strictHandler) CreateFormRule(w http.ResponseWriter, r *http.Request, tenantId TenantId, formId FormId, params CreateFormRuleParams) {
+	var request CreateFormRuleRequestObject
+
+	request.TenantId = tenantId
+	request.FormId = formId
+	request.Params = params
+
+	var body CreateFormRuleJSONRequestBody
+	if err := json.NewDecoder(r.Body).Decode(&body); err != nil {
+		sh.options.RequestErrorHandlerFunc(w, r, fmt.Errorf("can't decode JSON body: %w", err))
+		return
+	}
+	request.Body = &body
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.CreateFormRule(ctx, request.(CreateFormRuleRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "CreateFormRule")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(CreateFormRuleResponseObject); ok {
+		if err := validResponse.VisitCreateFormRuleResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// DeleteFormRule operation middleware
+func (sh *strictHandler) DeleteFormRule(w http.ResponseWriter, r *http.Request, tenantId TenantId, formId FormId, ruleId FormRuleId, params DeleteFormRuleParams) {
+	var request DeleteFormRuleRequestObject
+
+	request.TenantId = tenantId
+	request.FormId = formId
+	request.RuleId = ruleId
+	request.Params = params
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.DeleteFormRule(ctx, request.(DeleteFormRuleRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "DeleteFormRule")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(DeleteFormRuleResponseObject); ok {
+		if err := validResponse.VisitDeleteFormRuleResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// UpdateFormRule operation middleware
+func (sh *strictHandler) UpdateFormRule(w http.ResponseWriter, r *http.Request, tenantId TenantId, formId FormId, ruleId FormRuleId, params UpdateFormRuleParams) {
+	var request UpdateFormRuleRequestObject
+
+	request.TenantId = tenantId
+	request.FormId = formId
+	request.RuleId = ruleId
+	request.Params = params
+
+	var body UpdateFormRuleJSONRequestBody
+	if err := json.NewDecoder(r.Body).Decode(&body); err != nil {
+		sh.options.RequestErrorHandlerFunc(w, r, fmt.Errorf("can't decode JSON body: %w", err))
+		return
+	}
+	request.Body = &body
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.UpdateFormRule(ctx, request.(UpdateFormRuleRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "UpdateFormRule")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(UpdateFormRuleResponseObject); ok {
+		if err := validResponse.VisitUpdateFormRuleResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// BackfillFormRule operation middleware
+func (sh *strictHandler) BackfillFormRule(w http.ResponseWriter, r *http.Request, tenantId TenantId, formId FormId, ruleId FormRuleId, params BackfillFormRuleParams) {
+	var request BackfillFormRuleRequestObject
+
+	request.TenantId = tenantId
+	request.FormId = formId
+	request.RuleId = ruleId
+	request.Params = params
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.BackfillFormRule(ctx, request.(BackfillFormRuleRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "BackfillFormRule")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(BackfillFormRuleResponseObject); ok {
+		if err := validResponse.VisitBackfillFormRuleResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// GetFormResponseSummary operation middleware
+func (sh *strictHandler) GetFormResponseSummary(w http.ResponseWriter, r *http.Request, tenantId TenantId, formId FormId) {
+	var request GetFormResponseSummaryRequestObject
+
+	request.TenantId = tenantId
+	request.FormId = formId
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.GetFormResponseSummary(ctx, request.(GetFormResponseSummaryRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "GetFormResponseSummary")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(GetFormResponseSummaryResponseObject); ok {
+		if err := validResponse.VisitGetFormResponseSummaryResponse(w); err != nil {
 			sh.options.ResponseErrorHandlerFunc(w, r, err)
 		}
 	} else if response != nil {

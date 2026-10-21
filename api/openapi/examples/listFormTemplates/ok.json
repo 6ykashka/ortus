@@ -1,0 +1,154 @@
+{
+  "items": [
+    {
+      "id": "blank",
+      "category": "basic",
+      "name": "Пустая форма",
+      "icon": "note_add",
+      "moduleKey": null,
+      "available": true,
+      "pageCount": 1,
+      "questionCount": 1
+    },
+    {
+      "id": "tpl-profile",
+      "category": "basic",
+      "name": "Анкета",
+      "icon": "badge",
+      "moduleKey": null,
+      "available": true,
+      "pageCount": 1,
+      "questionCount": 6
+    },
+    {
+      "id": "tpl-feedback",
+      "category": "basic",
+      "name": "Форма обратной связи",
+      "icon": "forum",
+      "moduleKey": null,
+      "available": true,
+      "pageCount": 1,
+      "questionCount": 5
+    },
+    {
+      "id": "tpl-request",
+      "category": "basic",
+      "name": "Заявка на услугу или работу",
+      "icon": "assignment_add",
+      "moduleKey": null,
+      "available": true,
+      "pageCount": 2,
+      "questionCount": 8
+    },
+    {
+      "id": "tpl-event",
+      "category": "basic",
+      "name": "Регистрация на обучение",
+      "icon": "event_available",
+      "moduleKey": null,
+      "available": true,
+      "pageCount": 2,
+      "questionCount": 7
+    },
+    {
+      "id": "tpl-csat",
+      "category": "survey",
+      "name": "CSAT · удовлетворённость",
+      "icon": "sentiment_satisfied",
+      "moduleKey": null,
+      "available": true,
+      "pageCount": 1,
+      "questionCount": 2
+    },
+    {
+      "id": "tpl-nps",
+      "category": "survey",
+      "name": "NPS · готовность рекомендовать",
+      "icon": "recommend",
+      "moduleKey": null,
+      "available": true,
+      "pageCount": 1,
+      "questionCount": 2
+    },
+    {
+      "id": "tpl-ces",
+      "category": "survey",
+      "name": "CES · лёгкость обращения",
+      "icon": "speed",
+      "moduleKey": null,
+      "available": true,
+      "pageCount": 1,
+      "questionCount": 2
+    },
+    {
+      "id": "tpl-support",
+      "category": "survey",
+      "name": "Оценка поддержки",
+      "icon": "support_agent",
+      "moduleKey": null,
+      "available": true,
+      "pageCount": 1,
+      "questionCount": 4
+    },
+    {
+      "id": "tpl-pulse",
+      "category": "people",
+      "name": "Пульс команды",
+      "icon": "monitor_heart",
+      "moduleKey": null,
+      "available": true,
+      "pageCount": 2,
+      "questionCount": 4
+    },
+    {
+      "id": "tpl-onboard",
+      "category": "people",
+      "name": "Онбординг сотрудника",
+      "icon": "person_add",
+      "moduleKey": null,
+      "available": true,
+      "pageCount": 3,
+      "questionCount": 7
+    },
+    {
+      "id": "tpl-quiz",
+      "category": "quiz",
+      "name": "Тест знаний с баллами",
+      "icon": "quiz",
+      "moduleKey": null,
+      "available": true,
+      "pageCount": 2,
+      "questionCount": 4
+    },
+    {
+      "id": "tpl-insp",
+      "category": "industry",
+      "name": "Круговой осмотр машины",
+      "icon": "local_shipping",
+      "moduleKey": "fleet",
+      "available": true,
+      "pageCount": 3,
+      "questionCount": 7
+    },
+    {
+      "id": "tpl-foreman",
+      "category": "industry",
+      "name": "Ежедневный отчёт прораба",
+      "icon": "construction",
+      "moduleKey": "repairs",
+      "available": false,
+      "pageCount": 2,
+      "questionCount": 7
+    },
+    {
+      "id": "tpl-spa",
+      "category": "industry",
+      "name": "Анкета клиента перед процедурой",
+      "icon": "spa",
+      "moduleKey": "spa",
+      "available": true,
+      "pageCount": 2,
+      "questionCount": 6
+    }
+  ]
+}

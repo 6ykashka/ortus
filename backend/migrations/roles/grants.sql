@@ -1,7 +1,7 @@
 -- W0.06 · гранты runtime-ролям после каждого Up (выполняет ortus_migrator, владелец БД).
 -- У API и worker нет DDL (design/docs/14-engineering.md:81): только CONNECT, USAGE схем и DML.
 -- CONNECT у PUBLIC отозван: к базам Ортус подключаются только роли с доступом к данным (ortus_provisioner — W1.02).
--- Неизменяемые записи (design/docs/10-data-model.md:38) — только INSERT: аудит, версии ролей и чек-листов,
+-- Неизменяемые записи (design/docs/10-data-model.md:38) — только INSERT: аудит, версии ролей, чек-листов и форм (W4.05),
 -- движения квоты; outbox.events меняет только worker (публикация, повторы), API только вставляет.
 do $$
 declare
@@ -24,7 +24,7 @@ begin
     revoke insert, update, delete, truncate on public.goose_db_version from ortus_api, ortus_worker;
   end if;
   foreach t in array array['public.platform_audit', 'audit.events', 'access.role_versions',
-                           'fleet.checklist_versions', 'files.quota_ledger'] loop
+                           'fleet.checklist_versions', 'files.quota_ledger', 'forms.versions'] loop
     if to_regclass(t) is not null then
       execute format('revoke update, delete, truncate on %s from ortus_api, ortus_worker', to_regclass(t));
     end if;

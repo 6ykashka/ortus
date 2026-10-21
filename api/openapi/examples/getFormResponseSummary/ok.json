@@ -1,0 +1,136 @@
+{
+  "formId": "3a5f4ca2-f3bf-5b37-819f-a9511aee0211",
+  "total": 2,
+  "questions": [
+    {
+      "fieldKey": "q-photos",
+      "label": "Фото: спереди, сзади, слева, справа, одометр",
+      "type": "photo",
+      "answered": 2,
+      "recentTexts": ["5 фото", "5 фото"]
+    },
+    {
+      "fieldKey": "q-odo",
+      "label": "Пробег по одометру, км",
+      "type": "number",
+      "answered": 2,
+      "numbers": {
+        "average": "84056",
+        "min": "83902",
+        "max": "84210"
+      }
+    },
+    {
+      "fieldKey": "q-fuel",
+      "label": "Уровень топлива",
+      "type": "choice",
+      "answered": 1,
+      "options": [
+        {
+          "key": "o1",
+          "label": "¼",
+          "count": 0,
+          "percent": 0
+        },
+        {
+          "key": "o2",
+          "label": "½",
+          "count": 0,
+          "percent": 0
+        },
+        {
+          "key": "o3",
+          "label": "¾",
+          "count": 1,
+          "percent": 100
+        },
+        {
+          "key": "o4",
+          "label": "Полный",
+          "count": 0,
+          "percent": 0
+        }
+      ]
+    },
+    {
+      "fieldKey": "q-checks",
+      "label": "Чек-лист: кузов, шины, документы",
+      "type": "multi",
+      "answered": 2,
+      "options": [
+        {
+          "key": "o1",
+          "label": "кузов",
+          "count": 2,
+          "percent": 100
+        },
+        {
+          "key": "o2",
+          "label": "шины",
+          "count": 2,
+          "percent": 100
+        },
+        {
+          "key": "o3",
+          "label": "документы",
+          "count": 2,
+          "percent": 100
+        }
+      ]
+    },
+    {
+      "fieldKey": "q-defect",
+      "label": "Есть дефекты?",
+      "type": "bool",
+      "answered": 1,
+      "options": [
+        {
+          "key": "true",
+          "label": "Да",
+          "count": 0,
+          "percent": 0
+        },
+        {
+          "key": "false",
+          "label": "Нет",
+          "count": 1,
+          "percent": 100
+        }
+      ]
+    },
+    {
+      "fieldKey": "q-defect-text",
+      "label": "Описание дефекта",
+      "type": "text",
+      "answered": 0,
+      "recentTexts": []
+    },
+    {
+      "fieldKey": "q-critical",
+      "label": "Дефект критический",
+      "type": "bool",
+      "answered": 0,
+      "options": [
+        {
+          "key": "true",
+          "label": "Да",
+          "count": 0,
+          "percent": 0
+        },
+        {
+          "key": "false",
+          "label": "Нет",
+          "count": 0,
+          "percent": 0
+        }
+      ]
+    },
+    {
+      "fieldKey": "q-fuel-t",
+      "label": "Уровень топлива",
+      "type": "text",
+      "answered": 1,
+      "recentTexts": ["почти полный"]
+    }
+  ]
+}

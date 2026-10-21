@@ -19,13 +19,13 @@ import (
 
 // Defines values for BooleanValueType.
 const (
-	BooleanValueTypeBoolean BooleanValueType = "boolean"
+	Boolean BooleanValueType = "boolean"
 )
 
 // Valid indicates whether the value is a known member of the BooleanValueType enum.
 func (e BooleanValueType) Valid() bool {
 	switch e {
-	case BooleanValueTypeBoolean:
+	case Boolean:
 		return true
 	default:
 		return false
@@ -131,42 +131,237 @@ func (e FilesValueType) Valid() bool {
 	}
 }
 
-// Defines values for FormFieldType.
+// Defines values for FormQuestionAccept.
 const (
-	FormFieldTypeBoolean      FormFieldType = "boolean"
-	FormFieldTypeDate         FormFieldType = "date"
-	FormFieldTypeDatetime     FormFieldType = "datetime"
-	FormFieldTypeFile         FormFieldType = "file"
-	FormFieldTypeMultiChoice  FormFieldType = "multi_choice"
-	FormFieldTypeNumber       FormFieldType = "number"
-	FormFieldTypeReference    FormFieldType = "reference"
-	FormFieldTypeSingleChoice FormFieldType = "single_choice"
-	FormFieldTypeText         FormFieldType = "text"
-	FormFieldTypeTextarea     FormFieldType = "textarea"
+	FormQuestionAcceptAny   FormQuestionAccept = "any"
+	FormQuestionAcceptDocs  FormQuestionAccept = "docs"
+	FormQuestionAcceptPhoto FormQuestionAccept = "photo"
 )
 
-// Valid indicates whether the value is a known member of the FormFieldType enum.
-func (e FormFieldType) Valid() bool {
+// Valid indicates whether the value is a known member of the FormQuestionAccept enum.
+func (e FormQuestionAccept) Valid() bool {
 	switch e {
-	case FormFieldTypeBoolean:
+	case FormQuestionAcceptAny:
 		return true
-	case FormFieldTypeDate:
+	case FormQuestionAcceptDocs:
 		return true
-	case FormFieldTypeDatetime:
+	case FormQuestionAcceptPhoto:
 		return true
-	case FormFieldTypeFile:
+	default:
+		return false
+	}
+}
+
+// Defines values for FormQuestionOptionOrder.
+const (
+	Alpha  FormQuestionOptionOrder = "alpha"
+	AsIs   FormQuestionOptionOrder = "as_is"
+	Random FormQuestionOptionOrder = "random"
+)
+
+// Valid indicates whether the value is a known member of the FormQuestionOptionOrder enum.
+func (e FormQuestionOptionOrder) Valid() bool {
+	switch e {
+	case Alpha:
 		return true
-	case FormFieldTypeMultiChoice:
+	case AsIs:
 		return true
-	case FormFieldTypeNumber:
+	case Random:
 		return true
-	case FormFieldTypeReference:
+	default:
+		return false
+	}
+}
+
+// Defines values for FormQuestionOptionView.
+const (
+	List  FormQuestionOptionView = "list"
+	Row   FormQuestionOptionView = "row"
+	Tiles FormQuestionOptionView = "tiles"
+)
+
+// Valid indicates whether the value is a known member of the FormQuestionOptionView enum.
+func (e FormQuestionOptionView) Valid() bool {
+	switch e {
+	case List:
 		return true
-	case FormFieldTypeSingleChoice:
+	case Row:
 		return true
-	case FormFieldTypeText:
+	case Tiles:
 		return true
-	case FormFieldTypeTextarea:
+	default:
+		return false
+	}
+}
+
+// Defines values for FormQuestionRefKind.
+const (
+	Object  FormQuestionRefKind = "object"
+	Task    FormQuestionRefKind = "task"
+	Trip    FormQuestionRefKind = "trip"
+	Vehicle FormQuestionRefKind = "vehicle"
+)
+
+// Valid indicates whether the value is a known member of the FormQuestionRefKind enum.
+func (e FormQuestionRefKind) Valid() bool {
+	switch e {
+	case Object:
+		return true
+	case Task:
+		return true
+	case Trip:
+		return true
+	case Vehicle:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for FormQuestionScaleMin.
+const (
+	N0 FormQuestionScaleMin = 0
+	N1 FormQuestionScaleMin = 1
+)
+
+// Valid indicates whether the value is a known member of the FormQuestionScaleMin enum.
+func (e FormQuestionScaleMin) Valid() bool {
+	switch e {
+	case N0:
+		return true
+	case N1:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for FormQuestionUnitLevel.
+const (
+	FormQuestionUnitLevelAny    FormQuestionUnitLevel = "any"
+	FormQuestionUnitLevelFirm   FormQuestionUnitLevel = "firm"
+	FormQuestionUnitLevelRegion FormQuestionUnitLevel = "region"
+)
+
+// Valid indicates whether the value is a known member of the FormQuestionUnitLevel enum.
+func (e FormQuestionUnitLevel) Valid() bool {
+	switch e {
+	case FormQuestionUnitLevelAny:
+		return true
+	case FormQuestionUnitLevelFirm:
+		return true
+	case FormQuestionUnitLevelRegion:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for FormQuestionType.
+const (
+	FormQuestionTypeBool      FormQuestionType = "bool"
+	FormQuestionTypeChoice    FormQuestionType = "choice"
+	FormQuestionTypeDate      FormQuestionType = "date"
+	FormQuestionTypeEmail     FormQuestionType = "email"
+	FormQuestionTypeInn       FormQuestionType = "inn"
+	FormQuestionTypeInt       FormQuestionType = "int"
+	FormQuestionTypeLongtext  FormQuestionType = "longtext"
+	FormQuestionTypeMoney     FormQuestionType = "money"
+	FormQuestionTypeMulti     FormQuestionType = "multi"
+	FormQuestionTypeNumber    FormQuestionType = "number"
+	FormQuestionTypePerson    FormQuestionType = "person"
+	FormQuestionTypePhone     FormQuestionType = "phone"
+	FormQuestionTypePhoto     FormQuestionType = "photo"
+	FormQuestionTypeRating    FormQuestionType = "rating"
+	FormQuestionTypeRef       FormQuestionType = "ref"
+	FormQuestionTypeScale     FormQuestionType = "scale"
+	FormQuestionTypeSelect    FormQuestionType = "select"
+	FormQuestionTypeStatement FormQuestionType = "statement"
+	FormQuestionTypeText      FormQuestionType = "text"
+	FormQuestionTypeUnit      FormQuestionType = "unit"
+	FormQuestionTypeUrl       FormQuestionType = "url"
+)
+
+// Valid indicates whether the value is a known member of the FormQuestionType enum.
+func (e FormQuestionType) Valid() bool {
+	switch e {
+	case FormQuestionTypeBool:
+		return true
+	case FormQuestionTypeChoice:
+		return true
+	case FormQuestionTypeDate:
+		return true
+	case FormQuestionTypeEmail:
+		return true
+	case FormQuestionTypeInn:
+		return true
+	case FormQuestionTypeInt:
+		return true
+	case FormQuestionTypeLongtext:
+		return true
+	case FormQuestionTypeMoney:
+		return true
+	case FormQuestionTypeMulti:
+		return true
+	case FormQuestionTypeNumber:
+		return true
+	case FormQuestionTypePerson:
+		return true
+	case FormQuestionTypePhone:
+		return true
+	case FormQuestionTypePhoto:
+		return true
+	case FormQuestionTypeRating:
+		return true
+	case FormQuestionTypeRef:
+		return true
+	case FormQuestionTypeScale:
+		return true
+	case FormQuestionTypeSelect:
+		return true
+	case FormQuestionTypeStatement:
+		return true
+	case FormQuestionTypeText:
+		return true
+	case FormQuestionTypeUnit:
+		return true
+	case FormQuestionTypeUrl:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for FormShowIfMode.
+const (
+	FormShowIfModeAll FormShowIfMode = "all"
+	FormShowIfModeAny FormShowIfMode = "any"
+)
+
+// Valid indicates whether the value is a known member of the FormShowIfMode enum.
+func (e FormShowIfMode) Valid() bool {
+	switch e {
+	case FormShowIfModeAll:
+		return true
+	case FormShowIfModeAny:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for FormShowIfConditionOperator.
+const (
+	Equals    FormShowIfConditionOperator = "equals"
+	NotEquals FormShowIfConditionOperator = "not_equals"
+)
+
+// Valid indicates whether the value is a known member of the FormShowIfConditionOperator enum.
+func (e FormShowIfConditionOperator) Valid() bool {
+	switch e {
+	case Equals:
+		return true
+	case NotEquals:
 		return true
 	default:
 		return false
@@ -391,13 +586,13 @@ func (e ProblemCode) Valid() bool {
 
 // Defines values for ReferenceValueType.
 const (
-	ReferenceValueTypeReference ReferenceValueType = "reference"
+	Reference ReferenceValueType = "reference"
 )
 
 // Valid indicates whether the value is a known member of the ReferenceValueType enum.
 func (e ReferenceValueType) Valid() bool {
 	switch e {
-	case ReferenceValueTypeReference:
+	case Reference:
 		return true
 	default:
 		return false
@@ -434,27 +629,6 @@ func (e UploadTicketMethod) Valid() bool {
 	}
 }
 
-// Defines values for VisibilityConditionOperator.
-const (
-	Contains  VisibilityConditionOperator = "contains"
-	Equals    VisibilityConditionOperator = "equals"
-	NotEquals VisibilityConditionOperator = "not_equals"
-)
-
-// Valid indicates whether the value is a known member of the VisibilityConditionOperator enum.
-func (e VisibilityConditionOperator) Valid() bool {
-	switch e {
-	case Contains:
-		return true
-	case Equals:
-		return true
-	case NotEquals:
-		return true
-	default:
-		return false
-	}
-}
-
 // BooleanValue defines model for BooleanValue.
 type BooleanValue struct {
 	Type  BooleanValueType `json:"type"`
@@ -464,16 +638,12 @@ type BooleanValue struct {
 // BooleanValueType defines model for BooleanValue.Type.
 type BooleanValueType string
 
-// ChoiceOption defines model for ChoiceOption.
-type ChoiceOption struct {
-	Key   string `json:"key"`
-	Label string `json:"label"`
-}
-
 // ChoicesValue defines model for ChoicesValue.
 type ChoicesValue struct {
-	Type  ChoicesValueType `json:"type"`
-	Value []string         `json:"value"`
+	// OtherText W4.05 (0.11.0-stage4). «Другое — свой вариант» of a question with FormQuestion.otherOption — the text of the respondent; value then carries the key other.
+	OtherText *string          `json:"otherText,omitempty"`
+	Type      ChoicesValueType `json:"type"`
+	Value     []string         `json:"value"`
 }
 
 // ChoicesValueType defines model for ChoicesValue.Type.
@@ -515,12 +685,6 @@ type FieldEntry struct {
 // FieldValue defines model for FieldValue.
 type FieldValue struct {
 	union json.RawMessage
-}
-
-// FieldVisibility AND conditions only in v0.1. Cycles and unknown field keys are rejected. Server repeats visibility/required-field evaluation during submit.
-type FieldVisibility struct {
-	Conditions []VisibilityCondition `json:"conditions"`
-	FieldKey   string                `json:"fieldKey"`
 }
 
 // File Complete verifies object size, MIME and checksum then queues scanning; 202 does not mean safe/ready. Operational release/review only accepts ready evidence belonging to the same object, tenant and actor purpose.
@@ -575,34 +739,171 @@ type FilesValue struct {
 // FilesValueType defines model for FilesValue.Type.
 type FilesValueType string
 
-// FormDefinition defines model for FormDefinition.
-type FormDefinition struct {
-	ConfirmationText string            `json:"confirmationText"`
-	Description      string            `json:"description"`
-	Fields           []FormField       `json:"fields"`
-	Title            string            `json:"title"`
-	Visibility       []FieldVisibility `json:"visibility"`
+// FormDefinitionV2 W4.05 (0.11.0-stage4). FormDefinition v2 — the questions of a draft or of an immutable version: pages in their order and questions in their order (the page of a question — pageId). At least one page («Удалить страницу» is disabled on the only page).
+type FormDefinitionV2 struct {
+	Fields []FormQuestion       `json:"fields"`
+	Pages  []FormPageDefinition `json:"pages"`
 }
 
-// FormField Public forms cannot expose arbitrary tenant reference datasets; allowlisted public choices are materialized into the published version. File fields require maxFiles, allowedMimeTypes and maxFileBytes. The effective public limit is the smaller of field, publication, tenant and global safety limits.
-type FormField struct {
-	AllowedMimeTypes *[]string `json:"allowedMimeTypes,omitempty"`
+// FormOption defines model for FormOption.
+type FormOption struct {
+	// Key The stable key of the option («o1»…); answers, conditions and «Только если» of rules compare keys (Q-W4.00-forms-3). other is reserved for «Другое».
+	Key string `json:"key"`
 
-	// BlockingValues W2.52 (0.6.1-stage2, D-30 комплекта). Option keys (ChoiceOption.key) of a single_choice or multi_choice field whose answer blocks the owning process. The inspection checklist (InspectionChecklist.definition) sets [fail] for an item with failureBlocksRelease: such an answer does not release the vehicle. A form without such a process ignores it.
-	BlockingValues     *[]string       `json:"blockingValues,omitempty"`
-	Key                string          `json:"key"`
-	Label              string          `json:"label"`
-	MaxFileBytes       *int            `json:"maxFileBytes,omitempty"`
-	MaxFiles           *int            `json:"maxFiles,omitempty"`
-	MaxLength          *int            `json:"maxLength,omitempty"`
-	Options            *[]ChoiceOption `json:"options,omitempty"`
-	ReferenceDatasetId *string         `json:"referenceDatasetId,omitempty"`
-	Required           bool            `json:"required"`
-	Type               FormFieldType   `json:"type"`
+	// Label «Вариант N»; an empty label is an issue of the draft («…: есть пустой вариант»).
+	Label string `json:"label"`
+
+	// Score «баллов» of the option when the form counts scores (FormSettings.scoring).
+	Score *int `json:"score,omitempty"`
 }
 
-// FormFieldType defines model for FormField.Type.
-type FormFieldType string
+// FormPageDefinition defines model for FormPageDefinition.
+type FormPageDefinition struct {
+	Id string `json:"id"`
+
+	// Shuffle «Перемешивать вопросы для каждого».
+	Shuffle *bool `json:"shuffle,omitempty"`
+
+	// Title «Название страницы» («Страница 1»).
+	Title string `json:"title"`
+}
+
+// FormQuestion W4.05 (0.11.0-stage4). A question of the builder (dc:571–580, 839–879). The key is the identifier of the question («Идентификатор вопроса», Q-W4.00-forms-6): the server accepts ^[a-zA-Z][a-zA-Z0-9_-]{0,63}$ (the keys of the seed — q-photos — included), the screen checks the rule of the prototype (2–60 characters, «Латиница, цифры, «_» и «-», с буквы, от 2 символов»); a key present in a published version is not renamed. The draft may be incomplete — empty text, no options; publishForm blocks such a draft (FormDraft.issues).
+type FormQuestion struct {
+	// Accept «Только фото» / «Документы: PDF, Word, Excel» / «Любые файлы» (photo).
+	Accept *FormQuestionAccept `json:"accept,omitempty"`
+
+	// DefaultValue «Значение по умолчанию» (not for photo, statement, multi); a hidden required question needs it.
+	DefaultValue *string `json:"defaultValue,omitempty"`
+
+	// Hidden «Скрытый вопрос не показывается. Значение — по умолчанию или из параметра ссылки ?{key}=…»
+	Hidden *bool `json:"hidden,omitempty"`
+
+	// Hint «Пояснение под вопросом».
+	Hint *string `json:"hint,omitempty"`
+	Key  string  `json:"key"`
+
+	// Label «Вопрос» («Текст» for statement).
+	Label string `json:"label"`
+
+	// MaxFileMb «до N МБ» (default 20).
+	MaxFileMb *int `json:"maxFileMb,omitempty"`
+
+	// MaxFiles «не больше N файлов» (default 5).
+	MaxFiles *int `json:"maxFiles,omitempty"`
+
+	// MaxLength «Длина ответа, символов» — до (text, longtext); «от» больше «до» is an issue.
+	MaxLength *int `json:"maxLength,omitempty"`
+
+	// MaxSelected «Сколько вариантов выбрать» — не больше (multi).
+	MaxSelected *int `json:"maxSelected,omitempty"`
+
+	// MaxValue «Допустимое значение» — до (number, int, money).
+	//
+	// Examples: 12.500
+	MaxValue *Decimal `json:"maxValue,omitempty"`
+
+	// MinLength «Длина ответа, символов» — от (text, longtext).
+	MinLength *int `json:"minLength,omitempty"`
+
+	// MinSelected «Сколько вариантов выбрать» — не меньше (multi).
+	MinSelected *int `json:"minSelected,omitempty"`
+
+	// MinValue «Допустимое значение» — от (number, int, money).
+	//
+	// Examples: 12.500
+	MinValue *Decimal `json:"minValue,omitempty"`
+
+	// OptionOrder «Как в списке» / «По алфавиту» / «В случайном порядке для каждого».
+	OptionOrder *FormQuestionOptionOrder `json:"optionOrder,omitempty"`
+
+	// OptionView «Списком» / «Плиткой» / «В один ряд».
+	OptionView *FormQuestionOptionView `json:"optionView,omitempty"`
+
+	// Options «Ответы» of choice, multi and select.
+	Options *[]FormOption `json:"options,omitempty"`
+
+	// OtherOption «Вариант «Другое» с вводом».
+	OtherOption *bool `json:"otherOption,omitempty"`
+
+	// PageId FormPageDefinition.id of the page of the question.
+	PageId string `json:"pageId"`
+
+	// RefKind «Объект CRM»: «Машина» / «Рейс» / «Объект ремонта» / «Задача» (ref).
+	RefKind *FormQuestionRefKind `json:"refKind,omitempty"`
+
+	// Required «Обязательный».
+	Required bool `json:"required"`
+
+	// ScaleLeftLabel «Подпись слева».
+	ScaleLeftLabel *string `json:"scaleLeftLabel,omitempty"`
+
+	// ScaleMax «Шкала» — до (scale; default 5).
+	ScaleMax *int `json:"scaleMax,omitempty"`
+
+	// ScaleMin «Шкала» — от (scale; default 1).
+	ScaleMin *FormQuestionScaleMin `json:"scaleMin,omitempty"`
+
+	// ScaleRightLabel «Подпись справа».
+	ScaleRightLabel *string `json:"scaleRightLabel,omitempty"`
+
+	// ShowIf W4.05 (0.11.0-stage4). «Показывать при условии» — «Все условия выполнены (И)» (all) / «Любое из условий (ИЛИ)» (any). A question shown by no condition is not asked and not required («Не показывался по условию»); the server repeats the evaluation at submission.
+	ShowIf *FormShowIf `json:"showIf,omitempty"`
+
+	// Type W4.05 (0.11.0-stage4, Q-W4.00-forms-5). The 21 active types of the prototype (TYPES, dc:474–482) in four groups — «Текст и числа»: text «Короткий текст», longtext «Длинный текст», number «Число», money «Сумма, ₽», email «Почта», phone «Телефон», inn «ИНН», url «Ссылка»; «Выбор»: choice «Один вариант», multi «Несколько вариантов», select «Выпадающий список», bool «Да / нет»; «Данные CRM»: person «Сотрудник», unit «Регион или фирма», ref «Объект CRM»; «Другие»: date «Дата», int «Целое число», scale «Оценка по шкале», rating «Оценка звёздами», photo «Файл или фото», statement «Текст без вопроса» (no answer). series «Серия вопросов» (FORM-06) and payment «Оплата» (FORM-05) are not types of the contract — the screen shows them disabled with the reason. Values of answers (FieldEntry.value): text, longtext, email, phone, inn, url — text; number — decimal; int, scale, rating — decimal (an integer); money — money (RUB); choice, select — choices (one FormOption.key), multi — choices (keys; other with otherText); bool — boolean; date — date (instant with withTime); photo — files (File ids of uploads of the purpose form_attachment, the owner forms/form — the form being answered); person — reference core/member, unit — reference core/org_unit, ref — reference of refKind (vehicle fleet/vehicle, trip fleet/trip, object repairs/repair_object, task tasks/task) with the label; a question not answered — absent or null.
+	Type FormQuestionType `json:"type"`
+
+	// UnitLevel «Что можно выбрать»: «Регион или фирму» / «Только регион» / «Только фирму» (unit).
+	UnitLevel *FormQuestionUnitLevel `json:"unitLevel,omitempty"`
+
+	// WithTime «Спрашивать время» (date).
+	WithTime *bool `json:"withTime,omitempty"`
+}
+
+// FormQuestionAccept «Только фото» / «Документы: PDF, Word, Excel» / «Любые файлы» (photo).
+type FormQuestionAccept string
+
+// FormQuestionOptionOrder «Как в списке» / «По алфавиту» / «В случайном порядке для каждого».
+type FormQuestionOptionOrder string
+
+// FormQuestionOptionView «Списком» / «Плиткой» / «В один ряд».
+type FormQuestionOptionView string
+
+// FormQuestionRefKind «Объект CRM»: «Машина» / «Рейс» / «Объект ремонта» / «Задача» (ref).
+type FormQuestionRefKind string
+
+// FormQuestionScaleMin «Шкала» — от (scale; default 1).
+type FormQuestionScaleMin int
+
+// FormQuestionUnitLevel «Что можно выбрать»: «Регион или фирму» / «Только регион» / «Только фирму» (unit).
+type FormQuestionUnitLevel string
+
+// FormQuestionType W4.05 (0.11.0-stage4, Q-W4.00-forms-5). The 21 active types of the prototype (TYPES, dc:474–482) in four groups — «Текст и числа»: text «Короткий текст», longtext «Длинный текст», number «Число», money «Сумма, ₽», email «Почта», phone «Телефон», inn «ИНН», url «Ссылка»; «Выбор»: choice «Один вариант», multi «Несколько вариантов», select «Выпадающий список», bool «Да / нет»; «Данные CRM»: person «Сотрудник», unit «Регион или фирма», ref «Объект CRM»; «Другие»: date «Дата», int «Целое число», scale «Оценка по шкале», rating «Оценка звёздами», photo «Файл или фото», statement «Текст без вопроса» (no answer). series «Серия вопросов» (FORM-06) and payment «Оплата» (FORM-05) are not types of the contract — the screen shows them disabled with the reason. Values of answers (FieldEntry.value): text, longtext, email, phone, inn, url — text; number — decimal; int, scale, rating — decimal (an integer); money — money (RUB); choice, select — choices (one FormOption.key), multi — choices (keys; other with otherText); bool — boolean; date — date (instant with withTime); photo — files (File ids of uploads of the purpose form_attachment, the owner forms/form — the form being answered); person — reference core/member, unit — reference core/org_unit, ref — reference of refKind (vehicle fleet/vehicle, trip fleet/trip, object repairs/repair_object, task tasks/task) with the label; a question not answered — absent or null.
+type FormQuestionType string
+
+// FormShowIf W4.05 (0.11.0-stage4). «Показывать при условии» — «Все условия выполнены (И)» (all) / «Любое из условий (ИЛИ)» (any). A question shown by no condition is not asked and not required («Не показывался по условию»); the server repeats the evaluation at submission.
+type FormShowIf struct {
+	Conditions []FormShowIfCondition `json:"conditions"`
+	Mode       FormShowIfMode        `json:"mode"`
+}
+
+// FormShowIfMode defines model for FormShowIf.Mode.
+type FormShowIfMode string
+
+// FormShowIfCondition defines model for FormShowIfCondition.
+type FormShowIfCondition struct {
+	// FieldKey A question above (an issue otherwise — «условие ссылается на вопрос ниже…», «…на удалённый вопрос»).
+	FieldKey string `json:"fieldKey"`
+
+	// Operator «равно» / «не равно».
+	Operator FormShowIfConditionOperator `json:"operator"`
+
+	// Value FormOption.key for choice, multi and select; true or false for bool; the text otherwise.
+	Value string `json:"value"`
+}
+
+// FormShowIfConditionOperator «равно» / «не равно».
+type FormShowIfConditionOperator string
 
 // Id Examples: 10000000-0000-4000-8000-000000000001
 type Id = openapi_types.UUID
@@ -688,10 +989,12 @@ type ProblemViolation struct {
 	Message string `json:"message"`
 }
 
-// PublicForm Only a sanitized published definition. No internal tenant IDs, reviewers, other responses, authenticated reference lookup, directory, dataset or file enumeration.
+// PublicForm Only a sanitized published definition. No internal tenant IDs, reviewers, other responses, authenticated reference lookup, directory, dataset or file enumeration. W4.05 (0.11.0-stage4, return 1): the guest never receives the key of a test or values he does not enter — FormOption.score of every option is removed (the server counts the score at submission, Q-W4.00-forms-24; presentation.showScore only says whether the result is shown after submission), and defaultValue of hidden questions is removed (the server applies it at submission; a hidden question stays in the definition with its key, so that a parameter of the link ?{key}=… can fill it — the page passes the parameters of its address in PublicResponseCreate.linkParams). The link is found by token_digest of forms.public_links (FormShare.publicToken). W4.05 (return 2): the tenant of the guest — by the same token_digest in the control index public_form_links (control 0009), the path carries no tenant.
 type PublicForm struct {
-	AcceptingResponses bool           `json:"acceptingResponses"`
-	Definition         FormDefinition `json:"definition"`
+	AcceptingResponses bool `json:"acceptingResponses"`
+
+	// Definition W4.05 (0.11.0-stage4, return 1). The acting version cut for a guest — without FormOption.score and without defaultValue of hidden questions (see PublicForm).
+	Definition FormDefinitionV2 `json:"definition"`
 
 	// FormId Examples: 10000000-0000-4000-8000-000000000001
 	FormId Id `json:"formId"`
@@ -699,20 +1002,38 @@ type PublicForm struct {
 	// NonceExpiresAt UTC RFC3339 instant. Write requests must use the Z suffix; retain the IANA timezone separately for local calendars.
 	//
 	// Examples: 2026-10-05T06:00:00Z
-	NonceExpiresAt  Instant `json:"nonceExpiresAt"`
-	SubmissionNonce string  `json:"submissionNonce"`
-	UploadAllowed   bool    `json:"uploadAllowed"`
-	UploadMaxBytes  int64   `json:"uploadMaxBytes"`
+	NonceExpiresAt Instant `json:"nonceExpiresAt"`
+
+	// Presentation W4.05 (0.11.0-stage4, Q-W4.00-forms-19). How the public form is drawn — the render of «Предпросмотр» without its panel: the logo and the name of the organization («Логотип и название организации»), the progress by pages, the button «Назад», the text after submission and whether the score is shown (FormSettings of the form). The colours of buttons come from «Оформление» of the organization.
+	Presentation    *PublicFormPresentation `json:"presentation,omitempty"`
+	SubmissionNonce string                  `json:"submissionNonce"`
+	UploadAllowed   bool                    `json:"uploadAllowed"`
+	UploadMaxBytes  int64                   `json:"uploadMaxBytes"`
 
 	// VersionId Examples: 10000000-0000-4000-8000-000000000001
 	VersionId Id `json:"versionId"`
 }
 
-// PublicResponseCreate Nonce is bound to public token+version+browser session; short-lived. Server can require antiAbuseToken at risk thresholds. Uploaded file IDs must belong to the same nonce/form field and be ready. A changed live version yields 409 form_version_changed rather than reinterpreting answers. Nonce is single-use for a committed response. Idempotency replay is checked after capability authorization but before the consumed-nonce rejection. Anonymous idempotency namespace is tenant+publicToken digest+nonce+operation; never one global anonymous actor.
+// PublicFormPresentation W4.05 (0.11.0-stage4, Q-W4.00-forms-19). How the public form is drawn — the render of «Предпросмотр» without its panel: the logo and the name of the organization («Логотип и название организации»), the progress by pages, the button «Назад», the text after submission and whether the score is shown (FormSettings of the form). The colours of buttons come from «Оформление» of the organization.
+type PublicFormPresentation struct {
+	BackButton       bool   `json:"backButton"`
+	ConfirmationText string `json:"confirmationText"`
+
+	// OrganizationName null — the form hides the logo and the name (showLogo false).
+	OrganizationName *string `json:"organizationName"`
+	ProgressBar      bool    `json:"progressBar"`
+	ShowScore        bool    `json:"showScore"`
+}
+
+// PublicResponseCreate Nonce is bound to public token+version+browser session; short-lived. Server can require antiAbuseToken at risk thresholds. Uploaded file IDs must belong to the same nonce/form field and be ready. A changed live version yields 409 form_version_changed rather than reinterpreting answers. Nonce is single-use for a committed response. Idempotency replay is checked after capability authorization but before the consumed-nonce rejection. Anonymous idempotency namespace is tenant+publicToken digest+nonce+operation; never one global anonymous actor. W4.05 (0.11.0-stage4, return 3; Q-W4.00-forms-20): the response of the channel public records the keys of hidden questions filled from linkParams in FormResponse.linkParamKeys (forms.responses.link_param_keys) — the value came from the link, not from the guest; a hidden question without a parameter takes its defaultValue on the server.
 type PublicResponseCreate struct {
-	Answers         []FieldEntry `json:"answers"`
-	AntiAbuseToken  *string      `json:"antiAbuseToken,omitempty"`
-	SubmissionNonce string       `json:"submissionNonce"`
+	// Answers W4.05 (0.11.0-stage4, return 3). Answers of the guest by FormQuestion.key. A guest is untrusted and never answers a hidden question: a hidden question key in answers — 422 validation_failed (code hidden, «Скрытый вопрос заполняют ссылка и значение по умолчанию»), so the guest cannot override the defaultValue the server applies (cut from PublicForm) or a parameter of the link; the value of a hidden question comes only from linkParams or defaultValue — as FormResponseCreate.answers.
+	Answers        []FieldEntry `json:"answers"`
+	AntiAbuseToken *string      `json:"antiAbuseToken,omitempty"`
+
+	// LinkParams W4.05 (0.11.0-stage4, return 3; Q-W4.00-forms-20). Values of hidden questions from the parameters of the public link (?key=…): the page of the guest passes the parameters of its address. Only hidden questions of the version, never CRM and file questions; a key of another question or an unknown key — 422 validation_failed on linkParams.{key} (code not_hidden, «Параметр ссылки — только для скрытого вопроса»). The value is text up to 500 characters; the same schema as FormResponseCreate.linkParams.
+	LinkParams      *map[string]string `json:"linkParams,omitempty"`
+	SubmissionNonce string             `json:"submissionNonce"`
 
 	// VersionId Examples: 10000000-0000-4000-8000-000000000001
 	VersionId Id `json:"versionId"`
@@ -758,7 +1079,9 @@ type PublicUploadStatusQuery struct {
 
 // ReferenceValue defines model for ReferenceValue.
 type ReferenceValue struct {
-	Type ReferenceValueType `json:"type"`
+	// Label W4.05 (0.11.0-stage4, Q-W4.00-forms-23). The label of the object at the moment of the answer («Рейс Р-196», «Марина Котова») — kept when the object is renamed or hidden later; set by the server.
+	Label *string            `json:"label,omitempty"`
+	Type  ReferenceValueType `json:"type"`
 
 	// Value Server verifies same-tenant ownership and target visibility. A reference never grants access.
 	Value ObjectRef `json:"value"`
@@ -797,16 +1120,6 @@ type UploadTicket struct {
 
 // UploadTicketMethod defines model for UploadTicket.Method.
 type UploadTicketMethod string
-
-// VisibilityCondition defines model for VisibilityCondition.
-type VisibilityCondition struct {
-	Operator       VisibilityConditionOperator `json:"operator"`
-	SourceFieldKey string                      `json:"sourceFieldKey"`
-	Value          FieldValue                  `json:"value"`
-}
-
-// VisibilityConditionOperator defines model for VisibilityCondition.Operator.
-type VisibilityConditionOperator string
 
 // IdempotencyKey defines model for IdempotencyKey.
 type IdempotencyKey = string
@@ -853,8 +1166,17 @@ type ExportJobId = Id
 // FileId Examples: 10000000-0000-4000-8000-000000000001
 type FileId = Id
 
+// FormFieldKey defines model for formFieldKey.
+type FormFieldKey = string
+
+// FormGroupId Examples: 10000000-0000-4000-8000-000000000001
+type FormGroupId = Id
+
 // FormId Examples: 10000000-0000-4000-8000-000000000001
 type FormId = Id
+
+// FormRuleId Examples: 10000000-0000-4000-8000-000000000001
+type FormRuleId = Id
 
 // GroupId Examples: 10000000-0000-4000-8000-000000000001
 type GroupId = Id

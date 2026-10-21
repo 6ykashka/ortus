@@ -1,4 +1,6 @@
 # Контракт Ортус · тег Forms: пути и операции. Пишет только стюард контракта (план v2 §3.5).
+# W4.05 (0.11.0-stage4, контрактный PR 4 этапа 4): черновик и публикация из черновика, правила, перенос и повтор
+# действий, отправка сотрудником, сводка, CSV, варианты вопросов CRM, шаблоны, группы; FormPatch v2 (C п. 13).
 /api/v1/tenants/{tenantId}/forms:
   parameters:
     - $ref: ../components/common/parameters.yaml#/tenantId
@@ -10,7 +12,7 @@
     x-permissions:
       - forms.read
     x-scope: tenant-org-unit-project
-    description: List scoped form definitions
+    description: "List scoped form definitions. W4.05 (0.11.0-stage4, «Формы и группы»): forms whose area (Form.orgUnitId; null — the whole organization) is covered by a grant of forms.read of the member, the latest change first. Filters: q — the name contains the text without regard to case («Поиск»); owner=me — «Мои формы»; status — «Черновики» (draft), «Принимают ответы» (open — published), «Приём закрыт» (closed); groupId — the forms of a group. An empty list after filters — «Ничего не найдено»."
     responses:
       "200":
         description: Successful result.
@@ -41,6 +43,37 @@
     parameters:
       - $ref: ../components/common/parameters.yaml#/Cursor
       - $ref: ../components/common/parameters.yaml#/Limit
+      - name: q
+        in: query
+        required: false
+        description: W4.05 (0.11.0-stage4). «Поиск формы» — a part of the name.
+        schema:
+          type: string
+          maxLength: 100
+      - name: owner
+        in: query
+        required: false
+        description: W4.05 (0.11.0-stage4). me — «Мои формы» (the owner is the requesting member).
+        schema:
+          type: string
+          enum:
+            - me
+      - name: status
+        in: query
+        required: false
+        description: W4.05 (0.11.0-stage4). draft — «Черновики», open — «Принимают ответы», closed — «Приём закрыт».
+        schema:
+          type: string
+          enum:
+            - draft
+            - open
+            - closed
+      - name: groupId
+        in: query
+        required: false
+        description: W4.05 (0.11.0-stage4). Forms of the group (FormGroup.id).
+        schema:
+          $ref: ../components/common/schemas.yaml#/Id
     x-permissions-mode: all
   post:
     operationId: createForm
@@ -50,7 +83,7 @@
     x-permissions:
       - forms.create
     x-scope: tenant-org-unit-project
-    description: Create a form and immutable initial version
+    description: "Create a form and immutable initial version. W4.05 (0.11.0-stage4, D-24 комплекта, Q-W4.00-forms-1): the form is created as a draft without versions and rules — responses are accepted after publishForm of v1, which creates the immutable version. forms.create in the area of the form (orgUnitId; null — the organization). Texts of the prototype (api.js:590–595): 422 validation_failed «Укажите название формы — не короче 3 символов», «Форма «{name}» уже есть — измените название» (name), «Шаблон не найден» (templateId), «Область не найдена» (orgUnitId), «Форма не найдена» (sourceFormId the member does not see); 403 module_not_installed «Модуль «{module}» не подключён: шаблон недоступен» (a template of a module that is not active). Answers the form; the screen opens «Конструктор» (getFormDraft) and toasts «Создан черновик «{name}»» / «Создана копия «{name}»». Event forms.form.created.v1 (the owners — «Создан черновик формы «…» из шаблона «…»»)."
     responses:
       "201":
         description: Successful result.
@@ -112,7 +145,7 @@
     x-permissions:
       - forms.read
     x-scope: tenant-org-unit-project
-    description: Read form metadata and version pointers
+    description: "Read form metadata and version pointers. W4.05 (0.11.0-stage4): the form with its settings, counters, links «Поделиться» (FormShare) and the rights of the member on it (FormMy); a form outside the grants of forms.read of the member — 404 «Форма не найдена», as a missing one. The ETag is Form.revision."
     responses:
       "200":
         description: Successful result.
@@ -151,7 +184,7 @@
     x-permissions:
       - forms.manage
     x-scope: tenant-org-unit-project
-    description: Rename or close submissions
+    description: "Rename or close submissions. W4.05 (0.11.0-stage4, C п. 13, FormPatch v2): the name, «Закрыть приём ответов» / «Возобновить приём ответов» (status closed / open — a published form only, otherwise 409 invalid_transition, reason form_not_published «Форма ещё не опубликована»), the area («Область формы изменена»), the group («Переместить в группу», FormGroup.id or null), the settings (FormSettingsPatch). forms.manage in the area of the form (and in the new area). Settings access public additionally requires forms.publish_public (403 «Нужно право «Публичные ссылки»») and a draft and version without CRM questions (422 «Публичный доступ невозможен: вопрос «…» спрашивает данные CRM»). Texts of the prototype: «Название формы — не короче 3 символов», «Форма «…» уже есть», «Лимит ответов — положительное число», «Область не найдена», «Группа не найдена» (422 validation_failed, violations by field). If-Match — Form.revision. Events forms.form.updated.v1, forms.form.closed.v1, forms.form.reopened.v1 («Закрыт приём ответов: «…»» / «Возобновлён приём ответов: «…»»)."
     responses:
       "200":
         description: Successful result.
@@ -204,6 +237,218 @@
           schema:
             $ref: ../components/forms/schemas.yaml#/FormPatch
     x-permissions-mode: all
+/api/v1/tenants/{tenantId}/forms/{formId}/draft:
+  parameters:
+    - $ref: ../components/common/parameters.yaml#/tenantId
+    - $ref: ../components/common/parameters.yaml#/formId
+  get:
+    operationId: getFormDraft
+    tags:
+      - Forms
+    summary: Read the draft of the questions of a form
+    x-permissions:
+      - forms.read
+    x-scope: tenant-org-unit-project
+    description: "W4.05 (0.11.0-stage4, Q-W4.00-forms-1, tab «Конструктор»): the draft — the questions being edited, or the acting version when there are no unpublished changes (hasChanges false) — with the issues that block the publication («До публикации исправьте»). Read-only members (forms.read without forms.manage) see the same draft with fields disabled. The ETag is FormDraft.revision."
+    responses:
+      "200":
+        description: Successful result.
+        headers:
+          X-Request-Id:
+            $ref: ../components/common/headers.yaml#/RequestId
+          ETag:
+            $ref: ../components/common/headers.yaml#/ETag
+          Cache-Control: &a1
+            description: Never cache authenticated, confidential or capability-bearing API responses in shared caches.
+            schema:
+              type: string
+              const: private, no-store
+        content:
+          application/json:
+            schema:
+              $ref: ../components/forms/schemas.yaml#/FormDraft
+      "400":
+        $ref: ../components/common/responses.yaml#/BadRequest
+      "401":
+        $ref: ../components/common/responses.yaml#/Unauthenticated
+      "403":
+        $ref: ../components/common/responses.yaml#/Forbidden
+      "404":
+        $ref: ../components/common/responses.yaml#/NotFound
+      "422":
+        $ref: ../components/common/responses.yaml#/Validation
+      "429":
+        $ref: ../components/common/responses.yaml#/RateLimited
+    x-permissions-mode: all
+  put:
+    operationId: saveFormDraft
+    tags:
+      - Forms
+    summary: Save the whole draft of a form
+    x-permissions:
+      - forms.manage
+    x-scope: tenant-org-unit-project
+    description: "W4.05 (0.11.0-stage4, prototype saveFormDraft, autosave 700 ms — «Сохраняем черновик…», «Черновик сохранён», «Черновик не сохранён: {err}»). Replaces the draft; incomplete questions are issues, not errors. If-Match — FormDraft.revision: the draft changed by another editor — 412 revision_mismatch «Черновик изменил другой редактор — обновите страницу». 422 validation_failed (violations by question key): structure errors — «Такой идентификатор уже есть» (a key repeated), «Страница не найдена» (a question on a missing page), «Идентификатор нельзя изменить: вопрос есть в опубликованной версии.» is a rule of the screen, not of the server (a renamed key is a new question). The subscription in read-only — 403 tenant_read_only (the backend blocks every change, unlike the prototype — Q-65)."
+    responses:
+      "200":
+        description: Successful result.
+        headers:
+          X-Request-Id:
+            $ref: ../components/common/headers.yaml#/RequestId
+          ETag:
+            $ref: ../components/common/headers.yaml#/ETag
+          Idempotency-Replayed:
+            $ref: ../components/common/headers.yaml#/IdempotencyReplayed
+          Cache-Control: *a1
+        content:
+          application/json:
+            schema:
+              $ref: ../components/forms/schemas.yaml#/FormDraft
+      "400":
+        $ref: ../components/common/responses.yaml#/BadRequest
+      "401":
+        $ref: ../components/common/responses.yaml#/Unauthenticated
+      "402":
+        $ref: ../components/common/responses.yaml#/PlanRequired
+      "403":
+        $ref: ../components/common/responses.yaml#/Forbidden
+      "404":
+        $ref: ../components/common/responses.yaml#/NotFound
+      "409":
+        $ref: ../components/common/responses.yaml#/Conflict
+      "412":
+        $ref: ../components/common/responses.yaml#/PreconditionFailed
+      "422":
+        $ref: ../components/common/responses.yaml#/Validation
+      "428":
+        $ref: ../components/common/responses.yaml#/PreconditionRequired
+      "429":
+        $ref: ../components/common/responses.yaml#/RateLimited
+    x-csrf-required-for-cookie: true
+    parameters:
+      - $ref: ../components/common/parameters.yaml#/IdempotencyKey
+      - $ref: ../components/common/parameters.yaml#/Csrf
+      - $ref: ../components/common/parameters.yaml#/Origin
+      - $ref: ../components/common/parameters.yaml#/IfMatch
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: ../components/forms/schemas.yaml#/FormDraftSave
+    x-permissions-mode: all
+  delete:
+    operationId: discardFormDraft
+    tags:
+      - Forms
+    summary: Discard the unpublished changes of a form
+    x-permissions:
+      - forms.manage
+    x-scope: tenant-org-unit-project
+    description: "W4.05 (0.11.0-stage4, prototype discardFormDraft, «Отменить неопубликованные изменения»): the draft becomes the acting version again («Изменения отменены: действует vN»). A form never published — 409 invalid_transition, reason form_not_published «У формы ещё нет опубликованной версии». If-Match — FormDraft.revision. Answers the draft after the discard."
+    responses:
+      "200":
+        description: Successful result.
+        headers:
+          X-Request-Id:
+            $ref: ../components/common/headers.yaml#/RequestId
+          ETag:
+            $ref: ../components/common/headers.yaml#/ETag
+          Idempotency-Replayed:
+            $ref: ../components/common/headers.yaml#/IdempotencyReplayed
+          Cache-Control: *a1
+        content:
+          application/json:
+            schema:
+              $ref: ../components/forms/schemas.yaml#/FormDraft
+      "400":
+        $ref: ../components/common/responses.yaml#/BadRequest
+      "401":
+        $ref: ../components/common/responses.yaml#/Unauthenticated
+      "402":
+        $ref: ../components/common/responses.yaml#/PlanRequired
+      "403":
+        $ref: ../components/common/responses.yaml#/Forbidden
+      "404":
+        $ref: ../components/common/responses.yaml#/NotFound
+      "409":
+        $ref: ../components/common/responses.yaml#/Conflict
+      "412":
+        $ref: ../components/common/responses.yaml#/PreconditionFailed
+      "422":
+        $ref: ../components/common/responses.yaml#/Validation
+      "428":
+        $ref: ../components/common/responses.yaml#/PreconditionRequired
+      "429":
+        $ref: ../components/common/responses.yaml#/RateLimited
+    x-csrf-required-for-cookie: true
+    parameters:
+      - $ref: ../components/common/parameters.yaml#/IdempotencyKey
+      - $ref: ../components/common/parameters.yaml#/Csrf
+      - $ref: ../components/common/parameters.yaml#/Origin
+      - $ref: ../components/common/parameters.yaml#/IfMatch
+    x-permissions-mode: all
+/api/v1/tenants/{tenantId}/forms/{formId}/publish:
+  parameters:
+    - $ref: ../components/common/parameters.yaml#/tenantId
+    - $ref: ../components/common/parameters.yaml#/formId
+  post:
+    operationId: publishForm
+    tags:
+      - Forms
+    summary: Publish the draft as the next immutable version
+    x-permissions:
+      - forms.publish
+    x-scope: tenant-org-unit-project
+    description: "W4.05 (0.11.0-stage4, prototype publishForm, dialog «Опубликовать «{name}» vN?»): the draft of revision draftRevision becomes version N+1 (a question whose type changed gets the key «{key}-v{N}»), the form accepts responses (status published), the draft equals the new version. If-Match — Form.revision; a draft changed since — 412 revision_mismatch «Черновик изменил другой редактор — обновите страницу». Blocking issues — 422 validation_failed, detail «Найдено ошибок: N. Исправьте их в конструкторе.», violations (field — the question key or form, message — the text of issues(); the checks of api.js with their texts come first: «В форме нет ни одного вопроса», «У вопроса нет текста», «У вопроса «…» нет вариантов ответа», «Публичная форма не может спрашивать «…»: справочники CRM гостю не показываются», «Повторяется идентификатор вопроса …» — Q-W4.00-forms-4). Nothing changed — 409 invalid_transition, reason form_no_changes. A public form requires forms.publish_public as well (403). Answers the form (publishedVersionNumber — «Опубликована версия vN формы «…»»). Event forms.version.published.v1 (the owners — «Опубликована форма «…» vN. Старые ответы сохраняют свои версии»); rules keep their own versions."
+    responses:
+      "200":
+        description: Successful result.
+        headers:
+          X-Request-Id:
+            $ref: ../components/common/headers.yaml#/RequestId
+          ETag:
+            $ref: ../components/common/headers.yaml#/ETag
+          Idempotency-Replayed:
+            $ref: ../components/common/headers.yaml#/IdempotencyReplayed
+          Cache-Control: *a1
+        content:
+          application/json:
+            schema:
+              $ref: ../components/forms/schemas.yaml#/Form
+      "400":
+        $ref: ../components/common/responses.yaml#/BadRequest
+      "401":
+        $ref: ../components/common/responses.yaml#/Unauthenticated
+      "402":
+        $ref: ../components/common/responses.yaml#/PlanRequired
+      "403":
+        $ref: ../components/common/responses.yaml#/Forbidden
+      "404":
+        $ref: ../components/common/responses.yaml#/NotFound
+      "409":
+        $ref: ../components/common/responses.yaml#/Conflict
+      "412":
+        $ref: ../components/common/responses.yaml#/PreconditionFailed
+      "422":
+        $ref: ../components/common/responses.yaml#/Validation
+      "428":
+        $ref: ../components/common/responses.yaml#/PreconditionRequired
+      "429":
+        $ref: ../components/common/responses.yaml#/RateLimited
+    x-csrf-required-for-cookie: true
+    parameters:
+      - $ref: ../components/common/parameters.yaml#/IdempotencyKey
+      - $ref: ../components/common/parameters.yaml#/Csrf
+      - $ref: ../components/common/parameters.yaml#/Origin
+      - $ref: ../components/common/parameters.yaml#/IfMatch
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: ../components/forms/schemas.yaml#/FormPublishRequest
+    x-permissions-mode: all
 /api/v1/tenants/{tenantId}/forms/{formId}/versions:
   parameters:
     - $ref: ../components/common/parameters.yaml#/tenantId
@@ -216,7 +461,7 @@
     x-permissions:
       - forms.read
     x-scope: tenant-org-unit-project
-    description: List immutable schema versions
+    description: "List immutable schema versions. W4.05 (0.11.0-stage4, tab «Версии»): the published versions, the newest first, with the v2 definition («Структура версии N · неизменяема»), the author, «вопросов: N» and the chip «Действует» (current); a form never published — an empty list («Форма ещё не публиковалась»). The client compares neighbouring versions («Добавлено», «Новый тип», «Текст изменён», «Изменено», «Убрано относительно предыдущей версии: «…»»)."
     responses:
       "200":
         description: Successful result.
@@ -256,7 +501,7 @@
     x-permissions:
       - forms.manage
     x-scope: tenant-org-unit-project
-    description: If-Match refers to the parent form metadata revision, preventing concurrent editors from silently moving latestVersionId. After success re-read GET form for the new ETag. Historical response schemas stay unchanged.
+    description: "If-Match refers to the parent form metadata revision, preventing concurrent editors from silently moving latestVersionId. After success re-read GET form for the new ETag. Historical response schemas stay unchanged. W4.05 (0.11.0-stage4, Q-W4.00-forms-1): deprecated — the draft on the server (saveFormDraft) and publishForm replace the pair createFormVersion + publishFormVersion; the server answers 409 invalid_transition, reason form_draft_flow."
     responses:
       "201":
         description: Successful result.
@@ -307,6 +552,7 @@
           schema:
             $ref: ../components/forms/schemas.yaml#/FormVersionCreate
     x-permissions-mode: all
+    deprecated: true
 /api/v1/tenants/{tenantId}/forms/{formId}/versions/{versionId}/publish:
   parameters:
     - $ref: ../components/common/parameters.yaml#/tenantId
@@ -320,7 +566,7 @@
     x-permissions:
       - forms.publish
     x-scope: tenant-org-unit-project
-    description: If-Match refers to parent form. Public publishing additionally requires forms.publish_public. Validate conditional rule graph and public-safe fields. The returned ETag is the new parent form revision.
+    description: "If-Match refers to parent form. Public publishing additionally requires forms.publish_public. Validate conditional rule graph and public-safe fields. The returned ETag is the new parent form revision. W4.05 (0.11.0-stage4, Q-W4.00-forms-1, -2): deprecated — publishForm publishes the draft; access, deadline, limit and retention are settings of the form (updateForm). The server answers 409 invalid_transition, reason form_draft_flow."
     responses:
       "200":
         description: Successful result.
@@ -373,6 +619,256 @@
           schema:
             $ref: ../components/forms/schemas.yaml#/FormPublish
     x-permissions-mode: all
+    deprecated: true
+/api/v1/tenants/{tenantId}/forms/{formId}/rules:
+  parameters:
+    - $ref: ../components/common/parameters.yaml#/tenantId
+    - $ref: ../components/common/parameters.yaml#/formId
+  get:
+    operationId: listFormRules
+    tags:
+      - Forms
+    summary: List the actions after a response
+    x-permissions:
+      - forms.read
+    x-scope: tenant-org-unit-project
+    description: "W4.05 (0.11.0-stage4, tab «Действия после ответа»): the rules of the form in the order of creation («Действий пока нет.»), with counters and, for kb, the page as the member sees it. Members without forms.manage see the cards with «Включено» disabled and «Открыть страницу» only. Return 1 (Q-W4.05-18): rules of kinds email and http come without their objects to a member without forms.manage in the area of the form — the address of the letter and the URL of the request (a secret of a webhook) stay with the members who configure the form."
+    responses:
+      "200":
+        description: Successful result.
+        headers:
+          X-Request-Id:
+            $ref: ../components/common/headers.yaml#/RequestId
+          Cache-Control: *a1
+        content:
+          application/json:
+            schema:
+              $ref: ../components/forms/schemas.yaml#/FormRuleList
+      "400":
+        $ref: ../components/common/responses.yaml#/BadRequest
+      "401":
+        $ref: ../components/common/responses.yaml#/Unauthenticated
+      "403":
+        $ref: ../components/common/responses.yaml#/Forbidden
+      "404":
+        $ref: ../components/common/responses.yaml#/NotFound
+      "422":
+        $ref: ../components/common/responses.yaml#/Validation
+      "429":
+        $ref: ../components/common/responses.yaml#/RateLimited
+    x-permissions-mode: all
+  post:
+    operationId: createFormRule
+    tags:
+      - Forms
+    summary: Add an action after a response
+    x-permissions:
+      - forms.manage
+    x-scope: tenant-org-unit-project
+    description: "W4.05 (0.11.0-stage4, «Новое действие: {вид}», «Действие добавлено»): the author is the requesting member — the action runs on his behalf. 422 validation_failed with the texts of the prototype: «Укажите название задачи», «Выберите, кого уведомить», «Укажите адрес почты», «Адрес запроса должен начинаться с https://», «Выберите страницу Базы знаний», «Выберите таблицу», «Укажите данные хотя бы для одного столбца» / «Выберите, что записать», «У поля нет названия», «Названия полей повторяются», «Подтвердите, что записи увидят все сотрудники с доступом к странице»; a page or a table the member does not see — «Страница не найдена»; a project the member may not create tasks in — «Нет права создавать задачи в проекте». A public form writes to the knowledge base only accepted responses: a kb rule of trigger submitted — 422 «Публичная форма: в Базу знаний попадают только принятые ответы, чтобы туда не попал спам.»."
+    responses:
+      "201":
+        description: Successful result.
+        headers:
+          X-Request-Id:
+            $ref: ../components/common/headers.yaml#/RequestId
+          ETag:
+            $ref: ../components/common/headers.yaml#/ETag
+          Idempotency-Replayed:
+            $ref: ../components/common/headers.yaml#/IdempotencyReplayed
+          Cache-Control: *a1
+        content:
+          application/json:
+            schema:
+              $ref: ../components/forms/schemas.yaml#/FormRule
+      "400":
+        $ref: ../components/common/responses.yaml#/BadRequest
+      "401":
+        $ref: ../components/common/responses.yaml#/Unauthenticated
+      "402":
+        $ref: ../components/common/responses.yaml#/PlanRequired
+      "403":
+        $ref: ../components/common/responses.yaml#/Forbidden
+      "404":
+        $ref: ../components/common/responses.yaml#/NotFound
+      "409":
+        $ref: ../components/common/responses.yaml#/Conflict
+      "422":
+        $ref: ../components/common/responses.yaml#/Validation
+      "428":
+        $ref: ../components/common/responses.yaml#/PreconditionRequired
+      "429":
+        $ref: ../components/common/responses.yaml#/RateLimited
+    x-csrf-required-for-cookie: true
+    parameters:
+      - $ref: ../components/common/parameters.yaml#/IdempotencyKey
+      - $ref: ../components/common/parameters.yaml#/Csrf
+      - $ref: ../components/common/parameters.yaml#/Origin
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: ../components/forms/schemas.yaml#/FormRuleCreate
+    x-permissions-mode: all
+/api/v1/tenants/{tenantId}/forms/{formId}/rules/{ruleId}:
+  parameters:
+    - $ref: ../components/common/parameters.yaml#/tenantId
+    - $ref: ../components/common/parameters.yaml#/formId
+    - $ref: ../components/common/parameters.yaml#/formRuleId
+  patch:
+    operationId: updateFormRule
+    tags:
+      - Forms
+    summary: Change or switch an action after a response
+    x-permissions:
+      - forms.manage
+    x-scope: tenant-org-unit-project
+    description: "W4.05 (0.11.0-stage4): «Включено» — enabled only, the version stays («Действие включено» / «Действие выключено»); «Изменить» — the version is raised («Действие обновлено · правило vN»), the author becomes the requesting member; the kind does not change (an object of another kind — 422). Validation as createFormRule. If-Match — FormRule.revision; a missing rule — 404 «Действие не найдено»."
+    responses:
+      "200":
+        description: Successful result.
+        headers:
+          X-Request-Id:
+            $ref: ../components/common/headers.yaml#/RequestId
+          ETag:
+            $ref: ../components/common/headers.yaml#/ETag
+          Idempotency-Replayed:
+            $ref: ../components/common/headers.yaml#/IdempotencyReplayed
+          Cache-Control: *a1
+        content:
+          application/json:
+            schema:
+              $ref: ../components/forms/schemas.yaml#/FormRule
+      "400":
+        $ref: ../components/common/responses.yaml#/BadRequest
+      "401":
+        $ref: ../components/common/responses.yaml#/Unauthenticated
+      "402":
+        $ref: ../components/common/responses.yaml#/PlanRequired
+      "403":
+        $ref: ../components/common/responses.yaml#/Forbidden
+      "404":
+        $ref: ../components/common/responses.yaml#/NotFound
+      "409":
+        $ref: ../components/common/responses.yaml#/Conflict
+      "412":
+        $ref: ../components/common/responses.yaml#/PreconditionFailed
+      "422":
+        $ref: ../components/common/responses.yaml#/Validation
+      "428":
+        $ref: ../components/common/responses.yaml#/PreconditionRequired
+      "429":
+        $ref: ../components/common/responses.yaml#/RateLimited
+    x-csrf-required-for-cookie: true
+    parameters:
+      - $ref: ../components/common/parameters.yaml#/IdempotencyKey
+      - $ref: ../components/common/parameters.yaml#/Csrf
+      - $ref: ../components/common/parameters.yaml#/Origin
+      - $ref: ../components/common/parameters.yaml#/IfMatch
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: ../components/forms/schemas.yaml#/FormRulePatch
+    x-permissions-mode: all
+  delete:
+    operationId: deleteFormRule
+    tags:
+      - Forms
+    summary: Delete an action after a response
+    x-permissions:
+      - forms.manage
+    x-scope: tenant-org-unit-project
+    description: "W4.05 (0.11.0-stage4): «Действие удалено» / «Действие удалено. Уже записанные строки остаются в Базе знаний». The journal of responses keeps its lines without «Повторить». If-Match — FormRule.revision; a missing rule — 404 «Действие не найдено»."
+    responses:
+      "204":
+        description: Completed with no response body.
+        headers:
+          X-Request-Id:
+            $ref: ../components/common/headers.yaml#/RequestId
+          Idempotency-Replayed:
+            $ref: ../components/common/headers.yaml#/IdempotencyReplayed
+          Cache-Control: *a1
+      "400":
+        $ref: ../components/common/responses.yaml#/BadRequest
+      "401":
+        $ref: ../components/common/responses.yaml#/Unauthenticated
+      "402":
+        $ref: ../components/common/responses.yaml#/PlanRequired
+      "403":
+        $ref: ../components/common/responses.yaml#/Forbidden
+      "404":
+        $ref: ../components/common/responses.yaml#/NotFound
+      "409":
+        $ref: ../components/common/responses.yaml#/Conflict
+      "412":
+        $ref: ../components/common/responses.yaml#/PreconditionFailed
+      "422":
+        $ref: ../components/common/responses.yaml#/Validation
+      "428":
+        $ref: ../components/common/responses.yaml#/PreconditionRequired
+      "429":
+        $ref: ../components/common/responses.yaml#/RateLimited
+    x-csrf-required-for-cookie: true
+    parameters:
+      - $ref: ../components/common/parameters.yaml#/IdempotencyKey
+      - $ref: ../components/common/parameters.yaml#/Csrf
+      - $ref: ../components/common/parameters.yaml#/Origin
+      - $ref: ../components/common/parameters.yaml#/IfMatch
+    x-permissions-mode: all
+/api/v1/tenants/{tenantId}/forms/{formId}/rules/{ruleId}/backfill:
+  parameters:
+    - $ref: ../components/common/parameters.yaml#/tenantId
+    - $ref: ../components/common/parameters.yaml#/formId
+    - $ref: ../components/common/parameters.yaml#/formRuleId
+  post:
+    operationId: backfillFormRule
+    tags:
+      - Forms
+    summary: Write the earlier responses by a knowledge base action
+    x-permissions:
+      - forms.manage
+    x-scope: tenant-org-unit-project
+    description: "W4.05 (0.11.0-stage4, prototype backfillKbRule, «Перенести прошлые ответы · N»): the responses that fit the enabled kb rule and were not written yet, by number; one result per «response × rule» (forms.response_actions, primary key response_id, rule_id — a new version of the rule does not repeat a done action; a failed one is written by the current version). Concurrency (return 3): each response is written in the same transaction as its row of forms.response_actions, under the lock of that row — insert … on conflict do nothing, then select … for update; a parallel backfill or «Повторить» with another Idempotency-Key waits for the lock and skips a done response — no second row in the table. A rule of another kind — 404 «Действие не найдено»; a disabled rule — 409 invalid_transition, reason form_rule_disabled «Действие выключено — включите его, чтобы перенести ответы»."
+    responses:
+      "200":
+        description: Successful result.
+        headers:
+          X-Request-Id:
+            $ref: ../components/common/headers.yaml#/RequestId
+          Idempotency-Replayed:
+            $ref: ../components/common/headers.yaml#/IdempotencyReplayed
+          Cache-Control: *a1
+        content:
+          application/json:
+            schema:
+              $ref: ../components/forms/schemas.yaml#/FormRuleBackfillResult
+      "400":
+        $ref: ../components/common/responses.yaml#/BadRequest
+      "401":
+        $ref: ../components/common/responses.yaml#/Unauthenticated
+      "402":
+        $ref: ../components/common/responses.yaml#/PlanRequired
+      "403":
+        $ref: ../components/common/responses.yaml#/Forbidden
+      "404":
+        $ref: ../components/common/responses.yaml#/NotFound
+      "409":
+        $ref: ../components/common/responses.yaml#/Conflict
+      "422":
+        $ref: ../components/common/responses.yaml#/Validation
+      "428":
+        $ref: ../components/common/responses.yaml#/PreconditionRequired
+      "429":
+        $ref: ../components/common/responses.yaml#/RateLimited
+    x-csrf-required-for-cookie: true
+    parameters:
+      - $ref: ../components/common/parameters.yaml#/IdempotencyKey
+      - $ref: ../components/common/parameters.yaml#/Csrf
+      - $ref: ../components/common/parameters.yaml#/Origin
+    x-permissions-mode: all
 /api/v1/tenants/{tenantId}/forms/{formId}/responses:
   parameters:
     - $ref: ../components/common/parameters.yaml#/tenantId
@@ -385,7 +881,7 @@
     x-permissions:
       - forms.responses.read
     x-scope: tenant-org-unit-project-assigned
-    description: List visible responses, preserving submitted version
+    description: "List visible responses, preserving submitted version. W4.05 (0.11.0-stage4, Q-W4.00-forms-9): forms.responses.read in the area of the form — every response; in the scope self — own responses; a response about a CRM object (subject) — also to members who see the object and hold forms.responses.read anywhere (the stub seesLog of the prototype is gone). The latest first; «Лента» and «Таблица» read the same items."
     responses:
       "200":
         description: Successful result.
@@ -417,6 +913,60 @@
       - $ref: ../components/common/parameters.yaml#/Cursor
       - $ref: ../components/common/parameters.yaml#/Limit
     x-permissions-mode: all
+  post:
+    operationId: submitFormResponse
+    tags:
+      - Forms
+    summary: Submit a response as an employee
+    x-permissions:
+      - forms.read
+    x-scope: tenant-org-unit-project
+    description: "W4.05 (0.11.0-stage4, Q-W4.00-forms-8, -19, -25): an employee answers a published form with forms.read in its area (no own key — forms.responses.create stays null). The response is accepted at once (Q-W4.00-forms-18) and runs the rules of triggers submitted and accepted; the score is counted when the form counts scores. Refusals: 409 invalid_transition — reason form_version_changed «Форма обновилась — откройте её заново» (versionId is not the acting version), form_closed «Приём ответов закрыт» (closed, past acceptUntil, responseLimit reached, the module of the form not active — Q-W4.00-forms-16), form_already_answered «Вы уже отвечали на эту форму» (onePerMember); a form never published — 404 «Форма не найдена». 422 validation_failed with violations by question key and the texts of the prototype (pvCheck dc:688–705: «Обязательный вопрос», «Проверьте адрес почты», «Нужно не меньше 10 цифр», «ИНН — 10 или 12 цифр», «Ссылка начинается с http:// или https://», «Нужно число», «Нужно целое число», «Не меньше N», «Не больше N», «Не короче N символов», «Не длиннее N символов», «Выберите не меньше N», «Выберите не больше N»). Event forms.response.submitted.v1. Return 1: «Не больше ответов всего» and «Один ответ от сотрудника» hold under concurrency — the server locks the row of the form (select … for update on forms.forms) in the transaction that counts the responses and inserts the new one, so two parallel submissions neither exceed the limit nor give two responses of one member."
+    responses:
+      "201":
+        description: Successful result.
+        headers:
+          X-Request-Id:
+            $ref: ../components/common/headers.yaml#/RequestId
+          ETag:
+            $ref: ../components/common/headers.yaml#/ETag
+          Idempotency-Replayed:
+            $ref: ../components/common/headers.yaml#/IdempotencyReplayed
+          Cache-Control: *a1
+        content:
+          application/json:
+            schema:
+              $ref: ../components/forms/schemas.yaml#/FormResponse
+      "400":
+        $ref: ../components/common/responses.yaml#/BadRequest
+      "401":
+        $ref: ../components/common/responses.yaml#/Unauthenticated
+      "402":
+        $ref: ../components/common/responses.yaml#/PlanRequired
+      "403":
+        $ref: ../components/common/responses.yaml#/Forbidden
+      "404":
+        $ref: ../components/common/responses.yaml#/NotFound
+      "409":
+        $ref: ../components/common/responses.yaml#/Conflict
+      "422":
+        $ref: ../components/common/responses.yaml#/Validation
+      "428":
+        $ref: ../components/common/responses.yaml#/PreconditionRequired
+      "429":
+        $ref: ../components/common/responses.yaml#/RateLimited
+    x-csrf-required-for-cookie: true
+    parameters:
+      - $ref: ../components/common/parameters.yaml#/IdempotencyKey
+      - $ref: ../components/common/parameters.yaml#/Csrf
+      - $ref: ../components/common/parameters.yaml#/Origin
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: ../components/forms/schemas.yaml#/FormResponseCreate
+    x-permissions-mode: all
 /api/v1/tenants/{tenantId}/forms/{formId}/responses/{responseId}:
   parameters:
     - $ref: ../components/common/parameters.yaml#/tenantId
@@ -430,7 +980,7 @@
     x-permissions:
       - forms.responses.read
     x-scope: tenant-org-unit-project-assigned
-    description: Read a response permitted for review
+    description: "Read a response permitted for review. W4.05 (0.11.0-stage4): the card of the feed — answers by the structure of its version, the author, the object, the score and «Журнал действий»; visibility as listFormResponses (a response the member may not read — 404 «Ответ не найден»)."
     responses:
       "200":
         description: Successful result.
@@ -468,7 +1018,7 @@
     summary: Assign and review an immutable submission
     x-permissions: []
     x-scope: tenant-org-unit-project-assigned
-    description: "x-permissions is empty because requirements are field-dependent: modifying assignee requires forms.responses.assign; review fields require forms.responses.review; modifying both requires both. Server validates every supplied field."
+    description: "x-permissions is empty because requirements are field-dependent: modifying assignee requires forms.responses.assign; review fields require forms.responses.review; modifying both requires both. Server validates every supplied field. W4.05 (0.11.0-stage4, Q-W4.00-forms-18): «Принять» / «Отклонить» of a pending response (a guest of a public form) — accepted runs the rules of trigger accepted. Event forms.response.accepted.v1. Return 1 (Q-W4.05-16): the key of a field (forms.responses.review, forms.responses.assign) is checked in the area of the form, not in any role: a member may change the field when he holds the key in the area of the form, or he is the assignee of the response and holds the key in any role, or the form is «Вся организация» and he holds the key in any role and sees the response by its relation to a CRM object (Q-W4.00-forms-9). A reviewer of another unit who sees a response of a form of a unit only by such a relation gets 403 forbidden_action."
     responses:
       "200":
         description: Successful result.
@@ -524,4 +1074,348 @@
       assigneeMemberId: forms.responses.assign
       reviewStatus: forms.responses.review
       reviewComment: forms.responses.review
+    x-permissions-mode: all
+/api/v1/tenants/{tenantId}/forms/{formId}/responses/{responseId}/actions/{ruleId}/retry:
+  parameters:
+    - $ref: ../components/common/parameters.yaml#/tenantId
+    - $ref: ../components/common/parameters.yaml#/formId
+    - $ref: ../components/common/parameters.yaml#/responseId
+    - $ref: ../components/common/parameters.yaml#/formRuleId
+  post:
+    operationId: retryFormResponseAction
+    tags:
+      - Forms
+    summary: Repeat an action for one response
+    x-permissions:
+      - forms.manage
+    x-scope: tenant-org-unit-project
+    description: "W4.05 (0.11.0-stage4, prototype retryFormAction, «Повторить» of «Журнал действий»; Q-W4.00-forms-13): repeats the rule (kb or task) for the response; a done action answers its earlier result («Повторная обработка не создаёт вторую задачу или строку.»). Concurrency (return 3): the action (the task or the knowledge base row) is written in the same transaction as the row of forms.response_actions (primary key response_id, rule_id), under the lock of that row — insert … on conflict do nothing, then select … for update; a parallel «Повторить» or backfill with another Idempotency-Key waits for the lock and answers the done result — no second task or row. A deleted rule — 409 invalid_transition, reason form_rule_deleted «Действие удалено из формы — повторить нельзя»; a failure again — 422 validation_failed «Не выполнено: {err}». Toast «Ответ R-… сохранён в Базу знаний»."
+    responses:
+      "200":
+        description: Successful result.
+        headers:
+          X-Request-Id:
+            $ref: ../components/common/headers.yaml#/RequestId
+          Idempotency-Replayed:
+            $ref: ../components/common/headers.yaml#/IdempotencyReplayed
+          Cache-Control: *a1
+        content:
+          application/json:
+            schema:
+              $ref: ../components/forms/schemas.yaml#/FormResponseAction
+      "400":
+        $ref: ../components/common/responses.yaml#/BadRequest
+      "401":
+        $ref: ../components/common/responses.yaml#/Unauthenticated
+      "402":
+        $ref: ../components/common/responses.yaml#/PlanRequired
+      "403":
+        $ref: ../components/common/responses.yaml#/Forbidden
+      "404":
+        $ref: ../components/common/responses.yaml#/NotFound
+      "409":
+        $ref: ../components/common/responses.yaml#/Conflict
+      "422":
+        $ref: ../components/common/responses.yaml#/Validation
+      "428":
+        $ref: ../components/common/responses.yaml#/PreconditionRequired
+      "429":
+        $ref: ../components/common/responses.yaml#/RateLimited
+    x-csrf-required-for-cookie: true
+    parameters:
+      - $ref: ../components/common/parameters.yaml#/IdempotencyKey
+      - $ref: ../components/common/parameters.yaml#/Csrf
+      - $ref: ../components/common/parameters.yaml#/Origin
+    x-permissions-mode: all
+/api/v1/tenants/{tenantId}/forms/{formId}/summary:
+  parameters:
+    - $ref: ../components/common/parameters.yaml#/tenantId
+    - $ref: ../components/common/parameters.yaml#/formId
+  get:
+    operationId: getFormResponseSummary
+    tags:
+      - Forms
+    summary: Summary of the responses by question
+    x-permissions:
+      - forms.responses.read
+    x-scope: tenant-org-unit-project-assigned
+    description: "W4.05 (0.11.0-stage4, «Сводка»): aggregates over the responses the member may read (visibility as listFormResponses): per question of all versions — answered, counts and percents of options, average, minimum and maximum of numbers, three latest texts."
+    responses:
+      "200":
+        description: Successful result.
+        headers:
+          X-Request-Id:
+            $ref: ../components/common/headers.yaml#/RequestId
+          Cache-Control: *a1
+        content:
+          application/json:
+            schema:
+              $ref: ../components/forms/schemas.yaml#/FormResponseSummary
+      "400":
+        $ref: ../components/common/responses.yaml#/BadRequest
+      "401":
+        $ref: ../components/common/responses.yaml#/Unauthenticated
+      "403":
+        $ref: ../components/common/responses.yaml#/Forbidden
+      "404":
+        $ref: ../components/common/responses.yaml#/NotFound
+      "422":
+        $ref: ../components/common/responses.yaml#/Validation
+      "429":
+        $ref: ../components/common/responses.yaml#/RateLimited
+    x-permissions-mode: all
+/api/v1/tenants/{tenantId}/forms/{formId}/export:
+  parameters:
+    - $ref: ../components/common/parameters.yaml#/tenantId
+    - $ref: ../components/common/parameters.yaml#/formId
+  get:
+    operationId: exportFormResponses
+    tags:
+      - Forms
+    summary: Export the responses as a CSV file
+    x-permissions:
+      - forms.responses.read
+    x-scope: tenant-org-unit-project-assigned
+    description: "W4.05 (0.11.0-stage4, «Выгрузить CSV»): the responses the member may read as a CSV file (separators «;», BOM, «{форма}.csv»; nobody checks data.export — as the prototype, forms.md §3.1). Without responses — 409 invalid_transition, reason form_no_responses «Ответов пока нет». Up to 100 000 rows. Return 1 — cells as exportDataset: delimiter ;, CRLF, RFC 4180 quoting (a cell with ;, a quote, CR or LF is quoted, quotes doubled). Answers of guests of a public form are free text: against CSV formula injection (OWASP) the text cells — answers of text, choice, reference and file questions, the author, the object, the labels of the questions in the header — starting with =, +, -, @, tab or CR, also after leading whitespace, are prefixed with an apostrophe; numbers, money, dates, «да / нет», the number of the response, the version and the status are never prefixed (-5 stays a number). Writes an audit row forms.responses.exported (the form, the row count — never the content). GET stays (Q-W4.05-15): the export has no filters and no body; the audit is written by the handler."
+    responses:
+      "200":
+        description: Successful result.
+        headers:
+          X-Request-Id:
+            $ref: ../components/common/headers.yaml#/RequestId
+          Cache-Control: *a1
+        content:
+          application/json:
+            schema:
+              $ref: ../components/forms/schemas.yaml#/FormResponsesExport
+      "400":
+        $ref: ../components/common/responses.yaml#/BadRequest
+      "401":
+        $ref: ../components/common/responses.yaml#/Unauthenticated
+      "403":
+        $ref: ../components/common/responses.yaml#/Forbidden
+      "404":
+        $ref: ../components/common/responses.yaml#/NotFound
+      "409":
+        $ref: ../components/common/responses.yaml#/Conflict
+      "422":
+        $ref: ../components/common/responses.yaml#/Validation
+      "429":
+        $ref: ../components/common/responses.yaml#/RateLimited
+    x-permissions-mode: all
+/api/v1/tenants/{tenantId}/forms/{formId}/fields/{fieldKey}/options:
+  parameters:
+    - $ref: ../components/common/parameters.yaml#/tenantId
+    - $ref: ../components/common/parameters.yaml#/formId
+    - $ref: ../components/common/parameters.yaml#/formFieldKey
+  get:
+    operationId: listFormFieldOptions
+    tags:
+      - Forms
+    summary: Choices of a CRM question for the respondent
+    x-permissions:
+      - forms.read
+    x-scope: tenant-org-unit-project
+    description: "W4.05 (0.11.0-stage4, Q-W4.00-forms-23): the records a CRM question of the acting version offers — members (person), regions and firms (unit, by unitLevel), vehicles, trips, repair objects or tasks (ref, by refKind) — only those the respondent sees by his own rights, up to 50, by label. A question that is not a CRM question or not in the acting version — 404 «Вопрос не найден»."
+    responses:
+      "200":
+        description: Successful result.
+        headers:
+          X-Request-Id:
+            $ref: ../components/common/headers.yaml#/RequestId
+          Cache-Control: *a1
+        content:
+          application/json:
+            schema:
+              $ref: ../components/forms/schemas.yaml#/FormFieldOptionList
+      "400":
+        $ref: ../components/common/responses.yaml#/BadRequest
+      "401":
+        $ref: ../components/common/responses.yaml#/Unauthenticated
+      "403":
+        $ref: ../components/common/responses.yaml#/Forbidden
+      "404":
+        $ref: ../components/common/responses.yaml#/NotFound
+      "422":
+        $ref: ../components/common/responses.yaml#/Validation
+      "429":
+        $ref: ../components/common/responses.yaml#/RateLimited
+    parameters:
+      - name: q
+        in: query
+        required: false
+        description: W4.05 (0.11.0-stage4). Search by the label.
+        schema:
+          type: string
+          maxLength: 100
+    x-permissions-mode: all
+/api/v1/tenants/{tenantId}/form-templates:
+  parameters:
+    - $ref: ../components/common/parameters.yaml#/tenantId
+  get:
+    operationId: listFormTemplates
+    tags:
+      - Forms
+    summary: List the templates of forms
+    x-permissions:
+      - forms.create
+    x-scope: tenant-org-unit-project
+    description: "W4.05 (0.11.0-stage4, Q-W4.00-forms-14): the 15 templates of the code catalogue in the order of the prototype — tiles «Создать пустую форму», «Анкета», «Форма обратной связи», «Заявка на услугу или работу», «Регистрация на обучение» and «Все шаблоны · 15» by category. A template of a module that is not active is listed with available false."
+    responses:
+      "200":
+        description: Successful result.
+        headers:
+          X-Request-Id:
+            $ref: ../components/common/headers.yaml#/RequestId
+          Cache-Control: *a1
+        content:
+          application/json:
+            schema:
+              $ref: ../components/forms/schemas.yaml#/FormTemplateList
+      "400":
+        $ref: ../components/common/responses.yaml#/BadRequest
+      "401":
+        $ref: ../components/common/responses.yaml#/Unauthenticated
+      "403":
+        $ref: ../components/common/responses.yaml#/Forbidden
+      "404":
+        $ref: ../components/common/responses.yaml#/NotFound
+      "422":
+        $ref: ../components/common/responses.yaml#/Validation
+      "429":
+        $ref: ../components/common/responses.yaml#/RateLimited
+    x-permissions-mode: all
+/api/v1/tenants/{tenantId}/form-groups:
+  parameters:
+    - $ref: ../components/common/parameters.yaml#/tenantId
+  get:
+    operationId: listFormGroups
+    tags:
+      - Forms
+    summary: List the groups of forms
+    x-permissions:
+      - forms.read
+    x-scope: tenant-org-unit-project
+    description: "W4.05 (0.11.0-stage4, FM-03, Q-W4.00-forms-7): groups of the organization by name; formCount counts the forms the member sees (an empty group — «В группе пока нет форм — переместите сюда форму через меню «…».»)."
+    responses:
+      "200":
+        description: Successful result.
+        headers:
+          X-Request-Id:
+            $ref: ../components/common/headers.yaml#/RequestId
+          Cache-Control: *a1
+        content:
+          application/json:
+            schema:
+              $ref: ../components/forms/schemas.yaml#/FormGroupList
+      "400":
+        $ref: ../components/common/responses.yaml#/BadRequest
+      "401":
+        $ref: ../components/common/responses.yaml#/Unauthenticated
+      "403":
+        $ref: ../components/common/responses.yaml#/Forbidden
+      "404":
+        $ref: ../components/common/responses.yaml#/NotFound
+      "422":
+        $ref: ../components/common/responses.yaml#/Validation
+      "429":
+        $ref: ../components/common/responses.yaml#/RateLimited
+    x-permissions-mode: all
+  post:
+    operationId: createFormGroup
+    tags:
+      - Forms
+    summary: Create a group of forms
+    x-permissions:
+      - forms.manage
+    x-scope: tenant
+    description: "W4.05 (0.11.0-stage4, Q-W4.00-forms-7): forms.manage in the organization. 422 validation_failed «Название группы — от 2 символов», «Такая группа уже есть» (name). Toast «Группа «{name}» создана. Переместите в неё формы через меню «…»»."
+    responses:
+      "201":
+        description: Successful result.
+        headers:
+          X-Request-Id:
+            $ref: ../components/common/headers.yaml#/RequestId
+          Idempotency-Replayed:
+            $ref: ../components/common/headers.yaml#/IdempotencyReplayed
+          Cache-Control: *a1
+        content:
+          application/json:
+            schema:
+              $ref: ../components/forms/schemas.yaml#/FormGroup
+      "400":
+        $ref: ../components/common/responses.yaml#/BadRequest
+      "401":
+        $ref: ../components/common/responses.yaml#/Unauthenticated
+      "402":
+        $ref: ../components/common/responses.yaml#/PlanRequired
+      "403":
+        $ref: ../components/common/responses.yaml#/Forbidden
+      "404":
+        $ref: ../components/common/responses.yaml#/NotFound
+      "409":
+        $ref: ../components/common/responses.yaml#/Conflict
+      "422":
+        $ref: ../components/common/responses.yaml#/Validation
+      "428":
+        $ref: ../components/common/responses.yaml#/PreconditionRequired
+      "429":
+        $ref: ../components/common/responses.yaml#/RateLimited
+    x-csrf-required-for-cookie: true
+    parameters:
+      - $ref: ../components/common/parameters.yaml#/IdempotencyKey
+      - $ref: ../components/common/parameters.yaml#/Csrf
+      - $ref: ../components/common/parameters.yaml#/Origin
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: ../components/forms/schemas.yaml#/FormGroupCreate
+    x-permissions-mode: all
+/api/v1/tenants/{tenantId}/form-groups/{groupId}:
+  parameters:
+    - $ref: ../components/common/parameters.yaml#/tenantId
+    - $ref: ../components/common/parameters.yaml#/formGroupId
+  delete:
+    operationId: deleteFormGroup
+    tags:
+      - Forms
+    summary: Delete an empty group of forms
+    x-permissions:
+      - forms.manage
+    x-scope: tenant
+    description: "W4.05 (0.11.0-stage4, «Удалить пустую группу» — without confirmation): a group with forms (any, including forms the member does not see) — 409 invalid_transition, reason form_group_not_empty «В группе есть формы — сначала переместите их»; a missing group — 404 «Группа не найдена»."
+    responses:
+      "204":
+        description: Completed with no response body.
+        headers:
+          X-Request-Id:
+            $ref: ../components/common/headers.yaml#/RequestId
+          Idempotency-Replayed:
+            $ref: ../components/common/headers.yaml#/IdempotencyReplayed
+          Cache-Control: *a1
+      "400":
+        $ref: ../components/common/responses.yaml#/BadRequest
+      "401":
+        $ref: ../components/common/responses.yaml#/Unauthenticated
+      "402":
+        $ref: ../components/common/responses.yaml#/PlanRequired
+      "403":
+        $ref: ../components/common/responses.yaml#/Forbidden
+      "404":
+        $ref: ../components/common/responses.yaml#/NotFound
+      "409":
+        $ref: ../components/common/responses.yaml#/Conflict
+      "422":
+        $ref: ../components/common/responses.yaml#/Validation
+      "428":
+        $ref: ../components/common/responses.yaml#/PreconditionRequired
+      "429":
+        $ref: ../components/common/responses.yaml#/RateLimited
+    x-csrf-required-for-cookie: true
+    parameters:
+      - $ref: ../components/common/parameters.yaml#/IdempotencyKey
+      - $ref: ../components/common/parameters.yaml#/Csrf
+      - $ref: ../components/common/parameters.yaml#/Origin
     x-permissions-mode: all

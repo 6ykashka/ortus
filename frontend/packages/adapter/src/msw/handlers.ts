@@ -17,6 +17,7 @@ import { dataViewHandlers } from './data/views.ts';
 import { filesHandlers } from './files/index.ts';
 import { filesListHandlers } from './files/list.ts';
 import { fleetHandlers } from './fleet/index.ts';
+import { formsHandlers } from './forms/index.ts';
 import { knowledgeHandlers } from './knowledge/index.ts';
 import { moduleDeactivationHandlers } from './modules/deactivation.ts';
 import { modulesHandlers } from './modules/index.ts';
@@ -60,4 +61,6 @@ export const defaultRegistry: Registry = {
   ...knowledgeHandlers,
   // 0.10.0-stage4 (W4.03): «Задачи и проекты».
   ...tasksHandlers,
+  // 0.11.0-stage4 (W4.05): «Формы и опросы».
+  ...formsHandlers,
 };

@@ -757,8 +757,10 @@ type ChoiceOption struct {
 
 // ChoicesValue defines model for ChoicesValue.
 type ChoicesValue struct {
-	Type  ChoicesValueType `json:"type"`
-	Value []string         `json:"value"`
+	// OtherText W4.05 (0.11.0-stage4). «Другое — свой вариант» of a question with FormQuestion.otherOption — the text of the respondent; value then carries the key other.
+	OtherText *string          `json:"otherText,omitempty"`
+	Type      ChoicesValueType `json:"type"`
+	Value     []string         `json:"value"`
 }
 
 // ChoicesValueType defines model for ChoicesValue.Type.
@@ -1271,7 +1273,9 @@ type QuerySortDirection string
 
 // ReferenceValue defines model for ReferenceValue.
 type ReferenceValue struct {
-	Type ReferenceValueType `json:"type"`
+	// Label W4.05 (0.11.0-stage4, Q-W4.00-forms-23). The label of the object at the moment of the answer («Рейс Р-196», «Марина Котова») — kept when the object is renamed or hidden later; set by the server.
+	Label *string            `json:"label,omitempty"`
+	Type  ReferenceValueType `json:"type"`
 
 	// Value Server verifies same-tenant ownership and target visibility. A reference never grants access.
 	Value ObjectRef `json:"value"`
@@ -1351,8 +1355,17 @@ type ExportJobId = Id
 // FileId Examples: 10000000-0000-4000-8000-000000000001
 type FileId = Id
 
+// FormFieldKey defines model for formFieldKey.
+type FormFieldKey = string
+
+// FormGroupId Examples: 10000000-0000-4000-8000-000000000001
+type FormGroupId = Id
+
 // FormId Examples: 10000000-0000-4000-8000-000000000001
 type FormId = Id
+
+// FormRuleId Examples: 10000000-0000-4000-8000-000000000001
+type FormRuleId = Id
 
 // GroupId Examples: 10000000-0000-4000-8000-000000000001
 type GroupId = Id

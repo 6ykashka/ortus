@@ -325,6 +325,10 @@ ReferenceValue:
       const: reference
     value:
       $ref: ./schemas.yaml#/ObjectRef
+    label:
+      type: string
+      maxLength: 200
+      description: W4.05 (0.11.0-stage4, Q-W4.00-forms-23). The label of the object at the moment of the answer («Рейс Р-196», «Марина Котова») — kept when the object is renamed or hidden later; set by the server.
   required:
     - type
     - value
@@ -368,6 +372,10 @@ ChoicesValue:
         type: string
       uniqueItems: true
       maxItems: 100
+    otherText:
+      type: string
+      maxLength: 500
+      description: W4.05 (0.11.0-stage4). «Другое — свой вариант» of a question with FormQuestion.otherOption — the text of the respondent; value then carries the key other.
   required:
     - type
     - value
@@ -660,6 +668,276 @@ FormDefinition:
     - fields
     - visibility
     - confirmationText
+
+# W4.05 (0.11.0-stage4, контрактный PR 4 этапа 4): определение формы v2 — страницы и вопросы конструктора «Формы и
+# опросы» (design-2026-10-19, design/docs/20-forms.md, D-25 комплекта): 21 тип прототипа, условия «И / ИЛИ», скрытые вопросы,
+# баллы. Общее для тегов Forms (черновик, версии) и PublicForms (публичная форма). FormDefinition 0.1 остаётся
+# форматом чек-листа осмотра (InspectionChecklist.definition, W2.52) и тела устаревшей createFormVersion.
+FormQuestionType:
+  type: string
+  enum:
+    - text
+    - longtext
+    - number
+    - money
+    - email
+    - phone
+    - inn
+    - url
+    - choice
+    - multi
+    - select
+    - bool
+    - person
+    - unit
+    - ref
+    - date
+    - int
+    - scale
+    - rating
+    - photo
+    - statement
+  description: "W4.05 (0.11.0-stage4, Q-W4.00-forms-5). The 21 active types of the prototype (TYPES, dc:474–482) in four groups — «Текст и числа»: text «Короткий текст», longtext «Длинный текст», number «Число», money «Сумма, ₽», email «Почта», phone «Телефон», inn «ИНН», url «Ссылка»; «Выбор»: choice «Один вариант», multi «Несколько вариантов», select «Выпадающий список», bool «Да / нет»; «Данные CRM»: person «Сотрудник», unit «Регион или фирма», ref «Объект CRM»; «Другие»: date «Дата», int «Целое число», scale «Оценка по шкале», rating «Оценка звёздами», photo «Файл или фото», statement «Текст без вопроса» (no answer). series «Серия вопросов» (FORM-06) and payment «Оплата» (FORM-05) are not types of the contract — the screen shows them disabled with the reason. Values of answers (FieldEntry.value): text, longtext, email, phone, inn, url — text; number — decimal; int, scale, rating — decimal (an integer); money — money (RUB); choice, select — choices (one FormOption.key), multi — choices (keys; other with otherText); bool — boolean; date — date (instant with withTime); photo — files (File ids of uploads of the purpose form_attachment, the owner forms/form — the form being answered); person — reference core/member, unit — reference core/org_unit, ref — reference of refKind (vehicle fleet/vehicle, trip fleet/trip, object repairs/repair_object, task tasks/task) with the label; a question not answered — absent or null."
+FormOption:
+  type: object
+  additionalProperties: false
+  properties:
+    key:
+      type: string
+      pattern: ^[a-zA-Z0-9][a-zA-Z0-9_-]{0,63}$
+      description: The stable key of the option («o1»…); answers, conditions and «Только если» of rules compare keys (Q-W4.00-forms-3). other is reserved for «Другое».
+    label:
+      type: string
+      maxLength: 300
+      description: "«Вариант N»; an empty label is an issue of the draft («…: есть пустой вариант»)."
+    score:
+      type: integer
+      minimum: -1000
+      maximum: 1000
+      description: «баллов» of the option when the form counts scores (FormSettings.scoring).
+  required:
+    - key
+    - label
+FormShowIfCondition:
+  type: object
+  additionalProperties: false
+  properties:
+    fieldKey:
+      type: string
+      pattern: ^[a-zA-Z][a-zA-Z0-9_-]{0,63}$
+      description: A question above (an issue otherwise — «условие ссылается на вопрос ниже…», «…на удалённый вопрос»).
+    operator:
+      type: string
+      enum:
+        - equals
+        - not_equals
+      description: «равно» / «не равно».
+    value:
+      type: string
+      maxLength: 500
+      description: FormOption.key for choice, multi and select; true or false for bool; the text otherwise.
+  required:
+    - fieldKey
+    - operator
+    - value
+FormShowIf:
+  type: object
+  additionalProperties: false
+  description: W4.05 (0.11.0-stage4). «Показывать при условии» — «Все условия выполнены (И)» (all) / «Любое из условий (ИЛИ)» (any). A question shown by no condition is not asked and not required («Не показывался по условию»); the server repeats the evaluation at submission.
+  properties:
+    mode:
+      type: string
+      enum:
+        - all
+        - any
+    conditions:
+      type: array
+      items:
+        $ref: ./schemas.yaml#/FormShowIfCondition
+      minItems: 1
+      maxItems: 20
+  required:
+    - mode
+    - conditions
+FormPageDefinition:
+  type: object
+  additionalProperties: false
+  properties:
+    id:
+      type: string
+      pattern: ^[a-zA-Z][a-zA-Z0-9_-]{0,63}$
+    title:
+      type: string
+      maxLength: 200
+      description: «Название страницы» («Страница 1»).
+    shuffle:
+      type: boolean
+      description: «Перемешивать вопросы для каждого».
+  required:
+    - id
+    - title
+FormQuestion:
+  type: object
+  additionalProperties: false
+  description: "W4.05 (0.11.0-stage4). A question of the builder (dc:571–580, 839–879). The key is the identifier of the question («Идентификатор вопроса», Q-W4.00-forms-6): the server accepts ^[a-zA-Z][a-zA-Z0-9_-]{0,63}$ (the keys of the seed — q-photos — included), the screen checks the rule of the prototype (2–60 characters, «Латиница, цифры, «_» и «-», с буквы, от 2 символов»); a key present in a published version is not renamed. The draft may be incomplete — empty text, no options; publishForm blocks such a draft (FormDraft.issues)."
+  properties:
+    key:
+      type: string
+      pattern: ^[a-zA-Z][a-zA-Z0-9_-]{0,63}$
+    pageId:
+      type: string
+      pattern: ^[a-zA-Z][a-zA-Z0-9_-]{0,63}$
+      description: FormPageDefinition.id of the page of the question.
+    type:
+      $ref: ./schemas.yaml#/FormQuestionType
+    label:
+      type: string
+      maxLength: 500
+      description: «Вопрос» («Текст» for statement).
+    required:
+      type: boolean
+      description: «Обязательный».
+    hint:
+      type: string
+      maxLength: 1000
+      description: «Пояснение под вопросом».
+    defaultValue:
+      type: string
+      maxLength: 500
+      description: «Значение по умолчанию» (not for photo, statement, multi); a hidden required question needs it.
+    hidden:
+      type: boolean
+      description: «Скрытый вопрос не показывается. Значение — по умолчанию или из параметра ссылки ?{key}=…»
+    options:
+      type: array
+      items:
+        $ref: ./schemas.yaml#/FormOption
+      maxItems: 100
+      description: «Ответы» of choice, multi and select.
+    otherOption:
+      type: boolean
+      description: «Вариант «Другое» с вводом».
+    optionView:
+      type: string
+      enum:
+        - list
+        - tiles
+        - row
+      description: «Списком» / «Плиткой» / «В один ряд».
+    optionOrder:
+      type: string
+      enum:
+        - as_is
+        - alpha
+        - random
+      description: «Как в списке» / «По алфавиту» / «В случайном порядке для каждого».
+    showIf:
+      $ref: ./schemas.yaml#/FormShowIf
+    minLength:
+      type: integer
+      minimum: 0
+      maximum: 10000
+      description: «Длина ответа, символов» — от (text, longtext).
+    maxLength:
+      type: integer
+      minimum: 1
+      maximum: 10000
+      description: «Длина ответа, символов» — до (text, longtext); «от» больше «до» is an issue.
+    minValue:
+      $ref: ./schemas.yaml#/Decimal
+      description: «Допустимое значение» — от (number, int, money).
+    maxValue:
+      $ref: ./schemas.yaml#/Decimal
+      description: «Допустимое значение» — до (number, int, money).
+    minSelected:
+      type: integer
+      minimum: 1
+      maximum: 100
+      description: «Сколько вариантов выбрать» — не меньше (multi).
+    maxSelected:
+      type: integer
+      minimum: 1
+      maximum: 100
+      description: «Сколько вариантов выбрать» — не больше (multi).
+    scaleMin:
+      type: integer
+      enum:
+        - 0
+        - 1
+      description: «Шкала» — от (scale; default 1).
+    scaleMax:
+      type: integer
+      minimum: 3
+      maximum: 10
+      description: «Шкала» — до (scale; default 5).
+    scaleLeftLabel:
+      type: string
+      maxLength: 100
+      description: «Подпись слева».
+    scaleRightLabel:
+      type: string
+      maxLength: 100
+      description: «Подпись справа».
+    withTime:
+      type: boolean
+      description: «Спрашивать время» (date).
+    accept:
+      type: string
+      enum:
+        - photo
+        - docs
+        - any
+      description: "«Только фото» / «Документы: PDF, Word, Excel» / «Любые файлы» (photo)."
+    maxFiles:
+      type: integer
+      minimum: 1
+      maximum: 20
+      description: «не больше N файлов» (default 5).
+    maxFileMb:
+      type: integer
+      minimum: 1
+      maximum: 100
+      description: «до N МБ» (default 20).
+    unitLevel:
+      type: string
+      enum:
+        - any
+        - region
+        - firm
+      description: "«Что можно выбрать»: «Регион или фирму» / «Только регион» / «Только фирму» (unit)."
+    refKind:
+      type: string
+      enum:
+        - vehicle
+        - trip
+        - object
+        - task
+      description: "«Объект CRM»: «Машина» / «Рейс» / «Объект ремонта» / «Задача» (ref)."
+  required:
+    - key
+    - pageId
+    - type
+    - label
+    - required
+FormDefinitionV2:
+  type: object
+  additionalProperties: false
+  description: "W4.05 (0.11.0-stage4). FormDefinition v2 — the questions of a draft or of an immutable version: pages in their order and questions in their order (the page of a question — pageId). At least one page («Удалить страницу» is disabled on the only page)."
+  properties:
+    pages:
+      type: array
+      items:
+        $ref: ./schemas.yaml#/FormPageDefinition
+      minItems: 1
+      maxItems: 50
+    fields:
+      type: array
+      items:
+        $ref: ./schemas.yaml#/FormQuestion
+      maxItems: 200
+  required:
+    - pages
+    - fields
 
 # W4.07 (stage 4.6): seats, price book, subscription change requests and branding — shared by the tags Billing,
 # Platform, Branding and Context (design/docs/17-users-and-billing.md, 18-branding.md; control 0002, 0003, 0007, 0008).

@@ -1,5 +1,5 @@
 {
-  "version": "0.10.0-stage4",
+  "version": "0.11.0-stage4",
   "operations": [
     {
       "id": "getMyContext",
@@ -1138,7 +1138,8 @@
                               "entityId": { "type": "string", "format": "uuid" }
                             },
                             "required": ["moduleKey", "entityType", "entityId"]
-                          }
+                          },
+                          "label": { "type": "string", "maxLength": 200 }
                         },
                         "required": ["type", "value"]
                       },
@@ -1186,7 +1187,8 @@
                             "items": { "type": "string" },
                             "uniqueItems": true,
                             "maxItems": 100
-                          }
+                          },
+                          "otherText": { "type": "string", "maxLength": 500 }
                         },
                         "required": ["type", "value"]
                       },
@@ -1529,7 +1531,8 @@
                             "entityId": { "type": "string", "format": "uuid" }
                           },
                           "required": ["moduleKey", "entityType", "entityId"]
-                        }
+                        },
+                        "label": { "type": "string", "maxLength": 200 }
                       },
                       "required": ["type", "value"]
                     },
@@ -1577,7 +1580,8 @@
                           "items": { "type": "string" },
                           "uniqueItems": true,
                           "maxItems": 100
-                        }
+                        },
+                        "otherText": { "type": "string", "maxLength": 500 }
                       },
                       "required": ["type", "value"]
                     },
@@ -1725,7 +1729,8 @@
                             "entityId": { "type": "string", "format": "uuid" }
                           },
                           "required": ["moduleKey", "entityType", "entityId"]
-                        }
+                        },
+                        "label": { "type": "string", "maxLength": 200 }
                       },
                       "required": ["type", "value"]
                     },
@@ -1773,7 +1778,8 @@
                           "items": { "type": "string" },
                           "uniqueItems": true,
                           "maxItems": 100
-                        }
+                        },
+                        "otherText": { "type": "string", "maxLength": 500 }
                       },
                       "required": ["type", "value"]
                     },
@@ -2191,7 +2197,7 @@
       "tag": "Forms",
       "stage1": false,
       "stage2": false,
-      "stage4": false,
+      "stage4": true,
       "permissions": ["forms.read"],
       "mode": "all",
       "scope": "tenant-org-unit-project",
@@ -2211,7 +2217,7 @@
       "tag": "Forms",
       "stage1": false,
       "stage2": false,
-      "stage4": false,
+      "stage4": true,
       "permissions": ["forms.create"],
       "mode": "all",
       "scope": "tenant-org-unit-project",
@@ -2227,244 +2233,149 @@
         "type": "object",
         "additionalProperties": false,
         "properties": {
-          "orgUnitId": { "type": "string", "format": "uuid" },
+          "orgUnitId": { "type": ["string", "null"], "format": "uuid" },
           "name": { "type": "string", "minLength": 1, "maxLength": 200 },
           "definition": {
             "type": "object",
             "additionalProperties": false,
             "properties": {
-              "title": { "type": "string", "minLength": 1, "maxLength": 200 },
-              "description": { "type": "string", "maxLength": 5000 },
+              "pages": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "properties": {
+                    "id": { "type": "string", "pattern": "^[a-zA-Z][a-zA-Z0-9_-]{0,63}$" },
+                    "title": { "type": "string", "maxLength": 200 },
+                    "shuffle": { "type": "boolean" }
+                  },
+                  "required": ["id", "title"]
+                },
+                "minItems": 1,
+                "maxItems": 50
+              },
               "fields": {
                 "type": "array",
                 "items": {
                   "type": "object",
                   "additionalProperties": false,
                   "properties": {
-                    "key": { "type": "string", "pattern": "^[a-z][a-z0-9_]{0,63}$" },
-                    "label": { "type": "string", "minLength": 1, "maxLength": 500 },
+                    "key": { "type": "string", "pattern": "^[a-zA-Z][a-zA-Z0-9_-]{0,63}$" },
+                    "pageId": { "type": "string", "pattern": "^[a-zA-Z][a-zA-Z0-9_-]{0,63}$" },
                     "type": {
                       "type": "string",
                       "enum": [
                         "text",
-                        "textarea",
+                        "longtext",
                         "number",
+                        "money",
+                        "email",
+                        "phone",
+                        "inn",
+                        "url",
+                        "choice",
+                        "multi",
+                        "select",
+                        "bool",
+                        "person",
+                        "unit",
+                        "ref",
                         "date",
-                        "datetime",
-                        "single_choice",
-                        "multi_choice",
-                        "boolean",
-                        "file",
-                        "reference"
+                        "int",
+                        "scale",
+                        "rating",
+                        "photo",
+                        "statement"
                       ]
                     },
+                    "label": { "type": "string", "maxLength": 500 },
                     "required": { "type": "boolean" },
+                    "hint": { "type": "string", "maxLength": 1000 },
+                    "defaultValue": { "type": "string", "maxLength": 500 },
+                    "hidden": { "type": "boolean" },
                     "options": {
                       "type": "array",
                       "items": {
                         "type": "object",
                         "additionalProperties": false,
                         "properties": {
-                          "key": { "type": "string" },
-                          "label": { "type": "string" }
+                          "key": {
+                            "type": "string",
+                            "pattern": "^[a-zA-Z0-9][a-zA-Z0-9_-]{0,63}$"
+                          },
+                          "label": { "type": "string", "maxLength": 300 },
+                          "score": { "type": "integer", "minimum": -1000, "maximum": 1000 }
                         },
                         "required": ["key", "label"]
-                      }
-                    },
-                    "referenceDatasetId": { "type": "string" },
-                    "maxFiles": { "type": "integer", "minimum": 1, "maximum": 10 },
-                    "maxLength": { "type": "integer", "minimum": 1, "maximum": 10000 },
-                    "allowedMimeTypes": {
-                      "type": "array",
-                      "items": { "type": "string" },
-                      "maxItems": 20,
-                      "uniqueItems": true
-                    },
-                    "maxFileBytes": { "type": "integer", "minimum": 1, "maximum": 26214400 },
-                    "blockingValues": {
-                      "type": "array",
-                      "maxItems": 20,
-                      "uniqueItems": true,
-                      "items": { "type": "string", "minLength": 1, "maxLength": 100 }
-                    }
-                  },
-                  "required": ["key", "label", "type", "required"]
-                },
-                "minItems": 1,
-                "maxItems": 200
-              },
-              "visibility": {
-                "type": "array",
-                "items": {
-                  "type": "object",
-                  "additionalProperties": false,
-                  "properties": {
-                    "fieldKey": { "type": "string" },
-                    "conditions": {
-                      "type": "array",
-                      "items": {
-                        "type": "object",
-                        "additionalProperties": false,
-                        "properties": {
-                          "sourceFieldKey": { "type": "string" },
-                          "operator": {
-                            "type": "string",
-                            "enum": ["equals", "not_equals", "contains"]
-                          },
-                          "value": {
-                            "oneOf": [
-                              {
-                                "type": "object",
-                                "additionalProperties": false,
-                                "properties": {
-                                  "type": { "type": "string", "const": "text" },
-                                  "value": { "type": "string", "maxLength": 10000 }
-                                },
-                                "required": ["type", "value"]
-                              },
-                              {
-                                "type": "object",
-                                "additionalProperties": false,
-                                "properties": {
-                                  "type": { "type": "string", "const": "decimal" },
-                                  "value": {
-                                    "type": "string",
-                                    "pattern": "^-?(0|[1-9][0-9]*)(\\.[0-9]{1,6})?$",
-                                    "maxLength": 40
-                                  }
-                                },
-                                "required": ["type", "value"]
-                              },
-                              {
-                                "type": "object",
-                                "additionalProperties": false,
-                                "properties": {
-                                  "type": { "type": "string", "const": "boolean" },
-                                  "value": { "type": "boolean" }
-                                },
-                                "required": ["type", "value"]
-                              },
-                              {
-                                "type": "object",
-                                "additionalProperties": false,
-                                "properties": {
-                                  "type": { "type": "string", "const": "date" },
-                                  "value": { "type": "string", "format": "date" }
-                                },
-                                "required": ["type", "value"]
-                              },
-                              {
-                                "type": "object",
-                                "additionalProperties": false,
-                                "properties": {
-                                  "type": { "type": "string", "const": "instant" },
-                                  "value": {
-                                    "type": "string",
-                                    "format": "date-time",
-                                    "pattern": "Z$"
-                                  }
-                                },
-                                "required": ["type", "value"]
-                              },
-                              {
-                                "type": "object",
-                                "additionalProperties": false,
-                                "properties": {
-                                  "type": { "type": "string", "const": "reference" },
-                                  "value": {
-                                    "type": "object",
-                                    "additionalProperties": false,
-                                    "properties": {
-                                      "moduleKey": {
-                                        "type": "string",
-                                        "pattern": "^[a-z][a-z0-9_-]{1,49}$"
-                                      },
-                                      "entityType": {
-                                        "type": "string",
-                                        "pattern": "^[a-z][a-z0-9_]{1,49}$"
-                                      },
-                                      "entityId": { "type": "string", "format": "uuid" }
-                                    },
-                                    "required": ["moduleKey", "entityType", "entityId"]
-                                  }
-                                },
-                                "required": ["type", "value"]
-                              },
-                              {
-                                "type": "object",
-                                "additionalProperties": false,
-                                "properties": {
-                                  "type": { "type": "string", "const": "money" },
-                                  "value": {
-                                    "type": "object",
-                                    "additionalProperties": false,
-                                    "properties": {
-                                      "amountMinor": {
-                                        "type": "integer",
-                                        "minimum": 0,
-                                        "maximum": 9007199254740991
-                                      },
-                                      "currency": { "type": "string", "pattern": "^[A-Z]{3}$" }
-                                    },
-                                    "required": ["amountMinor", "currency"]
-                                  }
-                                },
-                                "required": ["type", "value"]
-                              },
-                              {
-                                "type": "object",
-                                "additionalProperties": false,
-                                "properties": {
-                                  "type": { "type": "string", "const": "files" },
-                                  "value": {
-                                    "type": "array",
-                                    "items": { "type": "string", "format": "uuid" },
-                                    "maxItems": 20
-                                  }
-                                },
-                                "required": ["type", "value"]
-                              },
-                              {
-                                "type": "object",
-                                "additionalProperties": false,
-                                "properties": {
-                                  "type": { "type": "string", "const": "choices" },
-                                  "value": {
-                                    "type": "array",
-                                    "items": { "type": "string" },
-                                    "uniqueItems": true,
-                                    "maxItems": 100
-                                  }
-                                },
-                                "required": ["type", "value"]
-                              },
-                              {
-                                "type": "object",
-                                "additionalProperties": false,
-                                "properties": {
-                                  "type": { "type": "string", "const": "null" },
-                                  "value": { "type": "null" }
-                                },
-                                "required": ["type", "value"]
-                              }
-                            ]
-                          }
-                        },
-                        "required": ["sourceFieldKey", "operator", "value"]
                       },
-                      "minItems": 1
-                    }
+                      "maxItems": 100
+                    },
+                    "otherOption": { "type": "boolean" },
+                    "optionView": { "type": "string", "enum": ["list", "tiles", "row"] },
+                    "optionOrder": { "type": "string", "enum": ["as_is", "alpha", "random"] },
+                    "showIf": {
+                      "type": "object",
+                      "additionalProperties": false,
+                      "properties": {
+                        "mode": { "type": "string", "enum": ["all", "any"] },
+                        "conditions": {
+                          "type": "array",
+                          "items": {
+                            "type": "object",
+                            "additionalProperties": false,
+                            "properties": {
+                              "fieldKey": {
+                                "type": "string",
+                                "pattern": "^[a-zA-Z][a-zA-Z0-9_-]{0,63}$"
+                              },
+                              "operator": { "type": "string", "enum": ["equals", "not_equals"] },
+                              "value": { "type": "string", "maxLength": 500 }
+                            },
+                            "required": ["fieldKey", "operator", "value"]
+                          },
+                          "minItems": 1,
+                          "maxItems": 20
+                        }
+                      },
+                      "required": ["mode", "conditions"]
+                    },
+                    "minLength": { "type": "integer", "minimum": 0, "maximum": 10000 },
+                    "maxLength": { "type": "integer", "minimum": 1, "maximum": 10000 },
+                    "minValue": {
+                      "type": "string",
+                      "pattern": "^-?(0|[1-9][0-9]*)(\\.[0-9]{1,6})?$",
+                      "maxLength": 40
+                    },
+                    "maxValue": {
+                      "type": "string",
+                      "pattern": "^-?(0|[1-9][0-9]*)(\\.[0-9]{1,6})?$",
+                      "maxLength": 40
+                    },
+                    "minSelected": { "type": "integer", "minimum": 1, "maximum": 100 },
+                    "maxSelected": { "type": "integer", "minimum": 1, "maximum": 100 },
+                    "scaleMin": { "type": "integer", "enum": [0, 1] },
+                    "scaleMax": { "type": "integer", "minimum": 3, "maximum": 10 },
+                    "scaleLeftLabel": { "type": "string", "maxLength": 100 },
+                    "scaleRightLabel": { "type": "string", "maxLength": 100 },
+                    "withTime": { "type": "boolean" },
+                    "accept": { "type": "string", "enum": ["photo", "docs", "any"] },
+                    "maxFiles": { "type": "integer", "minimum": 1, "maximum": 20 },
+                    "maxFileMb": { "type": "integer", "minimum": 1, "maximum": 100 },
+                    "unitLevel": { "type": "string", "enum": ["any", "region", "firm"] },
+                    "refKind": { "type": "string", "enum": ["vehicle", "trip", "object", "task"] }
                   },
-                  "required": ["fieldKey", "conditions"]
+                  "required": ["key", "pageId", "type", "label", "required"]
                 },
                 "maxItems": 200
-              },
-              "confirmationText": { "type": "string", "maxLength": 1000 }
+              }
             },
-            "required": ["title", "description", "fields", "visibility", "confirmationText"]
-          }
+            "required": ["pages", "fields"]
+          },
+          "templateId": { "type": "string", "pattern": "^[a-z][a-z0-9-]{1,49}$" },
+          "sourceFormId": { "type": "string", "format": "uuid" },
+          "groupId": { "type": ["string", "null"], "format": "uuid" }
         },
-        "required": ["orgUnitId", "name", "definition"]
+        "required": ["orgUnitId", "name"]
       }
     },
     {
@@ -2474,7 +2385,7 @@
       "tag": "Forms",
       "stage1": false,
       "stage2": false,
-      "stage4": false,
+      "stage4": true,
       "permissions": ["forms.read"],
       "mode": "all",
       "scope": "tenant-org-unit-project",
@@ -2494,7 +2405,7 @@
       "tag": "Forms",
       "stage1": false,
       "stage2": false,
-      "stage4": false,
+      "stage4": true,
       "permissions": ["forms.manage"],
       "mode": "all",
       "scope": "tenant-org-unit-project",
@@ -2509,9 +2420,32 @@
       "request": {
         "type": "object",
         "additionalProperties": false,
+        "minProperties": 1,
         "properties": {
           "name": { "type": "string", "minLength": 1, "maxLength": 200 },
-          "status": { "type": "string", "const": "closed" }
+          "status": { "type": "string", "enum": ["open", "closed"] },
+          "orgUnitId": { "type": ["string", "null"], "format": "uuid" },
+          "groupId": { "type": ["string", "null"], "format": "uuid" },
+          "settings": {
+            "type": "object",
+            "additionalProperties": false,
+            "minProperties": 1,
+            "properties": {
+              "access": { "type": "string", "enum": ["members", "public"] },
+              "acceptUntil": { "type": ["string", "null"], "format": "date" },
+              "responseLimit": { "type": ["integer", "null"], "minimum": 1, "maximum": 1000000 },
+              "onePerMember": { "type": "boolean" },
+              "allowEditBeforeReview": { "type": "boolean" },
+              "confirmationText": { "type": "string", "maxLength": 1000 },
+              "scoring": { "type": "boolean" },
+              "passScore": { "type": ["integer", "null"], "minimum": 0, "maximum": 100000 },
+              "showScore": { "type": "boolean" },
+              "progressBar": { "type": "boolean" },
+              "backButton": { "type": "boolean" },
+              "showLogo": { "type": "boolean" },
+              "retainResponsesDays": { "type": "integer", "enum": [90, 365, 1095] }
+            }
+          }
         }
       }
     },
@@ -2522,7 +2456,7 @@
       "tag": "Forms",
       "stage1": false,
       "stage2": false,
-      "stage4": false,
+      "stage4": true,
       "permissions": ["forms.read"],
       "mode": "all",
       "scope": "tenant-org-unit-project",
@@ -2716,7 +2650,8 @@
                                       "entityId": { "type": "string", "format": "uuid" }
                                     },
                                     "required": ["moduleKey", "entityType", "entityId"]
-                                  }
+                                  },
+                                  "label": { "type": "string", "maxLength": 200 }
                                 },
                                 "required": ["type", "value"]
                               },
@@ -2764,7 +2699,8 @@
                                     "items": { "type": "string" },
                                     "uniqueItems": true,
                                     "maxItems": 100
-                                  }
+                                  },
+                                  "otherText": { "type": "string", "maxLength": 500 }
                                 },
                                 "required": ["type", "value"]
                               },
@@ -2837,7 +2773,7 @@
       "tag": "Forms",
       "stage1": false,
       "stage2": false,
-      "stage4": false,
+      "stage4": true,
       "permissions": ["forms.responses.read"],
       "mode": "all",
       "scope": "tenant-org-unit-project-assigned",
@@ -2851,13 +2787,197 @@
       "etag": false
     },
     {
+      "id": "submitFormResponse",
+      "method": "POST",
+      "path": "/api/v1/tenants/{tenantId}/forms/{formId}/responses",
+      "tag": "Forms",
+      "stage1": false,
+      "stage2": false,
+      "stage4": true,
+      "permissions": ["forms.read"],
+      "mode": "all",
+      "scope": "tenant-org-unit-project",
+      "public": false,
+      "mutating": true,
+      "ifMatch": false,
+      "idempotent": true,
+      "statuses": [201, 400, 401, 402, 403, 404, 409, 422, 428, 429],
+      "success": 201,
+      "successBody": true,
+      "etag": true,
+      "request": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "versionId": { "type": "string", "format": "uuid" },
+          "answers": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "fieldKey": { "type": "string" },
+                "value": {
+                  "oneOf": [
+                    {
+                      "type": "object",
+                      "additionalProperties": false,
+                      "properties": {
+                        "type": { "type": "string", "const": "text" },
+                        "value": { "type": "string", "maxLength": 10000 }
+                      },
+                      "required": ["type", "value"]
+                    },
+                    {
+                      "type": "object",
+                      "additionalProperties": false,
+                      "properties": {
+                        "type": { "type": "string", "const": "decimal" },
+                        "value": {
+                          "type": "string",
+                          "pattern": "^-?(0|[1-9][0-9]*)(\\.[0-9]{1,6})?$",
+                          "maxLength": 40
+                        }
+                      },
+                      "required": ["type", "value"]
+                    },
+                    {
+                      "type": "object",
+                      "additionalProperties": false,
+                      "properties": {
+                        "type": { "type": "string", "const": "boolean" },
+                        "value": { "type": "boolean" }
+                      },
+                      "required": ["type", "value"]
+                    },
+                    {
+                      "type": "object",
+                      "additionalProperties": false,
+                      "properties": {
+                        "type": { "type": "string", "const": "date" },
+                        "value": { "type": "string", "format": "date" }
+                      },
+                      "required": ["type", "value"]
+                    },
+                    {
+                      "type": "object",
+                      "additionalProperties": false,
+                      "properties": {
+                        "type": { "type": "string", "const": "instant" },
+                        "value": { "type": "string", "format": "date-time", "pattern": "Z$" }
+                      },
+                      "required": ["type", "value"]
+                    },
+                    {
+                      "type": "object",
+                      "additionalProperties": false,
+                      "properties": {
+                        "type": { "type": "string", "const": "reference" },
+                        "value": {
+                          "type": "object",
+                          "additionalProperties": false,
+                          "properties": {
+                            "moduleKey": { "type": "string", "pattern": "^[a-z][a-z0-9_-]{1,49}$" },
+                            "entityType": { "type": "string", "pattern": "^[a-z][a-z0-9_]{1,49}$" },
+                            "entityId": { "type": "string", "format": "uuid" }
+                          },
+                          "required": ["moduleKey", "entityType", "entityId"]
+                        },
+                        "label": { "type": "string", "maxLength": 200 }
+                      },
+                      "required": ["type", "value"]
+                    },
+                    {
+                      "type": "object",
+                      "additionalProperties": false,
+                      "properties": {
+                        "type": { "type": "string", "const": "money" },
+                        "value": {
+                          "type": "object",
+                          "additionalProperties": false,
+                          "properties": {
+                            "amountMinor": {
+                              "type": "integer",
+                              "minimum": 0,
+                              "maximum": 9007199254740991
+                            },
+                            "currency": { "type": "string", "pattern": "^[A-Z]{3}$" }
+                          },
+                          "required": ["amountMinor", "currency"]
+                        }
+                      },
+                      "required": ["type", "value"]
+                    },
+                    {
+                      "type": "object",
+                      "additionalProperties": false,
+                      "properties": {
+                        "type": { "type": "string", "const": "files" },
+                        "value": {
+                          "type": "array",
+                          "items": { "type": "string", "format": "uuid" },
+                          "maxItems": 20
+                        }
+                      },
+                      "required": ["type", "value"]
+                    },
+                    {
+                      "type": "object",
+                      "additionalProperties": false,
+                      "properties": {
+                        "type": { "type": "string", "const": "choices" },
+                        "value": {
+                          "type": "array",
+                          "items": { "type": "string" },
+                          "uniqueItems": true,
+                          "maxItems": 100
+                        },
+                        "otherText": { "type": "string", "maxLength": 500 }
+                      },
+                      "required": ["type", "value"]
+                    },
+                    {
+                      "type": "object",
+                      "additionalProperties": false,
+                      "properties": {
+                        "type": { "type": "string", "const": "null" },
+                        "value": { "type": "null" }
+                      },
+                      "required": ["type", "value"]
+                    }
+                  ]
+                }
+              },
+              "required": ["fieldKey", "value"]
+            },
+            "maxItems": 200
+          },
+          "subject": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "moduleKey": { "type": "string", "pattern": "^[a-z][a-z0-9_-]{1,49}$" },
+              "entityType": { "type": "string", "pattern": "^[a-z][a-z0-9_]{1,49}$" },
+              "entityId": { "type": "string", "format": "uuid" }
+            },
+            "required": ["moduleKey", "entityType", "entityId"]
+          },
+          "linkParams": {
+            "type": "object",
+            "additionalProperties": { "type": "string", "maxLength": 500 }
+          }
+        },
+        "required": ["versionId", "answers"]
+      }
+    },
+    {
       "id": "getFormResponse",
       "method": "GET",
       "path": "/api/v1/tenants/{tenantId}/forms/{formId}/responses/{responseId}",
       "tag": "Forms",
       "stage1": false,
       "stage2": false,
-      "stage4": false,
+      "stage4": true,
       "permissions": ["forms.responses.read"],
       "mode": "all",
       "scope": "tenant-org-unit-project-assigned",
@@ -2877,7 +2997,7 @@
       "tag": "Forms",
       "stage1": false,
       "stage2": false,
-      "stage4": false,
+      "stage4": true,
       "permissions": [],
       "mode": "all",
       "scope": "tenant-org-unit-project-assigned",
@@ -2897,6 +3017,7 @@
       "request": {
         "type": "object",
         "additionalProperties": false,
+        "minProperties": 1,
         "properties": {
           "assigneeMemberId": { "type": ["string", "null"], "format": "uuid" },
           "reviewStatus": { "type": "string", "enum": ["pending", "accepted", "rejected"] },
@@ -3021,7 +3142,8 @@
                             "entityId": { "type": "string", "format": "uuid" }
                           },
                           "required": ["moduleKey", "entityType", "entityId"]
-                        }
+                        },
+                        "label": { "type": "string", "maxLength": 200 }
                       },
                       "required": ["type", "value"]
                     },
@@ -3069,7 +3191,8 @@
                           "items": { "type": "string" },
                           "uniqueItems": true,
                           "maxItems": 100
-                        }
+                        },
+                        "otherText": { "type": "string", "maxLength": 500 }
                       },
                       "required": ["type", "value"]
                     },
@@ -3088,6 +3211,10 @@
               "required": ["fieldKey", "value"]
             },
             "maxItems": 200
+          },
+          "linkParams": {
+            "type": "object",
+            "additionalProperties": { "type": "string", "maxLength": 500 }
           },
           "antiAbuseToken": { "type": "string" }
         },
@@ -6582,7 +6709,8 @@
                               "entityId": { "type": "string", "format": "uuid" }
                             },
                             "required": ["moduleKey", "entityType", "entityId"]
-                          }
+                          },
+                          "label": { "type": "string", "maxLength": 200 }
                         },
                         "required": ["type", "value"]
                       },
@@ -6630,7 +6758,8 @@
                             "items": { "type": "string" },
                             "uniqueItems": true,
                             "maxItems": 100
-                          }
+                          },
+                          "otherText": { "type": "string", "maxLength": 500 }
                         },
                         "required": ["type", "value"]
                       },
@@ -6829,7 +6958,8 @@
                                   "entityId": { "type": "string", "format": "uuid" }
                                 },
                                 "required": ["moduleKey", "entityType", "entityId"]
-                              }
+                              },
+                              "label": { "type": "string", "maxLength": 200 }
                             },
                             "required": ["type", "value"]
                           },
@@ -6877,7 +7007,8 @@
                                 "items": { "type": "string" },
                                 "uniqueItems": true,
                                 "maxItems": 100
-                              }
+                              },
+                              "otherText": { "type": "string", "maxLength": 500 }
                             },
                             "required": ["type", "value"]
                           },
@@ -7060,7 +7191,8 @@
                                   "entityId": { "type": "string", "format": "uuid" }
                                 },
                                 "required": ["moduleKey", "entityType", "entityId"]
-                              }
+                              },
+                              "label": { "type": "string", "maxLength": 200 }
                             },
                             "required": ["type", "value"]
                           },
@@ -7108,7 +7240,8 @@
                                 "items": { "type": "string" },
                                 "uniqueItems": true,
                                 "maxItems": 100
-                              }
+                              },
+                              "otherText": { "type": "string", "maxLength": 500 }
                             },
                             "required": ["type", "value"]
                           },
@@ -7263,7 +7396,8 @@
                               "entityId": { "type": "string", "format": "uuid" }
                             },
                             "required": ["moduleKey", "entityType", "entityId"]
-                          }
+                          },
+                          "label": { "type": "string", "maxLength": 200 }
                         },
                         "required": ["type", "value"]
                       },
@@ -7311,7 +7445,8 @@
                             "items": { "type": "string" },
                             "uniqueItems": true,
                             "maxItems": 100
-                          }
+                          },
+                          "otherText": { "type": "string", "maxLength": 500 }
                         },
                         "required": ["type", "value"]
                       },
@@ -9521,6 +9656,700 @@
       "success": 200,
       "successBody": true,
       "etag": false
+    },
+    {
+      "id": "getFormDraft",
+      "method": "GET",
+      "path": "/api/v1/tenants/{tenantId}/forms/{formId}/draft",
+      "tag": "Forms",
+      "stage1": false,
+      "stage2": false,
+      "stage4": true,
+      "permissions": ["forms.read"],
+      "mode": "all",
+      "scope": "tenant-org-unit-project",
+      "public": false,
+      "mutating": false,
+      "ifMatch": false,
+      "idempotent": false,
+      "statuses": [200, 400, 401, 403, 404, 422, 429],
+      "success": 200,
+      "successBody": true,
+      "etag": true
+    },
+    {
+      "id": "saveFormDraft",
+      "method": "PUT",
+      "path": "/api/v1/tenants/{tenantId}/forms/{formId}/draft",
+      "tag": "Forms",
+      "stage1": false,
+      "stage2": false,
+      "stage4": true,
+      "permissions": ["forms.manage"],
+      "mode": "all",
+      "scope": "tenant-org-unit-project",
+      "public": false,
+      "mutating": true,
+      "ifMatch": true,
+      "idempotent": true,
+      "statuses": [200, 400, 401, 402, 403, 404, 409, 412, 422, 428, 429],
+      "success": 200,
+      "successBody": true,
+      "etag": true,
+      "request": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "definition": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "pages": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "properties": {
+                    "id": { "type": "string", "pattern": "^[a-zA-Z][a-zA-Z0-9_-]{0,63}$" },
+                    "title": { "type": "string", "maxLength": 200 },
+                    "shuffle": { "type": "boolean" }
+                  },
+                  "required": ["id", "title"]
+                },
+                "minItems": 1,
+                "maxItems": 50
+              },
+              "fields": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "properties": {
+                    "key": { "type": "string", "pattern": "^[a-zA-Z][a-zA-Z0-9_-]{0,63}$" },
+                    "pageId": { "type": "string", "pattern": "^[a-zA-Z][a-zA-Z0-9_-]{0,63}$" },
+                    "type": {
+                      "type": "string",
+                      "enum": [
+                        "text",
+                        "longtext",
+                        "number",
+                        "money",
+                        "email",
+                        "phone",
+                        "inn",
+                        "url",
+                        "choice",
+                        "multi",
+                        "select",
+                        "bool",
+                        "person",
+                        "unit",
+                        "ref",
+                        "date",
+                        "int",
+                        "scale",
+                        "rating",
+                        "photo",
+                        "statement"
+                      ]
+                    },
+                    "label": { "type": "string", "maxLength": 500 },
+                    "required": { "type": "boolean" },
+                    "hint": { "type": "string", "maxLength": 1000 },
+                    "defaultValue": { "type": "string", "maxLength": 500 },
+                    "hidden": { "type": "boolean" },
+                    "options": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "additionalProperties": false,
+                        "properties": {
+                          "key": {
+                            "type": "string",
+                            "pattern": "^[a-zA-Z0-9][a-zA-Z0-9_-]{0,63}$"
+                          },
+                          "label": { "type": "string", "maxLength": 300 },
+                          "score": { "type": "integer", "minimum": -1000, "maximum": 1000 }
+                        },
+                        "required": ["key", "label"]
+                      },
+                      "maxItems": 100
+                    },
+                    "otherOption": { "type": "boolean" },
+                    "optionView": { "type": "string", "enum": ["list", "tiles", "row"] },
+                    "optionOrder": { "type": "string", "enum": ["as_is", "alpha", "random"] },
+                    "showIf": {
+                      "type": "object",
+                      "additionalProperties": false,
+                      "properties": {
+                        "mode": { "type": "string", "enum": ["all", "any"] },
+                        "conditions": {
+                          "type": "array",
+                          "items": {
+                            "type": "object",
+                            "additionalProperties": false,
+                            "properties": {
+                              "fieldKey": {
+                                "type": "string",
+                                "pattern": "^[a-zA-Z][a-zA-Z0-9_-]{0,63}$"
+                              },
+                              "operator": { "type": "string", "enum": ["equals", "not_equals"] },
+                              "value": { "type": "string", "maxLength": 500 }
+                            },
+                            "required": ["fieldKey", "operator", "value"]
+                          },
+                          "minItems": 1,
+                          "maxItems": 20
+                        }
+                      },
+                      "required": ["mode", "conditions"]
+                    },
+                    "minLength": { "type": "integer", "minimum": 0, "maximum": 10000 },
+                    "maxLength": { "type": "integer", "minimum": 1, "maximum": 10000 },
+                    "minValue": {
+                      "type": "string",
+                      "pattern": "^-?(0|[1-9][0-9]*)(\\.[0-9]{1,6})?$",
+                      "maxLength": 40
+                    },
+                    "maxValue": {
+                      "type": "string",
+                      "pattern": "^-?(0|[1-9][0-9]*)(\\.[0-9]{1,6})?$",
+                      "maxLength": 40
+                    },
+                    "minSelected": { "type": "integer", "minimum": 1, "maximum": 100 },
+                    "maxSelected": { "type": "integer", "minimum": 1, "maximum": 100 },
+                    "scaleMin": { "type": "integer", "enum": [0, 1] },
+                    "scaleMax": { "type": "integer", "minimum": 3, "maximum": 10 },
+                    "scaleLeftLabel": { "type": "string", "maxLength": 100 },
+                    "scaleRightLabel": { "type": "string", "maxLength": 100 },
+                    "withTime": { "type": "boolean" },
+                    "accept": { "type": "string", "enum": ["photo", "docs", "any"] },
+                    "maxFiles": { "type": "integer", "minimum": 1, "maximum": 20 },
+                    "maxFileMb": { "type": "integer", "minimum": 1, "maximum": 100 },
+                    "unitLevel": { "type": "string", "enum": ["any", "region", "firm"] },
+                    "refKind": { "type": "string", "enum": ["vehicle", "trip", "object", "task"] }
+                  },
+                  "required": ["key", "pageId", "type", "label", "required"]
+                },
+                "maxItems": 200
+              }
+            },
+            "required": ["pages", "fields"]
+          }
+        },
+        "required": ["definition"]
+      }
+    },
+    {
+      "id": "discardFormDraft",
+      "method": "DELETE",
+      "path": "/api/v1/tenants/{tenantId}/forms/{formId}/draft",
+      "tag": "Forms",
+      "stage1": false,
+      "stage2": false,
+      "stage4": true,
+      "permissions": ["forms.manage"],
+      "mode": "all",
+      "scope": "tenant-org-unit-project",
+      "public": false,
+      "mutating": true,
+      "ifMatch": true,
+      "idempotent": true,
+      "statuses": [200, 400, 401, 402, 403, 404, 409, 412, 422, 428, 429],
+      "success": 200,
+      "successBody": true,
+      "etag": true
+    },
+    {
+      "id": "publishForm",
+      "method": "POST",
+      "path": "/api/v1/tenants/{tenantId}/forms/{formId}/publish",
+      "tag": "Forms",
+      "stage1": false,
+      "stage2": false,
+      "stage4": true,
+      "permissions": ["forms.publish"],
+      "mode": "all",
+      "scope": "tenant-org-unit-project",
+      "public": false,
+      "mutating": true,
+      "ifMatch": true,
+      "idempotent": true,
+      "statuses": [200, 400, 401, 402, 403, 404, 409, 412, 422, 428, 429],
+      "success": 200,
+      "successBody": true,
+      "etag": true,
+      "request": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": { "draftRevision": { "type": "integer", "minimum": 1, "format": "int64" } },
+        "required": ["draftRevision"]
+      }
+    },
+    {
+      "id": "listFormRules",
+      "method": "GET",
+      "path": "/api/v1/tenants/{tenantId}/forms/{formId}/rules",
+      "tag": "Forms",
+      "stage1": false,
+      "stage2": false,
+      "stage4": true,
+      "permissions": ["forms.read"],
+      "mode": "all",
+      "scope": "tenant-org-unit-project",
+      "public": false,
+      "mutating": false,
+      "ifMatch": false,
+      "idempotent": false,
+      "statuses": [200, 400, 401, 403, 404, 422, 429],
+      "success": 200,
+      "successBody": true,
+      "etag": false
+    },
+    {
+      "id": "createFormRule",
+      "method": "POST",
+      "path": "/api/v1/tenants/{tenantId}/forms/{formId}/rules",
+      "tag": "Forms",
+      "stage1": false,
+      "stage2": false,
+      "stage4": true,
+      "permissions": ["forms.manage"],
+      "mode": "all",
+      "scope": "tenant-org-unit-project",
+      "public": false,
+      "mutating": true,
+      "ifMatch": false,
+      "idempotent": true,
+      "statuses": [201, 400, 401, 402, 403, 404, 409, 422, 428, 429],
+      "success": 201,
+      "successBody": true,
+      "etag": true,
+      "request": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "kind": { "type": "string", "enum": ["task", "notify", "email", "http", "kb"] },
+          "enabled": { "type": "boolean" },
+          "trigger": { "type": "string", "enum": ["submitted", "accepted"] },
+          "condition": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "fieldKey": {
+                "type": ["string", "null"],
+                "pattern": "^[a-zA-Z][a-zA-Z0-9_-]{0,63}$"
+              },
+              "value": { "type": ["string", "null"], "maxLength": 64 }
+            },
+            "required": ["fieldKey", "value"]
+          },
+          "task": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "projectId": { "type": "string", "format": "uuid" },
+              "title": { "type": "string", "minLength": 1, "maxLength": 200 },
+              "assigneeMemberId": { "type": "string", "format": "uuid" }
+            },
+            "required": ["projectId", "title", "assigneeMemberId"]
+          },
+          "notify": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": { "memberId": { "type": "string", "format": "uuid" } },
+            "required": ["memberId"]
+          },
+          "email": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": { "to": { "type": "string", "format": "email", "maxLength": 254 } },
+            "required": ["to"]
+          },
+          "http": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "url": {
+                "type": "string",
+                "format": "uri",
+                "pattern": "^https://",
+                "maxLength": 2000
+              }
+            },
+            "required": ["url"]
+          },
+          "kb": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "nodeId": { "type": "string", "format": "uuid" },
+              "mode": { "type": "string", "enum": ["table", "entry"] },
+              "tableId": { "type": "string", "format": "uuid" },
+              "head": {
+                "type": "string",
+                "maxLength": 120,
+                "pattern": "^(\\$(at|author|object|id|form|ver)|[a-zA-Z][a-zA-Z0-9_-]{0,63})$"
+              },
+              "position": { "type": "string", "enum": ["top", "bottom"] },
+              "fields": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "properties": {
+                    "columnId": { "type": "string", "format": "uuid" },
+                    "name": { "type": "string", "minLength": 1, "maxLength": 120 },
+                    "source": {
+                      "type": "string",
+                      "pattern": "^(\\$(at|author|object|id|form|ver)|[a-zA-Z][a-zA-Z0-9_-]{0,63})$"
+                    }
+                  },
+                  "required": ["name", "source"]
+                },
+                "minItems": 1,
+                "maxItems": 30
+              },
+              "showLink": { "type": "boolean" },
+              "allEmployeesConfirmed": { "type": "boolean" }
+            },
+            "required": [
+              "nodeId",
+              "mode",
+              "position",
+              "fields",
+              "showLink",
+              "allEmployeesConfirmed"
+            ]
+          }
+        },
+        "required": ["kind", "trigger"]
+      }
+    },
+    {
+      "id": "deleteFormRule",
+      "method": "DELETE",
+      "path": "/api/v1/tenants/{tenantId}/forms/{formId}/rules/{ruleId}",
+      "tag": "Forms",
+      "stage1": false,
+      "stage2": false,
+      "stage4": true,
+      "permissions": ["forms.manage"],
+      "mode": "all",
+      "scope": "tenant-org-unit-project",
+      "public": false,
+      "mutating": true,
+      "ifMatch": true,
+      "idempotent": true,
+      "statuses": [204, 400, 401, 402, 403, 404, 409, 412, 422, 428, 429],
+      "success": 204,
+      "successBody": false,
+      "etag": false
+    },
+    {
+      "id": "updateFormRule",
+      "method": "PATCH",
+      "path": "/api/v1/tenants/{tenantId}/forms/{formId}/rules/{ruleId}",
+      "tag": "Forms",
+      "stage1": false,
+      "stage2": false,
+      "stage4": true,
+      "permissions": ["forms.manage"],
+      "mode": "all",
+      "scope": "tenant-org-unit-project",
+      "public": false,
+      "mutating": true,
+      "ifMatch": true,
+      "idempotent": true,
+      "statuses": [200, 400, 401, 402, 403, 404, 409, 412, 422, 428, 429],
+      "success": 200,
+      "successBody": true,
+      "etag": true,
+      "request": {
+        "type": "object",
+        "additionalProperties": false,
+        "minProperties": 1,
+        "properties": {
+          "enabled": { "type": "boolean" },
+          "trigger": { "type": "string", "enum": ["submitted", "accepted"] },
+          "condition": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "fieldKey": {
+                "type": ["string", "null"],
+                "pattern": "^[a-zA-Z][a-zA-Z0-9_-]{0,63}$"
+              },
+              "value": { "type": ["string", "null"], "maxLength": 64 }
+            },
+            "required": ["fieldKey", "value"]
+          },
+          "task": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "projectId": { "type": "string", "format": "uuid" },
+              "title": { "type": "string", "minLength": 1, "maxLength": 200 },
+              "assigneeMemberId": { "type": "string", "format": "uuid" }
+            },
+            "required": ["projectId", "title", "assigneeMemberId"]
+          },
+          "notify": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": { "memberId": { "type": "string", "format": "uuid" } },
+            "required": ["memberId"]
+          },
+          "email": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": { "to": { "type": "string", "format": "email", "maxLength": 254 } },
+            "required": ["to"]
+          },
+          "http": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "url": {
+                "type": "string",
+                "format": "uri",
+                "pattern": "^https://",
+                "maxLength": 2000
+              }
+            },
+            "required": ["url"]
+          },
+          "kb": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "nodeId": { "type": "string", "format": "uuid" },
+              "mode": { "type": "string", "enum": ["table", "entry"] },
+              "tableId": { "type": "string", "format": "uuid" },
+              "head": {
+                "type": "string",
+                "maxLength": 120,
+                "pattern": "^(\\$(at|author|object|id|form|ver)|[a-zA-Z][a-zA-Z0-9_-]{0,63})$"
+              },
+              "position": { "type": "string", "enum": ["top", "bottom"] },
+              "fields": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "properties": {
+                    "columnId": { "type": "string", "format": "uuid" },
+                    "name": { "type": "string", "minLength": 1, "maxLength": 120 },
+                    "source": {
+                      "type": "string",
+                      "pattern": "^(\\$(at|author|object|id|form|ver)|[a-zA-Z][a-zA-Z0-9_-]{0,63})$"
+                    }
+                  },
+                  "required": ["name", "source"]
+                },
+                "minItems": 1,
+                "maxItems": 30
+              },
+              "showLink": { "type": "boolean" },
+              "allEmployeesConfirmed": { "type": "boolean" }
+            },
+            "required": [
+              "nodeId",
+              "mode",
+              "position",
+              "fields",
+              "showLink",
+              "allEmployeesConfirmed"
+            ]
+          }
+        }
+      }
+    },
+    {
+      "id": "backfillFormRule",
+      "method": "POST",
+      "path": "/api/v1/tenants/{tenantId}/forms/{formId}/rules/{ruleId}/backfill",
+      "tag": "Forms",
+      "stage1": false,
+      "stage2": false,
+      "stage4": true,
+      "permissions": ["forms.manage"],
+      "mode": "all",
+      "scope": "tenant-org-unit-project",
+      "public": false,
+      "mutating": true,
+      "ifMatch": false,
+      "idempotent": true,
+      "statuses": [200, 400, 401, 402, 403, 404, 409, 422, 428, 429],
+      "success": 200,
+      "successBody": true,
+      "etag": false
+    },
+    {
+      "id": "retryFormResponseAction",
+      "method": "POST",
+      "path": "/api/v1/tenants/{tenantId}/forms/{formId}/responses/{responseId}/actions/{ruleId}/retry",
+      "tag": "Forms",
+      "stage1": false,
+      "stage2": false,
+      "stage4": true,
+      "permissions": ["forms.manage"],
+      "mode": "all",
+      "scope": "tenant-org-unit-project",
+      "public": false,
+      "mutating": true,
+      "ifMatch": false,
+      "idempotent": true,
+      "statuses": [200, 400, 401, 402, 403, 404, 409, 422, 428, 429],
+      "success": 200,
+      "successBody": true,
+      "etag": false
+    },
+    {
+      "id": "getFormResponseSummary",
+      "method": "GET",
+      "path": "/api/v1/tenants/{tenantId}/forms/{formId}/summary",
+      "tag": "Forms",
+      "stage1": false,
+      "stage2": false,
+      "stage4": true,
+      "permissions": ["forms.responses.read"],
+      "mode": "all",
+      "scope": "tenant-org-unit-project-assigned",
+      "public": false,
+      "mutating": false,
+      "ifMatch": false,
+      "idempotent": false,
+      "statuses": [200, 400, 401, 403, 404, 422, 429],
+      "success": 200,
+      "successBody": true,
+      "etag": false
+    },
+    {
+      "id": "exportFormResponses",
+      "method": "GET",
+      "path": "/api/v1/tenants/{tenantId}/forms/{formId}/export",
+      "tag": "Forms",
+      "stage1": false,
+      "stage2": false,
+      "stage4": true,
+      "permissions": ["forms.responses.read"],
+      "mode": "all",
+      "scope": "tenant-org-unit-project-assigned",
+      "public": false,
+      "mutating": false,
+      "ifMatch": false,
+      "idempotent": false,
+      "statuses": [200, 400, 401, 403, 404, 409, 422, 429],
+      "success": 200,
+      "successBody": true,
+      "etag": false
+    },
+    {
+      "id": "listFormFieldOptions",
+      "method": "GET",
+      "path": "/api/v1/tenants/{tenantId}/forms/{formId}/fields/{fieldKey}/options",
+      "tag": "Forms",
+      "stage1": false,
+      "stage2": false,
+      "stage4": true,
+      "permissions": ["forms.read"],
+      "mode": "all",
+      "scope": "tenant-org-unit-project",
+      "public": false,
+      "mutating": false,
+      "ifMatch": false,
+      "idempotent": false,
+      "statuses": [200, 400, 401, 403, 404, 422, 429],
+      "success": 200,
+      "successBody": true,
+      "etag": false
+    },
+    {
+      "id": "listFormTemplates",
+      "method": "GET",
+      "path": "/api/v1/tenants/{tenantId}/form-templates",
+      "tag": "Forms",
+      "stage1": false,
+      "stage2": false,
+      "stage4": true,
+      "permissions": ["forms.create"],
+      "mode": "all",
+      "scope": "tenant-org-unit-project",
+      "public": false,
+      "mutating": false,
+      "ifMatch": false,
+      "idempotent": false,
+      "statuses": [200, 400, 401, 403, 404, 422, 429],
+      "success": 200,
+      "successBody": true,
+      "etag": false
+    },
+    {
+      "id": "listFormGroups",
+      "method": "GET",
+      "path": "/api/v1/tenants/{tenantId}/form-groups",
+      "tag": "Forms",
+      "stage1": false,
+      "stage2": false,
+      "stage4": true,
+      "permissions": ["forms.read"],
+      "mode": "all",
+      "scope": "tenant-org-unit-project",
+      "public": false,
+      "mutating": false,
+      "ifMatch": false,
+      "idempotent": false,
+      "statuses": [200, 400, 401, 403, 404, 422, 429],
+      "success": 200,
+      "successBody": true,
+      "etag": false
+    },
+    {
+      "id": "createFormGroup",
+      "method": "POST",
+      "path": "/api/v1/tenants/{tenantId}/form-groups",
+      "tag": "Forms",
+      "stage1": false,
+      "stage2": false,
+      "stage4": true,
+      "permissions": ["forms.manage"],
+      "mode": "all",
+      "scope": "tenant",
+      "public": false,
+      "mutating": true,
+      "ifMatch": false,
+      "idempotent": true,
+      "statuses": [201, 400, 401, 402, 403, 404, 409, 422, 428, 429],
+      "success": 201,
+      "successBody": true,
+      "etag": false,
+      "request": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": { "name": { "type": "string", "minLength": 1, "maxLength": 80 } },
+        "required": ["name"]
+      }
+    },
+    {
+      "id": "deleteFormGroup",
+      "method": "DELETE",
+      "path": "/api/v1/tenants/{tenantId}/form-groups/{groupId}",
+      "tag": "Forms",
+      "stage1": false,
+      "stage2": false,
+      "stage4": true,
+      "permissions": ["forms.manage"],
+      "mode": "all",
+      "scope": "tenant",
+      "public": false,
+      "mutating": true,
+      "ifMatch": false,
+      "idempotent": true,
+      "statuses": [204, 400, 401, 402, 403, 404, 409, 422, 428, 429],
+      "success": 204,
+      "successBody": false,
+      "etag": false
     }
   ],
   "errors": {
@@ -9601,7 +10430,16 @@
         "doc_route",
         "form_version_changed",
         "workflow_exists",
-        "funnel_fixed"
+        "funnel_fixed",
+        "form_draft_flow",
+        "form_not_published",
+        "form_no_changes",
+        "form_closed",
+        "form_already_answered",
+        "form_group_not_empty",
+        "form_rule_disabled",
+        "form_rule_deleted",
+        "form_no_responses"
       ]
     },
     "separation_of_duties_conflict": {
@@ -16187,6 +17025,844 @@
           }
         ],
         "retryable": true
+      }
+    },
+    "listForms": {
+      "forbidden_action": {
+        "type": "https://docs.ortus.example/errors/forbidden_action",
+        "title": "Нет действия ни в одной роли",
+        "status": 403,
+        "code": "forbidden_action",
+        "requestId": "01J9Z4QK8M6T2V5X7Y9A1B3C5D",
+        "detail": "Нет права «Видеть формы»"
+      },
+      "ok": {
+        "items": [
+          {
+            "id": "7849cddb-8d14-505d-aedb-4d59b6be855b",
+            "orgUnitId": null,
+            "name": "Ежедневный отчёт прораба",
+            "status": "draft",
+            "revision": 1,
+            "moduleKey": "repairs",
+            "templateId": null,
+            "groupId": null,
+            "owner": {
+              "memberId": "b8df06ec-317e-5f46-b54c-e76603e41b5b",
+              "displayName": "Дарья Зимина"
+            },
+            "updatedAt": "2026-09-30T07:30:00Z",
+            "publishedVersionNumber": null,
+            "versionCount": 0,
+            "hasUnpublishedChanges": false,
+            "questionCount": 3,
+            "responseCount": 0,
+            "enabledRuleCount": 0,
+            "settings": {
+              "access": "members",
+              "acceptUntil": null,
+              "responseLimit": null,
+              "onePerMember": false,
+              "allowEditBeforeReview": true,
+              "confirmationText": "Спасибо! Ответ отправлен.",
+              "scoring": false,
+              "passScore": null,
+              "showScore": true,
+              "progressBar": true,
+              "backButton": true,
+              "showLogo": true,
+              "retainResponsesDays": 365
+            },
+            "share": { "publicToken": null },
+            "my": {
+              "create": true,
+              "manage": true,
+              "publish": true,
+              "publishPublic": true,
+              "readResponses": true,
+              "reviewResponses": true,
+              "respond": false
+            }
+          },
+          {
+            "id": "3a5f4ca2-f3bf-5b37-819f-a9511aee0211",
+            "orgUnitId": null,
+            "name": "Осмотр машины",
+            "status": "published",
+            "revision": 1,
+            "moduleKey": "fleet",
+            "templateId": null,
+            "groupId": null,
+            "owner": {
+              "memberId": "b8df06ec-317e-5f46-b54c-e76603e41b5b",
+              "displayName": "Дарья Зимина"
+            },
+            "updatedAt": "2026-09-23T21:00:00Z",
+            "publishedVersionNumber": 3,
+            "versionCount": 3,
+            "hasUnpublishedChanges": false,
+            "questionCount": 7,
+            "responseCount": 2,
+            "enabledRuleCount": 2,
+            "settings": {
+              "access": "members",
+              "acceptUntil": null,
+              "responseLimit": null,
+              "onePerMember": false,
+              "allowEditBeforeReview": true,
+              "confirmationText": "Спасибо! Ответ отправлен.",
+              "scoring": false,
+              "passScore": null,
+              "showScore": true,
+              "progressBar": true,
+              "backButton": true,
+              "showLogo": true,
+              "retainResponsesDays": 365
+            },
+            "share": { "publicToken": null },
+            "my": {
+              "create": true,
+              "manage": true,
+              "publish": true,
+              "publishPublic": true,
+              "readResponses": true,
+              "reviewResponses": true,
+              "respond": true
+            },
+            "latestVersionId": "977e10e3-a208-5061-9c01-ec51c56e7ce4",
+            "publishedVersionId": "977e10e3-a208-5061-9c01-ec51c56e7ce4"
+          }
+        ],
+        "nextCursor": null
+      }
+    },
+    "createForm": {
+      "created": {
+        "id": "065a8ca0-ebb9-574d-9e78-170d39f799c3",
+        "orgUnitId": null,
+        "name": "Форма обратной связи",
+        "status": "draft",
+        "revision": 1,
+        "moduleKey": null,
+        "templateId": "tpl-feedback",
+        "groupId": null,
+        "owner": {
+          "memberId": "b8df06ec-317e-5f46-b54c-e76603e41b5b",
+          "displayName": "Дарья Зимина"
+        },
+        "updatedAt": "2026-10-01T07:30:00Z",
+        "publishedVersionNumber": null,
+        "versionCount": 0,
+        "hasUnpublishedChanges": false,
+        "questionCount": 5,
+        "responseCount": 0,
+        "enabledRuleCount": 0,
+        "settings": {
+          "access": "public",
+          "acceptUntil": null,
+          "responseLimit": null,
+          "onePerMember": false,
+          "allowEditBeforeReview": true,
+          "confirmationText": "Спасибо! Ответ отправлен.",
+          "scoring": false,
+          "passScore": null,
+          "showScore": true,
+          "progressBar": true,
+          "backButton": true,
+          "showLogo": true,
+          "retainResponsesDays": 365
+        },
+        "share": { "publicToken": null },
+        "my": {
+          "create": true,
+          "manage": true,
+          "publish": true,
+          "publishPublic": true,
+          "readResponses": true,
+          "reviewResponses": true,
+          "respond": false
+        }
+      },
+      "forbidden_action": {
+        "type": "https://docs.ortus.example/errors/forbidden_action",
+        "title": "Нет действия ни в одной роли",
+        "status": 403,
+        "code": "forbidden_action",
+        "requestId": "01J9Z4QK8M6T2V5X7Y9A1B3C5D",
+        "detail": "Нет права «Создавать формы»"
+      },
+      "module_not_installed": {
+        "type": "https://docs.ortus.example/errors/module_not_installed",
+        "title": "Модуль не подключён",
+        "status": 403,
+        "code": "module_not_installed",
+        "detail": "Модуль «Ремонт и стройка» не подключён: шаблон недоступен",
+        "requestId": "01J9Z4QK8M6T2V5X7Y9A1B3C5D"
+      },
+      "validation_failed": {
+        "type": "https://docs.ortus.example/errors/validation_failed",
+        "title": "Ошибки полей",
+        "status": 422,
+        "code": "validation_failed",
+        "detail": "Форма «осмотр машины» уже есть — измените название",
+        "requestId": "01J9Z4QK8M6T2V5X7Y9A1B3C5D",
+        "violations": [
+          {
+            "field": "name",
+            "code": "taken",
+            "message": "Форма «осмотр машины» уже есть — измените название"
+          }
+        ]
+      }
+    },
+    "getForm": {
+      "not_found": {
+        "type": "https://docs.ortus.example/errors/not_found",
+        "title": "Нет объекта или он вне области",
+        "status": 404,
+        "code": "not_found",
+        "detail": "Форма не найдена",
+        "requestId": "01J9Z4QK8M6T2V5X7Y9A1B3C5D"
+      },
+      "ok": {
+        "id": "3a5f4ca2-f3bf-5b37-819f-a9511aee0211",
+        "orgUnitId": null,
+        "name": "Осмотр машины",
+        "status": "published",
+        "revision": 1,
+        "moduleKey": "fleet",
+        "templateId": null,
+        "groupId": null,
+        "owner": {
+          "memberId": "b8df06ec-317e-5f46-b54c-e76603e41b5b",
+          "displayName": "Дарья Зимина"
+        },
+        "updatedAt": "2026-09-23T21:00:00Z",
+        "publishedVersionNumber": 3,
+        "versionCount": 3,
+        "hasUnpublishedChanges": false,
+        "questionCount": 7,
+        "responseCount": 2,
+        "enabledRuleCount": 2,
+        "settings": {
+          "access": "members",
+          "acceptUntil": null,
+          "responseLimit": null,
+          "onePerMember": false,
+          "allowEditBeforeReview": true,
+          "confirmationText": "Спасибо! Ответ отправлен.",
+          "scoring": false,
+          "passScore": null,
+          "showScore": true,
+          "progressBar": true,
+          "backButton": true,
+          "showLogo": true,
+          "retainResponsesDays": 365
+        },
+        "share": { "publicToken": null },
+        "my": {
+          "create": true,
+          "manage": true,
+          "publish": true,
+          "publishPublic": true,
+          "readResponses": true,
+          "reviewResponses": true,
+          "respond": true
+        },
+        "latestVersionId": "977e10e3-a208-5061-9c01-ec51c56e7ce4",
+        "publishedVersionId": "977e10e3-a208-5061-9c01-ec51c56e7ce4"
+      }
+    },
+    "updateForm": {
+      "forbidden_action": {
+        "type": "https://docs.ortus.example/errors/forbidden_action",
+        "title": "Нет действия ни в одной роли",
+        "status": 403,
+        "code": "forbidden_action",
+        "requestId": "01J9Z4QK8M6T2V5X7Y9A1B3C5D",
+        "detail": "Нет права «Настраивать» формы"
+      },
+      "invalid_transition": {
+        "type": "https://docs.ortus.example/errors/invalid_transition",
+        "title": "Переход статуса не разрешён",
+        "status": 409,
+        "code": "invalid_transition",
+        "detail": "Форма ещё не опубликована",
+        "requestId": "01J9Z4QK8M6T2V5X7Y9A1B3C5D",
+        "reason": "form_not_published"
+      },
+      "ok": {
+        "id": "3a5f4ca2-f3bf-5b37-819f-a9511aee0211",
+        "orgUnitId": null,
+        "name": "Осмотр машины",
+        "status": "closed",
+        "revision": 2,
+        "moduleKey": "fleet",
+        "templateId": null,
+        "groupId": null,
+        "owner": {
+          "memberId": "b8df06ec-317e-5f46-b54c-e76603e41b5b",
+          "displayName": "Дарья Зимина"
+        },
+        "updatedAt": "2026-10-01T07:30:00Z",
+        "publishedVersionNumber": 3,
+        "versionCount": 3,
+        "hasUnpublishedChanges": false,
+        "questionCount": 7,
+        "responseCount": 2,
+        "enabledRuleCount": 2,
+        "settings": {
+          "access": "members",
+          "acceptUntil": null,
+          "responseLimit": null,
+          "onePerMember": false,
+          "allowEditBeforeReview": true,
+          "confirmationText": "Спасибо! Ответ отправлен.",
+          "scoring": false,
+          "passScore": null,
+          "showScore": true,
+          "progressBar": true,
+          "backButton": true,
+          "showLogo": true,
+          "retainResponsesDays": 365
+        },
+        "share": { "publicToken": null },
+        "my": {
+          "create": true,
+          "manage": true,
+          "publish": true,
+          "publishPublic": true,
+          "readResponses": true,
+          "reviewResponses": true,
+          "respond": false
+        },
+        "latestVersionId": "977e10e3-a208-5061-9c01-ec51c56e7ce4",
+        "publishedVersionId": "977e10e3-a208-5061-9c01-ec51c56e7ce4"
+      },
+      "revision_mismatch": {
+        "type": "https://docs.ortus.example/errors/revision_mismatch",
+        "title": "Устаревший If-Match",
+        "status": 412,
+        "code": "revision_mismatch",
+        "requestId": "01J9Z4QK8M6T2V5X7Y9A1B3C5D",
+        "detail": "Форму уже изменили — обновите страницу"
+      },
+      "validation_failed": {
+        "type": "https://docs.ortus.example/errors/validation_failed",
+        "title": "Ошибки полей",
+        "status": 422,
+        "code": "validation_failed",
+        "detail": "Название формы — не короче 3 символов",
+        "requestId": "01J9Z4QK8M6T2V5X7Y9A1B3C5D",
+        "violations": [
+          { "field": "name", "code": "invalid", "message": "Название формы — не короче 3 символов" }
+        ]
+      }
+    },
+    "listFormVersions": {
+      "not_found": {
+        "type": "https://docs.ortus.example/errors/not_found",
+        "title": "Нет объекта или он вне области",
+        "status": 404,
+        "code": "not_found",
+        "detail": "Форма не найдена",
+        "requestId": "01J9Z4QK8M6T2V5X7Y9A1B3C5D"
+      },
+      "ok": {
+        "items": [
+          {
+            "id": "977e10e3-a208-5061-9c01-ec51c56e7ce4",
+            "formId": "3a5f4ca2-f3bf-5b37-819f-a9511aee0211",
+            "number": 3,
+            "definition": {
+              "pages": [
+                { "id": "p1", "title": "Фото" },
+                { "id": "p2", "title": "Показания" },
+                { "id": "p3", "title": "Проверка" },
+                { "id": "p4", "title": "Дефекты" }
+              ],
+              "fields": [
+                {
+                  "key": "q-photos",
+                  "pageId": "p1",
+                  "type": "photo",
+                  "label": "Фото: спереди, сзади, слева, справа, одометр",
+                  "required": true
+                },
+                {
+                  "key": "q-odo",
+                  "pageId": "p2",
+                  "type": "number",
+                  "label": "Пробег по одометру, км",
+                  "required": true
+                },
+                {
+                  "key": "q-fuel",
+                  "pageId": "p2",
+                  "type": "choice",
+                  "label": "Уровень топлива",
+                  "required": true,
+                  "options": [
+                    { "key": "o1", "label": "¼" },
+                    { "key": "o2", "label": "½" },
+                    { "key": "o3", "label": "¾" },
+                    { "key": "o4", "label": "Полный" }
+                  ]
+                },
+                {
+                  "key": "q-checks",
+                  "pageId": "p3",
+                  "type": "multi",
+                  "label": "Чек-лист: кузов, шины, документы",
+                  "required": true,
+                  "options": [
+                    { "key": "o1", "label": "кузов" },
+                    { "key": "o2", "label": "шины" },
+                    { "key": "o3", "label": "документы" }
+                  ]
+                },
+                {
+                  "key": "q-defect",
+                  "pageId": "p4",
+                  "type": "bool",
+                  "label": "Есть дефекты?",
+                  "required": true
+                },
+                {
+                  "key": "q-defect-text",
+                  "pageId": "p4",
+                  "type": "text",
+                  "label": "Описание дефекта",
+                  "required": true,
+                  "showIf": {
+                    "mode": "all",
+                    "conditions": [
+                      { "fieldKey": "q-defect", "operator": "equals", "value": "true" }
+                    ]
+                  }
+                },
+                {
+                  "key": "q-critical",
+                  "pageId": "p4",
+                  "type": "bool",
+                  "label": "Дефект критический",
+                  "required": false,
+                  "showIf": {
+                    "mode": "all",
+                    "conditions": [
+                      { "fieldKey": "q-defect", "operator": "equals", "value": "true" }
+                    ]
+                  }
+                }
+              ]
+            },
+            "createdAt": "2026-09-23T21:00:00Z",
+            "createdBy": {
+              "memberId": "b8df06ec-317e-5f46-b54c-e76603e41b5b",
+              "displayName": "Дарья Зимина"
+            },
+            "questionCount": 7,
+            "current": true
+          },
+          {
+            "id": "90589e67-85d5-5ce5-88d5-f1d2f928a251",
+            "formId": "3a5f4ca2-f3bf-5b37-819f-a9511aee0211",
+            "number": 2,
+            "definition": {
+              "pages": [
+                { "id": "p1", "title": "Фото" },
+                { "id": "p2", "title": "Показания" },
+                { "id": "p3", "title": "Проверка" }
+              ],
+              "fields": [
+                {
+                  "key": "q-photos",
+                  "pageId": "p1",
+                  "type": "photo",
+                  "label": "Фото: спереди, сзади, слева, справа, одометр",
+                  "required": true
+                },
+                {
+                  "key": "q-odo",
+                  "pageId": "p2",
+                  "type": "number",
+                  "label": "Пробег по одометру, км",
+                  "required": true
+                },
+                {
+                  "key": "q-fuel-t",
+                  "pageId": "p2",
+                  "type": "text",
+                  "label": "Уровень топлива",
+                  "required": false
+                },
+                {
+                  "key": "q-checks",
+                  "pageId": "p3",
+                  "type": "multi",
+                  "label": "Чек-лист: кузов, шины, документы",
+                  "required": true,
+                  "options": [
+                    { "key": "o1", "label": "кузов" },
+                    { "key": "o2", "label": "шины" },
+                    { "key": "o3", "label": "документы" }
+                  ]
+                }
+              ]
+            },
+            "createdAt": "2026-09-09T21:00:00Z",
+            "createdBy": {
+              "memberId": "b8df06ec-317e-5f46-b54c-e76603e41b5b",
+              "displayName": "Дарья Зимина"
+            },
+            "questionCount": 4,
+            "current": false
+          },
+          {
+            "id": "7d1adb2c-e018-5cdc-9c4d-4d6a941aec50",
+            "formId": "3a5f4ca2-f3bf-5b37-819f-a9511aee0211",
+            "number": 1,
+            "definition": {
+              "pages": [
+                { "id": "p1", "title": "Фото" },
+                { "id": "p2", "title": "Показания" }
+              ],
+              "fields": [
+                {
+                  "key": "q-photos",
+                  "pageId": "p1",
+                  "type": "photo",
+                  "label": "Фото: спереди, сзади, слева, справа",
+                  "required": true
+                },
+                {
+                  "key": "q-odo",
+                  "pageId": "p2",
+                  "type": "number",
+                  "label": "Пробег",
+                  "required": true
+                },
+                {
+                  "key": "q-fuel-t",
+                  "pageId": "p2",
+                  "type": "text",
+                  "label": "Уровень топлива",
+                  "required": false
+                }
+              ]
+            },
+            "createdAt": "2026-09-01T21:00:00Z",
+            "createdBy": {
+              "memberId": "b8df06ec-317e-5f46-b54c-e76603e41b5b",
+              "displayName": "Дарья Зимина"
+            },
+            "questionCount": 3,
+            "current": false
+          }
+        ],
+        "nextCursor": null
+      }
+    },
+    "listFormResponses": {
+      "forbidden_action": {
+        "type": "https://docs.ortus.example/errors/forbidden_action",
+        "title": "Нет действия ни в одной роли",
+        "status": 403,
+        "code": "forbidden_action",
+        "requestId": "01J9Z4QK8M6T2V5X7Y9A1B3C5D",
+        "detail": "Нет права «Читать ответы»"
+      },
+      "ok": {
+        "items": [
+          {
+            "id": "9c64b00c-9706-549f-b788-8456dd9c35ea",
+            "formId": "3a5f4ca2-f3bf-5b37-819f-a9511aee0211",
+            "versionId": "977e10e3-a208-5061-9c01-ec51c56e7ce4",
+            "submittedAt": "2026-09-27T06:05:00Z",
+            "answers": [
+              { "fieldKey": "q-photos", "value": { "type": "text", "value": "5 фото" } },
+              { "fieldKey": "q-odo", "value": { "type": "decimal", "value": "84210" } },
+              { "fieldKey": "q-fuel", "value": { "type": "choices", "value": ["o3"] } },
+              {
+                "fieldKey": "q-checks",
+                "value": { "type": "choices", "value": ["o1", "o2", "o3"] }
+              },
+              { "fieldKey": "q-defect", "value": { "type": "boolean", "value": false } }
+            ],
+            "reviewStatus": "accepted",
+            "revision": 1,
+            "number": "R-1012",
+            "versionNumber": 3,
+            "author": {
+              "memberId": "a560b4fe-78b7-585e-b960-f0ab3622570c",
+              "displayName": "Илья Васильев"
+            },
+            "channel": "inspection",
+            "my": { "review": true, "assign": true },
+            "actions": [
+              {
+                "ruleId": "a249c9f4-6e6e-561d-bdc8-40bca93f0500",
+                "ruleVersion": 1,
+                "kind": "kb",
+                "ok": true,
+                "at": "2026-09-27T06:12:00Z",
+                "retryable": false,
+                "text": "Строка в таблице «Осмотры» · страница «Журнал осмотров машин»",
+                "node": {
+                  "id": "babd503a-697f-595f-83f8-6501710d0803",
+                  "title": "Журнал осмотров машин"
+                }
+              }
+            ],
+            "subject": {
+              "ref": {
+                "moduleKey": "fleet",
+                "entityType": "trip",
+                "entityId": "25c43989-32f2-5c05-b707-7dc1cbcaa6b4"
+              },
+              "label": "Рейс Р-196"
+            }
+          },
+          {
+            "id": "d530b3dc-6b28-5f5c-be4c-a14813678265",
+            "formId": "3a5f4ca2-f3bf-5b37-819f-a9511aee0211",
+            "versionId": "90589e67-85d5-5ce5-88d5-f1d2f928a251",
+            "submittedAt": "2026-09-18T05:41:00Z",
+            "answers": [
+              { "fieldKey": "q-photos", "value": { "type": "text", "value": "5 фото" } },
+              { "fieldKey": "q-odo", "value": { "type": "decimal", "value": "83902" } },
+              { "fieldKey": "q-fuel-t", "value": { "type": "text", "value": "почти полный" } },
+              {
+                "fieldKey": "q-checks",
+                "value": { "type": "choices", "value": ["o1", "o2", "o3"] }
+              }
+            ],
+            "reviewStatus": "accepted",
+            "revision": 1,
+            "number": "R-0988",
+            "versionNumber": 2,
+            "author": {
+              "memberId": "e3e06740-e478-5398-a737-dd89c477cbd7",
+              "displayName": "Кирилл Громов"
+            },
+            "channel": "inspection",
+            "my": { "review": true, "assign": true },
+            "actions": [
+              {
+                "ruleId": "a249c9f4-6e6e-561d-bdc8-40bca93f0500",
+                "ruleVersion": 1,
+                "kind": "kb",
+                "ok": true,
+                "at": "2026-09-24T15:20:00Z",
+                "retryable": false,
+                "text": "Строка в таблице «Осмотры» · страница «Журнал осмотров машин»",
+                "node": {
+                  "id": "babd503a-697f-595f-83f8-6501710d0803",
+                  "title": "Журнал осмотров машин"
+                }
+              }
+            ],
+            "subject": {
+              "ref": {
+                "moduleKey": "fleet",
+                "entityType": "trip",
+                "entityId": "b0233fb6-9316-54d7-91c6-62df0753ddd8"
+              },
+              "label": "Рейс Р-171"
+            }
+          }
+        ],
+        "nextCursor": null
+      }
+    },
+    "submitFormResponse": {
+      "created": {
+        "id": "a6f36b82-b4ca-5c77-a87a-16a35f713b45",
+        "formId": "3a5f4ca2-f3bf-5b37-819f-a9511aee0211",
+        "versionId": "977e10e3-a208-5061-9c01-ec51c56e7ce4",
+        "submittedAt": "2026-10-01T07:30:00Z",
+        "answers": [
+          {
+            "fieldKey": "q-photos",
+            "value": { "type": "files", "value": ["306049e3-70eb-5010-8e81-c31905366d6c"] }
+          },
+          { "fieldKey": "q-odo", "value": { "type": "decimal", "value": "84530" } },
+          { "fieldKey": "q-fuel", "value": { "type": "choices", "value": ["o3"] } },
+          { "fieldKey": "q-checks", "value": { "type": "choices", "value": ["o1", "o2", "o3"] } },
+          { "fieldKey": "q-defect", "value": { "type": "boolean", "value": false } }
+        ],
+        "reviewStatus": "accepted",
+        "revision": 1,
+        "number": "R-1013",
+        "versionNumber": 3,
+        "author": {
+          "memberId": "b8df06ec-317e-5f46-b54c-e76603e41b5b",
+          "displayName": "Дарья Зимина"
+        },
+        "channel": "member",
+        "my": { "review": true, "assign": true },
+        "actions": [
+          {
+            "ruleId": "534e3740-14f4-58e2-9684-1a31eda0a053",
+            "ruleVersion": 1,
+            "kind": "task",
+            "ok": true,
+            "at": "2026-10-01T07:30:00Z",
+            "retryable": false,
+            "text": "Задача LOG-101 «Проверить осмотр» · Марина Котова · Новая",
+            "taskId": "e92719af-ef92-523f-80d2-4b2abedb339c",
+            "taskKey": "LOG-101"
+          },
+          {
+            "ruleId": "a249c9f4-6e6e-561d-bdc8-40bca93f0500",
+            "ruleVersion": 1,
+            "kind": "kb",
+            "ok": true,
+            "at": "2026-10-01T07:30:00Z",
+            "retryable": false,
+            "text": "Строка в таблице «Осмотры» · страница «Журнал осмотров машин»",
+            "node": {
+              "id": "babd503a-697f-595f-83f8-6501710d0803",
+              "title": "Журнал осмотров машин"
+            }
+          }
+        ]
+      },
+      "invalid_transition": {
+        "type": "https://docs.ortus.example/errors/invalid_transition",
+        "title": "Переход статуса не разрешён",
+        "status": 409,
+        "code": "invalid_transition",
+        "detail": "Форма обновилась — откройте её заново",
+        "requestId": "01J9Z4QK8M6T2V5X7Y9A1B3C5D",
+        "reason": "form_version_changed"
+      },
+      "validation_failed": {
+        "type": "https://docs.ortus.example/errors/validation_failed",
+        "title": "Ошибки полей",
+        "status": 422,
+        "code": "validation_failed",
+        "detail": "Обязательный вопрос",
+        "requestId": "01J9Z4QK8M6T2V5X7Y9A1B3C5D",
+        "violations": [
+          { "field": "q-photos", "code": "invalid", "message": "Обязательный вопрос" },
+          { "field": "q-fuel", "code": "invalid", "message": "Обязательный вопрос" },
+          { "field": "q-checks", "code": "invalid", "message": "Обязательный вопрос" },
+          { "field": "q-defect", "code": "invalid", "message": "Обязательный вопрос" }
+        ]
+      }
+    },
+    "getFormResponse": {
+      "not_found": {
+        "type": "https://docs.ortus.example/errors/not_found",
+        "title": "Нет объекта или он вне области",
+        "status": 404,
+        "code": "not_found",
+        "detail": "Ответ не найден",
+        "requestId": "01J9Z4QK8M6T2V5X7Y9A1B3C5D"
+      },
+      "ok": {
+        "id": "9c64b00c-9706-549f-b788-8456dd9c35ea",
+        "formId": "3a5f4ca2-f3bf-5b37-819f-a9511aee0211",
+        "versionId": "977e10e3-a208-5061-9c01-ec51c56e7ce4",
+        "submittedAt": "2026-09-27T06:05:00Z",
+        "answers": [
+          { "fieldKey": "q-photos", "value": { "type": "text", "value": "5 фото" } },
+          { "fieldKey": "q-odo", "value": { "type": "decimal", "value": "84210" } },
+          { "fieldKey": "q-fuel", "value": { "type": "choices", "value": ["o3"] } },
+          { "fieldKey": "q-checks", "value": { "type": "choices", "value": ["o1", "o2", "o3"] } },
+          { "fieldKey": "q-defect", "value": { "type": "boolean", "value": false } }
+        ],
+        "reviewStatus": "accepted",
+        "revision": 1,
+        "number": "R-1012",
+        "versionNumber": 3,
+        "author": {
+          "memberId": "a560b4fe-78b7-585e-b960-f0ab3622570c",
+          "displayName": "Илья Васильев"
+        },
+        "channel": "inspection",
+        "my": { "review": true, "assign": true },
+        "actions": [
+          {
+            "ruleId": "a249c9f4-6e6e-561d-bdc8-40bca93f0500",
+            "ruleVersion": 1,
+            "kind": "kb",
+            "ok": true,
+            "at": "2026-09-27T06:12:00Z",
+            "retryable": false,
+            "text": "Строка в таблице «Осмотры» · страница «Журнал осмотров машин»",
+            "node": {
+              "id": "babd503a-697f-595f-83f8-6501710d0803",
+              "title": "Журнал осмотров машин"
+            }
+          }
+        ],
+        "subject": {
+          "ref": {
+            "moduleKey": "fleet",
+            "entityType": "trip",
+            "entityId": "25c43989-32f2-5c05-b707-7dc1cbcaa6b4"
+          },
+          "label": "Рейс Р-196"
+        }
+      }
+    },
+    "reviewFormResponse": {
+      "forbidden_action": {
+        "type": "https://docs.ortus.example/errors/forbidden_action",
+        "title": "Нет действия ни в одной роли",
+        "status": 403,
+        "code": "forbidden_action",
+        "detail": "Нет права «Назначать ответственного за ответ»",
+        "requestId": "01J9Z4QK8M6T2V5X7Y9A1B3C5D"
+      },
+      "ok": {
+        "id": "9c64b00c-9706-549f-b788-8456dd9c35ea",
+        "formId": "3a5f4ca2-f3bf-5b37-819f-a9511aee0211",
+        "versionId": "977e10e3-a208-5061-9c01-ec51c56e7ce4",
+        "submittedAt": "2026-09-27T06:05:00Z",
+        "answers": [
+          { "fieldKey": "q-photos", "value": { "type": "text", "value": "5 фото" } },
+          { "fieldKey": "q-odo", "value": { "type": "decimal", "value": "84210" } },
+          { "fieldKey": "q-fuel", "value": { "type": "choices", "value": ["o3"] } },
+          { "fieldKey": "q-checks", "value": { "type": "choices", "value": ["o1", "o2", "o3"] } },
+          { "fieldKey": "q-defect", "value": { "type": "boolean", "value": false } }
+        ],
+        "reviewStatus": "rejected",
+        "revision": 2,
+        "number": "R-1012",
+        "versionNumber": 3,
+        "author": {
+          "memberId": "a560b4fe-78b7-585e-b960-f0ab3622570c",
+          "displayName": "Илья Васильев"
+        },
+        "channel": "inspection",
+        "my": { "review": true, "assign": false },
+        "actions": [
+          {
+            "ruleId": "a249c9f4-6e6e-561d-bdc8-40bca93f0500",
+            "ruleVersion": 1,
+            "kind": "kb",
+            "ok": true,
+            "at": "2026-09-27T06:12:00Z",
+            "retryable": false,
+            "text": "Строка в таблице «Осмотры» · страница «Журнал осмотров машин»",
+            "node": {
+              "id": "babd503a-697f-595f-83f8-6501710d0803",
+              "title": "Журнал осмотров машин"
+            }
+          }
+        ],
+        "subject": {
+          "ref": {
+            "moduleKey": "fleet",
+            "entityType": "trip",
+            "entityId": "25c43989-32f2-5c05-b707-7dc1cbcaa6b4"
+          },
+          "label": "Рейс Р-196"
+        },
+        "reviewComment": "Нет фото одометра"
       }
     },
     "chooseReservation": {
@@ -23837,6 +25513,948 @@
         ],
         "nextCursor": null
       }
+    },
+    "getFormDraft": {
+      "not_found": {
+        "type": "https://docs.ortus.example/errors/not_found",
+        "title": "Нет объекта или он вне области",
+        "status": 404,
+        "code": "not_found",
+        "detail": "Форма не найдена",
+        "requestId": "01J9Z4QK8M6T2V5X7Y9A1B3C5D"
+      },
+      "ok": {
+        "formId": "7849cddb-8d14-505d-aedb-4d59b6be855b",
+        "definition": {
+          "pages": [
+            { "id": "p1", "title": "Работы" },
+            { "id": "p2", "title": "Фото" }
+          ],
+          "fields": [
+            {
+              "key": "q-volume",
+              "pageId": "p1",
+              "type": "number",
+              "label": "Выполненный объём, м²",
+              "required": true
+            },
+            {
+              "key": "q-crew",
+              "pageId": "p1",
+              "type": "multi",
+              "label": "Явка бригады",
+              "required": true,
+              "options": []
+            },
+            {
+              "key": "q-photo",
+              "pageId": "p2",
+              "type": "photo",
+              "label": "Фотоотчёт",
+              "required": true
+            }
+          ]
+        },
+        "revision": 1,
+        "hasChanges": false,
+        "baseVersionNumber": null,
+        "issues": [{ "fieldKey": "q-crew", "message": "«Явка бригады»: нет вариантов ответа" }],
+        "savedAt": "2026-09-30T07:30:00Z",
+        "savedBy": {
+          "memberId": "b8df06ec-317e-5f46-b54c-e76603e41b5b",
+          "displayName": "Дарья Зимина"
+        }
+      }
+    },
+    "saveFormDraft": {
+      "ok": {
+        "formId": "3a5f4ca2-f3bf-5b37-819f-a9511aee0211",
+        "definition": {
+          "pages": [
+            { "id": "p1", "title": "Фото" },
+            { "id": "p2", "title": "Показания" },
+            { "id": "p3", "title": "Проверка" },
+            { "id": "p4", "title": "Дефекты" }
+          ],
+          "fields": [
+            {
+              "key": "q-photos",
+              "pageId": "p1",
+              "type": "photo",
+              "label": "Фото: спереди, сзади, слева, справа, одометр",
+              "required": true
+            },
+            {
+              "key": "q-odo",
+              "pageId": "p2",
+              "type": "number",
+              "label": "Пробег по одометру, км",
+              "required": true
+            },
+            {
+              "key": "q-fuel",
+              "pageId": "p2",
+              "type": "choice",
+              "label": "Уровень топлива",
+              "required": true,
+              "options": [
+                { "key": "o1", "label": "¼" },
+                { "key": "o2", "label": "½" },
+                { "key": "o3", "label": "¾" },
+                { "key": "o4", "label": "Полный" }
+              ]
+            },
+            {
+              "key": "q-checks",
+              "pageId": "p3",
+              "type": "multi",
+              "label": "Чек-лист: кузов, шины, документы",
+              "required": true,
+              "options": [
+                { "key": "o1", "label": "кузов" },
+                { "key": "o2", "label": "шины" },
+                { "key": "o3", "label": "документы" }
+              ]
+            },
+            {
+              "key": "q-defect",
+              "pageId": "p4",
+              "type": "bool",
+              "label": "Есть дефекты?",
+              "required": true
+            },
+            {
+              "key": "q-defect-text",
+              "pageId": "p4",
+              "type": "text",
+              "label": "Описание дефекта",
+              "required": true,
+              "showIf": {
+                "mode": "all",
+                "conditions": [{ "fieldKey": "q-defect", "operator": "equals", "value": "true" }]
+              }
+            },
+            {
+              "key": "q-critical",
+              "pageId": "p4",
+              "type": "bool",
+              "label": "Дефект критический",
+              "required": false,
+              "showIf": {
+                "mode": "all",
+                "conditions": [{ "fieldKey": "q-defect", "operator": "equals", "value": "true" }]
+              }
+            },
+            {
+              "key": "q-tires",
+              "pageId": "p3",
+              "type": "bool",
+              "label": "Шины в порядке?",
+              "required": false
+            }
+          ]
+        },
+        "revision": 2,
+        "hasChanges": true,
+        "baseVersionNumber": 3,
+        "issues": [],
+        "savedAt": "2026-10-01T07:30:00Z",
+        "savedBy": {
+          "memberId": "b8df06ec-317e-5f46-b54c-e76603e41b5b",
+          "displayName": "Дарья Зимина"
+        }
+      },
+      "revision_mismatch": {
+        "type": "https://docs.ortus.example/errors/revision_mismatch",
+        "title": "Устаревший If-Match",
+        "status": 412,
+        "code": "revision_mismatch",
+        "detail": "Черновик изменил другой редактор — обновите страницу",
+        "requestId": "01J9Z4QK8M6T2V5X7Y9A1B3C5D"
+      },
+      "validation_failed": {
+        "type": "https://docs.ortus.example/errors/validation_failed",
+        "title": "Ошибки полей",
+        "status": 422,
+        "code": "validation_failed",
+        "detail": "Такой идентификатор уже есть",
+        "requestId": "01J9Z4QK8M6T2V5X7Y9A1B3C5D",
+        "violations": [
+          { "field": "q-odo", "code": "duplicate", "message": "Такой идентификатор уже есть" }
+        ]
+      }
+    },
+    "discardFormDraft": {
+      "invalid_transition": {
+        "type": "https://docs.ortus.example/errors/invalid_transition",
+        "title": "Переход статуса не разрешён",
+        "status": 409,
+        "code": "invalid_transition",
+        "detail": "У формы ещё нет опубликованной версии",
+        "requestId": "01J9Z4QK8M6T2V5X7Y9A1B3C5D",
+        "reason": "form_not_published"
+      },
+      "ok": {
+        "formId": "3a5f4ca2-f3bf-5b37-819f-a9511aee0211",
+        "definition": {
+          "pages": [
+            { "id": "p1", "title": "Фото" },
+            { "id": "p2", "title": "Показания" },
+            { "id": "p3", "title": "Проверка" },
+            { "id": "p4", "title": "Дефекты" }
+          ],
+          "fields": [
+            {
+              "key": "q-photos",
+              "pageId": "p1",
+              "type": "photo",
+              "label": "Фото: спереди, сзади, слева, справа, одометр",
+              "required": true
+            },
+            {
+              "key": "q-odo",
+              "pageId": "p2",
+              "type": "number",
+              "label": "Пробег по одометру, км",
+              "required": true
+            },
+            {
+              "key": "q-fuel",
+              "pageId": "p2",
+              "type": "choice",
+              "label": "Уровень топлива",
+              "required": true,
+              "options": [
+                { "key": "o1", "label": "¼" },
+                { "key": "o2", "label": "½" },
+                { "key": "o3", "label": "¾" },
+                { "key": "o4", "label": "Полный" }
+              ]
+            },
+            {
+              "key": "q-checks",
+              "pageId": "p3",
+              "type": "multi",
+              "label": "Чек-лист: кузов, шины, документы",
+              "required": true,
+              "options": [
+                { "key": "o1", "label": "кузов" },
+                { "key": "o2", "label": "шины" },
+                { "key": "o3", "label": "документы" }
+              ]
+            },
+            {
+              "key": "q-defect",
+              "pageId": "p4",
+              "type": "bool",
+              "label": "Есть дефекты?",
+              "required": true
+            },
+            {
+              "key": "q-defect-text",
+              "pageId": "p4",
+              "type": "text",
+              "label": "Описание дефекта",
+              "required": true,
+              "showIf": {
+                "mode": "all",
+                "conditions": [{ "fieldKey": "q-defect", "operator": "equals", "value": "true" }]
+              }
+            },
+            {
+              "key": "q-critical",
+              "pageId": "p4",
+              "type": "bool",
+              "label": "Дефект критический",
+              "required": false,
+              "showIf": {
+                "mode": "all",
+                "conditions": [{ "fieldKey": "q-defect", "operator": "equals", "value": "true" }]
+              }
+            }
+          ]
+        },
+        "revision": 3,
+        "hasChanges": false,
+        "baseVersionNumber": 3,
+        "issues": [],
+        "savedAt": "2026-10-01T07:30:00Z",
+        "savedBy": {
+          "memberId": "b8df06ec-317e-5f46-b54c-e76603e41b5b",
+          "displayName": "Дарья Зимина"
+        }
+      }
+    },
+    "publishForm": {
+      "invalid_transition": {
+        "type": "https://docs.ortus.example/errors/invalid_transition",
+        "title": "Переход статуса не разрешён",
+        "status": 409,
+        "code": "invalid_transition",
+        "detail": "Изменений для публикации нет",
+        "requestId": "01J9Z4QK8M6T2V5X7Y9A1B3C5D",
+        "reason": "form_no_changes"
+      },
+      "ok": {
+        "id": "3a5f4ca2-f3bf-5b37-819f-a9511aee0211",
+        "orgUnitId": null,
+        "name": "Осмотр машины",
+        "status": "published",
+        "revision": 2,
+        "moduleKey": "fleet",
+        "templateId": null,
+        "groupId": null,
+        "owner": {
+          "memberId": "b8df06ec-317e-5f46-b54c-e76603e41b5b",
+          "displayName": "Дарья Зимина"
+        },
+        "updatedAt": "2026-10-01T07:30:00Z",
+        "publishedVersionNumber": 4,
+        "versionCount": 4,
+        "hasUnpublishedChanges": false,
+        "questionCount": 8,
+        "responseCount": 2,
+        "enabledRuleCount": 2,
+        "settings": {
+          "access": "members",
+          "acceptUntil": null,
+          "responseLimit": null,
+          "onePerMember": false,
+          "allowEditBeforeReview": true,
+          "confirmationText": "Спасибо! Ответ отправлен.",
+          "scoring": false,
+          "passScore": null,
+          "showScore": true,
+          "progressBar": true,
+          "backButton": true,
+          "showLogo": true,
+          "retainResponsesDays": 365
+        },
+        "share": { "publicToken": null },
+        "my": {
+          "create": true,
+          "manage": true,
+          "publish": true,
+          "publishPublic": true,
+          "readResponses": true,
+          "reviewResponses": true,
+          "respond": true
+        },
+        "latestVersionId": "0f203e03-8c53-56e8-a345-3d9dc66a7900",
+        "publishedVersionId": "0f203e03-8c53-56e8-a345-3d9dc66a7900"
+      },
+      "revision_mismatch": {
+        "type": "https://docs.ortus.example/errors/revision_mismatch",
+        "title": "Устаревший If-Match",
+        "status": 412,
+        "code": "revision_mismatch",
+        "detail": "Черновик изменил другой редактор — обновите страницу",
+        "requestId": "01J9Z4QK8M6T2V5X7Y9A1B3C5D"
+      },
+      "validation_failed": {
+        "type": "https://docs.ortus.example/errors/validation_failed",
+        "title": "Ошибки полей",
+        "status": 422,
+        "code": "validation_failed",
+        "detail": "Найдено ошибок: 2. Исправьте их в конструкторе.",
+        "requestId": "01J9Z4QK8M6T2V5X7Y9A1B3C5D",
+        "violations": [
+          {
+            "field": "form",
+            "code": "publish",
+            "message": "У вопроса «Явка бригады» нет вариантов ответа"
+          },
+          { "field": "q-crew", "code": "issue", "message": "«Явка бригады»: нет вариантов ответа" }
+        ]
+      }
+    },
+    "listFormRules": {
+      "not_found": {
+        "type": "https://docs.ortus.example/errors/not_found",
+        "title": "Нет объекта или он вне области",
+        "status": 404,
+        "code": "not_found",
+        "detail": "Форма не найдена",
+        "requestId": "01J9Z4QK8M6T2V5X7Y9A1B3C5D"
+      },
+      "ok": {
+        "items": [
+          {
+            "id": "534e3740-14f4-58e2-9684-1a31eda0a053",
+            "formId": "3a5f4ca2-f3bf-5b37-819f-a9511aee0211",
+            "kind": "task",
+            "enabled": true,
+            "version": 1,
+            "trigger": "accepted",
+            "condition": { "fieldKey": null, "value": null },
+            "author": {
+              "memberId": "b8df06ec-317e-5f46-b54c-e76603e41b5b",
+              "displayName": "Дарья Зимина"
+            },
+            "doneCount": 0,
+            "failedCount": 0,
+            "pendingBackfillCount": 0,
+            "createdAt": "2026-09-01T21:00:00Z",
+            "updatedAt": "2026-09-01T21:00:00Z",
+            "revision": 1,
+            "task": {
+              "projectId": "1380e888-13ac-5357-9a6f-a592a20e8220",
+              "title": "Проверить осмотр",
+              "assigneeMemberId": "ac41932c-dbd9-53b1-a84b-42cbc1d6629a"
+            }
+          },
+          {
+            "id": "a249c9f4-6e6e-561d-bdc8-40bca93f0500",
+            "formId": "3a5f4ca2-f3bf-5b37-819f-a9511aee0211",
+            "kind": "kb",
+            "enabled": true,
+            "version": 1,
+            "trigger": "accepted",
+            "condition": { "fieldKey": null, "value": null },
+            "author": {
+              "memberId": "b8df06ec-317e-5f46-b54c-e76603e41b5b",
+              "displayName": "Дарья Зимина"
+            },
+            "doneCount": 2,
+            "failedCount": 0,
+            "pendingBackfillCount": 0,
+            "createdAt": "2026-09-01T21:00:00Z",
+            "updatedAt": "2026-09-01T21:00:00Z",
+            "revision": 1,
+            "kb": {
+              "nodeId": "babd503a-697f-595f-83f8-6501710d0803",
+              "mode": "table",
+              "position": "top",
+              "fields": [
+                {
+                  "columnId": "f9d1765e-6b10-54b8-985d-67eb224066c9",
+                  "name": "Дата",
+                  "source": "$at"
+                },
+                {
+                  "columnId": "26f118a4-3f77-5f17-b15c-5ef8bcc40001",
+                  "name": "Рейс",
+                  "source": "$object"
+                },
+                {
+                  "columnId": "78f11670-a011-52de-ab61-8232f4bba051",
+                  "name": "Водитель",
+                  "source": "$author"
+                },
+                {
+                  "columnId": "309feb68-f898-5e01-93d6-9a2a638b7848",
+                  "name": "Пробег, км",
+                  "source": "q-odo"
+                },
+                {
+                  "columnId": "d20c56ad-76ab-5787-ab7d-3165ca58d572",
+                  "name": "Топливо",
+                  "source": "q-fuel"
+                },
+                {
+                  "columnId": "d8332e3e-53b9-5fb8-9dc8-73afcc14afc5",
+                  "name": "Дефекты",
+                  "source": "q-defect"
+                },
+                {
+                  "columnId": "9dfbe221-6337-5680-b93c-e724544ca12c",
+                  "name": "Ответ",
+                  "source": "$id"
+                }
+              ],
+              "showLink": false,
+              "allEmployeesConfirmed": true,
+              "tableId": "a1ef80ec-8553-5feb-868e-0c3618900951",
+              "node": {
+                "id": "babd503a-697f-595f-83f8-6501710d0803",
+                "title": "Журнал осмотров машин"
+              },
+              "tableTitle": "Осмотры"
+            }
+          }
+        ]
+      }
+    },
+    "createFormRule": {
+      "created": {
+        "id": "5d8f2031-5cc4-5cec-90c7-9d525cf30090",
+        "formId": "3a5f4ca2-f3bf-5b37-819f-a9511aee0211",
+        "kind": "notify",
+        "enabled": true,
+        "version": 1,
+        "trigger": "submitted",
+        "condition": { "fieldKey": "q-defect", "value": "true" },
+        "author": {
+          "memberId": "b8df06ec-317e-5f46-b54c-e76603e41b5b",
+          "displayName": "Дарья Зимина"
+        },
+        "doneCount": 0,
+        "failedCount": 0,
+        "pendingBackfillCount": 0,
+        "createdAt": "2026-10-01T07:30:00Z",
+        "updatedAt": "2026-10-01T07:30:00Z",
+        "revision": 1,
+        "notify": { "memberId": "ac41932c-dbd9-53b1-a84b-42cbc1d6629a" }
+      },
+      "validation_failed": {
+        "type": "https://docs.ortus.example/errors/validation_failed",
+        "title": "Ошибки полей",
+        "status": 422,
+        "code": "validation_failed",
+        "detail": "Выберите страницу Базы знаний",
+        "requestId": "01J9Z4QK8M6T2V5X7Y9A1B3C5D",
+        "violations": [
+          { "field": "kb.nodeId", "code": "invalid", "message": "Выберите страницу Базы знаний" }
+        ]
+      }
+    },
+    "deleteFormRule": {
+      "not_found": {
+        "type": "https://docs.ortus.example/errors/not_found",
+        "title": "Нет объекта или он вне области",
+        "status": 404,
+        "code": "not_found",
+        "detail": "Действие не найдено",
+        "requestId": "01J9Z4QK8M6T2V5X7Y9A1B3C5D"
+      }
+    },
+    "updateFormRule": {
+      "not_found": {
+        "type": "https://docs.ortus.example/errors/not_found",
+        "title": "Нет объекта или он вне области",
+        "status": 404,
+        "code": "not_found",
+        "detail": "Действие не найдено",
+        "requestId": "01J9Z4QK8M6T2V5X7Y9A1B3C5D"
+      },
+      "ok": {
+        "id": "534e3740-14f4-58e2-9684-1a31eda0a053",
+        "formId": "3a5f4ca2-f3bf-5b37-819f-a9511aee0211",
+        "kind": "task",
+        "enabled": false,
+        "version": 1,
+        "trigger": "accepted",
+        "condition": { "fieldKey": null, "value": null },
+        "author": {
+          "memberId": "b8df06ec-317e-5f46-b54c-e76603e41b5b",
+          "displayName": "Дарья Зимина"
+        },
+        "doneCount": 0,
+        "failedCount": 0,
+        "pendingBackfillCount": 0,
+        "createdAt": "2026-09-01T21:00:00Z",
+        "updatedAt": "2026-10-01T07:30:00Z",
+        "revision": 2,
+        "task": {
+          "projectId": "1380e888-13ac-5357-9a6f-a592a20e8220",
+          "title": "Проверить осмотр",
+          "assigneeMemberId": "ac41932c-dbd9-53b1-a84b-42cbc1d6629a"
+        }
+      }
+    },
+    "backfillFormRule": {
+      "invalid_transition": {
+        "type": "https://docs.ortus.example/errors/invalid_transition",
+        "title": "Переход статуса не разрешён",
+        "status": 409,
+        "code": "invalid_transition",
+        "detail": "Действие выключено — включите его, чтобы перенести ответы",
+        "requestId": "01J9Z4QK8M6T2V5X7Y9A1B3C5D",
+        "reason": "form_rule_disabled"
+      },
+      "ok": { "added": 0, "failed": 0, "error": null }
+    },
+    "retryFormResponseAction": {
+      "invalid_transition": {
+        "type": "https://docs.ortus.example/errors/invalid_transition",
+        "title": "Переход статуса не разрешён",
+        "status": 409,
+        "code": "invalid_transition",
+        "detail": "Действие удалено из формы — повторить нельзя",
+        "requestId": "01J9Z4QK8M6T2V5X7Y9A1B3C5D",
+        "reason": "form_rule_deleted"
+      },
+      "ok": {
+        "ruleId": "a249c9f4-6e6e-561d-bdc8-40bca93f0500",
+        "ruleVersion": 1,
+        "kind": "kb",
+        "ok": true,
+        "at": "2026-10-01T07:30:00Z",
+        "retryable": false
+      }
+    },
+    "getFormResponseSummary": {
+      "forbidden_action": {
+        "type": "https://docs.ortus.example/errors/forbidden_action",
+        "title": "Нет действия ни в одной роли",
+        "status": 403,
+        "code": "forbidden_action",
+        "requestId": "01J9Z4QK8M6T2V5X7Y9A1B3C5D",
+        "detail": "Нет права «Читать ответы»"
+      },
+      "ok": {
+        "formId": "3a5f4ca2-f3bf-5b37-819f-a9511aee0211",
+        "total": 2,
+        "questions": [
+          {
+            "fieldKey": "q-photos",
+            "label": "Фото: спереди, сзади, слева, справа, одометр",
+            "type": "photo",
+            "answered": 2,
+            "recentTexts": ["5 фото", "5 фото"]
+          },
+          {
+            "fieldKey": "q-odo",
+            "label": "Пробег по одометру, км",
+            "type": "number",
+            "answered": 2,
+            "numbers": { "average": "84056", "min": "83902", "max": "84210" }
+          },
+          {
+            "fieldKey": "q-fuel",
+            "label": "Уровень топлива",
+            "type": "choice",
+            "answered": 1,
+            "options": [
+              { "key": "o1", "label": "¼", "count": 0, "percent": 0 },
+              { "key": "o2", "label": "½", "count": 0, "percent": 0 },
+              { "key": "o3", "label": "¾", "count": 1, "percent": 100 },
+              { "key": "o4", "label": "Полный", "count": 0, "percent": 0 }
+            ]
+          },
+          {
+            "fieldKey": "q-checks",
+            "label": "Чек-лист: кузов, шины, документы",
+            "type": "multi",
+            "answered": 2,
+            "options": [
+              { "key": "o1", "label": "кузов", "count": 2, "percent": 100 },
+              { "key": "o2", "label": "шины", "count": 2, "percent": 100 },
+              { "key": "o3", "label": "документы", "count": 2, "percent": 100 }
+            ]
+          },
+          {
+            "fieldKey": "q-defect",
+            "label": "Есть дефекты?",
+            "type": "bool",
+            "answered": 1,
+            "options": [
+              { "key": "true", "label": "Да", "count": 0, "percent": 0 },
+              { "key": "false", "label": "Нет", "count": 1, "percent": 100 }
+            ]
+          },
+          {
+            "fieldKey": "q-defect-text",
+            "label": "Описание дефекта",
+            "type": "text",
+            "answered": 0,
+            "recentTexts": []
+          },
+          {
+            "fieldKey": "q-critical",
+            "label": "Дефект критический",
+            "type": "bool",
+            "answered": 0,
+            "options": [
+              { "key": "true", "label": "Да", "count": 0, "percent": 0 },
+              { "key": "false", "label": "Нет", "count": 0, "percent": 0 }
+            ]
+          },
+          {
+            "fieldKey": "q-fuel-t",
+            "label": "Уровень топлива",
+            "type": "text",
+            "answered": 1,
+            "recentTexts": ["почти полный"]
+          }
+        ]
+      }
+    },
+    "exportFormResponses": {
+      "invalid_transition": {
+        "type": "https://docs.ortus.example/errors/invalid_transition",
+        "title": "Переход статуса не разрешён",
+        "status": 409,
+        "code": "invalid_transition",
+        "detail": "Ответов пока нет",
+        "requestId": "01J9Z4QK8M6T2V5X7Y9A1B3C5D",
+        "reason": "form_no_responses"
+      },
+      "ok": {
+        "formId": "3a5f4ca2-f3bf-5b37-819f-a9511aee0211",
+        "fileName": "Осмотр машины.csv",
+        "contentType": "text/csv; charset=utf-8",
+        "content": "﻿Ответ;Дата;Автор;Объект;Версия;Статус;Фото: спереди, сзади, слева, справа, одометр;Пробег по одометру, км;Уровень топлива;Чек-лист: кузов, шины, документы;Есть дефекты?;Описание дефекта;Дефект критический;Уровень топлива\r\nR-1012;27.09.2026 09:05;Илья Васильев;Рейс Р-196;v3;Принят;5 фото;84210;¾;кузов, шины, документы;нет;;;\r\nR-0988;18.09.2026 08:41;Кирилл Громов;Рейс Р-171;v2;Принят;5 фото;83902;;кузов, шины, документы;;;;почти полный\r\n",
+        "rowCount": 2,
+        "generatedAt": "2026-10-01T07:30:00Z"
+      }
+    },
+    "listFormFieldOptions": {
+      "not_found": {
+        "type": "https://docs.ortus.example/errors/not_found",
+        "title": "Нет объекта или он вне области",
+        "status": 404,
+        "code": "not_found",
+        "detail": "Вопрос не найден",
+        "requestId": "01J9Z4QK8M6T2V5X7Y9A1B3C5D"
+      },
+      "ok": {
+        "items": [
+          {
+            "ref": {
+              "moduleKey": "core",
+              "entityType": "member",
+              "entityId": "ebdf9767-327e-55cc-8c65-cb5fd313bdf4"
+            },
+            "label": "Алексей Соколов"
+          },
+          {
+            "ref": {
+              "moduleKey": "core",
+              "entityType": "member",
+              "entityId": "25097109-efb6-5471-880f-7a01ee6615a0"
+            },
+            "label": "Анна Морозова"
+          },
+          {
+            "ref": {
+              "moduleKey": "core",
+              "entityType": "member",
+              "entityId": "ea845988-640e-5506-9303-1cbfc3dede0d"
+            },
+            "label": "Вера Котельникова"
+          },
+          {
+            "ref": {
+              "moduleKey": "core",
+              "entityType": "member",
+              "entityId": "ac41932c-dbd9-53b1-a84b-42cbc1d6629a"
+            },
+            "label": "Марина Котова"
+          },
+          {
+            "ref": {
+              "moduleKey": "core",
+              "entityType": "member",
+              "entityId": "1a544c8a-52b8-557b-9720-10b9d94fdd10"
+            },
+            "label": "Тимур Ахмедов"
+          }
+        ],
+        "truncated": false
+      }
+    },
+    "listFormTemplates": {
+      "forbidden_action": {
+        "type": "https://docs.ortus.example/errors/forbidden_action",
+        "title": "Нет действия ни в одной роли",
+        "status": 403,
+        "code": "forbidden_action",
+        "requestId": "01J9Z4QK8M6T2V5X7Y9A1B3C5D",
+        "detail": "Нет права «Создавать формы»"
+      },
+      "ok": {
+        "items": [
+          {
+            "id": "blank",
+            "category": "basic",
+            "name": "Пустая форма",
+            "icon": "note_add",
+            "moduleKey": null,
+            "available": true,
+            "pageCount": 1,
+            "questionCount": 1
+          },
+          {
+            "id": "tpl-profile",
+            "category": "basic",
+            "name": "Анкета",
+            "icon": "badge",
+            "moduleKey": null,
+            "available": true,
+            "pageCount": 1,
+            "questionCount": 6
+          },
+          {
+            "id": "tpl-feedback",
+            "category": "basic",
+            "name": "Форма обратной связи",
+            "icon": "forum",
+            "moduleKey": null,
+            "available": true,
+            "pageCount": 1,
+            "questionCount": 5
+          },
+          {
+            "id": "tpl-request",
+            "category": "basic",
+            "name": "Заявка на услугу или работу",
+            "icon": "assignment_add",
+            "moduleKey": null,
+            "available": true,
+            "pageCount": 2,
+            "questionCount": 8
+          },
+          {
+            "id": "tpl-event",
+            "category": "basic",
+            "name": "Регистрация на обучение",
+            "icon": "event_available",
+            "moduleKey": null,
+            "available": true,
+            "pageCount": 2,
+            "questionCount": 7
+          },
+          {
+            "id": "tpl-csat",
+            "category": "survey",
+            "name": "CSAT · удовлетворённость",
+            "icon": "sentiment_satisfied",
+            "moduleKey": null,
+            "available": true,
+            "pageCount": 1,
+            "questionCount": 2
+          },
+          {
+            "id": "tpl-nps",
+            "category": "survey",
+            "name": "NPS · готовность рекомендовать",
+            "icon": "recommend",
+            "moduleKey": null,
+            "available": true,
+            "pageCount": 1,
+            "questionCount": 2
+          },
+          {
+            "id": "tpl-ces",
+            "category": "survey",
+            "name": "CES · лёгкость обращения",
+            "icon": "speed",
+            "moduleKey": null,
+            "available": true,
+            "pageCount": 1,
+            "questionCount": 2
+          },
+          {
+            "id": "tpl-support",
+            "category": "survey",
+            "name": "Оценка поддержки",
+            "icon": "support_agent",
+            "moduleKey": null,
+            "available": true,
+            "pageCount": 1,
+            "questionCount": 4
+          },
+          {
+            "id": "tpl-pulse",
+            "category": "people",
+            "name": "Пульс команды",
+            "icon": "monitor_heart",
+            "moduleKey": null,
+            "available": true,
+            "pageCount": 2,
+            "questionCount": 4
+          },
+          {
+            "id": "tpl-onboard",
+            "category": "people",
+            "name": "Онбординг сотрудника",
+            "icon": "person_add",
+            "moduleKey": null,
+            "available": true,
+            "pageCount": 3,
+            "questionCount": 7
+          },
+          {
+            "id": "tpl-quiz",
+            "category": "quiz",
+            "name": "Тест знаний с баллами",
+            "icon": "quiz",
+            "moduleKey": null,
+            "available": true,
+            "pageCount": 2,
+            "questionCount": 4
+          },
+          {
+            "id": "tpl-insp",
+            "category": "industry",
+            "name": "Круговой осмотр машины",
+            "icon": "local_shipping",
+            "moduleKey": "fleet",
+            "available": true,
+            "pageCount": 3,
+            "questionCount": 7
+          },
+          {
+            "id": "tpl-foreman",
+            "category": "industry",
+            "name": "Ежедневный отчёт прораба",
+            "icon": "construction",
+            "moduleKey": "repairs",
+            "available": false,
+            "pageCount": 2,
+            "questionCount": 7
+          },
+          {
+            "id": "tpl-spa",
+            "category": "industry",
+            "name": "Анкета клиента перед процедурой",
+            "icon": "spa",
+            "moduleKey": "spa",
+            "available": true,
+            "pageCount": 2,
+            "questionCount": 6
+          }
+        ]
+      }
+    },
+    "listFormGroups": {
+      "forbidden_action": {
+        "type": "https://docs.ortus.example/errors/forbidden_action",
+        "title": "Нет действия ни в одной роли",
+        "status": 403,
+        "code": "forbidden_action",
+        "requestId": "01J9Z4QK8M6T2V5X7Y9A1B3C5D",
+        "detail": "Нет права «Видеть формы»"
+      },
+      "ok": {
+        "items": [
+          {
+            "id": "a7526fe3-22d6-5a1b-902e-c683da298443",
+            "name": "Опросы клиентов",
+            "formCount": 1
+          }
+        ]
+      }
+    },
+    "createFormGroup": {
+      "created": {
+        "id": "a7526fe3-22d6-5a1b-902e-c683da298443",
+        "name": "Опросы клиентов",
+        "formCount": 0
+      },
+      "validation_failed": {
+        "type": "https://docs.ortus.example/errors/validation_failed",
+        "title": "Ошибки полей",
+        "status": 422,
+        "code": "validation_failed",
+        "detail": "Название группы — от 2 символов",
+        "requestId": "01J9Z4QK8M6T2V5X7Y9A1B3C5D",
+        "violations": [
+          { "field": "name", "code": "invalid", "message": "Название группы — от 2 символов" }
+        ]
+      }
+    },
+    "deleteFormGroup": {
+      "invalid_transition": {
+        "type": "https://docs.ortus.example/errors/invalid_transition",
+        "title": "Переход статуса не разрешён",
+        "status": 409,
+        "code": "invalid_transition",
+        "detail": "В группе есть формы — сначала переместите их",
+        "requestId": "01J9Z4QK8M6T2V5X7Y9A1B3C5D",
+        "reason": "form_group_not_empty"
+      }
     }
   },
   "seedIds": {
@@ -23889,6 +26507,9 @@
       "op-7": "a246f07b-5c1b-50c3-b7a6-95cd28c04445"
     },
     "t-alta": {
+      "R-0988": "d530b3dc-6b28-5f5c-be4c-a14813678265",
+      "R-1012": "9c64b00c-9706-549f-b788-8456dd9c35ea",
+      "R-1013": "a6f36b82-b4ca-5c77-a87a-16a35f713b45",
       "T-58": "508a35f4-ec0b-5edb-b35b-93330ef656e4",
       "T-63": "f12c3e97-42a6-50bd-aaf3-d70bf1ffd460",
       "T-64": "a51ba39b-9199-51cc-8acf-0bf66df47df6",
@@ -23907,12 +26528,22 @@
       "ar-1": "8d4174be-38ea-52ff-a7a5-e3f05620ccf9",
       "ar-2": "9edcfd31-b1be-5c59-a359-bb1abe8768a5",
       "assignment-v1": "8a557bc9-5273-5743-a9ed-86be64ec4caa",
+      "au-1": "534e3740-14f4-58e2-9684-1a31eda0a053",
+      "au-2": "a249c9f4-6e6e-561d-bdc8-40bca93f0500",
+      "au-w1": "5d8f2031-5cc4-5cec-90c7-9d525cf30090",
       "b-a1": "3b8b9c80-10c9-50b9-8e4f-ecfe3f0ec3b1",
       "b-a2": "db6412f9-f1f9-5fba-a945-5fdbcb856d9c",
       "b-a3": "ec30fb9f-f6e0-5788-95f6-f8d650e48357",
       "b-br": "0a269c1f-4dc4-5ded-a908-3d8385793a76",
+      "c-at": "f9d1765e-6b10-54b8-985d-67eb224066c9",
+      "c-def": "d8332e3e-53b9-5fb8-9dc8-73afcc14afc5",
+      "c-fuel": "d20c56ad-76ab-5787-ab7d-3165ca58d572",
+      "c-obj": "26f118a4-3f77-5f17-b15c-5ef8bcc40001",
+      "c-odo": "309feb68-f898-5e01-93d6-9a2a638b7848",
+      "c-resp": "9dfbe221-6337-5680-b93c-e724544ca12c",
       "c-w1": "404e0d21-f2ee-565c-bef3-3967ac725559",
       "c-w2": "2a1e8a00-3cbd-54ae-85ae-b99a3cfeda6f",
+      "c-who": "78f11670-a011-52de-ab61-8232f4bba051",
       "checklist:departure:1": "5d6fb3d3-4082-5302-b552-ef2d23223335",
       "d-104": "6f0d2321-532c-5f7a-8e75-ec1196316a7d",
       "d-117": "ac90c429-0be6-58ff-9486-cb47b14ce96d",
@@ -23928,9 +26559,19 @@
       "f-spb-neva": "b74e2ab0-1d3a-585a-8f06-b67deee87272",
       "f-spb-ohta": "0c774529-e424-575e-ae8d-518cb4979ad1",
       "f-spb-pulk": "f986762f-6733-5bc1-91d0-197e4cae6bb4",
+      "fg-w1": "a7526fe3-22d6-5a1b-902e-c683da298443",
       "file-insp-208-front": "0a5af2d5-52c6-5a8a-84aa-8eda2fa9c7d2",
       "file:T-65:f-1": "ae02584f-2926-5056-8c20-acb9c5568122",
       "fleet": "1380e888-13ac-5357-9a6f-a592a20e8220",
+      "fm-foreman": "7849cddb-8d14-505d-aedb-4d59b6be855b",
+      "fm-insp": "3a5f4ca2-f3bf-5b37-819f-a9511aee0211",
+      "fm-insp:v1": "7d1adb2c-e018-5cdc-9c4d-4d6a941aec50",
+      "fm-insp:v2": "90589e67-85d5-5ce5-88d5-f1d2f928a251",
+      "fm-insp:v3": "977e10e3-a208-5061-9c01-ec51c56e7ce4",
+      "fm-insp:v4": "0f203e03-8c53-56e8-a345-3d9dc66a7900",
+      "fm-w1": "065a8ca0-ebb9-574d-9e78-170d39f799c3",
+      "fmfile-1": "306049e3-70eb-5010-8e81-c31905366d6c",
+      "fmtask-R-1013-au-1": "e92719af-ef92-523f-80d2-4b2abedb339c",
       "g-disp": "ffdc7501-0a74-5af4-950b-894aeb64d658",
       "g-drv": "ce9dd6e5-dcb8-5d08-ad94-53c3155b3d14",
       "hist:T-65:1": "e51b9809-0336-5ca9-bef9-e712135ecf40",
@@ -23965,6 +26606,7 @@
       "krr-1": "bd2162ed-7591-5f0a-be45-a49ac72b9da2",
       "krr-2": "9b5bc19f-0c6c-5bc9-be26-77ca6febd86a",
       "krr-w1": "e278de58-f6af-5b1c-87cf-39e8386794aa",
+      "kt-insp": "a1ef80ec-8553-5feb-868e-0c3618900951",
       "kt-w3": "9ed76e4c-0040-582a-948a-16d0e8466008",
       "leads": "22011b60-f6d0-56d6-9e42-98202e5e319a",
       "m-akhmedov": "1a544c8a-52b8-557b-9720-10b9d94fdd10",
@@ -24009,6 +26651,8 @@
       "v5": "ca7940cc-9cbe-5487-8b11-8087457d50b9",
       "v6": "b9ef5783-2b1a-5682-8d25-66e89de49b8e",
       "work:m-vasiliev:driver": "b2f83c8c-fc7a-54ef-a5d1-1b30a3842213",
+      "Р-171": "b0233fb6-9316-54d7-91c6-62df0753ddd8",
+      "Р-196": "25c43989-32f2-5c05-b707-7dc1cbcaa6b4",
       "Р-208": "b4e8c74b-68ff-5f33-9ef7-71151d07b3c3",
       "Р-211": "604f2a38-8d47-5a47-90b6-7b4ca5e6f791",
       "Р-212": "12836484-5e4f-5b32-8093-3ecc9cc5c0c5"

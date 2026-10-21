@@ -1069,8 +1069,17 @@ type ExportJobId = Id
 // FileId Examples: 10000000-0000-4000-8000-000000000001
 type FileId = Id
 
+// FormFieldKey defines model for formFieldKey.
+type FormFieldKey = string
+
+// FormGroupId Examples: 10000000-0000-4000-8000-000000000001
+type FormGroupId = Id
+
 // FormId Examples: 10000000-0000-4000-8000-000000000001
 type FormId = Id
+
+// FormRuleId Examples: 10000000-0000-4000-8000-000000000001
+type FormRuleId = Id
 
 // GroupId Examples: 10000000-0000-4000-8000-000000000001
 type GroupId = Id

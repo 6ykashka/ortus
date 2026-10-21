@@ -8,7 +8,10 @@ PublicForm:
     versionId:
       $ref: ../common/schemas.yaml#/Id
     definition:
-      $ref: ../common/schemas.yaml#/FormDefinition
+      $ref: ../common/schemas.yaml#/FormDefinitionV2
+      description: W4.05 (0.11.0-stage4, return 1). The acting version cut for a guest — without FormOption.score and without defaultValue of hidden questions (see PublicForm).
+    presentation:
+      $ref: ./schemas.yaml#/PublicFormPresentation
     acceptingResponses:
       type: boolean
     uploadAllowed:
@@ -30,7 +33,33 @@ PublicForm:
     - uploadMaxBytes
     - submissionNonce
     - nonceExpiresAt
-  description: Only a sanitized published definition. No internal tenant IDs, reviewers, other responses, authenticated reference lookup, directory, dataset or file enumeration.
+  description: "Only a sanitized published definition. No internal tenant IDs, reviewers, other responses, authenticated reference lookup, directory, dataset or file enumeration. W4.05 (0.11.0-stage4, return 1): the guest never receives the key of a test or values he does not enter — FormOption.score of every option is removed (the server counts the score at submission, Q-W4.00-forms-24; presentation.showScore only says whether the result is shown after submission), and defaultValue of hidden questions is removed (the server applies it at submission; a hidden question stays in the definition with its key, so that a parameter of the link ?{key}=… can fill it — the page passes the parameters of its address in PublicResponseCreate.linkParams). The link is found by token_digest of forms.public_links (FormShare.publicToken). W4.05 (return 2): the tenant of the guest — by the same token_digest in the control index public_form_links (control 0009), the path carries no tenant."
+PublicFormPresentation:
+  type: object
+  additionalProperties: false
+  description: "W4.05 (0.11.0-stage4, Q-W4.00-forms-19). How the public form is drawn — the render of «Предпросмотр» without its panel: the logo and the name of the organization («Логотип и название организации»), the progress by pages, the button «Назад», the text after submission and whether the score is shown (FormSettings of the form). The colours of buttons come from «Оформление» of the organization."
+  properties:
+    organizationName:
+      type:
+        - string
+        - "null"
+      maxLength: 200
+      description: null — the form hides the logo and the name (showLogo false).
+    progressBar:
+      type: boolean
+    backButton:
+      type: boolean
+    confirmationText:
+      type: string
+      maxLength: 1000
+    showScore:
+      type: boolean
+  required:
+    - organizationName
+    - progressBar
+    - backButton
+    - confirmationText
+    - showScore
 PublicResponseCreate:
   type: object
   additionalProperties: false
@@ -44,13 +73,21 @@ PublicResponseCreate:
       items:
         $ref: ../common/schemas.yaml#/FieldEntry
       maxItems: 200
+      description: "W4.05 (0.11.0-stage4, return 3). Answers of the guest by FormQuestion.key. A guest is untrusted and never answers a hidden question: a hidden question key in answers — 422 validation_failed (code hidden, «Скрытый вопрос заполняют ссылка и значение по умолчанию»), so the guest cannot override the defaultValue the server applies (cut from PublicForm) or a parameter of the link; the value of a hidden question comes only from linkParams or defaultValue — as FormResponseCreate.answers."
+    linkParams:
+      type: object
+      maxProperties: 50
+      additionalProperties:
+        type: string
+        maxLength: 500
+      description: "W4.05 (0.11.0-stage4, return 3; Q-W4.00-forms-20). Values of hidden questions from the parameters of the public link (?key=…): the page of the guest passes the parameters of its address. Only hidden questions of the version, never CRM and file questions; a key of another question or an unknown key — 422 validation_failed on linkParams.{key} (code not_hidden, «Параметр ссылки — только для скрытого вопроса»). The value is text up to 500 characters; the same schema as FormResponseCreate.linkParams."
     antiAbuseToken:
       type: string
   required:
     - versionId
     - submissionNonce
     - answers
-  description: Nonce is bound to public token+version+browser session; short-lived. Server can require antiAbuseToken at risk thresholds. Uploaded file IDs must belong to the same nonce/form field and be ready. A changed live version yields 409 form_version_changed rather than reinterpreting answers. Nonce is single-use for a committed response. Idempotency replay is checked after capability authorization but before the consumed-nonce rejection. Anonymous idempotency namespace is tenant+publicToken digest+nonce+operation; never one global anonymous actor.
+  description: "Nonce is bound to public token+version+browser session; short-lived. Server can require antiAbuseToken at risk thresholds. Uploaded file IDs must belong to the same nonce/form field and be ready. A changed live version yields 409 form_version_changed rather than reinterpreting answers. Nonce is single-use for a committed response. Idempotency replay is checked after capability authorization but before the consumed-nonce rejection. Anonymous idempotency namespace is tenant+publicToken digest+nonce+operation; never one global anonymous actor. W4.05 (0.11.0-stage4, return 3; Q-W4.00-forms-20): the response of the channel public records the keys of hidden questions filled from linkParams in FormResponse.linkParamKeys (forms.responses.link_param_keys) — the value came from the link, not from the guest; a hidden question without a parameter takes its defaultValue on the server."
 PublicResponseReceipt:
   type: object
   additionalProperties: false

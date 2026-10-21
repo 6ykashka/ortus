@@ -1,0 +1,48 @@
+{
+  "id": "065a8ca0-ebb9-574d-9e78-170d39f799c3",
+  "orgUnitId": null,
+  "name": "Форма обратной связи",
+  "status": "draft",
+  "revision": 1,
+  "moduleKey": null,
+  "templateId": "tpl-feedback",
+  "groupId": null,
+  "owner": {
+    "memberId": "b8df06ec-317e-5f46-b54c-e76603e41b5b",
+    "displayName": "Дарья Зимина"
+  },
+  "updatedAt": "2026-10-01T07:30:00Z",
+  "publishedVersionNumber": null,
+  "versionCount": 0,
+  "hasUnpublishedChanges": false,
+  "questionCount": 5,
+  "responseCount": 0,
+  "enabledRuleCount": 0,
+  "settings": {
+    "access": "public",
+    "acceptUntil": null,
+    "responseLimit": null,
+    "onePerMember": false,
+    "allowEditBeforeReview": true,
+    "confirmationText": "Спасибо! Ответ отправлен.",
+    "scoring": false,
+    "passScore": null,
+    "showScore": true,
+    "progressBar": true,
+    "backButton": true,
+    "showLogo": true,
+    "retainResponsesDays": 365
+  },
+  "share": {
+    "publicToken": null
+  },
+  "my": {
+    "create": true,
+    "manage": true,
+    "publish": true,
+    "publishPublic": true,
+    "readResponses": true,
+    "reviewResponses": true,
+    "respond": false
+  }
+}

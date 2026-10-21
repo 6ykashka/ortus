@@ -181,10 +181,11 @@ describe('платформа и организация', () => {
   });
 
   it('операция без хендлера — 501 not_implemented после шлюза', async () => {
-    // W4.03: тег Tasks получил хендлеры (0.10.0-stage4) — операция без хендлера теперь из тега Forms (до PR 4 этапа 4).
+    // W4.03: тег Tasks получил хендлеры (0.10.0-stage4), W4.05 — тег Forms (0.11.0-stage4); операция без хендлера теперь
+    // прежняя операция «Базы знаний» 0.1 (проекция узлов-страниц без экрана и хендлера).
     const owner = await api.as('owner');
-    expect((await owner.get(`${T(ALTA)}/forms`)).status).toBe(501);
-    expect((await api.anon().get(`${T(ALTA)}/forms`)).status).toBe(401);
+    expect((await owner.get(`${T(ALTA)}/knowledge/pages`)).status).toBe(501);
+    expect((await api.anon().get(`${T(ALTA)}/knowledge/pages`)).status).toBe(401);
   });
 
   it('неизвестный путь и чужой метод под /api/v1/ — 404', async () => {

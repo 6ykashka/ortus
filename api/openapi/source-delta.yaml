@@ -5,8 +5,8 @@
 deltas:
   - pointer: /info/version
     kind: change
-    source: план v2 PD-56, W0.07, W0.08, W1.00, W2.00, W2.40, W2.51, W2.52, W2.57, W4.02, W4.06, W2.71, W4.07, W4.04, W4.03
-    reason: 0.1.0-design → 0.2.0-stage0 (W0.07, шаг 0.2, разложен по тегам) → 0.3.0-stage1 (W0.08, шаг 0.3, контракт этапа 1) → 0.4.0-stage1 (W1.00, второй контрактный PR этапа 1) → 0.5.0-stage2 (W2.00, контракт этапа 2) → 0.5.1-stage2 (W2.40, аддитивный PR стюарда этапа 2 для показа 18.10) → 0.6.0-stage2 (W2.51, стюард этапа 2 — пул водителей, наборы «Данных») → 0.6.1-stage2 (W2.52, стюард этапа 2, часть 2 — ответы владельца 17.10 — справочник расходов, история машины, антифрод фото, чек-лист-форма, задача дефекта, заменители интеграций D-11 комплекта) → 0.6.2-stage2 (W2.57, контрактная дельта решения Q-W2.07-1 — временный водитель «только рейс», продление) → 0.7.0-stage4 (W4.02, контрактный PR 1 этапа 4 — виды областей этапов 4–7, объяснение доступа с объектом, вложения задач, Problem.reason, экраны этапа 4; W4.06, контрактный PR 5 этапа 4 — календарь ресурсов, сохранённые виды и выгрузка заданием «Данных») → 0.7.1-stage4 (W2.71, контрактная дельта S2-20 — машина для временного водителя, решение владельца 19.10 по Q-W2.32-1; в ветке 0.6.3-stage2, перенумерована интегратором при вливании после W4.02 и W4.06) → 0.8.0-stage4 (W4.07, контрактный PR 6 этапа 4 — места и тарифная сетка, заявки на тариф, «Использование», каталог аккаунтов и операторы платформы, оформление организации; номер версии согласован интегратором при вливании после W2.71) → 0.9.0-stage4 (W4.04, контрактный PR 3 этапа 4 — «База знаний» — пространства, дерево, версии, доступ узла, запросы, участники, автоматизация; влит интегратором после W4.07) → 0.10.0-stage4 (W4.03, контрактный PR 2 этапа 4 — «Задачи и проекты» — проекты, участники, процесс с версиями, задачи, история, автоматизация; в ветке 0.9.0-stage4, перенумерована интегратором при вливании после W4.04).
+    source: план v2 PD-56, W0.07, W0.08, W1.00, W2.00, W2.40, W2.51, W2.52, W2.57, W4.02, W4.06, W2.71, W4.07, W4.04, W4.03, W4.05
+    reason: 0.1.0-design → 0.2.0-stage0 (W0.07, шаг 0.2, разложен по тегам) → 0.3.0-stage1 (W0.08, шаг 0.3, контракт этапа 1) → 0.4.0-stage1 (W1.00, второй контрактный PR этапа 1) → 0.5.0-stage2 (W2.00, контракт этапа 2) → 0.5.1-stage2 (W2.40, аддитивный PR стюарда этапа 2 для показа 18.10) → 0.6.0-stage2 (W2.51, стюард этапа 2 — пул водителей, наборы «Данных») → 0.6.1-stage2 (W2.52, стюард этапа 2, часть 2 — ответы владельца 17.10 — справочник расходов, история машины, антифрод фото, чек-лист-форма, задача дефекта, заменители интеграций D-11 комплекта) → 0.6.2-stage2 (W2.57, контрактная дельта решения Q-W2.07-1 — временный водитель «только рейс», продление) → 0.7.0-stage4 (W4.02, контрактный PR 1 этапа 4 — виды областей этапов 4–7, объяснение доступа с объектом, вложения задач, Problem.reason, экраны этапа 4; W4.06, контрактный PR 5 этапа 4 — календарь ресурсов, сохранённые виды и выгрузка заданием «Данных») → 0.7.1-stage4 (W2.71, контрактная дельта S2-20 — машина для временного водителя, решение владельца 19.10 по Q-W2.32-1; в ветке 0.6.3-stage2, перенумерована интегратором при вливании после W4.02 и W4.06) → 0.8.0-stage4 (W4.07, контрактный PR 6 этапа 4 — места и тарифная сетка, заявки на тариф, «Использование», каталог аккаунтов и операторы платформы, оформление организации; номер версии согласован интегратором при вливании после W2.71) → 0.9.0-stage4 (W4.04, контрактный PR 3 этапа 4 — «База знаний» — пространства, дерево, версии, доступ узла, запросы, участники, автоматизация; влит интегратором после W4.07) → 0.10.0-stage4 (W4.03, контрактный PR 2 этапа 4 — «Задачи и проекты» — проекты, участники, процесс с версиями, задачи, история, автоматизация; в ветке 0.9.0-stage4, перенумерована интегратором при вливании после W4.04) → 0.11.0-stage4 (W4.05, контрактный PR 4 этапа 4 — «Формы и опросы» — черновик, FormDefinition v2, настройки, группы, правила, ответы v2, сводка, CSV).
   - pointer: /components/schemas/Tenant/properties/status/enum
     kind: change
     source: 01-technical-spec PLAT-02; 10-data-model «Тенант»; control_0001_init.sql tenant_state; PD-35
@@ -2417,3 +2417,559 @@ deltas:
     kind: add
     source: "W4.03; tasks.md §2.2, §2.5, §3; эталон «Задачи и проекты.dc.html» (design-2026-10-19); домен W4.10"
     reason: "схема «Задач и проектов» (tasks.md §2)."
+
+  # W4.05 (0.11.0-stage4) — контрактный PR 4 этапа 4 «Формы и опросы»: FormDefinition v2, черновик, настройки,
+  # FormPatch v2 (C п. 13), группы, шаблоны, правила, ответы v2, сводка, CSV, варианты CRM; устаревшие createFormVersion
+  # и publishFormVersion.
+  - pointer: /paths/~1api~1v1~1tenants~1{tenantId}~1forms/get/description
+    kind: change
+    source: "W4.05; forms.md §2.2, §2.5, §3; design/docs/20-forms.md; эталон «Формы и опросы.dc.html» (design-2026-10-19); домен W4.20"
+    reason: "текст 0.1 сохранён дословно в начале или заменён описанием W4.05 той же операции (черновик, FormPatch v2, ответы v2, права и тексты эталона)."
+  - pointer: /paths/~1api~1v1~1tenants~1{tenantId}~1forms/get/parameters
+    kind: change
+    source: "W4.05; forms.md §2.2, §2.5, §3; design/docs/20-forms.md; эталон «Формы и опросы.dc.html» (design-2026-10-19); домен W4.20"
+    reason: "параметры 0.1 (Cursor, Limit) — те же и в том же порядке; + q, owner=me, status, groupId (фильтры списка «Формы и группы»)."
+  - pointer: /paths/~1api~1v1~1tenants~1{tenantId}~1forms/post/description
+    kind: change
+    source: "W4.05; forms.md §2.2, §2.5, §3; design/docs/20-forms.md; эталон «Формы и опросы.dc.html» (design-2026-10-19); домен W4.20"
+    reason: "текст 0.1 сохранён дословно в начале или заменён описанием W4.05 той же операции (черновик, FormPatch v2, ответы v2, права и тексты эталона)."
+  - pointer: /paths/~1api~1v1~1tenants~1{tenantId}~1forms~1{formId}/get/description
+    kind: change
+    source: "W4.05; forms.md §2.2, §2.5, §3; design/docs/20-forms.md; эталон «Формы и опросы.dc.html» (design-2026-10-19); домен W4.20"
+    reason: "текст 0.1 сохранён дословно в начале или заменён описанием W4.05 той же операции (черновик, FormPatch v2, ответы v2, права и тексты эталона)."
+  - pointer: /paths/~1api~1v1~1tenants~1{tenantId}~1forms~1{formId}/patch/description
+    kind: change
+    source: "W4.05; forms.md §2.2, §2.5, §3; design/docs/20-forms.md; эталон «Формы и опросы.dc.html» (design-2026-10-19); домен W4.20"
+    reason: "текст 0.1 сохранён дословно в начале или заменён описанием W4.05 той же операции (черновик, FormPatch v2, ответы v2, права и тексты эталона)."
+  - pointer: /paths/~1api~1v1~1tenants~1{tenantId}~1forms~1{formId}~1versions/get/description
+    kind: change
+    source: "W4.05; forms.md §2.2, §2.5, §3; design/docs/20-forms.md; эталон «Формы и опросы.dc.html» (design-2026-10-19); домен W4.20"
+    reason: "текст 0.1 сохранён дословно в начале или заменён описанием W4.05 той же операции (черновик, FormPatch v2, ответы v2, права и тексты эталона)."
+  - pointer: /paths/~1api~1v1~1tenants~1{tenantId}~1forms~1{formId}~1versions/post/description
+    kind: change
+    source: "W4.05; forms.md §2.2, §2.5, §3; design/docs/20-forms.md; эталон «Формы и опросы.dc.html» (design-2026-10-19); домен W4.20"
+    reason: "текст 0.1 сохранён дословно в начале или заменён описанием W4.05 той же операции (черновик, FormPatch v2, ответы v2, права и тексты эталона)."
+  - pointer: /paths/~1api~1v1~1tenants~1{tenantId}~1forms~1{formId}~1versions/post/deprecated
+    kind: add
+    source: "W4.05; forms.md §2.2, §2.5, §3; design/docs/20-forms.md; эталон «Формы и опросы.dc.html» (design-2026-10-19); домен W4.20"
+    reason: "устаревшая операция 0.1: версии создаёт публикация черновика publishForm (Q-W4.00-forms-1); сервер отвечает 409 invalid_transition, reason form_draft_flow."
+  - pointer: /paths/~1api~1v1~1tenants~1{tenantId}~1forms~1{formId}~1versions~1{versionId}~1publish/post/description
+    kind: change
+    source: "W4.05; forms.md §2.2, §2.5, §3; design/docs/20-forms.md; эталон «Формы и опросы.dc.html» (design-2026-10-19); домен W4.20"
+    reason: "текст 0.1 сохранён дословно в начале или заменён описанием W4.05 той же операции (черновик, FormPatch v2, ответы v2, права и тексты эталона)."
+  - pointer: /paths/~1api~1v1~1tenants~1{tenantId}~1forms~1{formId}~1versions~1{versionId}~1publish/post/deprecated
+    kind: add
+    source: "W4.05; forms.md §2.2, §2.5, §3; design/docs/20-forms.md; эталон «Формы и опросы.dc.html» (design-2026-10-19); домен W4.20"
+    reason: "устаревшая операция 0.1: версии создаёт публикация черновика publishForm (Q-W4.00-forms-1); сервер отвечает 409 invalid_transition, reason form_draft_flow."
+  - pointer: /paths/~1api~1v1~1tenants~1{tenantId}~1forms~1{formId}~1responses/get/description
+    kind: change
+    source: "W4.05; forms.md §2.2, §2.5, §3; design/docs/20-forms.md; эталон «Формы и опросы.dc.html» (design-2026-10-19); домен W4.20"
+    reason: "текст 0.1 сохранён дословно в начале или заменён описанием W4.05 той же операции (черновик, FormPatch v2, ответы v2, права и тексты эталона)."
+  - pointer: /paths/~1api~1v1~1tenants~1{tenantId}~1forms~1{formId}~1responses/post
+    kind: add
+    source: "W4.05; forms.md §2.2, §2.5, §3; design/docs/20-forms.md; эталон «Формы и опросы.dc.html» (design-2026-10-19); домен W4.20"
+    reason: "отправка ответа сотрудником после входа (Q-W4.00-forms-8, -19, -25)."
+  - pointer: /paths/~1api~1v1~1tenants~1{tenantId}~1forms~1{formId}~1responses~1{responseId}/get/description
+    kind: change
+    source: "W4.05; forms.md §2.2, §2.5, §3; design/docs/20-forms.md; эталон «Формы и опросы.dc.html» (design-2026-10-19); домен W4.20"
+    reason: "текст 0.1 сохранён дословно в начале или заменён описанием W4.05 той же операции (черновик, FormPatch v2, ответы v2, права и тексты эталона)."
+  - pointer: /paths/~1api~1v1~1tenants~1{tenantId}~1forms~1{formId}~1responses~1{responseId}/patch/description
+    kind: change
+    source: "W4.05; forms.md §2.2, §2.5, §3; design/docs/20-forms.md; эталон «Формы и опросы.dc.html» (design-2026-10-19); домен W4.20"
+    reason: "текст 0.1 сохранён дословно в начале или заменён описанием W4.05 той же операции (черновик, FormPatch v2, ответы v2, права и тексты эталона)."
+  - pointer: /paths/~1api~1v1~1tenants~1{tenantId}~1forms~1{formId}~1draft
+    kind: add
+    source: "W4.05; forms.md §2.2, §2.5, §3; design/docs/20-forms.md; эталон «Формы и опросы.dc.html» (design-2026-10-19); домен W4.20"
+    reason: "новый путь тега Forms (черновик, публикация, правила, перенос и повтор, сводка, CSV, варианты CRM, шаблоны, группы)."
+  - pointer: /paths/~1api~1v1~1tenants~1{tenantId}~1forms~1{formId}~1publish
+    kind: add
+    source: "W4.05; forms.md §2.2, §2.5, §3; design/docs/20-forms.md; эталон «Формы и опросы.dc.html» (design-2026-10-19); домен W4.20"
+    reason: "новый путь тега Forms (черновик, публикация, правила, перенос и повтор, сводка, CSV, варианты CRM, шаблоны, группы)."
+  - pointer: /paths/~1api~1v1~1tenants~1{tenantId}~1forms~1{formId}~1rules
+    kind: add
+    source: "W4.05; forms.md §2.2, §2.5, §3; design/docs/20-forms.md; эталон «Формы и опросы.dc.html» (design-2026-10-19); домен W4.20"
+    reason: "новый путь тега Forms (черновик, публикация, правила, перенос и повтор, сводка, CSV, варианты CRM, шаблоны, группы)."
+  - pointer: /paths/~1api~1v1~1tenants~1{tenantId}~1forms~1{formId}~1rules~1{ruleId}
+    kind: add
+    source: "W4.05; forms.md §2.2, §2.5, §3; design/docs/20-forms.md; эталон «Формы и опросы.dc.html» (design-2026-10-19); домен W4.20"
+    reason: "новый путь тега Forms (черновик, публикация, правила, перенос и повтор, сводка, CSV, варианты CRM, шаблоны, группы)."
+  - pointer: /paths/~1api~1v1~1tenants~1{tenantId}~1forms~1{formId}~1rules~1{ruleId}~1backfill
+    kind: add
+    source: "W4.05; forms.md §2.2, §2.5, §3; design/docs/20-forms.md; эталон «Формы и опросы.dc.html» (design-2026-10-19); домен W4.20"
+    reason: "новый путь тега Forms (черновик, публикация, правила, перенос и повтор, сводка, CSV, варианты CRM, шаблоны, группы)."
+  - pointer: /paths/~1api~1v1~1tenants~1{tenantId}~1forms~1{formId}~1responses~1{responseId}~1actions~1{ruleId}~1retry
+    kind: add
+    source: "W4.05; forms.md §2.2, §2.5, §3; design/docs/20-forms.md; эталон «Формы и опросы.dc.html» (design-2026-10-19); домен W4.20"
+    reason: "новый путь тега Forms (черновик, публикация, правила, перенос и повтор, сводка, CSV, варианты CRM, шаблоны, группы)."
+  - pointer: /paths/~1api~1v1~1tenants~1{tenantId}~1forms~1{formId}~1summary
+    kind: add
+    source: "W4.05; forms.md §2.2, §2.5, §3; design/docs/20-forms.md; эталон «Формы и опросы.dc.html» (design-2026-10-19); домен W4.20"
+    reason: "новый путь тега Forms (черновик, публикация, правила, перенос и повтор, сводка, CSV, варианты CRM, шаблоны, группы)."
+  - pointer: /paths/~1api~1v1~1tenants~1{tenantId}~1forms~1{formId}~1export
+    kind: add
+    source: "W4.05; forms.md §2.2, §2.5, §3; design/docs/20-forms.md; эталон «Формы и опросы.dc.html» (design-2026-10-19); домен W4.20"
+    reason: "новый путь тега Forms (черновик, публикация, правила, перенос и повтор, сводка, CSV, варианты CRM, шаблоны, группы)."
+  - pointer: /paths/~1api~1v1~1tenants~1{tenantId}~1forms~1{formId}~1fields~1{fieldKey}~1options
+    kind: add
+    source: "W4.05; forms.md §2.2, §2.5, §3; design/docs/20-forms.md; эталон «Формы и опросы.dc.html» (design-2026-10-19); домен W4.20"
+    reason: "новый путь тега Forms (черновик, публикация, правила, перенос и повтор, сводка, CSV, варианты CRM, шаблоны, группы)."
+  - pointer: /paths/~1api~1v1~1tenants~1{tenantId}~1form-templates
+    kind: add
+    source: "W4.05; forms.md §2.2, §2.5, §3; design/docs/20-forms.md; эталон «Формы и опросы.dc.html» (design-2026-10-19); домен W4.20"
+    reason: "новый путь тега Forms (черновик, публикация, правила, перенос и повтор, сводка, CSV, варианты CRM, шаблоны, группы)."
+  - pointer: /paths/~1api~1v1~1tenants~1{tenantId}~1form-groups
+    kind: add
+    source: "W4.05; forms.md §2.2, §2.5, §3; design/docs/20-forms.md; эталон «Формы и опросы.dc.html» (design-2026-10-19); домен W4.20"
+    reason: "новый путь тега Forms (черновик, публикация, правила, перенос и повтор, сводка, CSV, варианты CRM, шаблоны, группы)."
+  - pointer: /paths/~1api~1v1~1tenants~1{tenantId}~1form-groups~1{groupId}
+    kind: add
+    source: "W4.05; forms.md §2.2, §2.5, §3; design/docs/20-forms.md; эталон «Формы и опросы.dc.html» (design-2026-10-19); домен W4.20"
+    reason: "новый путь тега Forms (черновик, публикация, правила, перенос и повтор, сводка, CSV, варианты CRM, шаблоны, группы)."
+  - pointer: /components/parameters/formFieldKey
+    kind: add
+    source: "W4.05; forms.md §2.2, §2.5, §3; design/docs/20-forms.md; эталон «Формы и опросы.dc.html» (design-2026-10-19); домен W4.20"
+    reason: "параметр пути новых операций форм (правило, вопрос, группа)."
+  - pointer: /components/parameters/formGroupId
+    kind: add
+    source: "W4.05; forms.md §2.2, §2.5, §3; design/docs/20-forms.md; эталон «Формы и опросы.dc.html» (design-2026-10-19); домен W4.20"
+    reason: "параметр пути новых операций форм (правило, вопрос, группа)."
+  - pointer: /components/parameters/formRuleId
+    kind: add
+    source: "W4.05; forms.md §2.2, §2.5, §3; design/docs/20-forms.md; эталон «Формы и опросы.dc.html» (design-2026-10-19); домен W4.20"
+    reason: "параметр пути новых операций форм (правило, вопрос, группа)."
+  - pointer: /components/schemas/ReferenceValue/properties/label
+    kind: add
+    source: "W4.05; forms.md §2.2, §2.5, §3; design/docs/20-forms.md; эталон «Формы и опросы.dc.html» (design-2026-10-19); домен W4.20"
+    reason: "подпись объекта на момент ответа (Q-W4.00-forms-23); только добавление."
+  - pointer: /components/schemas/ChoicesValue/properties/otherText
+    kind: add
+    source: "W4.05; forms.md §2.2, §2.5, §3; design/docs/20-forms.md; эталон «Формы и опросы.dc.html» (design-2026-10-19); домен W4.20"
+    reason: "«Другое — свой вариант» вопроса выбора; только добавление."
+  - pointer: /components/schemas/Form/properties/orgUnitId
+    kind: change
+    source: "W4.05; forms.md §2.2, §2.5, §3; design/docs/20-forms.md; эталон «Формы и опросы.dc.html» (design-2026-10-19); домен W4.20"
+    reason: "Id 0.1 → строка UUID или null: null — форма на всю организацию («Вся организация», Q-W4.00-forms-17)."
+  - pointer: /components/schemas/Form/properties/moduleKey
+    kind: add
+    source: "W4.05; forms.md §2.2, §2.5, §3; design/docs/20-forms.md; эталон «Формы и опросы.dc.html» (design-2026-10-19); домен W4.20"
+    reason: "новое поле Form.properties.moduleKey (W4.05)."
+  - pointer: /components/schemas/Form/properties/templateId
+    kind: add
+    source: "W4.05; forms.md §2.2, §2.5, §3; design/docs/20-forms.md; эталон «Формы и опросы.dc.html» (design-2026-10-19); домен W4.20"
+    reason: "новое поле Form.properties.templateId (W4.05)."
+  - pointer: /components/schemas/Form/properties/groupId
+    kind: add
+    source: "W4.05; forms.md §2.2, §2.5, §3; design/docs/20-forms.md; эталон «Формы и опросы.dc.html» (design-2026-10-19); домен W4.20"
+    reason: "новое поле Form.properties.groupId (W4.05)."
+  - pointer: /components/schemas/Form/properties/owner
+    kind: add
+    source: "W4.05; forms.md §2.2, §2.5, §3; design/docs/20-forms.md; эталон «Формы и опросы.dc.html» (design-2026-10-19); домен W4.20"
+    reason: "новое поле Form.properties.owner (W4.05)."
+  - pointer: /components/schemas/Form/properties/updatedAt
+    kind: add
+    source: "W4.05; forms.md §2.2, §2.5, §3; design/docs/20-forms.md; эталон «Формы и опросы.dc.html» (design-2026-10-19); домен W4.20"
+    reason: "новое поле Form.properties.updatedAt (W4.05)."
+  - pointer: /components/schemas/Form/properties/publishedVersionNumber
+    kind: add
+    source: "W4.05; forms.md §2.2, §2.5, §3; design/docs/20-forms.md; эталон «Формы и опросы.dc.html» (design-2026-10-19); домен W4.20"
+    reason: "новое поле Form.properties.publishedVersionNumber (W4.05)."
+  - pointer: /components/schemas/Form/properties/versionCount
+    kind: add
+    source: "W4.05; forms.md §2.2, §2.5, §3; design/docs/20-forms.md; эталон «Формы и опросы.dc.html» (design-2026-10-19); домен W4.20"
+    reason: "новое поле Form.properties.versionCount (W4.05)."
+  - pointer: /components/schemas/Form/properties/hasUnpublishedChanges
+    kind: add
+    source: "W4.05; forms.md §2.2, §2.5, §3; design/docs/20-forms.md; эталон «Формы и опросы.dc.html» (design-2026-10-19); домен W4.20"
+    reason: "новое поле Form.properties.hasUnpublishedChanges (W4.05)."
+  - pointer: /components/schemas/Form/properties/questionCount
+    kind: add
+    source: "W4.05; forms.md §2.2, §2.5, §3; design/docs/20-forms.md; эталон «Формы и опросы.dc.html» (design-2026-10-19); домен W4.20"
+    reason: "новое поле Form.properties.questionCount (W4.05)."
+  - pointer: /components/schemas/Form/properties/responseCount
+    kind: add
+    source: "W4.05; forms.md §2.2, §2.5, §3; design/docs/20-forms.md; эталон «Формы и опросы.dc.html» (design-2026-10-19); домен W4.20"
+    reason: "новое поле Form.properties.responseCount (W4.05)."
+  - pointer: /components/schemas/Form/properties/enabledRuleCount
+    kind: add
+    source: "W4.05; forms.md §2.2, §2.5, §3; design/docs/20-forms.md; эталон «Формы и опросы.dc.html» (design-2026-10-19); домен W4.20"
+    reason: "новое поле Form.properties.enabledRuleCount (W4.05)."
+  - pointer: /components/schemas/Form/properties/settings
+    kind: add
+    source: "W4.05; forms.md §2.2, §2.5, §3; design/docs/20-forms.md; эталон «Формы и опросы.dc.html» (design-2026-10-19); домен W4.20"
+    reason: "новое поле Form.properties.settings (W4.05)."
+  - pointer: /components/schemas/Form/properties/share
+    kind: add
+    source: "W4.05; forms.md §2.2, §2.5, §3; design/docs/20-forms.md; эталон «Формы и опросы.dc.html» (design-2026-10-19); домен W4.20"
+    reason: "новое поле Form.properties.share (W4.05)."
+  - pointer: /components/schemas/Form/properties/my
+    kind: add
+    source: "W4.05; forms.md §2.2, §2.5, §3; design/docs/20-forms.md; эталон «Формы и опросы.dc.html» (design-2026-10-19); домен W4.20"
+    reason: "новое поле Form.properties.my (W4.05)."
+  - pointer: /components/schemas/Form/required
+    kind: change
+    source: "W4.05; forms.md §2.2, §2.5, §3; design/docs/20-forms.md; эталон «Формы и опросы.dc.html» (design-2026-10-19); домен W4.20"
+    reason: "список обязательных полей v2: поля 0.1 сохранены, кроме latestVersionId у Form (черновик без версий, D-24 комплекта) и definition у FormCreate (форма создаётся черновиком из шаблона или копии); новые поля ответа всегда есть."
+  - pointer: /components/schemas/Form/description
+    kind: add
+    source: "W4.05; forms.md §2.2, §2.5, §3; design/docs/20-forms.md; эталон «Формы и опросы.dc.html» (design-2026-10-19); домен W4.20"
+    reason: "описание схемы v2 (W4.05)."
+  - pointer: /components/schemas/FormCreate/properties/orgUnitId
+    kind: change
+    source: "W4.05; forms.md §2.2, §2.5, §3; design/docs/20-forms.md; эталон «Формы и опросы.dc.html» (design-2026-10-19); домен W4.20"
+    reason: "Id 0.1 → строка UUID или null: null — форма на всю организацию («Вся организация», Q-W4.00-forms-17)."
+  - pointer: /components/schemas/FormCreate/properties/name
+    kind: change
+    source: "W4.05; forms.md §2.2, §2.5, §3; design/docs/20-forms.md; эталон «Формы и опросы.dc.html» (design-2026-10-19); домен W4.20"
+    reason: "изменение FormCreate.properties.name (W4.05)."
+  - pointer: /components/schemas/FormCreate/properties/definition
+    kind: change
+    source: "W4.05; forms.md §2.2, §2.5, §3; design/docs/20-forms.md; эталон «Формы и опросы.dc.html» (design-2026-10-19); домен W4.20"
+    reason: "FormDefinition 0.1 → FormDefinitionV2 (страницы, 21 тип прототипа, условия «И / ИЛИ», скрытые вопросы, баллы — Q-W4.00-forms-1, -3, -5, -6); FormDefinition 0.1 остаётся форматом чек-листа осмотра и тела устаревшей createFormVersion."
+  - pointer: /components/schemas/FormCreate/properties/templateId
+    kind: add
+    source: "W4.05; forms.md §2.2, §2.5, §3; design/docs/20-forms.md; эталон «Формы и опросы.dc.html» (design-2026-10-19); домен W4.20"
+    reason: "новое поле FormCreate.properties.templateId (W4.05)."
+  - pointer: /components/schemas/FormCreate/properties/sourceFormId
+    kind: add
+    source: "W4.05; forms.md §2.2, §2.5, §3; design/docs/20-forms.md; эталон «Формы и опросы.dc.html» (design-2026-10-19); домен W4.20"
+    reason: "новое поле FormCreate.properties.sourceFormId (W4.05)."
+  - pointer: /components/schemas/FormCreate/properties/groupId
+    kind: add
+    source: "W4.05; forms.md §2.2, §2.5, §3; design/docs/20-forms.md; эталон «Формы и опросы.dc.html» (design-2026-10-19); домен W4.20"
+    reason: "новое поле FormCreate.properties.groupId (W4.05)."
+  - pointer: /components/schemas/FormCreate/required
+    kind: change
+    source: "W4.05; forms.md §2.2, §2.5, §3; design/docs/20-forms.md; эталон «Формы и опросы.dc.html» (design-2026-10-19); домен W4.20"
+    reason: "список обязательных полей v2: поля 0.1 сохранены, кроме latestVersionId у Form (черновик без версий, D-24 комплекта) и definition у FormCreate (форма создаётся черновиком из шаблона или копии); новые поля ответа всегда есть."
+  - pointer: /components/schemas/FormCreate/description
+    kind: add
+    source: "W4.05; forms.md §2.2, §2.5, §3; design/docs/20-forms.md; эталон «Формы и опросы.dc.html» (design-2026-10-19); домен W4.20"
+    reason: "описание схемы v2 (W4.05)."
+  - pointer: /components/schemas/FormPatch/properties/status
+    kind: change
+    source: "W4.05; forms.md §2.2, §2.5, §3; design/docs/20-forms.md; эталон «Формы и опросы.dc.html» (design-2026-10-19); домен W4.20"
+    reason: "const closed 0.1 → open | closed: «Возобновить приём ответов» (forms.md §5 п. 12, C п. 13)."
+  - pointer: /components/schemas/FormPatch/properties/orgUnitId
+    kind: add
+    source: "W4.05; forms.md §2.2, §2.5, §3; design/docs/20-forms.md; эталон «Формы и опросы.dc.html» (design-2026-10-19); домен W4.20"
+    reason: "Id 0.1 → строка UUID или null: null — форма на всю организацию («Вся организация», Q-W4.00-forms-17)."
+  - pointer: /components/schemas/FormPatch/properties/groupId
+    kind: add
+    source: "W4.05; forms.md §2.2, §2.5, §3; design/docs/20-forms.md; эталон «Формы и опросы.dc.html» (design-2026-10-19); домен W4.20"
+    reason: "новое поле FormPatch.properties.groupId (W4.05)."
+  - pointer: /components/schemas/FormPatch/properties/settings
+    kind: add
+    source: "W4.05; forms.md §2.2, §2.5, §3; design/docs/20-forms.md; эталон «Формы и опросы.dc.html» (design-2026-10-19); домен W4.20"
+    reason: "новое поле FormPatch.properties.settings (W4.05)."
+  - pointer: /components/schemas/FormPatch/description
+    kind: change
+    source: "W4.05; forms.md §2.2, §2.5, §3; design/docs/20-forms.md; эталон «Формы и опросы.dc.html» (design-2026-10-19); домен W4.20"
+    reason: "описание схемы v2 (W4.05)."
+  - pointer: /components/schemas/FormPatch/minProperties
+    kind: add
+    source: "W4.05; forms.md §2.2, §2.5, §3; design/docs/20-forms.md; эталон «Формы и опросы.dc.html» (design-2026-10-19); домен W4.20"
+    reason: "пустой PATCH — 422."
+  - pointer: /components/schemas/FormVersion/properties/definition
+    kind: change
+    source: "W4.05; forms.md §2.2, §2.5, §3; design/docs/20-forms.md; эталон «Формы и опросы.dc.html» (design-2026-10-19); домен W4.20"
+    reason: "FormDefinition 0.1 → FormDefinitionV2 (страницы, 21 тип прототипа, условия «И / ИЛИ», скрытые вопросы, баллы — Q-W4.00-forms-1, -3, -5, -6); FormDefinition 0.1 остаётся форматом чек-листа осмотра и тела устаревшей createFormVersion."
+  - pointer: /components/schemas/FormVersion/properties/createdBy
+    kind: add
+    source: "W4.05; forms.md §2.2, §2.5, §3; design/docs/20-forms.md; эталон «Формы и опросы.dc.html» (design-2026-10-19); домен W4.20"
+    reason: "новое поле FormVersion.properties.createdBy (W4.05)."
+  - pointer: /components/schemas/FormVersion/properties/questionCount
+    kind: add
+    source: "W4.05; forms.md §2.2, §2.5, §3; design/docs/20-forms.md; эталон «Формы и опросы.dc.html» (design-2026-10-19); домен W4.20"
+    reason: "новое поле FormVersion.properties.questionCount (W4.05)."
+  - pointer: /components/schemas/FormVersion/properties/current
+    kind: add
+    source: "W4.05; forms.md §2.2, §2.5, §3; design/docs/20-forms.md; эталон «Формы и опросы.dc.html» (design-2026-10-19); домен W4.20"
+    reason: "новое поле FormVersion.properties.current (W4.05)."
+  - pointer: /components/schemas/FormVersion/required
+    kind: change
+    source: "W4.05; forms.md §2.2, §2.5, §3; design/docs/20-forms.md; эталон «Формы и опросы.dc.html» (design-2026-10-19); домен W4.20"
+    reason: "список обязательных полей v2: поля 0.1 сохранены, кроме latestVersionId у Form (черновик без версий, D-24 комплекта) и definition у FormCreate (форма создаётся черновиком из шаблона или копии); новые поля ответа всегда есть."
+  - pointer: /components/schemas/FormVersion/description
+    kind: add
+    source: "W4.05; forms.md §2.2, §2.5, §3; design/docs/20-forms.md; эталон «Формы и опросы.dc.html» (design-2026-10-19); домен W4.20"
+    reason: "описание схемы v2 (W4.05)."
+  - pointer: /components/schemas/FormResponse/properties/number
+    kind: add
+    source: "W4.05; forms.md §2.2, §2.5, §3; design/docs/20-forms.md; эталон «Формы и опросы.dc.html» (design-2026-10-19); домен W4.20"
+    reason: "новое поле FormResponse.properties.number (W4.05)."
+  - pointer: /components/schemas/FormResponse/properties/versionNumber
+    kind: add
+    source: "W4.05; forms.md §2.2, §2.5, §3; design/docs/20-forms.md; эталон «Формы и опросы.dc.html» (design-2026-10-19); домен W4.20"
+    reason: "новое поле FormResponse.properties.versionNumber (W4.05)."
+  - pointer: /components/schemas/FormResponse/properties/author
+    kind: add
+    source: "W4.05; forms.md §2.2, §2.5, §3; design/docs/20-forms.md; эталон «Формы и опросы.dc.html» (design-2026-10-19); домен W4.20"
+    reason: "новое поле FormResponse.properties.author (W4.05)."
+  - pointer: /components/schemas/FormResponse/properties/subject
+    kind: add
+    source: "W4.05; forms.md §2.2, §2.5, §3; design/docs/20-forms.md; эталон «Формы и опросы.dc.html» (design-2026-10-19); домен W4.20"
+    reason: "новое поле FormResponse.properties.subject (W4.05)."
+  - pointer: /components/schemas/FormResponse/properties/channel
+    kind: add
+    source: "W4.05; forms.md §2.2, §2.5, §3; design/docs/20-forms.md; эталон «Формы и опросы.dc.html» (design-2026-10-19); домен W4.20"
+    reason: "новое поле FormResponse.properties.channel (W4.05)."
+  - pointer: /components/schemas/FormResponse/properties/score
+    kind: add
+    source: "W4.05; forms.md §2.2, §2.5, §3; design/docs/20-forms.md; эталон «Формы и опросы.dc.html» (design-2026-10-19); домен W4.20"
+    reason: "новое поле FormResponse.properties.score (W4.05)."
+  - pointer: /components/schemas/FormResponse/properties/actions
+    kind: add
+    source: "W4.05; forms.md §2.2, §2.5, §3; design/docs/20-forms.md; эталон «Формы и опросы.dc.html» (design-2026-10-19); домен W4.20"
+    reason: "новое поле FormResponse.properties.actions (W4.05)."
+  - pointer: /components/schemas/FormResponse/properties/linkParamKeys
+    kind: add
+    source: "W4.05; forms.md §2.2, §2.5, §3; design/docs/20-forms.md; эталон «Формы и опросы.dc.html» (design-2026-10-19); домен W4.20"
+    reason: "новое поле FormResponse.properties.linkParamKeys (W4.05)."
+  - pointer: /components/schemas/FormResponse/required
+    kind: change
+    source: "W4.05; forms.md §2.2, §2.5, §3; design/docs/20-forms.md; эталон «Формы и опросы.dc.html» (design-2026-10-19); домен W4.20"
+    reason: "список обязательных полей v2: поля 0.1 сохранены, кроме latestVersionId у Form (черновик без версий, D-24 комплекта) и definition у FormCreate (форма создаётся черновиком из шаблона или копии); новые поля ответа всегда есть."
+  - pointer: /components/schemas/FormResponse/description
+    kind: add
+    source: "W4.05; forms.md §2.2, §2.5, §3; design/docs/20-forms.md; эталон «Формы и опросы.dc.html» (design-2026-10-19); домен W4.20"
+    reason: "описание схемы v2 (W4.05)."
+  - pointer: /components/schemas/PublicForm/properties/definition
+    kind: change
+    source: "W4.05; forms.md §2.2, §2.5, §3; design/docs/20-forms.md; эталон «Формы и опросы.dc.html» (design-2026-10-19); домен W4.20"
+    reason: "FormDefinition 0.1 → FormDefinitionV2 (страницы, 21 тип прототипа, условия «И / ИЛИ», скрытые вопросы, баллы — Q-W4.00-forms-1, -3, -5, -6); FormDefinition 0.1 остаётся форматом чек-листа осмотра и тела устаревшей createFormVersion."
+  - pointer: /components/schemas/PublicForm/description
+    kind: change
+    source: "W4.05, возврат 1 (ревью: ключ теста у гостя); forms.md §2.5; Q-W4.00-forms-24"
+    reason: "текст 0.1 + что вырезается из определения для гостя: FormOption.score и defaultValue скрытых вопросов (баллы и значения по умолчанию применяет сервер); поиск ссылки по token_digest; возврат 2 — тенант гостя по индексу control 0009 public_form_links; возврат 3 — параметры адреса страница передаёт в PublicResponseCreate.linkParams."
+  - pointer: /components/parameters/publicToken/description
+    kind: change
+    source: "W4.05, возврат 2 (ревью: маршрут токена без tenantId); ADR 0006; control 0009"
+    reason: "текст 0.1 + токен без части тенанта: тенант — по дайджесту токена в индексе control public_form_links, ссылка — в forms.public_links тенанта."
+  - pointer: /components/schemas/FormResponse/properties/my
+    kind: add
+    source: "W4.05, возврат 2 (ревью: право проверки у ответа); Q-W4.05-16"
+    reason: "право проверки и назначения у ответа (назначенный проверяющий с ключом в другой области); FormMy.reviewResponses — флаг формы."
+  - pointer: /components/schemas/FormResponseMy
+    kind: add
+    source: "W4.05, возврат 2 (ревью: право проверки у ответа); Q-W4.05-16"
+    reason: "новая схема FormResponseMy (review, assign) — правило mayReview сервера."
+  - pointer: /components/schemas/ResponseReviewPatch/minProperties
+    kind: add
+    source: "W4.05, возврат 2 (ревью: пустой PATCH меняет ревизию)"
+    reason: "пустое тело reviewFormResponse — 422, ревизия и ETag ответа не меняются."
+  - pointer: /components/schemas/ResponseReviewPatch/description
+    kind: change
+    source: "W4.05, возврат 2 (ревью: пустой PATCH меняет ревизию)"
+    reason: "текст 0.1 + хотя бы одно поле: пустое тело — 422."
+  - pointer: /components/schemas/PublicResponseCreate/properties/linkParams
+    kind: add
+    source: "W4.05, возврат 3 (ревью: параметры ссылки гостя); forms.md §7; Q-W4.00-forms-20"
+    reason: "значения скрытых вопросов из параметров публичной ссылки ?key=… — та же схема, что FormResponseCreate.linkParams (50 ключей, текст до 500; только скрытые, не CRM и не файл — 422 not_hidden)."
+  - pointer: /components/schemas/PublicResponseCreate/properties/answers/description
+    kind: add
+    source: "W4.05, возврат 3 (ревью: гость подменяет значение скрытого вопроса); Q-W4.05-24"
+    reason: "ключ скрытого вопроса в answers гостя — 422 hidden: defaultValue (вырезан из PublicForm) и параметр ссылки гость не подменяет."
+  - pointer: /components/schemas/PublicResponseCreate/description
+    kind: change
+    source: "W4.05, возврат 3 (ревью: параметры ссылки гостя); Q-W4.00-forms-20"
+    reason: "текст 0.1 + ответ канала public записывает ключи из linkParams в FormResponse.linkParamKeys (forms.responses.link_param_keys)."
+  - pointer: /components/schemas/FormPatch/properties/name/description
+    kind: add
+    source: "W4.05, возврат 3 (ревью: minLength 1 против проверки БД 3–200)"
+    reason: "minLength 1 из 0.1 остаётся (JSON Schema не обрезает пробелы); сервер проверяет имя после обрезки до вставки — 422 «Название формы — не короче 3 символов», а не 500 от проверки БД."
+  - pointer: /components/schemas/PublicForm/properties/presentation
+    kind: add
+    source: "W4.05; forms.md §2.2, §2.5, §3; design/docs/20-forms.md; эталон «Формы и опросы.dc.html» (design-2026-10-19); домен W4.20"
+    reason: "новое поле PublicForm.properties.presentation (W4.05)."
+  - pointer: /components/schemas/FormDefinitionV2
+    kind: add
+    source: "W4.05; forms.md §2.2, §2.5, §3; design/docs/20-forms.md; эталон «Формы и опросы.dc.html» (design-2026-10-19); домен W4.20"
+    reason: "новая схема тега Forms (W4.05)."
+  - pointer: /components/schemas/FormDraft
+    kind: add
+    source: "W4.05; forms.md §2.2, §2.5, §3; design/docs/20-forms.md; эталон «Формы и опросы.dc.html» (design-2026-10-19); домен W4.20"
+    reason: "новая схема тега Forms (W4.05)."
+  - pointer: /components/schemas/FormDraftSave
+    kind: add
+    source: "W4.05; forms.md §2.2, §2.5, §3; design/docs/20-forms.md; эталон «Формы и опросы.dc.html» (design-2026-10-19); домен W4.20"
+    reason: "новая схема тега Forms (W4.05)."
+  - pointer: /components/schemas/FormFieldOption
+    kind: add
+    source: "W4.05; forms.md §2.2, §2.5, §3; design/docs/20-forms.md; эталон «Формы и опросы.dc.html» (design-2026-10-19); домен W4.20"
+    reason: "новая схема тега Forms (W4.05)."
+  - pointer: /components/schemas/FormFieldOptionList
+    kind: add
+    source: "W4.05; forms.md §2.2, §2.5, §3; design/docs/20-forms.md; эталон «Формы и опросы.dc.html» (design-2026-10-19); домен W4.20"
+    reason: "новая схема тега Forms (W4.05)."
+  - pointer: /components/schemas/FormGroup
+    kind: add
+    source: "W4.05; forms.md §2.2, §2.5, §3; design/docs/20-forms.md; эталон «Формы и опросы.dc.html» (design-2026-10-19); домен W4.20"
+    reason: "новая схема тега Forms (W4.05)."
+  - pointer: /components/schemas/FormGroupCreate
+    kind: add
+    source: "W4.05; forms.md §2.2, §2.5, §3; design/docs/20-forms.md; эталон «Формы и опросы.dc.html» (design-2026-10-19); домен W4.20"
+    reason: "новая схема тега Forms (W4.05)."
+  - pointer: /components/schemas/FormGroupList
+    kind: add
+    source: "W4.05; forms.md §2.2, §2.5, §3; design/docs/20-forms.md; эталон «Формы и опросы.dc.html» (design-2026-10-19); домен W4.20"
+    reason: "новая схема тега Forms (W4.05)."
+  - pointer: /components/schemas/FormIssue
+    kind: add
+    source: "W4.05; forms.md §2.2, §2.5, §3; design/docs/20-forms.md; эталон «Формы и опросы.dc.html» (design-2026-10-19); домен W4.20"
+    reason: "новая схема тега Forms (W4.05)."
+  - pointer: /components/schemas/FormMemberRef
+    kind: add
+    source: "W4.05; forms.md §2.2, §2.5, §3; design/docs/20-forms.md; эталон «Формы и опросы.dc.html» (design-2026-10-19); домен W4.20"
+    reason: "новая схема тега Forms (W4.05)."
+  - pointer: /components/schemas/FormMy
+    kind: add
+    source: "W4.05; forms.md §2.2, §2.5, §3; design/docs/20-forms.md; эталон «Формы и опросы.dc.html» (design-2026-10-19); домен W4.20"
+    reason: "новая схема тега Forms (W4.05)."
+  - pointer: /components/schemas/FormNumberStats
+    kind: add
+    source: "W4.05; forms.md §2.2, §2.5, §3; design/docs/20-forms.md; эталон «Формы и опросы.dc.html» (design-2026-10-19); домен W4.20"
+    reason: "новая схема тега Forms (W4.05)."
+  - pointer: /components/schemas/FormOption
+    kind: add
+    source: "W4.05; forms.md §2.2, §2.5, §3; design/docs/20-forms.md; эталон «Формы и опросы.dc.html» (design-2026-10-19); домен W4.20"
+    reason: "новая схема тега Forms (W4.05)."
+  - pointer: /components/schemas/FormOptionCount
+    kind: add
+    source: "W4.05; forms.md §2.2, §2.5, §3; design/docs/20-forms.md; эталон «Формы и опросы.dc.html» (design-2026-10-19); домен W4.20"
+    reason: "новая схема тега Forms (W4.05)."
+  - pointer: /components/schemas/FormPageDefinition
+    kind: add
+    source: "W4.05; forms.md §2.2, §2.5, §3; design/docs/20-forms.md; эталон «Формы и опросы.dc.html» (design-2026-10-19); домен W4.20"
+    reason: "новая схема тега Forms (W4.05)."
+  - pointer: /components/schemas/FormPublishRequest
+    kind: add
+    source: "W4.05; forms.md §2.2, §2.5, §3; design/docs/20-forms.md; эталон «Формы и опросы.dc.html» (design-2026-10-19); домен W4.20"
+    reason: "новая схема тега Forms (W4.05)."
+  - pointer: /components/schemas/FormQuestion
+    kind: add
+    source: "W4.05; forms.md §2.2, §2.5, §3; design/docs/20-forms.md; эталон «Формы и опросы.dc.html» (design-2026-10-19); домен W4.20"
+    reason: "новая схема тега Forms (W4.05)."
+  - pointer: /components/schemas/FormQuestionSummary
+    kind: add
+    source: "W4.05; forms.md §2.2, §2.5, §3; design/docs/20-forms.md; эталон «Формы и опросы.dc.html» (design-2026-10-19); домен W4.20"
+    reason: "новая схема тега Forms (W4.05)."
+  - pointer: /components/schemas/FormQuestionType
+    kind: add
+    source: "W4.05; forms.md §2.2, §2.5, §3; design/docs/20-forms.md; эталон «Формы и опросы.dc.html» (design-2026-10-19); домен W4.20"
+    reason: "новая схема тега Forms (W4.05)."
+  - pointer: /components/schemas/FormResponseAction
+    kind: add
+    source: "W4.05; forms.md §2.2, §2.5, §3; design/docs/20-forms.md; эталон «Формы и опросы.dc.html» (design-2026-10-19); домен W4.20"
+    reason: "новая схема тега Forms (W4.05)."
+  - pointer: /components/schemas/FormResponseCreate
+    kind: add
+    source: "W4.05; forms.md §2.2, §2.5, §3; design/docs/20-forms.md; эталон «Формы и опросы.dc.html» (design-2026-10-19); домен W4.20"
+    reason: "новая схема тега Forms (W4.05)."
+  - pointer: /components/schemas/FormResponseScore
+    kind: add
+    source: "W4.05; forms.md §2.2, §2.5, §3; design/docs/20-forms.md; эталон «Формы и опросы.dc.html» (design-2026-10-19); домен W4.20"
+    reason: "новая схема тега Forms (W4.05)."
+  - pointer: /components/schemas/FormResponseSubject
+    kind: add
+    source: "W4.05; forms.md §2.2, §2.5, §3; design/docs/20-forms.md; эталон «Формы и опросы.dc.html» (design-2026-10-19); домен W4.20"
+    reason: "новая схема тега Forms (W4.05)."
+  - pointer: /components/schemas/FormResponseSummary
+    kind: add
+    source: "W4.05; forms.md §2.2, §2.5, §3; design/docs/20-forms.md; эталон «Формы и опросы.dc.html» (design-2026-10-19); домен W4.20"
+    reason: "новая схема тега Forms (W4.05)."
+  - pointer: /components/schemas/FormResponsesExport
+    kind: add
+    source: "W4.05; forms.md §2.2, §2.5, §3; design/docs/20-forms.md; эталон «Формы и опросы.dc.html» (design-2026-10-19); домен W4.20"
+    reason: "новая схема тега Forms (W4.05)."
+  - pointer: /components/schemas/FormRule
+    kind: add
+    source: "W4.05; forms.md §2.2, §2.5, §3; design/docs/20-forms.md; эталон «Формы и опросы.dc.html» (design-2026-10-19); домен W4.20"
+    reason: "новая схема тега Forms (W4.05)."
+  - pointer: /components/schemas/FormRuleBackfillResult
+    kind: add
+    source: "W4.05; forms.md §2.2, §2.5, §3; design/docs/20-forms.md; эталон «Формы и опросы.dc.html» (design-2026-10-19); домен W4.20"
+    reason: "новая схема тега Forms (W4.05)."
+  - pointer: /components/schemas/FormRuleCondition
+    kind: add
+    source: "W4.05; forms.md §2.2, §2.5, §3; design/docs/20-forms.md; эталон «Формы и опросы.dc.html» (design-2026-10-19); домен W4.20"
+    reason: "новая схема тега Forms (W4.05)."
+  - pointer: /components/schemas/FormRuleCreate
+    kind: add
+    source: "W4.05; forms.md §2.2, §2.5, §3; design/docs/20-forms.md; эталон «Формы и опросы.dc.html» (design-2026-10-19); домен W4.20"
+    reason: "новая схема тега Forms (W4.05)."
+  - pointer: /components/schemas/FormRuleEmail
+    kind: add
+    source: "W4.05; forms.md §2.2, §2.5, §3; design/docs/20-forms.md; эталон «Формы и опросы.dc.html» (design-2026-10-19); домен W4.20"
+    reason: "новая схема тега Forms (W4.05)."
+  - pointer: /components/schemas/FormRuleHttp
+    kind: add
+    source: "W4.05; forms.md §2.2, §2.5, §3; design/docs/20-forms.md; эталон «Формы и опросы.dc.html» (design-2026-10-19); домен W4.20"
+    reason: "новая схема тега Forms (W4.05)."
+  - pointer: /components/schemas/FormRuleKb
+    kind: add
+    source: "W4.05; forms.md §2.2, §2.5, §3; design/docs/20-forms.md; эталон «Формы и опросы.dc.html» (design-2026-10-19); домен W4.20"
+    reason: "новая схема тега Forms (W4.05)."
+  - pointer: /components/schemas/FormRuleKbField
+    kind: add
+    source: "W4.05; forms.md §2.2, §2.5, §3; design/docs/20-forms.md; эталон «Формы и опросы.dc.html» (design-2026-10-19); домен W4.20"
+    reason: "новая схема тега Forms (W4.05)."
+  - pointer: /components/schemas/FormRuleKbInput
+    kind: add
+    source: "W4.05; forms.md §2.2, §2.5, §3; design/docs/20-forms.md; эталон «Формы и опросы.dc.html» (design-2026-10-19); домен W4.20"
+    reason: "новая схема тега Forms (W4.05)."
+  - pointer: /components/schemas/FormRuleKind
+    kind: add
+    source: "W4.05; forms.md §2.2, §2.5, §3; design/docs/20-forms.md; эталон «Формы и опросы.dc.html» (design-2026-10-19); домен W4.20"
+    reason: "новая схема тега Forms (W4.05)."
+  - pointer: /components/schemas/FormRuleList
+    kind: add
+    source: "W4.05; forms.md §2.2, §2.5, §3; design/docs/20-forms.md; эталон «Формы и опросы.dc.html» (design-2026-10-19); домен W4.20"
+    reason: "новая схема тега Forms (W4.05)."
+  - pointer: /components/schemas/FormRuleNotify
+    kind: add
+    source: "W4.05; forms.md §2.2, §2.5, §3; design/docs/20-forms.md; эталон «Формы и опросы.dc.html» (design-2026-10-19); домен W4.20"
+    reason: "новая схема тега Forms (W4.05)."
+  - pointer: /components/schemas/FormRulePatch
+    kind: add
+    source: "W4.05; forms.md §2.2, §2.5, §3; design/docs/20-forms.md; эталон «Формы и опросы.dc.html» (design-2026-10-19); домен W4.20"
+    reason: "новая схема тега Forms (W4.05)."
+  - pointer: /components/schemas/FormRuleTask
+    kind: add
+    source: "W4.05; forms.md §2.2, §2.5, §3; design/docs/20-forms.md; эталон «Формы и опросы.dc.html» (design-2026-10-19); домен W4.20"
+    reason: "новая схема тега Forms (W4.05)."
+  - pointer: /components/schemas/FormRuleTrigger
+    kind: add
+    source: "W4.05; forms.md §2.2, §2.5, §3; design/docs/20-forms.md; эталон «Формы и опросы.dc.html» (design-2026-10-19); домен W4.20"
+    reason: "новая схема тега Forms (W4.05)."
+  - pointer: /components/schemas/FormSettings
+    kind: add
+    source: "W4.05; forms.md §2.2, §2.5, §3; design/docs/20-forms.md; эталон «Формы и опросы.dc.html» (design-2026-10-19); домен W4.20"
+    reason: "новая схема тега Forms (W4.05)."
+  - pointer: /components/schemas/FormSettingsPatch
+    kind: add
+    source: "W4.05; forms.md §2.2, §2.5, §3; design/docs/20-forms.md; эталон «Формы и опросы.dc.html» (design-2026-10-19); домен W4.20"
+    reason: "новая схема тега Forms (W4.05)."
+  - pointer: /components/schemas/FormShare
+    kind: add
+    source: "W4.05; forms.md §2.2, §2.5, §3; design/docs/20-forms.md; эталон «Формы и опросы.dc.html» (design-2026-10-19); домен W4.20"
+    reason: "новая схема тега Forms (W4.05)."
+  - pointer: /components/schemas/FormShowIf
+    kind: add
+    source: "W4.05; forms.md §2.2, §2.5, §3; design/docs/20-forms.md; эталон «Формы и опросы.dc.html» (design-2026-10-19); домен W4.20"
+    reason: "новая схема тега Forms (W4.05)."
+  - pointer: /components/schemas/FormShowIfCondition
+    kind: add
+    source: "W4.05; forms.md §2.2, §2.5, §3; design/docs/20-forms.md; эталон «Формы и опросы.dc.html» (design-2026-10-19); домен W4.20"
+    reason: "новая схема тега Forms (W4.05)."
+  - pointer: /components/schemas/FormTemplate
+    kind: add
+    source: "W4.05; forms.md §2.2, §2.5, §3; design/docs/20-forms.md; эталон «Формы и опросы.dc.html» (design-2026-10-19); домен W4.20"
+    reason: "новая схема тега Forms (W4.05)."
+  - pointer: /components/schemas/FormTemplateList
+    kind: add
+    source: "W4.05; forms.md §2.2, §2.5, §3; design/docs/20-forms.md; эталон «Формы и опросы.dc.html» (design-2026-10-19); домен W4.20"
+    reason: "новая схема тега Forms (W4.05)."
+  - pointer: /components/schemas/PublicFormPresentation
+    kind: add
+    source: "W4.05; forms.md §2.2, §2.5, §3; design/docs/20-forms.md; эталон «Формы и опросы.dc.html» (design-2026-10-19); домен W4.20"
+    reason: "новая схема тега Forms (W4.05)."

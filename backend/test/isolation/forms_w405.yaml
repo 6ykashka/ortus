@@ -1,0 +1,507 @@
+# Матрица изоляции: «Формы и опросы» контракта 0.11.0-stage4 (W4.05, контрактный PR 4 этапа 4) — до хендлеров W4.21
+# (тег Forms в cmd/api — 501 целиком; pending: 501 или совпавший ответ шлюза; в строгом режиме -tags isolation_pending —
+# красные до хендлера). Формы, черновики, версии, правила, ответы и группы — в области forms.* (форма — область формы:
+# организация или подразделение; ответы — ещё «своё» и связь с объектом, Q-W4.00-forms-9); чужая организация — 404
+# (AC-02), без сессии — 401. Строк forms.* в фикстурах нет: положительные строки — списки владельца без другого тенанта,
+# по id — «нет такого объекта» (tenant:missing) — 404 и владельцу. Ключ вопроса — не UUID: в пути — литерал q-who.
+# Команды с If-Match строки не передают If-Match (README, «Цель набора»): у них отказы до предусловия — без сессии 401,
+# чужая организация 404. Отказы шлюза (403) — forms_w405_gate.yaml. W4.21 с фикстурами forms.* тенанта B дописывает
+# строки «id формы, версии, правила, ответа, группы организации B в пути организации A → 404» и «чужой id в теле»
+# (sourceFormId, groupId, versionId, nodeId и tableId правила «в БЗ», projectId и assigneeMemberId правила «задача»).
+# Формат — README.md.
+# После правки: go -C backend generate ./test/isolation
+module: forms_w405
+endpoints:
+  - op: listForms
+    method: GET
+    path: /api/v1/tenants/{tenantId}/forms
+    pending: W4.21
+    rows:
+      - actor: a.owner
+        params: { tenantId: tenant:a }
+        status: 200
+        absent: [tenant:b]
+        note: список своей организации; объектов тенанта B нет
+      - actor: b.owner
+        params: { tenantId: tenant:a }
+        status: 404
+        absent: [tenant:a]
+        note: чужая организация — как несуществующая (AC-02)
+      - actor: anonymous
+        params: { tenantId: tenant:a }
+        status: 401
+  - op: createForm
+    method: POST
+    path: /api/v1/tenants/{tenantId}/forms
+    pending: W4.21
+    rows:
+      - actor: b.owner
+        params: { tenantId: tenant:a }
+        status: 404
+        absent: [tenant:a]
+        body: '{"name":"Анкета клиента","orgUnitId":null,"templateId":"blank"}'
+        note: чужая организация — как несуществующая (AC-02)
+      - actor: anonymous
+        params: { tenantId: tenant:a }
+        status: 401
+        body: '{"name":"Анкета клиента","orgUnitId":null,"templateId":"blank"}'
+  - op: getForm
+    method: GET
+    path: /api/v1/tenants/{tenantId}/forms/{formId}
+    pending: W4.21
+    rows:
+      - actor: a.owner
+        params: { tenantId: tenant:a, formId: tenant:missing }
+        status: 404
+        absent: [tenant:b]
+        note: объекта нет в организации — 404 и владельцу
+      - actor: b.owner
+        params: { tenantId: tenant:a, formId: tenant:missing }
+        status: 404
+        absent: [tenant:a]
+        note: чужая организация — как несуществующая (AC-02)
+      - actor: anonymous
+        params: { tenantId: tenant:a, formId: tenant:missing }
+        status: 401
+  - op: updateForm
+    method: PATCH
+    path: /api/v1/tenants/{tenantId}/forms/{formId}
+    pending: W4.21
+    rows:
+      - actor: b.owner
+        params: { tenantId: tenant:a, formId: tenant:missing }
+        status: 404
+        absent: [tenant:a]
+        body: '{"name":"Осмотр машины"}'
+        note: чужая организация — как несуществующая (AC-02)
+      - actor: anonymous
+        params: { tenantId: tenant:a, formId: tenant:missing }
+        status: 401
+        body: '{"name":"Осмотр машины"}'
+  - op: listFormVersions
+    method: GET
+    path: /api/v1/tenants/{tenantId}/forms/{formId}/versions
+    pending: W4.21
+    rows:
+      - actor: a.owner
+        params: { tenantId: tenant:a, formId: tenant:missing }
+        status: 404
+        absent: [tenant:b]
+        note: объекта нет в организации — 404 и владельцу
+      - actor: b.owner
+        params: { tenantId: tenant:a, formId: tenant:missing }
+        status: 404
+        absent: [tenant:a]
+        note: чужая организация — как несуществующая (AC-02)
+      - actor: anonymous
+        params: { tenantId: tenant:a, formId: tenant:missing }
+        status: 401
+  # Устаревшие операции 0.1 (Q-W4.05-3, возврат 1) маршрутизируются: своя организация — 409 form_draft_flow (W4.21),
+  # чужая организация — 404, без сессии — 401.
+  - op: createFormVersion
+    method: POST
+    path: /api/v1/tenants/{tenantId}/forms/{formId}/versions
+    pending: W4.21
+    rows:
+      - actor: b.owner
+        params: { tenantId: tenant:a, formId: tenant:missing }
+        status: 404
+        absent: [tenant:a]
+        body: '{"baseVersionId":"{{tenant:missing}}","definition":{"title":"Осмотр машины"}}'
+        note: чужая организация — как несуществующая (AC-02)
+      - actor: anonymous
+        params: { tenantId: tenant:a, formId: tenant:missing }
+        status: 401
+        body: '{"baseVersionId":"{{tenant:missing}}","definition":{"title":"Осмотр машины"}}'
+  - op: publishFormVersion
+    method: POST
+    path: /api/v1/tenants/{tenantId}/forms/{formId}/versions/{versionId}/publish
+    pending: W4.21
+    rows:
+      - actor: b.owner
+        params: { tenantId: tenant:a, formId: tenant:missing, versionId: tenant:missing }
+        status: 404
+        absent: [tenant:a]
+        body: '{"access":"members","allowFileUploads":false,"retainResponsesDays":365}'
+        note: чужая организация — как несуществующая (AC-02)
+      - actor: anonymous
+        params: { tenantId: tenant:a, formId: tenant:missing, versionId: tenant:missing }
+        status: 401
+        body: '{"access":"members","allowFileUploads":false,"retainResponsesDays":365}'
+  - op: getFormDraft
+    method: GET
+    path: /api/v1/tenants/{tenantId}/forms/{formId}/draft
+    pending: W4.21
+    rows:
+      - actor: a.owner
+        params: { tenantId: tenant:a, formId: tenant:missing }
+        status: 404
+        absent: [tenant:b]
+        note: объекта нет в организации — 404 и владельцу
+      - actor: b.owner
+        params: { tenantId: tenant:a, formId: tenant:missing }
+        status: 404
+        absent: [tenant:a]
+        note: чужая организация — как несуществующая (AC-02)
+      - actor: anonymous
+        params: { tenantId: tenant:a, formId: tenant:missing }
+        status: 401
+  - op: saveFormDraft
+    method: PUT
+    path: /api/v1/tenants/{tenantId}/forms/{formId}/draft
+    pending: W4.21
+    rows:
+      - actor: b.owner
+        params: { tenantId: tenant:a, formId: tenant:missing }
+        status: 404
+        absent: [tenant:a]
+        body: '{"definition":{"pages":[{"id":"p1","title":"Страница 1"}],"fields":[]}}'
+        note: чужая организация — как несуществующая (AC-02)
+      - actor: anonymous
+        params: { tenantId: tenant:a, formId: tenant:missing }
+        status: 401
+        body: '{"definition":{"pages":[{"id":"p1","title":"Страница 1"}],"fields":[]}}'
+  - op: discardFormDraft
+    method: DELETE
+    path: /api/v1/tenants/{tenantId}/forms/{formId}/draft
+    pending: W4.21
+    rows:
+      - actor: b.owner
+        params: { tenantId: tenant:a, formId: tenant:missing }
+        status: 404
+        absent: [tenant:a]
+        note: чужая организация — как несуществующая (AC-02)
+      - actor: anonymous
+        params: { tenantId: tenant:a, formId: tenant:missing }
+        status: 401
+  - op: publishForm
+    method: POST
+    path: /api/v1/tenants/{tenantId}/forms/{formId}/publish
+    pending: W4.21
+    rows:
+      - actor: b.owner
+        params: { tenantId: tenant:a, formId: tenant:missing }
+        status: 404
+        absent: [tenant:a]
+        body: '{"draftRevision":1}'
+        note: чужая организация — как несуществующая (AC-02)
+      - actor: anonymous
+        params: { tenantId: tenant:a, formId: tenant:missing }
+        status: 401
+        body: '{"draftRevision":1}'
+  - op: listFormRules
+    method: GET
+    path: /api/v1/tenants/{tenantId}/forms/{formId}/rules
+    pending: W4.21
+    rows:
+      - actor: a.owner
+        params: { tenantId: tenant:a, formId: tenant:missing }
+        status: 404
+        absent: [tenant:b]
+        note: объекта нет в организации — 404 и владельцу
+      - actor: b.owner
+        params: { tenantId: tenant:a, formId: tenant:missing }
+        status: 404
+        absent: [tenant:a]
+        note: чужая организация — как несуществующая (AC-02)
+      - actor: anonymous
+        params: { tenantId: tenant:a, formId: tenant:missing }
+        status: 401
+  - op: createFormRule
+    method: POST
+    path: /api/v1/tenants/{tenantId}/forms/{formId}/rules
+    pending: W4.21
+    rows:
+      - actor: a.owner
+        params: { tenantId: tenant:a, formId: tenant:missing }
+        status: 404
+        absent: [tenant:b]
+        body: '{"kind":"notify","trigger":"submitted","notify":{"memberId":"{{tenant:missing}}"}}'
+        note: объекта нет в организации — 404 и владельцу
+      - actor: b.owner
+        params: { tenantId: tenant:a, formId: tenant:missing }
+        status: 404
+        absent: [tenant:a]
+        body: '{"kind":"notify","trigger":"submitted","notify":{"memberId":"{{tenant:missing}}"}}'
+        note: чужая организация — как несуществующая (AC-02)
+      - actor: anonymous
+        params: { tenantId: tenant:a, formId: tenant:missing }
+        status: 401
+        body: '{"kind":"notify","trigger":"submitted","notify":{"memberId":"{{tenant:missing}}"}}'
+  - op: updateFormRule
+    method: PATCH
+    path: /api/v1/tenants/{tenantId}/forms/{formId}/rules/{ruleId}
+    pending: W4.21
+    rows:
+      - actor: b.owner
+        params: { tenantId: tenant:a, formId: tenant:missing, ruleId: tenant:missing }
+        status: 404
+        absent: [tenant:a]
+        body: '{"enabled":false}'
+        note: чужая организация — как несуществующая (AC-02)
+      - actor: anonymous
+        params: { tenantId: tenant:a, formId: tenant:missing, ruleId: tenant:missing }
+        status: 401
+        body: '{"enabled":false}'
+  - op: deleteFormRule
+    method: DELETE
+    path: /api/v1/tenants/{tenantId}/forms/{formId}/rules/{ruleId}
+    pending: W4.21
+    rows:
+      - actor: b.owner
+        params: { tenantId: tenant:a, formId: tenant:missing, ruleId: tenant:missing }
+        status: 404
+        absent: [tenant:a]
+        note: чужая организация — как несуществующая (AC-02)
+      - actor: anonymous
+        params: { tenantId: tenant:a, formId: tenant:missing, ruleId: tenant:missing }
+        status: 401
+  - op: backfillFormRule
+    method: POST
+    path: /api/v1/tenants/{tenantId}/forms/{formId}/rules/{ruleId}/backfill
+    pending: W4.21
+    rows:
+      - actor: a.owner
+        params: { tenantId: tenant:a, formId: tenant:missing, ruleId: tenant:missing }
+        status: 404
+        absent: [tenant:b]
+        note: объекта нет в организации — 404 и владельцу
+      - actor: b.owner
+        params: { tenantId: tenant:a, formId: tenant:missing, ruleId: tenant:missing }
+        status: 404
+        absent: [tenant:a]
+        note: чужая организация — как несуществующая (AC-02)
+      - actor: anonymous
+        params: { tenantId: tenant:a, formId: tenant:missing, ruleId: tenant:missing }
+        status: 401
+  - op: listFormResponses
+    method: GET
+    path: /api/v1/tenants/{tenantId}/forms/{formId}/responses
+    pending: W4.21
+    rows:
+      - actor: a.owner
+        params: { tenantId: tenant:a, formId: tenant:missing }
+        status: 404
+        absent: [tenant:b]
+        note: объекта нет в организации — 404 и владельцу
+      - actor: b.owner
+        params: { tenantId: tenant:a, formId: tenant:missing }
+        status: 404
+        absent: [tenant:a]
+        note: чужая организация — как несуществующая (AC-02)
+      - actor: anonymous
+        params: { tenantId: tenant:a, formId: tenant:missing }
+        status: 401
+  - op: submitFormResponse
+    method: POST
+    path: /api/v1/tenants/{tenantId}/forms/{formId}/responses
+    pending: W4.21
+    rows:
+      - actor: a.owner
+        params: { tenantId: tenant:a, formId: tenant:missing }
+        status: 404
+        absent: [tenant:b]
+        body: '{"versionId":"{{tenant:missing}}","answers":[]}'
+        note: объекта нет в организации — 404 и владельцу
+      - actor: b.owner
+        params: { tenantId: tenant:a, formId: tenant:missing }
+        status: 404
+        absent: [tenant:a]
+        body: '{"versionId":"{{tenant:missing}}","answers":[]}'
+        note: чужая организация — как несуществующая (AC-02)
+      - actor: anonymous
+        params: { tenantId: tenant:a, formId: tenant:missing }
+        status: 401
+        body: '{"versionId":"{{tenant:missing}}","answers":[]}'
+  - op: getFormResponse
+    method: GET
+    path: /api/v1/tenants/{tenantId}/forms/{formId}/responses/{responseId}
+    pending: W4.21
+    rows:
+      - actor: a.owner
+        params: { tenantId: tenant:a, formId: tenant:missing, responseId: tenant:missing }
+        status: 404
+        absent: [tenant:b]
+        note: объекта нет в организации — 404 и владельцу
+      - actor: b.owner
+        params: { tenantId: tenant:a, formId: tenant:missing, responseId: tenant:missing }
+        status: 404
+        absent: [tenant:a]
+        note: чужая организация — как несуществующая (AC-02)
+      - actor: anonymous
+        params: { tenantId: tenant:a, formId: tenant:missing, responseId: tenant:missing }
+        status: 401
+  - op: reviewFormResponse
+    method: PATCH
+    path: /api/v1/tenants/{tenantId}/forms/{formId}/responses/{responseId}
+    pending: W4.21
+    rows:
+      - actor: b.owner
+        params: { tenantId: tenant:a, formId: tenant:missing, responseId: tenant:missing }
+        status: 404
+        absent: [tenant:a]
+        body: '{"reviewStatus":"accepted"}'
+        note: чужая организация — как несуществующая (AC-02)
+      - actor: anonymous
+        params: { tenantId: tenant:a, formId: tenant:missing, responseId: tenant:missing }
+        status: 401
+        body: '{"reviewStatus":"accepted"}'
+  - op: retryFormResponseAction
+    method: POST
+    path: /api/v1/tenants/{tenantId}/forms/{formId}/responses/{responseId}/actions/{ruleId}/retry
+    pending: W4.21
+    rows:
+      - actor: a.owner
+        params:
+          {
+            tenantId: tenant:a,
+            formId: tenant:missing,
+            responseId: tenant:missing,
+            ruleId: tenant:missing,
+          }
+        status: 404
+        absent: [tenant:b]
+        note: объекта нет в организации — 404 и владельцу
+      - actor: b.owner
+        params:
+          {
+            tenantId: tenant:a,
+            formId: tenant:missing,
+            responseId: tenant:missing,
+            ruleId: tenant:missing,
+          }
+        status: 404
+        absent: [tenant:a]
+        note: чужая организация — как несуществующая (AC-02)
+      - actor: anonymous
+        params:
+          {
+            tenantId: tenant:a,
+            formId: tenant:missing,
+            responseId: tenant:missing,
+            ruleId: tenant:missing,
+          }
+        status: 401
+  - op: getFormResponseSummary
+    method: GET
+    path: /api/v1/tenants/{tenantId}/forms/{formId}/summary
+    pending: W4.21
+    rows:
+      - actor: a.owner
+        params: { tenantId: tenant:a, formId: tenant:missing }
+        status: 404
+        absent: [tenant:b]
+        note: объекта нет в организации — 404 и владельцу
+      - actor: b.owner
+        params: { tenantId: tenant:a, formId: tenant:missing }
+        status: 404
+        absent: [tenant:a]
+        note: чужая организация — как несуществующая (AC-02)
+      - actor: anonymous
+        params: { tenantId: tenant:a, formId: tenant:missing }
+        status: 401
+  - op: exportFormResponses
+    method: GET
+    path: /api/v1/tenants/{tenantId}/forms/{formId}/export
+    pending: W4.21
+    rows:
+      - actor: a.owner
+        params: { tenantId: tenant:a, formId: tenant:missing }
+        status: 404
+        absent: [tenant:b]
+        note: объекта нет в организации — 404 и владельцу
+      - actor: b.owner
+        params: { tenantId: tenant:a, formId: tenant:missing }
+        status: 404
+        absent: [tenant:a]
+        note: чужая организация — как несуществующая (AC-02)
+      - actor: anonymous
+        params: { tenantId: tenant:a, formId: tenant:missing }
+        status: 401
+  - op: listFormFieldOptions
+    method: GET
+    path: /api/v1/tenants/{tenantId}/forms/{formId}/fields/q-who/options
+    pending: W4.21
+    rows:
+      - actor: a.owner
+        params: { tenantId: tenant:a, formId: tenant:missing }
+        status: 404
+        absent: [tenant:b]
+        note: объекта нет в организации — 404 и владельцу
+      - actor: b.owner
+        params: { tenantId: tenant:a, formId: tenant:missing }
+        status: 404
+        absent: [tenant:a]
+        note: чужая организация — как несуществующая (AC-02)
+      - actor: anonymous
+        params: { tenantId: tenant:a, formId: tenant:missing }
+        status: 401
+  - op: listFormTemplates
+    method: GET
+    path: /api/v1/tenants/{tenantId}/form-templates
+    pending: W4.21
+    rows:
+      - actor: a.owner
+        params: { tenantId: tenant:a }
+        status: 200
+        absent: [tenant:b]
+        note: список своей организации; объектов тенанта B нет
+      - actor: b.owner
+        params: { tenantId: tenant:a }
+        status: 404
+        absent: [tenant:a]
+        note: чужая организация — как несуществующая (AC-02)
+      - actor: anonymous
+        params: { tenantId: tenant:a }
+        status: 401
+  - op: listFormGroups
+    method: GET
+    path: /api/v1/tenants/{tenantId}/form-groups
+    pending: W4.21
+    rows:
+      - actor: a.owner
+        params: { tenantId: tenant:a }
+        status: 200
+        absent: [tenant:b]
+        note: список своей организации; объектов тенанта B нет
+      - actor: b.owner
+        params: { tenantId: tenant:a }
+        status: 404
+        absent: [tenant:a]
+        note: чужая организация — как несуществующая (AC-02)
+      - actor: anonymous
+        params: { tenantId: tenant:a }
+        status: 401
+  - op: createFormGroup
+    method: POST
+    path: /api/v1/tenants/{tenantId}/form-groups
+    pending: W4.21
+    rows:
+      - actor: b.owner
+        params: { tenantId: tenant:a }
+        status: 404
+        absent: [tenant:a]
+        body: '{"name":"Опросы клиентов"}'
+        note: чужая организация — как несуществующая (AC-02)
+      - actor: anonymous
+        params: { tenantId: tenant:a }
+        status: 401
+        body: '{"name":"Опросы клиентов"}'
+  - op: deleteFormGroup
+    method: DELETE
+    path: /api/v1/tenants/{tenantId}/form-groups/{groupId}
+    pending: W4.21
+    rows:
+      - actor: a.owner
+        params: { tenantId: tenant:a, groupId: tenant:missing }
+        status: 404
+        absent: [tenant:b]
+        note: объекта нет в организации — 404 и владельцу
+      - actor: b.owner
+        params: { tenantId: tenant:a, groupId: tenant:missing }
+        status: 404
+        absent: [tenant:a]
+        note: чужая организация — как несуществующая (AC-02)
+      - actor: anonymous
+        params: { tenantId: tenant:a, groupId: tenant:missing }
+        status: 401

@@ -1,0 +1,80 @@
+{
+  "id": "9c64b00c-9706-549f-b788-8456dd9c35ea",
+  "formId": "3a5f4ca2-f3bf-5b37-819f-a9511aee0211",
+  "versionId": "977e10e3-a208-5061-9c01-ec51c56e7ce4",
+  "submittedAt": "2026-09-27T06:05:00Z",
+  "answers": [
+    {
+      "fieldKey": "q-photos",
+      "value": {
+        "type": "text",
+        "value": "5 фото"
+      }
+    },
+    {
+      "fieldKey": "q-odo",
+      "value": {
+        "type": "decimal",
+        "value": "84210"
+      }
+    },
+    {
+      "fieldKey": "q-fuel",
+      "value": {
+        "type": "choices",
+        "value": ["o3"]
+      }
+    },
+    {
+      "fieldKey": "q-checks",
+      "value": {
+        "type": "choices",
+        "value": ["o1", "o2", "o3"]
+      }
+    },
+    {
+      "fieldKey": "q-defect",
+      "value": {
+        "type": "boolean",
+        "value": false
+      }
+    }
+  ],
+  "reviewStatus": "rejected",
+  "revision": 2,
+  "number": "R-1012",
+  "versionNumber": 3,
+  "author": {
+    "memberId": "a560b4fe-78b7-585e-b960-f0ab3622570c",
+    "displayName": "Илья Васильев"
+  },
+  "channel": "inspection",
+  "my": {
+    "review": true,
+    "assign": false
+  },
+  "actions": [
+    {
+      "ruleId": "a249c9f4-6e6e-561d-bdc8-40bca93f0500",
+      "ruleVersion": 1,
+      "kind": "kb",
+      "ok": true,
+      "at": "2026-09-27T06:12:00Z",
+      "retryable": false,
+      "text": "Строка в таблице «Осмотры» · страница «Журнал осмотров машин»",
+      "node": {
+        "id": "babd503a-697f-595f-83f8-6501710d0803",
+        "title": "Журнал осмотров машин"
+      }
+    }
+  ],
+  "subject": {
+    "ref": {
+      "moduleKey": "fleet",
+      "entityType": "trip",
+      "entityId": "25c43989-32f2-5c05-b707-7dc1cbcaa6b4"
+    },
+    "label": "Рейс Р-196"
+  },
+  "reviewComment": "Нет фото одометра"
+}

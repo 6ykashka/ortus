@@ -26,7 +26,7 @@ openapi: 3.1.0
 jsonSchemaDialect: https://json-schema.org/draft/2020-12/schema
 info:
   title: ORTUS CRM Constructor — Design API
-  version: 0.10.0-stage4
+  version: 0.11.0-stage4
   summary: Reviewable starting contract for a tenant-isolated modular CRM on Go; not an implemented or exhaustive API.
   description: |-
     Design snapshot, 2026-10-01. A tenant is one business holding; regions/companies/branches are scoped organization units within it. Platform administration is a separate control plane and never implies business-data access.
@@ -494,6 +494,30 @@ paths:
     $ref: paths/tasks.yaml#/~1api~1v1~1tenants~1%7BtenantId%7D~1tasks~1%7BtaskId%7D~1comments
   /api/v1/tenants/{tenantId}/tasks/{taskId}/history:
     $ref: paths/tasks.yaml#/~1api~1v1~1tenants~1%7BtenantId%7D~1tasks~1%7BtaskId%7D~1history
+  /api/v1/tenants/{tenantId}/forms/{formId}/draft:
+    $ref: paths/forms.yaml#/~1api~1v1~1tenants~1%7BtenantId%7D~1forms~1%7BformId%7D~1draft
+  /api/v1/tenants/{tenantId}/forms/{formId}/publish:
+    $ref: paths/forms.yaml#/~1api~1v1~1tenants~1%7BtenantId%7D~1forms~1%7BformId%7D~1publish
+  /api/v1/tenants/{tenantId}/forms/{formId}/rules:
+    $ref: paths/forms.yaml#/~1api~1v1~1tenants~1%7BtenantId%7D~1forms~1%7BformId%7D~1rules
+  /api/v1/tenants/{tenantId}/forms/{formId}/rules/{ruleId}:
+    $ref: paths/forms.yaml#/~1api~1v1~1tenants~1%7BtenantId%7D~1forms~1%7BformId%7D~1rules~1%7BruleId%7D
+  /api/v1/tenants/{tenantId}/forms/{formId}/rules/{ruleId}/backfill:
+    $ref: paths/forms.yaml#/~1api~1v1~1tenants~1%7BtenantId%7D~1forms~1%7BformId%7D~1rules~1%7BruleId%7D~1backfill
+  /api/v1/tenants/{tenantId}/forms/{formId}/responses/{responseId}/actions/{ruleId}/retry:
+    $ref: paths/forms.yaml#/~1api~1v1~1tenants~1%7BtenantId%7D~1forms~1%7BformId%7D~1responses~1%7BresponseId%7D~1actions~1%7BruleId%7D~1retry
+  /api/v1/tenants/{tenantId}/forms/{formId}/summary:
+    $ref: paths/forms.yaml#/~1api~1v1~1tenants~1%7BtenantId%7D~1forms~1%7BformId%7D~1summary
+  /api/v1/tenants/{tenantId}/forms/{formId}/export:
+    $ref: paths/forms.yaml#/~1api~1v1~1tenants~1%7BtenantId%7D~1forms~1%7BformId%7D~1export
+  /api/v1/tenants/{tenantId}/forms/{formId}/fields/{fieldKey}/options:
+    $ref: paths/forms.yaml#/~1api~1v1~1tenants~1%7BtenantId%7D~1forms~1%7BformId%7D~1fields~1%7BfieldKey%7D~1options
+  /api/v1/tenants/{tenantId}/form-templates:
+    $ref: paths/forms.yaml#/~1api~1v1~1tenants~1%7BtenantId%7D~1form-templates
+  /api/v1/tenants/{tenantId}/form-groups:
+    $ref: paths/forms.yaml#/~1api~1v1~1tenants~1%7BtenantId%7D~1form-groups
+  /api/v1/tenants/{tenantId}/form-groups/{groupId}:
+    $ref: paths/forms.yaml#/~1api~1v1~1tenants~1%7BtenantId%7D~1form-groups~1%7BgroupId%7D
 x-contract-status: design-proposal-not-implemented
 x-authorization-order:
   - authenticate

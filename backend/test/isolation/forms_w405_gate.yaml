@@ -1,0 +1,284 @@
+# Матрица изоляции: отказы шлюза «Форм и опросов» (W4.05, контракт 0.11.0-stage4) — без pending. Шлюз cmd/api пускает
+# операцию, только если у актора есть грант с действием x-permissions, вид области которого допускает x-scope операции.
+# У ролей фикстур нет ни одного действия core.forms: «Менеджер логистики» (a.manager-msk1) и «Водитель» (a.driver-msk1)
+# получают 403 до хендлера и после него. reviewFormResponse — x-permissions пуст (права по полям, x-field-permissions):
+# отказ даёт хендлер, строки — в forms_w405.yaml. Команды с If-Match получают 403 шлюза раньше предусловия; id объектов —
+# tenant:missing. Формат — README.md.
+# После правки: go -C backend generate ./test/isolation
+module: forms_w405_gate
+endpoints:
+  - op: listForms
+    method: GET
+    path: /api/v1/tenants/{tenantId}/forms
+    rows:
+      - actor: a.manager-msk1
+        params: { tenantId: tenant:a }
+        status: 403
+        code: forbidden_action
+        note: у «Менеджера логистики» фикстур нет действий core.forms — 403 шлюза
+      - actor: a.driver-msk1
+        params: { tenantId: tenant:a }
+        status: 403
+        code: forbidden_action
+        note: у водителя нет действий core.forms (отвечает через осмотр рейса) — 403 шлюза
+  - op: createForm
+    method: POST
+    path: /api/v1/tenants/{tenantId}/forms
+    rows:
+      - actor: a.manager-msk1
+        params: { tenantId: tenant:a }
+        status: 403
+        code: forbidden_action
+        body: '{"name":"Анкета клиента","orgUnitId":null,"templateId":"blank"}'
+        note: у «Менеджера логистики» фикстур нет действий core.forms — 403 шлюза
+  - op: getForm
+    method: GET
+    path: /api/v1/tenants/{tenantId}/forms/{formId}
+    rows:
+      - actor: a.manager-msk1
+        params: { tenantId: tenant:a, formId: tenant:missing }
+        status: 403
+        code: forbidden_action
+        note: у «Менеджера логистики» фикстур нет действий core.forms — 403 шлюза
+  - op: updateForm
+    method: PATCH
+    path: /api/v1/tenants/{tenantId}/forms/{formId}
+    rows:
+      - actor: a.manager-msk1
+        params: { tenantId: tenant:a, formId: tenant:missing }
+        status: 403
+        code: forbidden_action
+        body: '{"name":"Осмотр машины"}'
+        note: у «Менеджера логистики» фикстур нет действий core.forms — 403 шлюза
+  - op: listFormVersions
+    method: GET
+    path: /api/v1/tenants/{tenantId}/forms/{formId}/versions
+    rows:
+      - actor: a.manager-msk1
+        params: { tenantId: tenant:a, formId: tenant:missing }
+        status: 403
+        code: forbidden_action
+        note: у «Менеджера логистики» фикстур нет действий core.forms — 403 шлюза
+  - op: getFormDraft
+    method: GET
+    path: /api/v1/tenants/{tenantId}/forms/{formId}/draft
+    rows:
+      - actor: a.manager-msk1
+        params: { tenantId: tenant:a, formId: tenant:missing }
+        status: 403
+        code: forbidden_action
+        note: у «Менеджера логистики» фикстур нет действий core.forms — 403 шлюза
+  - op: saveFormDraft
+    method: PUT
+    path: /api/v1/tenants/{tenantId}/forms/{formId}/draft
+    rows:
+      - actor: a.manager-msk1
+        params: { tenantId: tenant:a, formId: tenant:missing }
+        status: 403
+        code: forbidden_action
+        body: '{"definition":{"pages":[{"id":"p1","title":"Страница 1"}],"fields":[]}}'
+        note: у «Менеджера логистики» фикстур нет действий core.forms — 403 шлюза
+  - op: discardFormDraft
+    method: DELETE
+    path: /api/v1/tenants/{tenantId}/forms/{formId}/draft
+    rows:
+      - actor: a.manager-msk1
+        params: { tenantId: tenant:a, formId: tenant:missing }
+        status: 403
+        code: forbidden_action
+        note: у «Менеджера логистики» фикстур нет действий core.forms — 403 шлюза
+  - op: createFormVersion
+    method: POST
+    path: /api/v1/tenants/{tenantId}/forms/{formId}/versions
+    rows:
+      - actor: a.manager-msk1
+        params: { tenantId: tenant:a, formId: tenant:missing }
+        status: 403
+        code: forbidden_action
+        body: '{"baseVersionId":"{{tenant:missing}}","definition":{"title":"Осмотр машины"}}'
+        note: устаревшая операция (Q-W4.05-3) — тот же шлюз forms.manage, 403 до хендлера
+  - op: publishFormVersion
+    method: POST
+    path: /api/v1/tenants/{tenantId}/forms/{formId}/versions/{versionId}/publish
+    rows:
+      - actor: a.manager-msk1
+        params: { tenantId: tenant:a, formId: tenant:missing, versionId: tenant:missing }
+        status: 403
+        code: forbidden_action
+        body: '{"access":"members","allowFileUploads":false,"retainResponsesDays":365}'
+        note: устаревшая операция (Q-W4.05-3) — тот же шлюз forms.publish, 403 до хендлера
+  - op: publishForm
+    method: POST
+    path: /api/v1/tenants/{tenantId}/forms/{formId}/publish
+    rows:
+      - actor: a.manager-msk1
+        params: { tenantId: tenant:a, formId: tenant:missing }
+        status: 403
+        code: forbidden_action
+        body: '{"draftRevision":1}'
+        note: у «Менеджера логистики» фикстур нет действий core.forms — 403 шлюза
+  - op: listFormRules
+    method: GET
+    path: /api/v1/tenants/{tenantId}/forms/{formId}/rules
+    rows:
+      - actor: a.manager-msk1
+        params: { tenantId: tenant:a, formId: tenant:missing }
+        status: 403
+        code: forbidden_action
+        note: у «Менеджера логистики» фикстур нет действий core.forms — 403 шлюза
+  - op: createFormRule
+    method: POST
+    path: /api/v1/tenants/{tenantId}/forms/{formId}/rules
+    rows:
+      - actor: a.manager-msk1
+        params: { tenantId: tenant:a, formId: tenant:missing }
+        status: 403
+        code: forbidden_action
+        body: '{"kind":"notify","trigger":"submitted","notify":{"memberId":"{{tenant:missing}}"}}'
+        note: у «Менеджера логистики» фикстур нет действий core.forms — 403 шлюза
+  - op: updateFormRule
+    method: PATCH
+    path: /api/v1/tenants/{tenantId}/forms/{formId}/rules/{ruleId}
+    rows:
+      - actor: a.manager-msk1
+        params: { tenantId: tenant:a, formId: tenant:missing, ruleId: tenant:missing }
+        status: 403
+        code: forbidden_action
+        body: '{"enabled":false}'
+        note: у «Менеджера логистики» фикстур нет действий core.forms — 403 шлюза
+  - op: deleteFormRule
+    method: DELETE
+    path: /api/v1/tenants/{tenantId}/forms/{formId}/rules/{ruleId}
+    rows:
+      - actor: a.manager-msk1
+        params: { tenantId: tenant:a, formId: tenant:missing, ruleId: tenant:missing }
+        status: 403
+        code: forbidden_action
+        note: у «Менеджера логистики» фикстур нет действий core.forms — 403 шлюза
+  - op: backfillFormRule
+    method: POST
+    path: /api/v1/tenants/{tenantId}/forms/{formId}/rules/{ruleId}/backfill
+    rows:
+      - actor: a.manager-msk1
+        params: { tenantId: tenant:a, formId: tenant:missing, ruleId: tenant:missing }
+        status: 403
+        code: forbidden_action
+        note: у «Менеджера логистики» фикстур нет действий core.forms — 403 шлюза
+  - op: listFormResponses
+    method: GET
+    path: /api/v1/tenants/{tenantId}/forms/{formId}/responses
+    rows:
+      - actor: a.manager-msk1
+        params: { tenantId: tenant:a, formId: tenant:missing }
+        status: 403
+        code: forbidden_action
+        note: у «Менеджера логистики» фикстур нет действий core.forms — 403 шлюза
+      - actor: a.driver-msk1
+        params: { tenantId: tenant:a, formId: tenant:missing }
+        status: 403
+        code: forbidden_action
+        note: у водителя нет действий core.forms (отвечает через осмотр рейса) — 403 шлюза
+  - op: submitFormResponse
+    method: POST
+    path: /api/v1/tenants/{tenantId}/forms/{formId}/responses
+    rows:
+      - actor: a.manager-msk1
+        params: { tenantId: tenant:a, formId: tenant:missing }
+        status: 403
+        code: forbidden_action
+        body: '{"versionId":"{{tenant:missing}}","answers":[]}'
+        note: у «Менеджера логистики» фикстур нет действий core.forms — 403 шлюза
+      - actor: a.driver-msk1
+        params: { tenantId: tenant:a, formId: tenant:missing }
+        status: 403
+        code: forbidden_action
+        body: '{"versionId":"{{tenant:missing}}","answers":[]}'
+        note: у водителя нет действий core.forms (отвечает через осмотр рейса) — 403 шлюза
+  - op: getFormResponse
+    method: GET
+    path: /api/v1/tenants/{tenantId}/forms/{formId}/responses/{responseId}
+    rows:
+      - actor: a.manager-msk1
+        params: { tenantId: tenant:a, formId: tenant:missing, responseId: tenant:missing }
+        status: 403
+        code: forbidden_action
+        note: у «Менеджера логистики» фикстур нет действий core.forms — 403 шлюза
+  - op: retryFormResponseAction
+    method: POST
+    path: /api/v1/tenants/{tenantId}/forms/{formId}/responses/{responseId}/actions/{ruleId}/retry
+    rows:
+      - actor: a.manager-msk1
+        params:
+          {
+            tenantId: tenant:a,
+            formId: tenant:missing,
+            responseId: tenant:missing,
+            ruleId: tenant:missing,
+          }
+        status: 403
+        code: forbidden_action
+        note: у «Менеджера логистики» фикстур нет действий core.forms — 403 шлюза
+  - op: getFormResponseSummary
+    method: GET
+    path: /api/v1/tenants/{tenantId}/forms/{formId}/summary
+    rows:
+      - actor: a.manager-msk1
+        params: { tenantId: tenant:a, formId: tenant:missing }
+        status: 403
+        code: forbidden_action
+        note: у «Менеджера логистики» фикстур нет действий core.forms — 403 шлюза
+  - op: exportFormResponses
+    method: GET
+    path: /api/v1/tenants/{tenantId}/forms/{formId}/export
+    rows:
+      - actor: a.manager-msk1
+        params: { tenantId: tenant:a, formId: tenant:missing }
+        status: 403
+        code: forbidden_action
+        note: у «Менеджера логистики» фикстур нет действий core.forms — 403 шлюза
+  - op: listFormFieldOptions
+    method: GET
+    path: /api/v1/tenants/{tenantId}/forms/{formId}/fields/q-who/options
+    rows:
+      - actor: a.manager-msk1
+        params: { tenantId: tenant:a, formId: tenant:missing }
+        status: 403
+        code: forbidden_action
+        note: у «Менеджера логистики» фикстур нет действий core.forms — 403 шлюза
+  - op: listFormTemplates
+    method: GET
+    path: /api/v1/tenants/{tenantId}/form-templates
+    rows:
+      - actor: a.manager-msk1
+        params: { tenantId: tenant:a }
+        status: 403
+        code: forbidden_action
+        note: у «Менеджера логистики» фикстур нет действий core.forms — 403 шлюза
+  - op: listFormGroups
+    method: GET
+    path: /api/v1/tenants/{tenantId}/form-groups
+    rows:
+      - actor: a.manager-msk1
+        params: { tenantId: tenant:a }
+        status: 403
+        code: forbidden_action
+        note: у «Менеджера логистики» фикстур нет действий core.forms — 403 шлюза
+  - op: createFormGroup
+    method: POST
+    path: /api/v1/tenants/{tenantId}/form-groups
+    rows:
+      - actor: a.manager-msk1
+        params: { tenantId: tenant:a }
+        status: 403
+        code: forbidden_action
+        body: '{"name":"Опросы клиентов"}'
+        note: у «Менеджера логистики» фикстур нет действий core.forms — 403 шлюза
+  - op: deleteFormGroup
+    method: DELETE
+    path: /api/v1/tenants/{tenantId}/form-groups/{groupId}
+    rows:
+      - actor: a.manager-msk1
+        params: { tenantId: tenant:a, groupId: tenant:missing }
+        status: 403
+        code: forbidden_action
+        note: у «Менеджера логистики» фикстур нет действий core.forms — 403 шлюза

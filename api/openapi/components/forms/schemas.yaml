@@ -1,12 +1,21 @@
 # Контракт Ортус · компоненты тега forms. Пишет только стюард контракта (план v2 §3.5).
+# W4.05 (0.11.0-stage4, контрактный PR 4 этапа 4): «Формы и опросы» — FormDefinition v2 (страницы, 21 тип вопроса,
+# условия «И / ИЛИ», скрытые вопросы, баллы), черновик на сервере, настройки у формы, FormPatch v2 (C п. 13), группы,
+# шаблоны, правила пяти видов («в БЗ» — схемы W4.04, «задача» — проект W4.03), ответы v2, сводка, CSV, варианты CRM.
+# Разбор docs/plan/v2/analysis/dor/forms.md §2; эталон «Формы и опросы.dc.html» (design-2026-10-19); домен W4.20.
 Form:
   type: object
   additionalProperties: false
+  description: "W4.05 (0.11.0-stage4). A form (forms.forms): the list «Формы и группы» and the header of the editor show it. A new form is a draft without versions (latestVersionId and publishedVersionId absent, status draft) until the first publishForm (D-24 комплекта); a published form accepts responses (status published) until «Закрыть приём ответов» (status closed). revision — the revision of the form itself (name, area, group, settings, status, publication), the ETag of getForm, updateForm and publishForm; the draft has its own revision (FormDraft.revision)."
   properties:
     id:
       $ref: ../common/schemas.yaml#/Id
     orgUnitId:
-      $ref: ../common/schemas.yaml#/Id
+      type:
+        - string
+        - "null"
+      format: uuid
+      description: W4.05 (0.11.0-stage4). The area of the form («Область формы») — an org unit (region or firm) whose roles with core.forms act on the form and its responses; null — the whole organization («Вся организация», Q-W4.00-forms-17).
     name:
       type: string
     status:
@@ -23,41 +32,139 @@ Form:
       type: integer
       minimum: 1
       format: int64
+    moduleKey:
+      type:
+        - string
+        - "null"
+      pattern: ^[a-z][a-z0-9_-]{1,49}$
+      description: W4.05 (0.11.0-stage4). The industry module of the form (prototype f.module, «{Модуль} · …» of the row; null — «Общая»). A form of a module that is not active does not accept responses (Q-W4.00-forms-16); it is read as usual.
+    templateId:
+      type:
+        - string
+        - "null"
+      pattern: ^[a-z][a-z0-9-]{1,49}$
+      description: W4.05 (0.11.0-stage4). The template the form was created from (FormTemplate.id); null — an empty form or a copy.
+    groupId:
+      type:
+        - string
+        - "null"
+      format: uuid
+      description: W4.05 (0.11.0-stage4). The group of the form («Формы и группы», FM-03 — groups of the organization); null — «Без группы».
+    owner:
+      $ref: ./schemas.yaml#/FormMemberRef
+    updatedAt:
+      $ref: ../common/schemas.yaml#/Instant
+    publishedVersionNumber:
+      type:
+        - integer
+        - "null"
+      minimum: 1
+      description: W4.05 (0.11.0-stage4). N of the acting version (chips «Принимает ответы · vN», «Приём закрыт · vN», button «Опубликовать v{N+1}»); null — never published.
+    versionCount:
+      type: integer
+      minimum: 0
+      description: W4.05 (0.11.0-stage4). «Версии (N)».
+    hasUnpublishedChanges:
+      type: boolean
+      description: W4.05 (0.11.0-stage4). The draft differs from the acting version («vN · есть изменения», «Действует vN · есть неопубликованные изменения»); a form never published — false (its chip is «Черновик»).
+    questionCount:
+      type: integer
+      minimum: 0
+      description: W4.05 (0.11.0-stage4). Questions of the draft (statements «Текст без вопроса» excluded) — «{N} стр. · {M} вопросов».
+    responseCount:
+      type: integer
+      minimum: 0
+      description: W4.05 (0.11.0-stage4). Responses the requesting member may read («N ответов», «Ответы · N»); 0 without forms.responses.read.
+    enabledRuleCount:
+      type: integer
+      minimum: 0
+      description: W4.05 (0.11.0-stage4). Enabled rules — the counter of the tab «Действия после ответа».
+    settings:
+      $ref: ./schemas.yaml#/FormSettings
+    share:
+      $ref: ./schemas.yaml#/FormShare
+    my:
+      $ref: ./schemas.yaml#/FormMy
   required:
     - id
     - orgUnitId
     - name
     - status
-    - latestVersionId
     - revision
+    - moduleKey
+    - templateId
+    - groupId
+    - owner
+    - updatedAt
+    - publishedVersionNumber
+    - versionCount
+    - hasUnpublishedChanges
+    - questionCount
+    - responseCount
+    - enabledRuleCount
+    - settings
+    - share
+    - my
 FormCreate:
   type: object
   additionalProperties: false
+  description: "W4.05 (0.11.0-stage4, prototype createForm, D-24 комплекта). Creates a draft without versions and rules: from a template (templateId — FormTemplate.id, «blank» — «Создать пустую форму»), as a copy of a form (sourceFormId — «Дублировать», «{имя} · копия»: the draft or the acting version of the source, its settings and group; rules are not copied) or from a ready definition (definition — e.g. the checklist of an inspection, W4.24). At most one of templateId, sourceFormId, definition; none — an empty form with one page «Страница 1»."
   properties:
     orgUnitId:
-      $ref: ../common/schemas.yaml#/Id
+      type:
+        - string
+        - "null"
+      format: uuid
+      description: W4.05 (0.11.0-stage4). The area of the form; null — the whole organization («Вся организация»).
     name:
       type: string
       minLength: 1
       maxLength: 200
+      description: "W4.05 (0.11.0-stage4). 3–200 characters, unique in the organization without regard to case (D-24 комплекта); the client offers «Новая форма» or the name of the template with the suffix « · 2» on a clash. W4.05 (return 3): minLength 1 stays from 0.1 — JSON Schema does not trim spaces, so the server checks the name trimmed, before the insert: shorter than 3 — 422 validation_failed on name «Укажите название формы — не короче 3 символов» (the check length(btrim(name)) of forms.forms is the last guard, never the answer)."
     definition:
-      $ref: ../common/schemas.yaml#/FormDefinition
+      $ref: ../common/schemas.yaml#/FormDefinitionV2
+    templateId:
+      type: string
+      pattern: ^[a-z][a-z0-9-]{1,49}$
+    sourceFormId:
+      $ref: ../common/schemas.yaml#/Id
+    groupId:
+      type:
+        - string
+        - "null"
+      format: uuid
+      description: W4.05 (0.11.0-stage4). The group of the new form; a copy keeps the group of the source when absent.
   required:
     - orgUnitId
     - name
-    - definition
 FormPatch:
   type: object
   additionalProperties: false
+  minProperties: 1
+  description: "W4.05 (0.11.0-stage4, C п. 13 — reworked, not extended). Changes of the form without a new version (design/docs/20-forms.md «Настройки … меняются без новой версии»): the name, the acceptance of responses (closed — «Закрыть приём ответов», open — «Возобновить приём ответов»; only a published form), the area, the group («Переместить в группу», null — «Без группы») and the settings (FormSettingsPatch — the changed fields only). The questions are changed in the draft (saveFormDraft) and published as a new immutable version (publishForm); PATCH never mutates versions or answers."
   properties:
     name:
       type: string
       minLength: 1
       maxLength: 200
+      description: "W4.05 (0.11.0-stage4, return 3). 3–200 characters, unique in the organization without regard to case. minLength 1 stays from 0.1 — JSON Schema does not trim spaces, so the server checks the name trimmed, before the insert: shorter than 3 — 422 validation_failed on name «Название формы — не короче 3 символов» (the check length(btrim(name)) of forms.forms is the last guard, never the answer)."
     status:
       type: string
-      const: closed
-  description: To change fields create a new immutable version; PATCH cannot mutate historical schemas or answers.
+      enum:
+        - open
+        - closed
+    orgUnitId:
+      type:
+        - string
+        - "null"
+      format: uuid
+    groupId:
+      type:
+        - string
+        - "null"
+      format: uuid
+    settings:
+      $ref: ./schemas.yaml#/FormSettingsPatch
 FormPage:
   type: object
   additionalProperties: false
@@ -88,15 +195,28 @@ FormVersion:
       minimum: 1
       format: int64
     definition:
-      $ref: ../common/schemas.yaml#/FormDefinition
+      $ref: ../common/schemas.yaml#/FormDefinitionV2
     createdAt:
       $ref: ../common/schemas.yaml#/Instant
+    createdBy:
+      $ref: ./schemas.yaml#/FormMemberRef
+    questionCount:
+      type: integer
+      minimum: 0
+      description: "W4.05 (0.11.0-stage4). «вопросов: N» of the tab «Версии»."
+    current:
+      type: boolean
+      description: W4.05 (0.11.0-stage4). The acting version — the chip «Действует».
   required:
     - id
     - formId
     - number
     - definition
     - createdAt
+    - createdBy
+    - questionCount
+    - current
+  description: "W4.05 (0.11.0-stage4). An immutable published version (forms.versions). A question whose type changed against the previous version gets a new key (prototype nextVersionFields: «{key}-v{N}»): answers of earlier versions keep the old key and value («Смена типа создаёт новое поле…»). Return 1: the new key is at most 64 characters (the pattern of FormQuestion.key) — the old key is cut so that «-v{N}» fits; a key taken by another question of the version gets «-v{N}-2», «-v{N}-3»…; conditions «Показывать при условии» of the same version follow the new key. Conditions «Только если» of rules and sources of «Сохранить в Базу знаний» keep the old key — they are not remapped (as the prototype): such a rule stops matching answers of the new version until it is edited."
 FormVersionPage:
   type: object
   additionalProperties: false
@@ -184,6 +304,7 @@ FormPublication:
 FormResponse:
   type: object
   additionalProperties: false
+  description: "W4.05 (0.11.0-stage4). A response (forms.responses), immutable after submission: answers by the structure of its version (versionNumber; the feed shows «показан по структуре версии vN (действует vM)»). Answers — FieldEntry by FormQuestion.key, values typed as described at FormQuestion.type; responses of versions created before stage 4 (the seed of the prototype) may carry a TextValue for any type. reviewStatus — accepted at once for a response of an employee, pending for a guest (Q-W4.00-forms-18); rules «После принятия ответа» run on accepted."
   properties:
     id:
       $ref: ../common/schemas.yaml#/Id
@@ -211,6 +332,43 @@ FormResponse:
       type: integer
       minimum: 1
       format: int64
+    number:
+      type: string
+      pattern: ^R-[0-9]{4,9}$
+      description: W4.05 (0.11.0-stage4). The human number of the response («R-1012»), a counter of the organization.
+    versionNumber:
+      type: integer
+      minimum: 1
+      description: W4.05 (0.11.0-stage4). N of the version the response was submitted by (the chip «vN»).
+    author:
+      $ref: ./schemas.yaml#/FormMemberRef
+    subject:
+      $ref: ./schemas.yaml#/FormResponseSubject
+    channel:
+      type: string
+      enum:
+        - member
+        - public
+        - inspection
+      description: W4.05 (0.11.0-stage4). member — an employee after sign-in (submitFormResponse); public — a guest by the public link (author memberId null, displayName «Гость»); inspection — the inspection of a trip written as a response (D-30 комплекта, W4.24).
+    score:
+      $ref: ./schemas.yaml#/FormResponseScore
+    actions:
+      type: array
+      items:
+        $ref: ./schemas.yaml#/FormResponseAction
+      maxItems: 50
+      description: W4.05 (0.11.0-stage4). «Журнал действий» of the response — one result per rule (the latest attempt); «Для этого ответа действия не выполнялись» — empty.
+    linkParamKeys:
+      type: array
+      items:
+        type: string
+        pattern: ^[a-zA-Z][a-zA-Z0-9_-]{0,63}$
+      maxItems: 200
+      uniqueItems: true
+      description: W4.05 (0.11.0-stage4, Q-W4.00-forms-20). Keys of hidden questions whose value came from a parameter of the link (?key=…), not from the respondent.
+    my:
+      $ref: ./schemas.yaml#/FormResponseMy
   required:
     - id
     - formId
@@ -219,9 +377,30 @@ FormResponse:
     - answers
     - reviewStatus
     - revision
+    - number
+    - versionNumber
+    - author
+    - channel
+    - actions
+    - my
+FormResponseMy:
+  type: object
+  additionalProperties: false
+  description: "W4.05 (0.11.0-stage4, return 2, Q-W4.05-16). What the requesting member may do with this response in reviewFormResponse — the same rule the server applies to the fields: the key in the area of the form; or the member is the assignee of the response and holds the key in any role; or the form «Вся организация», the key in any role and the response visible by the relation to its CRM object. The page shows «Принять», «Отклонить» by review and the choice of the assignee by assign (FormMy.reviewResponses is a flag of the whole form)."
+  properties:
+    review:
+      type: boolean
+      description: forms.responses.review for this response — reviewStatus and reviewComment.
+    assign:
+      type: boolean
+      description: forms.responses.assign for this response — assigneeMemberId.
+  required:
+    - review
+    - assign
 ResponseReviewPatch:
   type: object
   additionalProperties: false
+  minProperties: 1
   properties:
     assigneeMemberId:
       type:
@@ -237,7 +416,7 @@ ResponseReviewPatch:
     reviewComment:
       type: string
       maxLength: 5000
-  description: Changing assignee requires forms.responses.assign; changing review state requires forms.responses.review. No arbitrary editing of original answers.
+  description: "Changing assignee requires forms.responses.assign; changing review state requires forms.responses.review. No arbitrary editing of original answers. W4.05 (0.11.0-stage4, return 2): at least one field — an empty body — 422 validation_failed; the revision and the ETag of the response do not change."
 FormResponsePage:
   type: object
   additionalProperties: false
@@ -255,3 +434,960 @@ FormResponsePage:
     - items
     - nextCursor
   description: Opaque cursor is bound to tenant, principal, effective scopes, filters and sort. Permission changes invalidate the cursor.
+
+# --- W4.05 (0.11.0-stage4): новые схемы тега Forms ---
+FormMemberRef:
+  type: object
+  additionalProperties: false
+  properties:
+    memberId:
+      type:
+        - string
+        - "null"
+      format: uuid
+      description: null — not a member (a guest of a public form, «Гость»).
+    displayName:
+      type: string
+      maxLength: 200
+  required:
+    - memberId
+    - displayName
+  description: W4.05 (0.11.0-stage4). A member as the screens of forms show it — the owner of a form, the author of a version, a rule or a response.
+FormSettings:
+  type: object
+  additionalProperties: false
+  description: "W4.05 (0.11.0-stage4, Q-W4.00-forms-2). Settings of the form (forms.forms.settings) — changed without a new version (updateForm), applied to every response from the moment of the change. Defaults — FORM_SETTINGS of the prototype (models.js:85): members, no deadline and limit, edit before review allowed, «Спасибо! Ответ отправлен.», without scoring, the progress, the button «Назад» and the logo shown, 365 days."
+  properties:
+    access:
+      type: string
+      enum:
+        - members
+        - public
+      description: "«Кто может ответить»: members — «Сотрудники организации» (sign-in, forms.read in the area of the form, Q-W4.00-forms-8); public — «Все, у кого есть ссылка» (requires forms.publish_public, Q-W4.00-forms-11; a form with CRM questions — 422 «Публичный доступ невозможен: вопрос «…» спрашивает данные CRM»). «По персональному приглашению» is not in stage 4 (Q-W4.00-forms-10): the screen shows it disabled."
+    acceptUntil:
+      type:
+        - string
+        - "null"
+      format: date
+      description: «Принимать до» — the last day (inclusive, in the time zone of the organization) of accepting responses; null — no deadline.
+    responseLimit:
+      type:
+        - integer
+        - "null"
+      minimum: 1
+      maximum: 1000000
+      description: «Не больше ответов всего» across all versions (Q-W4.00-forms-25); null — «без ограничения».
+    onePerMember:
+      type: boolean
+      description: «Один ответ от сотрудника» across all versions (Q-W4.00-forms-25).
+    allowEditBeforeReview:
+      type: boolean
+      description: «Разрешить исправить ответ до проверки — появится ревизия» — stored; revisions of a response come after stage 4 (Q-W4.00-forms-18).
+    confirmationText:
+      type: string
+      maxLength: 1000
+      description: «Текст после отправки».
+    scoring:
+      type: boolean
+      description: «Считать баллы за варианты ответа» (scores — FormOption.score).
+    passScore:
+      type:
+        - integer
+        - "null"
+      minimum: 0
+      maximum: 100000
+      description: «Проходной балл»; null — «не задан».
+    showScore:
+      type: boolean
+      description: «Показывать результат после отправки».
+    progressBar:
+      type: boolean
+      description: «Прогресс по страницам».
+    backButton:
+      type: boolean
+      description: «Кнопка «Назад» между страницами».
+    showLogo:
+      type: boolean
+      description: «Логотип и название организации».
+    retainResponsesDays:
+      type: integer
+      enum:
+        - 90
+        - 365
+        - 1095
+      description: «Хранить ответы» — «90 дней», «1 год», «3 года». A daily job deletes older responses with their files and rows and records of the knowledge base (D-26 комплекта, Q-W4.00-forms-22).
+  required:
+    - access
+    - acceptUntil
+    - responseLimit
+    - onePerMember
+    - allowEditBeforeReview
+    - confirmationText
+    - scoring
+    - passScore
+    - showScore
+    - progressBar
+    - backButton
+    - showLogo
+    - retainResponsesDays
+FormSettingsPatch:
+  type: object
+  additionalProperties: false
+  minProperties: 1
+  description: W4.05 (0.11.0-stage4). The changed settings only; the others stay. Checkboxes and lists are saved at once, text fields on blur (dc:884).
+  properties:
+    access:
+      type: string
+      enum:
+        - members
+        - public
+    acceptUntil:
+      type:
+        - string
+        - "null"
+      format: date
+    responseLimit:
+      type:
+        - integer
+        - "null"
+      minimum: 1
+      maximum: 1000000
+    onePerMember:
+      type: boolean
+    allowEditBeforeReview:
+      type: boolean
+    confirmationText:
+      type: string
+      maxLength: 1000
+    scoring:
+      type: boolean
+    passScore:
+      type:
+        - integer
+        - "null"
+      minimum: 0
+      maximum: 100000
+    showScore:
+      type: boolean
+    progressBar:
+      type: boolean
+    backButton:
+      type: boolean
+    showLogo:
+      type: boolean
+    retainResponsesDays:
+      type: integer
+      enum:
+        - 90
+        - 365
+        - 1095
+FormShare:
+  type: object
+  additionalProperties: false
+  description: "W4.05 (0.11.0-stage4, Q-W4.00-forms-21; dialog «Поделиться формой»). Links are routes of the same SPA (D-01 комплекта): «Ссылка для сотрудников» — {origin}/forms/{formId} (after sign-in); «Публичная ссылка» — {origin}/f/{publicToken}, «Код для сайта» — the iframe of {origin}/f/{publicToken}?embed=1. A draft has no links («Ссылка появится после публикации…»)."
+  properties:
+    publicToken:
+      type:
+        - string
+        - "null"
+      minLength: 32
+      maxLength: 256
+      description: "The unpredictable revocable capability of the public form (PublicForm, publicToken of the tag PublicForms); null — the form is not published or not public. Shown only to members with forms.publish in the area of the form. W4.05 (0.11.0-stage4, return 1, Q-W4.05-19): the token is not stored — the server derives it each time: base64url without padding of HMAC-SHA256(key, «ortus.forms.public-link.v1» 0x00 tenant id 0x00 forms.public_links.id), the key — the server secret FORMS_PUBLIC_LINK_KEY of the version key_version of the link (base64, at least 32 bytes); the database keeps only token_digest = «sha256:» + hex SHA-256 of the token, by which getPublicForm finds the link. Revocation (after stage 4) — revoked_at and a new link: a new id, a new token. W4.05 (return 2): the route of a guest — the path /api/v1/public/forms/{publicToken} carries no tenant and the token carries no tenant part, while every tenant has its own database (ADR 0006); the server finds the tenant by token_digest in the control index public_form_links (control 0009: token_digest → tenant_id, form_id, link_id, key_version, revoked_at; the precedent — invitations.token_hash), the database of the tenant by tenant_routing, then the link in forms.public_links of that tenant (id = link_id, the same token_digest, not revoked) — the source of truth; no row in either — 404 as an unknown token. Issuing writes the index row first, then the tenant row (a failed tenant write deletes the index row); revocation and a change of the key — the tenant row first, then the index."
+  required:
+    - publicToken
+FormMy:
+  type: object
+  additionalProperties: false
+  description: W4.05 (0.11.0-stage4, Q-W4.00-forms-12). What the requesting member may do with this form (grants in its area); without manage the editor shows «Только просмотр · нет права «Настраивать» формы».
+  properties:
+    create:
+      type: boolean
+      description: forms.create — «Дублировать».
+    manage:
+      type: boolean
+      description: forms.manage — the draft, the name, the settings, the group, the rules, «Перенести прошлые ответы», «Повторить».
+    publish:
+      type: boolean
+      description: forms.publish — «Опубликовать vN».
+    publishPublic:
+      type: boolean
+      description: forms.publish_public — «Все, у кого есть ссылка» (otherwise «Нужно право «Публичные ссылки»»).
+    readResponses:
+      type: boolean
+      description: forms.responses.read in the area of the form — all responses (in the scope self — own ones).
+    reviewResponses:
+      type: boolean
+      description: "forms.responses.review — «Принять», «Отклонить» for every visible response of the form: the key in the area of the form, or a form «Вся организация» and the key in any role. W4.05 (return 2): a flag of the form, not of a response — the page shows the buttons of a response by FormResponse.my (an assignee of the response who holds the key in another area may review it while this flag is false, Q-W4.05-16)."
+    respond:
+      type: boolean
+      description: The member may submit a response now (forms.read in the area, the form published and accepting, «Один ответ от сотрудника» not used up).
+  required:
+    - create
+    - manage
+    - publish
+    - publishPublic
+    - readResponses
+    - reviewResponses
+    - respond
+FormDraft:
+  type: object
+  additionalProperties: false
+  description: "W4.05 (0.11.0-stage4, Q-W4.00-forms-1). The mutable draft of the questions of a form (forms.drafts). Without unpublished changes the draft equals the acting version (hasChanges false). revision — the ETag of getFormDraft and the If-Match of saveFormDraft and discardFormDraft (two editors: 412 «Черновик изменил другой редактор — обновите страницу»). issues — what blocks the publication («До публикации исправьте», the checks of issues() of the prototype with its texts, Q-W4.00-forms-4); publishForm repeats them."
+  properties:
+    formId:
+      $ref: ../common/schemas.yaml#/Id
+    definition:
+      $ref: ../common/schemas.yaml#/FormDefinitionV2
+    revision:
+      type: integer
+      minimum: 1
+      format: int64
+    hasChanges:
+      type: boolean
+    baseVersionNumber:
+      type:
+        - integer
+        - "null"
+      minimum: 1
+      description: The version the draft started from; null — the form was never published.
+    savedAt:
+      $ref: ../common/schemas.yaml#/Instant
+    savedBy:
+      $ref: ./schemas.yaml#/FormMemberRef
+    issues:
+      type: array
+      items:
+        $ref: ./schemas.yaml#/FormIssue
+      maxItems: 200
+  required:
+    - formId
+    - definition
+    - revision
+    - hasChanges
+    - baseVersionNumber
+    - issues
+FormIssue:
+  type: object
+  additionalProperties: false
+  properties:
+    fieldKey:
+      type:
+        - string
+        - "null"
+      maxLength: 64
+      description: The question of the issue; null — the form as a whole («В форме нет ни одного вопроса»).
+    message:
+      type: string
+      maxLength: 500
+      description: "Text of the prototype (dc:721–738), e.g. «Вопрос 3: нет вариантов ответа», «Идентификатор q-odo повторяется», «…: условие ссылается на вопрос ниже — условие может зависеть только от вопросов выше», «…: скрытый обязательный вопрос без значения по умолчанию»."
+  required:
+    - fieldKey
+    - message
+FormDraftSave:
+  type: object
+  additionalProperties: false
+  description: W4.05 (0.11.0-stage4). The whole draft (autosave 700 ms after an edit, dc:562). Incomplete questions are allowed — they are issues, not errors; the structure (keys, pages, types, sizes) is checked by the schema and the server (422 validation_failed).
+  properties:
+    definition:
+      $ref: ../common/schemas.yaml#/FormDefinitionV2
+  required:
+    - definition
+FormPublishRequest:
+  type: object
+  additionalProperties: false
+  description: W4.05 (0.11.0-stage4). «Опубликовать vN» — the draft of revision draftRevision becomes the next immutable version. The draft changed after the dialog opened — 412 revision_mismatch.
+  properties:
+    draftRevision:
+      type: integer
+      minimum: 1
+      format: int64
+  required:
+    - draftRevision
+FormTemplate:
+  type: object
+  additionalProperties: false
+  description: "W4.05 (0.11.0-stage4, Q-W4.00-forms-14). A template of the code catalogue (the domain FORM_TEMPLATES, 15 templates) — tiles of «Создание формы» and «Все шаблоны · 15»; the organization has no own templates (FM-02)."
+  properties:
+    id:
+      type: string
+      pattern: ^[a-z][a-z0-9-]{1,49}$
+    category:
+      type: string
+      enum:
+        - basic
+        - survey
+        - people
+        - quiz
+        - industry
+      description: «Основные», «Опросы и оценка», «Сотрудники», «Тесты», «Отраслевые».
+    name:
+      type: string
+      maxLength: 200
+    icon:
+      type: string
+      maxLength: 60
+    moduleKey:
+      type:
+        - string
+        - "null"
+      pattern: ^[a-z][a-z0-9_-]{1,49}$
+      description: The industry module the template needs; null — a template for every organization.
+    available:
+      type: boolean
+      description: false — the module is not active («Модуль «{name}» не подключён», createForm — 403 module_not_installed).
+    pageCount:
+      type: integer
+      minimum: 1
+    questionCount:
+      type: integer
+      minimum: 0
+  required:
+    - id
+    - category
+    - name
+    - icon
+    - moduleKey
+    - available
+    - pageCount
+    - questionCount
+FormTemplateList:
+  type: object
+  additionalProperties: false
+  properties:
+    items:
+      type: array
+      items:
+        $ref: ./schemas.yaml#/FormTemplate
+      maxItems: 100
+  required:
+    - items
+FormGroup:
+  type: object
+  additionalProperties: false
+  description: W4.05 (0.11.0-stage4, FM-03, Q-W4.00-forms-7). A group of forms of the organization («Формы и группы»); personal grouping is the filter «Мои формы».
+  properties:
+    id:
+      $ref: ../common/schemas.yaml#/Id
+    name:
+      type: string
+      maxLength: 80
+    formCount:
+      type: integer
+      minimum: 0
+      description: Forms of the group the requesting member sees.
+  required:
+    - id
+    - name
+    - formCount
+FormGroupList:
+  type: object
+  additionalProperties: false
+  properties:
+    items:
+      type: array
+      items:
+        $ref: ./schemas.yaml#/FormGroup
+      maxItems: 200
+  required:
+    - items
+FormGroupCreate:
+  type: object
+  additionalProperties: false
+  properties:
+    name:
+      type: string
+      minLength: 1
+      maxLength: 80
+      description: "2–80 characters, unique in the organization without regard to case («Название группы — от 2 символов», «Такая группа уже есть»). W4.05 (return 3): minLength 1 as the name of a form — JSON Schema does not trim spaces, so the server checks the name trimmed, before the insert: shorter than 2 — 422 validation_failed on name «Название группы — от 2 символов» (the check length(btrim(name)) of forms.groups is the last guard, never the answer)."
+  required:
+    - name
+FormRuleCondition:
+  type: object
+  additionalProperties: false
+  description: "W4.05 (0.11.0-stage4). «Только если»: the answer to a question of choice or «Да / нет» equals value (FormOption.key; true or false for «Да / нет»; Q-W4.00-forms-3); fieldKey null — «Для всех ответов»."
+  properties:
+    fieldKey:
+      type:
+        - string
+        - "null"
+      pattern: ^[a-zA-Z][a-zA-Z0-9_-]{0,63}$
+    value:
+      type:
+        - string
+        - "null"
+      maxLength: 64
+  required:
+    - fieldKey
+    - value
+FormRuleTask:
+  type: object
+  additionalProperties: false
+  description: "W4.05 (0.11.0-stage4, Q-W4.00-forms-13). «Создать задачу» — a task of the project projectId (Project of W4.03) with the title and the assignee; the description carries the answers and the link to the response. The task is created once per «response × rule» (forms.response_actions — one row per response and rule; a new version of the rule does not repeat a done action) on behalf of the author of the rule (tasks.create in the project is checked at each run)."
+  properties:
+    projectId:
+      $ref: ../common/schemas.yaml#/Id
+    title:
+      type: string
+      minLength: 1
+      maxLength: 200
+      description: «Название задачи» («Укажите название задачи»).
+    assigneeMemberId:
+      $ref: ../common/schemas.yaml#/Id
+  required:
+    - projectId
+    - title
+    - assigneeMemberId
+FormRuleNotify:
+  type: object
+  additionalProperties: false
+  description: W4.05 (0.11.0-stage4). «Уведомить сотрудника» — a notification in the inbox («Уведомление в CRM → …»).
+  properties:
+    memberId:
+      $ref: ../common/schemas.yaml#/Id
+  required:
+    - memberId
+FormRuleEmail:
+  type: object
+  additionalProperties: false
+  description: W4.05 (0.11.0-stage4, Q-W4.00-forms-15). «Письмо на почту» — stored; on the MVP show letters are not sent («На показе письма не отправляются.»).
+  properties:
+    to:
+      type: string
+      format: email
+      maxLength: 254
+  required:
+    - to
+FormRuleHttp:
+  type: object
+  additionalProperties: false
+  description: "W4.05 (0.11.0-stage4, Q-W4.00-forms-15). «HTTP-запрос» (POST, JSON with the answers) — stored; on the MVP show it is not executed («В продукте — подписанный вебхук с повтором.»). Return 1: the URL may carry a secret of the webhook — only members with forms.manage see it (FormRule). When requests are executed (after the MVP) the sender protects against SSRF: the host is resolved once and the request goes to that address, private, loopback, link-local, multicast and metadata addresses (10/8, 172.16/12, 192.168/16, 127/8, ::1, 169.254/16, fc00::/7) are refused, redirects are not followed, the timeout and the size of the answer are bounded."
+  properties:
+    url:
+      type: string
+      format: uri
+      pattern: ^https://
+      maxLength: 2000
+      description: «Адрес запроса должен начинаться с https://».
+  required:
+    - url
+FormRuleKbField:
+  type: object
+  additionalProperties: false
+  description: "W4.05 (0.11.0-stage4). A field «Поле ← источник»: a column of the table (columnId — KnowledgeTableColumn.id of W4.04) or a line of the record (name); source — a variable of FORM_VARS ($at «Дата и время ответа», $author «Автор ответа», $object «Объект CRM», $id «Номер ответа», $form «Название формы», $ver «Версия формы») or the key of a question."
+  properties:
+    columnId:
+      $ref: ../common/schemas.yaml#/Id
+    name:
+      type: string
+      minLength: 1
+      maxLength: 120
+    source:
+      type: string
+      pattern: ^(\$(at|author|object|id|form|ver)|[a-zA-Z][a-zA-Z0-9_-]{0,63})$
+  required:
+    - name
+    - source
+FormRuleKb:
+  type: object
+  additionalProperties: false
+  description: "W4.05 (0.11.0-stage4, D-26 комплекта, FM-05…07). «Сохранить в Базу знаний» — a row in a table of a page (mode table, tableId — KnowledgeTable of W4.04) or a record on a page (mode entry) of the knowledge base (nodeId — a node of W4.04). «＋ Новая страница» and «Новая таблица по вопросам формы» are created first by createKnowledgeNode and createKnowledgeTable (the tag Knowledge), then the rule references them («Сохраняем…» in two steps; «Страница создана, но действие не сохранено: …»). The rule writes on behalf of its author: knowledge.create and the access of the page are checked at each run (PD-53, kbAccess). A public form writes only accepted responses (trigger accepted)."
+  properties:
+    nodeId:
+      $ref: ../common/schemas.yaml#/Id
+    node:
+      $ref: ../knowledge/schemas.yaml#/KnowledgeNodeRef
+      description: The page as the requesting member sees it; absent when the page is not visible to him (the card «… «недоступна вам»»).
+    mode:
+      type: string
+      enum:
+        - table
+        - entry
+      description: «Строкой в таблицу» / «Записью на страницу».
+    tableId:
+      $ref: ../common/schemas.yaml#/Id
+    tableTitle:
+      type: string
+      maxLength: 120
+    head:
+      type: string
+      maxLength: 120
+      pattern: ^(\$(at|author|object|id|form|ver)|[a-zA-Z][a-zA-Z0-9_-]{0,63})$
+      description: «Заголовок записи» (mode entry) — a source as FormRuleKbField.source; default $object.
+    position:
+      type: string
+      enum:
+        - top
+        - bottom
+      description: "«Новые строки | записи»: «В начало» / «В конец»."
+    fields:
+      type: array
+      items:
+        $ref: ./schemas.yaml#/FormRuleKbField
+      minItems: 1
+      maxItems: 30
+    showLink:
+      type: boolean
+      description: «Показать ссылку на страницу после отправки» (never for a public form).
+    allEmployeesConfirmed:
+      type: boolean
+      description: "«Понимаю: записи увидят все сотрудники с доступом к Базе знаний…» — required for a page seen by all employees («Подтвердите, что записи увидят все сотрудники с доступом к странице»)."
+  required:
+    - nodeId
+    - mode
+    - position
+    - fields
+    - showLink
+    - allEmployeesConfirmed
+FormRule:
+  type: object
+  additionalProperties: false
+  description: "W4.05 (0.11.0-stage4, forms.rules). «Действие после ответа»: exactly the object of its kind (task, notify, email, http or kb) is present — except email and http for a member without forms.manage in the area of the form: the address of the letter and the URL of the request (it may carry a secret of a webhook) are not shown, the object is absent (Q-W4.05-18). version — «правило vN», raised by the server at each change of the action (not by «Включено»); a response runs a rule once per «response × rule» («Повторная обработка не создаёт вторую задачу или строку.»; forms.response_actions — one row per response and rule): a new version does not repeat an action done by an earlier one, «Повторить» and «Перенести прошлые ответы» run the current version for a failed or missing action, and the journal keeps the version that ran last (FormResponseAction.ruleVersion)."
+  properties:
+    id:
+      $ref: ../common/schemas.yaml#/Id
+    formId:
+      $ref: ../common/schemas.yaml#/Id
+    kind:
+      $ref: ./schemas.yaml#/FormRuleKind
+    enabled:
+      type: boolean
+    version:
+      type: integer
+      minimum: 1
+    trigger:
+      $ref: ./schemas.yaml#/FormRuleTrigger
+    condition:
+      $ref: ./schemas.yaml#/FormRuleCondition
+    task:
+      $ref: ./schemas.yaml#/FormRuleTask
+    notify:
+      $ref: ./schemas.yaml#/FormRuleNotify
+    email:
+      $ref: ./schemas.yaml#/FormRuleEmail
+    http:
+      $ref: ./schemas.yaml#/FormRuleHttp
+    kb:
+      $ref: ./schemas.yaml#/FormRuleKb
+    author:
+      $ref: ./schemas.yaml#/FormMemberRef
+    doneCount:
+      type: integer
+      minimum: 0
+      description: "«записано ответов: N»."
+    failedCount:
+      type: integer
+      minimum: 0
+      description: «Не выполнено для N ответов — повторите из ленты ответов».
+    pendingBackfillCount:
+      type: integer
+      minimum: 0
+      description: Responses that fit the rule and were not written — «Перенести прошлые ответы · N» (kb only; 0 otherwise).
+    createdAt:
+      $ref: ../common/schemas.yaml#/Instant
+    updatedAt:
+      $ref: ../common/schemas.yaml#/Instant
+    revision:
+      type: integer
+      minimum: 1
+      format: int64
+  required:
+    - id
+    - formId
+    - kind
+    - enabled
+    - version
+    - trigger
+    - condition
+    - author
+    - doneCount
+    - failedCount
+    - pendingBackfillCount
+    - createdAt
+    - updatedAt
+    - revision
+FormRuleKind:
+  type: string
+  enum:
+    - task
+    - notify
+    - email
+    - http
+    - kb
+  description: W4.05 (0.11.0-stage4). «Создать задачу», «Уведомить сотрудника», «Письмо на почту», «HTTP-запрос», «Сохранить в Базу знаний».
+FormRuleTrigger:
+  type: string
+  enum:
+    - submitted
+    - accepted
+  description: "W4.05 (0.11.0-stage4). «Когда»: «После отправки ответа» / «После принятия ответа»."
+FormRuleList:
+  type: object
+  additionalProperties: false
+  properties:
+    items:
+      type: array
+      items:
+        $ref: ./schemas.yaml#/FormRule
+      maxItems: 50
+  required:
+    - items
+FormRuleCreate:
+  type: object
+  additionalProperties: false
+  description: "W4.05 (0.11.0-stage4). «Новое действие: {вид}» — the object of kind is required, the others are absent (422 otherwise)."
+  properties:
+    kind:
+      $ref: ./schemas.yaml#/FormRuleKind
+    enabled:
+      type: boolean
+      default: true
+    trigger:
+      $ref: ./schemas.yaml#/FormRuleTrigger
+    condition:
+      $ref: ./schemas.yaml#/FormRuleCondition
+    task:
+      $ref: ./schemas.yaml#/FormRuleTask
+    notify:
+      $ref: ./schemas.yaml#/FormRuleNotify
+    email:
+      $ref: ./schemas.yaml#/FormRuleEmail
+    http:
+      $ref: ./schemas.yaml#/FormRuleHttp
+    kb:
+      $ref: ./schemas.yaml#/FormRuleKbInput
+  required:
+    - kind
+    - trigger
+FormRuleKbInput:
+  type: object
+  additionalProperties: false
+  description: W4.05 (0.11.0-stage4). FormRuleKb as the editor sends it (without the projections node and tableTitle).
+  properties:
+    nodeId:
+      $ref: ../common/schemas.yaml#/Id
+    mode:
+      type: string
+      enum:
+        - table
+        - entry
+    tableId:
+      $ref: ../common/schemas.yaml#/Id
+    head:
+      type: string
+      maxLength: 120
+      pattern: ^(\$(at|author|object|id|form|ver)|[a-zA-Z][a-zA-Z0-9_-]{0,63})$
+    position:
+      type: string
+      enum:
+        - top
+        - bottom
+    fields:
+      type: array
+      items:
+        $ref: ./schemas.yaml#/FormRuleKbField
+      minItems: 1
+      maxItems: 30
+    showLink:
+      type: boolean
+    allEmployeesConfirmed:
+      type: boolean
+  required:
+    - nodeId
+    - mode
+    - position
+    - fields
+    - showLink
+    - allEmployeesConfirmed
+FormRulePatch:
+  type: object
+  additionalProperties: false
+  minProperties: 1
+  description: W4.05 (0.11.0-stage4). «Включено» (enabled only — the version stays) or «Изменить» (trigger, condition and the object of the kind of the rule — the version is raised, «Действие обновлено · правило vN»). The kind of a rule does not change.
+  properties:
+    enabled:
+      type: boolean
+    trigger:
+      $ref: ./schemas.yaml#/FormRuleTrigger
+    condition:
+      $ref: ./schemas.yaml#/FormRuleCondition
+    task:
+      $ref: ./schemas.yaml#/FormRuleTask
+    notify:
+      $ref: ./schemas.yaml#/FormRuleNotify
+    email:
+      $ref: ./schemas.yaml#/FormRuleEmail
+    http:
+      $ref: ./schemas.yaml#/FormRuleHttp
+    kb:
+      $ref: ./schemas.yaml#/FormRuleKbInput
+FormRuleBackfillResult:
+  type: object
+  additionalProperties: false
+  description: "W4.05 (0.11.0-stage4). «Перенесено в Базу знаний: N ответов. Не удалось: K — {err}» / «Новых ответов для переноса нет»."
+  properties:
+    added:
+      type: integer
+      minimum: 0
+    failed:
+      type: integer
+      minimum: 0
+    error:
+      type:
+        - string
+        - "null"
+      maxLength: 500
+  required:
+    - added
+    - failed
+    - error
+FormResponseSubject:
+  type: object
+  additionalProperties: false
+  description: W4.05 (0.11.0-stage4). The CRM object the response is about («Рейс Р-196 · сдача»); members who see the object and hold forms.responses.read anywhere see the response by this relation (Q-W4.00-forms-9).
+  properties:
+    ref:
+      $ref: ../common/schemas.yaml#/ObjectRef
+    label:
+      type: string
+      maxLength: 200
+  required:
+    - ref
+    - label
+FormResponseScore:
+  type: object
+  additionalProperties: false
+  description: "W4.05 (0.11.0-stage4, Q-W4.00-forms-24). Scores counted by the server at submission (a form with «Считать баллы»): «Результат: X из Y баллов · тест пройден» / «… · нужно P для зачёта»."
+  properties:
+    points:
+      type: integer
+    maxPoints:
+      type: integer
+      minimum: 0
+    passed:
+      type:
+        - boolean
+        - "null"
+      description: null — «Проходной балл» not set.
+  required:
+    - points
+    - maxPoints
+    - passed
+FormResponseAction:
+  type: object
+  additionalProperties: false
+  description: "W4.05 (0.11.0-stage4). A line of «Журнал действий»: «Задача T-… «…» · {исполнитель} · {статус}», «{текст} · {время} · правило vN» + «Открыть страницу», or an error «Не сохранено в Базу знаний: {err} · {время}» + «Повторить» (retryable)."
+  properties:
+    ruleId:
+      $ref: ../common/schemas.yaml#/Id
+    ruleVersion:
+      type: integer
+      minimum: 1
+    kind:
+      $ref: ./schemas.yaml#/FormRuleKind
+    ok:
+      type: boolean
+    at:
+      $ref: ../common/schemas.yaml#/Instant
+    text:
+      type: string
+      maxLength: 500
+      description: The result, e.g. «Строка в таблице «Осмотры» · страница «Журнал осмотров машин»».
+    error:
+      type: string
+      maxLength: 500
+      description: The cause of a failure, e.g. «страница удалена из Базы знаний», «у автора правила … нет права «Создавать» в Базе знаний».
+    node:
+      $ref: ../knowledge/schemas.yaml#/KnowledgeNodeRef
+      description: The page written to — «Открыть страницу» (absent when the page is not visible to the requesting member).
+    taskId:
+      $ref: ../common/schemas.yaml#/Id
+    taskKey:
+      type: string
+      maxLength: 20
+      description: The number of the created task («LOG-101»).
+    retryable:
+      type: boolean
+      description: «Повторить» is offered — a failure of a rule that still exists (Q-W4.20-3).
+  required:
+    - ruleId
+    - ruleVersion
+    - kind
+    - ok
+    - at
+    - retryable
+FormResponseCreate:
+  type: object
+  additionalProperties: false
+  description: "W4.05 (0.11.0-stage4, Q-W4.00-forms-8, -19). A response of an employee after sign-in («Отправить»). versionId — the acting version shown to the respondent; a changed version — 409 invalid_transition, reason form_version_changed. The server repeats the visibility and required checks of the version and the checks of input («Обязательный вопрос», «Проверьте адрес почты», «ИНН — 10 или 12 цифр»…) — 422 validation_failed with violations by question key."
+  properties:
+    versionId:
+      $ref: ../common/schemas.yaml#/Id
+    answers:
+      type: array
+      items:
+        $ref: ../common/schemas.yaml#/FieldEntry
+      maxItems: 200
+      description: "W4.05 (0.11.0-stage4, return 2). Answers by FormQuestion.key. A hidden question is never answered here: a hidden question key in answers — 422 validation_failed (code hidden, «Скрытый вопрос заполняют ссылка и значение по умолчанию»), its value comes from linkParams or defaultValue. A reference answer (person, unit, ref) names only an object the respondent may choose — the same set as listFormFieldOptions by his rights (an active member of the organization, a unit of the level, a CRM object he sees); otherwise 422 «Сотрудник не найден» / «Объект не найден»; the label of the answer is set by the server."
+    subject:
+      $ref: ../common/schemas.yaml#/ObjectRef
+      description: "W4.05 (0.11.0-stage4, return 2). The CRM object the response is about (FormResponseSubject). The server checks that the respondent sees the object — a trip by the rights of «Логистика» in its area, a task by tasks.read in its project or as its assignee; an object he does not see, or a missing one — 422 validation_failed «Объект не найден» on subject: the response is not attached to a trip or a task of others, and the label set by the server does not leak the object."
+    linkParams:
+      type: object
+      maxProperties: 50
+      additionalProperties:
+        type: string
+        maxLength: 500
+      description: Values of hidden questions from the parameters of the link (?key=…) — only hidden questions, never CRM and file questions (Q-W4.00-forms-20). W4.05 (return 2) — the value of a hidden question comes only from defaultValue or linkParams. W4.05 (return 3) — a key of another question or an unknown key — 422 validation_failed on linkParams.{key} (code not_hidden, «Параметр ссылки — только для скрытого вопроса»); the same schema as PublicResponseCreate.linkParams of the guest.
+  required:
+    - versionId
+    - answers
+FormResponseSummary:
+  type: object
+  additionalProperties: false
+  description: W4.05 (0.11.0-stage4). «Сводка» over the responses the member may read — questions of all versions, the fresh version first (respCols, dc:985).
+  properties:
+    formId:
+      $ref: ../common/schemas.yaml#/Id
+    total:
+      type: integer
+      minimum: 0
+    questions:
+      type: array
+      items:
+        $ref: ./schemas.yaml#/FormQuestionSummary
+      maxItems: 1000
+  required:
+    - formId
+    - total
+    - questions
+FormQuestionSummary:
+  type: object
+  additionalProperties: false
+  description: W4.05 (0.11.0-stage4). A card «{тип} · ответили X из N» — bars «n · p%» (choice, «Да / нет»), «Среднее … · мин … · макс …» (numbers; absent — «Нет числовых ответов»), three latest texts («Пока без ответов»).
+  properties:
+    fieldKey:
+      type: string
+      maxLength: 64
+    label:
+      type: string
+      maxLength: 500
+    type:
+      $ref: ../common/schemas.yaml#/FormQuestionType
+    answered:
+      type: integer
+      minimum: 0
+    options:
+      type: array
+      items:
+        $ref: ./schemas.yaml#/FormOptionCount
+      maxItems: 101
+    numbers:
+      $ref: ./schemas.yaml#/FormNumberStats
+    recentTexts:
+      type: array
+      items:
+        type: string
+        maxLength: 500
+      maxItems: 3
+  required:
+    - fieldKey
+    - label
+    - type
+    - answered
+FormOptionCount:
+  type: object
+  additionalProperties: false
+  properties:
+    key:
+      type: string
+      maxLength: 64
+    label:
+      type: string
+      maxLength: 300
+    count:
+      type: integer
+      minimum: 0
+    percent:
+      type: integer
+      minimum: 0
+      maximum: 100
+  required:
+    - key
+    - label
+    - count
+    - percent
+FormNumberStats:
+  type: object
+  additionalProperties: false
+  properties:
+    average:
+      $ref: ../common/schemas.yaml#/Decimal
+    min:
+      $ref: ../common/schemas.yaml#/Decimal
+    max:
+      $ref: ../common/schemas.yaml#/Decimal
+  required:
+    - average
+    - min
+    - max
+FormResponsesExport:
+  type: object
+  additionalProperties: false
+  description: "W4.05 (0.11.0-stage4, dc:679–683). «Выгрузить CSV» of the responses the member may read: «;» separators, BOM, columns «Ответ;Дата;Автор;Объект;Версия;Статус;…» and the questions of all versions (the table has no «Статус», the file has it — as the prototype). Cells — as exportDataset (exportFormResponses): RFC 4180 quoting, CRLF, protection against CSV formula injection (an apostrophe before a text cell starting with =, +, -, @, tab or CR)."
+  properties:
+    formId:
+      $ref: ../common/schemas.yaml#/Id
+    fileName:
+      type: string
+      minLength: 1
+      maxLength: 255
+      description: «{форма}.csv».
+    contentType:
+      type: string
+      const: text/csv; charset=utf-8
+    content:
+      type: string
+      maxLength: 16777216
+    rowCount:
+      type: integer
+      minimum: 0
+      maximum: 100000
+    generatedAt:
+      $ref: ../common/schemas.yaml#/Instant
+  required:
+    - formId
+    - fileName
+    - contentType
+    - content
+    - rowCount
+    - generatedAt
+FormFieldOption:
+  type: object
+  additionalProperties: false
+  properties:
+    ref:
+      $ref: ../common/schemas.yaml#/ObjectRef
+    label:
+      type: string
+      maxLength: 200
+    hint:
+      type: string
+      maxLength: 200
+  required:
+    - ref
+    - label
+FormFieldOptionList:
+  type: object
+  additionalProperties: false
+  description: W4.05 (0.11.0-stage4, Q-W4.00-forms-23). Choices of a CRM question («Сотрудник», «Регион или фирма», «Объект CRM») the respondent may see by his own rights, filtered by q, at most 50.
+  properties:
+    items:
+      type: array
+      items:
+        $ref: ./schemas.yaml#/FormFieldOption
+      maxItems: 50
+    truncated:
+      type: boolean
+  required:
+    - items
+    - truncated
