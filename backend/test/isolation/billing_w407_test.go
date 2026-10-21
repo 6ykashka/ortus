@@ -19,7 +19,6 @@ var billingW407Matrix = matrix.File{
 			Method:  "GET",
 			Path:    "/api/v1/tenants/{tenantId}/price-book",
 			Channel: "http",
-			Pending: "W4.60",
 			Rows: []matrix.Row{
 				{
 					Actor:  "a.owner",
@@ -51,14 +50,14 @@ var billingW407Matrix = matrix.File{
 			Method:  "GET",
 			Path:    "/api/v1/tenants/{tenantId}/subscription/change-requests",
 			Channel: "http",
-			Pending: "W4.60",
 			Rows: []matrix.Row{
 				{
-					Actor:  "a.owner",
-					Params: map[string]string{"tenantId": "tenant:a"},
-					Status: 200,
-					Absent: []string{"tenant:b"},
-					Note:   "заявки только своей организации",
+					Actor:   "a.owner",
+					Params:  map[string]string{"tenantId": "tenant:a"},
+					Status:  200,
+					Present: []string{"subscription_request:a.rejected"},
+					Absent:  []string{"tenant:b", "subscription_request:b.pending"},
+					Note:    "заявки только своей организации",
 				},
 				{
 					Actor:  "b.owner",
@@ -78,8 +77,16 @@ var billingW407Matrix = matrix.File{
 			Method:  "POST",
 			Path:    "/api/v1/tenants/{tenantId}/subscription/change-requests",
 			Channel: "http",
-			Pending: "W4.60",
 			Rows: []matrix.Row{
+				{
+					Actor:   "a.owner",
+					Params:  map[string]string{"tenantId": "tenant:a"},
+					Status:  201,
+					Present: []string{"tenant:a"},
+					Absent:  []string{"tenant:b"},
+					Body:    "{\"tierCode\": \"unl\", \"termMonths\": 12, \"comment\": \"Проверка изоляции\"}",
+					Note:    "владелец просит тариф своей организации (безлимит — без проверки мест)",
+				},
 				{
 					Actor:  "b.owner",
 					Params: map[string]string{"tenantId": "tenant:a"},
@@ -101,17 +108,37 @@ var billingW407Matrix = matrix.File{
 			Method:  "POST",
 			Path:    "/api/v1/tenants/{tenantId}/subscription/change-requests/{changeRequestId}/cancel",
 			Channel: "http",
-			Pending: "W4.60",
 			Rows: []matrix.Row{
 				{
+					Actor:  "a.owner",
+					Params: map[string]string{"changeRequestId": "subscription_request:a.rejected", "tenantId": "tenant:a"},
+					Status: 409,
+					Code:   "invalid_transition",
+					Note:   "своя решённая заявка найдена — отменить нельзя",
+				},
+				{
 					Actor:  "b.owner",
-					Params: map[string]string{"changeRequestId": "tenant:missing", "tenantId": "tenant:a"},
+					Params: map[string]string{"changeRequestId": "subscription_request:a.rejected", "tenantId": "tenant:b"},
+					Status: 404,
+					Absent: []string{"tenant:a"},
+					Note:   "настоящая заявка A через URL своей организации — как несуществующая",
+				},
+				{
+					Actor:  "a.owner",
+					Params: map[string]string{"changeRequestId": "subscription_request:b.pending", "tenantId": "tenant:a"},
+					Status: 404,
+					Absent: []string{"tenant:b"},
+					Note:   "заявка B на рассмотрении через URL A — не найдена и не отменена",
+				},
+				{
+					Actor:  "b.owner",
+					Params: map[string]string{"changeRequestId": "subscription_request:a.rejected", "tenantId": "tenant:a"},
 					Status: 404,
 					Absent: []string{"tenant:a"},
 				},
 				{
 					Actor:  "anonymous",
-					Params: map[string]string{"changeRequestId": "tenant:missing", "tenantId": "tenant:a"},
+					Params: map[string]string{"changeRequestId": "subscription_request:a.rejected", "tenantId": "tenant:a"},
 					Status: 401,
 				},
 			},

@@ -61,7 +61,7 @@ type row struct {
 }
 
 const subscriptionSQL = `
-select id, plan_code, state, upper(period) from subscriptions
+select id, plan_code, state, upper(period), term_months, price_version, amount_minor from subscriptions
  where tenant_id = $1 order by created_at desc, id desc limit 1`
 
 // The current entitlements are the rows of the greatest version of the tenant that have not expired.
@@ -81,11 +81,13 @@ var (
 // current reads the subscription of t (derived when there is no row).
 func (s Store) current(ctx context.Context, q queryer, t Tenant) (Subscription, row, error) {
 	var (
-		r        row
-		plan, st string
-		end      sql.NullTime
+		r             row
+		plan, st      string
+		end           sql.NullTime
+		term, version sql.NullInt64
+		amount        sql.NullInt64
 	)
-	err := q.QueryRowContext(ctx, subscriptionSQL, t.ID).Scan(&r.id, &plan, &st, &end)
+	err := q.QueryRowContext(ctx, subscriptionSQL, t.ID).Scan(&r.id, &plan, &st, &end, &term, &version, &amount)
 	if errors.Is(err, sql.ErrNoRows) {
 		return Derive(t), row{}, nil
 	}
@@ -94,6 +96,15 @@ func (s Store) current(ctx context.Context, q queryer, t Tenant) (Subscription, 
 	}
 	r.ok = true
 	sub := Subscription{TenantID: t.ID, PlanKey: plan, Status: statusOf[st], Stored: true, Revision: 1}
+	if term.Valid {
+		sub.TermMonths = new(int(term.Int64))
+	}
+	if version.Valid {
+		sub.PriceVersion = new(int(version.Int64))
+	}
+	if amount.Valid {
+		sub.AmountMinor = new(amount.Int64)
+	}
 	if end.Valid {
 		e := end.Time.UTC()
 		switch sub.Status {
@@ -158,34 +169,36 @@ func (s Store) Current(ctx context.Context, tenantID uuid.UUID) (Subscription, e
 var followed = map[string]bool{stateTrial: true, stateActive: true, stateGrace: true, stateReadOnly: true}
 
 // write stores next as the subscription of t (since: the start of its period), its entitlements as version
-// next.Revision and the tenant state it leads to.
-func (s Store) write(ctx context.Context, tx *sql.Tx, t Tenant, r row, next Subscription, since time.Time, reason string, actor uuid.UUID) error {
+// next.Revision and the tenant state it leads to; it returns the id of the subscription row it wrote (r.id, or the
+// inserted one when t had none).
+func (s Store) write(ctx context.Context, tx *sql.Tx, t Tenant, r row, next Subscription, since time.Time, reason string, actor uuid.UUID) (uuid.UUID, error) {
 	end := periodEnd(next)
 	if end != nil && end.Before(since) {
 		since = *end
 	}
+	id := r.id
 	var err error
 	if r.ok {
 		_, err = tx.ExecContext(ctx, `update subscriptions set plan_code = $2, state = $3, period = tstzrange($4, $5, '[]') where id = $1`,
 			r.id, next.PlanKey, stateOf[next.Status], since, end)
 	} else {
-		_, err = tx.ExecContext(ctx, `insert into subscriptions (tenant_id, plan_code, state, period) values ($1, $2, $3, tstzrange($4, $5, '[]'))`,
-			t.ID, next.PlanKey, stateOf[next.Status], since, end)
+		err = tx.QueryRowContext(ctx, `insert into subscriptions (tenant_id, plan_code, state, period) values ($1, $2, $3, tstzrange($4, $5, '[]'))
+ returning id`, t.ID, next.PlanKey, stateOf[next.Status], since, end).Scan(&id)
 	}
 	if err != nil {
-		return fmt.Errorf("subscriptions: write: %w", err)
+		return uuid.Nil, fmt.Errorf("subscriptions: write: %w", err)
 	}
 	now := s.now()
 	if err := writeEntitlements(ctx, tx, t.ID, next, now, reason, actor); err != nil {
-		return err
+		return uuid.Nil, err
 	}
 	if st := TenantStateFor(next.Status); followed[t.State] && st != t.State {
 		if _, err := tx.ExecContext(ctx, `update tenants set state = $2::tenant_state, state_changed_at = $3,
 			revision = revision + 1 where id = $1`, t.ID, st, now); err != nil {
-			return fmt.Errorf("subscriptions: tenant state: %w", err)
+			return uuid.Nil, fmt.Errorf("subscriptions: tenant state: %w", err)
 		}
 	}
-	return nil
+	return id, nil
 }
 
 // periodEnd is the end of the period the stored state of s covers (upper(period); nil — open).
@@ -277,7 +290,7 @@ func (s Store) Update(ctx context.Context, tenantID uuid.UUID, u Update, ifMatch
 		return Subscription{}, err
 	}
 	next := s.applied(u, cur, plan)
-	if err := s.write(ctx, tx, t, r, next, s.now(), u.Reason, actor); err != nil {
+	if _, err := s.write(ctx, tx, t, r, next, s.now(), u.Reason, actor); err != nil {
 		return Subscription{}, err
 	}
 	reqID := requestid.FromContext(ctx)
@@ -478,7 +491,7 @@ func (s Store) advance(ctx context.Context, tenantID uuid.UUID, run string) (int
 		return 0, nil
 	}
 	next.Stored, next.Revision = true, cur.Revision+1
-	if err := s.write(ctx, tx, t, r, next, since, "Жизненный цикл подписки (PLAT-05)", uuid.Nil); err != nil {
+	if _, err := s.write(ctx, tx, t, r, next, since, "Жизненный цикл подписки (PLAT-05)", uuid.Nil); err != nil {
 		return 0, err
 	}
 	if err := tx.Commit(); err != nil {

@@ -16,6 +16,7 @@ import (
 
 	billingapi "github.com/ortus/ortus-crm/backend/internal/api/billing"
 	platformapi "github.com/ortus/ortus-crm/backend/internal/api/platform"
+	"github.com/ortus/ortus-crm/backend/internal/control/billing"
 	"github.com/ortus/ortus-crm/backend/internal/control/subscriptions"
 	"github.com/ortus/ortus-crm/backend/internal/platform/problem"
 	"github.com/ortus/ortus-crm/backend/internal/platform/requestid"
@@ -66,10 +67,17 @@ func storeError(err error) error {
 	return problem.Wrap(problem.CodeDependencyUnavailable, err)
 }
 
+// TermsSource is the billing of the control DB (billing.Store, W4.60): the tier, the terms and the seats of a
+// subscription.
+type TermsSource interface {
+	Terms(ctx context.Context, sub subscriptions.Subscription) (billing.Terms, error)
+}
+
 // PlatformServer is the tag Platform with the subscription operations of W1.08.
 type PlatformServer struct {
 	platformapi.StrictServerInterface
-	Subs Subscriptions
+	Subs  Subscriptions
+	Terms TermsSource // W4.60: the fields of W4.07 of getPlatformSubscription; nil — none
 }
 
 func platformSubscription(s subscriptions.Subscription) platformapi.Subscription {
@@ -93,9 +101,15 @@ func (s PlatformServer) GetPlatformSubscription(ctx context.Context, req platfor
 	if err != nil {
 		return nil, storeError(err)
 	}
+	body := platformSubscription(sub)
+	if t, ok, err := terms(ctx, s.Terms, sub); err != nil {
+		return nil, err
+	} else if ok {
+		platformTerms(&body, sub, t)
+	}
 	cc, rid, tag := noStore, requestid.FromContext(ctx), ETag(sub.Revision)
 	return platformapi.GetPlatformSubscription200JSONResponse{
-		Body:    platformSubscription(sub),
+		Body:    body,
 		Headers: platformapi.GetPlatformSubscription200ResponseHeaders{CacheControl: &cc, ETag: &tag, XRequestId: &rid},
 	}, nil
 }
@@ -139,7 +153,8 @@ func (s PlatformServer) UpdatePlatformSubscription(ctx context.Context, req plat
 // BillingServer is the tag Billing with the subscription operations of W1.08.
 type BillingServer struct {
 	billingapi.StrictServerInterface
-	Subs Subscriptions
+	Subs  Subscriptions
+	Terms TermsSource // W4.60: the fields of W4.07 of getTenantSubscription; nil — none
 }
 
 // NewBillingServer embeds base (nil: every other operation of the tag answers 501 until W1.09).
@@ -177,9 +192,15 @@ func (s BillingServer) GetTenantSubscription(ctx context.Context, _ billingapi.G
 	if err != nil {
 		return nil, storeError(err)
 	}
+	body := billingSubscription(sub)
+	if t, ok, err := terms(ctx, s.Terms, sub); err != nil {
+		return nil, err
+	} else if ok {
+		billingTerms(&body, sub, t)
+	}
 	cc, rid, tag := noStore, requestid.FromContext(ctx), ETag(sub.Revision)
 	return billingapi.GetTenantSubscription200JSONResponse{
-		Body:    billingSubscription(sub),
+		Body:    body,
 		Headers: billingapi.GetTenantSubscription200ResponseHeaders{CacheControl: &cc, ETag: &tag, XRequestId: &rid},
 	}, nil
 }

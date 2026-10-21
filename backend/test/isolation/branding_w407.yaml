@@ -1,13 +1,11 @@
 # Матрица изоляции: тег Branding контрактного PR 6 этапа 4 (W4.07, 0.8.0-stage4; шаг 4.6) — оформление организации.
-# Тег не смонтирован до W4.60 (Servers.Branding == nil → 501 после шлюза): pending. Отказы шлюза (x-scope tenant-owner)
-# — в branding_w407_gate.yaml без pending. updateTenantBranding требует If-Match — строки только отказов.
+# Хендлеры — W4.60. Отказы шлюза (x-scope tenant-owner) — в branding_w407_gate.yaml. updateTenantBranding требует If-Match — строки только отказов.
 # Формат — README.md. После правки: go -C backend generate ./test/isolation
 module: branding_w407
 endpoints:
   - op: getTenantBranding
     method: GET
     path: /api/v1/tenants/{tenantId}/branding
-    pending: W4.60
     rows:
       - actor: a.owner
         params: { tenantId: tenant:a }
@@ -23,7 +21,6 @@ endpoints:
   - op: updateTenantBranding
     method: PUT
     path: /api/v1/tenants/{tenantId}/branding
-    pending: W4.60
     rows:
       - actor: b.owner
         params: { tenantId: tenant:a }
@@ -36,7 +33,6 @@ endpoints:
   - op: uploadBrandingAsset
     method: POST
     path: /api/v1/tenants/{tenantId}/branding/assets
-    pending: W4.60
     rows:
       - actor: b.owner
         params: { tenantId: tenant:a }

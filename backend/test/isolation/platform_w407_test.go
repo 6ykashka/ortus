@@ -19,7 +19,6 @@ var platformW407Matrix = matrix.File{
 			Method:  "GET",
 			Path:    "/api/v1/platform/subscription-requests",
 			Channel: "http",
-			Pending: "W4.60",
 			Rows: []matrix.Row{
 				{
 					Actor:  "anonymous",
@@ -32,6 +31,16 @@ var platformW407Matrix = matrix.File{
 				{
 					Actor:  "p.operator",
 					Status: 200,
+				},
+				{
+					Actor:  "p.billing",
+					Status: 200,
+				},
+				{
+					Actor:  "p.support",
+					Status: 403,
+					Code:   "forbidden_action",
+					Note:   "у поддержки нет platform.billing.read",
 				},
 			},
 		},
@@ -40,7 +49,6 @@ var platformW407Matrix = matrix.File{
 			Method:  "POST",
 			Path:    "/api/v1/platform/subscription-requests/{changeRequestId}/decision",
 			Channel: "http",
-			Pending: "W4.60",
 			Rows: []matrix.Row{
 				{
 					Actor:  "anonymous",
@@ -50,9 +58,42 @@ var platformW407Matrix = matrix.File{
 				},
 				{
 					Actor:  "a.owner",
+					Params: map[string]string{"changeRequestId": "subscription_request:b.pending"},
+					Status: 404,
+					Absent: []string{"tenant:b"},
+					Body:   "{\"decision\": \"approve\"}",
+					Note:   "владелец организации — не оператор, даже для настоящей заявки",
+				},
+				{
+					Actor:  "p.support",
+					Params: map[string]string{"changeRequestId": "subscription_request:b.pending"},
+					Status: 403,
+					Code:   "forbidden_action",
+					Body:   "{\"decision\": \"approve\"}",
+				},
+				{
+					Actor:   "p.billing",
+					Params:  map[string]string{"changeRequestId": "subscription_request:b.pending"},
+					Status:  200,
+					Present: []string{"subscription_request:b.pending", "tenant:b"},
+					Absent:  []string{"tenant:a"},
+					Body:    "{\"decision\": \"reject\", \"note\": \"Проверка изоляции: оплата не поступила\"}",
+					Note:    "отказ не меняет тариф и места B — соседние строки не задеты",
+				},
+				{
+					Actor:  "p.operator",
+					Params: map[string]string{"changeRequestId": "subscription_request:a.rejected"},
+					Status: 409,
+					Code:   "invalid_transition",
+					Body:   "{\"decision\": \"approve\"}",
+					Note:   "решённая заявка — повторного решения нет",
+				},
+				{
+					Actor:  "p.billing",
 					Params: map[string]string{"changeRequestId": "tenant:missing"},
 					Status: 404,
 					Body:   "{\"decision\": \"approve\"}",
+					Note:   "биллинг решает заявки; несуществующая — 404",
 				},
 			},
 		},
@@ -61,7 +102,6 @@ var platformW407Matrix = matrix.File{
 			Method:  "GET",
 			Path:    "/api/v1/platform/price-book/versions",
 			Channel: "http",
-			Pending: "W4.60",
 			Rows: []matrix.Row{
 				{
 					Actor:  "anonymous",
@@ -75,6 +115,11 @@ var platformW407Matrix = matrix.File{
 					Actor:  "p.operator",
 					Status: 200,
 				},
+				{
+					Actor:  "p.support",
+					Status: 403,
+					Code:   "forbidden_action",
+				},
 			},
 		},
 		{
@@ -82,17 +127,29 @@ var platformW407Matrix = matrix.File{
 			Method:  "POST",
 			Path:    "/api/v1/platform/price-book/versions",
 			Channel: "http",
-			Pending: "W4.60",
 			Rows: []matrix.Row{
 				{
 					Actor:  "anonymous",
 					Status: 401,
-					Body:   "{\"effectiveFrom\": \"2026-12-01\", \"note\": \"Проверка изоляции\", \"tiers\": [{\"name\": \"Старт\", \"seatsLimit\": 10, \"monthAmountMinor\": 390000}], \"terms\": [{\"months\": 1, \"discountPercent\": 0}, {\"months\": 4, \"discountPercent\": 5}, {\"months\": 8, \"discountPercent\": 10}, {\"months\": 12, \"discountPercent\": 20}]}",
+					Body:   "{\"effectiveFrom\": \"2099-12-01\", \"note\": \"Проверка изоляции\", \"tiers\": [{\"name\": \"Старт\", \"seatsLimit\": 10, \"monthAmountMinor\": 390000}], \"terms\": [{\"months\": 1, \"discountPercent\": 0}, {\"months\": 4, \"discountPercent\": 5}, {\"months\": 8, \"discountPercent\": 10}, {\"months\": 12, \"discountPercent\": 20}]}",
 				},
 				{
 					Actor:  "a.owner",
 					Status: 404,
-					Body:   "{\"effectiveFrom\": \"2026-12-01\", \"note\": \"Проверка изоляции\", \"tiers\": [{\"name\": \"Старт\", \"seatsLimit\": 10, \"monthAmountMinor\": 390000}], \"terms\": [{\"months\": 1, \"discountPercent\": 0}, {\"months\": 4, \"discountPercent\": 5}, {\"months\": 8, \"discountPercent\": 10}, {\"months\": 12, \"discountPercent\": 20}]}",
+					Body:   "{\"effectiveFrom\": \"2099-12-01\", \"note\": \"Проверка изоляции\", \"tiers\": [{\"name\": \"Старт\", \"seatsLimit\": 10, \"monthAmountMinor\": 390000}], \"terms\": [{\"months\": 1, \"discountPercent\": 0}, {\"months\": 4, \"discountPercent\": 5}, {\"months\": 8, \"discountPercent\": 10}, {\"months\": 12, \"discountPercent\": 20}]}",
+				},
+				{
+					Actor:  "p.operator",
+					Status: 201,
+					Body:   "{\"effectiveFrom\": \"2099-12-01\", \"note\": \"Проверка изоляции\", \"tiers\": [{\"name\": \"Старт\", \"seatsLimit\": 10, \"monthAmountMinor\": 390000}], \"terms\": [{\"months\": 1, \"discountPercent\": 0}, {\"months\": 4, \"discountPercent\": 5}, {\"months\": 8, \"discountPercent\": 10}, {\"months\": 12, \"discountPercent\": 20}]}",
+					Note:   "запланированная версия; действующая v1 и заявки по ней не меняются",
+				},
+				{
+					Actor:  "p.billing",
+					Status: 403,
+					Code:   "forbidden_action",
+					Body:   "{\"effectiveFrom\": \"2099-12-01\", \"note\": \"Проверка изоляции\", \"tiers\": [{\"name\": \"Старт\", \"seatsLimit\": 10, \"monthAmountMinor\": 390000}], \"terms\": [{\"months\": 1, \"discountPercent\": 0}, {\"months\": 4, \"discountPercent\": 5}, {\"months\": 8, \"discountPercent\": 10}, {\"months\": 12, \"discountPercent\": 20}]}",
+					Note:   "сетку публикуют владелец и администратор платформы",
 				},
 			},
 		},
@@ -101,7 +158,6 @@ var platformW407Matrix = matrix.File{
 			Method:  "POST",
 			Path:    "/api/v1/platform/price-book/versions/{version}/cancel",
 			Channel: "http",
-			Pending: "W4.60",
 			Rows: []matrix.Row{
 				{
 					Actor:  "anonymous",
@@ -120,7 +176,6 @@ var platformW407Matrix = matrix.File{
 			Method:  "GET",
 			Path:    "/api/v1/platform/usage",
 			Channel: "http",
-			Pending: "W4.60",
 			Rows: []matrix.Row{
 				{
 					Actor:  "anonymous",
@@ -136,6 +191,11 @@ var platformW407Matrix = matrix.File{
 					Present: []string{"tenant:a", "tenant:b"},
 					Note:    "только метаданные control DB обеих организаций",
 				},
+				{
+					Actor:   "p.support",
+					Status:  200,
+					Present: []string{"tenant:a", "tenant:b"},
+				},
 			},
 		},
 		{
@@ -143,7 +203,6 @@ var platformW407Matrix = matrix.File{
 			Method:  "GET",
 			Path:    "/api/v1/platform/users/{accountId}",
 			Channel: "http",
-			Pending: "W4.60",
 			Rows: []matrix.Row{
 				{
 					Actor:  "anonymous",
@@ -170,7 +229,6 @@ var platformW407Matrix = matrix.File{
 			Method:  "POST",
 			Path:    "/api/v1/platform/users/{accountId}/lock",
 			Channel: "http",
-			Pending: "W4.60",
 			Rows: []matrix.Row{
 				{
 					Actor:  "anonymous",
@@ -184,6 +242,13 @@ var platformW407Matrix = matrix.File{
 					Status: 404,
 					Body:   "{\"reason\": \"Проверка изоляции\"}",
 				},
+				{
+					Actor:  "p.billing",
+					Params: map[string]string{"accountId": "account:a.owner"},
+					Status: 403,
+					Code:   "forbidden_action",
+					Body:   "{\"reason\": \"Проверка изоляции\"}",
+				},
 			},
 		},
 		{
@@ -191,8 +256,14 @@ var platformW407Matrix = matrix.File{
 			Method:  "POST",
 			Path:    "/api/v1/platform/users/{accountId}/unlock",
 			Channel: "http",
-			Pending: "W4.60",
 			Rows: []matrix.Row{
+				{
+					Actor:  "p.operator",
+					Params: map[string]string{"accountId": "account:a.owner"},
+					Status: 409,
+					Code:   "invalid_transition",
+					Note:   "вход не заблокирован — хендлер дошёл до аккаунта",
+				},
 				{
 					Actor:  "anonymous",
 					Params: map[string]string{"accountId": "account:a.owner"},
@@ -210,8 +281,14 @@ var platformW407Matrix = matrix.File{
 			Method:  "POST",
 			Path:    "/api/v1/platform/users/{accountId}/mfa-reset",
 			Channel: "http",
-			Pending: "W4.60",
 			Rows: []matrix.Row{
+				{
+					Actor:  "p.operator",
+					Params: map[string]string{"accountId": "account:a.owner"},
+					Status: 409,
+					Code:   "invalid_transition",
+					Note:   "второго фактора нет",
+				},
 				{
 					Actor:  "anonymous",
 					Params: map[string]string{"accountId": "account:a.owner"},
@@ -229,7 +306,6 @@ var platformW407Matrix = matrix.File{
 			Method:  "GET",
 			Path:    "/api/v1/platform/operators",
 			Channel: "http",
-			Pending: "W4.60",
 			Rows: []matrix.Row{
 				{
 					Actor:  "anonymous",
@@ -244,6 +320,11 @@ var platformW407Matrix = matrix.File{
 					Status:  200,
 					Present: []string{"account:p.operator"},
 				},
+				{
+					Actor:   "p.billing",
+					Status:  200,
+					Present: []string{"account:p.operator"},
+				},
 			},
 		},
 		{
@@ -251,8 +332,13 @@ var platformW407Matrix = matrix.File{
 			Method:  "POST",
 			Path:    "/api/v1/platform/operators",
 			Channel: "http",
-			Pending: "W4.60",
 			Rows: []matrix.Row{
+				{
+					Actor:  "p.operator",
+					Status: 201,
+					Body:   "{\"displayName\": \"Проверка изоляции\", \"email\": \"iso-invite@ortus.example\", \"role\": \"support\"}",
+					Note:   "приглашение владельцем платформы",
+				},
 				{
 					Actor:  "anonymous",
 					Status: 401,
@@ -263,6 +349,13 @@ var platformW407Matrix = matrix.File{
 					Status: 404,
 					Body:   "{\"displayName\": \"Проверка\", \"email\": \"check@ortus.example\", \"role\": \"support\"}",
 				},
+				{
+					Actor:  "p.admin",
+					Status: 403,
+					Code:   "forbidden_action",
+					Body:   "{\"displayName\": \"Проверка\", \"email\": \"check@ortus.example\", \"role\": \"support\"}",
+					Note:   "операторов приглашает только владелец платформы",
+				},
 			},
 		},
 		{
@@ -270,7 +363,6 @@ var platformW407Matrix = matrix.File{
 			Method:  "PATCH",
 			Path:    "/api/v1/platform/operators/{operatorId}",
 			Channel: "http",
-			Pending: "W4.60",
 			Rows: []matrix.Row{
 				{
 					Actor:  "anonymous",

@@ -62,8 +62,9 @@ type TenantDef struct {
 	Units           []UnitDef // parents first
 	Roles           []RoleDef
 	Groups          []GroupDef
-	Objects         []ObjectDef // targets of object-bound grants (PD-53): projects, warehouses, resources
-	Content         Content     // objects of the modules for positive rows; Load writes them WithContent
+	Objects         []ObjectDef  // targets of object-bound grants (PD-53): projects, warehouses, resources
+	Content         Content      // objects of the modules for positive rows; Load writes them WithContent
+	Requests        []RequestDef // tier requests of the control DB (W4.60, billing.go)
 }
 
 // Content is what the modules of stage 1 keep in the tenant DB and the rows of the matrix read (W1.44): people
@@ -259,13 +260,15 @@ const (
 	refVehicle      = "vehicle"
 	refFile         = "file"
 	refNotification = "notification"
+	// Tier requests of the control DB (W4.60).
+	refRequest = "subscription_request"
 )
 
 // localKinds are the reference kinds <kind>:<tenant>.<key>.
 var localKinds = []string{
 	refUnit, refRole, refGroup, ObjectProject, ObjectWarehouse, ObjectResource, ObjectSpace, ObjectPage, ObjectFolder,
 	ObjectDoc, ObjectAccount, ObjectChat, ObjectRepairProject,
-	refImport, refVehicle, refFile, refNotification,
+	refImport, refVehicle, refFile, refNotification, refRequest,
 }
 
 func tenantRef(t string) string              { return refTenant + ":" + t }
@@ -280,6 +283,7 @@ func accountRef(actor string) string         { return refAccount + ":" + actor }
 //	space:<t>.<key> · page:<t>.<key> · folder:<t>.<key> · doc:<t>.<key> · cash_account:<t>.<key> · chat:<t>.<key>
 //	repair_project:<t>.<key>
 //	import:<t>.<key> · vehicle:<t>.<key> · file:<t>.<key> · notification:<t>.<key>
+//	subscription_request:<t>.<key>
 //	account:<actor> · person:<actor>@<t> · membership:<actor>@<t>
 //	tenant:missing (MissingTenant) — a tenant of no database
 //
@@ -309,6 +313,9 @@ func (c Catalog) Refs() []string {
 			out = append(out, localRef(o.Kind, t.Key, o.Key))
 		}
 		out = append(out, t.Content.refs(t.Key)...)
+		for _, r := range t.Requests {
+			out = append(out, localRef(refRequest, t.Key, r.Key))
+		}
 	}
 	for _, a := range c.Actors {
 		out = append(out, accountRef(a.Key))
@@ -386,6 +393,7 @@ func (c Catalog) validateTenants(fail failFunc) {
 		validateObjects(t, fail)
 		validateGroups(t, fail)
 		c.validateContent(t, fail)
+		c.validateRequests(t, fail)
 		if !c.hasOwner(t.Key) {
 			fail("tenant %s: no owner", t.Key)
 		}
@@ -577,6 +585,8 @@ func (t TenantDef) hasLocal(kind, key string) bool {
 		return t.hasGroup(key)
 	case refImport, refVehicle, refFile, refNotification:
 		return t.Content.has(kind, key)
+	case refRequest:
+		return slices.ContainsFunc(t.Requests, func(r RequestDef) bool { return r.Key == key })
 	default:
 		return t.hasObject(kind, key)
 	}

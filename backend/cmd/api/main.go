@@ -200,6 +200,14 @@ func build(ctx context.Context, cfg config, log *slog.Logger, getenv func(string
 	}
 	// W1.08: the module registry, the subscription of the control DB and their parts of /me/context.
 	modules, subs := newModules(pools, cfg), subscriptions.Store{DB: controlSQL, Now: cfg.clock()}
+	// W4.60: the billing (price book, tier requests, seats, usage) and the branding of the control DB.
+	ctl, err := newControl(controlSQL, control, pools, subs, modules, ch, ev, cfg, getenv, log)
+	if err != nil {
+		pools.Close()
+		_ = controlSQL.Close()
+		control.Close()
+		return deps{}, nil, err
+	}
 	// W1.05; W1.03 and W1.06 embed theirs (access.go); W1.41: inviteMember sends the letter with the link.
 	access := newAccessServer(pools, ev, control, cfg.clock())
 	access.assignmentsHandler = access.WithInvitationMail( // assignments.Handler (embedded)
@@ -214,12 +222,15 @@ func build(ctx context.Context, cfg config, log *slog.Logger, getenv func(string
 			Context: &mehttp.Server{
 				Dir: dir, TenantDB: tenantStore{TenantData: data, Evaluator: ev},
 				LastTenants: mehttp.NewPGLastTenants(control), Log: log,
-				Inbox:  &inbox.Inbox{Pools: pools, Audience: inbox.AuthzAudience{E: ev}}, // W1.10: /me/notifications
-				Extras: meExtras{subs: subs, modules: modules, pools: pools},             // W1.08: modules, tenantState
+				Inbox:    &inbox.Inbox{Pools: pools, Audience: inbox.AuthzAudience{E: ev}}, // W1.10: /me/notifications
+				Extras:   meExtras{subs: subs, modules: modules, pools: pools},             // W1.08: modules, tenantState
+				Branding: ctl.themes,                                                       // W4.60: TenantContext.branding
 			},
 			Home: homeServer(dir, pools, ev, moduleStates{S: modules}, orgFacts{control: control, subs: subs}, cfg.clock()), // W2.09, W2.54
 			Auth: auth,
-			Platform: subshttp.PlatformServer{ // W1.08: subscriptions over the operator commands (W1.48) and the registry (W1.02)
+			// W4.60 (control.go): the requests, the price book, the usage and the facts of the tenants, the catalogue of
+			// accounts and the operators over the subscriptions of W1.08, the operator commands (W1.48) and the registry.
+			Platform: ctl.platform(subshttp.PlatformServer{
 				StrictServerInterface: &operators.Server{
 					Server: &platformhttp.Server{Store: platformhttp.SQLStore{Control: controlSQL}},
 					// Q-W1.48-12 (W1.42): the members of a suspended, resumed, extended or renamed tenant get context.changed.
@@ -227,12 +238,13 @@ func build(ctx context.Context, cfg config, log *slog.Logger, getenv func(string
 						Commands: &operators.Service{Control: controlSQL, Now: cfg.clock()}, hint: ch.tenantChanged, log: log,
 					},
 				},
-				Subs: subs,
-			},
-			Files:   filesSrv,                                    // W1.09
-			Billing: subshttp.NewBillingServer(billingSrv, subs), // W1.09: storage; W1.08: subscription over it
-			Modules: &modulesreg.Server{S: modules},              // W1.08
-			Access:  access,                                      // W1.05, W1.06, W1.41 (above)
+				Subs: subs, Terms: ctl.billing,
+			}),
+			Files:    filesSrv,                            // W1.09
+			Billing:  ctl.tenantBilling(billingSrv, subs), // W1.09: storage; W1.08: subscription; W4.60: price book, requests
+			Branding: ctl.brandingServer,                  // W4.60
+			Modules:  &modulesreg.Server{S: modules},      // W1.08
+			Access:   access,                              // W1.05, W1.06, W1.41 (above)
 			// fleet.go: W2.02 vehicles and reservations under the inspections of W2.04; W2.03…W2.07 wire theirs there.
 			Fleet:    newFleet(pools, ev, control, cfg.clock()),
 			Earnings: newEarnings(pools, ev, cfg.clock()),                           // W2.06: earnings by a separate route (earnings.go)
@@ -243,14 +255,17 @@ func build(ctx context.Context, cfg config, log *slog.Logger, getenv func(string
 		ready:   control.Ping,
 		// S1-25: tenant keys in core.idempotency_keys of the tenant DB; identity and platform operations in
 		// idempotency_keys of the control DB (control 0005, W1.48: tenant + actor + operation).
-		idem: &idem.Guard{Stores: idem.TenantStores{Pools: pools, Platform: operators.Keys{DB: controlSQL}}, Log: log},
+		// W4.60: a branding file of 1 MiB comes in base64.
+		idem: &idem.Guard{Stores: idem.TenantStores{Pools: pools, Platform: operators.Keys{DB: controlSQL}}, Log: log, Bodies: uploadBodies},
 		// W1.08: the module gate (AC-12) and the subscription lifecycle (AC-11, SUBSCRIPTION_SWEEP_INTERVAL); W1.42: the
-		// LISTEN of the realtime hints next to it.
-		modules:    modulesreg.Gate{S: modules},
-		background: together(lifecycle(subs, every, log), ch.listen),
-		newcomers:  auth.Accounts, // W1.50: a first dev login creates the account as the first OIDC sign-in
-		realtime:   ch.handler(),  // W1.42: GET /api/v1/realtime
-		stopping:   ch.stop,       // W1.42: http.Server does not track the hijacked sockets
+		// LISTEN of the realtime hints next to it; W4.60: the downgrades due with the lifecycle.
+		modules:       modulesreg.Gate{S: modules},
+		platformRoles: ctl.roles, // W4.60: x-permissions of /platform/** by the role of the operator
+		brandAssets:   ctl.public,
+		background:    together(lifecycle(subs, every, log), dueRequests(ctl.billing, every, ch.tenantChanged, log), ch.listen),
+		newcomers:     auth.Accounts, // W1.50: a first dev login creates the account as the first OIDC sign-in
+		realtime:      ch.handler(),  // W1.42: GET /api/v1/realtime
+		stopping:      ch.stop,       // W1.42: http.Server does not track the hijacked sockets
 	}
 	return d, func() {
 		pools.Close()

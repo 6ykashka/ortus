@@ -3,6 +3,8 @@ package mehttp
 import (
 	"context"
 
+	"github.com/google/uuid"
+
 	contextapi "github.com/ortus/ortus-crm/backend/internal/api/context"
 	"github.com/ortus/ortus-crm/backend/internal/platform/tenantctx"
 )
@@ -16,6 +18,25 @@ type Extras interface {
 	TenantState(ctx context.Context, m tenantctx.Membership, withDB bool) (*contextapi.TenantState, error)
 	// Modules is the module availability of an active membership with its capabilities.
 	Modules(ctx context.Context, tc tenantctx.TenantContext, tenantState string, caps []contextapi.ScopedCapability) ([]contextapi.ModuleAvailability, error)
+}
+
+// Branding is the theme of the branding in force of a tenant (W4.60, brandinghttp.Themes). It is optional: without it
+// TenantContext.branding is absent; a failing source leaves it absent for that tenant only (logged).
+type Branding interface {
+	Theme(ctx context.Context, tenantID uuid.UUID) (*contextapi.BrandingTheme, error)
+}
+
+// branding sets t.Branding from the Branding source.
+func (s *Server) branding(ctx context.Context, t *contextapi.TenantContext) {
+	if s.Branding == nil {
+		return
+	}
+	theme, err := s.Branding.Theme(ctx, t.TenantId)
+	if err != nil {
+		s.degraded(ctx, t.TenantId, err)
+		return
+	}
+	t.Branding = theme
 }
 
 // tenantState sets t.TenantState from Extras (absent when there is none or it fails).

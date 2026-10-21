@@ -8,7 +8,10 @@ import (
 	"slices"
 	"strings"
 
+	"github.com/google/uuid"
+
 	"github.com/ortus/ortus-crm/backend/internal/api/catalog"
+	"github.com/ortus/ortus-crm/backend/internal/control/tenants/operators"
 	"github.com/ortus/ortus-crm/backend/internal/platform/authz"
 	"github.com/ortus/ortus-crm/backend/internal/platform/httpx"
 	"github.com/ortus/ortus-crm/backend/internal/platform/idem"
@@ -121,7 +124,8 @@ type gateway struct {
 	// replays answer a repeat of an operation whose first call ended the session (logout, Q-W1.01-10): the
 	// session is gone, so the answer comes before the 401 of the gateway, or not at all.
 	replays map[string]replayFunc
-	modules moduleGate // nil: no module check (unit tests of the gateway); W1.08
+	modules moduleGate    // nil: no module check (unit tests of the gateway); W1.08
+	roles   platformRoles // nil: an operator passes every /platform/** operation (unit tests); W4.60
 }
 
 func (g *gateway) middleware(next http.Handler) http.Handler {
@@ -177,6 +181,31 @@ func underAPI(r *http.Request) bool {
 	return strings.HasPrefix(r.URL.Path, apiPrefix) || strings.HasPrefix(r.URL.RawPath, apiPrefix)
 }
 
+// resolve is the tenant of a request: the owner keeps the billing operations of billingAnyState in every working
+// state of the tenant (W4.60, Q-W4.07-3), every other operation follows the state (Resolve).
+func (g *gateway) resolve(ctx context.Context, account uuid.UUID, rawTenantID string, op catalog.Operation) (tenantctx.TenantContext, error) {
+	if billingAnyState[op.ID] {
+		return tenantctx.ResolveRecovery(ctx, g.dir, account, rawTenantID)
+	}
+	return tenantctx.Resolve(ctx, g.dir, account, rawTenantID, op.Mutating)
+}
+
+// permitOperator checks the x-permissions of a /platform/** operation against the role of the operator (W4.60,
+// Q-W4.07-14): another role is 403 forbidden_action before the handler, as for tenant operations.
+func (g *gateway) permitOperator(ctx context.Context, account uuid.UUID, op catalog.Operation) error {
+	if g.roles == nil {
+		return nil
+	}
+	role, err := g.roles.PlatformRole(ctx, account)
+	if err != nil {
+		return problem.Wrap(problem.CodeDependencyUnavailable, err)
+	}
+	if !operators.AllowedAll(role, op.Permissions, op.PermissionsMode) {
+		return problem.New(problem.CodeForbiddenAction, "")
+	}
+	return nil
+}
+
 // operationAdmitter is an authorizer that also weighs the x-scope of the operation (authz.Gateway, W1.04).
 type operationAdmitter interface {
 	Admit(ctx context.Context, tc tenantctx.TenantContext, op authz.Operation) error
@@ -212,8 +241,11 @@ func (g *gateway) admit(r *http.Request, op catalog.Operation, params map[string
 		if !isOp {
 			return r, problem.New(problem.CodeNotFound, "")
 		}
+		if err := g.permitOperator(ctx, s.AccountID, op); err != nil {
+			return r, err
+		}
 	case strings.HasPrefix(op.Path, tenantPrefix):
-		tc, err := tenantctx.Resolve(ctx, g.dir, s.AccountID, params["tenantId"], op.Mutating)
+		tc, err := g.resolve(ctx, s.AccountID, params["tenantId"], op)
 		if err != nil {
 			return r, err
 		}

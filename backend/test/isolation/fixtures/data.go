@@ -204,6 +204,8 @@ func Default() Catalog {
 				},
 				Objects: objects(),
 				Content: contentA(),
+				// W4.60: решённая заявка — строки «чужая заявка через свой URL» и «своя решённая — 409».
+				Requests: []RequestDef{{Key: "rejected", Number: "SR-9001", Owner: "a.owner", Tier: TierTeam, Status: RequestRejected}},
 			},
 			{
 				Key: TenantB, Slug: "iso-foreign", Name: "Чужой клиент",
@@ -214,6 +216,8 @@ func Default() Catalog {
 				Roles:   roles(),
 				Objects: objects(),
 				Content: contentB(),
+				// W4.60: заявка на рассмотрении — положительная строка решения оператора.
+				Requests: []RequestDef{{Key: "pending", Number: "SR-9002", Owner: "b.owner", Tier: TierTeam, Status: RequestPending}},
 			},
 		},
 		Actors: []ActorDef{
@@ -303,6 +307,11 @@ func Default() Catalog {
 			}},
 			// Оператор платформы (отдельный контур, без членств): положительные строки тега Platform.
 			{Key: "p.operator", Name: "Оператор платформы", Operator: "owner"},
+			// W4.60 (Q-W4.07-14): роли операторов на шлюзе /platform/** — поддержка без биллинга, биллинг без управления
+			// пользователями, администратор без управления операторами.
+			{Key: "p.support", Name: "Оператор поддержки", Operator: "support"},
+			{Key: "p.billing", Name: "Оператор биллинга", Operator: "billing"},
+			{Key: "p.admin", Name: "Администратор платформы", Operator: "admin"},
 		},
 	}
 }

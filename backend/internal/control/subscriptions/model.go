@@ -73,6 +73,10 @@ type Subscription struct {
 	Entitlements                           []Entitlement
 	Revision                               int64
 	Stored                                 bool // false: derived from the tenant (no row yet)
+	// W4.60: the commercial terms of the paid period (subscriptions.term_months, price_version, amount_minor; control
+	// 0002); nil — none stored (a trial, a subscription of stage 1).
+	TermMonths, PriceVersion *int
+	AmountMinor              *int64
 }
 
 // Tenant is what the subscription needs of tenants.

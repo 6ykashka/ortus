@@ -77,21 +77,10 @@ const (
 // membership first, then the tenant state. A malformed, unknown or foreign tenant, an inactive membership and a
 // tenant that is provisioning, closing or closed all give the same not_found.
 func Resolve(ctx context.Context, dir Directory, accountID uuid.UUID, rawTenantID string, mutating bool) (TenantContext, error) {
-	tenantID, err := uuid.Parse(rawTenantID)
+	m, tc, err := member(ctx, dir, accountID, rawTenantID)
 	if err != nil {
-		return TenantContext{}, problem.New(problem.CodeNotFound, "")
+		return TenantContext{}, err
 	}
-	m, err := dir.Membership(ctx, accountID, tenantID)
-	if errors.Is(err, ErrNotFound) {
-		return TenantContext{}, problem.New(problem.CodeNotFound, "")
-	}
-	if err != nil {
-		return TenantContext{}, problem.Wrap(problem.CodeDependencyUnavailable, err)
-	}
-	if m.Status != membershipActive {
-		return TenantContext{}, problem.New(problem.CodeNotFound, "")
-	}
-	tc := TenantContext{TenantID: tenantID, MembershipID: m.ID, AccountID: accountID, PersonID: m.PersonProfileID, Owner: m.Owner}
 	switch m.TenantState {
 	case stateTrial, stateActive:
 	case stateGrace, stateReadOnly:
@@ -105,6 +94,28 @@ func Resolve(ctx context.Context, dir Directory, accountID uuid.UUID, rawTenantI
 		return TenantContext{}, problem.New(problem.CodeNotFound, "")
 	}
 	return tc, nil
+}
+
+// member finds the active membership of accountID in the tenant of the URL and its context, before any tenant state
+// is weighed (Resolve, ResolveRecovery): a malformed, unknown or foreign tenant and an inactive membership are the
+// same not_found.
+func member(ctx context.Context, dir Directory, accountID uuid.UUID, rawTenantID string) (Membership, TenantContext, error) {
+	tenantID, err := uuid.Parse(rawTenantID)
+	if err != nil {
+		return Membership{}, TenantContext{}, problem.New(problem.CodeNotFound, "")
+	}
+	m, err := dir.Membership(ctx, accountID, tenantID)
+	if errors.Is(err, ErrNotFound) {
+		return Membership{}, TenantContext{}, problem.New(problem.CodeNotFound, "")
+	}
+	if err != nil {
+		return Membership{}, TenantContext{}, problem.Wrap(problem.CodeDependencyUnavailable, err)
+	}
+	if m.Status != membershipActive {
+		return Membership{}, TenantContext{}, problem.New(problem.CodeNotFound, "")
+	}
+	tc := TenantContext{TenantID: tenantID, MembershipID: m.ID, AccountID: accountID, PersonID: m.PersonProfileID, Owner: m.Owner}
+	return m, tc, nil
 }
 
 type ctxKey struct{}

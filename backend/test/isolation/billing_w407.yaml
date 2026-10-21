@@ -1,14 +1,15 @@
 # Матрица изоляции: тег Billing контрактного PR 6 этапа 4 (W4.07, 0.8.0-stage4; шаг 4.6) — тарифная сетка владельца
-# и заявки на тариф. Хендлеров нет до W4.60 (pending). Отказы шлюза (нет billing.read, x-scope tenant-owner) — в
-# billing_w407_gate.yaml без pending. Заявок в фикстурах нет: строки отмены заявки — только отказы (чужая организация,
-# без сессии); положительные строки с заявкой добавит W4.60 вместе с фикстурой заявки.
+# и заявки на тариф (хендлеры W4.60). Отказы шлюза (нет billing.read, x-scope tenant-owner) — в
+# billing_w407_gate.yaml. Заявки фикстур (W4.60, возврат 1): subscription_request:a.rejected — решённая заявка A,
+# subscription_request:b.pending — заявка B на рассмотрении (её решает строка platform_w407.yaml). Строки идут
+# параллельно на одних фикстурах, поэтому команды не меняют чужих для соседних строк данных: a.owner создаёт заявку A
+# (у A нет открытой), отмена своей решённой — 409 (хендлер нашёл заявку, а не 404), чужая заявка через свой URL — 404.
 # Формат — README.md. После правки: go -C backend generate ./test/isolation
 module: billing_w407
 endpoints:
   - op: getTenantPriceBook
     method: GET
     path: /api/v1/tenants/{tenantId}/price-book
-    pending: W4.60
     rows:
       - actor: a.owner
         params: { tenantId: tenant:a }
@@ -28,12 +29,12 @@ endpoints:
   - op: listSubscriptionChangeRequests
     method: GET
     path: /api/v1/tenants/{tenantId}/subscription/change-requests
-    pending: W4.60
     rows:
       - actor: a.owner
         params: { tenantId: tenant:a }
         status: 200
-        absent: [tenant:b]
+        present: [subscription_request:a.rejected]
+        absent: [tenant:b, subscription_request:b.pending]
         note: заявки только своей организации
       - actor: b.owner
         params: { tenantId: tenant:a }
@@ -45,8 +46,14 @@ endpoints:
   - op: createSubscriptionChangeRequest
     method: POST
     path: /api/v1/tenants/{tenantId}/subscription/change-requests
-    pending: W4.60
     rows:
+      - actor: a.owner
+        params: { tenantId: tenant:a }
+        status: 201
+        present: [tenant:a]
+        absent: [tenant:b]
+        body: '{"tierCode": "unl", "termMonths": 12, "comment": "Проверка изоляции"}'
+        note: владелец просит тариф своей организации (безлимит — без проверки мест)
       - actor: b.owner
         params: { tenantId: tenant:a }
         status: 404
@@ -60,12 +67,26 @@ endpoints:
   - op: cancelSubscriptionChangeRequest
     method: POST
     path: /api/v1/tenants/{tenantId}/subscription/change-requests/{changeRequestId}/cancel
-    pending: W4.60
     rows:
+      - actor: a.owner
+        params: { tenantId: tenant:a, changeRequestId: subscription_request:a.rejected }
+        status: 409
+        code: invalid_transition
+        note: своя решённая заявка найдена — отменить нельзя
       - actor: b.owner
-        params: { tenantId: tenant:a, changeRequestId: tenant:missing }
+        params: { tenantId: tenant:b, changeRequestId: subscription_request:a.rejected }
+        status: 404
+        absent: [tenant:a]
+        note: настоящая заявка A через URL своей организации — как несуществующая
+      - actor: a.owner
+        params: { tenantId: tenant:a, changeRequestId: subscription_request:b.pending }
+        status: 404
+        absent: [tenant:b]
+        note: заявка B на рассмотрении через URL A — не найдена и не отменена
+      - actor: b.owner
+        params: { tenantId: tenant:a, changeRequestId: subscription_request:a.rejected }
         status: 404
         absent: [tenant:a]
       - actor: anonymous
-        params: { tenantId: tenant:a, changeRequestId: tenant:missing }
+        params: { tenantId: tenant:a, changeRequestId: subscription_request:a.rejected }
         status: 401

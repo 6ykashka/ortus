@@ -176,7 +176,10 @@ func (w *World) loadControl(ctx context.Context, versions map[string]int64) erro
 				return err
 			}
 		}
-		return nil
+		if err := loadPriceBook(ctx, tx, w.Now); err != nil { // W4.60 (billing.go)
+			return err
+		}
+		return w.loadRequests(ctx, tx)
 	})
 	return err
 }

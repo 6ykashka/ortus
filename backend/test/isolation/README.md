@@ -95,7 +95,7 @@ endpoints:
 
 ## Ссылки на фикстуры
 
-`tenant:a|b` · `unit:<t>.<unit>` · `role:<t>.<role>` · `group:<t>.<group>` · `project:<t>.<key>` (также `warehouse:`, `resource:`) · `import:<t>.<key>` · `vehicle:<t>.<key>` · `file:<t>.<key>` · `notification:<t>.<key>` · `account:<actor>` · `person:<actor>@<t>` · `membership:<actor>@<t>` · `tenant:missing` (организации нет ни в одной базе). Id — UUID v5 (`NameSpaceURL`, имя `ortus:isolation:<ссылка>`), одинаковые во всех прогонах. Объекты (`project:…`) строк в своих таблицах не имеют: на их id ссылаются назначения с объектной областью (PD-53), строку добавит модуль-владелец таблицы.
+`tenant:a|b` · `unit:<t>.<unit>` · `role:<t>.<role>` · `group:<t>.<group>` · `project:<t>.<key>` (также `warehouse:`, `resource:`) · `import:<t>.<key>` · `vehicle:<t>.<key>` · `file:<t>.<key>` · `notification:<t>.<key>` · `subscription_request:<t>.<key>` · `account:<actor>` · `person:<actor>@<t>` · `membership:<actor>@<t>` · `tenant:missing` (организации нет ни в одной базе). Id — UUID v5 (`NameSpaceURL`, имя `ortus:isolation:<ссылка>`), одинаковые во всех прогонах. Объекты (`project:…`) строк в своих таблицах не имеют: на их id ссылаются назначения с объектной областью (PD-53), строку добавит модуль-владелец таблицы.
 
 | Тенант             | Подразделения                                                                               | Роли                                                                                                                                                                                                                                                                                                                                                                                                                        |
 | ------------------ | ------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -137,6 +137,8 @@ endpoints:
 | `notification:a.owner`                               | системное владельцу (без права и подразделения)                                                                         |
 | `notification:a.member`, `notification:b.member`     | `ab.member`, `fleet.trips.read` в Москва-2 своей организации (BR-T2)                                                    |
 | `notification:b.trip-msk1`                           | `b.manager-msk1`, `fleet.trips.review` в Москва-1 тенанта B                                                             |
+
+Заявки на тариф (W4.60, control DB, пишутся всегда, без `WithContent`): `subscription_request:a.rejected` — SR-9001 владельца `a.owner` на «Команду», отклонена `p.operator`; `subscription_request:b.pending` — SR-9002 владельца `b.owner`, на рассмотрении (её решает только строка отказа `p.billing` в `platform_w407.yaml`). Не больше одной заявки на рассмотрении на организацию (`Validate`).
 
 Цель набора получает фиктивное хранилище (`S3_ENDPOINT=http://127.0.0.1:9`): `getFileDownload` только подписывает ссылку локально, в сеть не ходит. Загрузки в строках останавливает шлюз (`files_gate.yaml`).
 

@@ -43,8 +43,11 @@ const (
 // Permissions of the platform (api/permissions.yaml, section platform).
 const (
 	PermTenantsRead     = "platform.tenants.read"
+	PermTenantsCreate   = "platform.tenants.create"
 	PermTenantsManage   = "platform.tenants.manage"
 	PermUsersRead       = "platform.users.read"
+	PermUsersManage     = "platform.users.manage"
+	PermBillingRead     = "platform.billing.read"
 	PermBillingManage   = "platform.billing.manage"
 	PermPricingManage   = "platform.pricing.manage"
 	PermOperatorsManage = "platform.operators.manage"
@@ -178,20 +181,39 @@ func (c TrialExtension) Validate() error {
 	return invalid(bad)
 }
 
-// grants: design/docs/17-users-and-billing.md «Права» and «Роли». Every operator sees tenants and accounts; the
-// platform owner and the administrator manage tenants and the price book; billing changes subscriptions; only the
+// grants: design/docs/17-users-and-billing.md «Права» and «Роли», the description of PlatformOperator.role of the
+// contract 0.8.0-stage4 and PLATFORM_GRANTS of MSW (Q-W4.07-14; TestGrantsMatchMSW). Every operator sees tenants
+// and accounts; the platform owner and the administrator create and manage tenants and the price book; support
+// locks sign-in and resets the second factor; billing reads and decides tier requests and subscriptions; only the
 // owner manages operators.
 var grants = map[string][]string{
 	PermTenantsRead:     {RoleOwner, RoleAdmin, RoleBilling, RoleSupport},
 	PermUsersRead:       {RoleOwner, RoleAdmin, RoleBilling, RoleSupport},
+	PermTenantsCreate:   {RoleOwner, RoleAdmin},
 	PermTenantsManage:   {RoleOwner, RoleAdmin},
-	PermBillingManage:   {RoleOwner, RoleAdmin, RoleBilling},
 	PermPricingManage:   {RoleOwner, RoleAdmin},
+	PermUsersManage:     {RoleOwner, RoleAdmin, RoleSupport},
+	PermBillingRead:     {RoleOwner, RoleAdmin, RoleBilling},
+	PermBillingManage:   {RoleOwner, RoleAdmin, RoleBilling},
 	PermOperatorsManage: {RoleOwner},
 }
 
 // Allowed reports whether an operator role grants permission.
 func Allowed(role, permission string) bool { return slices.Contains(grants[permission], role) }
+
+// AllowedAll reports whether an operator role grants the x-permissions of an operation (W4.60, the gateway of
+// /platform/**): every permission for x-permissions-mode all (the default), at least one for any. An operation
+// without permissions is closed (fail-closed).
+func AllowedAll(role string, permissions []string, mode string) bool {
+	if len(permissions) == 0 {
+		return false
+	}
+	allowed := func(p string) bool { return Allowed(role, p) }
+	if mode == "any" {
+		return slices.ContainsFunc(permissions, allowed)
+	}
+	return !slices.ContainsFunc(permissions, func(p string) bool { return !allowed(p) })
+}
 
 // targetPermission is the right a journal row of each target type needs (listPlatformAuditEvents).
 var targetPermission = map[string]string{
@@ -306,9 +328,11 @@ func NextTrialEnd(sub subscriptions.Subscription, now time.Time, days int) time.
 }
 
 // publicKeys are the details a journal row may show (PlatformAuditEvent.details: scalar parameters of the action;
-// never business content of a tenant, e-mails, request hashes or error texts).
+// never business content of a tenant, e-mails, request hashes or error texts). W4.60 (step 4.6): the number of a
+// tier request, its tier and term, the version of the price book and its start, the roles of an operator.
 var publicKeys = []string{
 	"days", "trialEndsAt", "periodEndsAt", "graceEndsAt", "quotaBytes", "fromStatus", "toStatus", "planKey", "at", "permission",
+	"request", "tier", "termMonths", "version", "effectiveFrom", "role", "from", "to",
 }
 
 // PublicDetails returns the public scalar details of a platform_audit.details document (nil when there are none).

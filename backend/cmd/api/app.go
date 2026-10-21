@@ -10,6 +10,7 @@ import (
 	"github.com/go-chi/chi/v5"
 
 	"github.com/ortus/ortus-crm/backend/internal/api/catalog"
+	"github.com/ortus/ortus-crm/backend/internal/control/branding"
 	"github.com/ortus/ortus-crm/backend/internal/platform/httpx"
 	"github.com/ortus/ortus-crm/backend/internal/platform/idem"
 	"github.com/ortus/ortus-crm/backend/internal/platform/notify/realtime"
@@ -36,6 +37,8 @@ type deps struct {
 	idem     *idem.Guard                 // nil: no idempotency (unit tests)
 	replays  map[string]replayFunc       // operationId → answer for a revoked session (logout, W1.03)
 	modules  moduleGate                  // nil: no module check (unit tests); W1.08
+	// platformRoles is the role of an operator for the x-permissions of /platform/** (W4.60); nil — no role check.
+	platformRoles platformRoles
 	// newcomers creates the account of a first dev login outside the seed (W1.50, APP_ENV dev | e2e); nil — none.
 	newcomers dev.Creator
 	// background runs until its context ends: the subscription lifecycle of W1.08 and the LISTEN of the realtime
@@ -43,6 +46,8 @@ type deps struct {
 	background func(context.Context)
 	// realtime is the WebSocket gateway GET /api/v1/realtime (ADR-0015, W1.42); nil — the route is not mounted.
 	realtime http.Handler
+	// brandAssets serves the public files of the branding GET /brand-assets/{file} (W4.60); nil — not mounted.
+	brandAssets http.Handler
 	// stopping runs before the HTTP server shuts down: it closes the hijacked sockets and waits for them until ctx
 	// ends; nil — nothing.
 	stopping func(ctx context.Context)
@@ -61,8 +66,8 @@ func newHandler(d deps) http.Handler {
 		extra:   []string{dev.LoginPath, dev.LogoutPath, realtime.Path},
 		idem:    d.idem,
 		replays: d.replays,
-		modules: d.modules, // W1.08
-
+		modules: d.modules,       // W1.08
+		roles:   d.platformRoles, // W4.60
 	}
 	// authhttp.WithExchange: the strict server of the tag Auth reads and sets cookies (W1.03).
 	return requestid.Middleware(httpx.Logging(d.log)(httpx.Recover(d.log)(httpx.SecurityHeaders(
@@ -97,6 +102,9 @@ func newRouter(d deps) chi.Router {
 	}
 	if d.realtime != nil {
 		r.Get(realtime.Path, d.realtime.ServeHTTP) // W1.42: the WebSocket gateway of the realtime channel
+	}
+	if d.brandAssets != nil {
+		r.Get(branding.PublicPrefix+"{file}", d.brandAssets.ServeHTTP) // W4.60: logos and signs, public and immutable
 	}
 	mountTags(r, d.servers, mountOptions{
 		requestError: func(w http.ResponseWriter, req *http.Request, err error) {

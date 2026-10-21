@@ -1,16 +1,22 @@
 # Матрица изоляции: тег Platform контрактного PR 6 этапа 4 (W4.07, 0.8.0-stage4; шаг 4.6) — заявки на тариф и их
 # решение, тарифная сетка, «Использование», каталог аккаунтов, операторы. Участник организации, даже владелец,
-# оператором не является: /platform/** для него не существует (404, шлюз). Хендлеров нет до W4.60 (pending).
-# Положительные строки — только чтения оператора: команды над общими фикстурами (блокировка a.owner, роль
-# p.operator) сломали бы соседние строки, команды с If-Match формат не передаёт — их проверит W4.60 тестами стека.
-# Заявок и версий сетки в фикстурах нет: параметр — несуществующий id (tenant:missing).
+# оператором не является: /platform/** для него не существует (404, шлюз). Хендлеры — W4.60; роль оператора (Q-W4.07-14)
+# шлюз проверяет до хендлера: p.support без биллинга, p.billing без управления пользователями и сетки, p.admin без
+# управления операторами — 403 forbidden_action.
+# Строки идут параллельно на общих фикстурах (W4.60, возврат 1): команды — только те, что не меняют данных соседних
+# строк. Решение оператора — отказ по subscription_request:b.pending (её больше никто не трогает), решённая заявка A —
+# 409; приглашение оператора и публикация версии сетки с 01.12.2099 — 201; разблокировка и сброс второго фактора a.owner —
+# 409 (вход не заблокирован, фактора нет: хендлер дошёл до аккаунта). Блокировка a.owner и смена роли p.operator
+# сломали бы соседние строки, If-Match формат не передаёт — их проверяют тесты стека W4.60 (cmd/api).
+# Дата сетки — 2099-12-01, а не ближняя: фикстуры и API идут по реальным часам, billing.Draft.Check отклоняет дату не
+# позже сегодняшней (422 «Дата начала — не раньше завтрашнего дня»), верхней границы нет. Ближняя дата сделала бы строку
+# 201 красной сама по себе; страж — matrix_dates_test.go (W4.60, возврат 2).
 # Формат — README.md. После правки: go -C backend generate ./test/isolation
 module: platform_w407
 endpoints:
   - op: listPlatformSubscriptionRequests
     method: GET
     path: /api/v1/platform/subscription-requests
-    pending: W4.60
     rows:
       - actor: anonymous
         status: 401
@@ -18,23 +24,52 @@ endpoints:
         status: 404
       - actor: p.operator
         status: 200
+      - actor: p.billing
+        status: 200
+      - actor: p.support
+        status: 403
+        code: forbidden_action
+        note: у поддержки нет platform.billing.read
   - op: decidePlatformSubscriptionRequest
     method: POST
     path: /api/v1/platform/subscription-requests/{changeRequestId}/decision
-    pending: W4.60
     rows:
       - actor: anonymous
         params: { changeRequestId: tenant:missing }
         status: 401
         body: '{"decision": "approve"}'
       - actor: a.owner
+        params: { changeRequestId: subscription_request:b.pending }
+        status: 404
+        absent: [tenant:b]
+        body: '{"decision": "approve"}'
+        note: владелец организации — не оператор, даже для настоящей заявки
+      - actor: p.support
+        params: { changeRequestId: subscription_request:b.pending }
+        status: 403
+        code: forbidden_action
+        body: '{"decision": "approve"}'
+      - actor: p.billing
+        params: { changeRequestId: subscription_request:b.pending }
+        status: 200
+        present: [subscription_request:b.pending, tenant:b]
+        absent: [tenant:a]
+        body: '{"decision": "reject", "note": "Проверка изоляции: оплата не поступила"}'
+        note: отказ не меняет тариф и места B — соседние строки не задеты
+      - actor: p.operator
+        params: { changeRequestId: subscription_request:a.rejected }
+        status: 409
+        code: invalid_transition
+        body: '{"decision": "approve"}'
+        note: решённая заявка — повторного решения нет
+      - actor: p.billing
         params: { changeRequestId: tenant:missing }
         status: 404
         body: '{"decision": "approve"}'
+        note: биллинг решает заявки; несуществующая — 404
   - op: listPriceBookVersions
     method: GET
     path: /api/v1/platform/price-book/versions
-    pending: W4.60
     rows:
       - actor: anonymous
         status: 401
@@ -42,21 +77,31 @@ endpoints:
         status: 404
       - actor: p.operator
         status: 200
+      - actor: p.support
+        status: 403
+        code: forbidden_action
   - op: publishPriceBookVersion
     method: POST
     path: /api/v1/platform/price-book/versions
-    pending: W4.60
     rows:
       - actor: anonymous
         status: 401
-        body: '{"effectiveFrom": "2026-12-01", "note": "Проверка изоляции", "tiers": [{"name": "Старт", "seatsLimit": 10, "monthAmountMinor": 390000}], "terms": [{"months": 1, "discountPercent": 0}, {"months": 4, "discountPercent": 5}, {"months": 8, "discountPercent": 10}, {"months": 12, "discountPercent": 20}]}'
+        body: '{"effectiveFrom": "2099-12-01", "note": "Проверка изоляции", "tiers": [{"name": "Старт", "seatsLimit": 10, "monthAmountMinor": 390000}], "terms": [{"months": 1, "discountPercent": 0}, {"months": 4, "discountPercent": 5}, {"months": 8, "discountPercent": 10}, {"months": 12, "discountPercent": 20}]}'
       - actor: a.owner
         status: 404
-        body: '{"effectiveFrom": "2026-12-01", "note": "Проверка изоляции", "tiers": [{"name": "Старт", "seatsLimit": 10, "monthAmountMinor": 390000}], "terms": [{"months": 1, "discountPercent": 0}, {"months": 4, "discountPercent": 5}, {"months": 8, "discountPercent": 10}, {"months": 12, "discountPercent": 20}]}'
+        body: '{"effectiveFrom": "2099-12-01", "note": "Проверка изоляции", "tiers": [{"name": "Старт", "seatsLimit": 10, "monthAmountMinor": 390000}], "terms": [{"months": 1, "discountPercent": 0}, {"months": 4, "discountPercent": 5}, {"months": 8, "discountPercent": 10}, {"months": 12, "discountPercent": 20}]}'
+      - actor: p.operator
+        status: 201
+        body: '{"effectiveFrom": "2099-12-01", "note": "Проверка изоляции", "tiers": [{"name": "Старт", "seatsLimit": 10, "monthAmountMinor": 390000}], "terms": [{"months": 1, "discountPercent": 0}, {"months": 4, "discountPercent": 5}, {"months": 8, "discountPercent": 10}, {"months": 12, "discountPercent": 20}]}'
+        note: запланированная версия; действующая v1 и заявки по ней не меняются
+      - actor: p.billing
+        status: 403
+        code: forbidden_action
+        body: '{"effectiveFrom": "2099-12-01", "note": "Проверка изоляции", "tiers": [{"name": "Старт", "seatsLimit": 10, "monthAmountMinor": 390000}], "terms": [{"months": 1, "discountPercent": 0}, {"months": 4, "discountPercent": 5}, {"months": 8, "discountPercent": 10}, {"months": 12, "discountPercent": 20}]}'
+        note: сетку публикуют владелец и администратор платформы
   - op: cancelPriceBookVersion
     method: POST
     path: /api/v1/platform/price-book/versions/{version}/cancel
-    pending: W4.60
     rows:
       - actor: anonymous
         params: { version: tenant:missing }
@@ -67,7 +112,6 @@ endpoints:
   - op: getPlatformUsage
     method: GET
     path: /api/v1/platform/usage
-    pending: W4.60
     rows:
       - actor: anonymous
         status: 401
@@ -77,10 +121,12 @@ endpoints:
         status: 200
         present: [tenant:a, tenant:b]
         note: только метаданные control DB обеих организаций
+      - actor: p.support
+        status: 200
+        present: [tenant:a, tenant:b]
   - op: getPlatformUser
     method: GET
     path: /api/v1/platform/users/{accountId}
-    pending: W4.60
     rows:
       - actor: anonymous
         params: { accountId: account:a.owner }
@@ -97,7 +143,6 @@ endpoints:
   - op: lockPlatformUser
     method: POST
     path: /api/v1/platform/users/{accountId}/lock
-    pending: W4.60
     rows:
       - actor: anonymous
         params: { accountId: account:a.owner }
@@ -107,11 +152,20 @@ endpoints:
         params: { accountId: account:a.owner }
         status: 404
         body: '{"reason": "Проверка изоляции"}'
+      - actor: p.billing
+        params: { accountId: account:a.owner }
+        status: 403
+        code: forbidden_action
+        body: '{"reason": "Проверка изоляции"}'
   - op: unlockPlatformUser
     method: POST
     path: /api/v1/platform/users/{accountId}/unlock
-    pending: W4.60
     rows:
+      - actor: p.operator
+        params: { accountId: account:a.owner }
+        status: 409
+        code: invalid_transition
+        note: вход не заблокирован — хендлер дошёл до аккаунта
       - actor: anonymous
         params: { accountId: account:a.owner }
         status: 401
@@ -121,8 +175,12 @@ endpoints:
   - op: resetPlatformUserMfa
     method: POST
     path: /api/v1/platform/users/{accountId}/mfa-reset
-    pending: W4.60
     rows:
+      - actor: p.operator
+        params: { accountId: account:a.owner }
+        status: 409
+        code: invalid_transition
+        note: второго фактора нет
       - actor: anonymous
         params: { accountId: account:a.owner }
         status: 401
@@ -132,7 +190,6 @@ endpoints:
   - op: listPlatformOperators
     method: GET
     path: /api/v1/platform/operators
-    pending: W4.60
     rows:
       - actor: anonymous
         status: 401
@@ -141,21 +198,31 @@ endpoints:
       - actor: p.operator
         status: 200
         present: [account:p.operator]
+      - actor: p.billing
+        status: 200
+        present: [account:p.operator]
   - op: invitePlatformOperator
     method: POST
     path: /api/v1/platform/operators
-    pending: W4.60
     rows:
+      - actor: p.operator
+        status: 201
+        body: '{"displayName": "Проверка изоляции", "email": "iso-invite@ortus.example", "role": "support"}'
+        note: приглашение владельцем платформы
       - actor: anonymous
         status: 401
         body: '{"displayName": "Проверка", "email": "check@ortus.example", "role": "support"}'
       - actor: a.owner
         status: 404
         body: '{"displayName": "Проверка", "email": "check@ortus.example", "role": "support"}'
+      - actor: p.admin
+        status: 403
+        code: forbidden_action
+        body: '{"displayName": "Проверка", "email": "check@ortus.example", "role": "support"}'
+        note: операторов приглашает только владелец платформы
   - op: updatePlatformOperator
     method: PATCH
     path: /api/v1/platform/operators/{operatorId}
-    pending: W4.60
     rows:
       - actor: anonymous
         params: { operatorId: account:p.operator }

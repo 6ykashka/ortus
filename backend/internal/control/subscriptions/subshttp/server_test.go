@@ -30,6 +30,7 @@ func altaTrial() subscriptions.Subscription {
 	return subscriptions.Subscription{
 		TenantID: alta, PlanKey: "start", Status: subscriptions.StatusTrialing, TrialEndsAt: &trialEnd, Revision: 2,
 		Entitlements: subscriptions.PlanEntitlements("start", subscriptions.SourceTrial, subscriptions.DefaultQuotaBytes),
+		PriceVersion: new(2), // W4.60: the trial runs on «Старт» of price book v2
 	}
 }
 
@@ -85,19 +86,6 @@ func normalized(t *testing.T, raw []byte) string {
 	return string(out)
 }
 
-// withoutFields drops top-level fields of a normalized JSON object.
-func withoutFields(t *testing.T, normalizedJSON string, fields ...string) string {
-	t.Helper()
-	var v map[string]any
-	if err := json.Unmarshal([]byte(normalizedJSON), &v); err != nil {
-		t.Fatal(err)
-	}
-	for _, f := range fields {
-		delete(v, f)
-	}
-	return asJSON(t, v)
-}
-
 func asJSON(t *testing.T, v any) string {
 	t.Helper()
 	raw, err := json.Marshal(v)
@@ -110,7 +98,7 @@ func asJSON(t *testing.T, v any) string {
 // Оператор читает подписку: тело = пример getPlatformSubscription/ok, ETag ревизии, без кеша.
 func TestGetPlatformSubscription(t *testing.T) {
 	t.Parallel()
-	srv := PlatformServer{Subs: &fakeSubs{sub: altaTrial()}}
+	srv := PlatformServer{Subs: &fakeSubs{sub: altaTrial()}, Terms: altaTerms{}}
 	resp, err := srv.GetPlatformSubscription(t.Context(), platformapi.GetPlatformSubscriptionRequestObject{TenantId: alta})
 	if err != nil {
 		t.Fatal(err)
@@ -119,8 +107,8 @@ func TestGetPlatformSubscription(t *testing.T) {
 	if !isOK || *ok.Headers.ETag != `"rev-2"` || *ok.Headers.CacheControl != "private, no-store" {
 		t.Fatalf("%+v", resp)
 	}
-	// Поля W4.07 (тариф, версия цен, места) сервер отдаёт с W4.60; до него — тело примера без них.
-	want := withoutFields(t, example(t, "getPlatformSubscription", "ok"), "tierCode", "tierName", "priceVersion", "seats")
+	// W4.60: тариф, версия цен и места (поля W4.07) — тело примера целиком.
+	want := example(t, "getPlatformSubscription", "ok")
 	if got := asJSON(t, ok.Body); got != want {
 		t.Errorf("body\n got %s\nwant %s", got, want)
 	}
@@ -192,6 +180,7 @@ func TestUpdatePlatformSubscriptionRefusals(t *testing.T) {
 func TestBillingServer(t *testing.T) {
 	t.Parallel()
 	srv := NewBillingServer(nil, &fakeSubs{sub: altaTrial()})
+	srv.Terms = altaTerms{}
 	ctx := tenantctx.WithTenant(t.Context(), tenantctx.TenantContext{TenantID: alta, Owner: true})
 	resp, err := srv.GetTenantSubscription(ctx, billingapi.GetTenantSubscriptionRequestObject{TenantId: alta})
 	if err != nil {
@@ -201,8 +190,8 @@ func TestBillingServer(t *testing.T) {
 	if !isOK || *ok.Headers.ETag != `"rev-2"` {
 		t.Fatalf("%+v", resp)
 	}
-	// W4.07 (0.8.0-stage4): тариф, версия цен и места подписки отдаёт сервер W4.60; до него — пример без них.
-	want := withoutFields(t, example(t, "getTenantSubscription", "ok"), "tierCode", "tierName", "priceVersion", "seats")
+	// W4.60: тариф, версия цен и места подписки (поля W4.07) — тело примера целиком.
+	want := example(t, "getTenantSubscription", "ok")
 	if got := asJSON(t, ok.Body); got != want {
 		t.Errorf("body\n got %s\nwant %s", got, want)
 	}

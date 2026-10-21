@@ -19,7 +19,6 @@ var brandingW407Matrix = matrix.File{
 			Method:  "GET",
 			Path:    "/api/v1/tenants/{tenantId}/branding",
 			Channel: "http",
-			Pending: "W4.60",
 			Rows: []matrix.Row{
 				{
 					Actor:  "a.owner",
@@ -45,7 +44,6 @@ var brandingW407Matrix = matrix.File{
 			Method:  "PUT",
 			Path:    "/api/v1/tenants/{tenantId}/branding",
 			Channel: "http",
-			Pending: "W4.60",
 			Rows: []matrix.Row{
 				{
 					Actor:  "b.owner",
@@ -66,7 +64,6 @@ var brandingW407Matrix = matrix.File{
 			Method:  "POST",
 			Path:    "/api/v1/tenants/{tenantId}/branding/assets",
 			Channel: "http",
-			Pending: "W4.60",
 			Rows: []matrix.Row{
 				{
 					Actor:  "b.owner",

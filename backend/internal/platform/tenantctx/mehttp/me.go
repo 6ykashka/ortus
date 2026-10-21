@@ -35,6 +35,7 @@ type Server struct {
 	LastTenants LastTenants  // W1.03 (select_tenant.go): accounts.last_tenant_id; nil — no lastTenantId
 	Inbox       Inbox        // notification inbox (W1.10, notifications.go); nil — its operations answer 501
 	Extras      Extras       // optional (W1.08, extras.go): modules and tenantState
+	Branding    Branding     // optional (W4.60, extras.go): the theme of the branding of each visible tenant
 	Log         *slog.Logger // optional: degraded tenants are logged here
 }
 
@@ -133,6 +134,7 @@ func (s *Server) tenant(ctx context.Context, account uuid.UUID, m tenantctx.Memb
 	}
 	withDB := m.Status == active && enriched[m.TenantState]
 	s.tenantState(ctx, &t, m, withDB)
+	s.branding(ctx, &t)
 	if !withDB {
 		return t, ""
 	}

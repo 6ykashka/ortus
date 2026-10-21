@@ -44,6 +44,8 @@ const (
 const (
 	codeKeyReused  = "idempotency_key_reused"
 	codeInProgress = "idempotency_in_progress"
+	// codePayloadTooLarge: a body over the limit of its operation (Guard.Bodies).
+	codePayloadTooLarge = "payload_too_large"
 )
 
 // retryAfter is the Retry-After of idempotency_in_progress, in seconds.
@@ -114,6 +116,9 @@ type Guard struct {
 	Lease  time.Duration    // 0: DefaultLease
 	Now    func() time.Time // nil: time.Now
 	Log    *slog.Logger     // nil: slog.Default
+	// Bodies are the body limits of operations larger than httpx.MaxBody (uploadBrandingAsset: a file of 1 MiB in
+	// base64); a body over such a limit is 413 payload_too_large.
+	Bodies map[string]int
 }
 
 func (g *Guard) now() time.Time {
@@ -196,9 +201,9 @@ func (g *Guard) Serve(w http.ResponseWriter, r *http.Request, ns Namespace, next
 		problem.Write(w, r, problem.New(problem.CodeMalformedRequest, ""))
 		return
 	}
-	body, err := io.ReadAll(io.LimitReader(r.Body, httpx.MaxBody+1))
-	if err != nil || len(body) > httpx.MaxBody {
-		problem.Write(w, r, problem.Wrap(problem.CodeMalformedRequest, err))
+	body, err := g.body(r, ns.Operation)
+	if err != nil {
+		problem.Write(w, r, err)
 		return
 	}
 	r.Body = io.NopCloser(bytes.NewReader(body))
@@ -227,6 +232,23 @@ func (g *Guard) Serve(w http.ResponseWriter, r *http.Request, ns Namespace, next
 		return
 	}
 	g.run(w, r.WithContext(context.WithValue(ctx, ctxKey{}, bound{rec: rec, expires: now.Add(g.ttl())})), st, rec, next)
+}
+
+// body reads the body of r within the limit of its operation: over an own limit (Bodies) — payload_too_large, over
+// httpx.MaxBody or unreadable — malformed_request.
+func (g *Guard) body(r *http.Request, operation string) ([]byte, error) {
+	limit, own := g.Bodies[operation]
+	if !own {
+		limit = httpx.MaxBody
+	}
+	body, err := io.ReadAll(io.LimitReader(r.Body, int64(limit)+1))
+	switch {
+	case err == nil && len(body) > limit && own:
+		return nil, problem.New(codePayloadTooLarge, "")
+	case err != nil || len(body) > limit:
+		return nil, problem.Wrap(problem.CodeMalformedRequest, err)
+	}
+	return body, nil
 }
 
 // run executes the claimed command and stores its outcome; a retryable outcome or a panic releases the key.
