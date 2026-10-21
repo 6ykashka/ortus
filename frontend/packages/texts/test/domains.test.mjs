@@ -15,7 +15,16 @@ import {
   platform,
   shell,
 } from '../src/index.ts';
-import { API_JS, DESIGN, MAIN_HTML, MODELS_JS, leaves, readText } from './_util.mjs';
+import {
+  API_JS,
+  DESIGN,
+  KB_HTML,
+  KNOWLEDGE_JS,
+  MAIN_HTML,
+  MODELS_JS,
+  leaves,
+  readText,
+} from './_util.mjs';
 
 const TASKS_HTML = join(DESIGN, 'Задачи и проекты.dc.html');
 
@@ -54,7 +63,10 @@ const PD37_FROM_DESIGN = ['usage', 'requests', 'accounts', 'plans', 'billing', '
 
 describe('каждая статическая строка словаря дословно есть в эталоне', () => {
   // W4.12: модульный файл «Задачи и проекты» — эталон домена `tasks` (design-2026-10-19, dc-import на pg.tasks).
-  const design = [MAIN_HTML, API_JS, MODELS_JS, TASKS_HTML].map(readText).join('\n');
+  // W4.32: «База знаний» — модульный файл и справочники knowledge.js (страница `knowledge`).
+  const design = [MAIN_HTML, API_JS, MODELS_JS, TASKS_HTML, KB_HTML, KNOWLEDGE_JS]
+    .map(readText)
+    .join('\n');
   const all = Object.entries(ALL).flatMap(([ns, tree]) => leaves(tree, ns));
   for (const [path, value] of all) {
     if (value.includes('{')) continue;

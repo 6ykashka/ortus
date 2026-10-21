@@ -157,6 +157,12 @@
       "stage": 4,
       "paths": ["frontend/apps/web/src/routes/core/tasks/**"],
       "reference": "Задачи и проекты.dc.html"
+    },
+    {
+      "key": "knowledge",
+      "stage": 4,
+      "paths": ["frontend/apps/web/src/routes/core/knowledge/**"],
+      "reference": "Ортус CRM.dc.html"
     }
   ]
 }

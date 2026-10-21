@@ -7,6 +7,7 @@ import { data } from './data.ts';
 import { errors } from './errors.ts';
 import { gate } from './gate.ts';
 import { home } from './home.ts';
+import { knowledge } from './knowledge.ts';
 import { logisticsDriver } from './logistics-driver.ts';
 import { logisticsManager } from './logistics-manager.ts';
 import { platform } from './platform.ts';
@@ -23,6 +24,7 @@ export {
   errors,
   gate,
   home,
+  knowledge,
   logisticsDriver,
   logisticsManager,
   platform,
@@ -43,6 +45,7 @@ export const ALL = {
   errors,
   gate,
   home,
+  knowledge,
   logisticsDriver,
   logisticsManager,
   platform,

@@ -16,6 +16,8 @@ const DOMAINS = [
   'errors',
   'gate',
   'home',
+  // W4.32: домен страницы «База знаний» (knowledge, KB-01…KB-08).
+  'knowledge',
   'logistics-driver',
   'logistics-manager',
   'platform',
