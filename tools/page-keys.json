@@ -163,6 +163,12 @@
       "stage": 4,
       "paths": ["frontend/apps/web/src/routes/core/knowledge/**"],
       "reference": "Ортус CRM.dc.html"
+    },
+    {
+      "key": "forms",
+      "stage": 4,
+      "paths": ["frontend/apps/web/src/routes/core/forms/**"],
+      "reference": "Формы и опросы.dc.html"
     }
   ]
 }

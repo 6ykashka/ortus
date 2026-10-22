@@ -18,6 +18,7 @@ import {
 import {
   API_JS,
   DESIGN,
+  FORMS_HTML,
   KB_HTML,
   KNOWLEDGE_JS,
   MAIN_HTML,
@@ -64,7 +65,8 @@ const PD37_FROM_DESIGN = ['usage', 'requests', 'accounts', 'plans', 'billing', '
 describe('каждая статическая строка словаря дословно есть в эталоне', () => {
   // W4.12: модульный файл «Задачи и проекты» — эталон домена `tasks` (design-2026-10-19, dc-import на pg.tasks).
   // W4.32: «База знаний» — модульный файл и справочники knowledge.js (страница `knowledge`).
-  const design = [MAIN_HTML, API_JS, MODELS_JS, TASKS_HTML, KB_HTML, KNOWLEDGE_JS]
+  // W4.22: «Формы и опросы» — модульный файл (страница `forms`).
+  const design = [MAIN_HTML, API_JS, MODELS_JS, TASKS_HTML, KB_HTML, KNOWLEDGE_JS, FORMS_HTML]
     .map(readText)
     .join('\n');
   const all = Object.entries(ALL).flatMap(([ns, tree]) => leaves(tree, ns));

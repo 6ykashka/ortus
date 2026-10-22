@@ -14,6 +14,8 @@ const DOMAINS = [
   // W2.26: домен страницы «Данные» (`core-data`, S2-16).
   'data',
   'errors',
+  // W4.22: домен «Формы и опросы» (forms-list, forms-builder, forms-preview, modal-form-publish).
+  'forms',
   'gate',
   'home',
   // W4.32: домен страницы «База знаний» (knowledge, KB-01…KB-08).

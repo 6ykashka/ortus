@@ -13,6 +13,8 @@ export const MODELS_JS = join(DESIGN, 'ortus', 'models.js');
 // W4.32: модульный файл «Базы знаний» (М) и её справочники — источники дословности домена `knowledge`.
 export const KB_HTML = join(DESIGN, 'База знаний.dc.html');
 export const KNOWLEDGE_JS = join(DESIGN, 'ortus', 'knowledge.js');
+// W4.22: модульный файл «Форм и опросов» — источник дословности домена `forms`.
+export const FORMS_HTML = join(DESIGN, 'Формы и опросы.dc.html');
 export const DOCS_12 = join(DESIGN, 'docs', '12-errors-and-events.md');
 export const ERRORS_YAML = join(ROOT, 'api', 'errors.yaml');
 
