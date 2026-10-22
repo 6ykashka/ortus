@@ -48,7 +48,17 @@ export const home = {
       subscription: 'Подписка',
       storage: platform.tenants.fields.storage,
       access: 'Доступ',
+      // W2.73 · S2-20 1g («Временный водитель - варианты.dc.html» :479, :487; design-2026-10-19b).
+      until: 'до {time}',
+      tripAt: 'рейс в {time}',
     },
+    // W2.73 · S2-20 1g: водитель ещё не выбрал машину, нет машины (:476–491).
+    vehicleChoice: '{trip}: водитель ещё не выбрал машину',
+    vehicleChoiceText:
+      '{driver}, {firm}. Не выберет — останется {host}, {home} вернётся в {firm}. Написать водителю можно в чате рейса.',
+    noVehicle: '{trip}: нет машины',
+    noVehicleText:
+      '{firm} выдал {driver} без обычной машины. Водитель получит уведомление и сразу начнёт осмотр.',
     criticalDefect: 'Критический дефект · рейс {trip}',
     defectText: '{zone}: {description} · {driver}', // :4053
     shiftWaits: 'Смена {trip} ждёт приёмки',
@@ -75,6 +85,9 @@ export const home = {
       more: 'Подробнее',
       assign: company.dialogs.assign.submit,
       modules: shell.nav.items.modules,
+      // W2.73 · S2-20 1g (:482, :490).
+      keepVehicle: 'Оставить {vehicle}',
+      assignVehicle: 'Поставить машину',
     },
   },
 

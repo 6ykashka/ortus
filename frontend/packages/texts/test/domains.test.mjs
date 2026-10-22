@@ -23,6 +23,7 @@ import {
   KNOWLEDGE_JS,
   MAIN_HTML,
   MODELS_JS,
+  S220_HTML,
   leaves,
   readText,
 } from './_util.mjs';
@@ -66,7 +67,17 @@ describe('каждая статическая строка словаря дос
   // W4.12: модульный файл «Задачи и проекты» — эталон домена `tasks` (design-2026-10-19, dc-import на pg.tasks).
   // W4.32: «База знаний» — модульный файл и справочники knowledge.js (страница `knowledge`).
   // W4.22: «Формы и опросы» — модульный файл (страница `forms`).
-  const design = [MAIN_HTML, API_JS, MODELS_JS, TASKS_HTML, KB_HTML, KNOWLEDGE_JS, FORMS_HTML]
+  // W2.73: подписи S2-20 (1a, 1b, 1f, 1g) — из макетов «Временный водитель - варианты.dc.html».
+  const design = [
+    MAIN_HTML,
+    API_JS,
+    MODELS_JS,
+    TASKS_HTML,
+    KB_HTML,
+    KNOWLEDGE_JS,
+    FORMS_HTML,
+    S220_HTML,
+  ]
     .map(readText)
     .join('\n');
   const all = Object.entries(ALL).flatMap(([ns, tree]) => leaves(tree, ns));

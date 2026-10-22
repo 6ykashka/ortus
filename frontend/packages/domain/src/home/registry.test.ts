@@ -17,6 +17,9 @@ const STAGE2_KINDS = [
   'fleet.blocking_defect',
   'fleet.trip_review',
   'fleet.trip_without_driver',
+  // W2.71 (0.6.3-stage2, S2-20 1g) → W2.73: машина рейса временного водителя.
+  'fleet.vehicle_choice_pending',
+  'fleet.trip_without_vehicle',
   'tenant.trial_ended',
   'tenant.trial_ending',
   'tenant.storage_high',

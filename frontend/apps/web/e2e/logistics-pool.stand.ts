@@ -75,13 +75,17 @@ async function yugDriver(
 /**
  * Пул строки и уборка в `undo`. По умолчанию — публикация Ахмедова («Север Логистик») и рейс «Юг Транс» в её окне
  * (решает владелец). `foreign` — для логиста Котовой: публикация водителя «Юг Транс» и рейс «Север Логистик» (в
- * каталоге логиста нет водителей фирм, где он запрашивает, AUTH-06).
+ * каталоге логиста нет водителей фирм, где он запрашивает, AUTH-06). W2.73 (S2-20): `usual` — id обычной машины
+ * водителя в его фирме (`usualVehicleId` публикации, правило 1); получает владельца, организацию и фирму водителя.
  */
 export async function poolStand(
   session: () => Promise<Session>,
   undo: Undo,
   project: string,
-  o: { foreign?: boolean } = {},
+  o: {
+    foreign?: boolean;
+    usual?: (owner: Page, tenant: string, homeUnit: string) => Promise<string>;
+  } = {},
 ): Promise<PoolStand> {
   const s = await logisticsOn(session, undo);
   const base = `/api/v1/tenants/${s.tenant}/fleet`;
@@ -92,6 +96,7 @@ export async function poolStand(
     : s.members.akhmedov;
   const home = o.foreign ? yug.id : s.unitId;
   const tripUnit = o.foreign ? s.unitId : yug.id;
+  const usualVehicleId = o.usual ? await o.usual(s.owner, s.tenant, home) : undefined;
   let start = Math.ceil((Date.now() + 4 * 24 * HOUR + Math.random() * 72 * HOUR) / HOUR) * HOUR;
   let pub: { id: string; displayName: string; freeWindow: { startsAt: string } } | undefined;
   for (let i = 0; i < 12 && !pub; i++, start += 7 * HOUR) {
@@ -106,6 +111,7 @@ export async function poolStand(
         },
         qualifications: ['Кат. B'],
         terms: 'По соглашению фирм группы',
+        ...(usualVehicleId ? { usualVehicleId } : {}),
       },
     });
     if (r.status === 201) pub = r.body as NonNullable<typeof pub>;

@@ -103,6 +103,53 @@ export const logisticsManager = {
     requestSent: 'Запрос отправлен фирме {firm}',
     firmApproved: 'Фирма {firm} одобрила запрос',
     firmDeclined: 'Фирма {firm} отклонила запрос',
+    // W2.73 · S2-20 (D-35), «Временный водитель - варианты.dc.html» design-2026-10-19b: 1b — входящий запрос фирмы
+    // водителя (:197–228, b :571–576); 1f — итог запроса у логиста (:426–460, f :609–625).
+    incoming: {
+      who: '{name} · {driver}',
+      asks: '{firm} просит на рейс {trip}',
+      waiting: 'Ждёт решения',
+      when: 'Когда',
+      whenValue: '{date}, {window} · доступ до {until}',
+      carChoice: 'Их {host} или ваша {home} — на выбор водителя',
+      carHost: 'Их {host} · {plate}',
+      carHome: 'Ваша {home} · {plate}',
+      yours: 'Ваша машина',
+      freeFor: 'Свободна {window}',
+      holdChoice:
+        'Удерживается на {window}, пока водитель выбирает (до {until}). Не выберет её — сразу вернётся к вам.',
+      holdHome: 'Занята на {window} рейсом {trip} {firm}.',
+      defects:
+        'Осмотры и дефекты по этому рейсу видите вы. Решение по блокирующему дефекту — тоже за вами.',
+      opens: 'Что откроется {firm}',
+      opensDriver: 'Имя и телефон водителя до {until}',
+      opensVehicle: 'По машине: модель, номер, габариты, осмотры этого рейса',
+      hidden: 'Начисления, история рейсов, другие машины {firm}',
+      approveWithVehicle: 'Одобрить с машиной',
+      driverOnly: 'Только водителя',
+      note: 'Отклонить можно только с причиной. Начисления по рейсу ведутся отдельной записью, {firm} их не получает автоматически.',
+    },
+    transfer: {
+      accessValue: 'До {until}, только этот рейс',
+      vehicles: 'Машины рейса',
+      usualFirm: '{firm} · обычная машина водителя',
+      ourFirm: '{firm} · наша',
+      chosen: 'Выбрана · {time}',
+      released: 'Освобождена · {time}',
+      none: 'Машины нет: {firm} выдал водителя без обычной машины.',
+      assignVehicle: home.queue.actions.assignVehicle,
+      journal: 'Журнал',
+      requested:
+        'Вы запросили водителя. Машина: {mode, select, host_or_home {наша {host}, можно свою обычную} host {наша {host}} other {обычная машина водителя}}.',
+      approved:
+        '{firm} одобрил {what, select, both {водителя с машиной.} driver {только водителя, без машины.} other {водителя.}}',
+      holds: 'Брони до выбора на {window}: {host} и {home}.',
+      chose: 'Водитель выбрал {chosen}. {other} освобождена.',
+      one: 'Бронь {vehicle} на {window}.',
+      noVehicle: 'Машины нет, рейс попал в «Требует решения».',
+      deadline:
+        'Если водитель не выбирает до {until}, остаётся {host}, а {home} возвращается в {firm}.',
+    },
   },
 
   review: {
@@ -173,6 +220,44 @@ export const logisticsManager = {
     driverValue: '{driver} · {firm}',
     tripValue: '{trip} · {title} · {window}',
     periodUntil: 'Временно, до {until}',
+    // W2.73 · S2-20 (D-35) 1a — блок «Машина» (Временный водитель - варианты.dc.html :145–183, renderVals
+    // :531–559; design-2026-10-19b).
+    driverQualValue: '{driver} · {firm} · {qual}',
+    tripDateValue: '{trip} · {title} · {date}, {window}',
+    cargo: 'Груз',
+    cargoValue:
+      '{mass} т · {volume} м³ · кузов от {length} м{temp, select, none {} other { · {temp}}}',
+    access: home.queue.chips.access,
+    accessValue: 'С одобрения до {until}, только этот рейс',
+    vehicle: logisticsDriver.today.steps.vehicle,
+    home: 'Едет на своей обычной',
+    homeSpecs: '{body} · {mass} т · {volume} м³ · кузов {length} м · {temp}',
+    noCooling: logisticsDriver.vehicle.noCooling,
+    noCoolingReason: 'нет охлаждения',
+    homeFits: 'Подходит рейсу · свободна {window}',
+    homeNoFit: 'Не подходит рейсу: {reason}',
+    homeApprove: 'Машину тоже согласует {firm}.',
+    host: 'Ставим нашу машину',
+    hostFits: 'подходит',
+    hostCount:
+      'Рейсу подходит {fit} из {free} {free, plural, one {свободной машины} few {свободных машин} many {свободных машин} other {свободных машин}}{firm, select, none {} other { {firm}}}.',
+    choice: 'Можно взять свою обычную',
+    choiceHint: 'Водитель выберет в день рейса до {until}: {host} или свою {home}.',
+    choiceOff: 'Недоступно: обычная машина не подходит рейсу, {reason}.',
+    after: 'Что произойдёт после одобрения',
+    sum: {
+      blocked: 'Обычная машина не подходит рейсу. Выберите «Ставим нашу машину».',
+      choiceHolds:
+        'Две брони до выбора на {window}: {host} и {home}. До рейса {brand} работает в {firm}.',
+      choiceUntil: 'Водитель выберет машину до {until}. Вторая бронь снимется сразу.',
+      choiceDefault: 'Не выберет — останется {host}, {brand} вернётся в {firm}.',
+      host: 'Бронь {host} на {window}.',
+      hostStart: 'Водителю нечего подтверждать: он сразу начинает осмотр.',
+      home: 'Бронь {home} на {window}, если {firm} одобрит машину.',
+      homeOnly: 'Одобрят только водителя — рейс попадёт в «Требует решения», машину поставите вы.',
+      access:
+        'Доступ водителя — только к рейсу {trip} до {until}. История и начисления остаются в {firm}.',
+    },
   },
 
   // W2.41 · «Категории расходов» (company-expense-categories, ответ владельца 17.10 на D-12 комплекта, ADR-0013):

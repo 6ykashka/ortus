@@ -3,7 +3,6 @@
    Цели нажатия на телефоне ≥ 44 px — невидимым расширением области (PD-28: видимая высота кнопки эталона 40 px). */
 
 .ox-pl {
-  --ox-pl-in-line: #ebd7a8; /* LINE.warn :2330 — рамка входящего запроса */
   display: flex;
   flex-direction: column;
   gap: 16px;
@@ -153,6 +152,11 @@
   color: var(--ox-warn-fg);
 }
 
+.ox-pl-chip[data-tone='info'] {
+  background: var(--ox-info-bg);
+  color: var(--ox-info-fg);
+}
+
 .ox-pl-dl {
   margin: 0;
   display: grid;
@@ -243,6 +247,15 @@
   cursor: not-allowed;
 }
 
+/* W2.73 · «Отправить запрос» недоступна по выбору машины (1a: своя не подходит) — серая кнопка макета
+   (sendBg/sendFg/sendBorder, renderVals :560); во время отправки — прозрачность, как у остальных кнопок. */
+.ox-pl-btn[data-variant='primary'][data-blocked]:disabled {
+  border-color: var(--ox-line); /* sendBorder #dce2d9 */
+  background: var(--ox-neutral-bg); /* sendBg #ecefea */
+  color: var(--ox-pl-off-fg);
+  opacity: 1;
+}
+
 .ox-pl-btn:focus-visible,
 .ox-pl-pick select:focus-visible,
 .ox-pl-label textarea:focus-visible {
@@ -321,8 +334,9 @@
   text-wrap: pretty;
 }
 
+/* W2.73: входящий запрос по макету 1b (:196) — обычная рамка карточки, промежуток 14. */
 .ox-pl-in-card {
-  border-color: var(--ox-pl-in-line);
+  gap: 14px;
 }
 
 .ox-pl-actions {
@@ -472,5 +486,507 @@
 
   .ox-pl-actions .ox-pl-btn {
     flex: 1 1 auto;
+  }
+}
+
+/* ── W2.73 · S2-20 «Машина для временного водителя» («Временный водитель - варианты.dc.html», design-2026-10-19b) ── */
+/* Цвета макета без токена в @ortus/tokens 0.2 (sendFg, homeBg/hostBg, homeBg при !fits, homeDot/boxBorder renderVals
+   :552–560) — свойства раздела; остальные цвета блока — токены (--ox-line, --ox-neutral-bg, --ox-danger-border). Свойства
+   стоят и на модалке: диалог 1a рендерится вне .ox-pl (портал). */
+.ox-pl,
+[role='dialog']:has(.ox-pl-dlg) {
+  --ox-pl-off-fg: #6b7873;
+  --ox-pl-off-border: #aeb9b2;
+  --ox-pl-on-bg: #f4f9f6;
+  --ox-pl-bad-bg: #fff8f7;
+}
+
+.ox-pl-mono {
+  font-family: var(--ox-font-mono);
+  font-size: var(--ox-fs-sm);
+  white-space: nowrap; /* госномер не переносится («М 608 КТ 77») */
+}
+
+/* Диалог 1a — 600 px, межстрочный интервал 1.4 (:144). */
+[data-size]:has(.ox-pl-dlg) {
+  max-width: 600px;
+}
+
+[role='dialog']:has(.ox-pl-dlg),
+[role='dialog']:has(.ox-pl-dlg) h2 {
+  line-height: 1.4;
+}
+
+/* Рамка модалки макета 1a (:144). */
+[role='dialog']:has(.ox-pl-dlg) {
+  border: 1px solid rgb(0 0 0 / 10%);
+}
+
+.ox-pl-dlg {
+  line-height: 1.4;
+}
+
+/* Группа «Машина» :152–176. */
+.ox-pl-cars {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.ox-pl-cars-title {
+  font-size: var(--ox-fs-sm);
+  font-weight: var(--ox-fw-semibold);
+  color: var(--ox-text-label);
+}
+
+.ox-pl-car {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 12px 14px;
+  border-radius: 10px;
+  border: 1px solid var(--ox-line);
+  background: var(--ox-card);
+  cursor: pointer;
+}
+
+.ox-pl-car-host {
+  gap: 8px;
+}
+
+.ox-pl-car[data-on] {
+  border: 1.5px solid var(--ox-accent);
+  background: var(--ox-pl-on-bg);
+}
+
+.ox-pl-car[data-on][data-bad] {
+  border-color: var(--ox-danger-fg);
+  background: var(--ox-pl-bad-bg);
+}
+
+.ox-pl-car-radio {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.ox-pl-car-radio strong {
+  font-weight: var(--ox-fw-semibold);
+}
+
+.ox-pl-dot {
+  flex: none;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  border: 2px solid var(--ox-pl-off-border);
+  display: grid;
+  place-items: center;
+}
+
+.ox-pl-dot > span {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+}
+
+.ox-pl-dot[data-on] {
+  border-color: var(--ox-accent);
+}
+
+.ox-pl-dot[data-on] > span {
+  background: var(--ox-accent);
+}
+
+.ox-pl-dot[data-on][data-bad] {
+  border-color: var(--ox-danger-fg);
+}
+
+.ox-pl-dot[data-on][data-bad] > span {
+  background: var(--ox-danger-fg);
+}
+
+.ox-pl-car-line,
+.ox-pl-car-muted,
+.ox-pl-car-fit,
+.ox-pl-car > .ox-pl-car-small {
+  padding-left: 32px;
+}
+
+.ox-pl-car-muted {
+  font-size: var(--ox-fs-sm);
+  color: var(--ox-text-muted);
+}
+
+.ox-pl-car-fit {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+  font-size: var(--ox-fs-sm);
+  color: var(--ox-danger-fg);
+}
+
+.ox-pl-car-fit[data-ok] {
+  color: var(--ox-accent);
+}
+
+.ox-pl-car-small {
+  font-size: 12.5px;
+  color: var(--ox-text-muted);
+  text-wrap: pretty;
+}
+
+/* Поле выбора машины :170: видимая строка эталона, под ней — прозрачный select (клавиатура и чтение экрана). */
+.ox-pl-select {
+  position: relative;
+  margin-left: 32px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 42px;
+  padding: 0 10px;
+  border: 1px solid var(--ox-line-control);
+  border-radius: var(--ox-radius-md);
+  background: var(--ox-card);
+}
+
+.ox-pl-select > .material-symbols-rounded:first-child {
+  color: var(--ox-text-label);
+}
+
+.ox-pl-select > .material-symbols-rounded:last-of-type {
+  color: var(--ox-text-muted);
+}
+
+.ox-pl-select-value {
+  flex: 1;
+  min-width: 0;
+}
+
+.ox-pl-select-fit {
+  font-size: var(--ox-fs-xs);
+  color: var(--ox-accent);
+}
+
+/* Поверх всей рамки поля (−1 px с каждой стороны): цель касания — внешняя высота поля, ≥ 44 px на телефоне. */
+.ox-pl-select select {
+  position: absolute;
+  top: -1px;
+  left: -1px;
+  width: calc(100% + 2px);
+  height: calc(100% + 2px);
+  opacity: 0;
+  cursor: pointer;
+  font: inherit;
+}
+
+.ox-pl-select:focus-within,
+.ox-pl-car-radio:focus-visible,
+.ox-pl-choice:focus-visible,
+.ox-pl-label textarea:focus-visible {
+  outline: 2px solid var(--ox-focus);
+  outline-offset: 2px;
+}
+
+.ox-pl-choice {
+  margin-left: 32px;
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+  padding: 10px 12px;
+  border: 0;
+  border-radius: var(--ox-radius-md);
+  background: var(--ox-surface);
+  color: inherit;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.ox-pl-choice[aria-disabled='true'] {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.ox-pl-box {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 20px;
+  height: 20px;
+  margin-top: 1px;
+  border-radius: 5px;
+  border: 2px solid var(--ox-pl-off-border);
+  background: var(--ox-card);
+  color: var(--ox-on-accent);
+}
+
+.ox-pl-box[data-on] {
+  border-color: var(--ox-accent);
+  background: var(--ox-accent);
+}
+
+.ox-pl-choice-text {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.ox-pl-choice-title {
+  font-weight: var(--ox-fw-medium);
+}
+
+/* «Что произойдёт после одобрения» :178–181. */
+.ox-pl-sum {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 12px 14px;
+  border-radius: 10px;
+  background: var(--ox-raised);
+}
+
+.ox-pl-sum > strong {
+  font-size: var(--ox-fs-sm);
+  font-weight: var(--ox-fw-semibold);
+}
+
+.ox-pl-sum-line {
+  display: flex;
+  gap: 8px;
+  font-size: var(--ox-fs-sm);
+  color: var(--ox-text-label);
+}
+
+.ox-pl-sum-line > .material-symbols-rounded {
+  flex: none;
+}
+
+.ox-pl-sum-line > span:last-child {
+  text-wrap: pretty;
+}
+
+.ox-pl-sum-line[data-danger] {
+  color: var(--ox-danger-fg);
+}
+
+/* Входящий запрос 1b :202–228. */
+.ox-pl-dl-in {
+  font-size: 13.5px;
+}
+
+.ox-pl-strong {
+  font-weight: var(--ox-fw-medium);
+}
+
+.ox-pl-yours {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 12px 14px;
+  border: 1px solid var(--ox-line);
+  border-radius: 10px;
+}
+
+.ox-pl-yours-head {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  align-items: center;
+}
+
+.ox-pl-yours-head > strong {
+  font-size: var(--ox-fs-sm);
+  font-weight: var(--ox-fw-semibold);
+}
+
+.ox-pl-yours-text {
+  font-size: var(--ox-fs-sm);
+  color: var(--ox-text-label);
+  text-wrap: pretty;
+}
+
+.ox-pl-opens {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 12px 14px;
+  border-radius: 10px;
+  background: var(--ox-raised);
+  font-size: var(--ox-fs-sm);
+}
+
+.ox-pl-opens > strong {
+  font-weight: var(--ox-fw-semibold);
+}
+
+.ox-pl-opens > span {
+  display: flex;
+  gap: 8px;
+}
+
+.ox-pl-opens > span > .material-symbols-rounded {
+  color: var(--ox-accent);
+}
+
+.ox-pl-opens > span[data-hidden] > .material-symbols-rounded {
+  color: var(--ox-text-muted);
+}
+
+.ox-pl-btn[data-danger] {
+  color: var(--ox-danger-fg);
+}
+
+/* Итог запроса у логиста 1f :431–460. */
+.ox-pl-driver:has(.ox-pl-block) {
+  gap: 14px;
+}
+
+.ox-pl-block {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.ox-pl-block-tight {
+  gap: 6px;
+}
+
+.ox-pl-block-title {
+  font-size: var(--ox-fs-sm);
+  font-weight: var(--ox-fw-semibold);
+}
+
+.ox-pl-trip-car {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  padding: 10px 12px;
+  border: 1px solid var(--ox-line);
+  border-radius: 10px;
+}
+
+.ox-pl-trip-car > .material-symbols-rounded {
+  flex: none;
+  color: var(--ox-text-label);
+}
+
+.ox-pl-trip-car-who {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.ox-pl-trip-car-name {
+  font-weight: var(--ox-fw-medium);
+}
+
+.ox-pl-no-car {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  align-items: center;
+  padding: 10px 12px;
+  border: 1px solid var(--ox-danger-border); /* #f0c9c3 :447 */
+  border-radius: 10px;
+  background: var(--ox-danger-bg);
+  color: var(--ox-danger-fg);
+}
+
+.ox-pl-no-car > .material-symbols-rounded {
+  flex: none;
+}
+
+.ox-pl-no-car > span:not(.material-symbols-rounded) {
+  flex: 1 1 240px;
+  font-size: var(--ox-fs-sm);
+  text-wrap: pretty;
+}
+
+.ox-pl-no-car > .ox-pl-btn {
+  padding: 0 14px;
+}
+
+.ox-pl-keep {
+  align-self: flex-start;
+}
+
+.ox-pl-journal {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-size: var(--ox-fs-sm);
+}
+
+.ox-pl-journal > li {
+  display: grid;
+  grid-template-columns: 44px minmax(0, 1fr);
+  gap: 8px;
+}
+
+.ox-pl-journal-t {
+  font-size: var(--ox-fs-xs);
+  color: var(--ox-text-muted);
+  padding-top: 1px;
+}
+
+.ox-pl-journal > li > span:last-child {
+  color: var(--ox-text-label);
+  text-wrap: pretty;
+}
+
+@media (max-width: 639px) {
+  .ox-pl-car-radio,
+  .ox-pl-choice {
+    min-height: 44px;
+  }
+
+  /* Возврат 3: макеты 1a и 1f — только 600 px. На телефоне «модель · номер» — одной строкой: «Подходит рейсу» поля
+     машины уходит второй строкой под значение, чип строки «Машины рейса» — под название. */
+  .ox-pl-select {
+    min-height: 44px;
+    flex-wrap: wrap;
+    row-gap: 0;
+    padding-block: 6px;
+  }
+
+  .ox-pl-select-value,
+  .ox-pl-trip-car-name {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .ox-pl-select > .material-symbols-rounded:last-of-type {
+    order: 1;
+  }
+
+  .ox-pl-select-fit {
+    order: 2;
+    flex-basis: 100%;
+    padding-left: 28px;
+  }
+
+  .ox-pl-trip-car {
+    flex-wrap: wrap;
+  }
+
+  .ox-pl-trip-car-who {
+    flex-basis: calc(100% - 32px);
+  }
+
+  .ox-pl-trip-car > .ox-pl-chip {
+    margin-left: 32px;
   }
 }

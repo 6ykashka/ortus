@@ -4,7 +4,7 @@ import { describe, expect, it } from 'vitest';
 
 import type { DecisionItemLike, HomeSource } from '../types.ts';
 import { source as access } from './access.ts';
-import { source as fleet } from './fleet.ts';
+import { accusative, source as fleet } from './fleet.ts';
 import { source as tenant } from './tenant.ts';
 
 const CTX = { timeZone: 'Europe/Moscow' };
@@ -19,13 +19,145 @@ function cardOf(src: HomeSource, it: Omit<DecisionItemLike, 'key'>) {
 const tripRef = { moduleKey: 'fleet', entityType: 'trip', entityId: TRIP };
 
 describe('источник «Логистика» (fleet)', () => {
-  it('модуль fleet, этап 2, три вида', () => {
+  it('модуль fleet, этап 2, пять видов (W2.73: два вида S2-20)', () => {
     expect(fleet.moduleKey).toBe('fleet');
     expect(fleet.stage).toBe(2);
     expect(Object.keys(fleet.kinds)).toEqual([
       'fleet.blocking_defect',
       'fleet.trip_review',
       'fleet.trip_without_driver',
+      'fleet.vehicle_choice_pending',
+      'fleet.trip_without_vehicle',
+    ]);
+  });
+
+  // W2.73 · S2-20 1g («Временный водитель - варианты.dc.html» :476–491, design-2026-10-19b): параметры — как в
+  // описании DecisionItem.kind контракта 0.6.3-stage2 и MSW W2.71 (home.ts vehicleSource).
+  it('водитель ещё не выбрал машину: schedule · «до 13:30» · «Оставить Ford Transit» → «Ресурсный пул» ?trip=', () => {
+    expect(
+      cardOf(fleet, {
+        kind: 'fleet.vehicle_choice_pending',
+        moduleKey: 'fleet',
+        tone: 'warn',
+        object: tripRef,
+        params: {
+          tripNumber: 'Р-211',
+          driverName: 'Олег Тарасов',
+          homeOrgUnitName: 'Юг Транс',
+          chooseUntil: '2026-10-01T10:30:00Z',
+          hostVehicle: 'Ford Transit · М 608 КТ 77',
+          homeVehicle: 'Hyundai HD-35 · Н 384 ТК 77',
+          reservationId: 'r-ford',
+        },
+      }),
+    ).toEqual({
+      icon: 'schedule',
+      tag: { key: 'queue.chips.until', args: { time: '13:30' } },
+      title: { key: 'queue.vehicleChoice', args: { trip: 'Р-211' } },
+      text: {
+        key: 'queue.vehicleChoiceText',
+        args: {
+          driver: 'Олег Тарасов',
+          firm: 'Юг Транс',
+          host: 'Ford Transit',
+          home: 'Hyundai HD-35',
+        },
+      },
+      action: {
+        label: { key: 'queue.actions.keepVehicle', args: { vehicle: 'Ford Transit' } },
+        target: { page: 'pool', search: { trip: TRIP } },
+      },
+    });
+  });
+
+  it('нет машины: no_crash · «рейс в 14:00» · «Поставить машину» → «Рабочее место логиста» ?trip=', () => {
+    expect(
+      cardOf(fleet, {
+        kind: 'fleet.trip_without_vehicle',
+        moduleKey: 'fleet',
+        tone: 'danger',
+        object: tripRef,
+        params: {
+          tripNumber: 'Р-211',
+          driverName: 'Олег Тарасов',
+          homeOrgUnitName: 'Юг Транс',
+          startsAt: '2026-10-01T11:00:00Z',
+        },
+      }),
+    ).toEqual({
+      icon: 'no_crash',
+      tag: { key: 'queue.chips.tripAt', args: { time: '14:00' } },
+      title: { key: 'queue.noVehicle', args: { trip: 'Р-211' } },
+      text: { key: 'queue.noVehicleText', args: { firm: 'Юг Транс', driver: 'Олега Тарасова' } },
+      action: {
+        label: { key: 'queue.actions.assignVehicle' },
+        target: { page: 'fleet', search: { trip: TRIP } },
+      },
+    });
+  });
+
+  it('имя водителя в винительном падеже («выдал Олега Тарасова», :488)', () => {
+    expect(
+      [
+        'Олег Тарасов',
+        'Марина Котова',
+        'Илья Васильев',
+        'Дмитрий Соколов',
+        'Игорь Невский',
+        'Анна Кольцевая',
+        '',
+      ].map(accusative),
+    ).toEqual([
+      'Олега Тарасова',
+      'Марину Котову',
+      'Илью Васильева',
+      'Дмитрия Соколова',
+      'Игоря Невского',
+      'Анну Кольцевую',
+      '',
+    ]);
+  });
+
+  it('винительный падеж с родом по имени: женские фамилии на согласную и имена на «ь» не склоняются', () => {
+    expect(
+      [
+        'Анна Шевчук',
+        'Любовь Ковальчук',
+        'Ольга Петренко',
+        'Мария Белова',
+        'Илья Мельник',
+        'Никита Шевчук',
+        'Игорь Ковальчук',
+      ].map(accusative),
+    ).toEqual([
+      'Анну Шевчук',
+      'Любовь Ковальчук',
+      'Ольгу Петренко',
+      'Марию Белову',
+      'Илью Мельника',
+      'Никиту Шевчука',
+      'Игоря Ковальчука',
+    ]);
+  });
+
+  // Возврат 3 (ревью r3, minor; Q-W2.73-4): беглая гласная имён и несклоняемые фамилии на «-ых», «-их».
+  it('винительный падеж: беглая гласная («Павла», «Петра», «Льва»), фамилии на «-ых», «-их» не склоняются', () => {
+    expect(
+      [
+        'Павел Черных',
+        'Пётр Долгих',
+        'Петр Седых',
+        'Лев Белых',
+        'Анна Черных',
+        'Павел Соколов',
+      ].map(accusative),
+    ).toEqual([
+      'Павла Черных',
+      'Петра Долгих',
+      'Петра Седых',
+      'Льва Белых',
+      'Анну Черных',
+      'Павла Соколова',
     ]);
   });
 

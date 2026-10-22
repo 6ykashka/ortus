@@ -39,6 +39,12 @@ export interface DriverCard {
   pendingText?: string;
   approvedText?: string;
   freeWindow?: S['TimeWindow'];
+  /** W2.73 · квалификации каталога («Кат. C · рефрижератор») — подзаголовок диалога 1a. */
+  qual?: string;
+  /** W2.73 · обычная машина водителя (S2-20 правило 1, 1a «Едет на своей обычной»). */
+  usualVehicle?: S['PoolUsualVehicle'];
+  /** W2.73 · одобренный запрос с машиной — карточка итога 1f («Машины рейса», «Журнал»). */
+  transfer?: S['DriverTransfer'];
 }
 export interface IncomingRow {
   id: string;
@@ -47,6 +53,8 @@ export interface IncomingRow {
   period: string;
   reason?: string;
   source: string;
+  /** W2.73 · запрос целиком — машина запроса 1b (DriverTransfer.vehicle). */
+  transfer: S['DriverTransfer'];
 }
 
 /** Рейс ещё не начат: водителя можно запросить и назначить (pool-rules NOT_STARTED MSW W2.51). */
@@ -206,6 +214,19 @@ function texts(
 }
 
 /**
+ * W2.73 · Одобренный запрос с машиной (S2-20) показывает итог 1f вместо текста «… назначен на рейс …» эталона 14.10;
+ * остальные — тексты статуса эталона.
+ */
+function outcome(
+  x: S['DriverTransfer'] | undefined,
+  code: string,
+  home: string,
+): Pick<DriverCard, 'pendingText' | 'approvedText' | 'transfer'> {
+  if (x?.status === 'approved' && x.vehicle) return { transfer: x };
+  return texts(x, code, home);
+}
+
+/**
  * Карточки пула (:3304–3317): каталог по publicationId + запросы без карточки каталога (открытые и одобренные).
  * Запросить можно свободного или отклонённого водителя, если у рейса нет водителя и одобренного запроса (busy),
  * окна пересекаются и у смотрящего есть право запроса на фирму рейса (`mayRequest`, не только чтение).
@@ -247,7 +268,9 @@ export function cards(o: {
       canRequest: (status === 'free' || status === 'rejected') && tripOpen && fits && o.mayRequest,
       declined: status === 'rejected',
       freeWindow: d.freeWindow,
-      ...texts(x, d.displayName, home),
+      ...(d.qualifications.length ? { qual: d.qualifications.join(' · ') } : {}),
+      ...(d.usualVehicle ? { usualVehicle: d.usualVehicle } : {}),
+      ...outcome(x, d.displayName, home),
     };
   });
   for (const [key, x] of latest) {
@@ -268,7 +291,7 @@ export function cards(o: {
       rows: [{ term: R.period, value: windowText(x.window) }],
       canRequest: false,
       declined: false,
-      ...texts(x, code, home),
+      ...outcome(x, code, home),
     });
   }
   return sortByLabel(out);
@@ -308,13 +331,14 @@ export function incomingRows(list: readonly S['DriverTransfer'][]): IncomingRow[
       return {
         id: x.id,
         code: x.driverDisplayName ?? '',
-        line: x.tripNumber ? format(T.incoming.line, { firm, trip: x.tripNumber }) : firm,
+        line: x.tripNumber ? format(P.incoming.asks, { firm, trip: x.tripNumber }) : firm,
         period: format(logisticsManager.fleet.tripWhen, {
           date: dayOf(x.window.startsAt, tz),
           window: windowText(x.window),
         }),
         ...(x.reason ? { reason: x.reason } : {}),
         source: x.sourceOrgUnitName ?? '',
+        transfer: x,
       };
     });
 }

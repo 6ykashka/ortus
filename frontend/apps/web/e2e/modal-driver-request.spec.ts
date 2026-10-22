@@ -18,9 +18,6 @@ import { realClock } from './logistics.stand.ts';
 import { h1, hitHeight, noHorizontalScroll, toast } from './modules.helpers.ts';
 import { call, devScenario } from './shell.helpers.ts';
 
-const NOTE =
-  'После одобрения создаётся временное назначение только на этот рейс. История и начисления водителя остаются в его фирме.';
-
 const open = async (page: Page, code = 'Водитель #104', trip = 'Р-211') => {
   await driverCard(page, code)
     .getByRole('button', { name: `Запросить на рейс ${trip}` })
@@ -56,31 +53,37 @@ test.describe('modal-driver-request — «Запросить водителя» 
   test.skip(({ harness }) => harness.mode !== 'mock', 'сценарии и пресеты — сценарный сервер mock');
   test.setTimeout(90_000);
 
-  test('поля эталона (п. 15): водитель, рейс, срок, согласует, комментарий, пояснение, кнопки', async ({
+  // W2.73 (S2-20, D-35): строки и группа «Машина» — по макету 1a «Временный водитель - варианты.dc.html» (:145–183),
+  // пояснение и «Срок» эталона 14.10 заменены строками «Груз» и «Доступ»; блок «Машина» — modal-driver-request-s220.spec.ts.
+  test('поля эталона (п. 15, 1a): водитель, рейс, груз, доступ, согласует, машина, комментарий, кнопки', async ({
     app,
     page,
   }) => {
     await openPool(app, page);
     const dlg = await open(page);
     await expect(dlg.getByRole('heading', { name: 'Запросить водителя' })).toBeVisible();
-    await expect(dlg).toContainText('Водитель #104 · Юг Транс');
-    await expect(value(dlg, 'Рейс')).toHaveText('Р-211 · Охлаждённая продукция · 14:00–18:00');
-    await expect(value(dlg, 'Срок')).toHaveText('Временно, до 18:00 01.10');
+    await expect(dlg).toContainText('Водитель #104 · Юг Транс · Кат. C · рефрижератор');
+    await expect(value(dlg, 'Рейс')).toHaveText(
+      'Р-211 · Охлаждённая продукция · 01.10, 14:00–18:00',
+    );
+    await expect(value(dlg, 'Груз')).toHaveText('0,6 т · 7 м³ · кузов от 2,4 м · +2…+6 °C');
+    await expect(value(dlg, 'Доступ')).toHaveText('С одобрения до 18:00, только этот рейс');
     await expect(value(dlg, 'Согласует')).toHaveText('Менеджер фирмы Юг Транс');
+    await expect(dlg.getByRole('radiogroup', { name: 'Машина' })).toBeVisible();
     const comment = dlg.getByLabel('Комментарий для фирмы-владельца');
     await expect(comment).toHaveAttribute('placeholder', 'Необязательно');
-    await expect(dlg).toContainText(NOTE);
+    await expect(dlg.getByText('Что произойдёт после одобрения')).toBeVisible();
     await expect(dlg.getByRole('button', { name: 'Отмена' })).toBeVisible();
     await expect(dlg.getByRole('button', { name: 'Отправить запрос' })).toBeEnabled();
   });
 
-  test('Водитель #117 свободен с 15:00: срок — «Временно, с 15:00 до 18:00 01.10» (Q-W2.51-10)', async ({
+  test('Водитель #117 свободен с 15:00: «Доступ» — «С 15:00 до 18:00, только этот рейс» (Q-W2.51-10)', async ({
     app,
     page,
   }) => {
     const alta = await openPool(app, page);
     const dlg = await open(page, 'Водитель #117');
-    await expect(value(dlg, 'Срок')).toHaveText('Временно, с 15:00 до 18:00 01.10');
+    await expect(value(dlg, 'Доступ')).toHaveText('С 15:00 до 18:00, только этот рейс');
     await dlg.getByRole('button', { name: 'Отправить запрос' }).click();
     await expect(toast(page)).toHaveText('Запрос отправлен фирме Восток Карго');
     const [x] = await outgoing(page, alta);
@@ -208,7 +211,9 @@ test.describe('modal-driver-request — стенд @stand', () => {
     await expect(dlg.getByRole('heading', { name: 'Запросить водителя' })).toBeVisible();
     await expect(dlg).toContainText(`${s.code} · Север Логистик`);
     await expect(value(dlg, 'Рейс')).toContainText(`${s.trip.number} · Пул `);
-    await expect(value(dlg, 'Срок')).toHaveText(/^Временно, до \d\d:\d\d \d\d\.\d\d$/);
+    await expect(value(dlg, 'Доступ')).toHaveText(
+      /^С одобрения до \d\d:\d\d( \d\d\.\d\d)?, только этот рейс$/,
+    );
     await expect(value(dlg, 'Согласует')).toHaveText('Менеджер фирмы Север Логистик');
     await dlg.getByLabel('Комментарий для фирмы-владельца').fill('Стенд-e2e W2.23');
     await dlg.getByRole('button', { name: 'Отправить запрос' }).click();

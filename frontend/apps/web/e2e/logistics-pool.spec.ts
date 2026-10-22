@@ -3,7 +3,7 @@
 // verification-protocol §1.3. Диалог «Запросить водителя» — modal-driver-request.spec.ts. Демо-ответ «Одобрить» /
 // «Отклонить» эталона (PD-54) заменён блоком входящих запросов фирмы-источника (Q-W2.51-2, no-reference): решает
 // владелец «Альты» (approve на все фирмы) — персонаж `owner`.
-import type { Page } from '@playwright/test';
+import type { Locator, Page } from '@playwright/test';
 
 import { expect, test } from './_stand/fixtures.ts';
 import {
@@ -21,7 +21,9 @@ import {
   POOL_INTRO,
 } from './logistics-pool.helpers.ts';
 import { fromMenu } from './logistics.helpers.ts';
-import { poolStand } from './logistics-pool.stand.ts';
+import { tripCars } from './logistics-pool-s220.helpers.ts';
+import { transferOf } from './logistics-pool-s220.stand.ts';
+import { type PoolStand, poolStand } from './logistics-pool.stand.ts';
 import { realClock } from './logistics.stand.ts';
 import { h1, hitHeight, noHorizontalScroll, toast } from './modules.helpers.ts';
 import { call, devScenario } from './shell.helpers.ts';
@@ -107,10 +109,11 @@ test.describe('logistics-pool — «Ресурсный пул» @mock', () => {
     await app(`/t/${alta}/pool`, { persona: 'owner' });
     const row = incomingCard(page, 'Водитель #104');
     await expect(incoming(page).getByRole('heading', { level: 2 })).toHaveText('Входящие запросы');
-    await expect(row).toContainText('Север Логистик · рейс Р-211');
-    await expect(row).toContainText('01.10.2026 · 14:00–18:00');
+    // W2.73: входящий — по макету 1b (design-2026-10-19b :199–207); запрос без машины — «Одобрить» / «Отклонить».
+    await expect(row).toContainText('Север Логистик просит на рейс Р-211');
+    await expect(row).toContainText('Ждёт решения');
+    await expect(cardValue(row, 'Когда')).toHaveText('01.10, 14:00–18:00 · доступ до 18:00');
     await expect(row).toContainText('Запрос на рейс Р-211');
-    await row.getByLabel('Комментарий к решению').fill('Отпускаем до конца смены');
     await row.getByRole('button', { name: 'Одобрить' }).click();
     await expect(toast(page)).toHaveText('Фирма Юг Транс одобрила запрос');
     await expect(incoming(page)).toHaveCount(0);
@@ -133,7 +136,7 @@ test.describe('logistics-pool — «Ресурсный пул» @mock', () => {
     await app(`/t/${alta}/pool`, { persona: 'owner' });
     // W2.71 (0.6.3-stage2, S2-20; Q-W2.70-8): «Отклонить» — только с причиной.
     await incomingCard(page, 'Водитель #104')
-      .getByLabel('Комментарий к решению')
+      .getByLabel('Причина отказа')
       .fill('Водитель нужен на своём рейсе');
     await incomingCard(page, 'Водитель #104').getByRole('button', { name: 'Отклонить' }).click();
     await expect(toast(page)).toHaveText('Фирма Юг Транс отклонила запрос');
@@ -338,8 +341,9 @@ test.describe('logistics-pool — «Ресурсный пул» @mock', () => {
     await expect(driverCard(page, 'Водитель #104')).toHaveCount(0);
     await b.getByRole('button', { name: `Запросить на рейс ${evening.number}` }).click();
     const dlg = page.getByRole('dialog');
-    await expect(dlg).toContainText(`${evening.number} · Вечерний рейс · 19:00–21:00`);
-    await expect(dlg).toContainText('Временно, до 20:00 01.10');
+    // W2.73: строки диалога — по макету 1a (рейс с датой, «Доступ»).
+    await expect(dlg).toContainText(`${evening.number} · Вечерний рейс · 01.10, 19:00–21:00`);
+    await expect(dlg).toContainText('С одобрения до 20:00, только этот рейс');
   });
 
   // Возврат 2: открытый запрос у публикации один на любой рейс (driver_transfers_open_uq, MSW pool.ts) — он блокирует
@@ -422,6 +426,38 @@ async function eveningTrip(page: Page, alta: string): Promise<{ id: string; numb
   return created.body as { id: string; number: string };
 }
 
+/**
+ * W2.73 · Итог одобрения на стенде. Диалог шлёт `vehicle` (S2-20), если у фирмы рейса есть подходящая свободная машина:
+ * backend без S2-20 поле игнорирует — карточка с текстом «{псевдоним} назначен на рейс … до …» (W2.23); backend S2-20
+ * (W2.72) бронирует машину — карточка-итог 1f: «Машины рейса» с одной машиной «Назначена на {рейс}», «Доступ».
+ * Ветка — по ответу сервера (`DriverTransfer.vehicle`), обе проверяются строго.
+ */
+async function approvedOnStand(
+  page: Page,
+  card: Locator,
+  s: PoolStand,
+  tail?: string,
+): Promise<void> {
+  await expect(card.locator('.ox-pl-chip').first()).toContainText('Временно назначен', {
+    timeout: 15_000,
+  });
+  const x = await transferOf(page, s);
+  expect(x?.status, 'запрос одобрен').toBe('approved');
+  if (x?.vehicle) {
+    await expect(card.getByText('Машины рейса')).toBeVisible();
+    await expect(tripCars(card)).toHaveCount(1);
+    await expect(tripCars(card).locator('.ox-pl-chip')).toHaveText(
+      new RegExp(`Назначена на ${s.trip.number}$`),
+    );
+    await expect(cardValue(card, 'Доступ')).toHaveText(/^До .+, только этот рейс$/);
+    return;
+  }
+  await expect(card.getByRole('status')).toContainText(
+    `${s.code} назначен на рейс ${s.trip.number} до`,
+  );
+  if (tail) await expect(card.getByRole('status')).toContainText(tail);
+}
+
 // W2.07 (пул на backend) в main — строки стенда без fixme. Сида пула на стенде нет (Q-W2.07-5): водителя публикует
 // владелец через API (publishDriverToPool), рейс фирмы-получателя «Юг Транс» — его же createTripPlan; уборка — отзыв
 // назначения и снятие публикации (logistics-pool.stand.ts).
@@ -452,15 +488,12 @@ test.describe('logistics-pool — стенд @stand', () => {
     });
     await expect(card.locator('.ox-pl-chip')).toContainText('Запрос отправлен');
     const row = incomingCard(page, s.code);
-    await expect(row).toContainText(`Юг Транс · рейс ${s.trip.number}`);
+    await expect(row).toContainText(`Юг Транс просит на рейс ${s.trip.number}`);
     await row.getByRole('button', { name: 'Одобрить' }).click();
     await expect(toast(page)).toHaveText('Фирма Север Логистик одобрила запрос', {
       timeout: 15_000,
     });
-    await expect(card.locator('.ox-pl-chip')).toContainText('Временно назначен');
-    await expect(card.getByRole('status')).toContainText(
-      `${s.code} назначен на рейс ${s.trip.number} до`,
-    );
+    await approvedOnStand(page, card, s);
   });
 
   test('логист Котова на стенде: водитель «Юг Транс» → «Запросить на рейс» своего рейса → одобрение → «Временно назначен»', async ({
@@ -500,13 +533,7 @@ test.describe('logistics-pool — стенд @stand', () => {
     expect(req, 'запрос Котовой на стенде').toBeTruthy();
     await apiDecide(s.owner, s.tenant, req?.id ?? '', 'approve');
     await page.reload();
-    await expect(card.locator('.ox-pl-chip')).toContainText('Временно назначен', {
-      timeout: 15_000,
-    });
-    await expect(card.getByRole('status')).toContainText(
-      `${s.code} назначен на рейс ${s.trip.number} до`,
-    );
-    await expect(card.getByRole('status')).toContainText('остаются в фирме Юг Транс');
+    await approvedOnStand(page, card, s, 'остаются в фирме Юг Транс');
   });
 
   test('логист на стенде: «Ресурсный пул» открывается, своих водителей в каталоге нет', async ({

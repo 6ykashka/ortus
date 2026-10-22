@@ -128,9 +128,11 @@ describe('«Ресурсный пул»', () => {
     );
     const dlg = await screen.findByRole('dialog', undefined, SLOW);
     expect(within(dlg).getByRole('heading', { name: 'Запросить водителя' })).toBeTruthy();
-    expect(dlg.textContent).toContain('Водитель #104 · Юг Транс');
-    expect(dd(dlg, 'Рейс')).toBe('Р-211 · Охлаждённая продукция · 14:00–18:00');
-    expect(dd(dlg, 'Срок')).toBe('Временно, до 18:00 01.10');
+    // W2.73: строки диалога — по макету 1a (:145–151, design-2026-10-19b).
+    expect(dlg.textContent).toContain('Водитель #104 · Юг Транс · Кат. C · рефрижератор');
+    expect(dd(dlg, 'Рейс')).toBe('Р-211 · Охлаждённая продукция · 01.10, 14:00–18:00');
+    expect(dd(dlg, 'Груз')).toBe('0,6 т · 7 м³ · кузов от 2,4 м · +2…+6 °C');
+    expect(dd(dlg, 'Доступ')).toBe('С одобрения до 18:00, только этот рейс');
     expect(dd(dlg, 'Согласует')).toBe('Менеджер фирмы Юг Транс');
     const comment = within(dlg).getByLabelText('Комментарий для фирмы-владельца');
     expect(comment.getAttribute('placeholder')).toBe('Необязательно');
@@ -149,15 +151,20 @@ describe('«Ресурсный пул»', () => {
     const [x] = poolOf(a.scenario).transfers;
     expect(x).toMatchObject({ reason: 'Нужен рефрижератор', status: 'requested' });
     expect(x?.window.startsAt).toBe('2026-10-01T11:00:00Z');
+    // W2.73: у #104 нет обычной машины — «Только наша» с подходящей машиной рейса (Ford Transit).
+    expect(x?.vehicle).toMatchObject({
+      mode: 'host',
+      hostVehicle: { displayName: 'Ford Transit', registrationNumber: 'М 608 КТ 77' },
+    });
   });
 
-  it('#117 свободен с 15:00: срок «Временно, с 15:00 до 18:00 01.10»; без комментария — «Запрос на рейс Р-211»', async () => {
+  it('#117 свободен с 15:00: «Доступ» — «С 15:00 до 18:00, только этот рейс»; без комментария — «Запрос на рейс Р-211»', async () => {
     const a = await open();
     fireEvent.click(
       within(await card('Водитель #117')).getByRole('button', { name: 'Запросить на рейс Р-211' }),
     );
     const dlg = await screen.findByRole('dialog', undefined, SLOW);
-    expect(dd(dlg, 'Срок')).toBe('Временно, с 15:00 до 18:00 01.10');
+    expect(dd(dlg, 'Доступ')).toBe('С 15:00 до 18:00, только этот рейс');
     fireEvent.click(within(dlg).getByRole('button', { name: 'Отправить запрос' }));
     await waitFor(() => expect(toast()).toBe('Запрос отправлен фирме Восток Карго'), SLOW);
     const [x] = poolOf(a.scenario).transfers;
@@ -322,18 +329,18 @@ describe('«Ресурсный пул»', () => {
     ).toBeTruthy();
   });
 
-  it('владелец: «Входящие запросы» — «Одобрить» с комментарием → тост, «Временно назначен»', async () => {
+  it('владелец: «Входящие запросы» — «Одобрить» → тост, «Временно назначен»', async () => {
     const a = await open({ persona: 'owner', setup: (s) => requested(s) });
     const block = (
       await screen.findByRole('heading', { level: 2, name: 'Входящие запросы' }, SLOW)
     ).closest('section') as HTMLElement;
     const row = within(block).getByText('Водитель #104').closest('article') as HTMLElement;
-    expect(row.textContent).toContain('Север Логистик · рейс Р-211');
-    expect(row.textContent).toContain('01.10.2026 · 14:00–18:00');
+    // W2.73: входящий — по макету 1b (:199–207): без машины в запросе — «Одобрить» / «Отклонить».
+    expect(row.textContent).toContain('Север Логистик просит на рейс Р-211');
+    expect(row.textContent).toContain('Ждёт решения');
+    expect(dd(row, 'Когда')).toBe('01.10, 14:00–18:00 · доступ до 18:00');
     expect(row.textContent).toContain('Нужен на вечер');
-    fireEvent.change(within(row).getByLabelText('Комментарий к решению'), {
-      target: { value: 'Отпускаем' },
-    });
+    expect(within(row).queryByRole('button', { name: 'Только водителя' })).toBeNull();
     fireEvent.click(within(row).getByRole('button', { name: 'Одобрить' }));
     await waitFor(() => expect(toast()).toBe('Фирма Юг Транс одобрила запрос'), SLOW);
     await waitFor(
@@ -350,7 +357,8 @@ describe('«Ресурсный пул»', () => {
       'Водитель #104 назначен на рейс Р-211 до 18:00 01.10. Доступ ограничен этим рейсом; история и начисления остаются в фирме Юг Транс.',
     );
     const [x] = poolOf(a.scenario).transfers;
-    expect(x).toMatchObject({ status: 'approved', decisionComment: 'Отпускаем' });
+    expect(x).toMatchObject({ status: 'approved' });
+    expect(x?.decisionComment).toBeUndefined();
     expect(within(await card('Водитель #117')).queryByRole('button')).toBeNull();
   });
 
@@ -360,7 +368,7 @@ describe('«Ресурсный пул»', () => {
       await screen.findByRole('heading', { level: 2, name: 'Входящие запросы' }, SLOW)
     ).closest('section') as HTMLElement;
     // W2.71 (0.6.3-stage2, S2-20; Q-W2.70-8): «Отклонить» — только с причиной (422 без комментария).
-    fireEvent.change(within(block).getByLabelText('Комментарий к решению'), {
+    fireEvent.change(within(block).getByLabelText('Причина отказа'), {
       target: { value: 'Водитель нужен на своём рейсе' },
     });
     fireEvent.click(within(block).getByRole('button', { name: 'Отклонить' }));
@@ -394,7 +402,7 @@ describe('«Ресурсный пул»', () => {
       await screen.findByRole('heading', { level: 2, name: 'Входящие запросы' }, SLOW)
     ).closest('section') as HTMLElement;
     // W2.71 (0.6.3-stage2, S2-20; Q-W2.70-8): «Отклонить» — только с причиной (422 без комментария).
-    fireEvent.change(within(block).getByLabelText('Комментарий к решению'), {
+    fireEvent.change(within(block).getByLabelText('Причина отказа'), {
       target: { value: 'Водитель нужен на своём рейсе' },
     });
     fireEvent.click(within(block).getByRole('button', { name: 'Отклонить' }));

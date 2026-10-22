@@ -16,11 +16,20 @@ type S = components['schemas'];
 
 const poolKey = (tenantId: string) => [...fleetKey(tenantId), 'pool'] as const;
 
-/** Каталог пула на окно рейса (AUTH-06: только минимум сведений); без окна — запроса нет. */
-export function useCatalog(tenantId: string, window: S['TimeWindow'] | null) {
+/**
+ * Каталог пула на окно рейса (AUTH-06: только минимум сведений); без окна — запроса нет. W2.73 (S2-20 правило 2):
+ * с `tripId` — обычная машина водителя с совместимостью и занятостью на окно рейса (`usualVehicle.fit`).
+ */
+export function useCatalog(tenantId: string, window: S['TimeWindow'] | null, tripId?: string) {
   const api = useApi();
   return useQuery({
-    queryKey: [...poolKey(tenantId), 'catalog', window?.startsAt ?? '', window?.endsAt ?? ''],
+    queryKey: [
+      ...poolKey(tenantId),
+      'catalog',
+      window?.startsAt ?? '',
+      window?.endsAt ?? '',
+      tripId ?? '',
+    ],
     enabled: !!window,
     queryFn: () =>
       allPages(async (cursor) =>
@@ -31,6 +40,7 @@ export function useCatalog(tenantId: string, window: S['TimeWindow'] | null) {
               query: {
                 availableFrom: window?.startsAt ?? '',
                 availableUntil: window?.endsAt ?? '',
+                ...(tripId ? { tripId } : {}),
                 ...pageQuery(cursor),
               },
             },
@@ -38,6 +48,59 @@ export function useCatalog(tenantId: string, window: S['TimeWindow'] | null) {
         ),
       ),
   });
+}
+
+/** W2.73 · Машины области `fleet.vehicles.read` — подбор «Ставим нашу машину» (1a) и «Машины рейса» (1f). */
+export function useVehicles(tenantId: string, enabled: boolean) {
+  const api = useApi();
+  return useQuery({
+    queryKey: [...poolKey(tenantId), 'vehicles'],
+    enabled,
+    queryFn: () =>
+      allPages(async (cursor) =>
+        unwrap(
+          await api.GET('/api/v1/tenants/{tenantId}/fleet/vehicles', {
+            params: { path: { tenantId }, query: pageQuery(cursor) },
+          }),
+        ),
+      ),
+  });
+}
+
+/**
+ * W2.73 · Публикации фирмы водителя (listDriverPoolPublications): имя своего водителя во входящем запросе 1b
+ * («Олег Тарасов · Водитель #104») — `driverDisplayName` отдаётся только фирме водителя.
+ */
+export function usePublications(tenantId: string, enabled: boolean) {
+  const api = useApi();
+  return useQuery({
+    queryKey: [...poolKey(tenantId), 'publications'],
+    enabled,
+    queryFn: () =>
+      allPages(async (cursor) =>
+        unwrap(
+          await api.GET('/api/v1/tenants/{tenantId}/fleet/driver-pool/publications', {
+            params: { path: { tenantId }, query: pageQuery(cursor) },
+          }),
+        ),
+      ),
+  });
+}
+
+/** W2.73 · «Оставить …» логиста (1f, 1g): chooseReservation брони машины фирмы рейса, Idempotency-Key. */
+export async function keepReservation(
+  api: ApiClient,
+  tenantId: string,
+  reservationId: string,
+): Promise<S['ReservationChoice']> {
+  return unwrap(
+    await api.POST('/api/v1/tenants/{tenantId}/fleet/reservations/{reservationId}/choose', {
+      params: {
+        path: { tenantId, reservationId },
+        header: { 'Idempotency-Key': crypto.randomUUID() },
+      },
+    }),
+  );
 }
 
 /** Запросы водителей: исходящие (фирмы, где смотрящий запрашивает) или входящие (где отпускает). */
