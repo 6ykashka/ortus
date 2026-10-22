@@ -1,0 +1,1293 @@
+/* W4.23 · Вкладки формы «Формы и опросы» по рендеру эталона design-2026-10-19 («Формы и опросы.dc.html»: «Настройки»
+   dc:287–323, «Действия после ответа» dc:324–410, «Ответы» dc:411–439, «Версии» dc:440–454, диалог dc:457–466; PD-28).
+   Значения — из инлайн-стилей эталона; тона чипов — TONE dc:490. Без эталона (Q-W4.00-forms-18 «Принять / Отклонить»,
+   загрузка и ошибка блока) — в стиле соседних блоков. На телефоне цели нажатия 44 px без изменения вида — вынос ::after. */
+
+.ox-fr-st,
+.ox-fr-ac,
+.ox-fr-rs,
+.ox-fr-vs,
+.ox-fr-overlay {
+  font-family: var(--ox-font-sans);
+  color: var(--ox-text);
+  font-size: 14px;
+  line-height: 1.45;
+}
+
+.ox-fr-st [data-tone='ok'],
+.ox-fr-ac [data-tone='ok'],
+.ox-fr-rs [data-tone='ok'],
+.ox-fr-vs [data-tone='ok'] {
+  --fm-bg: #e3efe7;
+  --fm-fg: #1f6b52;
+}
+.ox-fr-st [data-tone='info'],
+.ox-fr-ac [data-tone='info'],
+.ox-fr-rs [data-tone='info'],
+.ox-fr-vs [data-tone='info'] {
+  --fm-bg: #e7eef6;
+  --fm-fg: #2b5479;
+}
+.ox-fr-st [data-tone='warn'],
+.ox-fr-ac [data-tone='warn'],
+.ox-fr-rs [data-tone='warn'],
+.ox-fr-vs [data-tone='warn'] {
+  --fm-bg: #faf1dc;
+  --fm-fg: #7a5214;
+}
+.ox-fr-st [data-tone='danger'],
+.ox-fr-ac [data-tone='danger'],
+.ox-fr-rs [data-tone='danger'],
+.ox-fr-vs [data-tone='danger'] {
+  --fm-bg: #fbeae7;
+  --fm-fg: #a13a33;
+}
+.ox-fr-st [data-tone='neutral'],
+.ox-fr-ac [data-tone='neutral'],
+.ox-fr-rs [data-tone='neutral'],
+.ox-fr-vs [data-tone='neutral'],
+.ox-fr-overlay [data-tone='neutral'] {
+  --fm-bg: #ecefea;
+  --fm-fg: #4c5955;
+}
+
+/* Чип (dc:91, dc:370, dc:449) */
+.ox-fr-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 1px 8px 1px 6px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 500;
+  background: var(--fm-bg, #ecefea);
+  color: var(--fm-fg, #4c5955);
+}
+.ox-fr-chip[data-small] {
+  padding: 1px 8px;
+  font-size: 11px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+/* Кнопки эталона: вторичная 36 px (dc:332), основная 40 px (dc:405), отмена (dc:405) */
+.ox-fr-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 36px;
+  padding: 0 12px;
+  border-radius: 8px;
+  border: 1px solid #cdd5cb;
+  background: #ffffff;
+  color: inherit;
+  font-weight: 500;
+  cursor: pointer;
+}
+.ox-fr-btn[data-accent] {
+  border-color: var(--ox-accent, #1f6b52);
+  color: var(--ox-accent, #1f6b52);
+}
+.ox-fr-btn[data-primary] {
+  min-height: 40px;
+  padding: 0 16px;
+  border-color: var(--ox-accent, #1f6b52);
+  background: var(--ox-accent, #1f6b52);
+  color: #ffffff;
+}
+.ox-fr-btn[data-plain] {
+  gap: 0;
+}
+.ox-fr-btn[data-h38] {
+  min-height: 38px;
+}
+.ox-fr-btn[data-h40] {
+  min-height: 40px;
+}
+.ox-fr-btn[data-small] {
+  gap: 4px;
+  min-height: 32px;
+  padding: 0 10px;
+  font-size: 13px;
+}
+.ox-fr-btn[data-danger] {
+  border-color: #a13a33;
+  color: #a13a33;
+}
+.ox-fr-btn:disabled,
+.ox-fr-btn[aria-disabled='true'] {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+.ox-fr-icon-btn {
+  display: grid;
+  place-items: center;
+  width: 36px;
+  height: 36px;
+  border: 0;
+  border-radius: 8px;
+  background: transparent;
+  color: #a13a33;
+  cursor: pointer;
+}
+
+/* Сегменты (seg dc:495, dc:414) */
+.ox-fr-seg {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2px;
+  padding: 3px;
+  border-radius: 10px;
+  background: #e5e9e3;
+}
+.ox-fr-seg > button {
+  min-height: 34px;
+  padding: 0 12px;
+  border: 0;
+  border-radius: 8px;
+  background: transparent;
+  box-shadow: none;
+  font-weight: 500;
+  color: #1c2a26;
+  cursor: pointer;
+}
+.ox-fr-seg[data-small] {
+  flex-wrap: nowrap;
+}
+.ox-fr-seg[data-small] > button {
+  min-height: 32px;
+}
+.ox-fr-seg > button[aria-pressed='true'] {
+  background: #ffffff;
+  box-shadow: 0 1px 2px rgba(28, 42, 38, 0.14);
+  font-weight: 600;
+}
+.ox-fr-seg > button:disabled {
+  opacity: 1;
+  color: #8a968f;
+  cursor: not-allowed;
+}
+
+/* Поля (dc:293, dc:343) */
+.ox-fr-field {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  gap: 6px;
+  font-size: 13px;
+  font-weight: 500;
+  color: #3a4844;
+}
+.ox-fr-field select,
+.ox-fr-field input,
+.ox-fr-row select,
+.ox-fr-row input,
+.ox-fr-map select,
+.ox-fr-map input {
+  min-height: 40px;
+  border: 1px solid #cdd5cb;
+  border-radius: 8px;
+  background: #ffffff;
+  font-weight: 400;
+  color: #1c2a26;
+}
+.ox-fr-field select,
+.ox-fr-row select,
+.ox-fr-map select {
+  padding: 0 8px;
+  /* Длинные варианты («Логистика · Журнал осмотров машин») не раздвигают экран телефона. */
+  min-width: 0;
+  max-width: 100%;
+}
+.ox-fr-field input,
+.ox-fr-row input,
+.ox-fr-map input {
+  padding: 0 10px;
+}
+.ox-fr-field textarea {
+  padding: 8px 10px;
+  border: 1px solid #cdd5cb;
+  border-radius: 8px;
+  font-weight: 400;
+  resize: vertical;
+}
+.ox-fr-field select:disabled,
+.ox-fr-row select:disabled,
+.ox-fr-row input:disabled,
+.ox-fr-field textarea:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+.ox-fr-mono {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 13px;
+}
+.ox-fr-note {
+  font-size: 12px;
+  color: #5c6964;
+  text-wrap: pretty;
+}
+.ox-fr-note[data-tone='warn'] {
+  color: #7a5214;
+}
+.ox-fr-err {
+  font-size: 13px;
+  color: #a13a33;
+}
+.ox-fr-check {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  min-height: 36px;
+  cursor: pointer;
+}
+.ox-fr-check > input,
+.ox-fr-rule-on > input,
+.ox-fr-ack > input {
+  width: 18px;
+  height: 18px;
+  margin: 0;
+  accent-color: var(--ox-accent, #1f6b52);
+}
+.ox-fr-check.ox-fr-top {
+  align-items: flex-start;
+  min-height: 0;
+}
+.ox-fr-check.ox-fr-top > input {
+  flex: none;
+  margin: 2px 0 0;
+}
+.ox-fr-col {
+  display: flex;
+  flex-direction: column;
+}
+
+/* Загрузка блока (без эталона) */
+.ox-fr-pending {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  /* Во flex-контейнере вкладки («Версии» — .ox-fr-vs) скелет и ошибка — во всю ширину, а не по содержимому (0). */
+  flex: 1 1 100%;
+  width: 100%;
+}
+
+/* Ошибка загрузки блока с «Повторить» (без эталона, как LoadFailed «Модулей»): кнопка справа, на узком — под текстом */
+.ox-fr-failed {
+  display: flex;
+  flex: 1 1 100%;
+  flex-wrap: wrap;
+  gap: 10px;
+  align-items: center;
+  padding: 12px 14px;
+  border-radius: 12px;
+  border: 1px solid #efc9c4;
+  background: #fbeae7;
+  color: #a13a33;
+}
+.ox-fr-failed-text {
+  flex: 1 1 200px;
+  text-wrap: pretty;
+}
+.ox-fr-failed > .ox-fr-btn {
+  min-height: 40px;
+  color: #1c2a26;
+}
+/* Только для AT: h2 панели вкладки (порядок заголовков h1 → h2 → h3). */
+.ox-fr-sr {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+  border: 0;
+}
+
+.ox-fr-pending > span {
+  height: 40px;
+  border-radius: 8px;
+  background: #e8ece5;
+}
+
+/* ---------- «Настройки» dc:288–322 ---------- */
+.ox-fr-st {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 360px), 1fr));
+  gap: 12px;
+  align-items: start;
+}
+.ox-fr-st-err {
+  grid-column: 1 / -1;
+  padding: 10px 14px;
+  border-radius: 10px;
+  background: #fbeae7;
+  color: #a13a33;
+  font-size: 13px;
+}
+.ox-fr-card {
+  background: #ffffff;
+  border: 1px solid #dce2d9;
+  border-radius: 12px;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  min-width: 0;
+}
+.ox-fr-card[data-tight] {
+  gap: 6px;
+}
+.ox-fr-card > h3 {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 600;
+}
+.ox-fr-card[data-tight] > h3 {
+  margin: 0 0 4px;
+}
+.ox-fr-radios {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.ox-fr-radio {
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+  padding: 10px 12px;
+  border-radius: 10px;
+  border: 1.5px solid #dce2d9;
+  background: #ffffff;
+  text-align: left;
+  color: inherit;
+  cursor: pointer;
+}
+.ox-fr-radio[data-sel] {
+  border-color: var(--ox-accent, #1f6b52);
+  background: var(--ox-accent-tint, #eef5f0);
+}
+.ox-fr-radio:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+.ox-fr-radio-dot {
+  flex: none;
+  color: #8a968f;
+}
+.ox-fr-radio[data-sel] .ox-fr-radio-dot {
+  color: var(--ox-accent, #1f6b52);
+}
+.ox-fr-radio-body {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.ox-fr-radio-body > strong {
+  font-weight: 600;
+}
+.ox-fr-radio-body > span {
+  font-size: 12px;
+  color: #5c6964;
+  text-wrap: pretty;
+}
+.ox-fr-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+}
+.ox-fr-row > span {
+  flex: 1 1 180px;
+}
+.ox-fr-num {
+  width: 150px;
+}
+.ox-fr-num.ox-fr-num-sm {
+  width: 120px;
+}
+.ox-fr-quiz-max {
+  font-size: 13px;
+  color: #3a4844;
+}
+
+/* ---------- «Действия после ответа» dc:325–409 ---------- */
+.ox-fr-ac {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.ox-fr-intro {
+  margin: 0;
+  color: #5c6964;
+  max-width: 780px;
+  text-wrap: pretty;
+}
+.ox-fr-rule {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 14px;
+  align-items: center;
+  padding: 12px 14px;
+  border-radius: 12px;
+  background: #ffffff;
+  border: 1px solid #dce2d9;
+}
+.ox-fr-rule-icon {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 9px;
+  background: #e3efe7;
+  color: #1f6b52;
+}
+.ox-fr-rule-body {
+  flex: 1 1 280px;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+}
+.ox-fr-rule-body > strong {
+  font-weight: 600;
+}
+.ox-fr-rule-text {
+  font-size: 13px;
+  color: #3a4844;
+  text-wrap: pretty;
+}
+.ox-fr-rule-meta {
+  font-size: 12px;
+  color: #5c6964;
+  text-wrap: pretty;
+}
+.ox-fr-rule-on {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+}
+.ox-fr-rule-fail {
+  flex-basis: 100%;
+  display: flex;
+  gap: 6px;
+  align-items: center;
+  font-size: 13px;
+  color: #a13a33;
+}
+.ox-fr-empty {
+  padding: 16px;
+  border: 1px dashed #c3ccc1;
+  border-radius: 12px;
+  color: #5c6964;
+}
+.ox-fr-red {
+  background: #ffffff;
+  border: 1.5px solid var(--ox-accent, #1f6b52);
+  border-radius: 12px;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.ox-fr-red > h3 {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 600;
+}
+.ox-fr-red-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+.ox-fr-w160 {
+  flex: 1 1 160px;
+}
+.ox-fr-w200 {
+  flex: 1 1 200px;
+}
+.ox-fr-w240 {
+  flex: 2 1 240px;
+}
+.ox-fr-w260 {
+  flex: 2 1 260px;
+}
+.ox-fr-red-btns {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.ox-fr-red-btns > .ox-fr-btn[data-plain] {
+  min-height: 40px;
+  padding: 0 14px;
+}
+.ox-fr-adds {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.ox-fr-adds > button {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 40px;
+  padding: 0 12px;
+  border-radius: 8px;
+  border: 1px dashed #9fb3a8;
+  background: #ffffff;
+  color: var(--ox-accent, #1f6b52);
+  font-weight: 500;
+  cursor: pointer;
+}
+
+/* «в БЗ» dc:353–400 */
+.ox-fr-kb {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.ox-fr-kb-top {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  align-items: flex-end;
+}
+.ox-fr-grow1 {
+  flex: 1 1 180px;
+}
+.ox-fr-grow2 {
+  flex: 2 1 260px;
+}
+.ox-fr-kb-top .ox-fr-grow2 {
+  flex: 2 1 280px;
+}
+.ox-fr-kb-hint {
+  font-size: 13px;
+  color: #5c6964;
+  text-wrap: pretty;
+}
+.ox-fr-np {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 12px;
+  border-radius: 10px;
+  border: 1px dashed var(--ox-accent, #1f6b52);
+  background: #f8f9f6;
+}
+.ox-fr-np-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+.ox-fr-np-row.ox-fr-center {
+  gap: 8px 12px;
+  align-items: center;
+}
+.ox-fr-kb-label {
+  font-size: 13px;
+  color: #3a4844;
+}
+.ox-fr-kb-access {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 10px;
+  align-items: center;
+  font-size: 13px;
+  color: #3a4844;
+}
+.ox-fr-kbhead {
+  max-width: 420px;
+}
+.ox-fr-map {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.ox-fr-map-title {
+  font-size: 13px;
+  font-weight: 600;
+  color: #3a4844;
+}
+.ox-fr-map-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  align-items: center;
+}
+.ox-fr-map-name {
+  flex: 1 1 160px;
+  min-width: 0;
+  min-height: 38px;
+  display: flex;
+  align-items: center;
+  padding: 0 10px;
+  border-radius: 8px;
+  background: #f1f3ef;
+  font-weight: 500;
+}
+.ox-fr-map .ox-fr-map-input {
+  flex: 1 1 160px;
+  min-width: 0;
+  min-height: 38px;
+}
+.ox-fr-map-arrow {
+  color: #8a968f;
+}
+.ox-fr-map .ox-fr-map-src {
+  flex: 2 1 220px;
+  min-width: 0;
+  min-height: 38px;
+}
+.ox-fr-map .ox-fr-map-src[data-missing] {
+  border-color: #b7791f;
+}
+.ox-fr-map-del {
+  display: grid;
+  place-items: center;
+  width: 32px;
+  height: 32px;
+  border: 0;
+  border-radius: 8px;
+  background: transparent;
+  color: #a13a33;
+  cursor: pointer;
+}
+.ox-fr-link {
+  align-self: flex-start;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 34px;
+  padding: 0 4px;
+  border: 0;
+  background: transparent;
+  color: var(--ox-accent, #1f6b52);
+  font-weight: 500;
+  cursor: pointer;
+}
+.ox-fr-warn {
+  font-size: 12px;
+  color: #7a5214;
+  text-wrap: pretty;
+}
+.ox-fr-pv {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 12px;
+  border-radius: 10px;
+  background: #f8f9f6;
+  border: 1px solid #e3e8e0;
+}
+.ox-fr-pv-scroll {
+  overflow-x: auto;
+}
+.ox-fr-pv table {
+  border-collapse: collapse;
+  font-size: 13px;
+  width: 100%;
+}
+.ox-fr-pv th {
+  text-align: left;
+  padding: 6px 8px;
+  font-size: 12px;
+  font-weight: 600;
+  color: #3a4844;
+  white-space: nowrap;
+  border-bottom: 1px solid #dce2d9;
+}
+.ox-fr-pv td {
+  padding: 6px 8px;
+  vertical-align: top;
+  min-width: 90px;
+}
+.ox-fr-pv-entry {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 10px 12px;
+  border-radius: 8px;
+  background: #ffffff;
+  border: 1px solid #dce2d9;
+}
+.ox-fr-pv-entry > strong {
+  font-weight: 600;
+}
+.ox-fr-pv-line {
+  display: grid;
+  grid-template-columns: minmax(110px, 1fr) 2fr;
+  gap: 8px;
+  font-size: 13px;
+}
+.ox-fr-pv-line > span:first-child {
+  color: #5c6964;
+}
+.ox-fr-ack {
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+  padding: 10px 12px;
+  border-radius: 10px;
+  background: #faf1dc;
+  color: #7a5214;
+  cursor: pointer;
+}
+.ox-fr-ack > input {
+  flex: none;
+  margin: 2px 0 0;
+  accent-color: #7a5214;
+}
+.ox-fr-ack > span {
+  font-size: 13px;
+  text-wrap: pretty;
+}
+
+/* ---------- «Ответы» dc:412–438 ---------- */
+.ox-fr-rs {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.ox-fr-rs-bar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 12px;
+  align-items: center;
+}
+.ox-fr-rs-count {
+  flex: 1;
+  font-size: 13px;
+  color: #5c6964;
+}
+.ox-fr-rs-empty {
+  padding: 28px 20px;
+  border: 1px dashed #c3ccc1;
+  border-radius: 12px;
+  background: #ffffff;
+  color: #5c6964;
+  text-align: center;
+  text-wrap: pretty;
+}
+.ox-fr-stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 320px), 1fr));
+  gap: 12px;
+}
+.ox-fr-stat {
+  background: #ffffff;
+  border: 1px solid #dce2d9;
+  border-radius: 12px;
+  padding: 14px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.ox-fr-stat-head {
+  display: flex;
+  flex-direction: column;
+}
+.ox-fr-stat-head > strong {
+  font-weight: 600;
+  text-wrap: pretty;
+}
+.ox-fr-stat-head > span {
+  font-size: 12px;
+  color: #5c6964;
+}
+.ox-fr-bar {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+.ox-fr-bar-head {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+  font-size: 13px;
+}
+.ox-fr-bar-head > span:first-child {
+  text-wrap: pretty;
+}
+.ox-fr-bar-n {
+  color: #5c6964;
+  font-variant-numeric: tabular-nums;
+}
+.ox-fr-bar-track {
+  height: 6px;
+  border-radius: 99px;
+  background: #ecefea;
+  overflow: hidden;
+}
+.ox-fr-bar-track > div {
+  height: 100%;
+  background: var(--ox-accent, #1f6b52);
+}
+.ox-fr-stat-num {
+  font-size: 14px;
+  font-variant-numeric: tabular-nums;
+}
+.ox-fr-stat-text {
+  padding: 6px 10px;
+  border-radius: 8px;
+  background: #f8f9f6;
+  font-size: 13px;
+  text-wrap: pretty;
+}
+.ox-fr-stat-none {
+  font-size: 13px;
+  color: #5c6964;
+}
+.ox-fr-feedwrap {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  align-items: flex-start;
+}
+.ox-fr-feed {
+  flex: 1 1 260px;
+  min-width: 0;
+  background: #ffffff;
+  border: 1px solid #dce2d9;
+  border-radius: 12px;
+  overflow: hidden;
+}
+.ox-fr-feed > button {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  width: 100%;
+  padding: 12px 14px;
+  border: 0;
+  border-top: 1px solid #e8ece5;
+  border-left: 3px solid transparent;
+  background: #ffffff;
+  text-align: left;
+  color: inherit;
+  cursor: pointer;
+}
+.ox-fr-feed > button[data-first] {
+  border-top-color: transparent;
+}
+.ox-fr-feed > button[aria-pressed='true'] {
+  border-left-color: var(--ox-accent, #1f6b52);
+  background: var(--ox-accent-tint, #eef5f0);
+}
+.ox-fr-feed-main {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+}
+.ox-fr-feed-title {
+  font-weight: 600;
+}
+.ox-fr-feed-by {
+  font-size: 12px;
+  color: #5c6964;
+}
+.ox-fr-ver-chip {
+  font-size: 12px;
+  font-weight: 600;
+  padding: 1px 8px;
+  border-radius: 999px;
+  background: #e7eef6;
+  color: #2b5479;
+  white-space: nowrap;
+}
+.ox-fr-feed-side {
+  flex: 2 1 340px;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.ox-fr-resp {
+  background: #ffffff;
+  border: 1px solid #dce2d9;
+  border-radius: 12px;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.ox-fr-resp-head {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+.ox-fr-resp-head > h3 {
+  margin: 0;
+  font-size: 15px;
+  font-weight: 600;
+}
+.ox-fr-resp-status {
+  padding: 1px 8px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 500;
+  background: var(--fm-bg, #e3efe7);
+  color: var(--fm-fg, #1f6b52);
+}
+.ox-fr-resp-note {
+  font-size: 13px;
+  color: #5c6964;
+  text-wrap: pretty;
+}
+.ox-fr-resp-review {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 4px;
+}
+.ox-fr-resp-review > .ox-fr-btn[data-plain] {
+  min-height: 40px;
+  padding: 0 14px;
+}
+.ox-fr-resp-rows {
+  margin-top: 6px;
+  display: flex;
+  flex-direction: column;
+}
+.ox-fr-resp-row {
+  display: grid;
+  grid-template-columns: minmax(120px, 1fr) 1.2fr;
+  gap: 8px;
+  padding: 8px 0;
+  border-top: 1px solid #e8ece5;
+}
+.ox-fr-resp-row > span:first-child {
+  font-size: 13px;
+  color: #5c6964;
+  text-wrap: pretty;
+}
+.ox-fr-resp-row > span:last-child {
+  font-size: 14px;
+  color: #1c2a26;
+  text-wrap: pretty;
+}
+.ox-fr-resp-row > span[data-muted] {
+  color: #6b7873;
+}
+.ox-fr-journal {
+  background: #f8f9f6;
+  border: 1px solid #dce2d9;
+  border-radius: 12px;
+  padding: 14px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.ox-fr-journal > h3 {
+  margin: 0;
+  font-size: 15px;
+  font-weight: 600;
+}
+.ox-fr-jline {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 10px;
+  align-items: center;
+  color: #1c2a26;
+}
+.ox-fr-jline[data-fail] {
+  color: #a13a33;
+}
+.ox-fr-jtext {
+  flex: 1 1 220px;
+  min-width: 0;
+  font-size: 13px;
+  text-wrap: pretty;
+}
+.ox-fr-jidem {
+  font-size: 12px;
+  color: #5c6964;
+}
+.ox-fr-table {
+  background: #ffffff;
+  border: 1px solid #dce2d9;
+  border-radius: 12px;
+  overflow-x: auto;
+}
+.ox-fr-table table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+}
+.ox-fr-table thead tr {
+  background: #f8f9f6;
+  text-align: left;
+}
+.ox-fr-table th {
+  padding: 10px 12px;
+  font-size: 12px;
+  font-weight: 500;
+  color: #5c6964;
+  white-space: nowrap;
+}
+.ox-fr-table tbody tr {
+  border-top: 1px solid #e8ece5;
+}
+.ox-fr-table td {
+  padding: 9px 12px;
+  vertical-align: top;
+  min-width: 110px;
+}
+
+/* ---------- «Версии» dc:441–453 ---------- */
+.ox-fr-vs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  align-items: flex-start;
+}
+.ox-fr-vlist {
+  flex: 1 1 240px;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.ox-fr-vnone {
+  padding: 24px;
+  text-align: center;
+  color: #5c6964;
+  font-size: 13px;
+  border: 1px dashed #c3ccc1;
+  border-radius: 12px;
+}
+.ox-fr-vlist > button {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  width: 100%;
+  padding: 12px 14px;
+  border-radius: 10px;
+  border: 1.5px solid #dce2d9;
+  background: #ffffff;
+  text-align: left;
+  color: inherit;
+  cursor: pointer;
+}
+.ox-fr-vlist > button[aria-pressed='true'] {
+  border-color: var(--ox-accent, #1f6b52);
+  background: var(--ox-accent-tint, #eef5f0);
+}
+.ox-fr-vrow {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+  width: 100%;
+}
+.ox-fr-vrow > strong {
+  font-weight: 600;
+}
+.ox-fr-vcur {
+  font-size: 12px;
+  font-weight: 600;
+  padding: 0 8px;
+  border-radius: 999px;
+  background: #e3efe7;
+  color: #1f6b52;
+}
+.ox-fr-vmeta {
+  font-size: 13px;
+  color: #5c6964;
+}
+.ox-fr-ver {
+  flex: 2 1 340px;
+  min-width: 0;
+  background: #ffffff;
+  border: 1px solid #dce2d9;
+  border-radius: 12px;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.ox-fr-ver > h3 {
+  margin: 0 0 6px;
+  font-size: 15px;
+  font-weight: 600;
+}
+.ox-fr-vq-wrap {
+  /* Заголовок страницы и строка вопроса — элементы списка с зазором 4 px (sc-for эталона, dc:449). */
+  display: contents;
+}
+.ox-fr-vpage {
+  padding: 10px 0 2px;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: #6b7873;
+}
+.ox-fr-vq {
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+  padding: 8px 0;
+  border-top: 1px solid #e8ece5;
+}
+.ox-fr-vq-icon {
+  color: #3a4844;
+}
+.ox-fr-vq-body {
+  flex: 1;
+  min-width: 0;
+}
+.ox-fr-vq-label {
+  font-weight: 500;
+  text-wrap: pretty;
+}
+.ox-fr-vq-meta {
+  font-size: 12px;
+  color: #5c6964;
+  text-wrap: pretty;
+}
+.ox-fr-vremoved {
+  display: flex;
+  gap: 10px;
+  padding: 8px 0;
+  border-top: 1px solid #e8ece5;
+  color: #a13a33;
+  font-size: 13px;
+}
+
+/* ---------- «Поделиться формой» dc:458–465 ---------- */
+.ox-fr-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 60;
+  display: grid;
+  place-items: center;
+  padding: 16px;
+  background: rgba(28, 42, 38, 0.45);
+}
+.ox-fr-dialog {
+  width: min(580px, 100%);
+  max-height: calc(100vh - 32px);
+  overflow: auto;
+  background: #ffffff;
+  border-radius: 14px;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  box-shadow: 0 20px 48px rgba(28, 42, 38, 0.3);
+  outline: none;
+}
+.ox-fr-dialog-head {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.ox-fr-dialog-head > h2 {
+  margin: 0;
+  font-size: 19px;
+  font-weight: 600;
+  text-wrap: pretty;
+}
+.ox-fr-dialog-head > span {
+  color: #5c6964;
+  text-wrap: pretty;
+}
+.ox-fr-item {
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+  padding: 10px 12px;
+  border-radius: 10px;
+  background: var(--fm-bg, #ecefea);
+  color: var(--fm-fg, #4c5955);
+  font-size: 13px;
+}
+.ox-fr-link-row {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.ox-fr-link-label {
+  font-size: 13px;
+  font-weight: 600;
+}
+.ox-fr-link-box {
+  display: flex;
+  gap: 6px;
+}
+.ox-fr-link-box > input {
+  flex: 1;
+  min-width: 0;
+  min-height: 40px;
+  padding: 0 10px;
+  border: 1px solid #cdd5cb;
+  border-radius: 8px;
+  background: #f8f9f6;
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 12px;
+}
+.ox-fr-link-box > .ox-fr-btn {
+  flex: none;
+  min-height: 40px;
+}
+.ox-fr-dialog-foot {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  justify-content: flex-end;
+}
+.ox-fr-dialog-foot > .ox-fr-btn {
+  min-height: 40px;
+  padding: 0 14px;
+}
+
+/* ---------- Телефон: цели нажатия 44 × 44 px без изменения вида (verification-protocol §1.3, PD-28) ---------- */
+@media (max-width: 639px) {
+  .ox-fr-btn,
+  .ox-fr-icon-btn,
+  .ox-fr-seg > button,
+  .ox-fr-adds > button,
+  .ox-fr-feed > button,
+  .ox-fr-vlist > button,
+  .ox-fr-radio,
+  .ox-fr-map-del,
+  .ox-fr-link {
+    position: relative;
+  }
+  .ox-fr-btn::after,
+  .ox-fr-icon-btn::after,
+  .ox-fr-seg > button::after,
+  .ox-fr-adds > button::after,
+  .ox-fr-map-del::after,
+  .ox-fr-link::after {
+    content: '';
+    position: absolute;
+    top: min(0px, calc((100% - 44px) / 2));
+    bottom: min(0px, calc((100% - 44px) / 2));
+    left: min(0px, calc((100% - 44px) / 2));
+    right: min(0px, calc((100% - 44px) / 2));
+  }
+  .ox-fr-check,
+  .ox-fr-rule-on,
+  .ox-fr-ack {
+    min-height: 44px;
+  }
+  .ox-fr-field select,
+  .ox-fr-field input,
+  .ox-fr-row select,
+  .ox-fr-row input,
+  .ox-fr-map select,
+  .ox-fr-map input,
+  .ox-fr-link-box > input,
+  .ox-fr-map .ox-fr-map-src,
+  .ox-fr-map .ox-fr-map-input,
+  .ox-fr-map-name,
+  .ox-fr-kb .ox-fr-seg > button {
+    min-height: 44px;
+  }
+}

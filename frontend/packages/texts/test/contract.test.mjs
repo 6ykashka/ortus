@@ -14,6 +14,8 @@ const DOMAINS = [
   // W2.26: домен страницы «Данные» (`core-data`, S2-16).
   'data',
   'errors',
+  // W4.23: домен вкладок «Формы и опросы» — настройки, действия после ответа, ответы, версии, «Поделиться».
+  'forms-results',
   // W4.22: домен «Формы и опросы» (forms-list, forms-builder, forms-preview, modal-form-publish).
   'forms',
   'gate',
@@ -31,7 +33,7 @@ const DOMAINS = [
 ];
 
 describe('файлы доменов', () => {
-  it('14 доменов этапов 0–4', () =>
+  it('15 доменов этапов 0–4', () =>
     assert.deepEqual(
       domainFiles(),
       DOMAINS.map((d) => `${d}.ts`),
@@ -52,7 +54,7 @@ describe('index.ts', () => {
     assert.equal(readText(join(PKG, 'src', 'index.ts')), renderIndex());
   });
 
-  it('экспортирует 14 пространств, ALL и ICU-функции', () => {
+  it('экспортирует 15 пространств, ALL и ICU-функции', () => {
     for (const d of DOMAINS) assert.ok(texts[camel(`${d}.ts`)], `нет экспорта ${camel(`${d}.ts`)}`);
     assert.deepEqual(Object.keys(texts.ALL).sort(), DOMAINS.map((d) => camel(`${d}.ts`)).sort());
     for (const fn of ['format', 'parseMessage', 'argNames'])

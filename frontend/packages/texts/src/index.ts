@@ -5,6 +5,7 @@ import { calendar } from './calendar.ts';
 import { company } from './company.ts';
 import { data } from './data.ts';
 import { errors } from './errors.ts';
+import { formsResults } from './forms-results.ts';
 import { forms } from './forms.ts';
 import { gate } from './gate.ts';
 import { home } from './home.ts';
@@ -23,6 +24,7 @@ export {
   company,
   data,
   errors,
+  formsResults,
   forms,
   gate,
   home,
@@ -45,6 +47,7 @@ export const ALL = {
   company,
   data,
   errors,
+  formsResults,
   forms,
   gate,
   home,

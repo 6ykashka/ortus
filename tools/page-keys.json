@@ -169,6 +169,51 @@
       "stage": 4,
       "paths": ["frontend/apps/web/src/routes/core/forms/**"],
       "reference": "Формы и опросы.dc.html"
+    },
+    {
+      "key": "forms-settings",
+      "stage": 4,
+      "paths": [
+        "frontend/apps/web/src/routes/core/forms/results/**",
+        "frontend/apps/web/src/routes/core/forms/tabs/**"
+      ],
+      "reference": "Ортус CRM.dc.html"
+    },
+    {
+      "key": "forms-actions",
+      "stage": 4,
+      "paths": [
+        "frontend/apps/web/src/routes/core/forms/results/**",
+        "frontend/apps/web/src/routes/core/forms/tabs/**"
+      ],
+      "reference": "Ортус CRM.dc.html"
+    },
+    {
+      "key": "forms-responses",
+      "stage": 4,
+      "paths": [
+        "frontend/apps/web/src/routes/core/forms/results/**",
+        "frontend/apps/web/src/routes/core/forms/tabs/**"
+      ],
+      "reference": "Ортус CRM.dc.html"
+    },
+    {
+      "key": "forms-versions",
+      "stage": 4,
+      "paths": [
+        "frontend/apps/web/src/routes/core/forms/results/**",
+        "frontend/apps/web/src/routes/core/forms/tabs/**"
+      ],
+      "reference": "Ортус CRM.dc.html"
+    },
+    {
+      "key": "modal-form-share",
+      "stage": 4,
+      "paths": [
+        "frontend/apps/web/src/routes/core/forms/results/**",
+        "frontend/apps/web/src/routes/core/forms/tabs/**"
+      ],
+      "reference": "Ортус CRM.dc.html"
     }
   ]
 }

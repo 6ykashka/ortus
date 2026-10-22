@@ -14,6 +14,7 @@ export const MODELS_JS = join(DESIGN, 'ortus', 'models.js');
 export const KB_HTML = join(DESIGN, 'База знаний.dc.html');
 export const KNOWLEDGE_JS = join(DESIGN, 'ortus', 'knowledge.js');
 // W4.22: модульный файл «Форм и опросов» — источник дословности домена `forms`.
+// W4.23: модульный файл «Формы и опросы» — источник дословности домена `formsResults`.
 export const FORMS_HTML = join(DESIGN, 'Формы и опросы.dc.html');
 /** W2.73 · S2-20 «Машина для временного водителя» (D-35): макеты 1a–1g снимка 19.10b. */
 export const S220_HTML = join(DESIGN, 'Временный водитель - варианты.dc.html');
