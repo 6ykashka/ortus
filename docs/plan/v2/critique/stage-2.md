@@ -7,7 +7,7 @@
   - DoR `docs/plan/analysis/14-stage2-dor.md` и `docs/plan/v2/analysis/dor/s2-20-temporary-driver-vehicle.md`;
   - инвентарь `api/openapi/screens.yaml` (`stage: 2`), «Работы после показа 18.10» (W2.41…W2.50) в `decisions.md`;
   - отчёты `reports/W2.*.md`, `status.md`, прогон выхода [../reports/stage-2.md](../reports/stage-2.md).
-- По `orchestration.md` §6 п. 6 пропуски становятся WS этого этапа. Номера W2.76…W2.81 предлагает критик, в реестр их вносит интегратор.
+- По `orchestration.md` §6 п. 6 пропуски становятся WS этого этапа. Номера W2.76…W2.82 предлагает критик, в реестр их вносит интегратор.
 
 ## Проверка 1 — main `db7046e`, 2026-10-22
 
@@ -128,6 +128,14 @@ Job `unit` падает, поэтому на GitHub пять дней не за�
 
 `gh api repos/6ykashka/ortus/branches/main/protection` → 404. Пять дней красного CI без последствий для вливаний — прямое следствие. Решает владелец репозитория.
 
+#### П-8. pre-push не проходит из linked worktree: `design-preview.test.mjs:163`
+
+При `git push` из `.claude/worktrees/exit-s2` хук `pre-push` (`pnpm run test`) дважды подряд упал на строке «сервер --ref: отдаёт файл из тега» (404 вместо 200). Отдельно та же строка зелёная (16/16). Причина воспроизведена: git передаёт хуку `GIT_DIR=<repo>/.git/worktrees/<имя>`. С этой переменной `tools/design-preview.js:108` выполняет `git show <ref>:./<rel>` с `cwd: <dir>`, и git считает `cwd` корнем рабочего дерева: путь `./Ortus CRM.dc.html` не находится, отсюда 404. Под `GIT_DIR` строка красная и вне хука (15/16).
+
+Исполнители и проверяющие работают в worktree, так что любой push из worktree упирается в этот хук. Коммит выхода отправлен из отдельного клона (обычный `.git`, хуки husky по `pnpm install`), без `--no-verify`.
+
+Предложение: W2.82 (не блокирует выход).
+
 ### 4. FollowUps (предложение критика)
 
 | ID | Что | Владеет (можно править) | Проверка | Блокирует |
@@ -138,6 +146,8 @@ Job `unit` падает, поэтому на GitHub пять дней не за�
 | W2.79 | Q-W2.72-2: фирма обычной машины читает фото осмотра сдачи по рейсу перевода | `backend/internal/modules/files/` (область чтения), `backend/test/isolation/fleet_pool*.yaml` | isolation: 200 для фирмы машины, 404 для других машин и фирм; integration files | да |
 | W2.80 | Время в «Требует решения» и «Рейсы сегодня» — в поясе `Europe/Moscow` (как branding и calendar), а не в поясе браузера; red — тест под `TZ=UTC` | `frontend/packages/domain/src/home/**`, `frontend/apps/web/src/routes/home/**` | `TZ=UTC` и Москва: `vitest run src/routes/home` зелёные; run GitHub на `main` проходит `unit` | да |
 | W2.81 | Полный mock на `main` зелёный: `company-roles.spec.ts` (17 ключей «Водителя» с `fleet.reservations.choose`), `company-roles.visual`, `shell.labels` («Обучение» — allowlist `out-of-stage` или пункт «не подключён» по D-23), `people.labels` (роли этапов 4–7 — allowlist `out-of-stage`), `modules.visual` (кадры 19.10b), `company-branding.spec.ts:457` (768) | `frontend/apps/web/e2e/**` (спеки и `visual/allowlist/*.md` перечисленных экранов); правки страниц — только с владельцем: W1.23, W1.49, W4.62 | `corepack pnpm run e2e` — 0 failed; `allowlist-lint` 0 | да |
+
+| W2.82 | `design-preview --ref` под хуком из linked worktree: путь в `git show` — от корня репозитория (`git -C <top> show <ref>:<путь от корня>`), без зависимости от `GIT_DIR` и `cwd`; red — строка `design-preview.test.mjs` с `GIT_DIR` worktree | `tools/design-preview.js`, `tools/__tests__/design-preview.test.mjs` | `GIT_DIR=$(git rev-parse --absolute-git-dir) node --test tools/__tests__/design-preview.test.mjs` — 0 fail; `git push` из worktree проходит `pre-push` | нет |
 
 W2.75 — карточка реестра (план §4), в followUps не входит. Её очередь — сразу после W2.77.
 
