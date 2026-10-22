@@ -177,6 +177,40 @@ describe('«Главная» логиста', () => {
   });
 });
 
+// W2.80 · Время «Главной» — всегда московское (core/clock TZ), как в «Брендинге» и календаре: CI GitHub идёт в UTC,
+// а пользователь может открыть страницу из другого пояса. Пояс процесса меняется на время теста (Node сбрасывает
+// пояс Intl и Date при присваивании process.env.TZ); проверки — те же подписи, что у браузера в Москве.
+describe('«Главная» в браузере другого часового пояса', () => {
+  let saved: string | undefined;
+  const setZone = (tz: string | undefined): void => {
+    if (tz === undefined) delete process.env.TZ;
+    else process.env.TZ = tz;
+  };
+  beforeEach(() => {
+    saved = process.env.TZ;
+  });
+  afterEach(() => setZone(saved));
+
+  for (const zone of ['UTC', 'Asia/Vladivostok']) {
+    it(`${zone}: приветствие, дата, «Требует решения» и «Рейсы сегодня» — по Москве`, async () => {
+      setZone(zone);
+      expect(Intl.DateTimeFormat().resolvedOptions().timeZone).toBe(zone);
+      await open({ persona: 'manager', preset: 'logistics-ready' });
+      expect(screen.getByRole('heading', { level: 1 }).textContent).toBe('Доброе утро, Марина');
+      await waitFor(() =>
+        expect(section().textContent).toContain('Четверг, 1 октября · Север Логистик'),
+      );
+      await waitFor(() => expect(titles()).toEqual(['Рейс Р-211 без водителя']));
+      expect(card('Рейс Р-211 без водителя').textContent).toContain('Сегодня 14:00');
+      const trips = await screen.findByRole('heading', { level: 2, name: 'Рейсы сегодня' }, SLOW);
+      const times = within(trips.parentElement as HTMLElement)
+        .getAllByRole('button')
+        .map((r) => r.querySelector('.ox-home-trip-time')?.textContent);
+      expect(times).toEqual(['09:00', '14:00']);
+    });
+  }
+});
+
 describe('«Главная» водителя', () => {
   // Возврат 1 (ревью W2.25, бриф §3): в эталоне у водителя «Главной» нет — прямой URL уводит на его стартовую
   // страницу (первый пункт меню), офисная «Главная» не рендерится и очередь не запрашивается.

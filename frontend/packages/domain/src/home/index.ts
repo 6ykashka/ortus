@@ -2,7 +2,7 @@
 export { OUT_OF_STAGE, type OutOfStageSource } from './out-of-stage.ts';
 export { homeQueue, QUEUE_LIMIT } from './queue.ts';
 export { HOME_SOURCES } from './sources.gen.ts';
-export { hhmm } from './time.ts';
+export { HOME_TIME_ZONE, hhmm } from './time.ts';
 export type * from './types.ts';
 export {
   dateLine,

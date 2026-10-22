@@ -328,6 +328,29 @@ test.describe('home — «Главная» @mock', () => {
   });
 });
 
+// W2.80 · Время «Главной» — московское (core/clock TZ), а не пояс браузера: часы e2e — 01.10.2026 10:30 МСК, браузер —
+// во Владивостоке (17:30 местного). До исправления — «Добрый день», «Сегодня 21:00».
+test.describe('home — браузер в другом часовом поясе @mock', () => {
+  test.skip(({ harness }) => harness.mode !== 'mock', 'пресеты — сценарный сервер mock');
+  test.use({ timezoneId: 'Asia/Vladivostok' });
+
+  test('логист: приветствие, дата, «Сегодня 14:00» и «Рейсы сегодня» — по Москве', async ({
+    app,
+    page,
+  }) => {
+    await openHome(app, page, { persona: 'manager', preset: 'logistics-ready' });
+    expect(await page.evaluate(() => Intl.DateTimeFormat().resolvedOptions().timeZone)).toBe(
+      'Asia/Vladivostok',
+    );
+    await expect(page.getByRole('heading', { level: 1 })).toHaveText('Доброе утро, Марина');
+    await expect(home(page)).toContainText('Четверг, 1 октября · Север Логистик');
+    await expect(card(page, 'Рейс Р-211 без водителя')).toContainText('Сегодня 14:00');
+    const trips = page.locator('.ox-home-trips');
+    await expect(trips.getByRole('button')).toHaveCount(2);
+    await expect(trips.locator('.ox-home-trip-time')).toHaveText(['09:00', '14:00']);
+  });
+});
+
 test.describe('home — стенд @stand @stand-spec', () => {
   test.skip(({ harness }) => harness.mode !== 'stand', 'режим stand');
 

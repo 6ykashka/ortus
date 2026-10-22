@@ -8,6 +8,7 @@ import {
   dateLine,
   greeting,
   hhmm,
+  HOME_TIME_ZONE,
   type HomeTarget,
   homeQueue,
   logisticsWork,
@@ -71,7 +72,8 @@ function OfficeHome(): ReactElement {
   const can = useCan();
   const navigate = useNavigate();
   const [now] = useState(() => new Date());
-  const timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+  // W2.80 · Все подписи «Главной» (шапка, «Требует решения», «Рейсы сегодня», события) — по Москве, не в поясе браузера.
+  const timeZone = HOME_TIME_ZONE;
   const owner = audience === 'owner';
   const caps = nav.capabilities;
 

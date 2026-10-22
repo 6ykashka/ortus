@@ -1,4 +1,11 @@
 // W2.25 · Время и дата подписей «Главной» в часовом поясе (часы инжектируемые, Q-61).
+import { TZ } from '../core/clock.ts';
+
+/**
+ * W2.80 · Пояс подписей «Главной» — московский пояс домена (core/clock), как «Брендинг» и календарь: не пояс
+ * браузера или CI. Пояс рейса (`plannedWindow.timeZone`) по-прежнему важнее общего.
+ */
+export const HOME_TIME_ZONE: string = TZ;
 
 const parts = (at: Date, timeZone: string, o: Intl.DateTimeFormatOptions) =>
   Object.fromEntries(
