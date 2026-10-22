@@ -85,6 +85,69 @@ func TestFleetParentsCloseTheContinuedReservation(t *testing.T) {
 	}
 }
 
+// W2.79 (Q-W2.72-2, S2-20 rule 6, DoR s2-20 §6): the company of the usual vehicle of a temporary driver reads the
+// inspection photos of that vehicle attached to the trip of another company — one share of the trip, by
+// fleet.inspections.read over the scope row of the photo ({{file}}), closed like the trip to the subject the pool
+// closes it to ({{hidden}}). The other parents share nothing.
+func TestFleetParentsShareUsualVehiclePhotos(t *testing.T) {
+	t.Parallel()
+	p, err := files.NewParents(files.FleetParents()...)
+	if err != nil {
+		t.Fatal(err)
+	}
+	for _, key := range p.Keys() {
+		module, entity, _ := strings.Cut(key, ".")
+		k, _ := p.Kind(module, entity)
+		if key != "fleet.trip" {
+			if len(k.Shares) != 0 {
+				t.Errorf("%s shares %+v", key, k.Shares)
+			}
+			continue
+		}
+		if len(k.Shares) != 1 {
+			t.Fatalf("fleet.trip shares %+v, want one", k.Shares)
+		}
+		s := k.Shares[0]
+		for _, part := range []string{files.IDPlaceholder, files.FilePlaceholder, files.HiddenPlaceholder,
+			"fleet.inspection_photos", "home_vehicle_id", "vehicle_decision = 'approved'"} {
+			if !strings.Contains(s.Rows, part) {
+				t.Errorf("the share of fleet.trip has no %s:\n%s", part, s.Rows)
+			}
+		}
+		if s.ReadAction != "fleet.inspections.read" {
+			t.Errorf("the share of fleet.trip reads by %q, want fleet.inspections.read", s.ReadAction)
+		}
+	}
+}
+
+func TestNewParentsRejectsBrokenShares(t *testing.T) {
+	t.Parallel()
+	share := files.Share{ReadAction: "fleet.inspections.read",
+		Rows: "select v.unit_id, null::uuid as project_id, null::uuid as person_a, null::uuid as person_b, v.plate " +
+			"from fleet.vehicles v where v.id = " + files.IDPlaceholder + " and " + files.FilePlaceholder + " is not null"}
+	kind := files.ParentKind{
+		Module: "fleet", Entity: "trip", ReadAction: "fleet.trips.read", Purposes: []files.Purpose{files.PurposeInspection},
+		Rows: "select t.unit_id, null::uuid as project_id, null::uuid as person_a, null::uuid as person_b, t.number " +
+			"from fleet.trips t where t.id = " + files.IDPlaceholder, Shares: []files.Share{share},
+	}
+	if _, err := files.NewParents(kind); err != nil {
+		t.Fatalf("a good share: %v", err)
+	}
+	for name, edit := range map[string]func(*files.Share){
+		"no read action": func(s *files.Share) { s.ReadAction = "" },
+		"no id":          func(s *files.Share) { s.Rows = "select 1 where " + files.FilePlaceholder + " is not null" },
+		"no file":        func(s *files.Share) { s.Rows = "select 1 where " + files.IDPlaceholder + " is not null" },
+	} {
+		s := share
+		edit(&s)
+		k := kind
+		k.Shares = []files.Share{s}
+		if _, err := files.NewParents(k); err == nil {
+			t.Errorf("%s: accepted", name)
+		}
+	}
+}
+
 func TestNewParentsRejectsBrokenKinds(t *testing.T) {
 	t.Parallel()
 	good := files.ParentKind{

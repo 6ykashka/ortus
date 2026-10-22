@@ -75,14 +75,35 @@ func (s *Service) closed(ctx context.Context, tc tenantctx.TenantContext) (Close
 	return c, nil
 }
 
-// placeholders binds the placeholders kind uses to parameters after args: the uuid[] expressions for
-// ParentKind.rows (empty when unused) and the args with the closed ids.
-func placeholders(kind ParentKind, c Closed, args []any) (hidden, continued string, out []any) {
-	if kind.uses(HiddenPlaceholder) {
+// closedIDs reads the ids the Hider closes to the subject at most once per request: the parent of a file and its
+// shares compare with the same ids.
+type closedIDs struct {
+	s  *Service
+	tc tenantctx.TenantContext
+	c  *Closed
+}
+
+func (s *Service) closedIDs(tc tenantctx.TenantContext) *closedIDs { return &closedIDs{s: s, tc: tc} }
+
+func (o *closedIDs) get(ctx context.Context) (Closed, error) {
+	if o.c == nil {
+		c, err := o.s.closed(ctx, o.tc)
+		if err != nil {
+			return Closed{}, err
+		}
+		o.c = &c
+	}
+	return *o.c, nil
+}
+
+// placeholders binds the placeholders sc uses to parameters after args: the uuid[] expressions for scope.expand
+// (empty when unused) and the args with the closed ids.
+func placeholders(sc scope, c Closed, args []any) (hidden, continued string, out []any) {
+	if sc.uses(HiddenPlaceholder) {
 		args = append(args, c.Hidden)
 		hidden = "$" + strconv.Itoa(len(args)) + "::uuid[]"
 	}
-	if kind.uses(ContinuedPlaceholder) {
+	if sc.uses(ContinuedPlaceholder) {
 		args = append(args, c.Continued)
 		continued = "$" + strconv.Itoa(len(args)) + "::uuid[]"
 	}
@@ -222,26 +243,63 @@ func (s *Service) kindOf(ownerType string) (ParentKind, bool) {
 
 // parent reads the scope row of a parent for the subject of tc; ok is false when the parent does not exist in this
 // tenant or the Hider closes it to the subject.
-func (s *Service) parent(ctx context.Context, q querier, tc tenantctx.TenantContext, kind ParentKind, id uuid.UUID) (parentRow, bool, error) {
-	sql, args := kind.rows("$1", "", ""), []any{id}
-	if kind.hides() {
-		closed, err := s.closed(ctx, tc)
+func (s *Service) parent(ctx context.Context, q querier, ids *closedIDs, kind ParentKind, id uuid.UUID) (parentRow, bool, error) {
+	return scopeRow(ctx, q, ids, kind.Key(), kind.own(), id, uuid.Nil)
+}
+
+// scopeRow reads the scope row sc selects for the parent id and the file (a share; uuid.Nil for the parent itself)
+// for the subject of tc; ok is false when there is no row.
+func scopeRow(ctx context.Context, q querier, ids *closedIDs, key string, sc scope, id, file uuid.UUID) (parentRow, bool, error) {
+	args, fileExpr := []any{id}, ""
+	if sc.uses(FilePlaceholder) {
+		args = append(args, file)
+		fileExpr = "$2"
+	}
+	var hidden, continued string
+	if sc.hides() {
+		closed, err := ids.get(ctx)
 		if err != nil {
 			return parentRow{}, false, err
 		}
-		var hidden, continued string
-		hidden, continued, args = placeholders(kind, closed, args)
-		sql = kind.rows("$1", hidden, continued)
+		hidden, continued, args = placeholders(sc, closed, args)
 	}
 	var p parentRow
-	err := q.QueryRow(ctx, sql, args...).Scan(&p.unit, &p.project, &p.personA, &p.personB, &p.title)
+	err := q.QueryRow(ctx, sc.expand("$1", fileExpr, hidden, continued), args...).
+		Scan(&p.unit, &p.project, &p.personA, &p.personB, &p.title)
 	switch {
 	case errors.Is(err, pgx.ErrNoRows):
 		return parentRow{}, false, nil
 	case err != nil:
-		return parentRow{}, false, fmt.Errorf("files: parent %s: %w", kind.Key(), err)
+		return parentRow{}, false, fmt.Errorf("files: parent %s: %w", key, err)
 	}
 	return p, true, nil
+}
+
+// shared returns the scope row of the first share of kind that opens file of the parent id to the subject of tc:
+// its read action and files.read cover the row. ok is false when no share does; a denial of a share is not an error.
+func (s *Service) shared(ctx context.Context, q querier, ids *closedIDs, kind ParentKind, id, file uuid.UUID) (parentRow, bool, error) {
+	tc := ids.tc
+	for _, sc := range kind.shares() {
+		p, found, err := scopeRow(ctx, q, ids, kind.Key(), sc, id, file)
+		if err != nil {
+			return parentRow{}, false, err
+		}
+		if !found {
+			continue
+		}
+		res := p.resource(sc.read)
+		err = s.Authz.Permit(ctx, tc, sc.read, res)
+		if err == nil {
+			err = s.Authz.Permit(ctx, tc, actionRead, res)
+		}
+		switch {
+		case err == nil:
+			return p, true, nil
+		case !hidden(err):
+			return parentRow{}, false, err
+		}
+	}
+	return parentRow{}, false, nil
 }
 
 // hidden reports whether a denial means «the subject does not see the object».
@@ -269,7 +327,7 @@ func (s *Service) permitUpload(ctx context.Context, q querier, tc tenantctx.Tena
 	if !ok {
 		return problem.New(codeNotFound, "")
 	}
-	p, found, err := s.parent(ctx, q, tc, kind, owner.ID)
+	p, found, err := s.parent(ctx, q, s.closedIDs(tc), kind, owner.ID)
 	switch {
 	case err != nil:
 		return err

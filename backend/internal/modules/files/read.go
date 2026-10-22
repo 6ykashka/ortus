@@ -63,8 +63,9 @@ func scanFile(row pgx.Row, extra ...any) (fileRow, error) {
 	return r, nil
 }
 
-// file returns a file the actor may read: its parent is visible and files.read covers it (FILE-03). A missing
-// file, a file of another tenant and a file of an invisible parent are one not_found (AC-01, AC-02).
+// file returns a file the actor may read: its parent is visible and files.read covers it (FILE-03), or a share of
+// the parent kind opens the file to him (W2.79). A missing file, a file of another tenant and a file of an invisible
+// parent are one not_found (AC-01, AC-02).
 func (s *Service) file(ctx context.Context, tc tenantctx.TenantContext, id uuid.UUID) (fileRow, error) {
 	pool, err := s.pool(ctx, tc)
 	if err != nil {
@@ -83,15 +84,28 @@ func (s *Service) file(ctx context.Context, tc tenantctx.TenantContext, id uuid.
 	if !ok { // a parent kind nobody registered: fail closed
 		return fileRow{}, problem.New(codeNotFound, "")
 	}
-	p, found, err := s.parent(ctx, pool, tc, kind, r.Owner.ID)
+	ids := s.closedIDs(tc)
+	p, found, err := s.parent(ctx, pool, ids, kind, r.Owner.ID)
 	if err != nil {
 		return fileRow{}, err
 	}
-	if !found {
-		return fileRow{}, problem.New(codeNotFound, "")
+	var denied error = problem.New(codeNotFound, "")
+	if found {
+		denied = s.permitOnParent(ctx, tc, kind, p, actionRead)
 	}
-	if err := s.permitOnParent(ctx, tc, kind, p, actionRead); err != nil {
-		return fileRow{}, err
+	if denied != nil {
+		if !hidden(denied) { // a failure of the check, not a denial: a share does not mask it
+			return fileRow{}, denied
+		}
+		// The parent does not let the subject read the file: a share may (the answer stays the parent's otherwise).
+		sp, ok, err := s.shared(ctx, pool, ids, kind, r.Owner.ID, r.ID)
+		switch {
+		case err != nil:
+			return fileRow{}, err
+		case !ok:
+			return fileRow{}, denied
+		}
+		p = sp
 	}
 	if p.title != nil {
 		r.OwnerTitle = *p.title
@@ -231,17 +245,18 @@ func (s *Service) List(ctx context.Context, tc tenantctx.TenantContext, q ListQu
 	if err != nil {
 		return Page{}, err
 	}
+	// One scope row per file: the first that a scope reading it and files.read cover (the parent or a share).
 	sql := `select f.id, f.state, f.purpose, f.owner_type, f.owner_id, f.declared_mime, f.bytes, encode(f.sha256, 'hex'),
 	               f.created_at, p.title
 	          from files.objects f
 	          left join files.upload_sessions s on s.file_id = f.id
-	          join lateral (` + union + `) p on true
+	          join lateral (select p.* from (` + union + `) p
+	                         where (` + parents + `) and ` + scopeddb.Placeholder + `
+	                         order by p.via limit 1) p on true
 	         where ` + visibleSQL + `
 	           and ($1::text[] is null or f.state = any($1::text[]))
 	           and ($2::text is null or f.purpose = $2::text)
 	           and ($3::timestamptz is null or (f.created_at, f.id) < ($3::timestamptz, $4::uuid))
-	           and (` + parents + `)
-	           and ` + scopeddb.Placeholder + `
 	         order by f.created_at desc, f.id desc
 	         limit $5`
 	rows, err := conn.Query(ctx, actionRead, parentColumns, sql, args...)
@@ -268,49 +283,67 @@ func (s *Service) List(ctx context.Context, tc tenantctx.TenantContext, q ListQu
 	return page, nil
 }
 
-// parentScope builds the lateral union of the scope rows of every registered parent kind and the OR of «the
-// subject reads this parent» per kind (the read action of the kind over the same columns). Kinds the subject
-// reads nowhere are left out; no kind at all — no file is visible (union ""). The ids the Hider closes to the subject
-// are one uuid[] parameter per placeholder, read once and only when a kind of the statement compares with it: their
-// parents have no row, so their files are absent before the pagination.
+// closedParams are the parameters of the placeholders of the closed ids in one statement of parentScope, each bound
+// once (the ids read once, on the first scope that compares with them).
+type closedParams struct {
+	closed            *Closed
+	hidden, continued string
+}
+
+// bind appends to args the closed ids sc compares with and that are not bound yet.
+func (b *closedParams) bind(ctx context.Context, s *Service, tc tenantctx.TenantContext, sc scope, args []any) ([]any, error) {
+	if sc.hides() && b.closed == nil {
+		c, err := s.closed(ctx, tc)
+		if err != nil {
+			return nil, err
+		}
+		b.closed = &c
+	}
+	if sc.uses(HiddenPlaceholder) && b.hidden == "" {
+		args = append(args, b.closed.Hidden)
+		b.hidden = "$" + strconv.Itoa(len(args)) + "::uuid[]"
+	}
+	if sc.uses(ContinuedPlaceholder) && b.continued == "" {
+		args = append(args, b.closed.Continued)
+		b.continued = "$" + strconv.Itoa(len(args)) + "::uuid[]"
+	}
+	return args, nil
+}
+
+// parentScope builds the lateral union of the scope rows of every registered parent kind and of its shares, each
+// row marked with its scope (column via), and the OR of «the subject reads this row» per scope (the read action of the
+// scope over the same columns). Scopes the subject reads nowhere are left out; none at all — no file is visible
+// (union ""). The ids the Hider closes to the subject are one uuid[] parameter per placeholder, read once and only when
+// a scope of the statement compares with it: their parents have no row, so their files are absent before the
+// pagination.
 func (s *Service) parentScope(ctx context.Context, tc tenantctx.TenantContext, args []any) (union, preds string, out []any, err error) {
 	if s.Parents == nil {
 		return "", "", args, nil
 	}
 	var (
-		closed            *Closed
-		hidden, continued string // the parameters of the placeholders, bound once
-		unions, parts     []string
+		b             closedParams
+		unions, parts []string
 	)
 	for _, key := range s.Parents.Keys() {
 		module, entity, _ := strings.Cut(key, ".")
 		kind, _ := s.Parents.Kind(module, entity)
-		p, err := s.Authz.ScopeQuery(ctx, tc, kind.ReadAction, parentColumns, len(args))
-		if err != nil {
-			return "", "", nil, err
-		}
-		if p.SQL == "false" {
-			continue
-		}
-		args = append(args, p.Args...)
-		if kind.hides() && closed == nil {
-			c, err := s.closed(ctx, tc)
+		lit := "'" + key + "'" // a registered key: [a-z0-9_-] and one dot (NewParents)
+		for _, sc := range kind.scopes() {
+			p, err := s.Authz.ScopeQuery(ctx, tc, sc.read, parentColumns, len(args))
 			if err != nil {
 				return "", "", nil, err
 			}
-			closed = &c
+			if p.SQL == "false" {
+				continue
+			}
+			if args, err = b.bind(ctx, s, tc, sc, append(args, p.Args...)); err != nil {
+				return "", "", nil, err
+			}
+			via := strconv.Itoa(len(parts))
+			unions = append(unions, "select q.*, "+via+" as via from ("+sc.expand("f.owner_id", "f.id", b.hidden, b.continued)+
+				") q where f.owner_type = "+lit)
+			parts = append(parts, "(p.via = "+via+" and "+p.SQL+")")
 		}
-		if kind.uses(HiddenPlaceholder) && hidden == "" {
-			args = append(args, closed.Hidden)
-			hidden = "$" + strconv.Itoa(len(args)) + "::uuid[]"
-		}
-		if kind.uses(ContinuedPlaceholder) && continued == "" {
-			args = append(args, closed.Continued)
-			continued = "$" + strconv.Itoa(len(args)) + "::uuid[]"
-		}
-		lit := "'" + key + "'" // a registered key: [a-z0-9_-] and one dot (NewParents)
-		unions = append(unions, "select q.* from ("+kind.rows("f.owner_id", hidden, continued)+") q where f.owner_type = "+lit)
-		parts = append(parts, "(f.owner_type = "+lit+" and "+p.SQL+")")
 	}
 	if len(unions) == 0 {
 		return "", "", args, nil

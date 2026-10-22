@@ -3,6 +3,7 @@
 package isolation
 
 import (
+	"crypto/sha256"
 	"maps"
 	"net/http"
 	"testing"
@@ -31,6 +32,9 @@ var s220Names = []string{
 	"vehicle-host", "vehicle-usual", "vehicle-spare", "vehicle-dl-host", "vehicle-dl-usual",
 	"vehicle-ch-host", "vehicle-ch-usual", "vehicle-other",
 	"res-host", "res-usual", "res-plain", "res-dl-host", "res-dl-usual", "res-ch-host", "res-ch-usual", "res-other",
+	// W2.79 (Q-W2.72-2): сданные рейсы перевода — на обычной машине и на машине фирмы рейса — и их файлы.
+	"trip-returned", "trip-ret-host", "vehicle-ret-usual", "vehicle-ret-home", "vehicle-ret-host",
+	"file-ret-usual", "file-ret-host", "file-ret-plain", "file-ret-receipt",
 }
 
 func s220ID(name string) uuid.UUID { return ac06ID("s220-" + name) }
@@ -71,6 +75,51 @@ func (s *s220Seed) reserve(name string, vehicle, trip uuid.UUID, from, until tim
 			$14, $15
 		from sched.resources r where r.kind = 'vehicle' and r.ref_id = $2`,
 		s220ID(name), vehicle, from, until, state, expires, trip, s.owner, g, o, k, chooseUntil, chosen, released, reason)
+}
+
+// file writes a checked photo (or receipt) of trip uploaded by the driver.
+func (s *s220Seed) file(name, purpose string, trip uuid.UUID) uuid.UUID {
+	id, key := s220ID(name), "isolation/b/s220/"+name+".jpg"
+	sum := sha256.Sum256([]byte(key))
+	s.exec(`insert into files.objects (id, object_key, state, purpose, owner_type, owner_id, declared_mime, detected_mime,
+		bytes, sha256, uploaded_by, created_at, ready_at)
+		values ($1, $2, 'ready', $3, 'fleet.trip', $4, 'image/jpeg', 'image/jpeg', 2048, $5, $6, $7, $7)`,
+		id, key, purpose, trip, sum[:], s.driver, s.at(-time.Hour))
+	return id
+}
+
+// inspected writes the submitted return inspection of vehicle on trip with the photo of the role «front».
+func (s *s220Seed) inspected(trip, vehicle, checklist, photo uuid.UUID) {
+	insp := s.id(`insert into fleet.inspections (trip_id, vehicle_id, kind, checklist_version_id, odometer_km, fuel_level,
+		answers, state, submitted_by) values ($1, $2, 'return', $3, 48500, 'half', $4::jsonb, 'submitted', $5) returning id`,
+		trip, vehicle, checklist, `{"photos": [{"role": "front", "fileId": "`+photo.String()+`"}]}`, s.driver)
+	s.exec(`insert into fleet.inspection_photos (inspection_id, role, file_id) values ($1, 'front', $2)`, insp, photo)
+	s.exec(`update fleet.trips set return_inspection_id = $1 where id = $2`, insp, trip)
+}
+
+// returned writes two trips of «Москва-2» the temporary driver has returned (W2.79, Q-W2.72-2; правило 6 docs/29): on his
+// usual vehicle of «Москва-1» approved with the request (a photo of the return inspection, a photo of no inspection and
+// a receipt of the trip) and, with the usual vehicle approved too, on the vehicle of the trip company he chose.
+func (s *s220Seed) returned(t *testing.T) {
+	t.Helper()
+	h := time.Hour
+	from, until := s.at(-3*h), s.at(h)
+	usual, home, host := s.vehicle("vehicle-ret-usual", s.home), s.vehicle("vehicle-ret-home", s.home),
+		s.vehicle("vehicle-ret-host", s.target)
+	checklist := ac06Checklist(t, usual)
+	trip := s.trip("s220-trip-returned", "submitted", s.driver, usual, from, until)
+	s.transfer(trip, "approved", from, until, until, "active", uuid.Nil, time.Time{})
+	s.exec(`update fleet.driver_transfers set vehicle_mode = 'home', home_vehicle_id = $2, vehicle_decision = 'approved'
+		where trip_id = $1`, trip, usual)
+	s.inspected(trip, usual, checklist, s.file("file-ret-usual", "inspection", trip))
+	s.file("file-ret-plain", "inspection", trip)
+	s.file("file-ret-receipt", "expense_receipt", trip)
+
+	hostTrip := s.trip("s220-trip-ret-host", "submitted", s.driver, host, from, until)
+	s.transfer(hostTrip, "approved", from, until, until, "active", uuid.Nil, time.Time{})
+	s.exec(`update fleet.driver_transfers set vehicle_mode = 'host_or_home', host_vehicle_id = $2, home_vehicle_id = $3,
+		vehicle_decision = 'approved' where trip_id = $1`, hostTrip, host, home)
+	s.inspected(hostTrip, host, checklist, s.file("file-ret-host", "inspection", hostTrip))
 }
 
 func (s *s220Seed) setup(w *fixtures.World) {
@@ -152,6 +201,8 @@ func seedS220(t *testing.T) (time.Time, time.Time) {
 	vOther := s.vehicle("vehicle-other", s.target)
 	s.reserve("res-other", vOther, other, from, until, "hold", choose, uuid.New(), s.other, "host", choose, none, none, none)
 
+	s.returned(t)
+
 	s.exec(`update access.policy_state set policy_version = policy_version + 1 where $1::uuid is not null`, d)
 	return from, until
 }
@@ -203,8 +254,55 @@ func s220Rows(from, until time.Time) matrix.File {
 				return r
 			}()}},
 	)
-
+	f.Endpoints = append(f.Endpoints, s220CompanyRows()...)
 	return f
+}
+
+// s220Company is the manager of «Москва-1», the company of the temporary driver and of his usual vehicle.
+const s220Company = "b.manager-msk1"
+
+// s220CompanyRows are the rows of the company of the usual vehicle (W2.79, Q-W2.72-2; DoR s2-20 §6 «Фирма водителя
+// читает осмотры своей машины по рейсу перевода — 200; осмотры других машин фирмы рейса — 404»; «Фирма водителя
+// читает рейс, расходы, приёмку фирмы рейса — 404»).
+func s220CompanyRows() []matrix.Endpoint {
+	row := func(params map[string]string, status int, present, absent []string, note string) matrix.Row {
+		r := s220Row(params, status, "", present, absent, note)
+		r.Actor = s220Company
+		if status == http.StatusNotFound {
+			r.Code = "not_found"
+		}
+		return r
+	}
+	file := func(name string) map[string]string { return map[string]string{"fileId": "s220:" + name} }
+	const files = "/api/v1/tenants/{tenantId}/files"
+	return []matrix.Endpoint{
+		{Op: "getFile", Method: http.MethodGet, Path: files + "/{fileId}", Channel: matrix.ChannelHTTP, Rows: []matrix.Row{
+			row(file("file-ret-usual"), http.StatusOK, []string{"s220:file-ret-usual"}, nil,
+				"фото осмотра сдачи своей обычной машины по рейсу перевода — 200"),
+			row(file("file-ret-host"), http.StatusNotFound, nil, []string{"s220:file-ret-host"},
+				"фото осмотра машины фирмы рейса — 404"),
+			row(file("file-ret-plain"), http.StatusNotFound, nil, []string{"s220:file-ret-plain"},
+				"фото рейса вне осмотра — 404"),
+			row(file("file-ret-receipt"), http.StatusNotFound, nil, []string{"s220:file-ret-receipt"},
+				"чек расхода рейса — 404 (расходы — у фирмы рейса)"),
+		}},
+		{Op: "getFileDownload", Method: http.MethodGet, Path: files + "/{fileId}/download", Channel: matrix.ChannelHTTP,
+			Rows: []matrix.Row{
+				row(file("file-ret-usual"), http.StatusOK, nil, nil, "фото осмотра своей обычной машины скачивается"),
+				row(file("file-ret-host"), http.StatusNotFound, nil, []string{"s220:file-ret-host"},
+					"фото осмотра машины фирмы рейса — 404"),
+			}},
+		{Op: "listFiles", Method: http.MethodGet, Path: files, Channel: matrix.ChannelHTTP, Rows: []matrix.Row{
+			row(nil, http.StatusOK, []string{"s220:file-ret-usual"},
+				[]string{"s220:file-ret-host", "s220:file-ret-plain", "s220:file-ret-receipt"},
+				"файлы рейсов перевода — только фото осмотров своей обычной машины"),
+		}},
+		{Op: "getTrip", Method: http.MethodGet, Path: "/api/v1/tenants/{tenantId}/fleet/trips/{tripId}",
+			Channel: matrix.ChannelHTTP, Rows: []matrix.Row{
+				row(map[string]string{"tripId": "s220:trip-returned"}, http.StatusNotFound, nil, []string{"s220:trip-returned"},
+					"рейс фирмы рейса — 404 (как в 0.6.2)"),
+			}},
+	}
 }
 
 func TestIsolationFleetPoolS220(t *testing.T) {
