@@ -95,21 +95,88 @@ function readWorkingCopy(file) {
   }
 }
 
+const GIT_STDIO = ['ignore', 'pipe', 'ignore'];
+// Запас на случай, если `git rev-parse --local-env-vars` недоступен.
+const LOCAL_ENV_FALLBACK = [
+  'GIT_ALTERNATE_OBJECT_DIRECTORIES',
+  'GIT_CONFIG',
+  'GIT_CONFIG_PARAMETERS',
+  'GIT_CONFIG_COUNT',
+  'GIT_OBJECT_DIRECTORY',
+  'GIT_DIR',
+  'GIT_WORK_TREE',
+  'GIT_IMPLICIT_WORK_TREE',
+  'GIT_GRAFT_FILE',
+  'GIT_INDEX_FILE',
+  'GIT_NO_REPLACE_OBJECTS',
+  'GIT_REPLACE_REF_BASE',
+  'GIT_PREFIX',
+  'GIT_INTERNAL_SUPER_PREFIX',
+  'GIT_SHALLOW_FILE',
+  'GIT_COMMON_DIR',
+];
+
+/**
+ * Окружение для git без переменных локального репозитория. Хук pre-push из linked worktree
+ * получает GIT_DIR=<repo>/.git/worktrees/<name> без GIT_WORK_TREE, и git считает cwd корнем
+ * рабочей копии; без этих переменных репозиторий находится по самому каталогу эталона.
+ */
+function gitEnv() {
+  let names;
+  try {
+    names = execFileSync('git', ['rev-parse', '--local-env-vars'], { stdio: GIT_STDIO })
+      .toString()
+      .split(/\r?\n/)
+      .filter(Boolean);
+  } catch {
+    names = LOCAL_ENV_FALLBACK;
+  }
+  // Ключи окружения Windows нечувствительны к регистру, у копии process.env — чувствительны.
+  const drop = new Set(names.map((n) => n.toUpperCase()));
+  return Object.fromEntries(
+    Object.entries(process.env).filter(([k]) => !drop.has(k.toUpperCase())),
+  );
+}
+
+/** Корень репозитория и путь каталога от корня (`design/`) или null вне git. */
+function locateRepo(root) {
+  const env = gitEnv();
+  try {
+    const out = execFileSync('git', ['rev-parse', '--show-toplevel', '--show-prefix'], {
+      cwd: root,
+      env,
+      stdio: GIT_STDIO,
+    });
+    const [top, prefix = ''] = out.toString().split(/\r?\n/);
+    return top ? { top, prefix, env } : null;
+  } catch {
+    return null;
+  }
+}
+
 /** Источник файлов эталона: рабочая копия или git-ссылка. */
 function createSource(dir, ref) {
   const root = resolve(dir);
   if (!ref) return (rel) => readWorkingCopy(inside(root, rel));
   const cache = new Map();
+  let repo;
   return (rel) => {
     if (!inside(root, rel)) return null;
+    if (repo === undefined) repo = locateRepo(root);
+    if (!repo) return null;
     if (!cache.has(rel)) {
       let buf;
       try {
-        buf = execFileSync('git', ['show', `${ref}:./${rel.slice(1)}`], {
-          cwd: root,
-          maxBuffer: 64 * 1024 * 1024,
-          stdio: ['ignore', 'pipe', 'ignore'],
-        });
+        // Путь от корня репозитория: не зависит ни от cwd, ни от GIT_DIR вызывающего.
+        buf = execFileSync(
+          'git',
+          ['-C', repo.top, 'show', `${ref}:${repo.prefix}${rel.slice(1)}`],
+          {
+            env: repo.env,
+            maxBuffer: 64 * 1024 * 1024,
+            stdio: GIT_STDIO,
+          },
+        );
       } catch {
         buf = null;
       }

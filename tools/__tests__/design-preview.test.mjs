@@ -174,3 +174,39 @@ describe('сервер --ref <git-ref> (снимок этапа, PD-57)', () => 
     assert.equal(res.status, 404);
   });
 });
+
+// Хук pre-push из linked worktree получает GIT_DIR=<repo>/.git/worktrees/<name> без GIT_WORK_TREE:
+// git тогда считает cwd корнем рабочей копии (W2.82).
+describe('сервер --ref при заданном GIT_DIR (хук pre-push из worktree)', () => {
+  const REF = 'design-2026-10-03';
+  const FILE = 'Ortus CRM.dc.html';
+  let s;
+  let expected;
+  let saved;
+  before(async () => {
+    const top = abs('.');
+    expected = execFileSync('git', ['show', `${REF}:design/${FILE}`], { cwd: top });
+    const gitDir = execFileSync('git', ['rev-parse', '--absolute-git-dir'], { cwd: top })
+      .toString()
+      .trim();
+    saved = process.env.GIT_DIR;
+    process.env.GIT_DIR = gitDir;
+    s = await listen({ dir: abs('design'), ref: REF });
+  });
+  after(async () => {
+    if (saved === undefined) delete process.env.GIT_DIR;
+    else process.env.GIT_DIR = saved;
+    await close(s?.server);
+  });
+
+  it('отдаёт файл из тега по пути от корня репозитория', async () => {
+    const res = await fetch(s.base + enc(FILE));
+    assert.equal(res.status, 200);
+    assert.ok(Buffer.from(await res.arrayBuffer()).equals(expected));
+  });
+
+  it('файла нет в теге → 404', async () => {
+    const res = await fetch(`${s.base}/nope.txt`);
+    assert.equal(res.status, 404);
+  });
+});
