@@ -33,6 +33,7 @@ import { useStoredQueueStatus } from '../pwa/status.ts';
 import { clearDeviceData } from '../pwa/store.ts';
 import { AccessGate } from './AccessGate.tsx';
 import { Banners, OfflineBootBanner } from './Banners.tsx';
+import { usePlatformBadges } from './badges.ts';
 import { applyBrand, brandHeader, brandNav } from './brand.ts';
 import { ShellContext, type ShellValue } from './context.tsx';
 import { Header, type Popover, ProfilePopover } from './Header.tsx';
@@ -171,11 +172,17 @@ export function AppShell({ me, area, tenant, page }: AppShellProps): ReactElemen
   );
   // W4.62: оформление организации (TenantContext.branding) — меню, знак шапки и акцент; у оператора — Ортус.
   const theme = area === 'tenant' ? (tenant?.branding ?? null) : null;
-  const groups = useMemo(() => brandNav(buildNav(ctx), theme), [ctx, theme]);
+  const operator = area === 'platform';
+  // W4.61: бейдж «Заявки на тариф» — число заявок на рассмотрении (navForBase :2972).
+  const badges = usePlatformBadges(operator);
+  const requests = badges.requests;
+  const groups = useMemo(
+    () => brandNav(buildNav(ctx, { badges: requests ? { requests } : {} }), theme),
+    [ctx, requests, theme],
+  );
   const access = page ? pageAccess(ctx, page) : ({ kind: 'not_found' } as const);
   const readOnly = access.kind === 'allow' && access.readOnly;
   const owner = ctx.audience === 'owner';
-  const operator = area === 'platform';
 
   const [popover, setPopover] = useState<Popover>(null);
   const [sheet, setSheet] = useState(false);

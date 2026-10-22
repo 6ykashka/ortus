@@ -1,0 +1,403 @@
+/* W4.61 · «Подписка и места» — разметка и стили эталона «Ортус CRM.dc.html» :1454–1528 (design-2026-10-19).
+   Общие правила — ../../platform/kit/kit.css. Все правила — под корнем .ox-bl. */
+.ox-bl {
+  --ox-bl-label: #3a4844; /* :1488 места тарифа, расчёт */
+  --ox-bl-off-on: #ddf0e4; /* :3936 скидка выбранного срока */
+}
+
+.ox-bl-top {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  align-items: stretch;
+}
+
+.ox-bl-plan,
+.ox-bl-seats {
+  flex: 1 1 320px;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.ox-bl-plan-head {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.ox-bl .ox-bl-plan-head h2 {
+  font-size: 18px;
+}
+
+.ox-bl-plan-meta {
+  margin: 0;
+  font-size: 13px;
+  color: var(--ox-text-muted);
+  text-wrap: pretty;
+}
+
+.ox-bl-seats-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 8px;
+}
+
+.ox-bl-seats-value {
+  font-size: 24px;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+
+.ox-bl-seats-sub {
+  font-size: 13px;
+  color: var(--ox-text-muted);
+}
+
+.ox-bl-full {
+  display: flex;
+  gap: 8px;
+  padding: 10px 12px;
+  border-radius: 8px;
+  background: var(--ox-danger-bg);
+  color: var(--ox-danger-fg);
+  font-size: 13px;
+}
+
+.ox-bl-full > span:last-child {
+  text-wrap: pretty;
+}
+
+/* ── Баннеры :1472–1475 ── */
+.ox-bl-banner {
+  display: flex;
+  gap: 8px;
+  padding: 12px 14px;
+  border-radius: 10px;
+  font-size: 13px;
+}
+
+.ox-bl-banner > span:last-child,
+.ox-bl-banner-text {
+  text-wrap: pretty;
+}
+
+.ox-bl-banner[data-tone='warn'] {
+  flex-wrap: wrap;
+  gap: 8px 12px;
+  align-items: center;
+  background: var(--ox-warn-bg);
+  border: 1px solid var(--ox-pk-warn-line);
+  color: var(--ox-warn-fg);
+}
+
+.ox-bl-banner-text {
+  flex: 1 1 260px;
+}
+
+.ox-bl-banner[data-tone='danger'] {
+  background: var(--ox-danger-bg);
+  border: 1px solid var(--ox-pk-danger-banner-line);
+  color: var(--ox-danger-fg);
+}
+
+.ox-bl-banner[data-tone='info'] {
+  background: var(--ox-info-bg);
+  border: 1px solid var(--ox-pk-info-line);
+  color: var(--ox-info-fg);
+}
+
+.ox-bl-banner[data-tone='ok'] {
+  background: var(--ox-accent-soft);
+  border: 1px solid var(--ox-pk-ok-line);
+  color: var(--ox-accent);
+}
+
+.ox-bl-cancel {
+  min-height: 36px;
+  padding: 0 12px;
+  border-radius: 8px;
+  border: 1px solid var(--ox-warn-fg);
+  background: var(--ox-card);
+  color: var(--ox-warn-fg);
+  font-weight: 500;
+  cursor: pointer;
+}
+
+/* ── «Изменить тариф» :1477–1502 ── */
+.ox-bl-change {
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.ox-bl-change-head {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px 16px;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.ox-bl .ox-bl-change-head h2 {
+  font-size: 17px;
+}
+
+.ox-bl-change-head > div:first-child > span {
+  font-size: 13px;
+  color: var(--ox-text-muted);
+}
+
+.ox-bl-terms {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.ox-bl-term {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 40px;
+  padding: 0 12px;
+  border-radius: 8px;
+  border: 1px solid var(--ox-line-control);
+  background: var(--ox-card);
+  color: var(--ox-text);
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.ox-bl-term[aria-checked='true'] {
+  background: var(--ox-accent);
+  color: var(--ox-on-accent);
+}
+
+.ox-bl-term-off {
+  font-size: 12px;
+  color: var(--ox-accent);
+}
+
+.ox-bl-term[aria-checked='true'] .ox-bl-term-off {
+  color: var(--ox-bl-off-on);
+}
+
+.ox-bl-tiers {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 190px), 1fr));
+  gap: 10px;
+}
+
+.ox-bl-tier {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 4px;
+  padding: 14px;
+  border-radius: 10px;
+  border: 1px solid var(--ox-line);
+  background: var(--ox-card);
+  cursor: pointer;
+  text-align: left;
+}
+
+.ox-bl-tier[aria-checked='true'] {
+  border: 2px solid var(--ox-accent);
+  background: var(--ox-accent-tint);
+}
+
+.ox-bl-tier[aria-disabled='true'] {
+  background: var(--ox-raised);
+  opacity: 0.62;
+  cursor: not-allowed;
+}
+
+.ox-bl-tier strong {
+  font-size: 15px;
+  font-weight: 600;
+}
+
+.ox-bl-tier-seats {
+  font-size: 13px;
+  color: var(--ox-bl-label);
+}
+
+.ox-bl-tier-price {
+  margin-top: 6px;
+  font-size: 18px;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+
+.ox-bl-tier-per {
+  font-size: 12px;
+  color: var(--ox-text-muted);
+}
+
+.ox-bl-tier-total {
+  font-size: 12px;
+  color: var(--ox-text-muted);
+  font-variant-numeric: tabular-nums;
+}
+
+.ox-bl-tier-note {
+  margin-top: 4px;
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--ox-info-fg);
+}
+
+.ox-bl-calc {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 12px 14px;
+  border-radius: 10px;
+  background: var(--ox-accent-tint);
+  border: 1px solid var(--ox-pk-ok-line);
+}
+
+.ox-bl-calc strong {
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+
+.ox-bl-calc span {
+  font-size: 13px;
+  color: var(--ox-bl-label);
+  text-wrap: pretty;
+}
+
+.ox-bl .ox-bl-comment {
+  font-size: 15px;
+}
+
+.ox-bl-send-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  align-items: center;
+  justify-content: flex-end;
+}
+
+.ox-bl-hint {
+  font-size: 13px;
+  color: var(--ox-text-muted);
+}
+
+.ox-bl .ox-bl-send {
+  padding: 0 18px;
+}
+
+/* ── Кто занимает место :1504–1526 ── */
+.ox-bl-lists {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  align-items: flex-start;
+}
+
+.ox-bl-paid {
+  flex: 3 1 420px;
+  overflow: hidden;
+}
+
+.ox-bl-free {
+  flex: 2 1 300px;
+  overflow: hidden;
+}
+
+.ox-bl-list-head {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 16px;
+  border-bottom: 1px solid var(--ox-line);
+}
+
+.ox-bl-free-head {
+  display: block;
+}
+
+.ox-bl-free-head > span {
+  font-size: 12px;
+  color: var(--ox-text-muted);
+}
+
+.ox-bl-free-empty {
+  padding: 18px 16px;
+  font-size: 13px;
+  color: var(--ox-text-muted);
+}
+
+.ox-bl-person {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 12px;
+  align-items: center;
+  padding: 10px 16px;
+  border-top: 1px solid var(--ox-pk-row-line);
+}
+
+.ox-bl-list-head + .ox-bl-person,
+.ox-bl-free-empty + .ox-bl-person {
+  border-top-color: transparent;
+}
+
+.ox-bl-free .ox-bl-person {
+  flex-wrap: nowrap;
+  gap: 12px;
+}
+
+.ox-bl-avatar {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  background: var(--ox-accent-soft);
+  color: var(--ox-accent);
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.ox-bl-avatar[data-free] {
+  background: var(--ox-neutral-bg);
+  color: var(--ox-neutral-fg);
+}
+
+.ox-bl-who {
+  flex: 1 1 180px;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.ox-bl-free .ox-bl-who {
+  flex: 1;
+}
+
+.ox-bl-name {
+  font-weight: 500;
+}
+
+.ox-bl-title {
+  font-size: 12px;
+  color: var(--ox-text-muted);
+  text-wrap: pretty;
+}
+
+.ox-bl-note {
+  font-size: 12px;
+  color: var(--ox-warn-fg);
+}

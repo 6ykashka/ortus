@@ -23,6 +23,25 @@ export interface NavProps {
   onGo: (item: NavItem) => void;
 }
 
+/**
+ * Бейдж пункта меню. Пробел перед числом — подпись и доступное имя «Заявки на тариф 1», как в эталоне
+ * (структурная сверка shell снимает бейдж после пробела; W4.61, Q-W4.50-10). В flex-пункте пробел не виден.
+ */
+function Badge({
+  value,
+  className,
+}: {
+  value: number | undefined;
+  className: string;
+}): ReactElement | null {
+  return value ? (
+    <>
+      {' '}
+      <span className={className}>{value}</span>
+    </>
+  ) : null;
+}
+
 export function Sidebar({ groups, page, onGo, note }: NavProps & { note: string }): ReactElement {
   return (
     <nav className="ox-sidebar" aria-label={shell.a11y.mainNav}>
@@ -43,7 +62,7 @@ export function Sidebar({ groups, page, onGo, note }: NavProps & { note: string 
               >
                 <Icon name={it.icon} size={20} />
                 <span className="ox-nav-label">{label}</span>
-                {it.badge ? <span className="ox-nav-badge">{it.badge}</span> : null}
+                <Badge value={it.badge} className="ox-nav-badge" />
               </button>
             );
           })}
@@ -85,7 +104,7 @@ export function BottomNav({
           >
             <Icon name={it.icon} size={24} fill={active} />
             {itemText(it as BrandedItem)}
-            {it.badge ? <span className="ox-bottom-badge">{it.badge}</span> : null}
+            <Badge value={it.badge} className="ox-bottom-badge" />
           </button>
         );
       })}
@@ -176,7 +195,7 @@ export function MoreSheet({
               >
                 <Icon name={it.icon} size={22} />
                 <span className="ox-nav-label">{itemText(it)}</span>
-                {it.badge ? <span className="ox-nav-badge">{it.badge}</span> : null}
+                <Badge value={it.badge} className="ox-nav-badge" />
               </button>
             ))}
           </Fragment>

@@ -18,7 +18,6 @@
 - kind: out-of-stage · target: button:Обращения 4 · mode: mock · reason: бейдж обращений с SLA первого ответа — модуль «Обращения» (W7.32) · decision: PD-55 · owner: W1.20 · expires: stage-7
 - kind: out-of-stage · target: button:Документы 2 · mode: mock · reason: бейдж ожиданий документов — модуль «Документы» (W7.25) · decision: PD-55 · owner: W1.20 · expires: stage-7
 - kind: out-of-stage · target: button:Касса 4 · mode: mock · reason: бейдж кассы — модуль «Касса» (W5.32, W5.33); «Подотчёт» водителя и прораба — пункт профиля рабочего места, «Касса» массажиста — по праву cash.* (W1.49, shell-therapist.md); страница — заглушка до этапа 5 · decision: PD-55 · owner: W1.20 · expires: stage-5
-- kind: out-of-stage · target: button:Заявки на тариф 1 · mode: mock · reason: бейдж заявок на тариф — страница оператора «Заявки на тариф» (W4.61) · decision: PD-55 · owner: W1.20 · expires: stage-4
 
 ## Пиксели (в допуске 0,01)
 

@@ -1,0 +1,458 @@
+/* W4.61 · Общие стили страниц шага 4.6 по шаблонам эталона «Ортус CRM.dc.html» (design-2026-10-19): шапка страницы
+   (:870–874), карточка (:877), чип статуса (:930), полоса (:901), пилюли фильтров (:913, :951, :998), кнопки
+   (:977–978, :1149, :1172), диалог opConfirm (:2180–2203). Все правила — под корнем страницы .ox-pk или диалога
+   .ox-pk-confirm (страницы грузятся лениво). Значения без токена — локальные переменные с номером строки эталона. */
+.ox-pk {
+  --ox-pk-track: #ecefea; /* :901 подложка полосы */
+  --ox-pk-warn-bar: #b7791f; /* :3756 barC ≥ 85 % */
+  --ox-pk-row-line: #e8ece5; /* :889 разделитель строк */
+  --ox-pk-danger-line: #e3b5af; /* :977 рамка опасной вторичной кнопки */
+  --ox-pk-info-line: #c9d8e8; /* :993 LINE.info баннера */
+  --ox-pk-warn-line: #ebd7a8; /* :1167 LINE.warn баннера */
+  --ox-pk-danger-banner-line: #f0c9c3; /* :1473 LINE.danger баннера */
+  --ox-pk-ok-line: #bfd9c8; /* :1475 LINE.ok баннера */
+
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.ox-pk-head {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.ox-pk-crumb {
+  font-size: 13px;
+  color: var(--ox-text-muted);
+}
+
+.ox-pk h1 {
+  margin: 0;
+  font-size: 26px;
+  line-height: 1.2;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+}
+
+.ox-pk h1:focus {
+  outline: none;
+}
+
+.ox-pk-intro {
+  margin: 0;
+  color: var(--ox-text-muted);
+  max-width: 720px;
+  text-wrap: pretty;
+}
+
+.ox-pk h2 {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.ox-pk-card {
+  min-width: 0;
+  background: var(--ox-card);
+  border: 1px solid var(--ox-line);
+  border-radius: 12px;
+}
+
+/* ── Чип статуса :930 ── */
+.ox-pk .ox-chip,
+.ox-pk-confirm .ox-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px 8px 2px 6px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 500;
+  line-height: 18px;
+  white-space: nowrap;
+}
+
+.ox-pk .ox-chip[data-tone='ok'] {
+  background: var(--ox-ok-bg);
+  color: var(--ox-ok-fg);
+}
+
+.ox-pk .ox-chip[data-tone='info'] {
+  background: var(--ox-info-bg);
+  color: var(--ox-info-fg);
+}
+
+.ox-pk .ox-chip[data-tone='warn'] {
+  background: var(--ox-warn-bg);
+  color: var(--ox-warn-fg);
+}
+
+.ox-pk .ox-chip[data-tone='danger'] {
+  background: var(--ox-danger-bg);
+  color: var(--ox-danger-fg);
+}
+
+.ox-pk .ox-chip[data-tone='neutral'] {
+  background: var(--ox-neutral-bg);
+  color: var(--ox-neutral-fg);
+}
+
+/* ── Полоса заполнения :901, :932, :1467 ── */
+.ox-pk-bar {
+  height: 6px;
+  border-radius: 99px;
+  background: var(--ox-pk-track);
+  overflow: hidden;
+}
+
+.ox-pk-bar[data-size='10'] {
+  height: 10px;
+}
+
+.ox-pk-bar-fill {
+  height: 100%;
+  background: var(--ox-accent);
+}
+
+.ox-pk-bar-fill[data-tone='warn'] {
+  background: var(--ox-pk-warn-bar);
+}
+
+.ox-pk-bar-fill[data-tone='danger'] {
+  background: var(--ox-danger-fg);
+}
+
+/* ── Пилюли фильтров :913, :951, :998 ── */
+.ox-pk-pills {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.ox-pk-pill {
+  min-height: 36px;
+  padding: 0 14px;
+  border-radius: 999px;
+  border: 1px solid var(--ox-line-control);
+  background: var(--ox-card);
+  color: var(--ox-text);
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.ox-pk-pill[data-size='34'] {
+  min-height: 34px;
+  padding: 0 12px;
+}
+
+.ox-pk-pill[aria-pressed='true'] {
+  background: var(--ox-text);
+  color: var(--ox-on-accent);
+}
+
+/* ── Кнопки :977–978, :1149, :1172 ── */
+.ox-pk-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  min-height: 44px;
+  padding: 0 16px;
+  border-radius: 8px;
+  border: 1px solid var(--ox-line-control);
+  background: var(--ox-card);
+  color: var(--ox-text);
+  font-weight: 500;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.ox-pk-btn[data-variant='primary'] {
+  border-color: var(--ox-accent);
+  background: var(--ox-accent);
+  color: var(--ox-on-accent);
+}
+
+.ox-pk-btn[data-variant='danger'] {
+  border-color: var(--ox-pk-danger-line);
+  color: var(--ox-danger-fg);
+}
+
+.ox-pk-btn[data-size='sm'] {
+  min-height: 36px;
+  padding: 0 12px;
+  font-size: 13px;
+}
+
+.ox-pk-btn[data-size='md'] {
+  min-height: 40px;
+  padding: 0 14px;
+}
+
+.ox-pk button:disabled {
+  cursor: not-allowed;
+}
+
+/* ── Поля :975, :1064 ── */
+.ox-pk-label {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--ox-text-label);
+}
+
+.ox-pk-input {
+  width: 100%;
+  min-height: 44px;
+  padding: 8px 12px;
+  border: 1px solid var(--ox-line-control);
+  border-radius: 8px;
+  background: var(--ox-card);
+  font-size: 15px;
+  font-weight: 400;
+  color: var(--ox-text);
+}
+
+textarea.ox-pk-input {
+  min-height: 0;
+  padding: 10px 12px;
+  resize: vertical;
+}
+
+/* ── Состояния без эталона: скелетон области, ошибка чтения, сообщение раздела ── */
+.ox-pk-skeleton {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.ox-pk-skeleton-block {
+  display: block;
+  height: 120px;
+  border-radius: 12px;
+  background: var(--ox-shell-skeleton-block);
+  animation: ox-pulse 1.4s ease-in-out infinite;
+}
+
+.ox-pk-skeleton-block[data-first] {
+  height: 88px;
+}
+
+.ox-pk-error {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px 16px;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 14px;
+  border-radius: 10px;
+  background: var(--ox-danger-bg);
+  color: var(--ox-danger-fg);
+  border: 1px solid var(--ox-pk-danger-banner-line);
+  font-size: 14px;
+}
+
+.ox-pk-notice {
+  margin: 0;
+  padding: 20px 16px;
+  border-radius: 12px;
+  background: var(--ox-card);
+  border: 1px solid var(--ox-line);
+  color: var(--ox-text-muted);
+  font-size: 14px;
+  text-wrap: pretty;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ox-pk-skeleton-block {
+    animation: none;
+  }
+}
+
+/* На телефоне область нажатия малых кнопок эталона (32–40 px) расширена до 44 px без изменения вида (PD-28,
+   verification-protocol §1 п. 3): пилюли 36 px с промежутком 8 px — области соседних рядов смыкаются, не перекрываясь. */
+@container ox-frame (width < 640px) {
+  .ox-pk .ox-pk-hit {
+    position: relative;
+  }
+
+  .ox-pk .ox-pk-hit::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 50%;
+    height: 44px;
+    transform: translateY(-50%);
+  }
+}
+
+/* ── Диалог opConfirm :2184–2203 (контейнер .ox-backdrop/.ox-dialog — shell.css) ── */
+.ox-pk-confirm-body {
+  padding: 22px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.ox-pk-confirm-head {
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+}
+
+.ox-pk-confirm-chip {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  background: var(--ox-info-bg);
+  color: var(--ox-info-fg);
+}
+
+.ox-pk-confirm-chip[data-tone='ok'] {
+  background: var(--ox-ok-bg);
+  color: var(--ox-ok-fg);
+}
+
+.ox-pk-confirm-chip[data-tone='warn'] {
+  background: var(--ox-warn-bg);
+  color: var(--ox-warn-fg);
+}
+
+.ox-pk-confirm-chip[data-tone='danger'] {
+  background: var(--ox-danger-bg);
+  color: var(--ox-danger-fg);
+}
+
+.ox-pk-confirm-chip[data-tone='neutral'] {
+  background: var(--ox-neutral-bg);
+  color: var(--ox-neutral-fg);
+}
+
+.ox-pk-confirm-headtext {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+}
+
+.ox-pk-confirm h2 {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 600;
+  text-wrap: balance;
+}
+
+.ox-pk-confirm-headtext p {
+  margin: 0;
+  color: var(--ox-text-muted);
+  text-wrap: pretty;
+}
+
+.ox-pk-confirm-scroll {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  max-height: max(140px, calc(100vh - 392px));
+  overflow-y: auto;
+  padding-right: 4px;
+}
+
+.ox-pk-confirm-section {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.ox-pk-confirm-section-title {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--ox-text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.ox-pk-confirm ul {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.ox-pk-confirm li {
+  display: flex;
+  gap: 8px;
+  align-items: flex-start;
+  font-size: 14px;
+}
+
+.ox-pk-confirm-item-icon {
+  display: inline-flex;
+  color: var(--ox-neutral-fg);
+}
+
+.ox-pk-confirm-item-icon[data-tone='ok'] {
+  color: var(--ox-ok-fg);
+}
+
+.ox-pk-confirm-item-icon[data-tone='info'] {
+  color: var(--ox-info-fg);
+}
+
+.ox-pk-confirm-item-icon[data-tone='warn'] {
+  color: var(--ox-warn-fg);
+}
+
+.ox-pk-confirm-item-icon[data-tone='danger'] {
+  color: var(--ox-danger-fg);
+}
+
+.ox-pk-confirm-item-text {
+  text-wrap: pretty;
+}
+
+.ox-pk-confirm-foot {
+  padding-top: 14px;
+  border-top: 1px solid var(--ox-divider);
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  justify-content: flex-end;
+}
+
+.ox-pk-confirm-cancel {
+  min-height: 44px;
+  padding: 0 16px;
+  border-radius: 8px;
+  border: 1px solid var(--ox-line-control);
+  background: var(--ox-card);
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.ox-pk-confirm-ok {
+  min-height: 44px;
+  padding: 0 18px;
+  border-radius: 8px;
+  border: 1px solid var(--ox-accent);
+  background: var(--ox-accent);
+  color: var(--ox-on-accent);
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.ox-pk-confirm-ok[data-danger] {
+  border-color: var(--ox-danger-fg);
+  background: var(--ox-danger-fg);
+}

@@ -1,0 +1,138 @@
+/* W4.61 · «Заявки на изменение тарифа» — разметка и стили эталона «Ортус CRM.dc.html» :945–985
+   (design-2026-10-19). Общие правила — ../kit/kit.css. Все правила — под корнем .ox-rq. */
+.ox-rq {
+  --ox-rq-comment: #3a4844; /* :971 комментарий владельца */
+}
+
+.ox-rq-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  padding: 36px 16px;
+  text-align: center;
+}
+
+.ox-rq-empty > .material-symbols-rounded {
+  color: var(--ox-text-muted);
+}
+
+.ox-rq-empty > span:last-child {
+  color: var(--ox-text-muted);
+  max-width: 360px;
+  text-wrap: pretty;
+}
+
+.ox-rq-card {
+  padding: 18px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.ox-rq-head {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 12px;
+  align-items: center;
+}
+
+.ox-rq .ox-rq-head h2 {
+  font-size: 17px;
+}
+
+.ox-rq-number {
+  font-family: var(--ox-font-mono);
+  font-size: 12px;
+  color: var(--ox-text-muted);
+}
+
+.ox-rq-spacer {
+  flex: 1;
+}
+
+.ox-rq-meta {
+  font-size: 12px;
+  color: var(--ox-text-muted);
+}
+
+.ox-rq-fields {
+  margin: 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 170px), 1fr));
+  gap: 12px 16px;
+  font-size: 13px;
+}
+
+.ox-rq-fields > div {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.ox-rq-fields dt {
+  color: var(--ox-text-muted);
+}
+
+.ox-rq-fields dd {
+  margin: 0;
+}
+
+.ox-rq-fields dd.ox-rq-to {
+  font-weight: 600;
+}
+
+.ox-rq-fields dd.ox-rq-num {
+  font-variant-numeric: tabular-nums;
+}
+
+.ox-rq-price {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  padding: 10px 12px;
+  border-radius: 8px;
+  background: var(--ox-raised);
+  font-size: 13px;
+}
+
+.ox-rq-price > .material-symbols-rounded {
+  color: var(--ox-accent);
+}
+
+.ox-rq-price > span:last-child {
+  font-variant-numeric: tabular-nums;
+}
+
+.ox-rq-comment {
+  margin: 0;
+  font-size: 13px;
+  color: var(--ox-rq-comment);
+  text-wrap: pretty;
+}
+
+.ox-rq-decision {
+  margin: 0;
+  font-size: 13px;
+  color: var(--ox-text-muted);
+  text-wrap: pretty;
+}
+
+.ox-rq-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding-top: 12px;
+  border-top: 1px solid var(--ox-pk-row-line);
+}
+
+.ox-rq .ox-rq-note {
+  font-size: 14px;
+}
+
+.ox-rq-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  justify-content: flex-end;
+}

@@ -1,0 +1,330 @@
+/* W4.61 · «Использование» оператора — разметка и стили эталона «Ортус CRM.dc.html» :869–943 (design-2026-10-19).
+   Общие правила (шапка, карточка, чип, полоса, пилюли) — ../kit/kit.css. Все правила — под корнем .ox-us. */
+.ox-us {
+  --ox-us-signal-text: #3a4844; /* :891 текст сигнала */
+  --ox-us-chip-hover: #ecefea; /* :904 style-hover чипа организации */
+}
+
+/* ── Плитки :875–883 ── */
+.ox-us-tiles {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 200px), 1fr));
+  gap: 12px;
+}
+
+.ox-us-tile {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 16px;
+  border-radius: 12px;
+  background: var(--ox-card);
+  border: 1px solid var(--ox-line);
+}
+
+.ox-us-tile-label {
+  font-size: 13px;
+  color: var(--ox-text-muted);
+}
+
+.ox-us-tile-value {
+  font-size: 22px;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.01em;
+}
+
+.ox-us-tile-sub {
+  font-size: 12px;
+  color: var(--ox-text-muted);
+  text-wrap: pretty;
+}
+
+/* ── «Требуют внимания» и «Отраслевые модули» :884–909 ── */
+.ox-us-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  align-items: flex-start;
+}
+
+.ox-us-signals {
+  flex: 3 1 420px;
+  overflow: hidden;
+}
+
+.ox-us-signals-head {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  padding: 14px 16px;
+  border-bottom: 1px solid var(--ox-line);
+}
+
+.ox-us-count {
+  font-size: 13px;
+  color: var(--ox-text-muted);
+}
+
+.ox-us-quiet {
+  padding: 20px 16px;
+  font-size: 13px;
+  color: var(--ox-text-muted);
+}
+
+.ox-us-signal {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 12px;
+  align-items: center;
+  padding: 12px 16px;
+  border-top: 1px solid var(--ox-pk-row-line);
+}
+
+.ox-us-signals-head + .ox-us-signal {
+  border-top-color: transparent;
+}
+
+.ox-us-signal-icon {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+}
+
+.ox-us-signal-icon[data-tone='danger'] {
+  background: var(--ox-danger-bg);
+  color: var(--ox-danger-fg);
+}
+
+.ox-us-signal-icon[data-tone='warn'] {
+  background: var(--ox-warn-bg);
+  color: var(--ox-warn-fg);
+}
+
+.ox-us-signal-icon[data-tone='info'] {
+  background: var(--ox-info-bg);
+  color: var(--ox-info-fg);
+}
+
+.ox-us-signal-main {
+  flex: 1 1 220px;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.ox-us-signal-org {
+  font-weight: 600;
+}
+
+.ox-us-signal-text {
+  font-size: 13px;
+  color: var(--ox-us-signal-text);
+  text-wrap: pretty;
+}
+
+.ox-us-signal-act {
+  min-height: 36px;
+  padding: 0 12px;
+  border-radius: 8px;
+  border: 1px solid var(--ox-line-control);
+  background: var(--ox-card);
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.ox-us-modules {
+  flex: 2 1 300px;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.ox-us-modules-head {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.ox-us-modules-head > span {
+  font-size: 12px;
+  color: var(--ox-text-muted);
+}
+
+.ox-us-module {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.ox-us-module-top {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.ox-us-module-icon {
+  color: var(--ox-accent);
+}
+
+.ox-us-module-top strong {
+  flex: 1;
+  font-weight: 600;
+}
+
+.ox-us-module-n {
+  font-size: 13px;
+  font-variant-numeric: tabular-nums;
+}
+
+.ox-us-module-seats {
+  font-size: 12px;
+  color: var(--ox-text-muted);
+}
+
+.ox-us-module-orgs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.ox-us-org-chip {
+  min-height: 32px;
+  padding: 0 10px;
+  border-radius: 999px;
+  border: 1px solid var(--ox-line-control);
+  background: var(--ox-raised);
+  font-size: 12px;
+  cursor: pointer;
+}
+
+.ox-us-org-chip:hover {
+  background: var(--ox-us-chip-hover);
+}
+
+/* ── «По организациям» :910–941 ── */
+.ox-us-table-card {
+  overflow: hidden;
+}
+
+.ox-us-table-head {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px 16px;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 16px;
+  border-bottom: 1px solid var(--ox-line);
+}
+
+.ox-us-sorts {
+  gap: 6px;
+}
+
+.ox-us-table-wrap {
+  overflow-x: auto;
+}
+
+.ox-us-table {
+  width: 100%;
+  min-width: 860px;
+  border-collapse: collapse;
+  font-size: 14px;
+}
+
+.ox-us-table thead tr {
+  background: var(--ox-raised);
+  text-align: left;
+}
+
+.ox-us-table th {
+  padding: 10px 16px;
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--ox-text-muted);
+  border-bottom: 1px solid var(--ox-line);
+}
+
+.ox-us-table th[data-narrow] {
+  width: 170px;
+}
+
+.ox-us-table tbody tr {
+  border-top: 1px solid var(--ox-pk-row-line);
+}
+
+.ox-us-table tbody tr:first-child {
+  border-top-color: transparent;
+}
+
+.ox-us-table td {
+  padding: 12px 16px;
+  vertical-align: top;
+}
+
+.ox-us-org {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 4px;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  text-align: left;
+  cursor: pointer;
+}
+
+.ox-us-org-name {
+  font-weight: 600;
+  color: var(--ox-accent);
+}
+
+.ox-us-cell-bar {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.ox-us-num {
+  font-variant-numeric: tabular-nums;
+}
+
+.ox-us-nowrap {
+  white-space: nowrap;
+}
+
+.ox-us-mods {
+  color: var(--ox-us-signal-text);
+}
+
+.ox-us-activity {
+  display: flex;
+  flex-direction: column;
+}
+
+.ox-us-last {
+  font-size: 12px;
+  color: var(--ox-text-muted);
+}
+
+.ox-us-last[data-late] {
+  color: var(--ox-danger-fg);
+}
+
+@container ox-frame (width < 640px) {
+  /* Пилюли сортировки 34 px и чипы организаций 32 px: ряды разведены, чтобы области нажатия 44 px соседних рядов
+     не перекрывались (PD-28). */
+  .ox-us .ox-us-sorts {
+    row-gap: 12px;
+  }
+
+  .ox-us-module-orgs {
+    row-gap: 14px;
+  }
+}

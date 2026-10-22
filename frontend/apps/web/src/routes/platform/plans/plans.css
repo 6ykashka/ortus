@@ -1,0 +1,409 @@
+/* W4.61 · «Тарифная сетка» — разметка и стили эталона «Ортус CRM.dc.html» :1161–1252 (design-2026-10-19).
+   Общие правила — ../kit/kit.css. Все правила — под корнем .ox-pb. */
+.ox-pb {
+  --ox-pb-label: #3a4844; /* :1193 подписи черновика, правила */
+}
+
+.ox-pb-demo {
+  display: flex;
+  gap: 10px;
+  padding: 12px 14px;
+  border-radius: 10px;
+  background: var(--ox-warn-bg);
+  color: var(--ox-warn-fg);
+  border: 1px solid var(--ox-pk-warn-line);
+  font-size: 13px;
+}
+
+.ox-pb-demo > span:last-child {
+  text-wrap: pretty;
+}
+
+.ox-pb-scheduled {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 12px;
+  align-items: center;
+  padding: 12px 14px;
+  border-radius: 10px;
+  background: var(--ox-info-bg);
+  border: 1px solid var(--ox-pk-info-line);
+  color: var(--ox-info-fg);
+  font-size: 13px;
+}
+
+.ox-pb-scheduled > span:nth-child(2) {
+  flex: 1 1 260px;
+  text-wrap: pretty;
+}
+
+.ox-pb-scheduled-cancel {
+  min-height: 36px;
+  padding: 0 12px;
+  border-radius: 8px;
+  border: 1px solid var(--ox-info-fg);
+  background: var(--ox-card);
+  color: var(--ox-info-fg);
+  font-weight: 500;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.ox-pb-grid {
+  overflow: hidden;
+}
+
+.ox-pb-grid-head {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 14px;
+  align-items: center;
+  padding: 16px 20px;
+  border-bottom: 1px solid var(--ox-line);
+}
+
+.ox-pb-grid-title {
+  flex: 1 1 260px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.ox-pb-ver {
+  font-weight: 600;
+  font-size: 16px;
+}
+
+.ox-pb-ver > span {
+  font-weight: 400;
+  color: var(--ox-text-muted);
+  font-size: 14px;
+}
+
+.ox-pb-note {
+  font-size: 13px;
+  color: var(--ox-text-muted);
+}
+
+.ox-pb-table-wrap {
+  overflow-x: auto;
+}
+
+.ox-pb-table {
+  width: 100%;
+  min-width: 760px;
+  border-collapse: collapse;
+  font-size: 14px;
+}
+
+.ox-pb-table thead tr {
+  background: var(--ox-raised);
+  text-align: left;
+}
+
+.ox-pb-table th {
+  padding: 10px 16px;
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--ox-text-muted);
+  border-bottom: 1px solid var(--ox-line);
+}
+
+.ox-pb-table th.ox-pb-term {
+  vertical-align: bottom;
+}
+
+.ox-pb-term-head {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.ox-pb-term-label {
+  color: var(--ox-text);
+  font-weight: 600;
+}
+
+.ox-pb-off {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.ox-pb-off input {
+  width: 52px;
+  min-height: 32px;
+  padding: 0 6px;
+  border: 1px solid var(--ox-line-control);
+  border-radius: 6px;
+  background: var(--ox-card);
+  font-size: 13px;
+}
+
+.ox-pb-table tbody tr {
+  border-top: 1px solid var(--ox-pk-row-line);
+}
+
+.ox-pb-table tbody tr:first-child {
+  border-top-color: transparent;
+}
+
+.ox-pb-table td {
+  padding: 12px 16px;
+  vertical-align: top;
+}
+
+.ox-pb-tier {
+  display: flex;
+  flex-direction: column;
+}
+
+.ox-pb-tier strong {
+  font-weight: 600;
+}
+
+.ox-pb-tier > span {
+  font-size: 12px;
+  color: var(--ox-text-muted);
+}
+
+.ox-pb-edit {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 200px;
+}
+
+.ox-pb-name {
+  width: 100%;
+  min-height: 36px;
+  padding: 0 10px;
+  border: 1px solid var(--ox-line-control);
+  border-radius: 6px;
+  background: var(--ox-card);
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.ox-pb-seats {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  color: var(--ox-text-muted);
+}
+
+.ox-pb-seats input {
+  width: 76px;
+  min-height: 32px;
+  padding: 0 8px;
+  border: 1px solid var(--ox-line-control);
+  border-radius: 6px;
+  background: var(--ox-card);
+  font-size: 13px;
+  text-align: right;
+}
+
+.ox-pb-hint {
+  font-size: 12px;
+  color: var(--ox-text-muted);
+}
+
+.ox-pb-row-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 10px;
+  align-items: center;
+}
+
+.ox-pb-unl {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 32px;
+  font-size: 12px;
+  color: var(--ox-pb-label);
+  cursor: pointer;
+}
+
+.ox-pb-unl input {
+  width: 16px;
+  height: 16px;
+  accent-color: var(--ox-accent);
+  margin: 0;
+}
+
+.ox-pb-remove {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  min-height: 32px;
+  padding: 0 8px;
+  border-radius: 6px;
+  border: 1px solid var(--ox-pk-danger-line);
+  background: var(--ox-card);
+  color: var(--ox-danger-fg);
+  font-size: 12px;
+  cursor: pointer;
+}
+
+.ox-pb-individual {
+  color: var(--ox-text-muted);
+  font-size: 13px;
+}
+
+.ox-pb-price {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.ox-pb-price input {
+  width: 96px;
+  min-height: 36px;
+  padding: 0 8px;
+  border: 1px solid var(--ox-line-control);
+  border-radius: 6px;
+  background: var(--ox-card);
+  font-size: 14px;
+  text-align: right;
+}
+
+.ox-pb-month {
+  font-variant-numeric: tabular-nums;
+  font-weight: 500;
+}
+
+.ox-pb-cell {
+  display: flex;
+  flex-direction: column;
+}
+
+.ox-pb-cell-main {
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.ox-pb-cell-sub {
+  font-size: 12px;
+  color: var(--ox-text-muted);
+  white-space: nowrap;
+}
+
+.ox-pb-tools {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 12px 20px 16px;
+  border-top: 1px solid var(--ox-pk-row-line);
+}
+
+.ox-pb-add {
+  align-self: flex-start;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 40px;
+  padding: 0 14px;
+  border-radius: 8px;
+  border: 1px dashed var(--ox-accent);
+  background: var(--ox-card);
+  color: var(--ox-accent);
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.ox-pb-tools-hint {
+  font-size: 12px;
+  color: var(--ox-text-muted);
+  text-wrap: pretty;
+}
+
+.ox-pb-errors {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 10px 12px;
+  border-radius: 8px;
+  background: var(--ox-danger-bg);
+  color: var(--ox-danger-fg);
+  font-size: 13px;
+}
+
+.ox-pb-errors strong {
+  font-weight: 600;
+}
+
+.ox-pb-foot {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  align-items: flex-end;
+  padding: 16px 20px;
+  border-top: 1px solid var(--ox-line);
+  background: var(--ox-raised);
+}
+
+.ox-pb-from {
+  flex: 0 1 180px;
+}
+
+.ox-pb-what {
+  flex: 1 1 240px;
+}
+
+.ox-pb-foot-buttons {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.ox-pb-bottom {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  align-items: flex-start;
+}
+
+.ox-pb-side {
+  flex: 1 1 340px;
+  padding: 18px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.ox-pb-version {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 12px;
+  align-items: center;
+  padding: 10px 0;
+  border-top: 1px solid var(--ox-pk-row-line);
+  font-size: 13px;
+}
+
+.ox-pb-version-n {
+  font-family: var(--ox-font-mono);
+  font-weight: 500;
+}
+
+.ox-pb-version-period {
+  color: var(--ox-pb-label);
+}
+
+.ox-pb-version-line {
+  flex-basis: 100%;
+  color: var(--ox-text-muted);
+  text-wrap: pretty;
+}
+
+.ox-pb-rules ul {
+  margin: 0;
+  padding-left: 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-size: 13px;
+  color: var(--ox-pb-label);
+}

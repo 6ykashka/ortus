@@ -1,0 +1,859 @@
+/* W4.61 · «Пользователи платформы» — разметка и стили эталона «Ортус CRM.dc.html» :987–1159 (design-2026-10-19).
+   Общие правила — ../kit/kit.css. Все правила — под корнем .ox-acc. */
+.ox-acc {
+  --ox-acc-label: #3a4844; /* :1104 подписи */
+  --ox-acc-dash: #b9c3b6; /* :1104 пунктир счётчика организаций */
+  --ox-acc-surface: #f2f3ef; /* :1005 фон «Ортус · Платформа», hover */
+  --ox-acc-dark-sub: #afc0b8; /* :3639 подпись выбранной платформы */
+  --ox-acc-system-bg: #3a4a45; /* :1025 чип «Системная организация» */
+  --ox-acc-system-fg: #dde7e2;
+  --ox-acc-about: #c9d6d0; /* :1026 текст тёмной карточки */
+}
+
+.ox-acc-banner {
+  display: flex;
+  gap: 10px;
+  padding: 12px 14px;
+  border-radius: 10px;
+  background: var(--ox-info-bg);
+  color: var(--ox-info-fg);
+  border: 1px solid var(--ox-pk-info-line);
+  font-size: 14px;
+}
+
+.ox-acc-banner > span:last-child {
+  text-wrap: pretty;
+}
+
+.ox-acc-search-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  align-items: center;
+}
+
+.ox-acc-search {
+  flex: 1 1 260px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 44px;
+  padding: 0 12px;
+  border-radius: 8px;
+  border: 1px solid var(--ox-line-control);
+  background: var(--ox-card);
+}
+
+.ox-acc-search > .material-symbols-rounded {
+  color: var(--ox-text-muted);
+}
+
+.ox-acc-search input {
+  flex: 1;
+  min-width: 0;
+  border: 0;
+  outline: 0;
+  background: transparent;
+  font-size: 15px;
+}
+
+.ox-acc-total {
+  font-size: 13px;
+  color: var(--ox-text-muted);
+}
+
+.ox-acc-body {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  align-items: flex-start;
+}
+
+/* ── Организации слева :1003–1019 ── */
+.ox-acc-realms {
+  flex: 1 1 230px;
+  padding: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.ox-acc-group {
+  padding: 6px 10px 8px;
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--ox-text-muted);
+}
+
+.ox-acc-group-clients {
+  margin-top: 8px;
+  padding: 10px 10px 8px;
+  border-top: 1px solid var(--ox-pk-row-line);
+}
+
+.ox-acc-realm-platform,
+.ox-acc-realm {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 48px;
+  padding: 6px 10px;
+  border: 0;
+  border-radius: 8px;
+  text-align: left;
+  cursor: pointer;
+}
+
+.ox-acc-realm-platform {
+  min-height: 52px;
+  background: var(--ox-acc-surface);
+  color: var(--ox-text);
+}
+
+.ox-acc-realm-platform[aria-current='page'] {
+  background: var(--ox-chrome);
+  color: var(--ox-on-accent);
+}
+
+.ox-acc-realm {
+  border-left: 3px solid transparent;
+  background: transparent;
+}
+
+.ox-acc-realm:hover {
+  background: var(--ox-acc-surface);
+}
+
+.ox-acc-realm[aria-current='page'] {
+  border-left-color: var(--ox-accent);
+  background: var(--ox-accent-tint);
+}
+
+.ox-acc-realm-mark {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 8px;
+  background: var(--ox-accent);
+  color: var(--ox-on-accent);
+  font-weight: 600;
+  font-size: 18px;
+  line-height: 1;
+  padding-bottom: 2px;
+}
+
+.ox-acc-realm-icon {
+  color: var(--ox-text-muted);
+}
+
+.ox-acc-realm-tile {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 26px;
+  height: 26px;
+  border-radius: 7px;
+  color: var(--ox-on-accent);
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.ox-acc-realm-text {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  line-height: 1.25;
+}
+
+.ox-acc-realm .ox-acc-realm-name {
+  font-weight: 500;
+}
+
+.ox-acc-realm[aria-current='page'] .ox-acc-realm-name,
+.ox-acc-realm-platform .ox-acc-realm-name {
+  font-weight: 600;
+}
+
+.ox-acc-realm-sub,
+.ox-acc-realm-n {
+  font-size: 12px;
+  color: var(--ox-text-muted);
+}
+
+.ox-acc-realm-n {
+  font-variant-numeric: tabular-nums;
+}
+
+.ox-acc-realm-platform[aria-current='page'] .ox-acc-realm-sub,
+.ox-acc-realm-platform[aria-current='page'] .ox-acc-realm-n {
+  color: var(--ox-acc-dark-sub);
+}
+
+/* ── Центр: шапка организации, список :1020–1130 ── */
+.ox-acc-center {
+  flex: 999 1 480px;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.ox-acc-orghead {
+  padding: 16px 18px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px 16px;
+  align-items: center;
+}
+
+.ox-acc-orghead-icon {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+  background: var(--ox-accent-soft);
+  color: var(--ox-accent);
+}
+
+.ox-acc-orghead-main {
+  flex: 1 1 220px;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.ox-acc-orghead-title {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+}
+
+.ox-acc-orghead-title strong {
+  font-size: 17px;
+  font-weight: 600;
+}
+
+.ox-acc-orghead-line {
+  font-size: 13px;
+  color: var(--ox-text-muted);
+  text-wrap: pretty;
+}
+
+.ox-acc-empty {
+  padding: 28px 16px;
+  text-align: center;
+  color: var(--ox-text-muted);
+}
+
+.ox-acc-row {
+  position: relative;
+}
+
+.ox-acc-row[data-open] {
+  z-index: 6;
+}
+
+.ox-acc-row > button {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 14px;
+  align-items: center;
+  width: 100%;
+  padding: 12px 16px;
+  border: 0;
+  border-top: 1px solid var(--ox-pk-row-line);
+  border-left: 3px solid transparent;
+  border-radius: 0;
+  background: var(--ox-card);
+  text-align: left;
+  cursor: pointer;
+}
+
+.ox-acc-row:first-child > button {
+  border-top-color: transparent;
+  border-radius: 11px 11px 0 0;
+}
+
+.ox-acc-row:last-child > button {
+  border-radius: 0 0 11px 11px;
+}
+
+.ox-acc-row:only-child > button {
+  border-radius: 11px;
+}
+
+.ox-acc-row > button[aria-pressed='true'] {
+  border-left-color: var(--ox-accent);
+  background: var(--ox-accent-tint);
+}
+
+.ox-acc-avatar {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: var(--ox-accent-soft);
+  color: var(--ox-accent);
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.ox-acc-avatar[data-size='44'] {
+  width: 44px;
+  height: 44px;
+  font-size: 15px;
+}
+
+.ox-acc-who {
+  flex: 1 1 200px;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.ox-acc-name {
+  font-weight: 600;
+}
+
+.ox-acc-email {
+  font-size: 12px;
+  color: var(--ox-text-muted);
+  overflow-wrap: anywhere;
+}
+
+.ox-acc-orgs {
+  flex: 1 1 200px;
+  min-width: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 8px;
+  align-items: center;
+}
+
+.ox-acc-count {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px 8px;
+  border-radius: 999px;
+  border: 1px dashed var(--ox-acc-dash);
+  font-size: 12px;
+  color: var(--ox-acc-label);
+  white-space: nowrap;
+}
+
+.ox-acc-status {
+  flex: 0 1 auto;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 10px;
+  align-items: center;
+}
+
+.ox-acc-mfa {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  font-size: 12px;
+  color: var(--ox-warn-fg);
+  white-space: nowrap;
+}
+
+.ox-acc-mfa[data-on] {
+  color: var(--ox-accent);
+}
+
+.ox-acc-last {
+  font-size: 12px;
+  color: var(--ox-text-muted);
+  white-space: nowrap;
+}
+
+/* ── Popover «Организации аккаунта» :1112–1126 ── */
+.ox-acc-pop {
+  position: absolute;
+  top: calc(100% - 8px);
+  left: 64px;
+  width: min(340px, calc(100% - 80px));
+  background: var(--ox-card);
+  border: 1px solid var(--ox-line);
+  border-radius: 12px;
+  box-shadow: var(--ox-shadow-popover);
+  padding: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.ox-acc-pop-title {
+  padding: 4px 8px 6px;
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--ox-text-muted);
+}
+
+.ox-acc-pop > button {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 8px;
+  align-items: center;
+  min-height: 44px;
+  padding: 6px 8px;
+  border: 0;
+  border-radius: 8px;
+  background: var(--ox-card);
+  text-align: left;
+  cursor: pointer;
+}
+
+.ox-acc-pop > button:hover {
+  background: var(--ox-acc-surface);
+}
+
+.ox-acc-pop > button[aria-current='true'] {
+  background: var(--ox-accent-tint);
+}
+
+.ox-acc-pop > button > .material-symbols-rounded {
+  color: var(--ox-text-muted);
+}
+
+.ox-acc-pop-text {
+  flex: 1 1 120px;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  line-height: 1.25;
+}
+
+.ox-acc-pop-org {
+  font-weight: 500;
+}
+
+.ox-acc-pop-state {
+  font-size: 12px;
+  color: var(--ox-text-muted);
+}
+
+.ox-acc-owner {
+  font-size: 12px;
+  color: var(--ox-info-fg);
+}
+
+.ox-acc-pop-footer {
+  padding: 6px 8px 2px;
+  font-size: 12px;
+  color: var(--ox-text-muted);
+}
+
+/* ── Карточка аккаунта :1133–1155 ── */
+.ox-acc-card {
+  flex: 1 1 320px;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.ox-acc-card-head {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+}
+
+.ox-acc-card-name {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.ox-acc .ox-acc-card-name h2 {
+  font-size: 18px;
+}
+
+.ox-acc-card-name > span {
+  font-size: 13px;
+  color: var(--ox-text-muted);
+  overflow-wrap: anywhere;
+}
+
+.ox-acc .ox-acc-card-chip {
+  align-self: flex-start;
+}
+
+.ox-acc-lock-reason {
+  padding: 10px 12px;
+  border-radius: 8px;
+  background: var(--ox-danger-bg);
+  color: var(--ox-danger-fg);
+  font-size: 13px;
+  text-wrap: pretty;
+}
+
+.ox-acc-card-dl {
+  margin: 0;
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 6px 12px;
+  font-size: 13px;
+}
+
+.ox-acc-card-dl dt {
+  color: var(--ox-text-muted);
+}
+
+.ox-acc-card-dl dd {
+  margin: 0;
+}
+
+.ox-acc-card-ms {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.ox-acc-card-ms h3 {
+  margin: 0;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.ox-acc-membership {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 10px;
+  align-items: center;
+  padding: 8px 10px;
+  border-radius: 8px;
+  background: var(--ox-raised);
+  font-size: 13px;
+}
+
+.ox-acc-membership > .material-symbols-rounded {
+  color: var(--ox-text-muted);
+}
+
+.ox-acc-membership-org {
+  flex: 1 1 120px;
+  font-weight: 500;
+}
+
+.ox-acc-multi {
+  margin: 0;
+  font-size: 12px;
+  color: var(--ox-text-muted);
+  text-wrap: pretty;
+}
+
+.ox-acc-card-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding-top: 12px;
+  border-top: 1px solid var(--ox-pk-row-line);
+}
+
+.ox-acc-card-actions .ox-pk-btn {
+  padding: 0 14px;
+}
+
+.ox-acc-card-note {
+  margin: 0;
+  font-size: 12px;
+  color: var(--ox-text-muted);
+  text-wrap: pretty;
+}
+
+/* ── «Ортус · Платформа» :1021–1083 ── */
+.ox-pf-head {
+  background: var(--ox-chrome);
+  color: var(--ox-on-accent);
+  border-radius: 12px;
+  padding: 18px 20px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px 16px;
+  align-items: center;
+}
+
+.ox-pf-mark {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  background: var(--ox-accent);
+  color: var(--ox-on-accent);
+  font-weight: 600;
+  font-size: 28px;
+  line-height: 1;
+  padding-bottom: 4px;
+}
+
+.ox-pf-about {
+  flex: 1 1 260px;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.ox-pf-title {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+}
+
+.ox-pf-title strong {
+  font-size: 18px;
+  font-weight: 600;
+}
+
+.ox-pf-system {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px 8px 2px 6px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 500;
+  line-height: 18px;
+  background: var(--ox-acc-system-bg);
+  color: var(--ox-acc-system-fg);
+}
+
+.ox-pf-text,
+.ox-pf-count {
+  font-size: 13px;
+  color: var(--ox-acc-about);
+}
+
+.ox-pf-text {
+  text-wrap: pretty;
+}
+
+.ox-pf-count {
+  white-space: nowrap;
+}
+
+.ox-pf-warn {
+  display: flex;
+  gap: 8px;
+  padding: 12px 14px;
+  border-radius: 10px;
+  background: var(--ox-warn-bg);
+  border: 1px solid var(--ox-pk-warn-line);
+  color: var(--ox-warn-fg);
+  font-size: 13px;
+}
+
+.ox-pf-warn > span:last-child {
+  text-wrap: pretty;
+}
+
+.ox-pf-roles {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 200px), 1fr));
+  gap: 10px;
+}
+
+.ox-pf-role {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 14px;
+  border-radius: 12px;
+  background: var(--ox-card);
+  border: 1px solid var(--ox-line);
+}
+
+.ox-pf-role-top {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.ox-pf-role-top > .material-symbols-rounded {
+  color: var(--ox-accent);
+}
+
+.ox-pf-role-top strong {
+  flex: 1;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.ox-pf-role-top > span:last-child {
+  font-size: 13px;
+  color: var(--ox-text-muted);
+  font-variant-numeric: tabular-nums;
+}
+
+.ox-pf-role-text {
+  font-size: 12px;
+  color: var(--ox-text-muted);
+  text-wrap: pretty;
+}
+
+.ox-pf-ops {
+  overflow: hidden;
+}
+
+.ox-pf-ops-head {
+  padding: 14px 16px;
+  border-bottom: 1px solid var(--ox-line);
+}
+
+.ox-op-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 14px;
+  align-items: center;
+  padding: 12px 16px;
+  border-top: 1px solid var(--ox-pk-row-line);
+}
+
+.ox-pf-ops-head + .ox-op-row {
+  border-top-color: transparent;
+}
+
+.ox-op-row[data-disabled] {
+  opacity: 0.7;
+}
+
+.ox-op-avatar {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: var(--ox-chrome);
+  color: var(--ox-on-accent);
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.ox-op-main {
+  flex: 1 1 200px;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.ox-op-name {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  align-items: center;
+}
+
+.ox-op-name > span:first-child {
+  font-weight: 600;
+}
+
+.ox-op-me {
+  padding: 0 6px;
+  border-radius: 6px;
+  background: var(--ox-info-bg);
+  color: var(--ox-info-fg);
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.ox-op-line {
+  font-size: 12px;
+  color: var(--ox-text-muted);
+  overflow-wrap: anywhere;
+}
+
+.ox-op-note {
+  font-size: 12px;
+  color: var(--ox-text-muted);
+}
+
+.ox-op-role {
+  flex: 0 1 210px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  font-size: 12px;
+  color: var(--ox-text-muted);
+}
+
+.ox-op-role select {
+  width: 100%;
+  min-height: 40px;
+  padding: 0 10px;
+  border: 1px solid var(--ox-line-control);
+  border-radius: 8px;
+  background: var(--ox-card);
+  font-size: 14px;
+  color: var(--ox-text);
+}
+
+.ox-op-side {
+  flex: 0 1 auto;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 10px;
+  align-items: center;
+}
+
+.ox-op-mfa {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  font-size: 12px;
+  color: var(--ox-warn-fg);
+  white-space: nowrap;
+}
+
+.ox-op-mfa[data-on] {
+  color: var(--ox-accent);
+}
+
+.ox-pf-bottom {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  align-items: flex-start;
+}
+
+.ox-pf-invite,
+.ox-pf-rules {
+  flex: 1 1 320px;
+  padding: 18px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.ox-pf-rules {
+  gap: 10px;
+}
+
+.ox-pf-send {
+  align-self: flex-start;
+}
+
+.ox-pf-rules ul {
+  margin: 0;
+  padding-left: 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-size: 13px;
+  color: var(--ox-acc-label);
+}

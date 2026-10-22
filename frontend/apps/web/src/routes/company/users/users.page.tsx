@@ -45,7 +45,7 @@ type Dialog =
   | { kind: 'card'; memberId: string; over?: 'assign' | 'transfer' }
   | { kind: 'group'; groupId?: string | undefined };
 
-type Search = Partial<Record<'tab' | 'role' | 'assign', string>>;
+type Search = Partial<Record<'tab' | 'role' | 'assign' | 'invite', string>>;
 
 const text = (v: unknown): string | undefined => (typeof v === 'string' && v ? v : undefined);
 
@@ -57,7 +57,13 @@ export default function UsersPage(): ReactElement {
   const navigate = useNavigate();
   const location = useLocation();
   const raw = location.search as Record<string, unknown>;
-  const search: Search = { tab: text(raw.tab), role: text(raw.role), assign: text(raw.assign) };
+  const search: Search = {
+    tab: text(raw.tab),
+    role: text(raw.role),
+    assign: text(raw.assign),
+    // Роутер разбирает ?invite=1 как число: значение — строкой.
+    invite: raw.invite === undefined ? undefined : String(raw.invite),
+  };
   const tab: Tab = TABS.includes(search.tab as Tab) ? (search.tab as Tab) : 'people';
   const data = useAccessData(tenantId);
   const refresh = useRefresh(tenantId);
@@ -114,10 +120,13 @@ export default function UsersPage(): ReactElement {
   const urlRole = (data.roles.data ?? []).some((r) => r.id === search.role && !r.builtIn)
     ? search.role
     : undefined;
+  // W4.61: «Пригласить» со страницы «Подписка и места» (billingVM :3955) — ?invite=1 открывает приглашение.
   const fromUrl: Dialog | null =
     ready && target && target.status !== 'suspended' && canAssign
       ? { kind: 'assign', memberId: target.id, roleId: urlRole }
-      : null;
+      : ready && search.invite === '1' && canInvite
+        ? { kind: 'invite' }
+        : null;
   const shown = dialog ?? fromUrl;
 
   const tabs = [
@@ -194,7 +203,7 @@ export default function UsersPage(): ReactElement {
   const close = () => {
     const was = shown;
     setDialog(null);
-    if (search.assign) go({ tab: 'people' });
+    if (search.assign || search.invite) go({ tab: 'people' });
     refocusIfLost(fallback(was));
   };
 
