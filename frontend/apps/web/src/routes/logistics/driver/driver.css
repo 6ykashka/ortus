@@ -212,6 +212,23 @@
   font-size: 14px;
 }
 
+/* W2.76 (Q-W2.32-12): плашка причины и строка панели без команд — цель Tab (axe scrollable-region-focusable); рамка
+   фокуса только с клавиатуры, вид эталона прежний. */
+.ox-dr-note[tabindex]:focus,
+.ox-dr-act-line[tabindex]:focus {
+  outline: none;
+}
+
+.ox-dr-note[tabindex]:focus-visible,
+.ox-dr-act-line[tabindex]:focus-visible {
+  outline: 2px solid var(--ox-accent);
+  outline-offset: 2px;
+}
+
+.ox-dr-act-line[tabindex] {
+  border-radius: 6px;
+}
+
 .ox-dr-held {
   display: flex;
   flex-wrap: wrap;

@@ -223,11 +223,39 @@ export function PhotoSlot({
   );
 }
 
+/**
+ * Плашка причины, почему команды недоступны (нет связи, пробный период, модуль отключён; :675). W2.76 (Q-W2.32-12):
+ * `tabStop` — команд на странице нет, у прокручиваемой основной области оболочки нет цели Tab (axe
+ * scrollable-region-focusable): плашка сама цель фокуса с именем по тексту причины (как карточка W2.24, дерево W1.54).
+ */
+export function ReasonNote({
+  icon,
+  text,
+  tabStop,
+}: {
+  icon: IconName;
+  text: string;
+  tabStop: boolean;
+}): ReactElement {
+  return (
+    <div
+      role="status"
+      className="ox-dr-note"
+      {...(tabStop ? { tabIndex: 0, 'aria-label': text } : {})}
+    >
+      <Sym name={icon} size={20} />
+      <span style={{ textWrap: 'pretty' }}>{text}</span>
+    </div>
+  );
+}
+
 export interface ActLine {
   key: string;
   tone: 'warn' | 'danger' | 'muted';
   icon: IconName;
   text: string;
+  /** W2.76: команда панели недоступна и других команд нет — строка причины цель Tab (`role="note"`). */
+  tabStop?: boolean;
 }
 
 /** Закреплённая панель главного действия (:839–846). */
@@ -249,7 +277,12 @@ export function ActionBar({
   return (
     <div className="ox-dr-act">
       {lines.map((l) => (
-        <span key={l.key} className="ox-dr-act-line" data-tone={l.tone}>
+        <span
+          key={l.key}
+          className="ox-dr-act-line"
+          data-tone={l.tone}
+          {...(l.tabStop ? { role: 'note', tabIndex: 0, 'aria-label': l.text } : {})}
+        >
           <Icon name={l.icon} size={18} />
           <span>{l.text}</span>
         </span>

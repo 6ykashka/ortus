@@ -213,6 +213,22 @@ describe('«Сегодня»: две машины на выбор (1c, 1d, 1e)',
     await waitFor(() => expect((take('Isuzu Elf') as HTMLButtonElement).disabled).toBe(false));
   });
 
+  // W2.76 (Q-W2.32-12): «Взять эту машину» недоступна у всех машин — у прокручиваемой области нет цели Tab (axe
+  // scrollable-region-focusable); цель — плашка причины с её текстом в имени. Со связью плашки нет.
+  it('офлайн: плашка причины — цель Tab с именем; связь вернулась — плашки нет', async () => {
+    await two();
+    const text = 'Нет связи: выбор машины требует подтверждения сервера.';
+    expect(screen.queryByRole('status', { name: text })).toBeNull();
+    Object.defineProperty(navigator, 'onLine', { configurable: true, value: false });
+    fireEvent(window, new Event('offline'));
+    const note = await screen.findByRole('status', { name: text });
+    expect(note.getAttribute('tabindex')).toBe('0');
+    expect((take('Isuzu Elf') as HTMLButtonElement).disabled).toBe(true);
+    Object.defineProperty(navigator, 'onLine', { configurable: true, value: true });
+    fireEvent(window, new Event('online'));
+    await waitFor(() => expect(screen.queryByRole('status', { name: text })).toBeNull());
+  });
+
   it('офлайн при открытом листе: «Взять и начать осмотр» недоступна с причиной', async () => {
     await two();
     fireEvent.click(take('Isuzu Elf'));

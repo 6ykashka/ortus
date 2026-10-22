@@ -568,3 +568,104 @@ describe('«Сегодня»: состояния', () => {
     await screen.findByText('Р-208 · Северный маршрут', undefined, SLOW);
   });
 });
+
+// W2.76 (Q-W2.32-12): без связи и в «только чтении» все команды смены недоступны — у прокручиваемой основной области
+// оболочки нет цели Tab (axe scrollable-region-focusable на 390/768/1440). Цель — плашка причины (как карточка
+// «Сдача сохранена на устройстве» W2.24 и дерево «Структуры» W1.54); с доступной командой лишней цели нет.
+describe('«Сегодня»: цель Tab, когда команд нет', () => {
+  const OFFLINE = 'Нет связи: бронь требует подтверждения сервера.';
+  /** Цели Tab страницы (без h1 с tabindex=-1 и скрытого поля выбора файла). */
+  const tabStops = (): Element[] =>
+    [
+      ...(screen
+        .getByRole('heading', { level: 1, name: 'Моя смена' })
+        .closest('section')
+        ?.querySelectorAll('button, a[href], input, select, textarea, [tabindex]') ?? []),
+    ].filter(
+      (e) =>
+        !(e as HTMLButtonElement).disabled &&
+        e.getAttribute('tabindex') !== '-1' &&
+        e.getAttribute('type') !== 'file',
+    );
+
+  it('без связи: «Бронь недоступна», плашка причины — цель Tab с именем; связь вернулась — плашки нет', async () => {
+    await open();
+    await screen.findByText('ГАЗель Next', { selector: '.ox-dr-car-model' }, SLOW);
+    expect(document.querySelector('.ox-dr-note')).toBeNull();
+    setOnline(false);
+    const note = await screen.findByRole('status', { name: OFFLINE });
+    expect(note.getAttribute('tabindex')).toBe('0');
+    expect(note.textContent).toContain(OFFLINE);
+    expect(tabStops()).toEqual([note]);
+    setOnline(true);
+    await waitFor(() => expect(screen.queryByRole('status', { name: OFFLINE })).toBeNull());
+    expect(
+      within(card('ГАЗель Next')).getByRole('button', { name: 'Забронировать' }),
+    ).toHaveProperty('disabled', false);
+  });
+
+  it('модуль «Логистика» отключён (только чтение): плашка «Модуль … отключён» — цель Tab', async () => {
+    await open({
+      setup: (s) => {
+        const org = s.state().orgs[ALTA] as unknown as {
+          modules: Record<string, { state: string }>;
+        };
+        const fleetRow = org.modules.fleet;
+        if (fleetRow) fleetRow.state = 'read_only';
+      },
+    });
+    const text = 'Модуль «Логистика» отключён: новые брони недоступны.';
+    const note = await screen.findByRole('status', { name: text }, SLOW);
+    expect(note.getAttribute('tabindex')).toBe('0');
+    expect(
+      within(card('ГАЗель Next')).getByRole('button', { name: 'Бронь недоступна' }),
+    ).toHaveProperty('disabled', true);
+    expect(tabStops()).toEqual([note]);
+  });
+
+  it('без связи с «Обновить список» (конфликт брони): команда есть — плашка не цель Tab', async () => {
+    await open({ scenario: 'reserveVehicle=reservation_overlap' });
+    await screen.findByText('ГАЗель Next', { selector: '.ox-dr-car-model' }, SLOW);
+    fireEvent.click(within(card('ГАЗель Next')).getByRole('button', { name: 'Забронировать' }));
+    const alert = await screen.findByRole('alert', undefined, SLOW);
+    setOnline(false);
+    await screen.findByText(OFFLINE);
+    const note = screen.getByText(OFFLINE).closest('.ox-dr-note');
+    expect(note?.hasAttribute('tabindex')).toBe(false);
+    expect(tabStops()).toEqual([within(alert).getByRole('button', { name: 'Обновить список' })]);
+  });
+
+  it('«Выехать на маршрут» после разрешения менеджера без связи: строка панели — цель Tab', async () => {
+    const a = await open();
+    await reserveGazel();
+    await photos(a);
+    fill('84500', DEP);
+    fireEvent.click(screen.getByRole('button', { name: 'Добавить дефект' }));
+    fireEvent.change(screen.getByLabelText('Где'), { target: { value: 'Стёкла' } });
+    fireEvent.change(screen.getByLabelText(/^Описание/), { target: { value: 'Скол' } });
+    fireEvent.click(screen.getByLabelText('Критический — машина не может выехать'));
+    fireEvent.click(screen.getByRole('button', { name: 'Добавить' }));
+    fireEvent.click(screen.getByRole('button', { name: 'Отправить на проверку менеджеру' }));
+    await screen.findByRole('heading', { level: 2, name: 'Выезд заблокирован' }, SLOW);
+    const t = trip208(a);
+    const d = fleet(a).defects.find((x) => x.id === t.blockingDefectId);
+    expect(
+      await asManager(
+        `/api/v1/tenants/${ALTA}/fleet/defects/${d?.id ?? ''}/decision`,
+        { decision: 'allow_departure' },
+        `"rev-${String(d?.revision)}"`,
+      ),
+    ).toBe(200);
+    await revisit(a);
+    await screen.findByText('Менеджер разрешил выезд: дефект признан некритичным', undefined, SLOW);
+    const go = screen.getByRole('button', { name: 'Выехать на маршрут' });
+    expect(go).toHaveProperty('disabled', false);
+    expect(screen.queryByRole('note')).toBeNull();
+    setOnline(false);
+    const text = 'Нет связи: выезд требует подтверждения сервера. Черновик сохранён на устройстве.';
+    const line = await screen.findByRole('note', { name: text });
+    expect(line.getAttribute('tabindex')).toBe('0');
+    expect(go).toHaveProperty('disabled', true);
+    expect(tabStops()).toEqual([line]);
+  });
+});

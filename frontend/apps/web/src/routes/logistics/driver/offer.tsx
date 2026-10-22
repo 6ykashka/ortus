@@ -27,7 +27,7 @@ import {
   twoLines,
 } from './offer.ts';
 import { OFFER as O } from './offer-texts.ts';
-import { Chip, Sym } from './parts.tsx';
+import { Chip, ReasonNote, Sym } from './parts.tsx';
 
 type Two = Extract<Offer, { state: 'two' }>;
 type One = Extract<Offer, { state: 'one' }>;
@@ -75,16 +75,6 @@ function OfferCard({
       ) : null}
       {children}
     </article>
-  );
-}
-
-/** Почему выбор недоступен (нет связи, пробный период, модуль отключён). */
-function BlockNote({ block }: { block: NonNullable<Block> }): ReactElement {
-  return (
-    <div role="status" className="ox-dr-note">
-      <Sym name={block.icon} size={20} />
-      <span style={{ textWrap: 'pretty' }}>{block.text}</span>
-    </div>
   );
 }
 
@@ -253,7 +243,8 @@ export function OfferChoose({
 
   return (
     <>
-      {block ? <BlockNote block={block} /> : null}
+      {/* Почему выбор недоступен; «Взять эту машину» недоступна у всех машин — плашка цель Tab (W2.76, Q-W2.32-12). */}
+      {block ? <ReasonNote icon={block.icon} text={block.text} tabStop /> : null}
       <div>
         <h2 className="ox-dr-h2">{O.choose}</h2>
         <span className="ox-dr-sub">{lines.sub}</span>

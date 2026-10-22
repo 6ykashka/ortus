@@ -119,6 +119,7 @@ import {
   Chip,
   ConflictAlert,
   Head,
+  ReasonNote,
   Steps,
   Sym,
   useFilePicker,
@@ -186,17 +187,15 @@ function Choose({
   const refreshing = useBusy('refresh');
   const busyAny = useBusy();
   const cars = carCards(ctx.vehicles, ctx.plan, !!blocked);
+  const empty = !cars.some((c) => c.ok);
+  // W2.76 (Q-W2.32-12): брони недоступны, «Обновить список» и «Обновить» нет — плашка причины цель Tab.
+  const commands = !!conflict || empty || cars.some((c) => c.canBook);
   return (
     <>
       {conflict ? (
         <ConflictAlert text={conflict} busy={refreshing} onRefresh={() => void refresh()} />
       ) : null}
-      {blocked ? (
-        <div role="status" className="ox-dr-note">
-          <Sym name={blocked.icon} size={20} />
-          <span style={{ textWrap: 'pretty' }}>{blocked.text}</span>
-        </div>
-      ) : null}
+      {blocked ? <ReasonNote icon={blocked.icon} text={blocked.text} tabStop={!commands} /> : null}
       <div>
         <h2 className="ox-dr-h2">{L.today.choose}</h2>
         <span className="ox-dr-sub">{L.today.chooseHint}</span>
@@ -204,7 +203,7 @@ function Choose({
       {cars.map((c) => (
         <BookCard key={c.id} car={c} full disabled={busyAny} onBook={() => void book(c.id)} />
       ))}
-      {cars.some((c) => c.ok) ? null : (
+      {empty ? (
         <div className="ox-dr-empty">
           <Sym name="no_crash" size={32} />
           <strong style={{ fontWeight: 600 }}>{L.today.noneTitle}</strong>
@@ -216,7 +215,7 @@ function Choose({
             {L.today.refresh}
           </button>
         </div>
-      )}
+      ) : null}
     </>
   );
 }
@@ -1043,9 +1042,18 @@ function DepartOnly({
     ).catch(() => undefined);
     await afterChange(qc, tenantId);
   };
+  // W2.76 (Q-W2.32-12): без связи «Выехать на маршрут» — единственная команда — недоступна: строка причины цель Tab.
   const lines: ActLine[] = online
     ? []
-    : [{ key: 'net', tone: 'muted', icon: 'cloud_off', text: L.notes.offlineDeparture }];
+    : [
+        {
+          key: 'net',
+          tone: 'muted',
+          icon: 'cloud_off',
+          text: L.notes.offlineDeparture,
+          tabStop: true,
+        },
+      ];
   return (
     <>
       {allowed ? (

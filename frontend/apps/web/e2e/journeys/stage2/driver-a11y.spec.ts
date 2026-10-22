@@ -9,11 +9,10 @@
 // области без команд — цель Tab (`tabIndex=0`, видимый `:focus-visible`). Evidence проверяющего:
 // docs/plan/evidence/driver-today/verify/mock/w2.32-r1/r2/logs/offline-axe.txt.
 //
-// Строки — `@known-defect` и `test.fixme` (бриф §7, §10): шаги записаны целиком; без fixme обе падают на `serious()`
-// после перехода в офлайн / при отключённом модуле — «serious scrollable-region-focusable», единственное нарушение, все
-// три проекта (возврат 1, ревью r2, mock слота 3: 6 failed; онлайн-проверка в той же строке зелёная). После исправления
-// страницы — снять fixme;
-// тег `@mock` уже есть, `@known-defect` убрать. draining в mock не моделируется (Q-W2.32-5): в draining у водителя
+// До W2.76 строки были `@known-defect` и `test.fixme`: без fixme обе падали на `serious()` после перехода в офлайн /
+// при отключённом модуле — «serious scrollable-region-focusable», единственное нарушение, все три проекта (возврат 1,
+// ревью r2, mock слота 3: 6 failed; онлайн-проверка в той же строке зелёная). W2.76 исправил страницу (плашка причины —
+// цель Tab), fixme и `@known-defect` сняты, шаги прежние. draining в mock не моделируется (Q-W2.32-5): в draining у водителя
 // с начатой сменой есть её команды (цели Tab), без смены модуль сразу уходит в «только чтение» — его строка ниже.
 import type { Page } from '@playwright/test';
 
@@ -31,10 +30,10 @@ async function serious(axe: Axe, page: Page): Promise<string[]> {
     .map((v) => `${v.impact} ${v.id}`);
 }
 
-test.describe('«Моя смена» — axe без связи и при отключённой «Логистике» @mock @known-defect', () => {
+test.describe('«Моя смена» — axe без связи и при отключённой «Логистике» @mock', () => {
   test.skip(({ harness }) => harness.mode !== 'mock', 'пресеты — сценарный сервер mock');
 
-  test.fixme('без связи: бронь недоступна, axe без serious/critical (прокручиваемая область — цель Tab)', async ({
+  test('без связи: бронь недоступна, axe без serious/critical (прокручиваемая область — цель Tab)', async ({
     app,
     page,
     axe,
@@ -52,7 +51,7 @@ test.describe('«Моя смена» — axe без связи и при отк�
     await page.context().setOffline(false);
   });
 
-  test.fixme('модуль отключён с историей: баннер, бронь недоступна, axe без serious/critical', async ({
+  test('модуль отключён с историей: баннер, бронь недоступна, axe без serious/critical', async ({
     app,
     page,
     axe,
