@@ -344,13 +344,42 @@ func TestInspectionVisibility(t *testing.T) {
 	}
 }
 
-// allInspections pages listInspections of actor in tenant A by one item and returns the ids.
+// W2.78, возврат 1: the owner of tenant A sees every inspection of the parallel tests of the package, so paging his
+// list by one item takes more than 50 pages; allInspections pages to the end and fails only on a cursor that does not
+// advance (TestInspectionVisibility failed with «a.owner: endless pages» once the release tests added their trips).
+func TestInspectionsPageBeyondFifty(t *testing.T) {
+	t.Parallel()
+	e := newEnv(t)
+	driver := e.tc(t, "a.driver-msk1", "a")
+	var seeded []uuid.UUID
+	for range 51 {
+		got, err := e.svc.Submit(t.Context(), driver, e.departure(t, seedTrip(t, "a", "msk1", person("a.driver-msk1"))))
+		if err != nil {
+			t.Fatal(err)
+		}
+		seeded = append(seeded, got.Id)
+	}
+	got := e.allInspections(t, "a.owner")
+	for _, id := range seeded {
+		if !slices.Contains(got, id) {
+			t.Fatalf("a.owner: inspection %s missing from %d paged items", id, len(got))
+		}
+	}
+}
+
+// maxInspectionPages bounds allInspections far above what the parallel tests of the package write to tenant A.
+const maxInspectionPages = 10000
+
+// allInspections pages listInspections of actor in tenant A by one item and returns the ids. The parallel tests share
+// tenant A, so the number of pages is not fixed: the walk fails only when the cursor does not advance.
 func (e env) allInspections(t *testing.T, actor string) []uuid.UUID {
 	t.Helper()
 	var out []uuid.UUID
 	q := inspectionsQuery(1)
-	for range 50 {
-		page, err := e.svc.Inspections(t.Context(), e.tc(t, actor, "a"), q)
+	tc := e.tc(t, actor, "a")
+	seen := map[string]bool{}
+	for range maxInspectionPages {
+		page, err := e.svc.Inspections(t.Context(), tc, q)
 		if err != nil {
 			t.Fatalf("%s: %v", actor, err)
 		}
@@ -360,8 +389,12 @@ func (e env) allInspections(t *testing.T, actor string) []uuid.UUID {
 		if page.NextCursor == nil {
 			return out
 		}
+		if seen[*page.NextCursor] {
+			t.Fatalf("%s: the cursor does not advance after %d items", actor, len(out))
+		}
+		seen[*page.NextCursor] = true
 		q.Cursor = *page.NextCursor
 	}
-	t.Fatalf("%s: endless pages", actor)
+	t.Fatalf("%s: endless pages (%d)", actor, maxInspectionPages)
 	return nil
 }

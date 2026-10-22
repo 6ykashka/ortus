@@ -544,7 +544,8 @@ const releaseUsualSQL = `update sched.reservations r
 // S2-20 rule 6, Q-W2.70-9; return 1: no other vehicle of another company), to its company at the return inspection:
 // its reservation for the trip ends at now, the acceptance of the shift by the company of the trip is not waited for
 // (a return inspection never holds a blocking defect, the decision of a blocking defect of a departure belongs to the
-// company of the vehicle).
+// company of the vehicle). The trip is marked as having released the vehicle (W2.78): another trip of its company may
+// take it to an inspection before the acceptance.
 func releaseUsual(ctx context.Context, tx querier, t target, v vehicleRow, b fleetapi.InspectionCreate, now time.Time) error {
 	if b.Kind != kindReturn || v.unit == t.unit {
 		return nil
@@ -552,8 +553,20 @@ func releaseUsual(ctx context.Context, tx querier, t target, v vehicleRow, b fle
 	if _, err := tx.Exec(ctx, releaseUsualSQL, t.trip, v.id, now); err != nil {
 		return fmt.Errorf("inspections: release the usual vehicle: %w", err)
 	}
+	if _, err := tx.Exec(ctx, markReleasedSQL, t.trip, v.id, now); err != nil {
+		return fmt.Errorf("inspections: mark the usual vehicle released: %w", err)
+	}
 	return nil
 }
+
+// markReleasedSQL marks at $3 trip $1 as having released its vehicle $2 before the acceptance (W2.78, tenant 0027,
+// Q-W2.72-1): trips_active_vehicle_uq no longer keeps the usual vehicle on the trip, so another trip of its company can
+// take it to an inspection while the shift waits for the acceptance. The first return inspection sets the moment, a
+// return after rework keeps it; the scope is that of releaseUsualSQL.
+const markReleasedSQL = `update fleet.trips t set vehicle_released_at = $3
+ where t.id = $1 and t.vehicle_id = $2 and t.vehicle_released_at is null
+   and exists (select 1 from fleet.driver_transfers x where x.trip_id = $1 and x.home_vehicle_id = $2
+                 and x.vehicle_decision = 'approved')`
 
 // moveTrip points the trip at its latest inspection of the kind; a blocking departure sends it to defect_review.
 func moveTrip(ctx context.Context, tx querier, t target, b fleetapi.InspectionCreate, id uuid.UUID, blocking bool) error {

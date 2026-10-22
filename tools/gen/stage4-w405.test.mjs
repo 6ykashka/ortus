@@ -646,7 +646,7 @@ describe('контракт 0.11.0-stage4 (W4.05): дельты, экраны, п
     const readme = readFileSync(abs('api/README.md'), 'utf8');
     assert.match(readme, /## Этап 4, W4\.05 \(`0\.11\.0-stage4`\)/);
     assert.match(readme, /\|\s*tenant\s*\|\s*0026\s*\|\s*`0026_forms_v2\.sql`[^|]*\|\s*W4\.05/);
-    assert.match(readme, /\|\s*tenant\s*\|\s*0027–0039\s*\|/);
+    assert.match(readme, /\|\s*tenant\s*\|\s*00(2[7-9]|3\d)–0039\s*\|/);
   });
 
   it('версия контракта — этап 4, не ниже 0.11.0-stage4 (номер при вливании — интегратор)', () => {
