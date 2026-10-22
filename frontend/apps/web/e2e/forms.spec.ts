@@ -632,19 +632,17 @@ test.describe('forms — «Формы и опросы» @mock', () => {
   });
 });
 
-// Backend «Форм и опросов» — W4.21 (не в main): тег Forms на стенде отвечает 501.
+// Backend «Форм и опросов» — W4.21: тег Forms на стенде.
 test.describe('forms — стенд @stand', () => {
   test.skip(({ harness }) => harness.mode !== 'stand', 'режим stand');
 
   test('владелец на стенде: список и конструктор «Осмотра машины»', async ({ app, page }) => {
-    test.fixme(true, 'W4.21: хендлеры тега Forms (listForms, getForm, getFormDraft) не в main');
     await open(app, page);
     await enter(page, 'Осмотр машины');
     await expect(qrow(page, 'Уровень топлива')).toBeVisible();
   });
 
   test('владелец на стенде: черновик из шаблона и публикация v1', async ({ app, page }) => {
-    test.fixme(true, 'W4.21: createForm, saveFormDraft, publishForm не в main');
     await open(app, page);
     await page.getByRole('button', { name: 'Анкета', exact: true }).click();
     await page.getByRole('button', { name: 'Опубликовать', exact: true }).click();

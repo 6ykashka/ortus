@@ -81,6 +81,11 @@ type Content struct {
 	// The knowledge base (W4.31): the space and the page of Objects get rows of kb, with these requests and rules.
 	KnowledgeRequests []KnowledgeRequestDef
 	KnowledgeRules    []KnowledgeRuleDef
+	// W4.21: the groups, forms, rules and responses of «Формы и опросы» (content_forms.go).
+	FormGroups    []FormGroupDef
+	Forms         []FormDef
+	FormRules     []FormRuleDef
+	FormResponses []FormResponseDef
 }
 
 // KnowledgeRequestDef is an open request of a member of the tenant to read the page of the objects
@@ -291,6 +296,7 @@ var localKinds = []string{
 	refUnit, refRole, refGroup, ObjectProject, ObjectWarehouse, ObjectResource, ObjectSpace, ObjectPage, ObjectFolder,
 	ObjectDoc, ObjectAccount, ObjectChat, ObjectRepairProject,
 	refImport, refVehicle, refFile, refNotification, refRequest, refTask, refAutomation, refKnowledgeRequest, refKnowledgeRule,
+	refFormGroup, refForm, refFormVersion, refFormRule, refFormResponse,
 }
 
 func tenantRef(t string) string              { return refTenant + ":" + t }
@@ -307,6 +313,7 @@ func accountRef(actor string) string         { return refAccount + ":" + actor }
 //	import:<t>.<key> · vehicle:<t>.<key> · file:<t>.<key> · notification:<t>.<key>
 //	subscription_request:<t>.<key>
 //	kb_request:<t>.<key> · kb_rule:<t>.<key>
+//	form_group:<t>.<key> · form:<t>.<key> · form_version:<t>.<key> · form_rule:<t>.<key> · form_response:<t>.<key>
 //	account:<actor> · person:<actor>@<t> · membership:<actor>@<t>
 //	tenant:missing (MissingTenant) — a tenant of no database
 //
@@ -606,7 +613,8 @@ func (t TenantDef) hasLocal(kind, key string) bool {
 		return t.hasRole(key)
 	case refGroup:
 		return t.hasGroup(key)
-	case refImport, refVehicle, refFile, refNotification, refTask, refAutomation, refKnowledgeRequest, refKnowledgeRule:
+	case refImport, refVehicle, refFile, refNotification, refTask, refAutomation, refKnowledgeRequest, refKnowledgeRule,
+		refFormGroup, refForm, refFormVersion, refFormRule, refFormResponse:
 		return t.Content.has(kind, key)
 	case refRequest:
 		return slices.ContainsFunc(t.Requests, func(r RequestDef) bool { return r.Key == key })

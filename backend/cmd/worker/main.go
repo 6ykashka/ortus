@@ -114,7 +114,10 @@ func run(ctx context.Context, args []string, getenv func(string) string, stdout,
 		now: cfg.clock(), log: log})
 	// W4.31: the review dates of the knowledge base, daily at 09:00 in Moscow (knowledge.go).
 	reviewKB, kbErr := kbReviewJob(getenv, listTenants(control), newKnowledge(pools, control, audience, cfg.clock()), log)
-	if err := errors.Join(registerFiles(reg, pools, getenv, log), poolErr, exportErr, kbErr); err != nil { // W1.09
+	// W4.21: «Хранить ответы» of the forms (forms.go).
+	formsSvc, formsSvcErr := newFormsService(pools, getenv, cfg.clock(), log)
+	retainForms, formsErr := formsRetentionJob(getenv, listTenants(control), formsSvc, log)
+	if err := errors.Join(registerFiles(reg, pools, getenv, log), poolErr, exportErr, kbErr, formsSvcErr, formsErr); err != nil { // W1.09
 		fmt.Fprintf(stderr, "worker: configuration: %v\n", err)
 		return exitConfig
 	}
@@ -130,9 +133,10 @@ func run(ctx context.Context, args []string, getenv func(string) string, stdout,
 		p := importPurge{tenants: listTenants(control), purge: pgPurge(pools), now: cfg.clock(), every: cfg.PurgeInterval, log: log}
 		purging.Go(func() { p.run(jobs) })
 	}
-	purging.Go(func() { settlePool(jobs) }) // W2.07: the time of the driver pool (WORKER_POOL_INTERVAL; 0 — returns at once)
-	purging.Go(func() { runExports(jobs) }) // W4.50: the export jobs (WORKER_EXPORT_INTERVAL; 0 — returns at once)
-	purging.Go(func() { reviewKB(jobs) })   // W4.31: WORKER_KB_REVIEW_INTERVAL; 0 — returns at once
+	purging.Go(func() { settlePool(jobs) })  // W2.07: the time of the driver pool (WORKER_POOL_INTERVAL; 0 — returns at once)
+	purging.Go(func() { runExports(jobs) })  // W4.50: the export jobs (WORKER_EXPORT_INTERVAL; 0 — returns at once)
+	purging.Go(func() { reviewKB(jobs) })    // W4.31: WORKER_KB_REVIEW_INTERVAL; 0 — returns at once
+	purging.Go(func() { retainForms(jobs) }) // W4.21: WORKER_FORMS_RETENTION_INTERVAL; 0 — returns at once
 	err = w.Run(ctx)
 	stop()
 	purging.Wait()

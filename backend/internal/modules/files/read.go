@@ -85,7 +85,7 @@ func (s *Service) file(ctx context.Context, tc tenantctx.TenantContext, id uuid.
 		return fileRow{}, problem.New(codeNotFound, "")
 	}
 	ids := s.closedIDs(tc)
-	p, found, err := s.parent(ctx, pool, ids, kind, r.Owner.ID)
+	p, found, err := s.parent(ctx, pool, ids, kind, r.Owner.ID, &r.ID)
 	if err != nil {
 		return fileRow{}, err
 	}

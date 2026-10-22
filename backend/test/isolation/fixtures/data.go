@@ -147,8 +147,10 @@ const (
 //     a system notice to the owner, a trip of Москва-2 to ab.member.
 func contentA() Content {
 	projects, tasks, rules := taskContent(TenantA)
+	groups, forms, formRules, responses := formContent(TenantA)
 	return Content{
 		Projects: projects, Tasks: tasks, Rules: rules, // W4.11 (content_tasks.go)
+		FormGroups: groups, Forms: forms, FormRules: formRules, FormResponses: responses, // W4.21 (content_forms.go)
 		Imports: []ImportDef{
 			{Key: uMsk1, DefaultUnit: uMsk1, Rows: []ImportRowDef{{Person: "a.driver-msk1", Unit: uMsk1}}},
 			{Key: uMsk2, DefaultUnit: uMsk2, Rows: []ImportRowDef{
@@ -178,8 +180,10 @@ func contentA() Content {
 // to b.manager-msk1) and a notification to ab.member — the same account reads one tenant at a time (BR-T2).
 func contentB() Content {
 	projects, tasks, rules := taskContent(TenantB)
+	groups, forms, formRules, responses := formContent(TenantB)
 	return Content{
 		Projects: projects, Tasks: tasks, Rules: rules, // W4.11 (content_tasks.go)
+		FormGroups: groups, Forms: forms, FormRules: formRules, FormResponses: responses, // W4.21 (content_forms.go)
 		Imports:  []ImportDef{{Key: uMsk1, DefaultUnit: uMsk1, Rows: []ImportRowDef{{Person: "b.driver-msk1", Unit: uMsk1}}}},
 		Vehicles: []VehicleDef{{Key: uMsk1, Unit: uMsk1, Plate: "ИЗ-101"}},
 		Files:    slices.Concat([]FileDef{{Key: uMsk1, Vehicle: uMsk1, Name: "Осмотр Москва-1.jpg"}}, taskFiles()),

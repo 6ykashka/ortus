@@ -30,7 +30,8 @@ const (
 
 // contentSteps are the steps of tenantLoader.load that write the content.
 func (l *tenantLoader) contentSteps() []func() error {
-	return []func() error{l.imports, l.vehicles, l.files, l.notifications, l.tasks, l.knowledge} // tasks — W4.11 (content_tasks.go), knowledge — W4.31
+	// tasks — W4.11 (content_tasks.go), knowledge — W4.31, forms — W4.21 (content_forms.go)
+	return []func() error{l.imports, l.vehicles, l.files, l.notifications, l.tasks, l.knowledge, l.forms}
 }
 
 func (l *tenantLoader) contentID(kind, key string) uuid.UUID {

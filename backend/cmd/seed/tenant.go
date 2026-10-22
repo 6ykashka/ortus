@@ -97,32 +97,22 @@ func writeTenant(ctx context.Context, db *sql.DB, td tenantData, objs objectStor
 		on conflict (singleton) do nothing`, td.tenant.id(), td.tenant.sentinel()); err != nil {
 		return fmt.Errorf("tenant_identity: %w", err)
 	}
-	if err = writeUnits(ctx, tx, td); err != nil {
-		return err
-	}
-	if err = writePeople(ctx, tx, td); err != nil {
-		return err
-	}
-	if err = writeAccess(ctx, tx, td); err != nil { // roles, groups, assignments, modules (access.go, W1.04)
-		return err
-	}
-	if err = writeFleet(ctx, tx, td); err != nil { // vehicles (fleet.go, W2.02)
-		return err
-	}
-	if err = writeFleetTrips(ctx, tx, td); err != nil { // trips of the demo (fleet_trips.go, W2.05)
-		return err
-	}
-	if err = writeCalendar(ctx, tx, td); err != nil { // the calendar of resources (calendar.go, W4.40)
-		return err
-	}
-	if err = writeTasks(ctx, tx, td, objs); err != nil { // projects and tasks (tasks.go, W4.11)
-		return err
-	}
-	if err = writeKnowledge(ctx, tx, td); err != nil { // the knowledge base (knowledge.go, W4.31)
-		return err
-	}
-	if err = writeStand(ctx, tx, td); err != nil { // «Логистика» of «Альта» on the stand (stand.go, W2.54)
-		return err
+	tasks := func(ctx context.Context, tx *sql.Tx, td tenantData) error { return writeTasks(ctx, tx, td, objs) }
+	for _, step := range []func(context.Context, *sql.Tx, tenantData) error{
+		writeUnits,
+		writePeople,
+		writeAccess,     // roles, groups, assignments, modules (access.go, W1.04)
+		writeFleet,      // vehicles (fleet.go, W2.02)
+		writeFleetTrips, // trips of the demo (fleet_trips.go, W2.05)
+		writeCalendar,   // the calendar of resources (calendar.go, W4.40)
+		tasks,           // projects and tasks (tasks.go, W4.11)
+		writeKnowledge,  // the knowledge base (knowledge.go, W4.31)
+		writeForms,      // the forms and their responses (forms.go, W4.21)
+		writeStand,      // «Логистика» of «Альта» on the stand (stand.go, W2.54)
+	} {
+		if err = step(ctx, tx, td); err != nil {
+			return err
+		}
 	}
 	return tx.Commit()
 }

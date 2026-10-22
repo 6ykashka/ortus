@@ -218,6 +218,13 @@ func build(ctx context.Context, cfg config, log *slog.Logger, getenv func(string
 		control.Close()
 		return deps{}, nil, err
 	}
+	formsSrv, publicFormsSrv, err := newForms(pools, ev, control, getenv, cfg.AppEnv, log, cfg.clock()) // W4.21 (forms.go)
+	if err != nil {
+		pools.Close()
+		_ = controlSQL.Close()
+		control.Close()
+		return deps{}, nil, err
+	}
 	// W1.05; W1.03 and W1.06 embed theirs (access.go); W1.41: inviteMember sends the letter with the link.
 	access := newAccessServer(pools, ev, control, cfg.clock())
 	access.assignmentsHandler = access.WithInvitationMail( // assignments.Handler (embedded)
@@ -256,12 +263,14 @@ func build(ctx context.Context, cfg config, log *slog.Logger, getenv func(string
 			Modules:  &modulesreg.Server{S: modules},      // W1.08
 			Access:   access,                              // W1.05, W1.06, W1.41 (above)
 			// fleet.go: W2.02 vehicles and reservations under the inspections of W2.04; W2.03…W2.07 wire theirs there.
-			Fleet:     newFleet(pools, ev, control, cfg.clock()),
-			Earnings:  newEarnings(pools, ev, cfg.clock()),                                // W2.06: earnings by a separate route (earnings.go)
-			Data:      newData(pools, ev, moduleStates{S: modules}, exports, cfg.clock()), // W2.08, W4.50: «Данные» (data.go)
-			Calendar:  newCalendar(pools, ev, moduleStates{S: modules}, cfg.clock()),      // W4.40: календарь ресурсов (calendar.go)
-			Tasks:     newTasks(pools, ev, control, cfg.clock()),                          // W4.11: задачи и проекты (tasks.go)
-			Knowledge: newKnowledge(pools, control, ev, cfg.clock()),                      // W4.31: «База знаний» (knowledge.go)
+			Fleet:       newFleet(pools, ev, control, cfg.clock()),
+			Earnings:    newEarnings(pools, ev, cfg.clock()),                                // W2.06: earnings by a separate route (earnings.go)
+			Data:        newData(pools, ev, moduleStates{S: modules}, exports, cfg.clock()), // W2.08, W4.50: «Данные» (data.go)
+			Calendar:    newCalendar(pools, ev, moduleStates{S: modules}, cfg.clock()),      // W4.40: календарь ресурсов (calendar.go)
+			Tasks:       newTasks(pools, ev, control, cfg.clock()),                          // W4.11: задачи и проекты (tasks.go)
+			Knowledge:   newKnowledge(pools, control, ev, cfg.clock()),                      // W4.31: «База знаний» (knowledge.go)
+			Forms:       formsSrv,                                                           // W4.21: «Формы и опросы» (forms.go)
+			PublicForms: publicFormsSrv,                                                     // W4.21: the guest of a public link
 		},
 		replays: map[string]replayFunc{"logout": auth.ReplayLogout},
 		ready:   control.Ping,

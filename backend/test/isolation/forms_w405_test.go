@@ -19,14 +19,14 @@ var formsW405Matrix = matrix.File{
 			Method:  "GET",
 			Path:    "/api/v1/tenants/{tenantId}/forms",
 			Channel: "http",
-			Pending: "W4.21",
 			Rows: []matrix.Row{
 				{
-					Actor:  "a.owner",
-					Params: map[string]string{"tenantId": "tenant:a"},
-					Status: 200,
-					Absent: []string{"tenant:b"},
-					Note:   "список своей организации; объектов тенанта B нет",
+					Actor:   "a.owner",
+					Params:  map[string]string{"tenantId": "tenant:a"},
+					Status:  200,
+					Present: []string{"form:a.insp", "form_group:a.checks"},
+					Absent:  []string{"tenant:b"},
+					Note:    "форма своей организации в своей группе; объектов тенанта B нет",
 				},
 				{
 					Actor:  "b.owner",
@@ -47,7 +47,6 @@ var formsW405Matrix = matrix.File{
 			Method:  "POST",
 			Path:    "/api/v1/tenants/{tenantId}/forms",
 			Channel: "http",
-			Pending: "W4.21",
 			Rows: []matrix.Row{
 				{
 					Actor:  "b.owner",
@@ -70,8 +69,23 @@ var formsW405Matrix = matrix.File{
 			Method:  "GET",
 			Path:    "/api/v1/tenants/{tenantId}/forms/{formId}",
 			Channel: "http",
-			Pending: "W4.21",
 			Rows: []matrix.Row{
+				{
+					Actor:   "a.owner",
+					Params:  map[string]string{"formId": "form:a.insp", "tenantId": "tenant:a"},
+					Status:  200,
+					Present: []string{"form:a.insp", "form_version:a.insp", "form_group:a.checks"},
+					Absent:  []string{"tenant:b"},
+					Note:    "своя форма с действующей версией",
+				},
+				{
+					Actor:  "a.owner",
+					Params: map[string]string{"formId": "form:b.insp", "tenantId": "tenant:a"},
+					Status: 404,
+					Code:   "not_found",
+					Absent: []string{"tenant:b"},
+					Note:   "id организации B в пути организации A — как несуществующий",
+				},
 				{
 					Actor:  "a.owner",
 					Params: map[string]string{"formId": "tenant:missing", "tenantId": "tenant:a"},
@@ -98,7 +112,6 @@ var formsW405Matrix = matrix.File{
 			Method:  "PATCH",
 			Path:    "/api/v1/tenants/{tenantId}/forms/{formId}",
 			Channel: "http",
-			Pending: "W4.21",
 			Rows: []matrix.Row{
 				{
 					Actor:  "b.owner",
@@ -121,8 +134,15 @@ var formsW405Matrix = matrix.File{
 			Method:  "GET",
 			Path:    "/api/v1/tenants/{tenantId}/forms/{formId}/versions",
 			Channel: "http",
-			Pending: "W4.21",
 			Rows: []matrix.Row{
+				{
+					Actor:  "a.owner",
+					Params: map[string]string{"formId": "form:b.insp", "tenantId": "tenant:a"},
+					Status: 404,
+					Code:   "not_found",
+					Absent: []string{"tenant:b"},
+					Note:   "id организации B в пути организации A — как несуществующий",
+				},
 				{
 					Actor:  "a.owner",
 					Params: map[string]string{"formId": "tenant:missing", "tenantId": "tenant:a"},
@@ -149,7 +169,6 @@ var formsW405Matrix = matrix.File{
 			Method:  "POST",
 			Path:    "/api/v1/tenants/{tenantId}/forms/{formId}/versions",
 			Channel: "http",
-			Pending: "W4.21",
 			Rows: []matrix.Row{
 				{
 					Actor:  "b.owner",
@@ -172,7 +191,6 @@ var formsW405Matrix = matrix.File{
 			Method:  "POST",
 			Path:    "/api/v1/tenants/{tenantId}/forms/{formId}/versions/{versionId}/publish",
 			Channel: "http",
-			Pending: "W4.21",
 			Rows: []matrix.Row{
 				{
 					Actor:  "b.owner",
@@ -195,8 +213,15 @@ var formsW405Matrix = matrix.File{
 			Method:  "GET",
 			Path:    "/api/v1/tenants/{tenantId}/forms/{formId}/draft",
 			Channel: "http",
-			Pending: "W4.21",
 			Rows: []matrix.Row{
+				{
+					Actor:  "a.owner",
+					Params: map[string]string{"formId": "form:b.insp", "tenantId": "tenant:a"},
+					Status: 404,
+					Code:   "not_found",
+					Absent: []string{"tenant:b"},
+					Note:   "id организации B в пути организации A — как несуществующий",
+				},
 				{
 					Actor:  "a.owner",
 					Params: map[string]string{"formId": "tenant:missing", "tenantId": "tenant:a"},
@@ -223,7 +248,6 @@ var formsW405Matrix = matrix.File{
 			Method:  "PUT",
 			Path:    "/api/v1/tenants/{tenantId}/forms/{formId}/draft",
 			Channel: "http",
-			Pending: "W4.21",
 			Rows: []matrix.Row{
 				{
 					Actor:  "b.owner",
@@ -246,7 +270,6 @@ var formsW405Matrix = matrix.File{
 			Method:  "DELETE",
 			Path:    "/api/v1/tenants/{tenantId}/forms/{formId}/draft",
 			Channel: "http",
-			Pending: "W4.21",
 			Rows: []matrix.Row{
 				{
 					Actor:  "b.owner",
@@ -267,7 +290,6 @@ var formsW405Matrix = matrix.File{
 			Method:  "POST",
 			Path:    "/api/v1/tenants/{tenantId}/forms/{formId}/publish",
 			Channel: "http",
-			Pending: "W4.21",
 			Rows: []matrix.Row{
 				{
 					Actor:  "b.owner",
@@ -290,8 +312,15 @@ var formsW405Matrix = matrix.File{
 			Method:  "GET",
 			Path:    "/api/v1/tenants/{tenantId}/forms/{formId}/rules",
 			Channel: "http",
-			Pending: "W4.21",
 			Rows: []matrix.Row{
+				{
+					Actor:  "a.owner",
+					Params: map[string]string{"formId": "form:b.insp", "tenantId": "tenant:a"},
+					Status: 404,
+					Code:   "not_found",
+					Absent: []string{"tenant:b"},
+					Note:   "id организации B в пути организации A — как несуществующий",
+				},
 				{
 					Actor:  "a.owner",
 					Params: map[string]string{"formId": "tenant:missing", "tenantId": "tenant:a"},
@@ -318,8 +347,16 @@ var formsW405Matrix = matrix.File{
 			Method:  "POST",
 			Path:    "/api/v1/tenants/{tenantId}/forms/{formId}/rules",
 			Channel: "http",
-			Pending: "W4.21",
 			Rows: []matrix.Row{
+				{
+					Actor:  "a.owner",
+					Params: map[string]string{"formId": "form:b.insp", "tenantId": "tenant:a"},
+					Status: 404,
+					Code:   "not_found",
+					Absent: []string{"tenant:b"},
+					Body:   "{\"kind\":\"notify\",\"trigger\":\"submitted\",\"notify\":{\"memberId\":\"{{tenant:missing}}\"}}",
+					Note:   "id организации B в пути организации A — как несуществующий",
+				},
 				{
 					Actor:  "a.owner",
 					Params: map[string]string{"formId": "tenant:missing", "tenantId": "tenant:a"},
@@ -349,7 +386,6 @@ var formsW405Matrix = matrix.File{
 			Method:  "PATCH",
 			Path:    "/api/v1/tenants/{tenantId}/forms/{formId}/rules/{ruleId}",
 			Channel: "http",
-			Pending: "W4.21",
 			Rows: []matrix.Row{
 				{
 					Actor:  "b.owner",
@@ -372,7 +408,6 @@ var formsW405Matrix = matrix.File{
 			Method:  "DELETE",
 			Path:    "/api/v1/tenants/{tenantId}/forms/{formId}/rules/{ruleId}",
 			Channel: "http",
-			Pending: "W4.21",
 			Rows: []matrix.Row{
 				{
 					Actor:  "b.owner",
@@ -393,8 +428,15 @@ var formsW405Matrix = matrix.File{
 			Method:  "POST",
 			Path:    "/api/v1/tenants/{tenantId}/forms/{formId}/rules/{ruleId}/backfill",
 			Channel: "http",
-			Pending: "W4.21",
 			Rows: []matrix.Row{
+				{
+					Actor:  "a.owner",
+					Params: map[string]string{"formId": "form:a.insp", "ruleId": "form_rule:b.insp-notify", "tenantId": "tenant:a"},
+					Status: 404,
+					Code:   "not_found",
+					Absent: []string{"tenant:b"},
+					Note:   "id организации B в пути организации A — как несуществующий",
+				},
 				{
 					Actor:  "a.owner",
 					Params: map[string]string{"formId": "tenant:missing", "ruleId": "tenant:missing", "tenantId": "tenant:a"},
@@ -421,8 +463,15 @@ var formsW405Matrix = matrix.File{
 			Method:  "GET",
 			Path:    "/api/v1/tenants/{tenantId}/forms/{formId}/responses",
 			Channel: "http",
-			Pending: "W4.21",
 			Rows: []matrix.Row{
+				{
+					Actor:  "a.owner",
+					Params: map[string]string{"formId": "form:b.insp", "tenantId": "tenant:a"},
+					Status: 404,
+					Code:   "not_found",
+					Absent: []string{"tenant:b"},
+					Note:   "id организации B в пути организации A — как несуществующий",
+				},
 				{
 					Actor:  "a.owner",
 					Params: map[string]string{"formId": "tenant:missing", "tenantId": "tenant:a"},
@@ -449,8 +498,16 @@ var formsW405Matrix = matrix.File{
 			Method:  "POST",
 			Path:    "/api/v1/tenants/{tenantId}/forms/{formId}/responses",
 			Channel: "http",
-			Pending: "W4.21",
 			Rows: []matrix.Row{
+				{
+					Actor:  "a.owner",
+					Params: map[string]string{"formId": "form:b.insp", "tenantId": "tenant:a"},
+					Status: 404,
+					Code:   "not_found",
+					Absent: []string{"tenant:b"},
+					Body:   "{\"versionId\":\"{{form_version:b.insp}}\",\"answers\":[]}",
+					Note:   "id организации B в пути организации A — как несуществующий",
+				},
 				{
 					Actor:  "a.owner",
 					Params: map[string]string{"formId": "tenant:missing", "tenantId": "tenant:a"},
@@ -480,8 +537,23 @@ var formsW405Matrix = matrix.File{
 			Method:  "GET",
 			Path:    "/api/v1/tenants/{tenantId}/forms/{formId}/responses/{responseId}",
 			Channel: "http",
-			Pending: "W4.21",
 			Rows: []matrix.Row{
+				{
+					Actor:   "a.owner",
+					Params:  map[string]string{"formId": "form:a.insp", "responseId": "form_response:a.insp-1", "tenantId": "tenant:a"},
+					Status:  200,
+					Present: []string{"form_response:a.insp-1", "form:a.insp"},
+					Absent:  []string{"tenant:b"},
+					Note:    "ответ своей формы",
+				},
+				{
+					Actor:  "a.owner",
+					Params: map[string]string{"formId": "form:a.insp", "responseId": "form_response:b.insp-1", "tenantId": "tenant:a"},
+					Status: 404,
+					Code:   "not_found",
+					Absent: []string{"tenant:b"},
+					Note:   "id организации B в пути организации A — как несуществующий",
+				},
 				{
 					Actor:  "a.owner",
 					Params: map[string]string{"formId": "tenant:missing", "responseId": "tenant:missing", "tenantId": "tenant:a"},
@@ -508,7 +580,6 @@ var formsW405Matrix = matrix.File{
 			Method:  "PATCH",
 			Path:    "/api/v1/tenants/{tenantId}/forms/{formId}/responses/{responseId}",
 			Channel: "http",
-			Pending: "W4.21",
 			Rows: []matrix.Row{
 				{
 					Actor:  "b.owner",
@@ -531,8 +602,15 @@ var formsW405Matrix = matrix.File{
 			Method:  "POST",
 			Path:    "/api/v1/tenants/{tenantId}/forms/{formId}/responses/{responseId}/actions/{ruleId}/retry",
 			Channel: "http",
-			Pending: "W4.21",
 			Rows: []matrix.Row{
+				{
+					Actor:  "a.owner",
+					Params: map[string]string{"formId": "form:a.insp", "responseId": "form_response:b.insp-1", "ruleId": "form_rule:a.insp-notify", "tenantId": "tenant:a"},
+					Status: 404,
+					Code:   "not_found",
+					Absent: []string{"tenant:b"},
+					Note:   "id организации B в пути организации A — как несуществующий",
+				},
 				{
 					Actor:  "a.owner",
 					Params: map[string]string{"formId": "tenant:missing", "responseId": "tenant:missing", "ruleId": "tenant:missing", "tenantId": "tenant:a"},
@@ -559,8 +637,15 @@ var formsW405Matrix = matrix.File{
 			Method:  "GET",
 			Path:    "/api/v1/tenants/{tenantId}/forms/{formId}/summary",
 			Channel: "http",
-			Pending: "W4.21",
 			Rows: []matrix.Row{
+				{
+					Actor:  "a.owner",
+					Params: map[string]string{"formId": "form:b.insp", "tenantId": "tenant:a"},
+					Status: 404,
+					Code:   "not_found",
+					Absent: []string{"tenant:b"},
+					Note:   "id организации B в пути организации A — как несуществующий",
+				},
 				{
 					Actor:  "a.owner",
 					Params: map[string]string{"formId": "tenant:missing", "tenantId": "tenant:a"},
@@ -587,8 +672,15 @@ var formsW405Matrix = matrix.File{
 			Method:  "GET",
 			Path:    "/api/v1/tenants/{tenantId}/forms/{formId}/export",
 			Channel: "http",
-			Pending: "W4.21",
 			Rows: []matrix.Row{
+				{
+					Actor:  "a.owner",
+					Params: map[string]string{"formId": "form:b.insp", "tenantId": "tenant:a"},
+					Status: 404,
+					Code:   "not_found",
+					Absent: []string{"tenant:b"},
+					Note:   "id организации B в пути организации A — как несуществующий",
+				},
 				{
 					Actor:  "a.owner",
 					Params: map[string]string{"formId": "tenant:missing", "tenantId": "tenant:a"},
@@ -615,8 +707,15 @@ var formsW405Matrix = matrix.File{
 			Method:  "GET",
 			Path:    "/api/v1/tenants/{tenantId}/forms/{formId}/fields/q-who/options",
 			Channel: "http",
-			Pending: "W4.21",
 			Rows: []matrix.Row{
+				{
+					Actor:  "a.owner",
+					Params: map[string]string{"formId": "form:b.insp", "tenantId": "tenant:a"},
+					Status: 404,
+					Code:   "not_found",
+					Absent: []string{"tenant:b"},
+					Note:   "id организации B в пути организации A — как несуществующий",
+				},
 				{
 					Actor:  "a.owner",
 					Params: map[string]string{"formId": "tenant:missing", "tenantId": "tenant:a"},
@@ -643,7 +742,6 @@ var formsW405Matrix = matrix.File{
 			Method:  "GET",
 			Path:    "/api/v1/tenants/{tenantId}/form-templates",
 			Channel: "http",
-			Pending: "W4.21",
 			Rows: []matrix.Row{
 				{
 					Actor:  "a.owner",
@@ -671,14 +769,14 @@ var formsW405Matrix = matrix.File{
 			Method:  "GET",
 			Path:    "/api/v1/tenants/{tenantId}/form-groups",
 			Channel: "http",
-			Pending: "W4.21",
 			Rows: []matrix.Row{
 				{
-					Actor:  "a.owner",
-					Params: map[string]string{"tenantId": "tenant:a"},
-					Status: 200,
-					Absent: []string{"tenant:b"},
-					Note:   "список своей организации; объектов тенанта B нет",
+					Actor:   "a.owner",
+					Params:  map[string]string{"tenantId": "tenant:a"},
+					Status:  200,
+					Present: []string{"form_group:a.checks"},
+					Absent:  []string{"tenant:b"},
+					Note:    "группа своей организации; групп тенанта B нет",
 				},
 				{
 					Actor:  "b.owner",
@@ -699,7 +797,6 @@ var formsW405Matrix = matrix.File{
 			Method:  "POST",
 			Path:    "/api/v1/tenants/{tenantId}/form-groups",
 			Channel: "http",
-			Pending: "W4.21",
 			Rows: []matrix.Row{
 				{
 					Actor:  "b.owner",
@@ -722,8 +819,15 @@ var formsW405Matrix = matrix.File{
 			Method:  "DELETE",
 			Path:    "/api/v1/tenants/{tenantId}/form-groups/{groupId}",
 			Channel: "http",
-			Pending: "W4.21",
 			Rows: []matrix.Row{
+				{
+					Actor:  "a.owner",
+					Params: map[string]string{"groupId": "form_group:b.checks", "tenantId": "tenant:a"},
+					Status: 404,
+					Code:   "not_found",
+					Absent: []string{"tenant:b"},
+					Note:   "id организации B в пути организации A — как несуществующий",
+				},
 				{
 					Actor:  "a.owner",
 					Params: map[string]string{"groupId": "tenant:missing", "tenantId": "tenant:a"},

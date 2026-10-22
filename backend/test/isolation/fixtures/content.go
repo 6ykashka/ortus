@@ -25,6 +25,14 @@ func (c Content) keys(kind string) []string {
 		return keysOf(c.KnowledgeRequests, func(x KnowledgeRequestDef) string { return x.Key })
 	case refKnowledgeRule:
 		return keysOf(c.KnowledgeRules, func(x KnowledgeRuleDef) string { return x.Key })
+	case refFormGroup:
+		return keysOf(c.FormGroups, func(x FormGroupDef) string { return x.Key })
+	case refForm, refFormVersion: // the v1 of a form carries the key of its form
+		return keysOf(c.Forms, func(x FormDef) string { return x.Key })
+	case refFormRule:
+		return keysOf(c.FormRules, func(x FormRuleDef) string { return x.Key })
+	case refFormResponse:
+		return keysOf(c.FormResponses, func(x FormResponseDef) string { return x.Key })
 	}
 	return nil
 }
@@ -39,7 +47,10 @@ func keysOf[T any](xs []T, key func(T) string) []string {
 }
 
 // contentKinds are the reference kinds of the content, in the order Refs lists them.
-var contentKinds = []string{refImport, refVehicle, refFile, refNotification, refTask, refAutomation, refKnowledgeRequest, refKnowledgeRule}
+var contentKinds = []string{
+	refImport, refVehicle, refFile, refNotification, refTask, refAutomation, refKnowledgeRequest, refKnowledgeRule,
+	refFormGroup, refForm, refFormVersion, refFormRule, refFormResponse,
+}
 
 // has reports whether the content holds an object of kind with key.
 func (c Content) has(kind, key string) bool { return slices.Contains(c.keys(kind), key) }
@@ -80,6 +91,7 @@ func (c Catalog) validateContent(t TenantDef, fail failFunc) {
 	}
 	c.validateTasks(t, fail) // W4.11
 	validateKnowledge(t, member, fail)
+	c.validateForms(t, fail) // W4.21
 }
 
 // validateKnowledge checks the knowledge base of t: requests and rules need the space and the page of the objects,

@@ -920,7 +920,7 @@ describe('строки изоляции W4.05 (backend/test/isolation/forms_w405
     assert.deepEqual(missing, []);
   });
 
-  it('метод и путь строк — как в контракте; отказ шлюза — без pending, остальное — pending W4.21', () => {
+  it('метод и путь строк — как в контракте; без pending — хендлеры тегов Forms и PublicForms написал W4.21', () => {
     const wrong = [];
     for (const e of endpoints) {
       const o = ops.get(e.op);
@@ -937,8 +937,11 @@ describe('строки изоляции W4.05 (backend/test/isolation/forms_w405
       if (e.method.toLowerCase() !== o.method || !re.test(e.path)) {
         wrong.push(`${e.file}/${e.op}: ${e.method} ${e.path} ≠ ${o.method} ${o.path}`);
       }
-      const want = e.file.endsWith('_gate') ? undefined : 'W4.21';
-      if (e.pending !== want) wrong.push(`${e.file}/${e.op}: pending ${e.pending} ≠ ${want}`);
+      if (e.pending !== undefined) {
+        wrong.push(
+          `${e.file}/${e.op}: pending ${e.pending} — хендлеры тега Forms уже есть (W4.21)`,
+        );
+      }
     }
     assert.deepEqual(wrong, []);
   });

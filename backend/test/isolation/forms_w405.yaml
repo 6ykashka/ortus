@@ -1,13 +1,15 @@
-# Матрица изоляции: «Формы и опросы» контракта 0.11.0-stage4 (W4.05, контрактный PR 4 этапа 4) — до хендлеров W4.21
-# (тег Forms в cmd/api — 501 целиком; pending: 501 или совпавший ответ шлюза; в строгом режиме -tags isolation_pending —
-# красные до хендлера). Формы, черновики, версии, правила, ответы и группы — в области forms.* (форма — область формы:
+# Матрица изоляции: «Формы и опросы» контракта 0.11.0-stage4 (W4.05, контрактный PR 4 этапа 4); хендлеры — W4.21
+# (pending снят). Формы, черновики, версии, правила, ответы и группы — в области forms.* (форма — область формы:
 # организация или подразделение; ответы — ещё «своё» и связь с объектом, Q-W4.00-forms-9); чужая организация — 404
-# (AC-02), без сессии — 401. Строк forms.* в фикстурах нет: положительные строки — списки владельца без другого тенанта,
-# по id — «нет такого объекта» (tenant:missing) — 404 и владельцу. Ключ вопроса — не UUID: в пути — литерал q-who.
-# Команды с If-Match строки не передают If-Match (README, «Цель набора»): у них отказы до предусловия — без сессии 401,
-# чужая организация 404. Отказы шлюза (403) — forms_w405_gate.yaml. W4.21 с фикстурами forms.* тенанта B дописывает
-# строки «id формы, версии, правила, ответа, группы организации B в пути организации A → 404» и «чужой id в теле»
-# (sourceFormId, groupId, versionId, nodeId и tableId правила «в БЗ», projectId и assigneeMemberId правила «задача»).
+# (AC-02), без сессии — 401. Содержимое фикстур (W4.21, content_forms.go): в обеих организациях группа «Проверки»
+# (form_group:<t>.checks), форма «Осмотр машины» всей организации (form:<t>.insp, её v1 — form_version:<t>.insp) с
+# правилом «уведомить» (form_rule:<t>.insp-notify) и принятым ответом водителя Москвы-1 (form_response:<t>.insp-1).
+# Чужой id в пути (id организации B в пути организации A) — 404 и владельцу, как несуществующий; чужой id в теле, который
+# контракт отклоняет как 422 (sourceFormId, groupId, versionId, nodeId правила «в БЗ», projectId и assigneeMemberId
+# правила «задача»; в матрице нет статуса 422), и строки PublicForms (отозванная ссылка, строка индекса без пары в
+# тенанте, токен A не ведёт в B — ссылку делают команды с If-Match) — в forms_w405_body_test.go (возврат 1 W4.21). Ключ
+# вопроса — не UUID: в пути — литерал q-who. Команды с If-Match строки не передают If-Match (README, «Цель набора»): у
+# них отказы до предусловия — без сессии 401, чужая организация 404. Отказы шлюза (403) — forms_w405_gate.yaml.
 # Формат — README.md.
 # После правки: go -C backend generate ./test/isolation
 module: forms_w405
@@ -15,13 +17,13 @@ endpoints:
   - op: listForms
     method: GET
     path: /api/v1/tenants/{tenantId}/forms
-    pending: W4.21
     rows:
       - actor: a.owner
         params: { tenantId: tenant:a }
         status: 200
+        present: [form:a.insp, form_group:a.checks]
         absent: [tenant:b]
-        note: список своей организации; объектов тенанта B нет
+        note: форма своей организации в своей группе; объектов тенанта B нет
       - actor: b.owner
         params: { tenantId: tenant:a }
         status: 404
@@ -33,7 +35,6 @@ endpoints:
   - op: createForm
     method: POST
     path: /api/v1/tenants/{tenantId}/forms
-    pending: W4.21
     rows:
       - actor: b.owner
         params: { tenantId: tenant:a }
@@ -48,8 +49,19 @@ endpoints:
   - op: getForm
     method: GET
     path: /api/v1/tenants/{tenantId}/forms/{formId}
-    pending: W4.21
     rows:
+      - actor: a.owner
+        params: { tenantId: tenant:a, formId: form:a.insp }
+        status: 200
+        present: [form:a.insp, form_version:a.insp, form_group:a.checks]
+        absent: [tenant:b]
+        note: своя форма с действующей версией
+      - actor: a.owner
+        params: { tenantId: tenant:a, formId: form:b.insp }
+        status: 404
+        code: not_found
+        absent: [tenant:b]
+        note: id организации B в пути организации A — как несуществующий
       - actor: a.owner
         params: { tenantId: tenant:a, formId: tenant:missing }
         status: 404
@@ -66,7 +78,6 @@ endpoints:
   - op: updateForm
     method: PATCH
     path: /api/v1/tenants/{tenantId}/forms/{formId}
-    pending: W4.21
     rows:
       - actor: b.owner
         params: { tenantId: tenant:a, formId: tenant:missing }
@@ -81,8 +92,13 @@ endpoints:
   - op: listFormVersions
     method: GET
     path: /api/v1/tenants/{tenantId}/forms/{formId}/versions
-    pending: W4.21
     rows:
+      - actor: a.owner
+        params: { tenantId: tenant:a, formId: form:b.insp }
+        status: 404
+        code: not_found
+        absent: [tenant:b]
+        note: id организации B в пути организации A — как несуществующий
       - actor: a.owner
         params: { tenantId: tenant:a, formId: tenant:missing }
         status: 404
@@ -101,7 +117,6 @@ endpoints:
   - op: createFormVersion
     method: POST
     path: /api/v1/tenants/{tenantId}/forms/{formId}/versions
-    pending: W4.21
     rows:
       - actor: b.owner
         params: { tenantId: tenant:a, formId: tenant:missing }
@@ -116,7 +131,6 @@ endpoints:
   - op: publishFormVersion
     method: POST
     path: /api/v1/tenants/{tenantId}/forms/{formId}/versions/{versionId}/publish
-    pending: W4.21
     rows:
       - actor: b.owner
         params: { tenantId: tenant:a, formId: tenant:missing, versionId: tenant:missing }
@@ -131,8 +145,13 @@ endpoints:
   - op: getFormDraft
     method: GET
     path: /api/v1/tenants/{tenantId}/forms/{formId}/draft
-    pending: W4.21
     rows:
+      - actor: a.owner
+        params: { tenantId: tenant:a, formId: form:b.insp }
+        status: 404
+        code: not_found
+        absent: [tenant:b]
+        note: id организации B в пути организации A — как несуществующий
       - actor: a.owner
         params: { tenantId: tenant:a, formId: tenant:missing }
         status: 404
@@ -149,7 +168,6 @@ endpoints:
   - op: saveFormDraft
     method: PUT
     path: /api/v1/tenants/{tenantId}/forms/{formId}/draft
-    pending: W4.21
     rows:
       - actor: b.owner
         params: { tenantId: tenant:a, formId: tenant:missing }
@@ -164,7 +182,6 @@ endpoints:
   - op: discardFormDraft
     method: DELETE
     path: /api/v1/tenants/{tenantId}/forms/{formId}/draft
-    pending: W4.21
     rows:
       - actor: b.owner
         params: { tenantId: tenant:a, formId: tenant:missing }
@@ -177,7 +194,6 @@ endpoints:
   - op: publishForm
     method: POST
     path: /api/v1/tenants/{tenantId}/forms/{formId}/publish
-    pending: W4.21
     rows:
       - actor: b.owner
         params: { tenantId: tenant:a, formId: tenant:missing }
@@ -192,8 +208,13 @@ endpoints:
   - op: listFormRules
     method: GET
     path: /api/v1/tenants/{tenantId}/forms/{formId}/rules
-    pending: W4.21
     rows:
+      - actor: a.owner
+        params: { tenantId: tenant:a, formId: form:b.insp }
+        status: 404
+        code: not_found
+        absent: [tenant:b]
+        note: id организации B в пути организации A — как несуществующий
       - actor: a.owner
         params: { tenantId: tenant:a, formId: tenant:missing }
         status: 404
@@ -210,8 +231,14 @@ endpoints:
   - op: createFormRule
     method: POST
     path: /api/v1/tenants/{tenantId}/forms/{formId}/rules
-    pending: W4.21
     rows:
+      - actor: a.owner
+        params: { tenantId: tenant:a, formId: form:b.insp }
+        status: 404
+        code: not_found
+        absent: [tenant:b]
+        body: '{"kind":"notify","trigger":"submitted","notify":{"memberId":"{{tenant:missing}}"}}'
+        note: id организации B в пути организации A — как несуществующий
       - actor: a.owner
         params: { tenantId: tenant:a, formId: tenant:missing }
         status: 404
@@ -231,7 +258,6 @@ endpoints:
   - op: updateFormRule
     method: PATCH
     path: /api/v1/tenants/{tenantId}/forms/{formId}/rules/{ruleId}
-    pending: W4.21
     rows:
       - actor: b.owner
         params: { tenantId: tenant:a, formId: tenant:missing, ruleId: tenant:missing }
@@ -246,7 +272,6 @@ endpoints:
   - op: deleteFormRule
     method: DELETE
     path: /api/v1/tenants/{tenantId}/forms/{formId}/rules/{ruleId}
-    pending: W4.21
     rows:
       - actor: b.owner
         params: { tenantId: tenant:a, formId: tenant:missing, ruleId: tenant:missing }
@@ -259,8 +284,13 @@ endpoints:
   - op: backfillFormRule
     method: POST
     path: /api/v1/tenants/{tenantId}/forms/{formId}/rules/{ruleId}/backfill
-    pending: W4.21
     rows:
+      - actor: a.owner
+        params: { tenantId: tenant:a, formId: form:a.insp, ruleId: form_rule:b.insp-notify }
+        status: 404
+        code: not_found
+        absent: [tenant:b]
+        note: id организации B в пути организации A — как несуществующий
       - actor: a.owner
         params: { tenantId: tenant:a, formId: tenant:missing, ruleId: tenant:missing }
         status: 404
@@ -277,8 +307,13 @@ endpoints:
   - op: listFormResponses
     method: GET
     path: /api/v1/tenants/{tenantId}/forms/{formId}/responses
-    pending: W4.21
     rows:
+      - actor: a.owner
+        params: { tenantId: tenant:a, formId: form:b.insp }
+        status: 404
+        code: not_found
+        absent: [tenant:b]
+        note: id организации B в пути организации A — как несуществующий
       - actor: a.owner
         params: { tenantId: tenant:a, formId: tenant:missing }
         status: 404
@@ -295,8 +330,14 @@ endpoints:
   - op: submitFormResponse
     method: POST
     path: /api/v1/tenants/{tenantId}/forms/{formId}/responses
-    pending: W4.21
     rows:
+      - actor: a.owner
+        params: { tenantId: tenant:a, formId: form:b.insp }
+        status: 404
+        code: not_found
+        absent: [tenant:b]
+        body: '{"versionId":"{{form_version:b.insp}}","answers":[]}'
+        note: id организации B в пути организации A — как несуществующий
       - actor: a.owner
         params: { tenantId: tenant:a, formId: tenant:missing }
         status: 404
@@ -316,8 +357,19 @@ endpoints:
   - op: getFormResponse
     method: GET
     path: /api/v1/tenants/{tenantId}/forms/{formId}/responses/{responseId}
-    pending: W4.21
     rows:
+      - actor: a.owner
+        params: { tenantId: tenant:a, formId: form:a.insp, responseId: form_response:a.insp-1 }
+        status: 200
+        present: [form_response:a.insp-1, form:a.insp]
+        absent: [tenant:b]
+        note: ответ своей формы
+      - actor: a.owner
+        params: { tenantId: tenant:a, formId: form:a.insp, responseId: form_response:b.insp-1 }
+        status: 404
+        code: not_found
+        absent: [tenant:b]
+        note: id организации B в пути организации A — как несуществующий
       - actor: a.owner
         params: { tenantId: tenant:a, formId: tenant:missing, responseId: tenant:missing }
         status: 404
@@ -334,7 +386,6 @@ endpoints:
   - op: reviewFormResponse
     method: PATCH
     path: /api/v1/tenants/{tenantId}/forms/{formId}/responses/{responseId}
-    pending: W4.21
     rows:
       - actor: b.owner
         params: { tenantId: tenant:a, formId: tenant:missing, responseId: tenant:missing }
@@ -349,8 +400,19 @@ endpoints:
   - op: retryFormResponseAction
     method: POST
     path: /api/v1/tenants/{tenantId}/forms/{formId}/responses/{responseId}/actions/{ruleId}/retry
-    pending: W4.21
     rows:
+      - actor: a.owner
+        params:
+          {
+            tenantId: tenant:a,
+            formId: form:a.insp,
+            responseId: form_response:b.insp-1,
+            ruleId: form_rule:a.insp-notify,
+          }
+        status: 404
+        code: not_found
+        absent: [tenant:b]
+        note: id организации B в пути организации A — как несуществующий
       - actor: a.owner
         params:
           {
@@ -385,8 +447,13 @@ endpoints:
   - op: getFormResponseSummary
     method: GET
     path: /api/v1/tenants/{tenantId}/forms/{formId}/summary
-    pending: W4.21
     rows:
+      - actor: a.owner
+        params: { tenantId: tenant:a, formId: form:b.insp }
+        status: 404
+        code: not_found
+        absent: [tenant:b]
+        note: id организации B в пути организации A — как несуществующий
       - actor: a.owner
         params: { tenantId: tenant:a, formId: tenant:missing }
         status: 404
@@ -403,8 +470,13 @@ endpoints:
   - op: exportFormResponses
     method: GET
     path: /api/v1/tenants/{tenantId}/forms/{formId}/export
-    pending: W4.21
     rows:
+      - actor: a.owner
+        params: { tenantId: tenant:a, formId: form:b.insp }
+        status: 404
+        code: not_found
+        absent: [tenant:b]
+        note: id организации B в пути организации A — как несуществующий
       - actor: a.owner
         params: { tenantId: tenant:a, formId: tenant:missing }
         status: 404
@@ -421,8 +493,13 @@ endpoints:
   - op: listFormFieldOptions
     method: GET
     path: /api/v1/tenants/{tenantId}/forms/{formId}/fields/q-who/options
-    pending: W4.21
     rows:
+      - actor: a.owner
+        params: { tenantId: tenant:a, formId: form:b.insp }
+        status: 404
+        code: not_found
+        absent: [tenant:b]
+        note: id организации B в пути организации A — как несуществующий
       - actor: a.owner
         params: { tenantId: tenant:a, formId: tenant:missing }
         status: 404
@@ -439,7 +516,6 @@ endpoints:
   - op: listFormTemplates
     method: GET
     path: /api/v1/tenants/{tenantId}/form-templates
-    pending: W4.21
     rows:
       - actor: a.owner
         params: { tenantId: tenant:a }
@@ -457,13 +533,13 @@ endpoints:
   - op: listFormGroups
     method: GET
     path: /api/v1/tenants/{tenantId}/form-groups
-    pending: W4.21
     rows:
       - actor: a.owner
         params: { tenantId: tenant:a }
         status: 200
+        present: [form_group:a.checks]
         absent: [tenant:b]
-        note: список своей организации; объектов тенанта B нет
+        note: группа своей организации; групп тенанта B нет
       - actor: b.owner
         params: { tenantId: tenant:a }
         status: 404
@@ -475,7 +551,6 @@ endpoints:
   - op: createFormGroup
     method: POST
     path: /api/v1/tenants/{tenantId}/form-groups
-    pending: W4.21
     rows:
       - actor: b.owner
         params: { tenantId: tenant:a }
@@ -490,8 +565,13 @@ endpoints:
   - op: deleteFormGroup
     method: DELETE
     path: /api/v1/tenants/{tenantId}/form-groups/{groupId}
-    pending: W4.21
     rows:
+      - actor: a.owner
+        params: { tenantId: tenant:a, groupId: form_group:b.checks }
+        status: 404
+        code: not_found
+        absent: [tenant:b]
+        note: id организации B в пути организации A — как несуществующий
       - actor: a.owner
         params: { tenantId: tenant:a, groupId: tenant:missing }
         status: 404

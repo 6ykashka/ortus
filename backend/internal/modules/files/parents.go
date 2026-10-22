@@ -21,7 +21,12 @@ const HiddenPlaceholder = "{{hidden}}"
 // W2.57, D09: the reservation of a trip in its continuation (a departure photo is new work, as startTrip is).
 const ContinuedPlaceholder = "{{continued}}"
 
-// FilePlaceholder stands in Share.Rows for the id of the file (uuid) whose parent IDPlaceholder is.
+// FilePlaceholder stands in ParentKind.Rows and Share.Rows for the id of the file (uuid) read through the parent
+// IDPlaceholder — in getFile, getFileDownload and listFiles the id of that file in both, never a stand-in; null in
+// ParentKind.Rows while a file is uploaded (there is none yet; an upload checks the parent only, not its shares).
+// A kind whose files are not all open to those who read the parent compares it with HiddenPlaceholder, and the Hider
+// names those files by their ids — W4.21: the files of the answers of a form are read by their uploader and by those
+// who read the answers, not by everyone who sees the form (Q-W4.00-forms-9). W2.79: a share selects its row by the file.
 const FilePlaceholder = "{{file}}"
 
 // ParentKind is a kind of object files attach to (UploadCreate.owner): every file is bound to its parent, and
@@ -32,8 +37,9 @@ type ParentKind struct {
 	ReadAction string    // the action that makes a parent visible (fleet.trips.read)
 	Purposes   []Purpose // purposes that may attach to it
 	// Rows selects the scope row of the parent whose id is IDPlaceholder: unit_id, project_id, person_a, person_b
-	// (uuid) and title (text); no row when the parent does not exist or is closed (HiddenPlaceholder and
-	// ContinuedPlaceholder, optional).
+	// (uuid) and title (text); no row when the parent does not exist or is closed (HiddenPlaceholder,
+	// ContinuedPlaceholder and FilePlaceholder, optional). In listFiles it is a lateral subquery next to files.objects f
+	// and files.upload_sessions s: its own tables take other aliases.
 	Rows string
 	// Shares open some files of a parent to readers who do not read the parent itself (getFile, getFileDownload,
 	// listFiles; an upload checks the parent only).

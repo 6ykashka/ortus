@@ -11,6 +11,7 @@ import (
 
 	"github.com/ortus/ortus-crm/backend/internal/api/catalog"
 	"github.com/ortus/ortus-crm/backend/internal/control/branding"
+	"github.com/ortus/ortus-crm/backend/internal/modules/forms"
 	"github.com/ortus/ortus-crm/backend/internal/platform/httpx"
 	"github.com/ortus/ortus-crm/backend/internal/platform/idem"
 	"github.com/ortus/ortus-crm/backend/internal/platform/notify/realtime"
@@ -84,6 +85,7 @@ func newRouter(d deps) chi.Router {
 	// An unknown route and a known path with another method are the same 404 (12 §5 item 1).
 	r.NotFound(notFound)
 	r.MethodNotAllowed(notFound)
+	r.Use(forms.NullsMiddleware) // W4.21: the explicit nulls of the patches of a form and of a response
 
 	r.Get("/healthz", func(w http.ResponseWriter, _ *http.Request) {
 		httpx.JSON(w, http.StatusOK, map[string]string{"status": "ok"})

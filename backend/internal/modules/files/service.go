@@ -241,19 +241,20 @@ func (s *Service) kindOf(ownerType string) (ParentKind, bool) {
 	return s.Parents.Kind(module, entity)
 }
 
-// parent reads the scope row of a parent for the subject of tc; ok is false when the parent does not exist in this
-// tenant or the Hider closes it to the subject.
-func (s *Service) parent(ctx context.Context, q querier, ids *closedIDs, kind ParentKind, id uuid.UUID) (parentRow, bool, error) {
-	return scopeRow(ctx, q, ids, kind.Key(), kind.own(), id, uuid.Nil)
+// parent reads the scope row of a parent for the subject of tc — for the file it holds (nil: an upload, no file yet);
+// ok is false when the parent does not exist in this tenant or the Hider closes it, or that file, to the subject.
+func (s *Service) parent(ctx context.Context, q querier, ids *closedIDs, kind ParentKind, id uuid.UUID, file *uuid.UUID) (parentRow, bool, error) {
+	return scopeRow(ctx, q, ids, kind.Key(), kind.own(), id, file)
 }
 
-// scopeRow reads the scope row sc selects for the parent id and the file (a share; uuid.Nil for the parent itself)
-// for the subject of tc; ok is false when there is no row.
-func scopeRow(ctx context.Context, q querier, ids *closedIDs, key string, sc scope, id, file uuid.UUID) (parentRow, bool, error) {
+// scopeRow reads the scope row sc selects for the parent id and the file (FilePlaceholder: the file read through the
+// parent, for the parent itself and for a share alike; nil — null, an upload) for the subject of tc; ok is false when
+// there is no row.
+func scopeRow(ctx context.Context, q querier, ids *closedIDs, key string, sc scope, id uuid.UUID, file *uuid.UUID) (parentRow, bool, error) {
 	args, fileExpr := []any{id}, ""
 	if sc.uses(FilePlaceholder) {
 		args = append(args, file)
-		fileExpr = "$2"
+		fileExpr = "$2::uuid"
 	}
 	var hidden, continued string
 	if sc.hides() {
@@ -280,7 +281,7 @@ func scopeRow(ctx context.Context, q querier, ids *closedIDs, key string, sc sco
 func (s *Service) shared(ctx context.Context, q querier, ids *closedIDs, kind ParentKind, id, file uuid.UUID) (parentRow, bool, error) {
 	tc := ids.tc
 	for _, sc := range kind.shares() {
-		p, found, err := scopeRow(ctx, q, ids, kind.Key(), sc, id, file)
+		p, found, err := scopeRow(ctx, q, ids, kind.Key(), sc, id, &file)
 		if err != nil {
 			return parentRow{}, false, err
 		}
@@ -327,7 +328,7 @@ func (s *Service) permitUpload(ctx context.Context, q querier, tc tenantctx.Tena
 	if !ok {
 		return problem.New(codeNotFound, "")
 	}
-	p, found, err := s.parent(ctx, q, s.closedIDs(tc), kind, owner.ID)
+	p, found, err := s.parent(ctx, q, s.closedIDs(tc), kind, owner.ID, nil)
 	switch {
 	case err != nil:
 		return err

@@ -174,12 +174,17 @@ func (w *Worker) record(ctx context.Context, tx pgx.Tx, id uuid.UUID, f scanned,
 			return fmt.Errorf("files: release rejected bytes: %w", err)
 		}
 	}
-	payload := map[string]string{"fileId": id.String(), "purpose": f.purpose, "ownerType": f.ownerType, "ownerId": f.ownerID.String()}
+	payload := filePayload(id, f.purpose, f.ownerType, f.ownerID)
 	if !v.Clean {
 		payload["rejectedCode"] = v.Code
 	}
 	_, err = events.Publish(ctx, tx, events.Event{Type: event, Aggregate: "files.file", AggregateID: id, Payload: payload})
 	return err
+}
+
+// filePayload is the payload of an event of a checked file (EventReady, EventRejected).
+func filePayload(id uuid.UUID, purpose, ownerType string, owner uuid.UUID) map[string]string {
+	return map[string]string{"fileId": id.String(), "purpose": purpose, "ownerType": ownerType, "ownerId": owner.String()}
 }
 
 // Expire closes an upload session whose deadline has come (EventDeadline): the reservation is released and the
