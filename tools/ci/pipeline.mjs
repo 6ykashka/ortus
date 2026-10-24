@@ -52,17 +52,24 @@ export const WIN_DOCKER_HOST = 'npipe:////./pipe/docker_engine';
  * через RYUK_RECONNECTION_TIMEOUT (по умолчанию 10 с) без соединений, а при `-p 4` на нагруженной машине пауза
  * между пакетами (сборка, линковка) бывает дольше. Пакет, нашедший умирающий ryuk, ждёт его 60 с и падает
  * («wait for reaper …: context deadline exceeded») или теряет защиту своих контейнеров («Reaper handshake failed»).
+ *
+ * W2.83: то же на раннере ubuntu GitHub — пакеты одного `go test ./...` делят один ryuk, и пакеты `access/groups`,
+ * `access/roles`, `data/fleet`, `files` падали «wait for reaper» (прогон 40120489895), поэтому таймаут — на любой
+ * платформе. Имя WIN_RYUK_RECONNECTION_TIMEOUT — прежнее (W1.46).
  */
-export const WIN_RYUK_RECONNECTION_TIMEOUT = '5m';
+export const RYUK_RECONNECTION_TIMEOUT = '5m';
+export const WIN_RYUK_RECONNECTION_TIMEOUT = RYUK_RECONNECTION_TIMEOUT;
 const RYUK_TIMEOUT_ENVS = ['RYUK_RECONNECTION_TIMEOUT', 'TESTCONTAINERS_RYUK_RECONNECTION_TIMEOUT'];
 
-/** Окружение Go-тестов с Docker на win32: канал Docker Desktop и таймаут ryuk, если они не заданы. */
+/**
+ * Окружение Go-тестов с Docker, если оно не задано: таймаут ryuk — на любой платформе (W2.83), канал Docker Desktop
+ * — только на win32.
+ */
 function dockerEnv(ctx) {
-  if (ctx.platform !== 'win32') return undefined;
   const env = {};
-  if (!ctx.env?.DOCKER_HOST) env.DOCKER_HOST = WIN_DOCKER_HOST;
+  if (ctx.platform === 'win32' && !ctx.env?.DOCKER_HOST) env.DOCKER_HOST = WIN_DOCKER_HOST;
   if (!RYUK_TIMEOUT_ENVS.some((k) => ctx.env?.[k])) {
-    env.RYUK_RECONNECTION_TIMEOUT = WIN_RYUK_RECONNECTION_TIMEOUT;
+    env.RYUK_RECONNECTION_TIMEOUT = RYUK_RECONNECTION_TIMEOUT;
   }
   return Object.keys(env).length ? env : undefined;
 }
@@ -340,7 +347,7 @@ export const JOBS = [
       {
         id: 'go-integration',
         owner: 'W0.06, W0.09, модули Б',
-        // W1.46: на win32 — -p 4 (ORTUS_GO_TEST_P), DOCKER_HOST и таймаут ryuk, см. dockerEnv.
+        // W1.46: на win32 — -p 4 (ORTUS_GO_TEST_P) и DOCKER_HOST; таймаут ryuk — везде (W2.83), см. dockerEnv.
         plan: (ctx) => {
           if (!ctx.goTagged('integration')) return { skip: 'нет Go-тестов с тегом integration' };
           const p = goTestP(ctx);

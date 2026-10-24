@@ -421,12 +421,21 @@ describe('W1.46: Go-тесты с Docker на Windows (П-10, П-12)', () => {
     }
   });
 
-  it('linux без env: команда прежняя, окружение не меняется', () => {
+  it('linux без env: команда прежняя, без DOCKER_HOST', () => {
     const p = integration({ platform: 'linux' });
     assert.deepEqual(p.cmds, [
       ['go', '-C', 'backend', 'test', '-tags', 'integration', '-count=1', './...'],
     ]);
-    assert.equal(p.env, undefined);
+    assert.equal(p.env?.DOCKER_HOST, undefined);
+  });
+
+  // W2.83: на раннере ubuntu пакеты одного `go test ./...` тоже делят один ryuk — он умирал через 10 с без
+  // соединений, следующий пакет падал «wait for reaper …: context deadline exceeded» (прогон 40120489895).
+  it('на linux ryuk тоже ждёт следующий пакет 5 минут; заданный таймаут (оба имени) не перекрывается', () => {
+    assert.deepEqual(integration({ platform: 'linux' }).env, RYUK);
+    for (const name of ['RYUK_RECONNECTION_TIMEOUT', 'TESTCONTAINERS_RYUK_RECONNECTION_TIMEOUT']) {
+      assert.equal(integration({ platform: 'linux', env: { [name]: '30s' } }).env, undefined, name);
+    }
   });
 
   it('заданный DOCKER_HOST не перекрывается', () => {
@@ -447,7 +456,7 @@ describe('W1.46: Go-тесты с Docker на Windows (П-10, П-12)', () => {
     assert.equal(own.env, undefined);
   });
 
-  it('isolation и concurrency на win32 тоже получают DOCKER_HOST (без -p)', () => {
+  it('isolation и concurrency на win32 тоже получают DOCKER_HOST (без -p), на linux — только таймаут ryuk', () => {
     for (const [j, s] of [
       ['isolation', 'go-isolation'],
       ['isolation', 'go-concurrency'],
@@ -455,7 +464,7 @@ describe('W1.46: Go-тесты с Docker на Windows (П-10, П-12)', () => {
       const p = step(j, s).plan(tagged({ platform: 'win32' }));
       assert.deepEqual(p.env, WIN_ENV, `${j}/${s}`);
       assert.ok(!p.cmds[0].includes('-p'), `${j}/${s}: ${p.cmds[0].join(' ')}`);
-      assert.equal(step(j, s).plan(tagged({ platform: 'linux' })).env, undefined, `${j}/${s}`);
+      assert.deepEqual(step(j, s).plan(tagged({ platform: 'linux' })).env, RYUK, `${j}/${s}`);
     }
   });
 

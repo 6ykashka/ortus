@@ -234,33 +234,56 @@ func wantVehiclesSpec(t *testing.T, s dataapi.DatasetExportCreate) {
 	}
 }
 
+// limiter is the member of TestExportJobChecks: no other test of the package starts exports of him, so his queued or
+// running jobs are the test's own and the limit of 3 is reached by the test alone. W2.83: with a.manager-msk1 the
+// parallel tests of the package (TestExportJobIsQueued, TestExportJobDownload, TestExportJobRevoke) held jobs of the
+// same member in the same database and the third own job already got 429. a.two-roles manages Москва-1 as
+// a.manager-msk1 does (and observes Самара-2).
+const limiter = "a.two-roles"
+
+// activeJobs counts the queued or running jobs of actor in tenant a — what the limit of createDatasetExportJob counts.
+func activeJobs(t *testing.T, actor string) int {
+	t.Helper()
+	var n int
+	if err := dbs["a"].QueryRowContext(t.Context(), `select count(*) from data.export_jobs where requested_by = $1
+		and state in ('queued', 'running')`, person(actor, "a")).Scan(&n); err != nil {
+		t.Fatal(err)
+	}
+	return n
+}
+
 // The checks of createDatasetExportJob: data.export (403), the dataset (404), the fields as queryDataset (422), the view
 // of the job (404 for a view the member does not see) and at most 3 queued or running jobs of a member (429).
 func TestExportJobChecks(t *testing.T) {
 	t.Parallel()
-	e := newEnv(t, "active").exporting("a.manager-msk1", "a.region-msk")
-	_, err := newEnv(t, "active").startJob(t, "a.manager-msk1", tripsSet, `{"select": ["trip"], "filters": [], "sort": []}`)
+	e := newEnv(t, "active").exporting(limiter, "a.region-msk")
+	_, err := newEnv(t, "active").startJob(t, limiter, tripsSet, `{"select": ["trip"], "filters": [], "sort": []}`)
 	wantCode(t, err, problem.CodeForbiddenAction)
-	_, err = e.startJob(t, "a.manager-msk1", "fleet.unknown", `{"select": ["trip"], "filters": [], "sort": []}`)
+	_, err = e.startJob(t, limiter, "fleet.unknown", `{"select": ["trip"], "filters": [], "sort": []}`)
 	wantCode(t, err, problem.CodeNotFound)
-	res, err := e.startJob(t, "a.manager-msk1", tripsSet, `{"select": ["trip", "earnings"], "filters": [], "sort": []}`)
+	res, err := e.startJob(t, limiter, tripsSet, `{"select": ["trip", "earnings"], "filters": [], "sort": []}`)
 	if err != nil {
 		t.Fatal(err)
 	}
 	if v := violationOf(t, res); v.Field != "select[1]" || v.Code != "unknown_field" {
 		t.Fatalf("hidden field %+v", v)
 	}
-	theirs := e.view(t, "a.region-msk", tripsSet, uniq(t, "Чужой вид"), false, `{"filters": [], "sort": []}`)
-	_, err = e.startJob(t, "a.manager-msk1", tripsSet, `{"select": ["trip"], "filters": [], "sort": [], "viewId": "`+theirs.Id.String()+`"}`)
+	// The views stay in the world after the test: a name of the run lets -count repeat the test.
+	run := uuid.NewString()[:8]
+	theirs := e.view(t, "a.region-msk", tripsSet, uniq(t, "Чужой вид "+run), false, `{"filters": [], "sort": []}`)
+	_, err = e.startJob(t, limiter, tripsSet, `{"select": ["trip"], "filters": [], "sort": [], "viewId": "`+theirs.Id.String()+`"}`)
 	wantCode(t, err, problem.CodeNotFound)
-	mine := e.view(t, "a.manager-msk1", tripsSet, uniq(t, "Свой вид"), false, `{"filters": [], "sort": []}`)
-	j := e.job(t, "a.manager-msk1", tripsSet, `{"select": ["trip"], "filters": [], "sort": [], "viewId": "`+mine.Id.String()+`"}`)
+	if n := activeJobs(t, limiter); n != 0 {
+		t.Fatalf("%s has %d queued or running jobs of other tests: the limit needs a member of its own", limiter, n)
+	}
+	mine := e.view(t, limiter, tripsSet, uniq(t, "Свой вид "+run), false, `{"filters": [], "sort": []}`)
+	j := e.job(t, limiter, tripsSet, `{"select": ["trip"], "filters": [], "sort": [], "viewId": "`+mine.Id.String()+`"}`)
 	if j.ViewId == nil || *j.ViewId != mine.Id {
 		t.Fatalf("view of the job %+v", j.ViewId)
 	}
-	e.job(t, "a.manager-msk1", tripsSet, `{"select": ["trip"], "filters": [], "sort": []}`)
-	e.job(t, "a.manager-msk1", tripsSet, `{"select": ["trip"], "filters": [], "sort": []}`)
-	_, err = e.startJob(t, "a.manager-msk1", tripsSet, `{"select": ["trip"], "filters": [], "sort": []}`)
+	e.job(t, limiter, tripsSet, `{"select": ["trip"], "filters": [], "sort": []}`)
+	e.job(t, limiter, tripsSet, `{"select": ["trip"], "filters": [], "sort": []}`)
+	_, err = e.startJob(t, limiter, tripsSet, `{"select": ["trip"], "filters": [], "sort": []}`)
 	wantDetail(t, err, "rate_limited", "Дождитесь завершения начатых выгрузок.")
 	// Another member is not limited by the jobs of the first.
 	e.job(t, "a.region-msk", tripsSet, `{"select": ["trip"], "filters": [], "sort": []}`)
