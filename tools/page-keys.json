@@ -214,6 +214,39 @@
         "frontend/apps/web/src/routes/core/forms/tabs/**"
       ],
       "reference": "Ортус CRM.dc.html"
+    },
+    {
+      "key": "tasks-people",
+      "stage": 4,
+      "paths": [
+        "frontend/apps/web/src/routes/core/tasks/settings/people*",
+        "frontend/apps/web/src/routes/core/tasks/settings/{api.ts,model.ts,texts.ts,settings.css,index.ts,tab.tsx,ui.tsx}"
+      ],
+      "reference": "Задачи и проекты.dc.html"
+    },
+    {
+      "key": "tasks-workflow",
+      "stage": 4,
+      "paths": [
+        "frontend/apps/web/src/routes/core/tasks/settings/workflow*",
+        "frontend/apps/web/src/routes/core/tasks/settings/{api.ts,model.ts,texts.ts,settings.css,index.ts,tab.tsx,ui.tsx}"
+      ],
+      "reference": "Задачи и проекты.dc.html"
+    },
+    {
+      "key": "tasks-automation",
+      "stage": 4,
+      "paths": [
+        "frontend/apps/web/src/routes/core/tasks/settings/automation*",
+        "frontend/apps/web/src/routes/core/tasks/settings/{api.ts,model.ts,texts.ts,settings.css,index.ts,tab.tsx,ui.tsx}"
+      ],
+      "reference": "Задачи и проекты.dc.html"
+    },
+    {
+      "key": "tasks-leads",
+      "stage": 4,
+      "paths": ["frontend/apps/web/src/routes/core/leads/**"],
+      "reference": "Ортус CRM.dc.html"
     }
   ]
 }

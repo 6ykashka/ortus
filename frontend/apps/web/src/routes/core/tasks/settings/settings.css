@@ -1,0 +1,857 @@
+/* W4.13 · Вкладки проекта «Участники», «Процесс», «Автоматизация» по рендеру эталона design-2026-10-19
+   «Задачи и проекты.dc.html» (:197–311; PD-28). Цвета, которых нет в токенах, — литералы эталона. Кнопки без
+   отступов в эталоне (режим согласования) — без своих отступов и здесь (отступы браузера, как у эталона).
+   Возврат 2: хост W4.12 сбрасывает шрифт и цвет полей и кнопок (`.ox-tasks button { font: inherit; color: inherit }`,
+   специфичность 0,1,1) — правила вкладок идут под корнем `.ox-tset` (0,2,0), иначе главная кнопка теряет белый
+   текст (axe color-contrast) и насыщенность, подписи — размер. */
+
+.ox-tset {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  padding: 16px;
+  align-items: flex-start;
+  background: #f4f6f2;
+  border-radius: 0 0 12px 12px;
+}
+
+.ox-tset .ox-tset-main {
+  flex: 1 1 560px;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.ox-tset .ox-tset-main[data-basis='520'] {
+  flex-basis: 520px;
+}
+
+.ox-tset .ox-tset-main[data-gap='10'] {
+  gap: 10px;
+}
+
+.ox-tset .ox-tset-side {
+  flex: 0 1 360px;
+  min-width: 280px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.ox-tset .ox-tset-box {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 14px;
+  background: #ffffff;
+  border: 1px solid #dce2d9;
+  border-radius: 12px;
+}
+
+.ox-tset .ox-tset-box[data-gap='8'] {
+  gap: 8px;
+}
+
+.ox-tset .ox-tset-box[data-gap='6'] {
+  gap: 6px;
+}
+
+.ox-tset .ox-tset-h3 {
+  margin: 0;
+  font-size: 15px;
+  font-weight: 600;
+}
+
+.ox-tset .ox-tset-h3[data-icon] {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.ox-tset .ox-tset-hint {
+  font-size: 12px;
+  color: #5c6964;
+  text-wrap: pretty;
+}
+
+.ox-tset .ox-tset-muted {
+  font-size: 13px;
+  color: #5c6964;
+}
+
+.ox-tset .ox-tset-fill {
+  flex: 1;
+}
+
+.ox-tset .ox-tset-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.ox-tset .ox-tset-chips[data-gap='6'] {
+  gap: 6px;
+}
+
+/* Поля и кнопки */
+.ox-tset .ox-tset-select {
+  min-height: 36px;
+  padding: 0 6px;
+  border: 1px solid #cdd5cb;
+  border-radius: 8px;
+  background: #ffffff;
+}
+
+.ox-tset .ox-tset-select[data-grow='member'] {
+  flex: 1 1 240px;
+  min-height: 40px;
+  padding: 0 8px;
+}
+
+.ox-tset .ox-tset-select[data-grow='role'] {
+  flex: 0 1 220px;
+  min-height: 40px;
+  padding: 0 8px;
+}
+
+.ox-tset .ox-tset-select[data-size='check'] {
+  min-height: 38px;
+  padding: 0 8px;
+}
+
+.ox-tset .ox-tset-select[data-size='xs'] {
+  min-height: 34px;
+}
+
+.ox-tset .ox-tset-input {
+  min-height: 36px;
+  padding: 0 10px;
+  border: 1px solid #cdd5cb;
+  border-radius: 8px;
+}
+
+.ox-tset .ox-tset-input[data-grow='status'] {
+  flex: 1 1 180px;
+}
+
+.ox-tset .ox-tset-input[data-grow='transition'] {
+  flex: 1 1 160px;
+}
+
+.ox-tset .ox-tset-input[data-grow='comment'] {
+  flex: 1 1 220px;
+}
+
+.ox-tset .ox-tset-input[data-size='lg'] {
+  min-height: 38px;
+}
+
+.ox-tset .ox-tset-primary {
+  min-height: 40px;
+  padding: 0 16px;
+  border: 0;
+  border-radius: 8px;
+  background: var(--ox-accent, #1f6b52);
+  color: #ffffff;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.ox-tset .ox-tset-primary[data-size='sm'] {
+  min-height: 36px;
+  padding: 0 14px;
+  font-size: 13px;
+}
+
+.ox-tset .ox-tset-primary[data-size='md'] {
+  min-height: 38px;
+}
+
+.ox-tset .ox-tset-primary[data-self='start'] {
+  align-self: flex-start;
+}
+
+.ox-tset .ox-tset-secondary {
+  min-height: 36px;
+  padding: 0 12px;
+  border: 1px solid #cdd5cb;
+  border-radius: 8px;
+  background: #ffffff;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.ox-tset .ox-tset-outline {
+  min-height: 36px;
+  padding: 0 12px;
+  border: 1px solid var(--ox-accent, #1f6b52);
+  border-radius: 8px;
+  background: #ffffff;
+  color: var(--ox-accent, #1f6b52);
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.ox-tset .ox-tset-danger {
+  min-height: 34px;
+  padding: 0 12px;
+  border: 1px solid #a13a33;
+  border-radius: 8px;
+  background: #ffffff;
+  color: #a13a33;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.ox-tset .ox-tset-del {
+  display: grid;
+  place-items: center;
+  width: 30px;
+  height: 30px;
+  border: 0;
+  border-radius: 8px;
+  background: transparent;
+  color: #a13a33;
+  cursor: pointer;
+}
+
+.ox-tset .ox-tset-del[data-size='32'] {
+  width: 32px;
+  height: 32px;
+}
+
+/* Сегменты «Уровень доступа» и «Режим согласования» */
+.ox-tset .ox-tset-seg {
+  display: flex;
+  gap: 2px;
+  padding: 3px;
+  border-radius: 10px;
+  background: #e5e9e3;
+}
+
+.ox-tset .ox-tset-seg > button {
+  min-height: 32px;
+  padding: 0 10px;
+  border: 0;
+  border-radius: 8px;
+  background: transparent;
+  box-shadow: none;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.ox-tset .ox-tset-seg[data-wide] > button {
+  flex: 1;
+  min-height: 30px;
+  padding: revert;
+}
+
+.ox-tset .ox-tset-seg > button[aria-pressed='true'] {
+  background: #ffffff;
+  box-shadow: 0 1px 2px rgba(28, 42, 38, 0.14);
+  font-weight: 600;
+}
+
+.ox-tset .ox-tset-check-row {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  font-size: 13px;
+  cursor: pointer;
+}
+
+.ox-tset .ox-tset-check-row[data-inline] {
+  display: inline-flex;
+  gap: 6px;
+}
+
+.ox-tset .ox-tset-check-row input {
+  width: 18px;
+  height: 18px;
+  margin: 0;
+  accent-color: #1f6b52;
+}
+
+/* «Участники» :197–231 */
+.ox-tset .ox-tset-acc {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  align-items: center;
+  padding: 12px 14px;
+  border-radius: 12px;
+  background: #ffffff;
+  border: 1px solid #dce2d9;
+}
+
+.ox-tset .ox-tset-acc-text {
+  flex: 1 1 240px;
+  display: flex;
+  flex-direction: column;
+}
+
+.ox-tset .ox-tset-acc-text strong {
+  font-weight: 600;
+}
+
+.ox-tset .ox-tset-acc-text span {
+  font-size: 13px;
+  color: #5c6964;
+}
+
+.ox-tset .ox-tset-add {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.ox-tset .ox-tset-table {
+  background: #ffffff;
+  border: 1px solid #dce2d9;
+  border-radius: 12px;
+  overflow-x: auto;
+}
+
+.ox-tset .ox-tset-mhead,
+.ox-tset .ox-tset-mrow {
+  min-width: 640px;
+  display: grid;
+  grid-template-columns: minmax(0, 1.4fr) 190px minmax(0, 1.4fr) minmax(0, 1.4fr) 36px;
+  gap: 12px;
+}
+
+.ox-tset .ox-tset-mhead {
+  padding: 10px 16px;
+  background: #f8f9f6;
+  border-bottom: 1px solid #dce2d9;
+  font-size: 12px;
+  font-weight: 600;
+  color: #5c6964;
+}
+
+.ox-tset .ox-tset-mrow {
+  align-items: center;
+  padding: 10px 16px;
+  border-bottom: 1px solid #eef1ec;
+}
+
+.ox-tset .ox-tset-who {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  min-width: 0;
+}
+
+.ox-tset .ox-tset-ava {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  background: #2b5479;
+  color: #ffffff;
+  font-size: 11px;
+  font-weight: 600;
+}
+
+.ox-tset .ox-tset-names {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.ox-tset .ox-tset-mname {
+  font-weight: 600;
+}
+
+.ox-tset .ox-tset-rolesel {
+  min-height: 34px;
+  padding: 0 6px;
+  border: 1px solid #cdd5cb;
+  border-radius: 8px;
+  background: #ffffff;
+  font-size: 13px;
+}
+
+.ox-tset .ox-tset-lock {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 34px;
+  padding: 0 10px;
+  border-radius: 8px;
+  background: #f4f6f2;
+  font-size: 13px;
+}
+
+/* Эталон — #8A968F на #F4F6F2 (2,9:1): axe color-contrast считает лигатуру значка текстом, когда не узнаёт её
+   (строка частично вне окна прокрутки таблицы) — цвет подписей эталона #5C6964 (5,3:1; PD-28, allowlist). */
+.ox-tset .ox-tset-lock .material-symbols-rounded {
+  color: #5c6964;
+}
+
+.ox-tset .ox-tset-src {
+  font-size: 13px;
+  color: #1c2a26;
+  text-wrap: pretty;
+}
+
+.ox-tset .ox-tset-src[data-muted] {
+  color: #5c6964;
+}
+
+.ox-tset .ox-tset-caps {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+
+.ox-tset .ox-tset-cap {
+  padding: 1px 8px;
+  border-radius: 999px;
+  background: #ecefea;
+  color: #3a4844;
+  font-size: 12px;
+}
+
+.ox-tset .ox-tset-chk {
+  display: flex;
+  gap: 8px;
+  align-items: flex-start;
+  padding: 10px 12px;
+  border-radius: 10px;
+  background: #e3efe7;
+  color: #1f6b52;
+  font-size: 13px;
+}
+
+.ox-tset .ox-tset-chk[data-ok='false'] {
+  background: #fbedea;
+  color: #7e2e28;
+}
+
+.ox-tset .ox-tset-chk-text {
+  text-wrap: pretty;
+}
+
+.ox-tset .ox-tset-role {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  padding: 6px 0;
+  border-top: 1px solid #eef1ec;
+}
+
+.ox-tset .ox-tset-role strong {
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.ox-tset .ox-tset-role span {
+  font-size: 12px;
+  color: #5c6964;
+}
+
+/* «Процесс» :233–275 */
+.ox-tset .ox-tset-bar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+}
+
+.ox-tset .ox-tset-ver {
+  padding: 2px 10px;
+  border-radius: 999px;
+  background: #e3efe7;
+  color: #1f6b52;
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.ox-tset .ox-tset-ver[data-draft] {
+  background: #faf1dc;
+  color: #7a5214;
+}
+
+.ox-tset .ox-tset-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 6px 6px 10px;
+  border-radius: 10px;
+  border: 1.5px solid;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+/* Эталон — opacity .8 (:240): контраст подписи на фоне «В работе» и «Готово» ниже 4,5:1 (axe color-contrast) —
+   подпись полной насыщенности (PD-28, allowlist/tasks-workflow.md). */
+.ox-tset .ox-tset-scat {
+  font-size: 11px;
+  font-weight: 500;
+}
+
+.ox-tset .ox-tset-sdel {
+  display: grid;
+  place-items: center;
+  width: 22px;
+  height: 22px;
+  border: 0;
+  border-radius: 6px;
+  background: transparent;
+  color: inherit;
+  cursor: pointer;
+}
+
+.ox-tset .ox-tset-inline {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.ox-tset .ox-tset-inline[data-gap='top'] {
+  margin-top: 6px;
+}
+
+.ox-tset .ox-tset-tr {
+  display: grid;
+  grid-template-columns: minmax(0, 1.3fr) minmax(0, 1fr) minmax(0, 1.4fr);
+  gap: 10px;
+  align-items: center;
+  padding: 9px 12px;
+  border: 1.5px solid #e3e8e0;
+  border-radius: 10px;
+  background: #ffffff;
+  text-align: left;
+  cursor: pointer;
+}
+
+.ox-tset .ox-tset-tr[aria-pressed='true'] {
+  border-color: #1f6b52;
+  background: #f1f7f3;
+}
+
+.ox-tset .ox-tset-trname {
+  display: flex;
+  flex-direction: column;
+}
+
+.ox-tset .ox-tset-trname strong {
+  font-weight: 600;
+}
+
+.ox-tset .ox-tset-trname span {
+  font-size: 12px;
+  color: #5c6964;
+}
+
+.ox-tset .ox-tset-trwho {
+  font-size: 13px;
+  color: #3a4844;
+}
+
+.ox-tset .ox-tset-rules {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+
+.ox-tset .ox-tset-rule-chip {
+  padding: 1px 8px;
+  border-radius: 999px;
+  background: #eceaf4;
+  color: #4b4a7a;
+  font-size: 12px;
+}
+
+.ox-tset .ox-tset-trpanel {
+  flex: 0 1 400px;
+  min-width: 300px;
+  display: flex;
+  flex-direction: column;
+  background: #ffffff;
+  border: 1.5px solid var(--ox-accent, #1f6b52);
+  border-radius: 12px;
+}
+
+.ox-tset .ox-tset-trp-head {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 14px 16px;
+  border-bottom: 1px solid #e8ece5;
+}
+
+.ox-tset .ox-tset-trp-head h3 {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.ox-tset .ox-tset-trp-head span {
+  font-size: 13px;
+  color: #5c6964;
+}
+
+.ox-tset .ox-tset-trp-sec {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 12px 16px;
+  border-bottom: 1px solid #e8ece5;
+}
+
+.ox-tset .ox-tset-cap-title {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: #6b7873;
+}
+
+.ox-tset .ox-tset-who-chip {
+  min-height: 30px;
+  padding: 0 10px;
+  border-radius: 999px;
+  border: 1px solid #cdd5cb;
+  background: #ffffff;
+  color: #3a4844;
+  font-size: 13px;
+  cursor: pointer;
+}
+
+.ox-tset .ox-tset-who-chip[aria-pressed='true'] {
+  border-color: #1f6b52;
+  background: #e3efe7;
+  color: #1f6b52;
+}
+
+.ox-tset .ox-tset-field {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-size: 13px;
+  color: #3a4844;
+}
+
+.ox-tset .ox-tset-trp-foot {
+  display: flex;
+  gap: 8px;
+  padding: 12px 16px;
+}
+
+.ox-tset .ox-tset-trp-foot .ox-tset-hint {
+  align-self: center;
+}
+
+/* «Автоматизация» :277–311 */
+.ox-tset .ox-tset-rule {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  align-items: center;
+  padding: 12px 14px;
+  border-radius: 12px;
+  background: #ffffff;
+  border: 1px solid #dce2d9;
+}
+
+.ox-tset .ox-tset-rule-text {
+  flex: 1 1 260px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.ox-tset .ox-tset-rule-text strong {
+  font-weight: 600;
+}
+
+.ox-tset .ox-tset-rule-when {
+  font-size: 13px;
+  color: #3a4844;
+}
+
+.ox-tset .ox-tset-rule-meta {
+  font-size: 12px;
+  color: #5c6964;
+}
+
+.ox-tset .ox-tset-empty {
+  padding: 16px;
+  border-radius: 12px;
+  background: #ffffff;
+  border: 1px dashed #c3ccc1;
+  color: #5c6964;
+}
+
+.ox-tset .ox-tset-clause {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+  font-size: 13px;
+}
+
+.ox-tset .ox-tset-clause b {
+  font-size: 11px;
+  letter-spacing: 0.08em;
+}
+
+.ox-tset .ox-tset-clause b[data-tone='when'] {
+  color: #2b5479;
+}
+
+.ox-tset .ox-tset-clause b[data-tone='if'] {
+  color: #7a5214;
+}
+
+.ox-tset .ox-tset-clause b[data-tone='then'] {
+  color: #1f6b52;
+}
+
+.ox-tset .ox-tset-err {
+  font-size: 13px;
+  color: #a13a33;
+}
+
+.ox-tset .ox-tset-runs {
+  flex: 0 1 360px;
+  min-width: 280px;
+}
+
+.ox-tset .ox-tset-run {
+  display: flex;
+  gap: 8px;
+  align-items: flex-start;
+  padding: 8px 0;
+  border-top: 1px solid #eef1ec;
+}
+
+.ox-tset .ox-tset-run-ic {
+  font-size: 19px;
+}
+
+.ox-tset .ox-tset-run-ic.ox-tset-tone-ok {
+  color: #1f6b52;
+}
+
+.ox-tset .ox-tset-run-ic.ox-tset-tone-muted {
+  color: #6b7873;
+}
+
+.ox-tset .ox-tset-run-ic.ox-tset-tone-error {
+  color: #a13a33;
+}
+
+.ox-tset .ox-tset-run-text {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.ox-tset .ox-tset-run-text > span:first-child {
+  font-size: 13px;
+  text-wrap: pretty;
+}
+
+.ox-tset .ox-tset-run-meta {
+  font-size: 12px;
+  color: #5c6964;
+}
+
+/* Телефон (< 640 px): цели нажатия не меньше 44 px (verification-protocol §1.3, PD-28). Кнопки — видимая высота
+   эталона, область нажатия расширена псевдоэлементом по вертикали; поля и списки — высотой 44 px (allowlist). */
+@media (max-width: 639px) {
+  .ox-tset .ox-tset-seg > button,
+  .ox-tset .ox-tset-del,
+  .ox-tset .ox-tset-sdel,
+  .ox-tset .ox-tset-who-chip,
+  .ox-tset .ox-tset-primary,
+  .ox-tset .ox-tset-secondary,
+  .ox-tset .ox-tset-outline,
+  .ox-tset .ox-tset-danger,
+  .ox-tset .ox-tset-tr {
+    position: relative;
+  }
+
+  .ox-tset .ox-tset-seg > button::after,
+  .ox-tset .ox-tset-who-chip::after,
+  .ox-tset .ox-tset-primary::after,
+  .ox-tset .ox-tset-secondary::after,
+  .ox-tset .ox-tset-outline::after,
+  .ox-tset .ox-tset-danger::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: -7px;
+    bottom: -7px;
+  }
+
+  /* Псевдоэлемент отсчитывается от внутреннего края рамки (1 px) — запас на рамку. */
+  .ox-tset .ox-tset-who-chip::after,
+  .ox-tset .ox-tset-secondary::after,
+  .ox-tset .ox-tset-outline::after,
+  .ox-tset .ox-tset-danger::after {
+    top: -8px;
+    bottom: -8px;
+  }
+
+  .ox-tset .ox-tset-del::after,
+  .ox-tset .ox-tset-sdel::after {
+    content: '';
+    position: absolute;
+    inset: -11px -7px;
+  }
+
+  .ox-tset .ox-tset-select,
+  .ox-tset .ox-tset-select[data-grow],
+  .ox-tset .ox-tset-select[data-size],
+  .ox-tset .ox-tset-input,
+  .ox-tset .ox-tset-input[data-size],
+  .ox-tset .ox-tset-rolesel {
+    min-height: 44px;
+  }
+
+  /* Метка флажка — цель нажатия целиком (клик по метке переключает флажок): не ниже 44 px. */
+  .ox-tset .ox-tset-check-row {
+    min-height: 44px;
+  }
+
+  .ox-tset .ox-tset-inline,
+  .ox-tset .ox-tset-add {
+    row-gap: 10px;
+  }
+
+  .ox-tset .ox-tset-chips,
+  .ox-tset .ox-tset-chips[data-gap] {
+    row-gap: 14px;
+  }
+}
+
+/* Загрузка: полосы-скелетон (состояния загрузки в эталоне нет — Q-70). Без корня `.ox-tset`: Skeleton вкладок
+   (`ui.tsx`) показывает и старая доска «Заявки» (`leads.page.tsx`), она вне вкладок. */
+.ox-tset-skel {
+  flex: 1 1 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.ox-tset-skel-line {
+  height: 40px;
+  border-radius: 10px;
+  background: #e8ece5;
+  animation: ox-pulse 1.4s ease-in-out infinite;
+}

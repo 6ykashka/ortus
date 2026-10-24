@@ -1,0 +1,694 @@
+/* W4.13 · Старая доска «Заявки» по рендеру эталона design-2026-10-19 («Ортус CRM.dc.html» :1600–1705; PD-28).
+   Цвета, которых нет в токенах, — литералы эталона. */
+
+.ox-leads {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.ox-leads-back {
+  align-self: flex-start;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  min-height: 32px;
+  padding: 0 8px;
+  border: 0;
+  border-radius: 8px;
+  background: transparent;
+  color: #5c6964;
+  cursor: pointer;
+}
+
+.ox-leads-head {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  align-items: flex-end;
+  justify-content: space-between;
+}
+
+.ox-leads-titles {
+  flex: 1 1 260px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.ox-leads-crumb {
+  font-size: 13px;
+  color: #5c6964;
+}
+
+.ox-leads-h1 {
+  margin: 0;
+  font-size: 26px;
+  line-height: 1.2;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+}
+
+.ox-leads-projs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.ox-leads-projs > button {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 36px;
+  padding: 0 12px;
+  border-radius: 999px;
+  border: 1px solid #cdd5cb;
+  background: #ffffff;
+  color: #1c2a26;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.ox-leads-projs > button[aria-pressed='true'] {
+  background: #1c2a26;
+  color: #ffffff;
+}
+
+.ox-leads-note {
+  margin: 0;
+  font-size: 13px;
+  color: #5c6964;
+  max-width: 720px;
+  text-wrap: pretty;
+}
+
+.ox-leads-tools {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+}
+
+.ox-leads-views {
+  display: flex;
+  border: 1px solid #cdd5cb;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.ox-leads-views > button {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 40px;
+  padding: 0 12px;
+  border: 0;
+  background: #ffffff;
+  color: #1c2a26;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.ox-leads-views > button[aria-pressed='true'] {
+  background: var(--ox-accent);
+  color: #ffffff;
+}
+
+.ox-leads-who {
+  min-height: 40px;
+  padding: 0 10px;
+  border-radius: 8px;
+  border: 1px solid #cdd5cb;
+  background: #ffffff;
+  font-size: 14px;
+}
+
+.ox-leads-new {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 40px;
+  padding: 0 14px;
+  border-radius: 8px;
+  border: 1px solid var(--ox-accent);
+  background: var(--ox-accent);
+  color: #ffffff;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+/* Нет воронок :1618 */
+.ox-leads-empty {
+  background: #ffffff;
+  border: 1px solid #dce2d9;
+  border-radius: 12px;
+  padding: 36px 20px;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+
+.ox-leads-empty .material-symbols-rounded {
+  color: #5c6964;
+}
+
+.ox-leads-empty strong {
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.ox-leads-empty span:last-child {
+  font-size: 13px;
+  color: #5c6964;
+  max-width: 440px;
+  text-wrap: pretty;
+}
+
+/* Форма «Задача» :1620–1627 */
+.ox-leads-form {
+  background: #ffffff;
+  border: 1px solid #dce2d9;
+  border-radius: 12px;
+  padding: 16px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  align-items: flex-end;
+}
+
+.ox-leads-form label {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-size: 13px;
+  font-weight: 500;
+  color: #3a4844;
+}
+
+.ox-leads-form label[data-grow='title'] {
+  flex: 3 1 260px;
+}
+
+.ox-leads-form label[data-grow='assignee'] {
+  flex: 1 1 160px;
+}
+
+.ox-leads-form label[data-grow='priority'] {
+  flex: 1 1 130px;
+}
+
+.ox-leads-form label[data-grow='due'] {
+  flex: 1 1 140px;
+}
+
+.ox-leads-form input,
+.ox-leads-form select {
+  width: 100%;
+  min-height: 44px;
+  padding: 8px 12px;
+  border: 1px solid #cdd5cb;
+  border-radius: 8px;
+  background: #ffffff;
+  font-size: 16px;
+}
+
+.ox-leads-form label[data-grow='title'] input {
+  border-width: 1.5px;
+}
+
+.ox-leads-form input[data-err] {
+  border-color: #a13a33;
+}
+
+.ox-leads-form-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.ox-leads-form-actions button {
+  min-height: 44px;
+  padding: 0 14px;
+  border-radius: 8px;
+  border: 1px solid #cdd5cb;
+  background: #ffffff;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.ox-leads-form-actions button[data-variant='primary'] {
+  padding: 0 16px;
+  border-color: var(--ox-accent);
+  background: var(--ox-accent);
+  color: #ffffff;
+}
+
+.ox-leads-err {
+  width: 100%;
+  font-size: 13px;
+  color: #a13a33;
+}
+
+/* Доска и карточка :1630–1701 */
+.ox-leads-content {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  align-items: flex-start;
+}
+
+.ox-leads-main {
+  flex: 999 1 560px;
+  min-width: 0;
+}
+
+.ox-leads-board {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 220px), 1fr));
+  gap: 10px;
+  align-items: start;
+}
+
+.ox-leads-col {
+  background: #ecefea;
+  border-radius: 12px;
+  padding: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  min-width: 0;
+}
+
+.ox-leads-colhead {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 2px 4px;
+}
+
+.ox-leads-colhl {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+  font-weight: 600;
+  font-size: 13px;
+  white-space: nowrap;
+}
+
+.ox-leads-count {
+  font-size: 12px;
+  color: #5c6964;
+}
+
+.ox-leads-card {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  width: 100%;
+  padding: 10px 12px;
+  border-radius: 10px;
+  border: 1.5px solid #e3e8e0;
+  background: #ffffff;
+  text-align: left;
+  cursor: pointer;
+}
+
+.ox-leads-card[aria-pressed='true'] {
+  border-color: var(--ox-accent);
+}
+
+.ox-leads-ctop {
+  display: flex;
+  justify-content: space-between;
+  gap: 6px;
+  font-size: 12px;
+  color: #5c6964;
+}
+
+.ox-leads-id {
+  font-family: 'IBM Plex Mono', monospace;
+}
+
+.ox-leads-prio {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  font-weight: 500;
+}
+
+.ox-leads-ctitle {
+  font-weight: 500;
+  text-wrap: pretty;
+}
+
+.ox-leads-cmeta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 10px;
+  font-size: 12px;
+  color: #5c6964;
+}
+
+[data-overdue] {
+  color: #a13a33;
+}
+
+/* Эталон — #6B7873 на фоне колонки #ECEFEA: 3,97:1 < 4,5:1 (axe color-contrast) — цвет подписей эталона #5C6964
+   (4,95:1; PD-60, allowlist/tasks-leads.md). */
+.ox-leads-colempty {
+  padding: 14px 4px;
+  text-align: center;
+  font-size: 12px;
+  color: #5c6964;
+}
+
+.ox-leads-list {
+  background: #ffffff;
+  border: 1px solid #dce2d9;
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.ox-leads-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 14px;
+  align-items: center;
+  width: 100%;
+  padding: 12px 16px;
+  border: 0;
+  border-top: 1px solid #e8ece5;
+  border-left: 3px solid transparent;
+  background: #ffffff;
+  text-align: left;
+  cursor: pointer;
+}
+
+.ox-leads-row:first-child {
+  border-top-color: transparent;
+}
+
+.ox-leads-row[aria-pressed='true'] {
+  border-left-color: var(--ox-accent);
+  background: var(--ox-accent-tint);
+}
+
+.ox-leads-row .ox-leads-id {
+  flex: 0 0 52px;
+  font-size: 12px;
+  color: #5c6964;
+}
+
+.ox-leads-rtitle {
+  flex: 3 1 220px;
+  min-width: 0;
+  font-weight: 500;
+  text-wrap: pretty;
+}
+
+.ox-leads-rchip {
+  flex: 0 0 120px;
+}
+
+.ox-leads-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 1px 8px 1px 6px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+.ox-leads-rwho {
+  flex: 1 1 130px;
+  font-size: 13px;
+  color: #3a4844;
+}
+
+.ox-leads-rprio {
+  flex: 0 0 90px;
+  font-size: 13px;
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+}
+
+.ox-leads-rdue {
+  flex: 0 0 70px;
+  font-size: 13px;
+  color: #5c6964;
+}
+
+.ox-leads-noitems {
+  padding: 24px;
+  text-align: center;
+  color: #5c6964;
+  font-size: 13px;
+}
+
+.ox-leads-aside {
+  flex: 1 1 320px;
+  min-width: 0;
+  background: #ffffff;
+  border: 1px solid #dce2d9;
+  border-radius: 12px;
+  padding: 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.ox-leads-ahead {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+  align-items: flex-start;
+}
+
+.ox-leads-atitle {
+  min-width: 0;
+}
+
+.ox-leads-sid {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 12px;
+  color: #5c6964;
+}
+
+.ox-leads-atitle h2 {
+  margin: 2px 0 0;
+  font-size: 17px;
+  font-weight: 600;
+  text-wrap: pretty;
+}
+
+.ox-leads-close {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 36px;
+  height: 36px;
+  border: 0;
+  border-radius: 8px;
+  background: transparent;
+  cursor: pointer;
+}
+
+.ox-leads-props {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 6px 12px;
+  font-size: 13px;
+}
+
+.ox-leads-plabel {
+  color: #5c6964;
+}
+
+.ox-leads-due {
+  color: #1c2a26;
+}
+
+.ox-leads-due[data-overdue] {
+  color: #a13a33;
+}
+
+.ox-leads-sec {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.ox-leads-sec[data-gap='4'] {
+  gap: 4px;
+}
+
+.ox-leads-stitle {
+  font-size: 12px;
+  font-weight: 600;
+  color: #5c6964;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.ox-leads-moves {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.ox-leads-move {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  min-height: 40px;
+  padding: 0 12px;
+  border-radius: 8px;
+  border: 1px solid #cdd5cb;
+  background: #ffffff;
+  color: #1c2a26;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.ox-leads-move[data-fwd] {
+  border-color: var(--ox-accent);
+  background: var(--ox-accent);
+  color: #ffffff;
+}
+
+.ox-leads-ro {
+  font-size: 12px;
+  color: #7a5214;
+}
+
+.ox-leads-check {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  min-height: 40px;
+  cursor: pointer;
+}
+
+.ox-leads-check input {
+  width: 18px;
+  height: 18px;
+  accent-color: var(--ox-accent);
+  margin: 0;
+}
+
+.ox-leads-check span {
+  color: #1c2a26;
+}
+
+.ox-leads-check span[data-done] {
+  text-decoration: line-through;
+  color: #6b7873;
+}
+
+.ox-leads-hist {
+  gap: 8px;
+  border-top: 1px solid #e8ece5;
+  padding-top: 12px;
+}
+
+.ox-leads-hline {
+  display: flex;
+  flex-direction: column;
+  font-size: 13px;
+  color: #1c2a26;
+}
+
+.ox-leads-hline[data-system] {
+  color: #5c6964;
+}
+
+.ox-leads-hline > span:first-child {
+  text-wrap: pretty;
+}
+
+.ox-leads-hmeta {
+  font-size: 12px;
+  color: #6b7873;
+}
+
+.ox-leads-hempty {
+  font-size: 13px;
+  color: #6b7873;
+}
+
+.ox-leads-cmt {
+  display: flex;
+  gap: 8px;
+}
+
+.ox-leads-cmt input {
+  flex: 1;
+  min-width: 0;
+  min-height: 44px;
+  padding: 8px 12px;
+  border: 1px solid #cdd5cb;
+  border-radius: 8px;
+  background: #ffffff;
+  font-size: 16px;
+}
+
+.ox-leads-cmt button {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  border-radius: 8px;
+  border: 1px solid var(--ox-accent);
+  background: var(--ox-accent);
+  color: #ffffff;
+  cursor: pointer;
+}
+
+.ox-leads-foot {
+  margin: 0;
+  font-size: 12px;
+  color: #5c6964;
+  text-wrap: pretty;
+}
+
+/* Телефон (< 640 px): цели нажатия не меньше 44 px (verification-protocol §1.3, PD-28) — область нажатия кнопок
+   расширена псевдоэлементом по вертикали, список «Исполнитель», вид и строка чек-листа — 44 px (allowlist). */
+@media (max-width: 639px) {
+  .ox-leads-back,
+  .ox-leads-projs > button,
+  .ox-leads-new,
+  .ox-leads-close,
+  .ox-leads-move {
+    position: relative;
+  }
+
+  .ox-leads-back::after,
+  .ox-leads-projs > button::after,
+  .ox-leads-new::after,
+  .ox-leads-close::after,
+  .ox-leads-move::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: -6px;
+    bottom: -6px;
+  }
+
+  .ox-leads-who,
+  .ox-leads-views > button,
+  .ox-leads-check {
+    min-height: 44px;
+  }
+
+  .ox-leads-moves,
+  .ox-leads-projs {
+    row-gap: 8px;
+  }
+}
