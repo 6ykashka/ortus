@@ -454,7 +454,7 @@ test.describe('company-branding — «Оформление» @mock', () => {
     expect((await serious()).map((v) => v.id)).toEqual([]);
   });
 
-  test('раскладка: 390 — одна колонка без горизонтальной прокрутки, 1440 — две колонки', async ({
+  test('раскладка: 390 — одна колонка без горизонтальной прокрутки, 768 — предпросмотр под формой, 1440 — две колонки', async ({
     app,
     page,
   }) => {
@@ -463,12 +463,22 @@ test.describe('company-branding — «Оформление» @mock', () => {
     expect(await noHorizontalScroll(page)).toBe(true);
     const card = await main(page).locator('.ox-br-main').boundingBox();
     const aside = await preview(page).boundingBox();
-    if (!card || !aside) throw new Error('нет колонок');
+    const cols = await main(page).locator('.ox-br-cols').boundingBox();
+    if (!card || !aside || !cols) throw new Error('нет колонок');
+    // W2.81: колонки — flex-wrap эталона (:1261, основы 3 1 480px и 2 1 340px, gap 16): рядом, только если в строке
+    // помещаются 480 + 16 + 340 px. На 768 строка уже (≈ 650 px) — предпросмотр под формой, как в эталоне.
+    const wide = cols.width >= 480 + 16 + 340;
+    // Возврат W2.81 №1: ожидание по ширине окна, а не только по ширине колонок реализации — сузившиеся на 1440
+    // колонки (< 836 px) не принимаются за одну колонку эталона.
+    const viewport = page.viewportSize()?.width ?? 0;
+    expect(wide, `ширина .ox-br-cols ${cols.width} px на ${viewport}`).toBe(viewport >= 1024);
     if (phone(page)) {
       expect(aside.y).toBeGreaterThan(card.y + card.height - 1);
       await expect(page.getByRole('navigation', { name: 'Навигация', exact: true })).toBeVisible();
-    } else {
+    } else if (wide) {
       expect(aside.x).toBeGreaterThan(card.x + card.width - 1);
+    } else {
+      expect(aside.y).toBeGreaterThan(card.y + card.height - 1);
     }
     await expect(panel(page)).toHaveCSS('position', 'sticky');
     await expect(save(page)).toHaveCSS('min-height', '44px');

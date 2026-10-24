@@ -1,6 +1,8 @@
 // Самотест e2e-харнесса (W0.05, бриф §6(б)): эталон design/ открывается фикстурой reference(file)
 // офлайн, панель демонстрации дословно, часы и локаль, labels, эталон ↔ эталон = 0 пикселей,
 // сверка с другим экраном краснеет «по делу». Проекты mobile-390 и desktop-1440.
+import { fileURLToPath } from 'node:url';
+
 import {
   FLAG_LABEL,
   MAIN_REFERENCE,
@@ -12,13 +14,21 @@ import {
 } from '@ortus/e2e-kit';
 
 import { expect, test } from '../fixtures/index.ts';
+import { hitHeight, openPage } from '../modules.helpers.ts';
 import { matchReference } from './match-reference.ts';
+
+const ICON_FONT = fileURLToPath(
+  new URL('../../../../packages/tokens/fonts/material-symbols-rounded.woff2', import.meta.url),
+);
 
 test.describe('самотест харнесса', { tag: '@harness' }, () => {
   test('H1 reference(file) открывает каждый .dc.html эталона', async ({
     reference,
     referenceFiles,
   }) => {
+    // W2.81: в снимке эталона 19.10 23 файла .dc.html (в design-stage-1 и design-stage-2 — 6): обход всех не
+    // укладывается в 30 с и одним воркером (27–31 с). Время теста — по числу файлов, не меньше таймаута проекта.
+    test.setTimeout(Math.max(test.info().timeout, referenceFiles.length * 4_000));
     expect(referenceFiles).toContain(MAIN_REFERENCE);
     expect(referenceFiles.length).toBeGreaterThanOrEqual(5);
     for (const file of referenceFiles) {
@@ -137,5 +147,34 @@ test.describe('самотест харнесса', { tag: '@harness' }, () => {
     const t = await app('/t/t-alta/home', { persona: 'owner' });
     await expect(t.root).toBeVisible();
     await expect(t.page.locator('html')).toHaveAttribute('data-e2e-persona', 'owner');
+  });
+
+  // W2.81, возврат 1: под нагрузкой шрифт иконок (Material Symbols) догружается после отрисовки страницы; до него
+  // лигатура «drive_file_move» — широкий текст, он перекрывает центр соседней кнопки-иконки, и hitHeight
+  // «Переименовать «Север Логистик»» на 390 давал 23 px вместо 44 (company-structure.spec.ts:412). Задержка шрифта
+  // догружающийся шрифт воспроизводится без нагрузки: после открытия страницы тот же шрифт подключается ещё раз
+  // по адресу, который отвечает через 3 с (последняя @font-face семейства главнее, font-display: block —
+  // лигатуры раскладываются запасным шрифтом). hitHeight меряет только после загрузки шрифтов.
+  test('H12 hitHeight меряет после загрузки шрифта иконок', async ({ app, page, harness }) => {
+    test.skip(harness.mode !== 'mock', 'сид «Структуры» — сценарный сервер mock');
+    test.skip((page.viewportSize()?.width ?? 0) >= 640, 'кнопки-иконки «Структуры» — на телефоне');
+    await page.route('**/__w281-slow-icons.woff2', async (route) => {
+      await new Promise((r) => setTimeout(r, 3_000));
+      await route.fulfill({ path: ICON_FONT, contentType: 'font/woff2' });
+    });
+    await openPage(app, page, 'structure');
+    const rename = page.getByRole('button', { name: 'Переименовать «Север Логистик»' });
+    await expect(rename).toBeVisible();
+    await page.evaluate(() => {
+      const face = new FontFace(
+        'Material Symbols Rounded',
+        "url('/__w281-slow-icons.woff2') format('woff2')",
+        { style: 'normal', weight: '100 700', display: 'block' },
+      );
+      document.fonts.add(face);
+      face.load().catch(() => undefined);
+    });
+    expect(await page.evaluate(() => document.fonts.status)).toBe('loading');
+    expect(await hitHeight(rename)).toBeGreaterThanOrEqual(44);
   });
 });

@@ -1,6 +1,7 @@
 // W1.23 · e2e страницы `company-roles`: «Пользователи и роли» → «Роли» — список ролей, RoleEditor, «Итоговые
 // права роли», сохранение с ревизией (эталон design-stage-1, «Ортус CRM.dc.html» :334–398, roleEditorVM
 // :3168–3216; чек-лист docs/plan/analysis/02-company.md §10 #28–#33; #28а — out-of-stage до этапа 5, §6.12).
+import type { runAxe } from '@ortus/e2e-kit';
 import type { Page } from '@playwright/test';
 
 import { expect, test } from './fixtures/index.ts';
@@ -20,6 +21,27 @@ const summary = (page: Page) => page.getByRole('complementary', { name: 'Ито�
 const sw = (page: Page, name: string) =>
   page.getByRole('switch', { name: `Доступ роли к модулю ${name}` });
 
+/**
+ * Перезагрузка страницы: вкладка «Роли» остаётся выбранной (?tab=roles). Повторная загрузка приложения (скелетон
+ * «Загружаем рабочее пространство…» до /me/context) ограничена таймаутом теста, как первый вход в openApp
+ * (e2e-kit), а не 5 с ожидания expect (W2.81, возврат 2); выбор вкладки проверяется обычным ожиданием.
+ */
+async function expectRolesTabAfterReload(page: Page) {
+  await page.reload();
+  await tab(page, 'Роли').waitFor();
+  await expect(tab(page, 'Роли')).toHaveAttribute('aria-selected', 'true');
+}
+
+/**
+ * Нарушения axe serious/critical на странице — после загрузки шрифтов (W2.81, возврат 2): пока шрифт значков
+ * грузится, axe проверяет лигатуру значка как текст запасным шрифтом (color-contrast на #8A968F).
+ */
+async function seriousOf(page: Page, axe: typeof runAxe) {
+  await page.evaluate(() => document.fonts.ready.then(() => undefined));
+  const r = await axe(page);
+  return r.violations.filter((v) => v.impact === 'serious' || v.impact === 'critical');
+}
+
 test.describe('company-roles — роли и редактор @mock', () => {
   test.skip(({ harness }) => harness.mode !== 'mock', 'сценарии — сценарный сервер mock');
 
@@ -28,8 +50,19 @@ test.describe('company-roles — роли и редактор @mock', () => {
     await tab(page, 'Роли').click();
     await expect(page).toHaveURL(/\?tab=roles/);
     await expect(roleButton(page, 'Менеджер логистики')).toBeVisible();
-    await page.reload();
-    await expect(tab(page, 'Роли')).toHaveAttribute('aria-selected', 'true');
+    await expectRolesTabAfterReload(page);
+  });
+
+  // W2.81, возврат 2: у проверяющего строка выше на 390 под нагрузкой красная в 3 из 4 прогонов — после
+  // page.reload() скелетон «Загружаем рабочее пространство…» держится дольше 5 с ожидания expect. Медленный
+  // /me/context (6 с) воспроизводит это без нагрузки.
+  test('после перезагрузки рабочее пространство грузится дольше 5 с — вкладка «Роли» сохраняется', async ({
+    app,
+    page,
+  }) => {
+    await openUsers(app, page, { query: 'tab=roles' });
+    await devScenario(page, { scenario: 'getMyContext=delay=6000', once: true });
+    await expectRolesTabAfterReload(page);
   });
 
   test('список ролей: чипы и «{n} разрешений · назначена: {k}», выбрана «Менеджер логистики» (#28)', async ({
@@ -46,7 +79,7 @@ test.describe('company-roles — роли и редактор @mock', () => {
     );
     await expect(roleButton(page, 'Менеджер логистики')).toHaveAttribute('aria-pressed', 'true');
     await expect(roleButton(page, 'Водитель')).toHaveText(
-      'ВодительШаблон 16 разрешений · назначена: 1',
+      'ВодительШаблон 17 разрешений · назначена: 1',
     );
     await expect(roleButton(page, 'Руководитель проекта')).toHaveText(
       'Руководитель проектаШаблон 12 разрешений · назначена: 1',
@@ -135,7 +168,8 @@ test.describe('company-roles — роли и редактор @mock', () => {
 
   // Возврат 16.10 №1 (blocker): у «Водителя» задачи и календарь выданы частично — переименование их не снимает,
   // выключение «Задач» не выключает «Календарь»; включённый модуль — «{k ≥ 1} из {M}» (roleEditorVM :3182).
-  test('«Водитель»: переименование сохраняет все 16 ключей; «Задачи» выключаются отдельно', async ({
+  // W2.81: ключей 17 — W2.71 (S2-20, D-35) добавил в шаблон fleet.reservations.choose (выбор предложенной машины).
+  test('«Водитель»: переименование сохраняет все 17 ключей; «Задачи» выключаются отдельно', async ({
     app,
     page,
   }) => {
@@ -143,9 +177,15 @@ test.describe('company-roles — роли и редактор @mock', () => {
     await roleButton(page, 'Водитель').click();
     await expect(editor(page).getByLabel('Название роли')).toHaveValue('Водитель');
     const keys = summary(page).locator('code');
-    await expect(keys).toHaveCount(16);
+    await expect(keys).toHaveCount(17);
     const before = await keys.allTextContents();
-    expect(before).toEqual(expect.arrayContaining(['tasks.read', 'calendar.availability.read']));
+    expect(before).toEqual(
+      expect.arrayContaining([
+        'tasks.read',
+        'calendar.availability.read',
+        'fleet.reservations.choose',
+      ]),
+    );
     await expect(editor(page)).not.toContainText(/\b0 из \d+ действий/);
     await expect(sw(page, 'Календарь')).toHaveAttribute('aria-checked', 'true');
     await sw(page, 'Задачи').click();
@@ -156,7 +196,7 @@ test.describe('company-roles — роли и редактор @mock', () => {
     await editor(page).getByLabel('Название роли').fill('Водитель рейса');
     await page.getByRole('button', { name: 'Сохранить роль' }).click();
     await expect(toast(page)).toHaveText('Роль «Водитель рейса» сохранена');
-    await expect(roleButton(page, 'Водитель рейса')).toContainText('16 разрешений');
+    await expect(roleButton(page, 'Водитель рейса')).toContainText('17 разрешений');
     expect(await keys.allTextContents()).toEqual(before);
   });
 
@@ -255,10 +295,33 @@ test.describe('company-roles — роли и редактор @mock', () => {
   test('axe: список и редактор без serious/critical', async ({ app, page, axe }) => {
     await openUsers(app, page, { query: 'tab=roles' });
     await expect(editor(page)).toBeVisible();
-    const r = await axe(page);
-    expect(r.violations.filter((v) => v.impact === 'serious' || v.impact === 'critical')).toEqual(
-      [],
-    );
+    expect(await seriousOf(page, axe)).toEqual([]);
+  });
+
+  // W2.81, возврат 2: у проверяющего строка выше на 1440 красная в 2 из 3 прогонов под нагрузкой — color-contrast
+  // serious на значках модулей (div[data-module] .material-symbols-rounded): пока шрифт значков грузится, axe
+  // проверяет лигатуру («local_shipping») как текст запасным шрифтом. Догружающийся шрифт воспроизводится без
+  // нагрузки: файл шрифта значков отвечает через 8 с. Маршрут — на контексте: запросы страницы проходят через
+  // service worker MSW, page.route их не перехватывает.
+  test('axe: список и редактор — проверка после загрузки шрифта значков', async ({
+    app,
+    page,
+    axe,
+  }) => {
+    // Строка нарочно ждёт 8 с шрифта значков плюс axe: под нагрузкой не укладывается в 30 с.
+    test.slow();
+    await page.context().route('**/material-symbols-rounded.woff2*', async (route) => {
+      await new Promise((r) => setTimeout(r, 8_000));
+      await route.continue();
+    });
+    await openUsers(app, page, { query: 'tab=roles' });
+    await expect(editor(page)).toBeVisible();
+    const icons = () =>
+      [...document.fonts]
+        .filter((f) => f.family.replace(/"/g, '') === 'Material Symbols Rounded')
+        .map((f) => f.status);
+    expect(await page.evaluate(icons)).toEqual(['loading']);
+    expect(await seriousOf(page, axe)).toEqual([]);
   });
 
   test('раскладка: 390 — список над редактором на всю ширину; 1440 — список 300 px слева', async ({

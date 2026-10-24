@@ -21,6 +21,12 @@ import {
 import { expect, test } from './fixtures/index.ts';
 import { ALTA, call, devScenario, LOTOS, tenantId } from './shell.helpers.ts';
 
+/**
+ * Ожидание страницы после провайдера или ссылки письма: приложение грузится заново (dev-сервер, MSW) — под нагрузкой
+ * дольше 5 с ожидания expect (W2.81, возврат 1). Строка-регрессия класса (медленная повторная загрузка) — одна, в
+ * auth-login.spec.ts; число и его обоснование — там (W2.81, возврат 2).
+ */
+const RELOAD_AFTER_IDP = 15_000;
 const main = (page: Page) => page.getByRole('main');
 const title = (page: Page) => page.getByRole('heading', { level: 1 });
 const accept = (page: Page) => page.getByRole('button', { name: 'Принять приглашение' });
@@ -71,7 +77,9 @@ test.describe('auth-invitation — приглашение @mock', () => {
     const seen = await fakeIdp(page, PETROVA.subject);
     await openLink(page, token);
     await signInAccept(page).click();
-    await expect(main(page)).toContainText(`Вы вошли как ${PETROVA.name}.`);
+    await expect(main(page)).toContainText(`Вы вошли как ${PETROVA.name}.`, {
+      timeout: RELOAD_AFTER_IDP,
+    });
     expect(seen).toEqual([`${START_LOGIN}?returnTo=%2Fauth%2Finvitation`]);
     const done = page.waitForResponse((r) => r.url().endsWith('/api/v1/auth/invitations/accept'));
     await accept(page).click();
@@ -95,7 +103,9 @@ test.describe('auth-invitation — приглашение @mock', () => {
   }) => {
     const token = await petrovaToken(page, app);
     await openLink(page, token, 'owner@t-lotos');
-    await expect(main(page)).toContainText('Вы вошли как Ирина Белова.');
+    await expect(main(page)).toContainText('Вы вошли как Ирина Белова.', {
+      timeout: RELOAD_AFTER_IDP,
+    });
     await accept(page).click();
     const alert = page.getByRole('alert');
     await expect(alert).toContainText('Приглашение для другого адреса');
@@ -169,7 +179,9 @@ test.describe('auth-invitation — приглашение @mock', () => {
   }) => {
     const token = await petrovaToken(page, app);
     await openLink(page, token, PETROVA.subject);
-    await expect(main(page)).toContainText(`Вы вошли как ${PETROVA.name}.`);
+    await expect(main(page)).toContainText(`Вы вошли как ${PETROVA.name}.`, {
+      timeout: RELOAD_AFTER_IDP,
+    });
     await devScenario(page, { scenario: 'session_expired' });
     const done = page.waitForResponse((r) => r.url().endsWith('/api/v1/auth/invitations/accept'));
     await accept(page).click();

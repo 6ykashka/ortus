@@ -4,6 +4,7 @@
 
 - kind: out-of-stage · target: tab:Роли23 · mode: mock · reason: в эталоне 23 роли — с ролями модулей этапов 4–7 (обращения, пространства, документы, чаты, касса); в этапе 1 API отдаёт роли ядра и логистики · decision: PD-55, Q-W0.02-2 · owner: W1.23 · expires: stage-7
 - kind: label · target: tab:Роли9 · mode: mock · reason: счётчик ролей этапа 1 (9 ролей сида «Альты») вместо 23 эталона · decision: PD-55, Q-W0.02-2 · owner: W1.23
+- kind: out-of-stage · target: tab:Роли24 · mode: mock · reason: в эталоне 19.10b 24 роли — к 23 ролям модулей этапов 4–7 добавлен шаблон «Наставник» (модуль «Обучение» из снимка эталона 19.10b (W2.70, design/docs/28-learning.md); в плане его нет, предложение — этап 4, шаг 4.7 (W4.08, W4.70–W4.75), в каталоге прав контракта learning.* нет) · decision: PD-55, Q-W2.70-16 · owner: W2.81 · expires: stage-7
 - kind: label · target: button:Дарья Зимина · mode: mock · reason: имя открывает карточку сотрудника (S1-09, приостановка updateMember W1.43, передача владения S1-16) — экрана карточки в эталоне нет · decision: B-6, Q-W1.23-9 · owner: W1.23
 - kind: label · target: button:Марина Котова · mode: mock · reason: имя открывает карточку сотрудника (S1-09, приостановка updateMember W1.43, передача владения S1-16) — экрана карточки в эталоне нет · decision: B-6, Q-W1.23-9 · owner: W1.23
 - kind: label · target: button:Илья Васильев · mode: mock · reason: имя открывает карточку сотрудника (S1-09, приостановка updateMember W1.43, передача владения S1-16) — экрана карточки в эталоне нет · decision: B-6, Q-W1.23-9 · owner: W1.23

@@ -319,6 +319,8 @@ test.describe('home — «Главная» @mock', () => {
   });
 
   test('axe: нет нарушений serious/critical у владельца и логиста', async ({ app, page, axe }) => {
+    // W2.81, возврат 1: вход двух персонажей и два прогона axe — под нагрузкой дольше 30 с.
+    test.slow();
     await openHome(app, page);
     await expect(cards(page)).toHaveCount(2);
     expect(serious(await axe(page))).toEqual([]);

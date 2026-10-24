@@ -8,6 +8,15 @@ import { expect, test } from './fixtures/index.ts';
 import { ALTA, tenantId } from './shell.helpers.ts';
 
 const LOGIN = '/auth/login';
+/**
+ * Ожидание оболочки после провайдера: приложение грузится заново (dev-сервер, MSW) — под нагрузкой дольше 5 с
+ * ожидания expect (W2.81, возврат 1). 15 с — половина таймаута строки (30 с): вторая половина остаётся проверкам
+ * после входа; первый вход openApp (e2e-kit) ждёт загрузку приложения до таймаута строки, так что здесь ожидание
+ * строже. Время загрузки приложения e2e mock не меряет: dev-сервер Vite собирает модули по запросу, сборки для
+ * пользователей здесь нет (W2.81, возврат 2). Строка «дольше 5 с» ниже — единственная регрессия класса и для
+ * auth-invitation.spec.ts.
+ */
+const RELOAD_AFTER_IDP = 15_000;
 const signIn = (page: Page) => page.getByRole('button', { name: 'Войти', exact: true });
 
 /**
@@ -179,9 +188,27 @@ test.describe('auth-login — экран входа @mock', () => {
     const seen = await fakeIdp(page, 'owner');
     await app(`${LOGIN}?next=${encodeURIComponent('/')}`);
     await signIn(page).click();
-    await expect(page.getByRole('banner')).toContainText(ALTA);
+    await expect(page.getByRole('banner')).toContainText(ALTA, { timeout: RELOAD_AFTER_IDP });
     const alta = await tenantId(page);
     await expect(page).toHaveURL(new RegExp(`/t/${alta}/home$`));
+    expect(seen).toEqual([`${START_LOGIN}?returnTo=%2F`]);
+  });
+
+  // W2.81, возврат 1: в полном прогоне под нагрузкой строка выше на 390 красная во всех трёх попытках —
+  // после провайдера приложение грузится заново (dev-сервер, MSW), и оболочка появляется позже 5 с ожидания
+  // expect. Медленная загрузка (вход приложения отвечает через 6 с) воспроизводит это без нагрузки.
+  test('полный круг: приложение после провайдера грузится дольше 5 с — оболочка «Альты»', async ({
+    app,
+    page,
+  }) => {
+    const seen = await fakeIdp(page, 'owner');
+    await app(`${LOGIN}?next=${encodeURIComponent('/')}`);
+    await page.route('**/src/main.tsx*', async (route) => {
+      await new Promise((r) => setTimeout(r, 6_000));
+      await route.continue();
+    });
+    await signIn(page).click();
+    await expect(page.getByRole('banner')).toContainText(ALTA, { timeout: RELOAD_AFTER_IDP });
     expect(seen).toEqual([`${START_LOGIN}?returnTo=%2F`]);
   });
 

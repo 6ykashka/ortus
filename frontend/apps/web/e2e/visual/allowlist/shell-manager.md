@@ -7,3 +7,4 @@
 - kind: label · target: button:Файлы · mode: mock · reason: возможности files.* из проектной роли r-pm (каноничные ключи шаблона); меню по canAny учитывает объектные роли (Q-W0.11-1) · decision: PD-53 · owner: W1.20
 - kind: label · target: button:Логист · mode: mock · reason: нижняя навигация 390 — сокращение той же заглушки «Рабочее место логиста» (см. выше) · decision: D-23 · owner: W1.20
 - kind: label · target: button:Задачи · mode: mock · reason: нижняя навигация 390 — третьим пунктом становится «Задачи», потому что заглушки логиста нет (см. выше) · decision: D-23 · owner: W1.20
+- kind: out-of-stage · target: button:Обучение · mode: mock · reason: пункт «Обучение» группы «Общие модули» логиста — модуль из снимка эталона 19.10b (W2.70); в плане его нет, предложение — этап 4, шаг 4.7 (W4.08, W4.70–W4.75); та же запись — в shell.md · decision: D-23, Q-W2.70-16 · owner: W2.81 · expires: stage-4

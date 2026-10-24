@@ -37,10 +37,13 @@ export const moduleCard = (page: Page, name: string): Locator =>
  * Высота области нажатия цели по вертикали через её центр: сколько точек (шаг 1 px) от верха до низа с запасом
  * 30 px попадает в саму цель (`elementFromPoint` → цель или её потомок). Видимая высота кнопки эталона может
  * быть 36/40 px (PD-28), область нажатия на телефоне — не меньше 44 px (verification-protocol §1 п. 3).
+ * Меряет после загрузки шрифтов (W2.81, harness H12): пока шрифт иконок грузится, лигатура раскладывается
+ * запасным шрифтом, шире кнопки-иконки, и перекрывает центр соседней цели.
  */
 export async function hitHeight(target: Locator): Promise<number> {
-  return target.evaluate((el) => {
+  return target.evaluate(async (el) => {
     el.scrollIntoView({ block: 'center' });
+    await document.fonts.ready;
     const r = el.getBoundingClientRect();
     const x = r.left + r.width / 2;
     let n = 0;

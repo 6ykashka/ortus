@@ -18,6 +18,7 @@
 - kind: out-of-stage · target: button:Обращения 4 · mode: mock · reason: бейдж обращений с SLA первого ответа — модуль «Обращения» (W7.32) · decision: PD-55 · owner: W1.20 · expires: stage-7
 - kind: out-of-stage · target: button:Документы 2 · mode: mock · reason: бейдж ожиданий документов — модуль «Документы» (W7.25) · decision: PD-55 · owner: W1.20 · expires: stage-7
 - kind: out-of-stage · target: button:Касса 4 · mode: mock · reason: бейдж кассы — модуль «Касса» (W5.32, W5.33); «Подотчёт» водителя и прораба — пункт профиля рабочего места, «Касса» массажиста — по праву cash.* (W1.49, shell-therapist.md); страница — заглушка до этапа 5 · decision: PD-55 · owner: W1.20 · expires: stage-5
+- kind: out-of-stage · target: button:Обучение · mode: mock · reason: пункт «Обучение» группы «Общие модули» (владелец, логист) и «Работа» (водитель) — модуль из снимка эталона 19.10b (W2.70, design/docs/28-learning.md); в плане его нет, предложение — этап 4, шаг 4.7 (W4.08, W4.70–W4.75); каталога модулей и прав learning.* в контракте нет, пункт не показывается. Бейдж эталона снимается правилом BADGE (labelsOf). В сверке с design-stage-1 запись не срабатывает (пункта нет) · decision: D-23, Q-W2.70-16 · owner: W2.81 · expires: stage-4
 
 ## Пиксели (в допуске 0,01)
 

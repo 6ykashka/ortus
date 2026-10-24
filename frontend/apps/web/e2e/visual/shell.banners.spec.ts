@@ -4,6 +4,8 @@
 // (verification-protocol.md §3, PD-22: 0,01). «Нет связи.» — эталон и реализация офлайн (context.setOffline,
 // эталон слушает navigator.onLine :2385). «Место организации заполнено.» — эталон: лимит 25 ГБ при занятых
 // 46,2 ГБ через «Модули и место» (:2683–2705), затем «Главная»; реализация — пресет storage-full.
+import { fileURLToPath } from 'node:url';
+
 import { comparePng, hidePanel, setPersona } from '@ortus/e2e-kit';
 import type { Locator, Page, TestInfo } from '@playwright/test';
 
@@ -15,6 +17,9 @@ const STORAGE = 'Место организации заполнено.';
 const STORAGE_OTHER =
   'Новые загрузки ограничены. Фото текущей смены сохраняются в пределах временного резерва.';
 const OPEN_MODULES = 'Открыть «Модули и место»';
+const ICON_FONT = fileURLToPath(
+  new URL('../../../../packages/tokens/fonts/material-symbols-rounded.woff2', import.meta.url),
+);
 
 /** Баннер основной области по заголовку (strong): в эталоне и в реализации — role status/alert в #ox-main. */
 const banner = (page: Page, title: string): Locator =>
@@ -69,10 +74,14 @@ const BUTTON = [
 
 type Styles = Record<string, Record<string, string>>;
 
-/** Вычисленные стили частей баннера: контейнер, текст (родитель strong), заголовок, иконка, кнопка. */
+/**
+ * Вычисленные стили частей баннера: контейнер, текст (родитель strong), заголовок, иконка, кнопка. Меряются после
+ * загрузки шрифтов (W2.81): пока шрифт значков грузится, лигатура раскладывается запасным шрифтом и шире значка.
+ */
 async function stylesOf(root: Locator): Promise<Styles> {
   return root.evaluate(
-    (el, keys) => {
+    async (el, keys) => {
+      await document.fonts.ready;
       const pick = (node: Element | null | undefined, list: readonly string[]) => {
         if (!node) return { missing: 'yes' };
         const s = getComputedStyle(node);
@@ -220,6 +229,37 @@ test.describe('shell — баннеры по эталону @mock', () => {
       `banner-storage-driver-${testInfo.project.name}`,
       testInfo,
     );
+  });
+
+  // W2.81, возврат 1: в полном прогоне под нагрузкой строка :187 красная во всех трёх попытках — шрифт значков ещё
+  // грузится, лигатура «warning» запасным шрифтом шире значка (width 58px против 20px эталона). Догружающийся шрифт
+  // воспроизводится без нагрузки: тот же шрифт подключается ещё раз по адресу, который отвечает через 3 с.
+  test('стили баннера меряются после загрузки шрифта значков', async ({ app, page }) => {
+    await page.route('**/__w281-slow-icons.woff2', async (route) => {
+      await new Promise((r) => setTimeout(r, 3_000));
+      await route.fulfill({ path: ICON_FONT, contentType: 'font/woff2' });
+    });
+    await app('/', { persona: 'driver' });
+    await devScenario(page, { preset: 'storage-full' });
+    await page.reload();
+    const implBanner = banner(page, STORAGE);
+    await expect(implBanner).toContainText(STORAGE_OTHER);
+    await page.evaluate(() => {
+      const face = new FontFace(
+        'Material Symbols Rounded',
+        "url('/__w281-slow-icons.woff2') format('woff2')",
+        { style: 'normal', weight: '100 700', display: 'block' },
+      );
+      document.fonts.add(face);
+      face.load().catch(() => undefined);
+    });
+    expect(await page.evaluate(() => document.fonts.status)).toBe('loading');
+    await page.evaluate(() => new Promise((r) => requestAnimationFrame(() => r(null))));
+    expect((await stylesOf(implBanner)).icon).toEqual({
+      'font-size': '20px',
+      width: '20px',
+      height: '20px',
+    });
   });
 
   test('строка события «Уведомления» — граница #F0F2EE (:129)', async ({ app, page }) => {

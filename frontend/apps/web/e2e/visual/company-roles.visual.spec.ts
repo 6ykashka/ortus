@@ -9,7 +9,7 @@ import type { Locator, Page } from '@playwright/test';
 
 import { expect, test } from '../fixtures/index.ts';
 import { CHROME, coverFrom, implUsers, referenceUsers, refBlock } from './people.compare.ts';
-import { compareShots } from './shell.compare.ts';
+import { allowlist, compareShots } from './shell.compare.ts';
 
 test.describe('company-roles — визуальная сверка с эталоном @mock', () => {
   test.skip(({ harness }) => harness.mode !== 'mock', 'пиксельная сверка — режим mock');
@@ -43,12 +43,39 @@ test.describe('company-roles — визуальная сверка с этало
       .getByRole('switch', { name: `Доступ роли к модулю ${name}` })
       .locator('xpath=ancestor::div[2]');
 
+  // W2.81: на 390 и 768 итог стоит под списком ролей и редактором, и его верх — дробный: в эталоне 19.10b над ним
+  // роль «Наставник» и строка модуля «Обучение» (W2.70, out-of-stage). Сглаживание текста при дробном сдвиге
+  // разное (1758 px > 0,01), снимок на пиксель выше («644×294 против 644×295»). Верх цели ставится на целый
+  // пиксель с обеих сторон: сдвиг меньше пикселя, вид и подписи не меняются. Нормализация кадра — запись `pixel`
+  // allowlist/company-roles.md (SNAP_TARGET), без неё сверка состояния не идёт (возврат W2.81 №1).
+  const SNAP_TARGET = 'top:цели сверки состояний редактора';
+  const snapAllowed = () =>
+    allowlist('company-roles').some((e) => e.kind === 'pixel' && e.target === SNAP_TARGET);
+  // Замер — после загрузки шрифтов (W2.81, возврат 2): пока шрифт значков грузится, лигатура значка раскладывается
+  // запасным шрифтом, и высота строки другая.
+  const snap = (l: Locator) =>
+    l.evaluate(async (el) => {
+      await document.fonts.ready;
+      el.scrollIntoView({ block: 'center' });
+      const top = el.getBoundingClientRect().top;
+      const frac = top - Math.floor(top);
+      if (frac > 0.001) {
+        const m = parseFloat(getComputedStyle(el).marginTop) || 0;
+        (el as HTMLElement).style.marginTop = `${m + 1 - frac}px`;
+      }
+    });
+
   const same = async (
     label: string,
     actual: Locator,
     expected: Locator,
     testInfo: Parameters<Parameters<typeof test>[2]>[1],
   ) => {
+    expect(snapAllowed(), `нет записи pixel «${SNAP_TARGET}» в allowlist/company-roles.md`).toBe(
+      true,
+    );
+    await snap(actual);
+    await snap(expected);
     const r = await compareShots(
       { target: shot(actual.page(), actual) },
       { target: shot(expected.page(), expected) },
@@ -91,12 +118,48 @@ test.describe('company-roles — визуальная сверка с этало
     await same('empty-summary', summary(page), summary(ref.page), testInfo);
   });
 
+  type Ctx = Parameters<Parameters<typeof test>[2]>[0];
+  type Info = Parameters<Parameters<typeof test>[2]>[1];
+
   test('раскрытый модуль «Календарь»: уровни действий', async ({
     app,
     page,
     reference,
   }, testInfo) => {
     test.skip(wideOnly(page.viewportSize()?.width), 'сверка состояния — на 1440');
+    await calendarRow({ app, page, reference }, testInfo);
+  });
+
+  // W2.81, возврат 2: в полном прогоне под нагрузкой строка выше на 1440 красная во всех трёх попытках — «size
+  // mismatch 475×104 vs 475×103»: строка реализации выше эталона, пока шрифт значков грузится (лигатура значка
+  // раскладывается запасным шрифтом). Догружающийся шрифт воспроизводится без нагрузки: файл шрифта значков
+  // реализации отвечает через 15 с (маршрут на контексте — запросы идут через service worker MSW).
+  test('раскрытый модуль «Календарь»: сверка после загрузки шрифта значков', async ({
+    app,
+    page,
+    reference,
+  }, testInfo) => {
+    test.skip(wideOnly(page.viewportSize()?.width), 'сверка состояния — на 1440');
+    test.slow();
+    await page.context().route('**/material-symbols-rounded.woff2*', async (route) => {
+      await new Promise((r) => setTimeout(r, 15_000));
+      await route.continue();
+    });
+    await calendarRow({ app, page, reference }, testInfo, async () => {
+      const icons = await page.evaluate(() =>
+        [...document.fonts]
+          .filter((f) => f.family.replace(/"/g, '') === 'Material Symbols Rounded')
+          .map((f) => f.status),
+      );
+      expect(icons).toEqual(['loading']);
+    });
+  });
+
+  async function calendarRow(
+    { app, page, reference }: Pick<Ctx, 'app' | 'page' | 'reference'>,
+    testInfo: Info,
+    beforeShot?: () => Promise<void>,
+  ) {
     const ref = await reference(undefined, { persona: 'owner', hidePanel: true });
     await referenceUsers(ref.page, 'Роли');
     await implUsers(app, page, 'tab=roles');
@@ -114,11 +177,12 @@ test.describe('company-roles — визуальная сверка с этало
       await p.mouse.move(0, 0);
       await p.evaluate(() => (document.activeElement as HTMLElement | null)?.blur());
     }
+    await beforeShot?.();
     await same(
       'calendar-row',
       moduleRow(page, 'Календарь'),
       moduleRow(ref.page, 'Календарь'),
       testInfo,
     );
-  });
+  }
 });

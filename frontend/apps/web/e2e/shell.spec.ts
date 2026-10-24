@@ -586,6 +586,8 @@ test.describe('shell — оболочка @mock', () => {
     app,
     page,
   }) => {
+    // W2.81, возврат 1: семь полных загрузок приложения (dev-сервер, MSW) — под нагрузкой дольше 30 с.
+    test.slow();
     await app('/', { persona: 'owner' });
     const alta = await tenantId(page);
     await app(`/t/${alta}/branding`, { persona: 'owner' });
