@@ -1,5 +1,8 @@
 // W4.62 · Помощники e2e «Оформления» (`company-branding`): переход по меню (на телефоне — «Ещё» → «Все разделы»),
 // поля и области страницы по подписям эталона, файлы PNG с заданными размерами, значения CSS-переменных акцента.
+// W4.72: цвет палитры, отличный от сохранённого, тело возврата оформления, настоящий PNG для cmd/api стенда.
+import { deflateSync } from 'node:zlib';
+
 import type { Locator, Page } from '@playwright/test';
 
 const BOTTOM_NAV = { name: 'Навигация', exact: true } as const;
@@ -69,6 +72,45 @@ export const rootVar = (page: Page, name: string): Promise<string> =>
     name,
   );
 
+/** Цвета палитры, которыми пользуется строка стенда (эталон :3681, brandingVM). */
+export const SWATCHES = {
+  blue: { name: 'Синий', hex: '#2B5479' },
+  plum: { name: 'Сливовый', hex: '#7A3E79' },
+} as const;
+
+/** Цвет палитры, отличный от сохранённого: выбор того же цвета черновик не меняет (Q-W4.60-6). */
+export const otherSwatch = (savedHex: string) =>
+  savedHex.toUpperCase() === SWATCHES.blue.hex ? SWATCHES.plum : SWATCHES.blue;
+
+interface AssetRef {
+  id: string;
+  url: string;
+}
+
+/** Действующее оформление (`Branding` контракта) — поля, нужные для возврата целиком (PUT заменяет версию). */
+export interface SavedBranding {
+  displayName: string;
+  shortName?: string | null;
+  accentHex: string;
+  logo?: AssetRef | null;
+  mark?: AssetRef | null;
+  terms: Record<string, unknown>;
+  menu: { items: Record<string, unknown>; order: string[] };
+  poweredBy: boolean;
+}
+
+/** Тело `updateTenantBranding` из прочитанной версии: та же версия по содержанию. */
+export const brandingBody = (b: SavedBranding) => ({
+  displayName: b.displayName,
+  shortName: b.shortName ?? null,
+  accentHex: b.accentHex,
+  logoAssetId: b.logo?.id ?? null,
+  markAssetId: b.mark?.id ?? null,
+  terms: b.terms,
+  menu: b.menu,
+  poweredBy: b.poweredBy,
+});
+
 /** Минимальный PNG w×h (сигнатура и IHDR — сервер читает размеры по заголовку). */
 export function pngFile(w: number, h: number, name = 'brand.png') {
   const buffer = Buffer.alloc(64);
@@ -77,5 +119,47 @@ export function pngFile(w: number, h: number, name = 'brand.png') {
   ]).copy(buffer);
   buffer.writeUInt32BE(w, 16);
   buffer.writeUInt32BE(h, 20);
+  return { name, mimeType: 'image/png', buffer };
+}
+
+const CRC_TABLE = Array.from({ length: 256 }, (_, n) => {
+  let c = n;
+  for (let k = 0; k < 8; k++) c = c & 1 ? 0xedb88320 ^ (c >>> 1) : c >>> 1;
+  return c >>> 0;
+});
+
+function crc32(bytes: Buffer): number {
+  let c = 0xffffffff;
+  for (const b of bytes) c = (CRC_TABLE[(c ^ b) & 0xff] ?? 0) ^ (c >>> 8);
+  return (c ^ 0xffffffff) >>> 0;
+}
+
+function chunk(type: string, data: Buffer): Buffer {
+  const body = Buffer.concat([Buffer.from(type, 'latin1'), data]);
+  const out = Buffer.alloc(body.length + 8);
+  out.writeUInt32BE(data.length, 0);
+  body.copy(out, 4);
+  out.writeUInt32BE(crc32(body), body.length + 4);
+  return out;
+}
+
+/**
+ * Настоящий PNG w×h одного цвета (RGB, контрольные суммы чанков): cmd/api проверяет его `png.DecodeConfig`
+ * (W4.60, знак — квадрат не меньше 512×512), браузер рисует фоном. Для сценарного сервера mock хватает `pngFile`.
+ */
+export function solidPng(w: number, h: number, rgb: [number, number, number], name = 'brand.png') {
+  const ihdr = Buffer.alloc(13);
+  ihdr.writeUInt32BE(w, 0);
+  ihdr.writeUInt32BE(h, 4);
+  ihdr.set([8, 2, 0, 0, 0], 8); // 8 бит, RGB, deflate, фильтры, без чересстрочности
+  const row = Buffer.alloc(1 + w * 3);
+  for (let x = 0; x < w; x++) row.set(rgb, 1 + x * 3);
+  const raw = Buffer.concat(Array.from({ length: h }, () => row));
+  const buffer = Buffer.concat([
+    Buffer.from([0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a]),
+    chunk('IHDR', ihdr),
+    chunk('IDAT', deflateSync(raw)),
+    chunk('IEND', Buffer.alloc(0)),
+  ]);
   return { name, mimeType: 'image/png', buffer };
 }

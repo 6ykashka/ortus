@@ -1,7 +1,11 @@
 // W4.62 · e2e страницы `company-branding` «Оформление» (эталон design-2026-10-19 «Ортус CRM.dc.html» pg.branding
 // :1253–1452, brandingVM :3681–3749; design/docs/18-branding.md). Пункты — WS-21 B-01…B-43 в редакции v2 и
-// обязательные пункты verification-protocol §1.3. Режим stand — после backend W4.60 (тег Branding отвечает 501).
+// обязательные пункты verification-protocol §1.3. Режим stand — backend W4.60, файлы через прокси /brand-assets (W4.72).
+import type { Page } from '@playwright/test';
+
+import { expectStatus } from './_stand/stand.ts';
 import {
+  brandingBody,
   fileInput,
   fromMenu,
   hex,
@@ -9,6 +13,7 @@ import {
   menuLabels,
   menuRow,
   nameField,
+  otherSwatch,
   palette,
   panel,
   phone,
@@ -16,13 +21,15 @@ import {
   preview,
   rootVar,
   save,
+  type SavedBranding,
   shortField,
+  solidPng,
   swatch,
   termRow,
 } from './company-branding.helpers.ts';
 import { expect, test } from './_stand/fixtures.ts';
 import { h1, noHorizontalScroll, openPage, toast } from './modules.helpers.ts';
-import { devScenario, LOTOS } from './shell.helpers.ts';
+import { call, devScenario, LOTOS } from './shell.helpers.ts';
 
 const INTRO =
   'Название, логотип, цвет, термины и меню действуют для всего бизнеса: всех регионов, фирм и сотрудников. Права доступа от оформления не зависят. Каждый сотрудник может выбрать для себя светлую или тёмную тему, акцентный цвет сохраняется.';
@@ -485,18 +492,99 @@ test.describe('company-branding — «Оформление» @mock', () => {
   });
 });
 
+/** Действующее оформление организации и его ETag (getTenantBranding) из сессии владельца. */
+async function readBranding(
+  page: Page,
+  tenant: string,
+): Promise<{ branding: SavedBranding; etag: string }> {
+  const r = expectStatus(
+    await call(page, 'GET', `/api/v1/tenants/${tenant}/branding`),
+    200,
+    'getTenantBranding',
+  );
+  return { branding: r.body as SavedBranding, etag: r.headers.etag ?? '' };
+}
+
+/** Вернуть оформление, как было (новая версия с тем же содержанием; If-Match — свежий ETag). */
+async function restoreBranding(page: Page, tenant: string, before: SavedBranding): Promise<void> {
+  const { etag } = await readBranding(page, tenant);
+  const r = await call(page, 'PUT', `/api/v1/tenants/${tenant}/branding`, {
+    body: brandingBody(before),
+    ifMatch: etag,
+  });
+  expectStatus(r, 200, 'updateTenantBranding (возврат оформления)');
+}
+
 test.describe('company-branding — стенд @stand', () => {
   test.skip(({ harness }) => harness.mode !== 'stand', 'режим stand');
 
-  test('владелец на стенде: сохранение оформления и его применение у сотрудника', async ({
+  // W4.72 (Q-W4.60-6): сид стенда общий для трёх проектов прогона — строка выбирает цвет, отличный от сохранённого,
+  // и возвращает исходное оформление (undo — и после падения). Q-W4.60-1: знак отдаёт cmd/api по /brand-assets/.
+  test('владелец на стенде: сохранение оформления и знака, применение у сотрудника, файл знака с /brand-assets/', async ({
     app,
     page,
+    session,
+    undo,
   }) => {
-    test.fixme(true, 'W4.60: тег Branding на стенде отвечает 501 (backend оформления не влит)');
-    await openPage(app, page, 'branding');
-    await swatch(page, 'Синий').click();
+    test.slow();
+    const tenant = await openPage(app, page, 'branding');
+    const { branding: before } = await readBranding(page, tenant);
+    const target = otherSwatch(before.accentHex);
+    const restore = undo('оформление «Альты»', () => restoreBranding(page, tenant, before));
+    await expect(hex(page)).toHaveValue(before.accentHex.toUpperCase());
+
+    // Ответы /brand-assets/ страницы владельца — с первого запроса (шапка после сохранения, страница после перезагрузки).
+    const assets: { path: string; status: number; type: string }[] = [];
+    page.on('response', (r) => {
+      const path = new URL(r.url()).pathname;
+      if (path.startsWith('/brand-assets/')) {
+        assets.push({ path, status: r.status(), type: r.headers()['content-type'] ?? '' });
+      }
+    });
+
+    await swatch(page, target.name).click();
+    await expect(swatch(page, target.name)).toHaveAttribute('aria-checked', 'true');
+    await expect(hex(page)).toHaveValue(target.hex);
+    const uploaded = page.waitForResponse(
+      (r) =>
+        r.request().method() === 'POST' && new URL(r.url()).pathname.endsWith('/branding/assets'),
+    );
+    await fileInput(page, 1).setInputFiles(solidPng(512, 512, [122, 62, 121], 'mark.png'));
+    const upload = await uploaded;
+    expect(upload.status(), 'uploadBrandingAsset').toBe(201);
+    const mark = (await upload.json()) as { id: string; url: string };
+    expect(mark.url).toMatch(/^\/brand-assets\/[0-9a-f]{64}\.png$/);
+    await expect(main(page).getByRole('img', { name: 'Знак' })).toBeVisible();
+
     await save(page).click();
     await expect(toast(page)).toHaveText(SAVED);
-    await expect.poll(() => rootVar(page, '--ox-accent')).toBe('#2B5479');
+    await expect(panel(page)).toContainText('Изменений нет');
+    await expect.poll(() => rootVar(page, '--ox-accent')).toBe(target.hex);
+    const { branding: saved } = await readBranding(page, tenant);
+    expect(saved.accentHex.toUpperCase()).toBe(target.hex);
+    expect(saved.mark?.url).toBe(mark.url);
+
+    // После перезагрузки знак — не `blob:` этой сессии, а публичный файл cmd/api через прокси Vite.
+    await page.reload();
+    const sign = main(page).getByRole('img', { name: 'Знак' });
+    await expect(sign).toBeVisible();
+    await expect(sign).toHaveAttribute('style', new RegExp(`url\\("${mark.url}"\\)`));
+    await expect
+      .poll(() => assets.filter((a) => a.path === mark.url).map((a) => `${a.status} ${a.type}`))
+      .toContain('200 image/png');
+    expect(assets.filter((a) => a.status >= 400)).toEqual([]);
+
+    // Сотрудник «Альты» (массажист, своя сессия): то же оформление в оболочке.
+    const employee = await session();
+    await employee.open(`/t/${tenant}/home`, 'therapist');
+    await expect.poll(() => rootVar(employee.page, '--ox-accent')).toBe(target.hex);
+
+    // Возврат: исходный цвет и знак (или его отсутствие) — и у владельца после перечитывания.
+    await restore();
+    const { branding: after } = await readBranding(page, tenant);
+    expect(after.accentHex).toBe(before.accentHex);
+    expect(after.mark?.id ?? null).toBe(before.mark?.id ?? null);
+    await page.reload();
+    await expect.poll(() => rootVar(page, '--ox-accent')).toBe(before.accentHex.toUpperCase());
   });
 });
