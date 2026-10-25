@@ -1,0 +1,29 @@
+# Матрица изоляции: отказы шлюза брони календаря createCalendarBooking (W4.90, контракт 0.7.0-stage4) — без pending.
+# Шлюз cmd/api допускает операцию, только если у актора есть грант с calendar.bookings.create в области tenant, unit или
+# self (x-scope tenant-org-unit-self). У шаблонов фикстур «Менеджер логистики», «Водитель» и «Наблюдатель» его нет —
+# 403 forbidden_action до хендлера, верно и после хендлера этапа 5 (README.md, «Как WS добавляет строки»).
+# Формат — README.md. После правки: go -C backend generate ./test/isolation
+module: calendar_w490_gate
+endpoints:
+  - op: createCalendarBooking
+    method: POST
+    path: /api/v1/tenants/{tenantId}/calendar/bookings
+    rows:
+      - actor: a.manager-msk1
+        params: { tenantId: tenant:a }
+        status: 403
+        code: forbidden_action
+        body: '{"orgUnitId": "{{unit:a.msk1}}", "title": "Бронь W490", "window": {"startsAt": "2026-10-01T09:00:00Z", "endsAt": "2026-10-01T10:00:00Z", "timeZone": "Europe/Moscow"}, "resources": [{"kind": "vehicle", "resourceId": "{{vehicle:a.msk1}}"}]}'
+        note: у шаблона «Менеджер логистики» фикстур нет calendar.bookings.create
+      - actor: a.driver-msk1
+        params: { tenantId: tenant:a }
+        status: 403
+        code: forbidden_action
+        body: '{"orgUnitId": "{{unit:a.msk1}}", "title": "Бронь W490", "window": {"startsAt": "2026-10-01T09:00:00Z", "endsAt": "2026-10-01T10:00:00Z", "timeZone": "Europe/Moscow"}, "resources": [{"kind": "vehicle", "resourceId": "{{vehicle:a.msk1}}"}]}'
+        note: водителю — только calendar.availability.read, брони не создаёт
+      - actor: a.two-roles
+        params: { tenantId: tenant:a }
+        status: 403
+        code: forbidden_action
+        body: '{"orgUnitId": "{{unit:a.smr2}}", "title": "Бронь W490", "window": {"startsAt": "2026-10-01T09:00:00Z", "endsAt": "2026-10-01T10:00:00Z", "timeZone": "Europe/Moscow"}, "resources": [{"kind": "vehicle", "resourceId": "{{vehicle:a.smr2}}"}]}'
+        note: менеджер Москвы-1 и наблюдатель Самары-2 — ни одна роль не создаёт броней

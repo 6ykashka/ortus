@@ -1,0 +1,30 @@
+# Матрица изоляции: бронь календаря ресурсов createCalendarBooking (контракт 0.7.0-stage4, W4.06) — единственная операция
+# модулей этапа 4 без строк (W4.90, выход этапа). Хендлера нет: брони делают модули этапа 5 (cmd/api отвечает 501 после
+# шлюза, calendar_test.go), первый — SPA W5.20 — снимает pending и добавляет положительную строку. Строки до хендлера: чужая
+# организация — 404 (AC-02), без сессии — 401; ответ шлюза совпадает со строкой уже сейчас (README, «Как WS добавляет
+# строки»), в строгом режиме -tags isolation_pending строки проверяют те же ожидания. Ресурсы в теле — машина и
+# подразделение организации A. Отказы шлюза — calendar_w490_gate.yaml. Формат — README.md.
+# После правки: go -C backend generate ./test/isolation
+module: calendar_w490
+endpoints:
+  - op: createCalendarBooking
+    method: POST
+    path: /api/v1/tenants/{tenantId}/calendar/bookings
+    pending: W5.20
+    rows:
+      - actor: b.owner
+        params: { tenantId: tenant:a }
+        status: 404
+        absent: [tenant:a]
+        body: '{"orgUnitId": "{{unit:a.msk1}}", "title": "Бронь W490", "window": {"startsAt": "2026-10-01T09:00:00Z", "endsAt": "2026-10-01T10:00:00Z", "timeZone": "Europe/Moscow"}, "resources": [{"kind": "vehicle", "resourceId": "{{vehicle:a.msk1}}"}]}'
+        note: бронь в чужой организации — как в несуществующей (AC-02), до тела
+      - actor: b.owner
+        params: { tenantId: tenant:missing }
+        status: 404
+        absent: [tenant:a]
+        body: '{"orgUnitId": "{{unit:b.msk1}}", "title": "Бронь W490", "window": {"startsAt": "2026-10-01T09:00:00Z", "endsAt": "2026-10-01T10:00:00Z", "timeZone": "Europe/Moscow"}, "resources": [{"kind": "vehicle", "resourceId": "{{vehicle:b.msk1}}"}]}'
+        note: организации нет — тот же ответ, что у чужой
+      - actor: anonymous
+        params: { tenantId: tenant:a }
+        status: 401
+        body: '{"orgUnitId": "{{unit:a.msk1}}", "title": "Бронь W490", "window": {"startsAt": "2026-10-01T09:00:00Z", "endsAt": "2026-10-01T10:00:00Z", "timeZone": "Europe/Moscow"}, "resources": [{"kind": "vehicle", "resourceId": "{{vehicle:a.msk1}}"}]}'
