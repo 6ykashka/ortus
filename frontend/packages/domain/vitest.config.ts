@@ -27,10 +27,11 @@ export default defineConfig({
     coverage: {
       provider: 'v8',
       // W0.12: те же пороги для модулей пилота и сида; эталон для тестов паритета — не код пакета.
-      include: ['src/core/**/*.ts', 'src/modules/**/*.ts', 'src/seed/**/*.ts'],
+      include: ['src/core/**/*.ts', 'src/lib/**/*.ts', 'src/modules/**/*.ts', 'src/seed/**/*.ts'],
       exclude: [
         'src/**/*.test.ts',
         'src/core/types/**',
+        'src/lib/**/types.ts',
         'src/modules/**/types.ts',
         'src/seed/reference.ts',
       ],

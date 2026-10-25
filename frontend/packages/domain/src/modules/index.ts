@@ -19,6 +19,7 @@ export * from './knowledge/index.ts';
 export * from './service/index.ts';
 export * from './chats/index.ts';
 export * from './cash/index.ts';
+export * from './repair/index.ts';
 
 /**
  * Модули пилота в порядке установки; `prototypeLeaks` — см. `SeedOptions`. «База знаний» (W4.30)
