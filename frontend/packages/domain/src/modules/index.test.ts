@@ -252,11 +252,56 @@ const MODULES_EXPORTS = [
   'chatsCommands',
   'CHAT_METHODS',
   'CHAT_DELAYS',
+  // cash (W5.30)
+  'CASH_ALL_VERBS',
+  'CASH_CATS',
+  'CASH_DELAYS',
+  'CASH_DENOMS',
+  'CASH_KIND',
+  'CASH_KKT',
+  'CASH_METHOD',
+  'CASH_METHODS',
+  'CASH_METHODS_OF',
+  'CASH_MODE',
+  'CASH_OP',
+  'CASH_OPT0',
+  'CASH_PRICE',
+  'CASH_REQ_LABEL',
+  'CASH_SEED_STAGE',
+  'CASH_VERB_TEXT',
+  'assertCashScope',
+  'canAcceptTransfer',
+  'cashAccCan',
+  'cashAccess',
+  'cashBalanceOf',
+  'cashCommands',
+  'cashDrawerFor',
+  'cashDueState',
+  'cashHook',
+  'cashMakeAccount',
+  'cashModule',
+  'cashNameOf',
+  'cashOpSign',
+  'cashOpenShift',
+  'cashParseSum',
+  'cashPeople',
+  'cashPlural',
+  'cashProposals',
+  'cashRightsText',
+  'cashRub',
+  'cashSeedAlta',
+  'cashSignRub',
+  'cashTodo',
+  'cashUnitTitle',
+  'cashView',
+  'createCashModule',
+  'driverCashSelf',
+  'installCash',
 ];
 describe('экспорт-лист @ortus/domain/modules', () => {
   it('модули пилота и их функции, ничего лишнего', async () => {
     const pkg = await import('./index.ts');
     expect(Object.keys(pkg).sort()).toEqual([...MODULES_EXPORTS].sort());
-    expect(MODULES_EXPORTS).toHaveLength(240);
+    expect(MODULES_EXPORTS).toHaveLength(284);
   });
 });
