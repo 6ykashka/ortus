@@ -212,11 +212,51 @@ const MODULES_EXPORTS = [
   'teamOf',
   'weekdayOf',
   'workBetween',
+  'chatsModule',
+  'chatsHook',
+  'chatsSeed',
+  'installChats',
+  'chatsView',
+  'CHAT_KINDS',
+  'CHAT_ROLE_LABEL',
+  'CHAT_ROLES',
+  'CHAT_ROLE_ID',
+  'CHAT_RANK',
+  'CHAT_BOUNDS',
+  'CHAT_DEFAULT_POLICY',
+  'CHAT_EDIT_LABEL',
+  'CHAT_EDIT_MIN',
+  'CHAT_RCPT_LABEL',
+  'CHAT_TEMP_LABEL',
+  'CHAT_FWD_LABEL',
+  'CHAT_FULL_LABEL',
+  'CHAT_FULL_HINT',
+  'CHAT_FULL_MODES_MVP',
+  'chatTsDay',
+  'chatTsTime',
+  'chatTsLabel',
+  'chatAccess',
+  'chatRights',
+  'chatPeople',
+  'chatMatrix',
+  'chatTitle',
+  'chatVerbs',
+  'chatPolicyOf',
+  'chatSrcHas',
+  'chatSrcLabel',
+  'chatSrcIcon',
+  'chatPlanStorage',
+  'chatCleanupPlan',
+  'chatHeldMsg',
+  'CHAT_ALL_RE',
+  'chatsCommands',
+  'CHAT_METHODS',
+  'CHAT_DELAYS',
 ];
 describe('экспорт-лист @ortus/domain/modules', () => {
   it('модули пилота и их функции, ничего лишнего', async () => {
     const pkg = await import('./index.ts');
     expect(Object.keys(pkg).sort()).toEqual([...MODULES_EXPORTS].sort());
-    expect(MODULES_EXPORTS).toHaveLength(200);
+    expect(MODULES_EXPORTS).toHaveLength(240);
   });
 });
