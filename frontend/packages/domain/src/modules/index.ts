@@ -16,6 +16,7 @@ export * from './platform/index.ts';
 export * from './tasks/index.ts';
 export * from './forms/index.ts';
 export * from './knowledge/index.ts';
+export * from './service/index.ts';
 
 /**
  * Модули пилота в порядке установки; `prototypeLeaks` — см. `SeedOptions`. «База знаний» (W4.30)
