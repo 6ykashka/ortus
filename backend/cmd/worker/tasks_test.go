@@ -14,15 +14,22 @@ import (
 
 // W4.11 (S2-17 → задача, D-29): the worker hands the events of the queue of blocking defects to the module of tasks —
 // a broken event of each type is an error of its handler (a retry, then the dead letter), not «delivered to nobody».
+// W4.24: the task of a blocking defect is made with the response of its inspection (inspections.go), so
+// blocking_reported has no handler of the tasks.
 func TestRegisterTasks(t *testing.T) {
 	t.Parallel()
 	reg := events.NewRegistry()
 	registerTasks(reg, nil, time.Now)
-	for _, typ := range []string{tasks.EventDefectBlocking, tasks.EventDefectAssigned, tasks.EventDefectDecided} {
-		m := events.Message{TenantID: uuid.New(), EventID: uuid.New(), Type: typ, Payload: []byte(`not json`)}
-		if err := reg.Dispatch(t.Context(), m); err == nil {
+	broken := func(typ string) error {
+		return reg.Dispatch(t.Context(), events.Message{TenantID: uuid.New(), EventID: uuid.New(), Type: typ, Payload: []byte(`not json`)})
+	}
+	for _, typ := range []string{tasks.EventDefectAssigned, tasks.EventDefectDecided} {
+		if err := broken(typ); err == nil {
 			t.Errorf("%s: no handler of the tasks", typ)
 		}
+	}
+	if err := broken(tasks.EventDefectBlocking); err != nil {
+		t.Errorf("blocking_reported is handled by the tasks: %v", err)
 	}
 }
 

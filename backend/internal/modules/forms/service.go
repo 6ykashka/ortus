@@ -53,6 +53,11 @@ type FormTask struct {
 	Title, Description        string
 	Response                  uuid.UUID
 	Origin                    string // «Ответ R-1012 формы «…»» — the line of the history of the task
+	// W4.24: the task of the response of an inspection (recordInspection, api.js:76) — urgent with a blocking defect
+	// ("" — normal), the items of its checklist and the trip among the related objects.
+	Priority  string
+	Checklist []string
+	Related   []fapi.ObjectRef
 }
 
 // TaskResult is the task created («LOG-101», the status, the assignee) or the cause of a refusal.

@@ -18,6 +18,7 @@ import (
 
 	formsapi "github.com/ortus/ortus-crm/backend/internal/api/forms"
 	publicformsapi "github.com/ortus/ortus-crm/backend/internal/api/publicforms"
+	tasksapi "github.com/ortus/ortus-crm/backend/internal/api/tasks"
 	"github.com/ortus/ortus-crm/backend/internal/modules/files"
 	"github.com/ortus/ortus-crm/backend/internal/modules/forms"
 	"github.com/ortus/ortus-crm/backend/internal/modules/knowledge"
@@ -266,8 +267,18 @@ var _ forms.Tasks = formTasks{}
 // CreateFormTask implements forms.Tasks.
 func (a formTasks) CreateFormTask(ctx context.Context, tx pgx.Tx, tenant uuid.UUID, t forms.FormTask) (forms.TaskResult, error) {
 	r, err := a.S.CreateFormTask(ctx, tx, tenant, tasks.FormTask{Project: t.Project, Author: t.Author, Assignee: t.Assignee,
-		AuthorOwner: t.AuthorOwner, AuthorName: t.AuthorName, Title: t.Title, Description: t.Description, Response: t.Response, Origin: t.Origin})
+		AuthorOwner: t.AuthorOwner, AuthorName: t.AuthorName, Title: t.Title, Description: t.Description, Response: t.Response, Origin: t.Origin,
+		Priority: t.Priority, Checklist: t.Checklist, Related: taskRefs(t.Related)}) // W4.24: «Повторить» of a response of an inspection
 	return forms.TaskResult{ID: r.ID, Key: r.Key, Status: r.Status, Assigned: r.Assigned, Refused: r.Refused}, err
+}
+
+// taskRefs are the related objects of a task of a form in the types of the tasks.
+func taskRefs(refs []formsapi.ObjectRef) []tasksapi.ObjectRef {
+	out := make([]tasksapi.ObjectRef, 0, len(refs))
+	for _, r := range refs {
+		out = append(out, tasksapi.ObjectRef{ModuleKey: r.ModuleKey, EntityType: r.EntityType, EntityId: r.EntityId})
+	}
+	return out
 }
 
 // MayCreate implements forms.Tasks.

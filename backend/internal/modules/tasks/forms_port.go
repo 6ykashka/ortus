@@ -23,6 +23,11 @@ type FormTask struct {
 	Title, Description        string
 	Response                  uuid.UUID
 	Origin                    string
+	// W4.24: the task of the response of an inspection (recordInspection, api.js:76) — its priority ("" — normal), the
+	// items of its checklist and the related objects next to the response (the trip).
+	Priority  string
+	Checklist []string
+	Related   []tasksapi.ObjectRef
 }
 
 // FormTaskResult is the task created — its number «LOG-101», the name of its status and of its assignee — or the
@@ -55,6 +60,9 @@ func (s *Service) CreateFormTask(ctx context.Context, tx pgx.Tx, tenant uuid.UUI
 	}
 	x := r.formTask(p, cur, t)
 	if err := r.insertTask(ctx, p, x); err != nil {
+		return FormTaskResult{}, err
+	}
+	if err := r.writeChecklist(ctx, x); err != nil { // W4.24: the checklist of the task of an inspection
 		return FormTaskResult{}, err
 	}
 	if _, err := r.log(ctx, x.ID, triggerCreated, clip("Создана действием формы: "+t.Origin, 5000), r.meActor(), ""); err != nil {
@@ -107,10 +115,10 @@ func (r *request) formTask(p *project, cur *version, t FormTask) *task {
 	}
 	module, typ, source := sourceForms, sourceResponse, t.Response
 	author, assignee := t.Author, t.Assignee
+	related := append([]tasksapi.ObjectRef{{ModuleKey: sourceForms, EntityType: sourceResponse, EntityId: t.Response}}, t.Related...)
 	x := &task{ID: uuid.New(), Project: p.ID, Title: title, Description: clip(trimmed(t.Description), descriptionMax),
-		StatusID: status, Priority: prioNormal, Labels: []string{}, Assignee: &assignee, Author: &author,
-		Checklist: []tasksapi.TaskChecklistItem{}, Related: []tasksapi.ObjectRef{{ModuleKey: sourceForms, EntityType: sourceResponse,
-			EntityId: t.Response}}, Revision: 1, CreatedAt: r.tick(), UpdatedAt: r.now,
+		StatusID: status, Priority: formPriority(t.Priority), Labels: []string{}, Assignee: &assignee, Author: &author,
+		Checklist: checklistOf(t.Checklist), Related: related, Revision: 1, CreatedAt: r.tick(), UpdatedAt: r.now,
 		source: sourceRef{module: &module, typ: &typ, id: &source}}
 	if !p.funnel() && cur != nil {
 		x.WorkflowVersion = &cur.Number

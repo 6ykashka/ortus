@@ -105,6 +105,8 @@ func run(ctx context.Context, args []string, getenv func(string) string, stdout,
 	audience := inbox.AuthzAudience{E: projectsIn(ev, pools)}
 	reg := newRegistry(registryDeps{control: control, pools: pools, audience: audience, log: log})
 	registerTasks(reg, pools, cfg.clock()) // W4.11: the queue of blocking defects → the task of the defect (tasks.go)
+	// W4.24: the inspection → the response of «Осмотр машины» and the task of its blocking defect (inspections.go).
+	registerInspections(reg, inspectionDeps{control: control, pools: pools, ev: audience.E, audience: audience, now: cfg.clock()})
 	// W2.72: the offers of vehicles whose deadline of the choice came tell the company of a released vehicle (inbox).
 	offers := &pool.Service{Pools: pools, Authz: ev, Recipients: inbox.PGRecipients{Control: control},
 		Owners: pool.ControlOwners{Control: control}, Audience: inbox.AuthzAudience{E: ev}, Now: cfg.clock(), Log: log}

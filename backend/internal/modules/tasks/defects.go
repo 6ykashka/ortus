@@ -37,9 +37,11 @@ type DefectTasks struct {
 	Now   func() time.Time // the clock of the application; nil: time.Now
 }
 
-// Register adds the handlers to reg (cmd/worker).
+// Register adds the handlers to reg (cmd/worker): the assignment and the decision of a defect. The task of a blocking
+// defect is made with the response of its inspection (W4.24, InspectionDefects called by forms.InspectionResponses):
+// one task, no race of two consumers of one inspection; Handle still makes it from blocking_reported when called.
 func (d DefectTasks) Register(reg *events.Registry) {
-	for _, typ := range []string{EventDefectBlocking, EventDefectAssigned, EventDefectDecided} {
+	for _, typ := range []string{EventDefectAssigned, EventDefectDecided} {
 		reg.Handle(typ, d.Handle)
 	}
 }
@@ -128,10 +130,13 @@ func (r *request) areaProject(ctx context.Context, unit uuid.UUID) (*project, er
 	return r.project(ctx, id)
 }
 
-// sourceTask is the live task made for the defect id (nil — none).
+// sourceTask is the live task of the defect id (nil — none): made for it, or the task of the response of its inspection
+// that took it (W4.24 — the defect among the related objects).
 func (r *request) sourceTask(ctx context.Context, id uuid.UUID) (*task, error) {
-	t, err := scanTask(r.tx.QueryRow(ctx, `select `+taskCols+` from tasks.tasks t where t.source_module = $1 and t.source_type = $2
-		and t.source_id = $3 and t.deleted_at is null order by t.created_at limit 1 for update`, sourceFleet, sourceDefect, id))
+	t, err := scanTask(r.tx.QueryRow(ctx, `select `+taskCols+` from tasks.tasks t where ((t.source_module = $1 and t.source_type = $2
+		and t.source_id = $3) or (t.source_module = $4 and t.source_type = $5 and t.related_objects @> $6::jsonb))
+		and t.deleted_at is null order by t.created_at limit 1 for update`, sourceFleet, sourceDefect, id, sourceForms, sourceResponse,
+		string(relatedJSON([]tasksapi.ObjectRef{defectRef(id)}))))
 	switch {
 	case noRows(err):
 		return nil, nil

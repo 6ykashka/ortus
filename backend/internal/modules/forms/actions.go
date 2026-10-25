@@ -183,9 +183,15 @@ func (r *req) actTask(ctx context.Context, f *formRow, x *responseRow, rule *rul
 	if err != nil {
 		return "", "", err
 	}
-	res, err := r.s.Tasks.CreateFormTask(ctx, r.tx, r.tc.TenantID, FormTask{Project: spec.ProjectId, Author: who.Member,
-		AuthorOwner: who.Owner, AuthorName: name, Assignee: spec.AssigneeMemberId, Title: spec.Title, Description: desc,
-		Response: x.id, Origin: "Ответ " + numberOf(x.number) + " формы «" + f.name + "»"})
+	t := FormTask{Project: spec.ProjectId, Author: who.Member, AuthorOwner: who.Owner, AuthorName: name,
+		Assignee: spec.AssigneeMemberId, Title: spec.Title, Description: desc, Response: x.id,
+		Origin: "Ответ " + numberOf(x.number) + " формы «" + f.name + "»"}
+	if x.channel == channelInspection { // W4.24: the task of the inspection of the reference (inspection.go)
+		if err := r.inspectionTask(ctx, x, &t); err != nil {
+			return "", "", err
+		}
+	}
+	res, err := r.s.Tasks.CreateFormTask(ctx, r.tx, r.tc.TenantID, t)
 	if err != nil {
 		return "", "", dependency(err)
 	}
@@ -193,7 +199,7 @@ func (r *req) actTask(ctx context.Context, f *formRow, x *responseRow, rule *rul
 		return "", res.Refused, nil
 	}
 	a.task = new(res.ID)
-	return "Задача " + res.Key + " «" + spec.Title + "» · " + res.Assigned + " · " + res.Status, "", nil
+	return "Задача " + res.Key + " «" + t.Title + "» · " + res.Assigned + " · " + res.Status, "", nil
 }
 
 // description is the description of the task of a rule: «вопрос: ответ» of the version and «Ответ R-… формы «…»».
