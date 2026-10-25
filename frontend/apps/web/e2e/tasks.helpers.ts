@@ -4,8 +4,9 @@
 import type { Persona } from '@ortus/e2e-kit';
 import { expect, type Locator, type Page } from '@playwright/test';
 
+import type { Session, Undo } from './_stand/fixtures.ts';
 import { openPage, toast } from './modules.helpers.ts';
-import { call, devScenario } from './shell.helpers.ts';
+import { call, devScenario, type Reply, tenantId } from './shell.helpers.ts';
 
 type AppFn = (route: string, o?: { persona?: Persona }) => Promise<unknown>;
 
@@ -156,3 +157,105 @@ export const EXE = {
 
 /** Телефон: ширина окна меньше 640 px. */
 export const phone = (page: Page): boolean => (page.viewportSize()?.width ?? 1440) < 640;
+
+// W4.74 (Q-W4.12-17) · Данные строк @stand на прогон: стенд один на три ширины (и повторы), поэтому строка не
+// берёт одноразовое из сида (T-65 согласуется один раз, название и ключ проекта уникальны в организации).
+// Что прогон оставляет на стенде: удалять задачи и проекты контракт W4.03 не умеет (нет deleteTask и
+// deleteTaskProject), поэтому каждый прогон добавляет задачу в LOG (LOG-101, LOG-102… — «Готово», а при падении
+// уборка approvalTask переводит её в «Отменена») и проект «Стенд · проверка S…». Темы и названия таких данных
+// начинаются с STAND_MARK: строка @stand, которая считает карточки доски LOG или проекты стенда, отбрасывает их по
+// этой метке (или считает на свежем стенде).
+
+/** Метка данных строк @stand на прогон — начало темы задачи и названия проекта. */
+export const STAND_MARK = 'Стенд · ';
+
+/**
+ * Суффикс прогона: base36 миллисекунд по модулю 36⁵, 5 заглавных знаков (`n` — сдвиг для следующего кандидата).
+ * Повторяется раз в ~16,8 ч — для ключа проекта уникальность проверяет freeProjectKey.
+ */
+export const standSuffix = (n = 0): string =>
+  ((Date.now() + n) % 36 ** 5).toString(36).padStart(5, '0').toUpperCase();
+
+const ok = (r: Reply, what: string): Reply => {
+  if (r.status >= 300) throw new Error(`${what} ${r.status}: ${JSON.stringify(r.body)}`);
+  return r;
+};
+
+/**
+ * Свободный ключ проекта `S<суффикс>` (шаблон ключа ^[A-ZА-ЯЁ][A-ZА-ЯЁ0-9]{1,5}$): ключи всех проектов, видимых
+ * текущему входу (listTaskProjects по всем страницам), исключаются. Проекты строки создаёт владелец, он же их
+ * руководитель — они в списке, поэтому повтор суффикса через ~16,8 ч ключ не займёт.
+ */
+export async function freeProjectKey(page: Page): Promise<string> {
+  const base = `/api/v1/tenants/${await tenantId(page)}/projects`;
+  const taken = new Set<string>();
+  let cursor: string | null | undefined;
+  do {
+    const q = cursor ? `?cursor=${encodeURIComponent(cursor)}` : '';
+    const body = ok(await call(page, 'GET', base + q), 'listTaskProjects').body as {
+      items: { key: string }[];
+      nextCursor?: string | null;
+    };
+    for (const p of body.items) taken.add(p.key);
+    cursor = body.nextCursor;
+  } while (cursor);
+  for (let n = 0; n < 100; n++) {
+    const key = `S${standSuffix(n)}`;
+    if (!taken.has(key)) return key;
+  }
+  throw new Error('нет свободного ключа S<суффикс> среди 100 кандидатов');
+}
+
+interface StandTask {
+  id: string;
+  statusName?: string;
+  statusCategory?: string;
+  availableTransitions?: { key: string; name: string; allowed: boolean; reasonText?: string }[];
+}
+
+/**
+ * Своя задача на согласование на стенде: Марина Котова — руководитель LOG (сид access.go ap1) — в своей сессии
+ * создаёт в «Логистика · Север» (процесс «С согласованием») задачу `title` и проводит её «Взять в работу» →
+ * «На проверку» (transitionTask, If-Match по ETag getTask). Согласует владелец — согласующий и не автор.
+ * Уборка (`undo`, регистрируется сразу после создания): если задача прогона не завершена (категория статуса не
+ * done — прогон упал до «Согласовать» или между переходами), Котова переводит её «Отменить» с комментарием в
+ * «Отменена». Возвращает «выполнить уборку сейчас».
+ */
+export async function approvalTask(
+  session: () => Promise<Session>,
+  title: string,
+  undo: Undo,
+): Promise<() => Promise<void>> {
+  const s = await session();
+  await s.open('/', 'manager');
+  const tenant = await tenantId(s.page);
+  const base = `/api/v1/tenants/${tenant}`;
+  const list = ok(await call(s.page, 'GET', `${base}/projects`), 'listTaskProjects').body as {
+    items: { id: string; name: string }[];
+  };
+  const project = list.items.find((x) => x.name === LOG);
+  if (!project) throw new Error(`нет проекта «${LOG}»`);
+  const created = ok(
+    await call(s.page, 'POST', `${base}/tasks`, { body: { projectId: project.id, title } }),
+    'createTask',
+  ).body as StandTask;
+  const move = async (name: string, comment?: string): Promise<void> => {
+    const cur = ok(await call(s.page, 'GET', `${base}/tasks/${created.id}`), 'getTask');
+    const task = cur.body as StandTask;
+    if (comment !== undefined && task.statusCategory === 'done') return;
+    const tr = task.availableTransitions?.find((x) => x.name === name);
+    if (!tr?.allowed) throw new Error(`«${name}» недоступен: ${tr?.reasonText ?? 'нет перехода'}`);
+    ok(
+      await call(s.page, 'POST', `${base}/tasks/${created.id}/transitions`, {
+        body: { transitionKey: tr.key, ...(comment !== undefined ? { comment } : {}) },
+        ifMatch: cur.headers.etag ?? '',
+      }),
+      `transitionTask «${name}»`,
+    );
+  };
+  const cleanup = undo(`«${title}» — «Отменена», если прогон не довёл до «Готово»`, () =>
+    move('Отменить', 'Уборка e2e: прогон @stand не довёл задачу до согласования.'),
+  );
+  for (const name of ['Взять в работу', 'На проверку']) await move(name);
+  return cleanup;
+}

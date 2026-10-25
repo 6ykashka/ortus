@@ -5,6 +5,7 @@
 import { expect, test } from './_stand/fixtures.ts';
 import { hitHeight, noHorizontalScroll } from './modules.helpers.ts';
 import {
+  approvalTask,
   boardCard,
   card,
   column,
@@ -21,6 +22,8 @@ import {
   ringVisible,
   scenario,
   setProjectRole,
+  STAND_MARK,
+  standSuffix,
   T58,
   T64,
   T65,
@@ -383,12 +386,44 @@ test.describe('tasks-card — карточка задачи @mock', () => {
 test.describe('tasks-card — стенд @stand', () => {
   test.skip(({ harness }) => harness.mode !== 'stand', 'режим stand');
 
-  // fixme (Q-W4.12-17): не повторяем на трёх ширинах одного стенда — T-65 согласуется один раз,
-  // на 768 и 1440 кнопки «Согласовать» уже нет; нужна своя задача на согласование на каждый прогон.
-  test.fixme('согласование T-65 на стенде (W4.11)', async ({ app, page }) => {
+  // W4.74 (Q-W4.12-17): своя задача на согласование на каждый прогон — три ширины подряд на одном стенде.
+  test('согласование своей задачи владельцем на стенде (W4.11)', async ({
+    app,
+    page,
+    session,
+    undo,
+  }) => {
     test.slow();
-    await openT(app, page, T65);
-    await card(page).getByRole('button', { name: 'Согласовать' }).click();
-    await expect(toast(page)).toHaveText('Согласовано');
+    const title = `${STAND_MARK}согласование ${standSuffix()}`;
+    await approvalTask(session, title, undo);
+    await openT(app, page, title);
+    const c = card(page);
+    await expect(c.locator('.ox-tk-status')).toHaveText('На проверке');
+    await expect(c.locator('.ox-tk-appr')).toContainText(
+      'Согласование «Согласовать» · достаточно одного',
+    );
+    await c.getByRole('button', { name: 'Согласовать' }).click();
+    await expect(toast(page)).toHaveText('Согласовано', { timeout: 15_000 });
+    await expect(c.locator('.ox-tk-status')).toHaveText('Готово');
+    await expect(c.locator('.ox-tk-appr')).toHaveCount(0);
+  });
+
+  // W4.74, возврат 1: прогон, упавший между переходами, не оставляет задачу «На проверке» — уборка approvalTask
+  // (руководитель LOG, «Отменить» с комментарием) переводит её в «Отменена»; здесь уборка вызывается сразу.
+  test('уборка задачи прогона: брошенная «На проверке» — «Отменена» (W4.74)', async ({
+    app,
+    page,
+    session,
+    undo,
+  }) => {
+    test.slow();
+    const title = `${STAND_MARK}уборка ${standSuffix()}`;
+    const cleanup = await approvalTask(session, title, undo);
+    await cleanup();
+    await openT(app, page, title);
+    const c = card(page);
+    await expect(c.locator('.ox-tk-status')).toHaveText('Отменена', { timeout: 15_000 });
+    await expect(c.getByRole('button', { name: 'Согласовать' })).toHaveCount(0);
+    await expect(c.locator('.ox-tk-appr')).toHaveCount(0);
   });
 });

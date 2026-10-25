@@ -4,6 +4,7 @@
 import { expect, test } from './_stand/fixtures.ts';
 import { hitHeight } from './modules.helpers.ts';
 import {
+  freeProjectKey,
   LOG,
   OFFLINE,
   openTasks,
@@ -12,6 +13,7 @@ import {
   projectsReady,
   root,
   scenario,
+  STAND_MARK,
   tab,
   toast,
   wizard,
@@ -171,15 +173,33 @@ test.describe('tasks-project-new — «Новый проект» @mock', () => {
 test.describe('tasks-project-new — стенд @stand', () => {
   test.skip(({ harness }) => harness.mode !== 'stand', 'режим stand');
 
-  // fixme (Q-W4.12-17): не повторяем на трёх ширинах одного стенда — проект «Стенд · проверка» и его ключ
-  // уже созданы прогоном 390, на 768 и 1440 тоста «создан» нет; нужно уникальное название на прогон.
-  test.fixme('владелец на стенде создаёт проект (W4.11)', async ({ app, page }) => {
+  // W4.74 (Q-W4.12-17): название и ключ уникальны на прогон — три ширины подряд на одном стенде; ключ — свободный
+  // среди проектов стенда (freeProjectKey). Проект остаётся на стенде (удаления в контракте нет, tasks.helpers.ts).
+  test('владелец на стенде создаёт проект со своим названием и ключом (W4.11)', async ({
+    app,
+    page,
+  }) => {
     test.slow();
     await openTasks(app, page);
     await projectsReady(page);
+    const key = await freeProjectKey(page);
+    const name = `${STAND_MARK}проверка ${key}`;
     await root(page).getByRole('button', { name: 'Новый проект' }).click();
-    await wizard(page).getByLabel('Название').fill('Стенд · проверка');
-    await wizard(page).getByRole('button', { name: 'Создать проект' }).click();
-    await expect(toast(page)).toHaveText('Проект «Стенд · проверка» создан');
+    const w = wizard(page);
+    await w.getByLabel('Название').fill(name);
+    await w.getByLabel('Ключ').fill(key);
+    await expect(w).toContainText(
+      `Номера задач: ${key}-101, ${key}-102… Ключ уникален в организации.`,
+    );
+    await w.getByRole('button', { name: 'Создать проект' }).click();
+    await expect(toast(page)).toHaveText(`Проект «${name}» создан`, { timeout: 15_000 });
+    // Стенд общий и под нагрузкой: проект после создания загружается дольше 5 с (прогон 24.10 на 768).
+    await expect(tab(page, 'Участники')).toHaveAttribute('aria-selected', 'true', {
+      timeout: 15_000,
+    });
+    await root(page).getByRole('button', { name: 'Проекты', exact: true }).click();
+    await expect(projectRow(page, name).locator('.ox-tk-key')).toHaveText(key, {
+      timeout: 15_000,
+    });
   });
 });

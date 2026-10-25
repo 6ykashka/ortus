@@ -4,12 +4,13 @@
 // backend — W4.40 (режим stand). Обязательные пункты verification-protocol §1.3: меню и URL,
 // состояния (загрузка, ошибка, нет связи, гейт), клавиатура, axe, 390 / 1440. Неделя и навигация по датам —
 // no-reference (Q-W4.06-4).
-import type { Locator, Page } from '@playwright/test';
+import type { Locator, Page, Response } from '@playwright/test';
 
-import { expect, test } from './_stand/fixtures.ts';
+import { expect, test, type Undo } from './_stand/fixtures.ts';
 import { phone } from './logistics-review.helpers.ts';
+import { realClock } from './logistics.stand.ts';
 import { h1, hitHeight, noHorizontalScroll, openPage, toast } from './modules.helpers.ts';
-import { devScenario, LOTOS } from './shell.helpers.ts';
+import { call, devScenario, LOTOS, tenantId } from './shell.helpers.ts';
 
 const H1 = 'Календарь ресурсов';
 const DAY = 'Четверг, 1 октября 2026 · Москва (UTC+3)';
@@ -42,6 +43,11 @@ const moveBtn = (page: Page): Locator =>
   panel(page).getByRole('button', { name: 'Проверить и перенести' });
 const period = (page: Page): Locator => section(page).getByRole('group', { name: 'Период' });
 const dateLine = (page: Page): Locator => section(page).locator('.ox-cal-date');
+/** Ответ findCalendarAvailability (POST …/calendar/availability) — слоты после конфликта переноса. */
+const availability = (page: Page): Promise<Response> =>
+  page.waitForResponse(
+    (r) => r.request().method() === 'POST' && r.url().includes('/calendar/availability'),
+  );
 
 /** «Календарь» организации по прямому URL; владелец — на пресете logistics-ready (машины и рейс видны). */
 async function open(
@@ -273,6 +279,27 @@ test.describe('core-calendar — «Календарь» @mock', () => {
     await expect(panel(page)).toContainText('Перерыв меняется в графике специалиста.');
   });
 
+  test('массажист: перенос на 11:00 — конфликт эталона; кнопок слотов нет — нет права (Q-W4.74-1)', async ({
+    app,
+    page,
+  }) => {
+    // Расхождение с эталоном (calVM :4140–4180: «08:00 / 08:15 / 08:30» и у массажиста) до решения Q-W4.74-1:
+    // роль «Массажист» (calendar ['view', 'edit'] → calendar.bookings.read, calendar.bookings.manage) без
+    // calendar.availability.read — findCalendarAvailability 403 forbidden_action. Решение выдать право — вернуть
+    // сюда и в @stand-строку кнопки ['08:00', '08:15', '08:30'] и перенос слотом 08:15.
+    await open(app, page, { persona: 'therapist', preset: null });
+    await pick(page, MASSAGE, 'Классический массаж · Мария К.');
+    await moveTo(page).selectOption({ label: '11:00' });
+    const slots = availability(page);
+    await moveBtn(page).click();
+    const alert = panel(page).getByRole('alert');
+    await expect(alert).toContainText(CONFLICT);
+    expect((await slots).status()).toBe(403);
+    await expect(alert.getByRole('button')).toHaveCount(0);
+    await expect(toast(page)).toHaveCount(0);
+    await expect(block(page, MASSAGE).first()).toBeVisible();
+  });
+
   test('массажист «Лотоса»: «Календарь ресурсов» салона без брони рейса', async ({ app, page }) => {
     await open(app, page, { persona: 'therapist', preset: null, tenant: LOTOS });
     await expect(block(page, 'SPA-ритуал · Ольга Р., 11:30–13:00').first()).toBeVisible();
@@ -445,18 +472,92 @@ test.describe('core-calendar — стенд @stand', () => {
     await expect(rows(page).first()).toBeVisible();
   });
 
-  // fixme (вливание W4.41, Q-W4.41-12): в e2e:stand 20.10 страница открылась на «Четверг, 1 октября 2026», визита
-  // «Классический массаж · Мария К., 10:00–11:00» в этом дне нет (Go-сид W4.40 пишет брони на день сида) — 90 с
-  // тайм-аута на 390/768/1440. Снять, когда дата страницы на стенде и дата сида совпадут (владелец W4.41).
-  test.fixme('массажист на стенде: перенос визита с проверкой всех ресурсов', async ({
+  test('массажист на стенде: перенос визита с проверкой всех ресурсов', async ({
     app,
     page,
+    undo,
   }) => {
-    // W4.40: перенос и свободные слоты — updateCalendarBooking, findCalendarAvailability стенда.
+    // W4.40: перенос и свободные слоты — updateCalendarBooking, findCalendarAvailability стенда. W4.74
+    // (Q-W4.41-12): день страницы — день визита сида, визит до и после строки — на 10:00–11:00.
     test.slow();
-    await openPage(app, page, 'calendar', { persona: 'therapist' });
+    await app('/', { persona: 'therapist' });
+    const alta = await tenantId(page);
+    const day = await seedVisit(page, alta, undo);
+    await realClock(page);
+    await app(`/t/${alta}/calendar?date=${day}`, { persona: 'therapist' });
     await expect(h1(page, H1)).toBeVisible({ timeout: 15_000 });
     await pick(page, MASSAGE, 'Классический массаж · Мария К.');
-    await expect(moveTo(page)).toBeVisible();
+    await moveTo(page).selectOption({ label: '11:00' });
+    const slots = availability(page);
+    await moveBtn(page).click();
+    // Сервер проверяет все ресурсы брони с уборкой: 11:00–12:00 (+15 мин) задевает «SPA-ритуал» на обоих.
+    // Кнопок свободных слотов у массажиста нет ни на стенде, ни в mock (строка @mock выше) — у роли «Массажист»
+    // (сид access.go roleTherapist, MSW r-therapist) нет calendar.availability.read: findCalendarAvailability 403
+    // до решения Q-W4.74-1, поэтому перенос — выбором времени. Выдадут право — проверить кнопки и слот 08:15.
+    await expect(panel(page).getByRole('alert')).toContainText(CONFLICT);
+    expect((await slots).status()).toBe(403);
+    await expect(panel(page).getByRole('alert').getByRole('button')).toHaveCount(0);
+    await expect(block(page, MASSAGE).first()).toBeVisible();
+    await moveTo(page).selectOption({ label: '08:15' });
+    await moveBtn(page).click();
+    await expect(toast(page)).toHaveText('Перенос подтверждён сервером');
+    await expect(panel(page).getByRole('alert')).toHaveCount(0);
+    await expect(block(page, 'Классический массаж · Мария К., 08:15–09:15').first()).toBeVisible();
   });
 });
+
+// W4.74 (Q-W4.41-12) · Визит сида на стенде. Go-сид W4.40 пишет брони на день своего запуска (calendarDay), а часы
+// харнесса — 01.10.2026; стенд один на три ширины, и строка переносит визит — поэтому она находит его сама, ставит на
+// часы сида и возвращает их в уборке.
+
+const HOUR = 3_600_000;
+/** Москва — UTC+3 без перехода на летнее время: день и часы броней сида. */
+const MSK = 3 * HOUR;
+const VISIT = 'Классический массаж · Мария К.';
+
+interface StandBooking {
+  id: string;
+  title: string;
+  window: { startsAt: string; endsAt: string; timeZone: string };
+  resources: unknown[];
+}
+
+/**
+ * Визит «Классический массаж · Мария К.» сида: ищется в окне ±3,5 суток от «сейчас» (стенд мог подняться в другой
+ * день), ставится на 10:00–11:00 своего дня (прошлый прогон мог оставить перенос), уборка — снова 10:00–11:00.
+ * Возвращает день визита «ГГГГ-ММ-ДД» для `?date=`.
+ */
+async function seedVisit(page: Page, tenant: string, undo: Undo): Promise<string> {
+  const base = `/api/v1/tenants/${tenant}/calendar/bookings`;
+  const now = Date.now();
+  const q = new URLSearchParams({
+    from: new Date(now - 84 * HOUR).toISOString(),
+    to: new Date(now + 84 * HOUR).toISOString(),
+    limit: '200',
+  });
+  const list = await call(page, 'GET', `${base}?${q.toString()}`);
+  expect(list.status, `listCalendarBookings ${JSON.stringify(list.body)}`).toBe(200);
+  const visit = (list.body as { items: StandBooking[] }).items.find((b) => b.title === VISIT);
+  if (!visit) throw new Error(`нет визита «${VISIT}» сида в окне ±3,5 суток`);
+  const day = new Date(Date.parse(visit.window.startsAt) + MSK).toISOString().slice(0, 10);
+  const at = (h: number): string =>
+    new Date(Date.parse(`${day}T00:00:00Z`) - MSK + h * HOUR).toISOString();
+  const seedHours = async (): Promise<void> => {
+    const cur = await call(page, 'GET', `${base}/${visit.id}`);
+    expect(cur.status, `getCalendarBooking ${JSON.stringify(cur.body)}`).toBe(200);
+    const b = cur.body as StandBooking;
+    if (Date.parse(b.window.startsAt) === Date.parse(at(10))) return;
+    const r = await call(page, 'PATCH', `${base}/${visit.id}`, {
+      body: {
+        action: 'reschedule',
+        window: { startsAt: at(10), endsAt: at(11), timeZone: b.window.timeZone },
+        resources: b.resources,
+      },
+      ifMatch: cur.headers.etag ?? '',
+    });
+    expect(r.status, `updateCalendarBooking ${JSON.stringify(r.body)}`).toBe(200);
+  };
+  await seedHours();
+  undo(`«${VISIT}» — снова 10:00–11:00`, seedHours);
+  return day;
+}
