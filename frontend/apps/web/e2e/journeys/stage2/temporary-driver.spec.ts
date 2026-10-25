@@ -3,9 +3,9 @@
 // «Одобрить» во «Входящих запросах»; в окне временный водитель видит только свой рейс и машину рейса, после срока у
 // начатого рейса — только сдача, после приёмки — ответ как у несуществующего. Анализ 08-requirements.md J6.
 //   @stand — узкая роль «Временный водитель» (W2.57, у Ахмедова в сиде своей роли нет); часы стенда настоящие, поэтому
-//            окно перевода короткое, от «сейчас» (≈ 2,5 мин), строка ждёт его начала и конца. Машину рейса временному
-//            водителю бронирует владелец: в роли нет fleet.reservations.create (Q-W2.57-1), а осмотр перед выездом
-//            сервер принимает только по брони водителя (рейс в «inspection») — см. отчёт W2.32, вопрос о брони;
+//            окно перевода короткое, от «сейчас» (≈ 2,5 мин), строка ждёт его начала и конца. Машину рейса бронирует
+//            сервер при одобрении запроса с машиной (S2-20, D-35; W2.75 вместо брони владельцем, Q-W2.57-1): одна
+//            предложенная машина — бронь сразу confirmed, «Моя смена» — «Машина на сегодня» → «Начать осмотр» (1c);
 //   @mock  — часы сценарного сервера (`now`); узкая роль «Временный водитель» без домашней (W2.62, Q-W2.32-6: MSW
 //            выдаёт роль при одобрении и открывает машину рейса в осмотре, как backend). После срока у начатого рейса
 //            сдача — командами водителя, как на стенде: экран «Моя смена» в продолжении требует listVehicles
@@ -16,6 +16,7 @@ import type { Browser, Page } from '@playwright/test';
 import { expect, type Session, test, type Undo } from '../../_stand/fixtures.ts';
 import { listUnits } from '../../_stand/stand.ts';
 import { actionBar, DEP_CHECKS } from '../../driver.helpers.ts';
+import { offerCard } from '../../driver-offer.helpers.ts';
 import { tripCars } from '../../logistics-pool-s220.helpers.ts';
 import { driverCard, incomingCard } from '../../logistics-pool.helpers.ts';
 import {
@@ -134,17 +135,15 @@ async function transferFor(owner: Page, tenant: string, trip: Plan) {
  * «Ставим нашу машину» Isuzu Elf → «Отправить запрос» → «Входящие запросы» → «Одобрить» → «Временно назначен».
  *
  * W2.73 (S2-20, D-35): диалог шлёт машину фирмы рейса (1a), строка входящего — «{фирма} просит на рейс {номер}» (1b).
- * Итог одобрения — по ответу сервера (`DriverTransfer.vehicle.hostVehicle.reservationId`): сервер с S2-20 (MSW 0.6.3,
- * backend W2.72) при одобрении бронирует Isuzu Elf водителю и ставит её на рейс — карточка-итог 1f «Машины рейса»;
- * backend без S2-20 поле запроса игнорирует — текст «{псевдоним} назначен на рейс … до …» (W2.23), машину рейса ставит
- * владелец. Возвращает true, если машину забронировал сервер при одобрении.
+ * W2.75: сервер (MSW 0.6.3, backend W2.72) при одобрении бронирует Isuzu Elf водителю (одна машина — сразу
+ * `confirmed`) и ставит её на рейс — карточка-итог 1f «Машины рейса». Бронь владельцем больше не нужна.
  */
 async function requestAndApprove(
   owner: Page,
   tenant: string,
   trip: Plan,
   code: string,
-): Promise<boolean> {
+): Promise<void> {
   await owner.goto(`/t/${tenant}/pool?trip=${trip.id}`);
   await expect(J.h1(owner, 'Ресурсный пул')).toBeVisible({ timeout: 15_000 });
   const card = driverCard(owner, code);
@@ -172,46 +171,14 @@ async function requestAndApprove(
   const x = await transferFor(owner, tenant, trip);
   expect(x?.status, 'запрос одобрен').toBe('approved');
   const car = x?.vehicle?.hostVehicle;
-  if (car?.reservationId) {
-    expect([car.displayName, car.reservationState], 'бронь машины рейса при одобрении').toEqual([
-      ELF,
-      'confirmed',
-    ]);
-    await expect(card.getByText('Машины рейса')).toBeVisible();
-    await expect(tripCars(card)).toHaveCount(1);
-    await expect(tripCars(card).locator('.ox-pl-chip')).toHaveText(
-      new RegExp(`Назначена на ${trip.number}$`),
-    );
-    return true;
-  }
-  await expect(card.getByRole('status')).toContainText(
-    `${code} назначен на рейс ${trip.number} до`,
-  );
-  return false;
-}
-
-/** Машина рейса (assignTripVehicle) и бронь на временного водителя (reserveVehicle владельца, Q-W2.57-1). */
-async function vehicleForTrip(
-  owner: Page,
-  tenant: string,
-  trip: Plan,
-  driver: string,
-  vehicleId: string,
-) {
-  const base = `/api/v1/tenants/${tenant}/fleet`;
-  const cur = J.expectOk(await call(owner, 'GET', `${base}/trip-plans/${trip.id}`), 'getTripPlan');
-  J.expectOk(
-    await call(owner, 'PUT', `${base}/trips/${trip.id}/vehicle`, {
-      body: { vehicleId },
-      ifMatch: cur.headers.etag ?? '',
-    }),
-    'assignTripVehicle',
-  );
-  J.expectOk(
-    await call(owner, 'POST', `${base}/reservations`, {
-      body: { vehicleId, driverMemberId: driver, window: trip.plannedWindow, tripId: trip.id },
-    }),
-    'reserveVehicle за временного водителя',
+  expect(
+    [car?.displayName, car?.reservationState],
+    'бронь машины рейса при одобрении (S2-20)',
+  ).toEqual([ELF, 'confirmed']);
+  await expect(card.getByText('Машины рейса')).toBeVisible();
+  await expect(tripCars(card)).toHaveCount(1);
+  await expect(tripCars(card).locator('.ox-pl-chip')).toHaveText(
+    new RegExp(`Назначена на ${trip.number}$`),
   );
 }
 
@@ -359,24 +326,15 @@ test.describe('выход этапа 2 — AC-06 временный водите
     const pub = await publish(page, alta, { driver: akh.id, home: sever, free: W });
     const trip = await yugTrip(page, alta, yug, W, 'Сборный груз');
     await app(`/t/${alta}/home`, { persona: 'owner' });
-    const reserved = await requestAndApprove(page, alta, trip, pub.displayName);
+    await requestAndApprove(page, alta, trip, pub.displayName);
     const car = (await vehicles(page, alta)).find((v) => v.displayName === ELF);
     if (!car) throw new Error(`нет машины «${ELF}»`);
-    const elf = car.id;
     const cur = J.expectOk(
       await call(page, 'GET', `${T}/fleet/trip-plans/${trip.id}`),
       'getTripPlan',
     );
-    // S2-20: машину рейса поставил сервер при одобрении (бронь водителю, рейс «assigned»); иначе — владелец.
-    if (reserved) expect((cur.body as { vehicleId?: string }).vehicleId, 'машина рейса').toBe(elf);
-    else
-      J.expectOk(
-        await call(page, 'PUT', `${T}/fleet/trips/${trip.id}/vehicle`, {
-          body: { vehicleId: elf },
-          ifMatch: cur.headers.etag ?? '',
-        }),
-        'assignTripVehicle',
-      );
+    // S2-20: машину рейса поставил сервер при одобрении (бронь водителю, рейс «assigned»).
+    expect((cur.body as { vehicleId?: string }).vehicleId, 'машина рейса').toBe(car.id);
     const r208 = (
       J.expectOk(await call(page, 'GET', `${T}/fleet/trip-plans?limit=200`), 'listTripPlans')
         .body as {
@@ -433,21 +391,9 @@ test.describe('выход этапа 2 — AC-06 временный водите
     const { alta, trip, yug, akh, car } = await temporary(app, page);
     const base = `/api/v1/tenants/${alta}/fleet`;
 
-    // В окне (14:30): машину рейса бронирует владелец (Q-W2.32-1), водитель — осмотр и выезд на экране. Бронь при
-    // одобрении (S2-20) экран «Моя смена» временного водителя увидит после W2.74 (1c, «Подтвердить бронь» ему не
-    // показывается); до того шаг владельца остаётся — его заменяет журни W2.75.
+    // В окне (14:30): бронь Isuzu Elf — с одобрения (S2-20, W2.75; бронь владельцем, Q-W2.32-1, больше не нужна),
+    // водитель — «Машина на сегодня» → «Начать осмотр», осмотр и выезд на экране.
     await J.serverNow(page, '2026-10-01T11:30:00Z');
-    J.expectOk(
-      await call(page, 'POST', `${base}/reservations`, {
-        body: {
-          vehicleId: car.id,
-          driverMemberId: akh,
-          window: trip.plannedWindow,
-          tripId: trip.id,
-        },
-      }),
-      'reserveVehicle за временного водителя',
-    );
     await J.relogin(page, 'acc-9');
     const file = await J.jpeg(page, 'Ортус · временный водитель');
     await departOnScreen(page, alta, trip, 'mock', file, Number(car.odometerKm) + 10);
@@ -483,7 +429,10 @@ test.describe('выход этапа 2 — AC-06 временный водите
   });
 });
 
-/** «Моя смена» в окне: рейс перевода, осмотр перед выездом с пятью фото и «Выехать на маршрут». */
+/**
+ * «Моя смена» в окне: рейс перевода; машина одна, бронь с одобрения — «Машина на сегодня» → «Начать осмотр» (S2-20 1c,
+ * W2.74; без «Подтвердить бронь»), осмотр перед выездом с пятью фото и «Выехать на маршрут».
+ */
 async function departOnScreen(
   driver: Page,
   tenant: string,
@@ -495,6 +444,9 @@ async function departOnScreen(
   await driver.goto(`/t/${tenant}/today`);
   await expect(J.h1(driver, 'Моя смена')).toBeVisible({ timeout: 15_000 });
   await expect(driver.getByText(`${trip.number} · ${trip.title}`)).toBeVisible();
+  await expect(J.h2(driver, 'Машина на сегодня')).toBeVisible(J.SERVER);
+  await expect(driver.getByRole('button', { name: 'Подтвердить бронь' })).toHaveCount(0);
+  await offerCard(driver, ELF).getByRole('button', { name: 'Начать осмотр' }).click();
   await expect(J.h2(driver, 'Осмотр перед выездом')).toBeVisible(J.SERVER);
   await J.photos(driver, mode, file);
   await J.fillInspection(driver, String(odometer), DEP_CHECKS);
@@ -679,9 +631,9 @@ async function overdueOnRoute(fx: StandFx, project: string): Promise<Overdue> {
     free: { startsAt: iso(Date.now() + 2000), endsAt: iso(end + 60_000), timeZone: MSK },
   });
   const trip = await yugTrip(owner.page, s.tenant, yug, window, `Пул W2.32 ${label(project)}`);
-  // Машина рейса и бронь — владелец (backend без S2-20; с W2.72 и W2.74 шаг заменяет журни W2.75).
+  // Машина рейса и бронь — сервер при одобрении (S2-20, W2.72; W2.75 вместо брони владельцем). Отзыв перевода в уборке
+  // снимает и эту бронь (`transfer_ended`) — Isuzu Elf не остаётся занятой после упавшей попытки (Q-W2.73-10).
   await requestAndApprove(owner.page, s.tenant, trip, pub.displayName);
-  await vehicleForTrip(owner.page, s.tenant, trip, s.members.akhmedov, elf.id);
   expect(Date.now(), 'одобрение и бронь — до начала окна').toBeLessThan(begin);
 
   const driver = await akhmedov(session);
@@ -711,7 +663,7 @@ async function overdueOnRoute(fx: StandFx, project: string): Promise<Overdue> {
     grant: { state: 'closing', overdue: true },
   });
   // Бронь после срока закрыта: фактический ответ записан явно (стенд 19.10, три проекта — 403; в роли нет
-  // fleet.reservations.create, Q-W2.57-1), чтобы смена ответа шлюза (например, после D-35/W2.75) была замечена.
+  // fleet.reservations.create — D-35, вариант (a) отклонён, AC-06 S2-20), чтобы смена ответа шлюза была замечена.
   const reserve = await call(driver, 'POST', `${base}/reservations`, {
     body: { vehicleId: elf.id, driverMemberId: s.members.akhmedov, window, tripId: trip.id },
   });
