@@ -18,8 +18,10 @@ import {
   OFFLINE,
   type Opened,
   openForm,
+  openStandForm,
   phone,
   reopen,
+  responseIdOf,
   serious,
   smallTargets,
   tab,
@@ -442,9 +444,37 @@ test.describe('forms-responses — «Ответы» @mock', () => {
 test.describe('forms-responses — стенд @stand', () => {
   test.skip(({ harness }) => harness.mode !== 'stand', 'режим stand');
 
-  test.fixme('владелец на стенде: сводка и лента «Осмотра машины»', async ({ app, page }) => {
-    // W4.21: listFormResponses, getFormResponseSummary, exportFormResponses стенда — до W4.21 тег Forms отвечает 501.
-    await openForm(app, page, { tab: 'responses' });
+  // W4.73: ответы сида W4.21 — R-0988 (v2, Кирилл Громов) и R-1012 (v3, Илья Васильев, Рейс Р-196) с записью au-2 «в БЗ».
+  // Число ответов не фиксируется: осмотры водителя соседних строк стенда (W4.24) добавляют ответы «Осмотра машины»;
+  // R-1012 выбирается прямой ссылкой `&resp=`, а не позицией в ленте. Строка только читает.
+  test('владелец на стенде: сводка и лента «Осмотра машины»', async ({ app, page }) => {
+    const o = await openStandForm(app, page, { tab: 'responses' });
+    await expect(tab(page, 'responses')).toHaveAttribute('aria-selected', 'true');
     await expect(view(page, 'Сводка')).toHaveAttribute('aria-pressed', 'true');
+    await expect(panel(page).locator('.ox-fr-rs-count')).toHaveText(/^\d+ ответ(|а|ов)$/);
+    await expect(stat(page, 'Пробег по одометру, км')).toContainText(/Число · ответили \d+ из \d+/);
+    await expect(stat(page, 'Есть дефекты?').locator('.ox-fr-bar-head span').first()).toHaveText(
+      'да',
+    );
+    await expect(panel(page).getByRole('button', { name: 'Выгрузить CSV' })).toBeEnabled();
+    const id = await responseIdOf(page, o, 'R-1012');
+    const u = new URL(page.url());
+    await app(`${u.pathname}${u.search}&resp=${id}`, { persona: 'owner' });
+    await expect(view(page, 'Лента')).toHaveAttribute('aria-pressed', 'true');
+    await expect(feedRow(page, 'R-1012')).toHaveAttribute('aria-pressed', 'true');
+    await expect(feedRow(page, 'R-1012')).toContainText('Илья Васильев · 27.09 09:05');
+    await expect(feedRow(page, 'R-0988')).toContainText('v2');
+    await expect(card(page).getByRole('heading', { level: 3 })).toHaveText('R-1012 · Рейс Р-196');
+    await expect(card(page).locator('.ox-fr-resp-status')).toHaveText('Принят');
+    await expect(card(page)).toContainText(
+      'Илья Васильев · 27.09 09:05 · показан по структуре версии v3',
+    );
+    await expect(row(page, 'Уровень топлива')).toContainText('¾');
+    await expect(row(page, 'Есть дефекты?')).toContainText('нет');
+    await expect(row(page, 'Описание дефекта')).toContainText('Не показывался по условию');
+    await expect(journal(page).getByRole('heading', { level: 3 })).toHaveText('Журнал действий');
+    await expect(journal(page)).toContainText(
+      'Строка в таблице «Осмотры» · страница «Журнал осмотров машин» · 27.09 09:12 · правило v1',
+    );
   });
 });

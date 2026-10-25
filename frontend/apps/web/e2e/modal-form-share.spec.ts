@@ -11,6 +11,7 @@ import {
   FOREMAN,
   formsApi,
   openForm,
+  openStandForm,
   patchForm,
   phone,
   serious,
@@ -135,10 +136,21 @@ test.describe('modal-form-share — «Поделиться формой» @mock'
 test.describe('modal-form-share — стенд @stand', () => {
   test.skip(({ harness }) => harness.mode !== 'stand', 'режим stand');
 
-  test.fixme('владелец на стенде: ссылка для сотрудников', async ({ app, page }) => {
-    // W4.21: getForm стенда (FormShare) — до W4.21 тег Forms отвечает 501.
-    await openForm(app, page, { tab: 'settings' });
+  // W4.73: «Осмотр машины» сида W4.21 — опубликована, доступ «Сотрудники организации»: ссылка `{origin}/forms/{id}`.
+  test('владелец на стенде: ссылка для сотрудников', async ({ app, page }) => {
+    const o = await openStandForm(app, page, { tab: 'settings' });
     await share(page).click();
-    await expect(dialog(page).getByLabel('Ссылка для сотрудников')).toBeVisible();
+    const d = dialog(page);
+    await expect(d.getByRole('heading', { level: 2 })).toHaveText('Поделиться формой');
+    await expect(d).toContainText('Доступ настраивается во вкладке «Настройки».');
+    await expect(d.getByLabel('Ссылка для сотрудников')).toHaveValue(
+      new RegExp(`/forms/${o.form}$`),
+    );
+    await expect(d).toContainText(
+      'Откроется после входа. Ответить могут сотрудники с правом «Формы» в области формы.',
+    );
+    await page.keyboard.press('Escape');
+    await expect(d).toHaveCount(0);
+    await expect(share(page)).toBeFocused();
   });
 });

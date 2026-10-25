@@ -10,6 +10,7 @@ import {
   FOREMAN,
   INSP,
   openForm,
+  openStandForm,
   phone,
   reopen,
   serious,
@@ -201,9 +202,39 @@ test.describe('forms-versions — «Версии» @mock', () => {
 test.describe('forms-versions — стенд @stand', () => {
   test.skip(({ harness }) => harness.mode !== 'stand', 'режим stand');
 
-  test.fixme('владелец на стенде: версии «Осмотра машины»', async ({ app, page }) => {
-    // W4.21: listFormVersions стенда — до W4.21 тег Forms отвечает 501.
-    await openForm(app, page, { tab: 'versions' });
-    await expect(list(page)).toHaveCount(3);
+  // W4.73: сид W4.21 (backend/internal/modules/forms/demo.go) — v1 02.09, v2 10.09, v3 24.09 (Дарья Зимина, 7 вопросов).
+  // Строка только читает: версии сида неизменяемы, новых версий «Осмотра машины» соседние строки стенда не публикуют.
+  test('владелец на стенде: версии «Осмотра машины»', async ({ app, page }) => {
+    await openStandForm(app, page, { tab: 'versions' });
+    await expect(tab(page, 'versions')).toContainText('3');
+    await expect(list(page).locator('strong')).toHaveText(['Версия 3', 'Версия 2', 'Версия 1']);
+    await expect(list(page).first()).toContainText('Действует');
+    await expect(list(page).first()).toContainText('24.09.2026 · Дарья Зимина · вопросов: 7');
+    await expect(list(page).first()).toHaveAttribute('aria-pressed', 'true');
+    await expect(ver(page).getByRole('heading', { level: 3 })).toHaveText(
+      'Структура версии 3 · неизменяема',
+    );
+    await expect(ver(page).locator('.ox-fr-vpage')).toHaveText([
+      'Фото',
+      'Показания',
+      'Проверка',
+      'Дефекты',
+    ]);
+    await expect(q(page, 'Пробег по одометру, км')).toContainText(
+      'ID q-odo · Число · обязательный',
+    );
+    await expect(q(page, 'Описание дефекта')).toContainText(
+      'ID q-defect-text · Короткий текст · обязательный · если «Есть дефекты?» = да',
+    );
+    await expect(ver(page)).toContainText(
+      'Убрано относительно предыдущей версии: «Уровень топлива»',
+    );
+    await list(page).nth(1).click();
+    await expect(list(page).nth(1)).toHaveAttribute('aria-pressed', 'true');
+    await expect(ver(page).getByRole('heading', { level: 3 })).toHaveText(
+      'Структура версии 2 · неизменяема',
+    );
+    await expect(q(page, 'Пробег по одометру, км')).toContainText('Текст изменён');
+    await expect(q(page, 'Чек-лист: кузов, шины, документы')).toContainText('Добавлено');
   });
 });

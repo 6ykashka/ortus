@@ -185,6 +185,41 @@ export async function serious(page: Page, axe: (p: Page) => Promise<AxeResult>):
     .map((v) => `${v.id}: ${v.nodes.map((n) => n.target.join(' ')).join(', ')}`);
 }
 
+/**
+ * W4.73 · Режим stand: вход персонажа и форма `name` «Альты» на вкладке `tab` по прямому URL — как `openForm`, но без
+ * пресета `logistics-ready` и без `before`: `/api/v1/dev/scenario` есть только у сценарного сервера MSW (на стенде —
+ * 404), роли и модули владельцу даёт сид стенда (W4.21).
+ */
+export async function openStandForm(
+  app: AppFn,
+  page: Page,
+  o: { persona?: Persona; name?: string; tab?: Tab; extra?: string } = {},
+): Promise<Opened> {
+  const persona = o.persona ?? 'owner';
+  await app('/', { persona });
+  const tenant = await tenantId(page);
+  const form = await formIdOf(page, tenant, o.name ?? INSP);
+  const tab = o.tab ? `&tab=${o.tab}` : '';
+  await app(`/t/${tenant}/forms?form=${form}${tab}${o.extra ?? ''}`, { persona });
+  await editor(page).waitFor({ timeout: 20_000 });
+  return { tenant, form };
+}
+
+/** W4.73 · Id ответа формы по номеру («R-1012»): `listFormResponses` по всем страницам курсора. */
+export async function responseIdOf(page: Page, o: Opened, number: string): Promise<string> {
+  let cursor = '';
+  for (let i = 0; i < 20; i++) {
+    const q = `?limit=100${cursor ? `&cursor=${encodeURIComponent(cursor)}` : ''}`;
+    const r = await call(page, 'GET', `${formsApi(o)}/responses${q}`);
+    const body = r.body as { items?: { id: string; number: string }[]; nextCursor?: string | null };
+    const hit = body.items?.find((x) => x.number === number);
+    if (hit) return hit.id;
+    if (!body.nextCursor) break;
+    cursor = body.nextCursor;
+  }
+  throw new Error(`нет ответа ${number} формы ${o.form}`);
+}
+
 /** Корень формы API тега Forms. */
 export const formsApi = (o: Opened): string => `/api/v1/tenants/${o.tenant}/forms/${o.form}`;
 

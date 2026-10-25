@@ -13,6 +13,7 @@ import {
   OFFLINE,
   openForm,
   openFromMenu,
+  openStandForm,
   openWithoutRight,
   phone,
   reopen,
@@ -278,11 +279,29 @@ test.describe('forms-settings — «Настройки» @mock', () => {
 test.describe('forms-settings — стенд @stand', () => {
   test.skip(({ harness }) => harness.mode !== 'stand', 'режим stand');
 
-  test.fixme('владелец на стенде: настройки «Осмотра машины»', async ({ app, page }) => {
-    // W4.21: getForm и updateForm стенда (Go-хендлеры форм) — до W4.21 тег Forms отвечает 501.
-    await openForm(app, page, { tab: 'settings' });
-    await expect(panel(page).getByRole('heading', { level: 3 }).first()).toHaveText(
+  // W4.73: настройки сида W4.21 — значения по умолчанию (forms/settings.go defaultSettings): доступ «Сотрудники
+  // организации», вся организация, хранить 365 дней. Строка только читает: общие настройки формы не меняются.
+  test('владелец на стенде: настройки «Осмотра машины»', async ({ app, page }) => {
+    await openStandForm(app, page, { tab: 'settings' });
+    await expect(tab(page, 'settings')).toHaveAttribute('aria-selected', 'true');
+    await expect(panel(page).getByRole('heading', { level: 3 })).toHaveText([
       'Кто может ответить',
+      'Приём ответов',
+      'Тест с баллами',
+      'Вид формы',
+    ]);
+    await expect(radio(page, /^Сотрудники организации/)).toHaveAttribute('aria-checked', 'true');
+    await expect(radio(page, /^Все, у кого есть ссылка/)).toBeEnabled();
+    await expect(radio(page, /^По персональному приглашению/)).toBeDisabled();
+    await expect(page.getByLabel('Область формы')).toHaveValue('');
+    await expect(panel(page)).toContainText(
+      'Форму и ответы видят роли с правами «Формы» в этой области.',
     );
+    await expect(page.getByLabel('Хранить ответы')).toHaveValue('365');
+    await expect(page.getByLabel('Текст после отправки')).toHaveValue('Спасибо! Ответ отправлен.');
+    await expect(page.getByLabel('Логотип и название организации')).toBeChecked();
+    await expect(page.getByLabel('Прогресс по страницам')).toBeChecked();
+    await expect(page.getByLabel('Кнопка «Назад» между страницами')).toBeChecked();
+    await expect(page.getByLabel('Считать баллы за варианты ответа')).not.toBeChecked();
   });
 });

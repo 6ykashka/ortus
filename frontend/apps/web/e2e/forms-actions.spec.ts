@@ -13,6 +13,7 @@ import {
   OFFLINE,
   openForm,
   openFromMenu,
+  openStandForm,
   openWithoutRight,
   phone,
   serious,
@@ -464,9 +465,28 @@ test.describe('forms-actions — «Действия после ответа» @m
 test.describe('forms-actions — стенд @stand', () => {
   test.skip(({ harness }) => harness.mode !== 'stand', 'режим stand');
 
-  test.fixme('владелец на стенде: правила «Осмотра машины»', async ({ app, page }) => {
-    // W4.21: listFormRules, createFormRule, backfillFormRule стенда — до W4.21 тег Forms отвечает 501.
-    await openForm(app, page, { tab: 'actions' });
+  // W4.73: правила сида W4.21 — au-1 «Создать задачу» («Проверить осмотр» → Марина Котова) и au-2 «Сохранить в Базу
+  // знаний» (таблица «Осмотры» страницы «Журнал осмотров машин»). Число записанных ответов au-2 не фиксируется:
+  // осмотры водителя соседних строк стенда (W4.24) добавляют ответы. Строка только читает.
+  test('владелец на стенде: правила «Осмотра машины»', async ({ app, page }) => {
+    await openStandForm(app, page, { tab: 'actions' });
+    await expect(tab(page, 'actions')).toContainText('2');
     await expect(rules(page)).toHaveCount(2);
+    const task = rule(page, 'Создать задачу');
+    await expect(task).toContainText('Задача «Проверить осмотр» → Марина Котова');
+    await expect(task).toContainText('после принятия ответа · правило v1');
+    await expect(task.getByLabel('Включено')).toBeChecked();
+    const kb = rule(page, 'Сохранить в Базу знаний');
+    await expect(kb).toContainText(KB_TEXT);
+    await expect(kb).toContainText(/после принятия ответа · правило v1 · записано ответов: \d+/);
+    await expect(kb.getByLabel('Включено')).toBeChecked();
+    await expect(kb.getByRole('button', { name: 'Открыть страницу' })).toBeVisible();
+    await expect(panel(page).locator('.ox-fr-adds button')).toHaveText([
+      'add_taskСоздать задачу',
+      'notificationsУведомить сотрудника',
+      'mailПисьмо на почту',
+      'webhookHTTP-запрос',
+      'menu_bookСохранить в Базу знаний',
+    ]);
   });
 });
