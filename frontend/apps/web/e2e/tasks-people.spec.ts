@@ -26,6 +26,15 @@ const row = (page: Page, name: string): Locator =>
 const names = (page: Page): Locator => memberRows(page).locator('.ox-tset-mname');
 const add = (page: Page): Locator => pane(page).locator('.ox-tset-add');
 
+/** Строка Ильи Васильева («Водители Север» → «Исполнитель»): замок с ролью, без выбора роли и «Исключить». */
+async function groupRowLocked(page: Page): Promise<void> {
+  const ilya = row(page, 'Илья Васильев');
+  await expect(ilya).toContainText('Назначен через группу «Водители Север»');
+  await expect(ilya.locator('.ox-tset-lock')).toContainText('Исполнитель');
+  await expect(ilya.getByRole('combobox')).toHaveCount(0);
+  await expect(pane(page).getByRole('button', { name: 'Исключить Илья Васильев' })).toHaveCount(0);
+}
+
 test.describe('tasks-people — «Участники» @mock', () => {
   test.skip(({ harness }) => harness.mode !== 'mock', 'сценарии — сценарный сервер mock');
   test.setTimeout(90_000);
@@ -158,6 +167,16 @@ test.describe('tasks-people — «Участники» @mock', () => {
     await expect(pane(page)).toContainText(
       'Роль в проекте — это назначение роли с областью «проект»; оно видно и в «Пользователях и ролях». Унаследованный доступ (замок) меняется только там.',
     );
+  });
+
+  // W4.87: участник через группу — роль меняется в «Пользователях и ролях» (контракт W4.03: editable false у
+  // source group; Q-W4.03-2). В эталоне — выбор роли и «Исключить» (allowlist tasks-people.md, «Данные»).
+  test('участник через группу: замок с ролью «Исполнитель», без выбора роли и «Исключить»', async ({
+    app,
+    page,
+  }) => {
+    await openProjectTab(app, page, 'people');
+    await groupRowLocked(page);
   });
 
   test('«Добавить» — «Роль назначена»; смена роли — «Роль изменена»; «Исключить»', async ({
@@ -319,5 +338,16 @@ test.describe('tasks-people — стенд @stand', () => {
     await openProjectTab(app, page, 'people');
     await expect(memberRows(page).first()).toBeVisible({ timeout: 15_000 });
     await expect(names(page)).toContainText(['Марина Котова']);
+  });
+
+  // W4.87: сид стенда — то же назначение ap2 «Водители Север» → «Исполнитель» в LOG (cmd/seed/access.go).
+  test('владелец на стенде: участник через группу — замок, без выбора роли и «Исключить»', async ({
+    app,
+    page,
+  }) => {
+    test.slow();
+    await openProjectTab(app, page, 'people');
+    await expect(memberRows(page).first()).toBeVisible({ timeout: 15_000 });
+    await groupRowLocked(page);
   });
 });

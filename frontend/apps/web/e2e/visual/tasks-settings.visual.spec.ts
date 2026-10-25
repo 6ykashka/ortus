@@ -85,6 +85,31 @@ async function phoneTweaks(page: Page): Promise<void> {
   });
 }
 
+/**
+ * W4.87 · «Участники»: должности сотрудника (m.title эталона — «Владелец», «Логист», «Водитель», «Диспетчер ·
+ * Самара») в контракте нет (запись `.ox-tset-names` allowlist/tasks-people.md, Q-W4.13-4) — на эталоне перед
+ * снимком подпись под именем убирается, как данные без контракта у tasks-leads. Иначе на 768 «Диспетчер · Самара»
+ * в две строки поднимает строку на 31 px и сдвигает всё ниже.
+ */
+async function dropTitles(page: Page, view: View): Promise<void> {
+  if (view !== 'people') return;
+  const n = await card(page).evaluate((root) => {
+    let count = 0;
+    for (const strong of Array.from(root.querySelectorAll('strong'))) {
+      const names = strong.parentElement;
+      const ava = names?.previousElementSibling;
+      const sub = strong.nextElementSibling;
+      // Ячейка «Сотрудник»: [инициалы][имя + подпись].
+      if (sub?.tagName === 'SPAN' && ava && /^[А-ЯЁ]{2}$/.test(ava.textContent?.trim() ?? '')) {
+        sub.remove();
+        count += 1;
+      }
+    }
+    return count;
+  });
+  if (n === 0) throw new Error('на эталоне нет подписей должности под именами участников');
+}
+
 async function openBoth(
   app: (route: string, o?: { persona?: 'owner' }) => Promise<unknown>,
   page: Page,
@@ -94,6 +119,7 @@ async function openBoth(
   const ref = await reference(undefined, { persona: 'owner', hidePanel: true });
   await openOnReference(ref.page, view);
   await act(ref.page, view);
+  await dropTitles(ref.page, view);
   await app('/', { persona: 'owner' });
   const alta = await tenantId(page);
   const log = await projectId(page, alta, 'LOG');
