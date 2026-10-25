@@ -177,6 +177,44 @@ func Derive(t Tenant) Subscription {
 	return sub
 }
 
+// quotaOf is the storage quota in force: a manual entitlement hides the plan one of the same key.
+func quotaOf(s Subscription) (int64, bool) {
+	var plan, manual *Entitlement
+	for i := range s.Entitlements {
+		e := &s.Entitlements[i]
+		if e.Key != KeyStorageQuota {
+			continue
+		}
+		if e.SourceType == SourceManual {
+			manual = e
+		} else {
+			plan = e
+		}
+	}
+	if manual != nil {
+		return manual.Value, true
+	}
+	if plan != nil {
+		return plan.Value, true
+	}
+	return 0, false
+}
+
+// UpdateDetails are the details of the platform_audit row of an update of an operator: the statuses, the plan and
+// the ends of the periods; quotaBytes — the storage quota in force when the update changed it (W4.84, the journal
+// line «{tenant}: квота N ГБ»).
+func UpdateDetails(cur, next Subscription) map[string]string {
+	d := map[string]string{
+		"fromStatus": cur.Status, "toStatus": next.Status, "planKey": next.PlanKey, "trialEndsAt": stamp(next.TrialEndsAt),
+		"periodEndsAt": stamp(next.PeriodEndsAt), "graceEndsAt": stamp(next.GraceEndsAt),
+	}
+	before, _ := quotaOf(cur)
+	if after, ok := quotaOf(next); ok && after != before {
+		d["quotaBytes"] = strconv.FormatInt(after, 10)
+	}
+	return d
+}
+
 // Transition is one step of the lifecycle.
 type Transition struct {
 	From, To string

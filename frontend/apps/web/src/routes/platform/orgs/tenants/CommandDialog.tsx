@@ -4,7 +4,7 @@
 // 5 символов или длиннее 500 (тогда — ошибка под полем); 422 — ошибка под полем; прочие ошибки — тост оболочки,
 // диалог остаётся открытым.
 import { ProblemError } from '@ortus/api-client';
-import { errors, platform, shell, toast } from '@ortus/texts';
+import { errors, format, platform, shell, toast } from '@ortus/texts';
 import { Button, Dialog, Field, Icon, Textarea, type Tone } from '@ortus/ui';
 import { type ReactElement, useEffect, useId, useState } from 'react';
 
@@ -59,6 +59,25 @@ export const COMMANDS = {
     danger: false,
   }),
 } as const;
+
+/**
+ * W4.84: «Изменить квоту «{name}» на {gb} ГБ?» (opVM :3566): квота меньше занятого — опасное действие с
+ * предупреждением о загрузках, иначе — «Новые загрузки остаются доступны».
+ */
+export function quotaCommand(name: string, gb: string, used: string, below: boolean): CommandSpec {
+  return {
+    title: format(C.quotaTitle, { name, gb }),
+    text: format(C.quotaText, { used }),
+    items: below
+      ? [
+          { icon: 'block', tone: 'danger', text: C.quotaBelow },
+          { icon: 'inventory_2', tone: 'ok', text: C.filesKept },
+        ]
+      : [{ icon: 'check', tone: 'ok', text: C.uploadsOk }],
+    confirm: C.quotaConfirm,
+    danger: below,
+  };
+}
 
 /** Текст ошибки поля из 422: нарушение поля `reason`, иначе общий текст кода. */
 function reasonError(e: unknown): string | undefined {

@@ -1,19 +1,15 @@
 # Allowlist `platform-org-card` (W1.25)
 
 Сверка карточки организации оператора (`/platform/tenants?org=<tenantId>`, `<aside>` pg.tenants :1554–1580) и диалогов
-`opConfirm` (:2176–2201) со снимком `design-stage-1`. Формат и поле `decision` — как в `platform-orgs.md`.
+`opConfirm` (:2176–2201) со снимком эталона (W4.84 — `design-2026-10-19`). Формат и поле `decision` — как в `platform-orgs.md`.
 
-## Данные, которых нет в контракте оператора этапа 1 (W4.60, W4.61)
+## Данные W4.60 (W4.84)
 
-- kind: out-of-stage · target: dd:Владелец, dd:Модули, dd:Участники → «—» · mode: both · reason: владельца, подключённых модулей и числа участников в Tenant и Subscription нет (этап 4: пользователи и использование — W4.60/W4.61); эталон приводится · decision: PD-50, Q-W1.25-1 · owner: W1.25 · expires: stage-4
-- kind: out-of-stage · target: dd:Место, .ox-org-seats — «— из {квота} ГБ», «— из {лимит}» · mode: both · reason: занятое место и занятые места — этап 4; квота и лимит — права подписки; эталон приводится · decision: PD-50, Q-W1.25-1 · owner: W1.25 · expires: stage-4
-- kind: out-of-stage · target: label:Квота места100 ГБ25 ГБ · меньше занятого50 ГБ100 ГБ250 ГБ500 ГБ · mode: both · reason: «Квота места» и «Применить» — updatePlatformSubscription (причина и ручное право со сроком, в эталоне их нет) до W4.60 (screens.yaml platform-tenants); эталон приводится (блок убран) · decision: PD-50, Q-W1.25-2 · owner: W1.25 · expires: stage-4
-- kind: out-of-stage · target: button:Применить · mode: both · reason: пара предыдущей записи · decision: PD-50, Q-W1.25-2 · owner: W1.25 · expires: stage-4
-- kind: out-of-stage · target: dd:Тариф — срок подписки («12 мес», «помесячно») · mode: both · reason: срока подписки в Subscription нет: оплаченная — ««Команда» · цены vN»; пробная совпадает с эталоном · decision: PD-50, Q-W1.25-10 · owner: W1.25 · expires: stage-4
-- kind: out-of-stage · target: dd:Оплата — сумма « · 6 800 ₽/мес» · mode: both · reason: прайс и срок — этап 4 (W4.60); показывается «Оплачено до ДД.ММ.ГГГГ» · decision: PD-50, Q-W1.25-10 · owner: W1.25 · expires: stage-4
-- kind: out-of-stage · target: text:Заявка SR-12: переход на «Бизнес» от 29.09 16:40 · mode: both · reason: заявки на тариф — страница и контракт этапа 4 (W4.60/W4.61); плашки «Открыть заявку» у «SPA «Лотос»» нет · decision: PD-50, Q-W1.25-1 · owner: W1.25 · expires: stage-4
-- kind: out-of-stage · target: button:Открыть заявку · mode: both · reason: пара предыдущей записи · decision: PD-50, Q-W1.25-1 · owner: W1.25 · expires: stage-4
-- kind: label · target: dd:Тариф «цены v2» у оплаченных организаций в mock · mode: mock · reason: проекция сида MSW (adapter core/project.ts) пишет sourceRef прав с текущей версией прайса v2 для всех организаций; эталон: «цены v1» у «Лотоса», «Ремстроя», «Карго» · decision: PD-43, Q-W1.25-10 · owner: W1.25
+- kind: label · target: dd:Тариф «Старт» без «помесячно» у «Ремстрой Плюс» · mode: both · reason: срок есть только у оплаченного периода (Subscription.termMonths отсутствует у пробного и после неоплаченного пробного периода); эталон пишет «помесячно» по plan.term = 1 сида прототипа; сверка значений карточки (platform-orgs.compare.ts comparableValues) убирает «помесячно» только в этом случае · decision: PD-22, Q-W4.84-5 · owner: W4.84
+- kind: no-reference · target: alert:Не удалось загрузить использование: {ошибка} · mode: both · reason: ошибки getPlatformUsage в эталоне нет; alert в карточке с «Повторить», владелец, модули и занятое место — «—», места и участники остаются (Tenant) · decision: PD-22, Q-W4.84-6 · owner: W4.84
+- kind: no-reference · target: dd[data-loading] Владелец, Модули, Место и .ox-org-row [data-loading] владелец и место — пока getPlatformUsage не ответил · mode: both · reason: эталон берёт данные синхронно; значения из «Использования» — скелетон со скрытым «Загрузка», как значения подписки (Q-W1.25-17) · decision: PD-22, Q-W4.84-6 · owner: W4.84
+- kind: no-reference · target: label:Причина — диалог «Изменить квоту «{организация}» на {N} ГБ?» · mode: both · reason: updatePlatformSubscription требует причину 5–500 и основание ручного права (в эталоне поля нет); поле — как у трёх команд W1.25, причина пишется и основанием права, срок права — 12 месяцев · decision: PD-22, Q-W4.84-1, Q-W4.84-2 · owner: W4.84
+- kind: state · target: заявки не прочитаны (403 роли поддержки, ошибка listPlatformSubscriptionRequests) — плашки «Заявка …» нет · mode: both · reason: роль без platform.billing.read заявок не видит (Q-W4.07-14); сбой чтения не мешает карточке, alert не показывается · decision: PD-22, Q-W4.84-4 · owner: W4.84
 
 ## Расхождения режимов mock и stand
 

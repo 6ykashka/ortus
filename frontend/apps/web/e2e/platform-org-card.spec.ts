@@ -59,12 +59,12 @@ test.describe('platform-org-card — карточка организации @mo
       'Тариф',
       'Оплата',
     ]);
-    await expect(cardValue(card, 'Владелец')).toHaveText('—');
+    await expect(cardValue(card, 'Владелец')).toHaveText('Дарья Зимина');
     await expect(cardValue(card, 'Пробный период')).toHaveText('Осталось 12 дн. · до 13.10.2026');
-    await expect(cardValue(card, 'Место')).toHaveText('— из 100 ГБ');
+    await expect(cardValue(card, 'Место')).toHaveText('46,2 из 100 ГБ');
     await expect(cardValue(card, 'Тариф')).toHaveText('«Старт» · пробный · цены v2');
     await expect(cardValue(card, 'Оплата')).toHaveText('Пробный период');
-    await expect(card.locator('.ox-org-seats')).toHaveText('— из 10');
+    await expect(card.locator('.ox-org-seats')).toHaveText('9 из 10');
     await expect(card.getByRole('button', { name: EXTEND })).toBeVisible();
     await expect(card.getByRole('button', { name: RESTRICT })).toBeVisible();
     await expect(card.getByRole('button', { name: LIFT })).toHaveCount(0);
@@ -79,9 +79,9 @@ test.describe('platform-org-card — карточка организации @mo
   }) => {
     await openCard(app, page, 'SPA «Лотос»');
     const card = orgCard(page, 'SPA «Лотос»');
-    await expect(cardValue(card, 'Оплата')).toHaveText('Оплачено до 31.03.2027');
+    await expect(cardValue(card, 'Оплата')).toHaveText('Оплачено до 31.03.2027 · 6 800 ₽/мес');
     await expect(cardValue(card, 'Пробный период')).toHaveText('Не применяется');
-    await expect(cardValue(card, 'Тариф')).toHaveText(/^«Команда» · цены v\d$/);
+    await expect(cardValue(card, 'Тариф')).toHaveText('«Команда» · 12 мес · цены v1');
     await expect(card.getByRole('button', { name: EXTEND })).toHaveCount(0);
     await expect(card.getByRole('button', { name: RESTRICT })).toBeVisible();
   });
@@ -109,6 +109,147 @@ test.describe('platform-org-card — карточка организации @mo
     await expect(card.getByRole('button', { name: LIFT })).toBeVisible();
     await expect(card.getByRole('button', { name: RESTRICT })).toHaveCount(0);
     await expect(card.getByRole('button', { name: EXTEND })).toHaveCount(0);
+  });
+
+  // W4.84: данные W4.60 (opVM :3549–3563): владелец, модули, участники, занятое место и места, срок и сумма.
+  test('W4.84 «Альта Групп»: владелец, модули, участники, место и места с заливкой', async ({
+    app,
+    page,
+  }) => {
+    await openOrgs(app, page);
+    const card = orgCard(page, 'Альта Групп');
+    await expect(cardValue(card, 'Владелец')).toHaveText('Дарья Зимина');
+    await expect(cardValue(card, 'Модули')).toHaveText('Салон и SPA');
+    await expect(cardValue(card, 'Участники')).toHaveText('10');
+    await expect(cardValue(card, 'Место')).toHaveText('46,2 из 100 ГБ');
+    await expect(card.locator('.ox-org-seats')).toHaveText('9 из 10');
+    const fills = await card
+      .locator('.ox-orgs-bar-fill')
+      .evaluateAll((els) => els.map((e) => (e as HTMLElement).style.width));
+    expect(fills).toEqual(['46.2%', '90%']);
+    await expect(card.locator('.ox-orgs-bar').nth(1)).toHaveAttribute('data-tone', 'warn');
+  });
+
+  test('W4.84 «SPA «Лотос»»: срок и сумма подписки, плашка заявки SR-12 и «Открыть заявку»', async ({
+    app,
+    page,
+  }) => {
+    await openCard(app, page, 'SPA «Лотос»');
+    const card = orgCard(page, 'SPA «Лотос»');
+    await expect(cardValue(card, 'Тариф')).toHaveText('«Команда» · 12 мес · цены v1');
+    await expect(cardValue(card, 'Оплата')).toHaveText('Оплачено до 31.03.2027 · 6 800 ₽/мес');
+    await expect(card.locator('.ox-org-request-text')).toHaveText(
+      'Заявка SR-12: переход на «Бизнес» от 29.09 16:40',
+    );
+    await card.getByRole('button', { name: 'Открыть заявку' }).click();
+    await expect(page).toHaveURL(/\/platform\/requests/);
+    await expect(
+      page.getByRole('heading', { level: 1, name: 'Заявки на изменение тарифа' }),
+    ).toBeVisible();
+  });
+
+  test('W4.84 «Карго Сити» и «Ремстрой Плюс»: срок, сумма, места; плашки без заявки нет', async ({
+    app,
+    page,
+  }) => {
+    await openCard(app, page, 'Карго Сити');
+    const cargo = orgCard(page, 'Карго Сити');
+    await expect(cardValue(cargo, 'Тариф')).toHaveText('«Команда» · 4 мес · цены v1');
+    await expect(cardValue(cargo, 'Оплата')).toHaveText('Оплачено до 15.09.2026 · 8 075 ₽/мес');
+    await expect(cardValue(cargo, 'Модули')).toHaveText('Логистика');
+    await expect(cargo.locator('.ox-org-seats')).toHaveText('22 из 25');
+    await expect(cargo.locator('.ox-org-request')).toHaveCount(0);
+    await orgRow(page, 'Ремстрой Плюс').click();
+    const remstroy = orgCard(page, 'Ремстрой Плюс');
+    await expect(cardValue(remstroy, 'Тариф')).toHaveText('«Старт» · цены v1');
+    await expect(cardValue(remstroy, 'Место')).toHaveText('19,8 из 25 ГБ');
+    await expect(cardValue(remstroy, 'Модули')).toHaveText('Ремонт и стройка');
+  });
+
+  test('W4.84 «Квота места»: варианты, «Применить» недоступна без смены, квота меньше занятого — диалог, журнал, полоса', async ({
+    app,
+    page,
+  }) => {
+    await openOrgs(app, page);
+    const id = await platformTenantId(page, 'Альта Групп');
+    const card = orgCard(page, 'Альта Групп');
+    const quota = card.getByLabel('Квота места');
+    await expect(quota.locator('option')).toHaveText([
+      '25 ГБ · меньше занятого',
+      '50 ГБ',
+      '100 ГБ',
+      '250 ГБ',
+      '500 ГБ',
+    ]);
+    await expect(quota).toHaveValue('100');
+    const apply = card.getByRole('button', { name: 'Применить', exact: true });
+    await expect(apply).toBeDisabled();
+    await quota.selectOption('25');
+    await expect(apply).toBeEnabled();
+    const puts: { ifMatch?: string; body: Record<string, unknown> }[] = [];
+    page.on('request', (r) => {
+      if (r.method() === 'PUT' && r.url().endsWith(`/platform/tenants/${id}/subscription`)) {
+        puts.push({ ifMatch: r.headers()['if-match'], body: r.postDataJSON() });
+      }
+    });
+    await apply.click();
+    const dialog = commandDialog(page, 'Изменить квоту «Альта Групп» на 25 ГБ?');
+    await expect(dialog).toContainText('Занято 46,2 ГБ.');
+    await expect(dialog.locator('.ox-orgs-conseq')).toHaveText([
+      'Квота меньше занятого: клиенту будут заблокированы новые загрузки',
+      'Файлы клиента не удаляются',
+    ]);
+    const confirm = dialog.getByRole('button', { name: 'Изменить квоту', exact: true });
+    await expect(confirm).toBeDisabled();
+    await confirmWithReason(dialog, 'Изменить квоту', REASON);
+    await expect(toast(page)).toContainText(DONE);
+    await expect(dialog).toBeHidden();
+    await expect(cardValue(card, 'Место')).toHaveText('46,2 из 25 ГБ');
+    await expect(orgRow(page, 'Альта Групп').locator('.ox-org-usage')).toHaveText('46,2 из 25 ГБ');
+    await expect(card.locator('.ox-orgs-bar').first()).toHaveAttribute('data-tone', 'danger');
+    await expect(quota).toHaveValue('25');
+    await expect(journal(page).first().locator('.ox-audit-text')).toHaveText(
+      'Альта Групп: квота 25 ГБ',
+    );
+    await expect(journal(page).first().locator('.ox-audit-reason')).toHaveText(
+      `Причина: ${REASON}`,
+    );
+    expect(puts).toHaveLength(1);
+    const body = puts[0]?.body ?? {};
+    expect(body).toMatchObject({
+      planKey: 'start',
+      status: 'trialing',
+      trialEndsAt: '2026-10-13T21:00:00Z',
+      cancelAtPeriodEnd: false,
+      reason: REASON,
+    });
+    expect(body.manualEntitlements).toEqual([
+      expect.objectContaining({
+        key: 'storage_quota_bytes',
+        sourceType: 'manual',
+        value: 25 * 1024 ** 3,
+        validUntil: expect.stringMatching(/^2027-\d\d-\d\dT21:00:00Z$/),
+      }),
+    ]);
+  });
+
+  test('W4.84 квота больше занятого: «Новые загрузки остаются доступны», кнопка не опасная', async ({
+    app,
+    page,
+  }) => {
+    await openOrgs(app, page);
+    const card = orgCard(page, 'Альта Групп');
+    await card.getByLabel('Квота места').selectOption('250');
+    await card.getByRole('button', { name: 'Применить', exact: true }).click();
+    const dialog = commandDialog(page, 'Изменить квоту «Альта Групп» на 250 ГБ?');
+    await expect(dialog.locator('.ox-orgs-conseq')).toHaveText([
+      'Новые загрузки остаются доступны',
+    ]);
+    await expect(
+      dialog.getByRole('button', { name: 'Изменить квоту', exact: true }),
+    ).toHaveAttribute('data-variant', 'primary');
+    await page.keyboard.press('Escape');
+    await expect(dialog).toBeHidden();
   });
 
   test('неизвестный ?org= — карточка первой организации', async ({ app, page }) => {
@@ -395,12 +536,13 @@ test.describe('platform-org-card — карточка организации @mo
     await expect(card.locator('.ox-org-seats')).toHaveText('Загрузка');
     await expect(card.locator('.ox-org-seats')).toHaveAttribute('data-loading', 'true');
     await expect(card).not.toHaveAttribute('aria-busy', 'true', { timeout: 10_000 });
-    await expect(card.locator('.ox-org-seats')).toHaveText('— из 10');
+    await expect(card.locator('.ox-org-seats')).toHaveText('9 из 10');
     await devScenario(page, { scenario: 'getPlatformSubscription=rate_limited' });
     await page.reload();
     const alert = orgCard(page, 'Альта Групп').getByRole('alert');
     await expect(alert).toContainText('Не удалось загрузить подписку: ');
-    await expect(orgCard(page).locator('.ox-org-seats')).toHaveText('—');
+    // Места — и в строке организации (Tenant.seats, W4.07): без подписки они остаются.
+    await expect(orgCard(page).locator('.ox-org-seats')).toHaveText('9 из 10');
     await expect(orgCard(page).getByRole('button', { name: EXTEND })).toHaveCount(0);
     await devScenario(page, { scenario: null });
     await alert.getByRole('button', { name: 'Повторить' }).click();
@@ -645,6 +787,68 @@ test.describe('platform-org-card — стенд @stand', () => {
     await card.getByRole('button', { name: LIFT }).click();
     await confirmWithReason(commandDialog(page, 'Снять ограничение «Альта Групп»?'), LIFT, REASON);
     await expect(card.locator('.ox-chip-label').first()).toHaveText('Пробный период');
+  });
+
+  test('стенд W4.84: карточка «Альты» — владелец, модули, участники, место и места; квота с причиной и возврат', async ({
+    app,
+    page,
+  }) => {
+    const id = await openCard(app, page, 'Альта Групп');
+    const card = orgCard(page, 'Альта Групп');
+    await expect(cardValue(card, 'Владелец')).toHaveText('Дарья Зимина');
+    await expect(cardValue(card, 'Модули')).not.toHaveText('—');
+    await expect(cardValue(card, 'Участники')).toHaveText(/^\d+$/);
+    await expect(cardValue(card, 'Место')).toHaveText(/^\d+(,\d)? из \d+ ГБ$/);
+    await expect(card.locator('.ox-org-seats')).toHaveText(/^\d+ (из \d+|· без ограничения)/);
+    const quota = card.getByLabel('Квота места');
+    const before = await quota.inputValue();
+    const target = before === '250' ? '500' : '250';
+    await quota.selectOption(target);
+    await card.getByRole('button', { name: 'Применить', exact: true }).click();
+    await confirmWithReason(
+      commandDialog(page, `Изменить квоту «Альта Групп» на ${target} ГБ?`),
+      'Изменить квоту',
+      REASON,
+    );
+    await expect(toast(page)).toContainText(DONE);
+    await expect(cardValue(card, 'Место')).toHaveText(new RegExp(` из ${target} ГБ$`));
+    await expect(journal(page).first().locator('.ox-audit-text')).toHaveText(
+      `Альта Групп: квота ${target} ГБ`,
+    );
+    const sub = (await call(page, 'GET', `/api/v1/platform/tenants/${id}/subscription`)).body as {
+      entitlements: { key: string; sourceType: string; value: number }[];
+    };
+    expect(sub.entitlements.filter((e) => e.key === 'storage_quota_bytes').at(-1)?.value).toBe(
+      Number(target) * 1024 ** 3,
+    );
+    // Вернуть квоту для остальных строк @stand.
+    await quota.selectOption(before);
+    await card.getByRole('button', { name: 'Применить', exact: true }).click();
+    await confirmWithReason(
+      commandDialog(page, `Изменить квоту «Альта Групп» на ${before} ГБ?`),
+      'Изменить квоту',
+      REASON,
+    );
+    await expect(cardValue(card, 'Место')).toHaveText(new RegExp(` из ${before} ГБ$`));
+  });
+
+  test('стенд W4.84: «SPA «Лотос»» — срок и сумма подписки, плашка заявки SR-12 → «Заявки на тариф»', async ({
+    app,
+    page,
+  }) => {
+    await openCard(app, page, 'SPA «Лотос»');
+    const card = orgCard(page, 'SPA «Лотос»');
+    await expect(cardValue(card, 'Тариф')).toHaveText(
+      /^«Команда» · (\d+ мес|помесячно) · цены v\d+$/,
+    );
+    await expect(cardValue(card, 'Оплата')).toHaveText(
+      /^Оплачено до \d\d\.\d\d\.\d{4} · \d[\d\s]* ₽\/мес$/,
+    );
+    await expect(card.locator('.ox-org-request-text')).toContainText(
+      /^Заявка SR-12: переход на «Бизнес» от \d\d\.\d\d \d\d:\d\d/,
+    );
+    await card.getByRole('button', { name: 'Открыть заявку' }).click();
+    await expect(page).toHaveURL(/\/platform\/requests/);
   });
 
   test('стенд: оплаченная «SPA «Лотос»» — кнопки продления нет; «Карго Сити» — «Снять ограничение»', async ({

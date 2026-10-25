@@ -205,6 +205,52 @@ export const platformCases = cases('platform')([
     },
   },
   {
+    // W4.84: «Квота места» оператора — ручное право storage_quota_bytes; строка журнала subscription.updated с
+    // причиной и деталью quotaBytes (как backend subscriptions.UpdateDetails) — «Альта Групп: квота 25 ГБ».
+    title: 'оператор меняет квоту места «Альты»: ручное право и строка журнала с quotaBytes',
+    operationId: 'updatePlatformSubscription',
+    expect: 'success',
+    run: async (ctx) => {
+      const op = await ctx.as('operator');
+      const GiB = 1024 ** 3;
+      const r = await op.put(
+        `${T}/${ctx.P('t-alta')}/subscription`,
+        {
+          planKey: 'start',
+          status: 'trialing',
+          trialEndsAt: '2026-10-13T21:00:00Z',
+          cancelAtPeriodEnd: false,
+          manualEntitlements: [
+            {
+              key: 'storage_quota_bytes',
+              sourceType: 'manual',
+              sourceRef: 'Клиент докупил место',
+              value: 25 * GiB,
+              validUntil: '2027-10-01T21:00:00Z',
+            },
+          ],
+          reason: 'Клиент докупил место',
+        },
+        { ifMatch: 2 },
+      );
+      expect(r.status).toBe(200);
+      const journal = await op.get('/api/v1/platform/audit-events?limit=1');
+      expect((journal.body as { items: unknown[] }).items[0]).toMatchObject({
+        action: 'subscription.updated',
+        actor: { kind: 'operator' },
+        target: { type: 'subscription', tenantId: ctx.P('t-alta'), name: 'Альта Групп' },
+        reason: 'Клиент докупил место',
+        result: 'ok',
+        details: {
+          fromStatus: 'trialing',
+          toStatus: 'trialing',
+          planKey: 'start',
+          quotaBytes: String(25 * GiB),
+        },
+      });
+    },
+  },
+  {
     title: 'без причины изменения',
     operationId: 'updatePlatformSubscription',
     expect: 'error',

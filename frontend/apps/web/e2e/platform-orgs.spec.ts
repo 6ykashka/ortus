@@ -1,6 +1,6 @@
 // W1.25 · e2e страницы `platform-orgs` — «Организации-клиенты» оператора (эталон design-stage-1, «Ортус CRM.dc.html»
 // pg.tenants :1529–1583, opVM :3532–3568; чек-лист docs/plan/analysis/04-platform.md §8 п. 7–8, обязательные пункты
-// verification-protocol.md §1.3). Данные, которых нет в контракте оператора этапа 1, — «—» (бриф W1.25 §10 п. 1).
+// verification-protocol.md §1.3). W4.84: владелец, места и занятое место — данные W4.60 (эталон design-2026-10-19).
 import { expect, test } from './fixtures/index.ts';
 import {
   expectNoHorizontalScroll,
@@ -68,19 +68,48 @@ test.describe('platform-orgs — «Организации-клиенты» @mock
     await expectRow('Карго Сити', 'Приостановлен', 'Не применяется');
   });
 
-  test('строки: лимит мест и квота из подписки, занятое — «—» до этапа 4', async ({
+  // W4.84: владелец и занятое — getPlatformUsage, места — Tenant.seats / Subscription.seats (эталон opVM :3545–3547).
+  test('строки W4.84: владелец и места, занятое место, заливка полос', async ({ app, page }) => {
+    await openOrgs(app, page);
+    const expectRow = async (name: (typeof ORGS)[number], owner: string, usage: string) => {
+      await expect(orgRow(page, name).locator('.ox-org-owner')).toHaveText(owner);
+      await expect(orgRow(page, name).locator('.ox-org-usage')).toHaveText(usage);
+    };
+    await expectRow('Альта Групп', 'Владелец: Дарья Зимина · мест 9/10', '46,2 из 100 ГБ');
+    await expectRow('SPA «Лотос»', 'Владелец: Ирина Белова · мест 23/25', '12,4 из 50 ГБ');
+    await expectRow('Ремстрой Плюс', 'Владелец: Павел Орлов · мест 5/10', '19,8 из 25 ГБ');
+    await expectRow('Карго Сити', 'Владелец: Денис Шишкин · мест 22/25', '63 из 100 ГБ');
+    const fill = (name: (typeof ORGS)[number]) =>
+      orgRow(page, name)
+        .locator('.ox-orgs-bar-fill')
+        .evaluate((e) => (e as HTMLElement).style.width);
+    expect(await fill('Альта Групп')).toBe('46.2%');
+    expect(await fill('Ремстрой Плюс')).toBe('79.2%');
+    expect(await fill('Карго Сити')).toBe('63%');
+    await expect(orgRow(page, 'Альта Групп').locator('.ox-orgs-bar')).toHaveAttribute(
+      'data-tone',
+      'accent',
+    );
+  });
+
+  test('getPlatformUsage не ответил: владелец и занятое — «—», alert карточки и «Повторить» (no-reference)', async ({
     app,
     page,
   }) => {
     await openOrgs(app, page);
+    await devScenario(page, { scenario: 'getPlatformUsage=rate_limited' });
+    await page.reload();
     await expect(orgRow(page, 'Альта Групп').locator('.ox-org-owner')).toHaveText(
-      'Владелец: — · мест —/10',
+      'Владелец: — · мест 9/10',
     );
     await expect(orgRow(page, 'Альта Групп').locator('.ox-org-usage')).toHaveText('— из 100 ГБ');
-    await expect(orgRow(page, 'SPA «Лотос»').locator('.ox-org-usage')).toHaveText('— из 50 ГБ');
-    await expect(orgRow(page, 'Ремстрой Плюс').locator('.ox-org-usage')).toHaveText('— из 25 ГБ');
-    await expect(orgRow(page, 'Карго Сити').locator('.ox-org-owner')).toHaveText(
-      'Владелец: — · мест —/25',
+    const alert = orgCard(page, 'Альта Групп').getByRole('alert');
+    await expect(alert).toContainText('Не удалось загрузить использование: ');
+    await devScenario(page, { scenario: null });
+    await alert.getByRole('button', { name: 'Повторить' }).click();
+    await expect(alert).toBeHidden();
+    await expect(orgRow(page, 'Альта Групп').locator('.ox-org-owner')).toHaveText(
+      'Владелец: Дарья Зимина · мест 9/10',
     );
   });
 
@@ -355,6 +384,24 @@ test.describe('platform-orgs — стенд @stand', () => {
     await expect(orgRows(page).locator('.ox-org-name')).toHaveText(order);
     await expect(orgRows(page).first()).toHaveAttribute('aria-pressed', 'true');
     await expect(orgCard(page, order[0] as (typeof ORGS)[number])).toBeVisible();
+  });
+
+  test('стенд W4.84: владелец, места и занятое место строк из getPlatformUsage', async ({
+    app,
+    page,
+  }) => {
+    await openOrgs(app, page);
+    for (const name of ORGS) {
+      await expect(orgRow(page, name).locator('.ox-org-owner')).toHaveText(
+        /^Владелец: .+ · мест \d+(\/\d+)?$/,
+      );
+      await expect(orgRow(page, name).locator('.ox-org-usage')).toHaveText(
+        /^\d+(,\d)? из \d+(,\d)? ГБ$/,
+      );
+    }
+    await expect(orgRow(page, 'Альта Групп').locator('.ox-org-owner')).toHaveText(
+      /^Владелец: Дарья Зимина · /,
+    );
   });
 
   test('стенд: меню «Организации» и выбор строки → ?org=', async ({ app, page }) => {

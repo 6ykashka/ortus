@@ -167,3 +167,35 @@ func TestPlanEntitlements(t *testing.T) {
 		t.Errorf("%+v", got)
 	}
 }
+
+// W4.84: строка журнала изменения оператора несёт квоту места (деталь quotaBytes, operators.PublicDetails), когда
+// действующая квота меняется — «{организация}: квота N ГБ» эталона (:3566); иначе квоты в деталях нет.
+func TestUpdateDetails(t *testing.T) {
+	t.Parallel()
+	plan := PlanEntitlements("start", SourceTrial, DefaultQuotaBytes)
+	cur := Subscription{PlanKey: "start", Status: StatusTrialing, TrialEndsAt: new(trialEnd), Entitlements: plan}
+	manual := Entitlement{Key: KeyStorageQuota, SourceType: SourceManual, SourceRef: "SUP-42", Value: 25 << 30, ValidUntil: new(trialEnd.Add(365 * day))}
+	next := cur
+	next.Entitlements = []Entitlement{plan[0], manual}
+	got := UpdateDetails(cur, next)
+	want := map[string]string{
+		"fromStatus": StatusTrialing, "toStatus": StatusTrialing, "planKey": "start",
+		"trialEndsAt": "2026-10-13T21:00:00Z", "periodEndsAt": "", "graceEndsAt": "", "quotaBytes": "26843545600",
+	}
+	if len(got) != len(want) {
+		t.Fatalf("details %v, want %v", got, want)
+	}
+	for k, v := range want {
+		if got[k] != v {
+			t.Errorf("%s = %q, want %q", k, got[k], v)
+		}
+	}
+	same := UpdateDetails(next, next)
+	if _, ok := same["quotaBytes"]; ok {
+		t.Errorf("quota unchanged: %v", same)
+	}
+	back := UpdateDetails(next, cur)
+	if back["quotaBytes"] != "107374182400" {
+		t.Errorf("manual quota removed — plan quota: %v", back)
+	}
+}

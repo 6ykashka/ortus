@@ -1,23 +1,37 @@
-// W1.25 · Модель «Организаций» оператора: подписи строк и карточки (opVM :3532–3568) по Tenant и Subscription
-// контракта 0.4.0-stage1, доступность команд (Q-W1.00-2, 3, 6), причина 5–500 (Q-W1.00-1), строка «Журнала
-// действий» по action и details (S1-23, Q-W1.48-8). Данных, которых нет в контракте оператора этапа 1 (владелец,
-// занятые места и место), — «—» (бриф W1.25 §10 п. 1).
+// W1.25 · Модель «Организаций» оператора: подписи строк и карточки (opVM :3532–3568) по Tenant и Subscription,
+// доступность команд (Q-W1.00-2, 3, 6), причина 5–500 (Q-W1.00-1), строка «Журнала действий» по action и details
+// (S1-23, Q-W1.48-8). W4.84: данные W4.07/W4.60 — владелец, модули и занятое место (getPlatformUsage), места и
+// участники (Tenant, Subscription.seats), срок и сумма периода, «Квота места» (updatePlatformSubscription) и плашка
+// заявки на тариф; чего нет в ответе — «—».
 import type { components } from '@ortus/api-client';
 import { company, format, platform } from '@ortus/texts';
 import type { Tone } from '@ortus/ui';
 
+import { rubMinor } from '../../kit/format.ts';
 import { ORGS_TEXT as T } from './texts.ts';
 
 type S = components['schemas'];
 export type Tenant = S['Tenant'];
 export type TenantStatus = Tenant['status'];
 export type Subscription = S['Subscription'];
+export type SeatUsage = S['SeatUsage'];
+export type UsageRow = S['PlatformUsageTenant'];
+export type ChangeRequest = S['SubscriptionChangeRequest'];
 export type AuditEvent = S['PlatformAuditEvent'];
 
 export interface Chip {
   label: string;
   tone: Tone;
   icon: string;
+}
+
+/** Цвет заливки полосы (opVM bar, sBar): акцент, warn или danger. */
+export type BarTone = 'accent' | 'warn' | 'danger';
+
+/** Заливка полосы: ширина в процентах (как pW/sW эталона, один знак) и цвет. */
+export interface Fill {
+  width: string;
+  tone: BarTone;
 }
 
 export interface Actions {
@@ -37,8 +51,8 @@ export const REASON_MAX = 500;
 
 const GiB = 1024 ** 3;
 const DAY = 86_400_000;
-/** Предел «без ограничения» мест: MSW выдаёт безлимитному тарифу 1 000 000 (adapter billing TIERS). */
-const UNLIMITED_SEATS = 1_000_000;
+const MSK_OFFSET = 3 * 3_600_000;
+const QUOTA_KEY = 'storage_quota_bytes';
 
 const CHIPS: Readonly<Record<TenantStatus, Chip>> = {
   trial: { label: T.status.trial, tone: 'info', icon: 'hourglass_top' },
@@ -80,15 +94,14 @@ const fromTrial = (sub: Subscription): boolean =>
   ((sub.status === 'grace' || sub.status === 'read_only') &&
     sub.entitlements.some((e) => e.sourceType === 'trial'));
 
-const entitlement = (sub: Subscription | undefined, key: string): number | undefined =>
-  sub?.entitlements.filter((e) => e.key === key).at(-1)?.value;
-
-const seatLimit = (sub: Subscription | undefined): number | null => {
-  const v = entitlement(sub, 'seats');
-  return v === undefined || v >= UNLIMITED_SEATS ? null : v;
+/** Действующее значение права: ручное право скрывает право тарифа того же ключа (W1.08, pilot-quotas). */
+const entitlement = (sub: Subscription | undefined, key: string): number | undefined => {
+  const all = sub?.entitlements.filter((e) => e.key === key) ?? [];
+  return (all.filter((e) => e.sourceType === 'manual').at(-1) ?? all.at(-1))?.value;
 };
 
-const num = (v: number): string => String(Math.round(v * 10) / 10).replace('.', ',');
+/** Число с одним знаком и запятой: «46,2», «100» (M.num эталона). */
+export const num = (v: number): string => String(Math.round(v * 10) / 10).replace('.', ',');
 
 /** Колонка пробного периода (opVM :3548): осталось · до, завершён, не применяется. */
 export function trialText(sub: Subscription | undefined, now: number): string {
@@ -104,50 +117,93 @@ export function trialText(sub: Subscription | undefined, now: number): string {
   return T.notApplicable;
 }
 
-/** Версия цен из источника прав: `price-book:v2:start` → 2. */
+/** Версия цен: priceVersion подписки (W4.07), иначе из источника прав `price-book:v2:start` → 2. */
 const priceVersion = (sub: Subscription): string | undefined =>
-  sub.entitlements
-    .map((e) => /^price-book:v(\d+):/.exec(e.sourceRef)?.[1])
-    .find((v) => v !== undefined);
+  sub.priceVersion !== undefined
+    ? String(sub.priceVersion)
+    : sub.entitlements
+        .map((e) => /^price-book:v(\d+):/.exec(e.sourceRef)?.[1])
+        .find((v) => v !== undefined);
+
+/** Срок «Тарифа»: идущий trial — «пробный», 1 месяц — «помесячно», иначе «{n} мес»; срока нет — ничего. */
+function termText(sub: Subscription): string | undefined {
+  if (sub.status === 'trialing') return T.plan.trial;
+  if (sub.termMonths === undefined) return undefined;
+  return sub.termMonths === 1 ? T.plan.monthly : format(T.plan.term, { months: sub.termMonths });
+}
 
 /**
- * «Тариф» карточки (opVM :3559): «{тариф}» · пробный · цены vN — «пробный» только у идущего trial (у
- * grace/read_only после trial его нет); срока подписки в контракте нет (§10 п. 10).
+ * «Тариф» карточки (opVM :3559): «{тариф}» · {срок} · цены vN — имя ступени сетки (tierName), срок периода
+ * (termMonths; «пробный» только у идущего trial — у grace/read_only после trial его нет) и версия цен периода.
+ * Без версии (неизвестный тариф) — только имя.
  */
 export function planText(sub: Subscription | undefined): string {
   if (!sub) return T.dash;
-  const tier = T.tiers[sub.planKey] ?? sub.planKey;
+  const tier = format(T.plan.tier, { tier: sub.tierName ?? T.tiers[sub.planKey] ?? sub.planKey });
   const version = priceVersion(sub);
-  if (!version) return format(T.plan.bare, { tier });
-  return format(sub.status === 'trialing' ? T.plan.trial : T.plan.paid, { tier, version });
+  if (!version) return tier;
+  return [tier, termText(sub), format(T.plan.version, { version })]
+    .filter((p): p is string => p !== undefined)
+    .join(T.plan.sep);
 }
 
-/** «Оплата» карточки (opVM :3560): пробный период, оплачено до (без суммы — прайс этапа 4), иначе «—». */
+/**
+ * «Оплата» карточки (opVM :3561): пробный период; «Оплачено до ДД.ММ.ГГГГ · 6 800 ₽/мес» — сумма месяца
+ * периода со скидкой срока (monthlyAmount; нет у индивидуальной цены — только дата); иначе «—».
+ */
 export function paymentText(sub: Subscription | undefined): string {
   if (!sub) return T.dash;
   if (sub.status === 'trialing') return company.modules.trial.chipTrial;
   if (sub.periodEndsAt && !fromTrial(sub)) {
-    return format(company.billing.paidUntil, { date: mskDate(sub.periodEndsAt) });
+    const paid = format(company.billing.paidUntil, { date: mskDate(sub.periodEndsAt) });
+    return sub.monthlyAmount
+      ? format(T.perMonth, { paid, amount: rubMinor(sub.monthlyAmount.amountMinor) })
+      : paid;
   }
   return T.dash;
 }
 
-/** «Владелец: — · мест —/10» (opVM :3545; владелец и занятые места — этап 4). */
-export function ownerLine(sub: Subscription | undefined): string {
-  const limit = seatLimit(sub);
-  const seats = limit === null ? T.dash : format(T.ownerSeats, { used: T.dash, limit });
-  return format(platform.tenants.ownerLine, { name: T.dash, seats });
+/** Места организации: из подписки (W4.07), иначе из строки организации (Tenant.seats). */
+export const seatsOf = (t: Tenant, sub: Subscription | undefined): SeatUsage | undefined =>
+  sub?.seats ?? t.seats;
+
+/** «Владелец: Дарья Зимина · мест 9/10» (opVM :3545); без лимита — «мест 40»; нет данных — «—». */
+export function ownerLine(owner: string | undefined, seats: SeatUsage | undefined): string {
+  const count = !seats
+    ? T.dash
+    : seats.limit === null
+      ? String(seats.used)
+      : format(T.ownerSeats, { used: seats.used, limit: seats.limit });
+  return format(platform.tenants.ownerLine, { name: owner || T.dash, seats: count });
 }
 
-const quotaGb = (sub: Subscription | undefined): number | undefined => {
+/** Квота места в ГБ (право `storage_quota_bytes` подписки). */
+export const quotaGb = (sub: Subscription | undefined): number | undefined => {
   const v = entitlement(sub, 'storage_quota_bytes');
   return v === undefined ? undefined : v / GiB;
 };
 
-/** «— из 100 ГБ» (opVM :3547; занятое место — этап 4). */
-export function usageText(sub: Subscription | undefined): string {
+/** Занятое место в ГБ с одним знаком (opVM: usedGb округляется до 0,1). */
+export const usedGb = (bytes: number): number => Math.round((bytes / GiB) * 10) / 10;
+
+/** «46,2 из 100 ГБ» (opVM :3547); занятое не загружено — «— из 100 ГБ»; без квоты — «—». */
+export function usageText(usedBytes: number | undefined, sub: Subscription | undefined): string {
   const quota = quotaGb(sub);
-  return quota === undefined ? T.dash : format(T.usage, { used: T.dash, quota: num(quota) });
+  if (quota === undefined) return T.dash;
+  const used = usedBytes === undefined ? T.dash : num(usedGb(usedBytes));
+  return format(T.usage, { used, quota: num(quota) });
+}
+
+const EMPTY: Fill = { width: '0%', tone: 'accent' };
+const width = (percent: number): string => `${Math.min(100, percent).toFixed(1)}%`;
+
+/** Полоса места (opVM bar :3537): занято всё — danger, больше 85 % — warn, иначе акцент. */
+export function storageFill(usedBytes: number | undefined, sub: Subscription | undefined): Fill {
+  const quota = quotaGb(sub);
+  if (usedBytes === undefined || !quota) return EMPTY;
+  const used = usedGb(usedBytes);
+  const tone: BarTone = used >= quota ? 'danger' : used / quota > 0.85 ? 'warn' : 'accent';
+  return { width: width((used / quota) * 100), tone };
 }
 
 /** Квота в гигабайтах: «50 ГБ». */
@@ -157,16 +213,107 @@ export function quotaText(sub: Subscription | undefined): string {
 }
 
 /**
- * «Места с входом» (opVM :3562): «— из 10», без лимита — «— · без ограничения»; подписки нет (загрузка,
- * ошибка) — «—»: о лимите ничего не известно.
+ * «Места с входом» (opVM :3560): «9 из 10», все заняты — «10 из 10 · мест нет», без лимита —
+ * «40 · без ограничения»; мест нет в данных (загрузка, ошибка) — «—».
  */
-export function seatsText(sub: Subscription | undefined): string {
-  if (!sub) return T.dash;
-  const limit = seatLimit(sub);
-  return limit === null
-    ? format(T.seatsUnlimited, { used: T.dash })
-    : format(T.seatsOf, { used: T.dash, limit });
+export function seatsText(seats: SeatUsage | undefined): string {
+  if (!seats) return T.dash;
+  if (seats.limit === null) return format(T.seatsUnlimited, { used: seats.used });
+  const text = format(T.seatsOf, { used: seats.used, limit: seats.limit });
+  return seats.used >= seats.limit ? text + T.seatsFull : text;
 }
+
+/** Полоса мест (opVM :3561): все заняты — danger, больше 80 % — warn; без лимита — пустая. */
+export function seatsFill(seats: SeatUsage | undefined): Fill {
+  if (!seats) return EMPTY;
+  const { limit, used } = seats;
+  const percent = limit ? Math.min(100, (used / limit) * 100) : 0;
+  const tone: BarTone =
+    limit !== null && used >= limit ? 'danger' : percent > 80 ? 'warn' : 'accent';
+  return { width: width(percent), tone };
+}
+
+/** «Модули» (opVM :3551): названия отраслевых модулей; без них — «Только ядро»; не загружены — «—». */
+export function modulesText(keys: readonly string[] | undefined): string {
+  if (!keys) return T.dash;
+  if (keys.length === 0) return platform.tenants.coreOnly;
+  return keys.map((k) => T.modules[k] ?? k).join(', ');
+}
+
+/** «Участники» (opVM :3551): незавершённые членства. */
+export const membersText = (n: number | undefined): string =>
+  n === undefined ? T.dash : String(n);
+
+/** Варианты «Квоты места» эталона (opVM :3565), ГБ. */
+export const QUOTAS: readonly number[] = [25, 50, 100, 250, 500];
+
+export interface QuotaOption {
+  value: string;
+  label: string;
+}
+
+/** Варианты квоты: меньше занятого — с пометкой; текущая квота вне списка — вариантом по порядку (Q-W4.84-3). */
+export function quotaOptions(
+  usedBytes: number | undefined,
+  sub: Subscription | undefined,
+): QuotaOption[] {
+  const current = quotaGb(sub);
+  const list = current === undefined || QUOTAS.includes(current) ? QUOTAS : [...QUOTAS, current];
+  const used = usedBytes === undefined ? undefined : usedGb(usedBytes);
+  return [...list]
+    .sort((a, b) => a - b)
+    .map((n) => ({
+      value: String(n),
+      label: format(used !== undefined && n < used ? T.quotaBelow : T.quotaOption, {
+        gb: num(n),
+      }),
+    }));
+}
+
+/** Срок ручного права квоты — 12 месяцев: полночь по Москве после того же дня через год (Q-W4.84-1). */
+function quotaValidUntil(now: number): string {
+  const msk = new Date(now + MSK_OFFSET);
+  const end = Date.UTC(msk.getUTCFullYear() + 1, msk.getUTCMonth(), msk.getUTCDate() + 1);
+  return new Date(end - MSK_OFFSET).toISOString().replace('.000Z', 'Z');
+}
+
+/**
+ * Тело updatePlatformSubscription для «Квоты места»: тариф, статус и даты — текущие (сервер сбрасывает
+ * незаданный конец периода и льготы), прочие ручные права сохраняются, квота — ручное право `storage_quota_bytes`
+ * со сроком 12 месяцев и причиной в источнике (контракт: у ручного права срок и основание обязательны).
+ */
+export function quotaUpdate(
+  sub: Subscription,
+  gb: number,
+  reason: string,
+  now: number,
+): S['PlatformSubscriptionUpdate'] {
+  const text = reason.trim();
+  const body: S['PlatformSubscriptionUpdate'] = {
+    planKey: sub.planKey,
+    status: sub.status,
+    cancelAtPeriodEnd: false,
+    manualEntitlements: [
+      ...sub.entitlements.filter((e) => e.sourceType === 'manual' && e.key !== QUOTA_KEY),
+      {
+        key: QUOTA_KEY,
+        value: gb * GiB,
+        sourceType: 'manual',
+        sourceRef: text,
+        validUntil: quotaValidUntil(now),
+      },
+    ],
+    reason: text,
+  };
+  if (sub.trialEndsAt) body.trialEndsAt = sub.trialEndsAt;
+  if (sub.periodEndsAt) body.periodEndsAt = sub.periodEndsAt;
+  if (sub.graceEndsAt) body.graceEndsAt = sub.graceEndsAt;
+  return body;
+}
+
+/** Плашка заявки (opVM :3562): «Заявка SR-12: переход на «Бизнес» от 29.09 16:40». */
+export const requestText = (r: ChangeRequest): string =>
+  format(T.request, { number: r.number, tier: r.toTierName, at: stamp(r.requestedAt) });
 
 const SUSPENDABLE: ReadonlySet<TenantStatus> = new Set(['trial', 'active', 'grace', 'read_only']);
 const LIVE: ReadonlySet<TenantStatus> = new Set([...SUSPENDABLE, 'suspended']);
@@ -228,6 +375,11 @@ function lineText(e: AuditEvent): string {
       return format(T.audit.status, { name, status: statusLabel(d.toStatus) });
     case 'storage.quota_changed':
       return format(T.audit.quota, { name, gb: num(Number(d.quotaBytes ?? 0) / GiB) });
+    // W4.84: «Квота места» оператора — updatePlatformSubscription с деталью quotaBytes (эталон :3566).
+    case 'subscription.updated':
+      return d.quotaBytes
+        ? format(T.audit.quota, { name, gb: num(Number(d.quotaBytes) / GiB) })
+        : format(T.audit.other, { name, action: e.action });
     case 'tenant.renamed':
       return format(T.audit.renamed, { name });
     case 'tenant.created':

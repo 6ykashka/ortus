@@ -297,10 +297,7 @@ func (s Store) Update(ctx context.Context, tenantID uuid.UUID, u Update, ifMatch
 	if reqID == "" {
 		reqID = "subscriptions:" + uuid.NewString()
 	}
-	if err := audit(ctx, tx, "operator", &actor, ActionUpdated, tenantID, u.Reason, reqID, map[string]string{
-		"fromStatus": cur.Status, "toStatus": next.Status, "planKey": next.PlanKey, "trialEndsAt": stamp(next.TrialEndsAt),
-		"periodEndsAt": stamp(next.PeriodEndsAt), "graceEndsAt": stamp(next.GraceEndsAt),
-	}); err != nil {
+	if err := audit(ctx, tx, "operator", &actor, ActionUpdated, tenantID, u.Reason, reqID, UpdateDetails(cur, next)); err != nil {
 		return Subscription{}, err
 	}
 	if err := tx.Commit(); err != nil {

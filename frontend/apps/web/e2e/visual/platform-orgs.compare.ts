@@ -1,9 +1,7 @@
-// W1.25 · Сверка «Организаций» оператора со снимком design-stage-1 (verification-protocol.md §3): область
-// страницы `#ox-main` обеих целей. Перед снимком эталон приводится к данным контракта оператора этапа 1 по
-// записям allowlist/platform-orgs.md (out-of-stage до W4.60–W4.62): владелец, занятые места и место, модули,
-// участники — «—», полосы без заливки, «Квота места» убрана. Знак организации — по оформлению (Tenant.brand, W4.62),
-// как в эталоне: не приводится.
-// Разметка эталона — шаблон pg.tenants «Ортус CRM.dc.html» :1536–1583 (снимок заморожен на этап).
+// W1.25 · Сверка «Организаций» оператора со снимком эталона (verification-protocol.md §3): область страницы
+// `#ox-main` обеих целей. W4.84: данные W4.60 (владелец, места, место, модули, участники, срок и сумма, «Квота
+// места», заявка) — как в эталоне, эталон не приводится. Знак организации — по оформлению (Tenant.brand, W4.62).
+// Разметка эталона — шаблон pg.tenants «Ортус CRM.dc.html» :1536–1583.
 import { expect, type Locator, type Page } from '@playwright/test';
 
 import type { Target } from '@ortus/e2e-kit';
@@ -12,57 +10,6 @@ const DASH = '—';
 
 /** Область страницы: `#ox-main` (шапка и меню — сверка shell W1.20). */
 export const mainTarget = (t: Target): Target => ({ ...t, root: t.page.locator('#ox-main') });
-
-/** Приводит эталон «Организаций» к данным контракта этапа 1 (записи allowlist/platform-orgs.md). */
-export async function normalizeReference(page: Page): Promise<void> {
-  await page.locator('section[aria-labelledby="h-ten"]').evaluate(
-    (section, { dash }) => {
-      for (const row of Array.from(section.querySelectorAll<HTMLElement>('button[aria-pressed]'))) {
-        const [, main, , storage] = Array.from(row.children) as HTMLElement[];
-        const owner = main?.children[1];
-        if (owner) {
-          owner.textContent = (owner.textContent ?? '').replace(
-            /^Владелец: .+ · мест (?:\d+\/)?(\d+)$/,
-            `Владелец: ${dash} · мест ${dash}/$1`,
-          );
-        }
-        const usage = storage?.children[0];
-        if (usage)
-          usage.textContent = (usage.textContent ?? '').replace(/^[\d,]+ из/, `${dash} из`);
-        const fill = storage?.children[1]?.firstElementChild as HTMLElement | null | undefined;
-        if (fill) fill.style.width = '0';
-      }
-      const aside = section.querySelector('aside');
-      if (!aside) return;
-      for (const dt of Array.from(aside.querySelectorAll('dt'))) {
-        const dd = dt.nextElementSibling;
-        if (!dd) continue;
-        const label = dt.textContent;
-        if (label === 'Владелец' || label === 'Модули' || label === 'Участники')
-          dd.textContent = dash;
-        if (label === 'Место')
-          dd.textContent = (dd.textContent ?? '').replace(/^[\d,]+ из/, `${dash} из`);
-      }
-      const blocks = Array.from(aside.children) as HTMLElement[];
-      const storageFill = blocks[2]?.firstElementChild as HTMLElement | null | undefined;
-      if (storageFill) storageFill.style.width = '0';
-      const seats = blocks[3];
-      const seatsValue = seats?.children[0]?.children[1];
-      if (seatsValue) {
-        // Занятые места — этап 4: «— из 10», «— · без ограничения»; «· мест нет» считается по занятым.
-        seatsValue.textContent = (seatsValue.textContent ?? '')
-          .replace(/^\d+ (из|·)/, `${dash} $1`)
-          .replace(/ · мест нет$/, '');
-      }
-      const seatsFill = seats?.children[1]?.firstElementChild as HTMLElement | null | undefined;
-      if (seatsFill) seatsFill.style.width = '0';
-      for (const label of Array.from(aside.querySelectorAll('label'))) {
-        if (label.textContent?.startsWith('Квота места')) label.parentElement?.remove();
-      }
-    },
-    { dash: DASH },
-  );
-}
 
 /** Секция «Организации-клиенты» цели (для подписей). */
 export const orgsArea = (page: Page): Locator => page.locator('section[aria-labelledby="h-ten"]');
@@ -157,15 +104,10 @@ export async function cardValues(page: Page): Promise<string[]> {
 }
 
 /**
- * Значения карточки с учётом allowlist platform-org-card.md: срок подписки («помесячно», «12 мес») и сумма
- * оплаты эталона — этап 4 (out-of-stage); в mock версия цен — проекция MSW (label, mode mock).
+ * Значения карточки с учётом allowlist platform-org-card.md: у подписки после неоплаченного пробного периода
+ * срока нет (Subscription.termMonths — только у оплаченного периода), эталон пишет «помесячно» по plan.term сида
+ * прототипа («Ремстрой Плюс»).
  */
-export function comparableValues(values: readonly string[], mode: 'mock' | 'stand'): string[] {
-  return values.map((v) => {
-    let out = v
-      .replace(/^(Тариф: .+?) · (?:помесячно|\d+ мес)(?= · цены v)/, '$1')
-      .replace(/^(Оплата: Оплачено до \d{2}\.\d{2}\.\d{4}) · .+\/мес$/, '$1');
-    if (mode === 'mock') out = out.replace(/^(Тариф: .+ · цены v)\d+$/, '$1N');
-    return out;
-  });
+export function comparableValues(values: readonly string[]): string[] {
+  return values.map((v) => v.replace(/^(Тариф: «Старт») · помесячно(?= · цены v)/, '$1'));
 }

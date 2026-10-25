@@ -1,19 +1,12 @@
 # Allowlist `platform-orgs` (W1.25)
 
-Сверка «Организации-клиенты» оператора (`/platform/tenants`) со снимком `design-stage-1` (`Ортус CRM.dc.html` pg.tenants
-:1529–1583). Сравнивается область `#ox-main`; шапка и меню — `shell` (W1.20). Формат — `frontend/packages/e2e-kit/src/allowlist.ts`.
+Сверка «Организации-клиенты» оператора (`/platform/tenants`) со снимком эталона (`Ортус CRM.dc.html` pg.tenants
+:1529–1583; W4.84 — `design-2026-10-19`). Сравнивается область `#ox-main`; шапка и меню — `shell` (W1.20). Формат — `frontend/packages/e2e-kit/src/allowlist.ts`.
 
 Поле `decision`: сначала решение из `docs/plan/decisions.md` (его требует формат), затем вопрос исполнителя `Q-W1.25-N`
 (отчёт W1.25, до внесения интегратором — значение по умолчанию; бриф W1.25 §10). Для `out-of-stage` это PD-50 (вид
 записи «позже этапа», план v2 §3.7), для отличий и состояний без эталона — PD-22; суть решения — в `Q-W1.25-N`.
-Записи `out-of-stage` с пометкой «эталон приводится» выполняет `e2e/visual/platform-orgs.compare.ts` до снимка и сбора
-подписей.
-
-## Данные, которых нет в контракте оператора этапа 1 (W4.60, W4.61)
-
-- kind: out-of-stage · target: .ox-org-owner — «Владелец: {имя} · мест {занято}/{лимит}» → «Владелец: — · мест —/{лимит}» · mode: both · reason: имени владельца и занятых мест в Tenant и Subscription нет (listPlatformUsers и места — W4.60/W4.61, этап 4); лимит мест — право seats подписки; эталон приводится · decision: PD-50, Q-W1.25-1 · owner: W1.25 · expires: stage-4
-- kind: out-of-stage · target: .ox-org-usage — «{занято} из {квота} ГБ» → «— из {квота} ГБ» · mode: both · reason: занятое место организации оператору не отдаётся (использование — W4.60); квота — право storage_quota_bytes; эталон приводится · decision: PD-50, Q-W1.25-1 · owner: W1.25 · expires: stage-4
-- kind: out-of-stage · target: .ox-orgs-bar-fill — заливка полос места и мест · mode: both · reason: без занятого места и мест полоса показывает только подложку; эталон приводится (ширина заливки 0) · decision: PD-50, Q-W1.25-1 · owner: W1.25 · expires: stage-4
+W4.84 снял записи `out-of-stage` этапа 4 (владелец, места, занятое место, заливка полос): эталон больше не приводится.
 
 ## Расхождения режимов mock и stand
 

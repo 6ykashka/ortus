@@ -8,14 +8,32 @@ export const ORGS_TEXT = {
   dash: '—',
   usage: '{used} из {quota} ГБ',
   seatsOf: company.billing.seatsOf,
+  /** «· мест нет» у занятых всех мест (opVM :3560). */
+  seatsFull: ' · мест нет',
   seatsUnlimited: '{used} · без ограничения',
   ownerSeats: '{used}/{limit}',
   gb: '{gb} ГБ',
+  /** W4.84: части «Тарифа» (opVM :3559) — «пробный», «помесячно», «{n} мес» — и сумма «Оплаты» (:3561). */
   plan: {
-    trial: '«{tier}» · пробный · цены v{version}',
-    paid: '«{tier}» · цены v{version}',
-    bare: '«{tier}»',
+    tier: '«{tier}»',
+    trial: 'пробный',
+    monthly: 'помесячно',
+    term: '{months} мес',
+    version: 'цены v{version}',
+    sep: ' · ',
   },
+  perMonth: '{paid} · {amount}/мес',
+  /** W4.84: «Квота места» (opVM :3565): вариант меньше занятого. */
+  quotaOption: '{gb} ГБ',
+  quotaBelow: '{gb} ГБ · меньше занятого',
+  /** W4.84: плашка заявки на тариф (opVM :3562). */
+  request: 'Заявка {number}: переход на «{tier}» от {at}',
+  /** W4.84: отраслевые модули (INDUSTRY models.js: logistics, spa, repair → ключи контракта fleet, spa, repairs). */
+  modules: {
+    fleet: 'Логистика',
+    spa: 'Салон и SPA',
+    repairs: 'Ремонт и стройка',
+  } as Readonly<Record<string, string>>,
   tiers: {
     start: 'Старт',
     team: 'Команда',
@@ -43,6 +61,8 @@ export const ORGS_TEXT = {
   /** Карточка: загрузка и ошибки своих данных (подписка, организация, журнал) — без эталона. */
   card: {
     subError: 'Не удалось загрузить подписку: {error}',
+    /** W4.84: getPlatformUsage не ответил — владелец, модули и занятое место «—» (без эталона). */
+    usageError: 'Не удалось загрузить использование: {error}',
     tenantError: 'Не удалось загрузить организацию: {error}',
     auditError: 'Не удалось загрузить журнал: {error}',
     auditEmpty: 'Действий пока нет',

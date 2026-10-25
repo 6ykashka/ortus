@@ -7,17 +7,26 @@ import {
   actionsFor,
   auditLine,
   markLetter,
+  membersText,
+  modulesText,
   mskDate,
   ownerLine,
   paymentText,
   planText,
+  quotaGb,
+  quotaOptions,
   quotaText,
+  quotaUpdate,
   REASON_MAX,
   reasonOk,
   reasonTooLong,
+  requestText,
+  seatsFill,
+  seatsOf,
   seatsText,
   shortName,
   statusChip,
+  storageFill,
   trialText,
   usageText,
 } from './model.ts';
@@ -136,51 +145,235 @@ describe('даты и пробный период', () => {
   });
 });
 
-describe('тариф и оплата (бриф §10 п. 10)', () => {
+/** Условия периода W4.07 (Subscription.tierName, termMonths, priceVersion, monthlyAmount). */
+const lotosPaid: S['Subscription'] = {
+  ...lotos,
+  tierCode: 'team',
+  tierName: 'Команда',
+  termMonths: 12,
+  priceVersion: 1,
+  monthlyAmount: { amountMinor: 680_000, currency: 'RUB' },
+  seats: { limit: 25, used: 23, active: 23, invited: 0, available: 2 },
+};
+const NB = ' ';
+
+describe('тариф и оплата (W4.84: срок, версия цен и сумма из Subscription)', () => {
   it('пробный: «Старт» · пробный · цены v2', () => {
     expect(planText(alta)).toBe('«Старт» · пробный · цены v2');
+    expect(planText({ ...alta, tierName: 'Старт', priceVersion: 2 })).toBe(
+      '«Старт» · пробный · цены v2',
+    );
   });
-  it('оплаченный: срока в контракте нет — «Команда» · цены v1', () => {
+  it('оплаченный: срок — «12 мес», помесячный — «помесячно»; версия цен — priceVersion, а не sourceRef', () => {
+    expect(planText(lotosPaid)).toBe('«Команда» · 12 мес · цены v1');
+    expect(planText({ ...lotosPaid, termMonths: 1 })).toBe('«Команда» · помесячно · цены v1');
+    expect(planText({ ...lotosPaid, termMonths: 4, priceVersion: 3 })).toBe(
+      '«Команда» · 4 мес · цены v3',
+    );
+  });
+  it('без срока (до W4.60 или после неоплаченного trial) — без срока; версия — из sourceRef', () => {
     expect(planText(lotos)).toBe('«Команда» · цены v1');
-  });
-  it('read_only после trial — не «пробный»: эталон (opVM :3559) пишет «пробный» только у status trial', () => {
     expect(planText(remstroy)).toBe('«Старт» · цены v2');
-    expect(planText({ ...remstroy, status: 'grace' })).toBe('«Старт» · цены v2');
+    expect(planText({ ...remstroy, status: 'grace', priceVersion: 1 })).toBe('«Старт» · цены v1');
   });
-  it('неизвестный ключ тарифа показывается как есть, без версии', () => {
+  it('имя тарифа — tierName сетки; неизвестный ключ без имени — как есть, без версии', () => {
+    expect(planText({ ...lotosPaid, tierName: 'Команда+' })).toBe('«Команда+» · 12 мес · цены v1');
     expect(planText({ ...lotos, planKey: 'vip', entitlements: [] })).toBe('«vip»');
   });
-  it('оплата: пробный период, «Оплачено до …», иначе «—»', () => {
+  it('оплата: пробный период, «Оплачено до … · 6 800 ₽/мес», без суммы — только дата, иначе «—»', () => {
     expect(paymentText(alta)).toBe('Пробный период');
+    expect(paymentText(lotosPaid)).toBe(`Оплачено до 31.03.2027 · 6${NB}800 ₽/мес`);
     expect(paymentText(lotos)).toBe('Оплачено до 31.03.2027');
     expect(paymentText(remstroy)).toBe('—');
     expect(paymentText(undefined)).toBe('—');
   });
 });
 
-describe('места и место: лимиты из подписки, занятое — «—» до этапа 4 (бриф §10 п. 1)', () => {
-  it('строка владельца: «Владелец: — · мест —/10»', () => {
-    expect(ownerLine(alta)).toBe('Владелец: — · мест —/10');
+describe('места, место и полосы (W4.84: Tenant.seats, Subscription.seats, getPlatformUsage)', () => {
+  const seats = (used: number, limit: number | null): S['SeatUsage'] => ({
+    limit,
+    used,
+    active: used,
+    invited: 0,
+    available: limit === null ? null : Math.max(0, limit - used),
   });
-  it('без лимита мест — только занятые', () => {
-    expect(ownerLine({ ...alta, entitlements: [] })).toBe('Владелец: — · мест —');
+  const tenant: S['Tenant'] = {
+    id: '00000000-0000-5000-8000-000000000001',
+    name: 'Альта Групп',
+    status: 'trial',
+    ownerUserIds: [],
+    createdAt: '2026-09-30T15:12:00Z',
+    revision: 1,
+    seats: seats(9, 10),
+  };
+  it('места: подписки, иначе организации; нет нигде — undefined', () => {
+    expect(seatsOf(tenant, lotosPaid)).toEqual(lotosPaid.seats);
+    expect(seatsOf(tenant, alta)).toEqual(seats(9, 10));
+    const bare: S['Tenant'] = { ...tenant };
+    delete bare.seats;
+    expect(seatsOf(bare, alta)).toBeUndefined();
   });
-  it('место: «— из 100 ГБ», дробная квота — с запятой', () => {
-    expect(usageText(alta)).toBe('— из 100 ГБ');
-    expect(usageText({ ...alta, entitlements: [ent('storage_quota_bytes', 12.5 * GiB)] })).toBe(
-      '— из 12,5 ГБ',
+  it('строка владельца: «Владелец: Дарья Зимина · мест 9/10», без лимита — только занятые', () => {
+    expect(ownerLine('Дарья Зимина', seats(9, 10))).toBe('Владелец: Дарья Зимина · мест 9/10');
+    expect(ownerLine('Дарья Зимина', seats(40, null))).toBe('Владелец: Дарья Зимина · мест 40');
+  });
+  it('строка владельца без данных: владелец и места — «—»', () => {
+    expect(ownerLine(undefined, seats(9, 10))).toBe('Владелец: — · мест 9/10');
+    expect(ownerLine('', undefined)).toBe('Владелец: — · мест —');
+  });
+  it('место: «46,2 из 100 ГБ», занятое не загружено — «— из 100 ГБ», без квоты — «—»', () => {
+    expect(usageText(46.2 * GiB + 1234, alta)).toBe('46,2 из 100 ГБ');
+    expect(usageText(63 * GiB, cargo)).toBe('63 из 100 ГБ');
+    expect(usageText(undefined, alta)).toBe('— из 100 ГБ');
+    expect(usageText(0, { ...alta, entitlements: [ent('storage_quota_bytes', 12.5 * GiB)] })).toBe(
+      '0 из 12,5 ГБ',
     );
-    expect(usageText(undefined)).toBe('—');
+    expect(usageText(10 * GiB, undefined)).toBe('—');
   });
-  it('места с входом: «— из 10», без лимита — «— · без ограничения»', () => {
-    expect(seatsText(alta)).toBe('— из 10');
-    expect(seatsText({ ...alta, entitlements: [] })).toBe('— · без ограничения');
+  it('полоса места: ширина по занятому (до 100 %), > 85 % — warn, занято всё — danger', () => {
+    expect(storageFill(46.2 * GiB, alta)).toEqual({ width: '46.2%', tone: 'accent' });
+    expect(storageFill(19.8 * GiB, remstroy)).toEqual({ width: '79.2%', tone: 'accent' });
+    expect(storageFill(90 * GiB, alta)).toEqual({ width: '90.0%', tone: 'warn' });
+    expect(
+      storageFill(46.2 * GiB, { ...alta, entitlements: [ent('storage_quota_bytes', 25 * GiB)] }),
+    ).toEqual({
+      width: '100.0%',
+      tone: 'danger',
+    });
+    expect(storageFill(undefined, alta)).toEqual({ width: '0%', tone: 'accent' });
+    expect(storageFill(5 * GiB, undefined)).toEqual({ width: '0%', tone: 'accent' });
   });
-  it('места с входом без подписки (загрузка, ошибка) — «—», а не «без ограничения»', () => {
+  it('места с входом: «9 из 10», все заняты — «· мест нет», без лимита — «· без ограничения»', () => {
+    expect(seatsText(seats(9, 10))).toBe('9 из 10');
+    expect(seatsText(seats(10, 10))).toBe('10 из 10 · мест нет');
+    expect(seatsText(seats(40, null))).toBe('40 · без ограничения');
     expect(seatsText(undefined)).toBe('—');
+  });
+  it('полоса мест: > 80 % — warn, все заняты — danger, без лимита — пустая', () => {
+    expect(seatsFill(seats(9, 10))).toEqual({ width: '90.0%', tone: 'warn' });
+    expect(seatsFill(seats(8, 10))).toEqual({ width: '80.0%', tone: 'accent' });
+    expect(seatsFill(seats(10, 10))).toEqual({ width: '100.0%', tone: 'danger' });
+    expect(seatsFill(seats(40, null))).toEqual({ width: '0.0%', tone: 'accent' });
+    expect(seatsFill(undefined)).toEqual({ width: '0%', tone: 'accent' });
+  });
+  it('модули: названия каталога через запятую, без модулей — «Только ядро», не загружены — «—»', () => {
+    expect(modulesText(['spa'])).toBe('Салон и SPA');
+    expect(modulesText(['fleet', 'repairs'])).toBe('Логистика, Ремонт и стройка');
+    expect(modulesText(['warehouse'])).toBe('warehouse');
+    expect(modulesText([])).toBe('Только ядро');
+    expect(modulesText(undefined)).toBe('—');
+  });
+  it('участники: число, не загружено — «—»', () => {
+    expect(membersText(10)).toBe('10');
+    expect(membersText(0)).toBe('0');
+    expect(membersText(undefined)).toBe('—');
   });
   it('квота в гигабайтах', () => {
     expect(quotaText(lotos)).toBe('50 ГБ');
+    expect(quotaGb(lotos)).toBe(50);
+    expect(quotaGb(undefined)).toBeUndefined();
+  });
+});
+
+describe('«Квота места» (W4.84, opVM :3565–3566; Q-W4.84-1…3)', () => {
+  it('варианты 25–500 ГБ, меньше занятого — с пометкой', () => {
+    expect(quotaOptions(46.2 * GiB, alta)).toEqual([
+      { value: '25', label: '25 ГБ · меньше занятого' },
+      { value: '50', label: '50 ГБ' },
+      { value: '100', label: '100 ГБ' },
+      { value: '250', label: '250 ГБ' },
+      { value: '500', label: '500 ГБ' },
+    ]);
+  });
+  it('текущая квота вне списка — вариантом по порядку; занятое не загружено — без пометок', () => {
+    const odd = { ...alta, entitlements: [ent('storage_quota_bytes', 75 * GiB)] };
+    expect(quotaOptions(undefined, odd).map((o) => o.label)).toEqual([
+      '25 ГБ',
+      '50 ГБ',
+      '75 ГБ',
+      '100 ГБ',
+      '250 ГБ',
+      '500 ГБ',
+    ]);
+  });
+  it('тело updatePlatformSubscription: тариф, статус и даты текущие, прочие ручные права сохраняются, квота — ручное право на 12 мес', () => {
+    const sub: S['Subscription'] = {
+      ...alta,
+      entitlements: [
+        ...alta.entitlements,
+        {
+          key: 'seats',
+          value: 100,
+          sourceType: 'manual',
+          sourceRef: 'Пилот D-08',
+          validUntil: '2027-01-31T21:00:00Z',
+        },
+        {
+          key: 'storage_quota_bytes',
+          value: 100 * GiB,
+          sourceType: 'manual',
+          sourceRef: 'Пилот D-08',
+          validUntil: '2027-01-31T21:00:00Z',
+        },
+      ],
+    };
+    expect(quotaUpdate(sub, 250, '  Клиент докупил место  ', NOW)).toEqual({
+      planKey: 'start',
+      status: 'trialing',
+      trialEndsAt: '2026-10-13T21:00:00Z',
+      cancelAtPeriodEnd: false,
+      manualEntitlements: [
+        {
+          key: 'seats',
+          value: 100,
+          sourceType: 'manual',
+          sourceRef: 'Пилот D-08',
+          validUntil: '2027-01-31T21:00:00Z',
+        },
+        {
+          key: 'storage_quota_bytes',
+          value: 250 * GiB,
+          sourceType: 'manual',
+          sourceRef: 'Клиент докупил место',
+          validUntil: '2027-10-01T21:00:00Z',
+        },
+      ],
+      reason: 'Клиент докупил место',
+    });
+  });
+  it('оплаченная и grace: даты периода и льготы передаются, чтобы сервер их не сбросил', () => {
+    const body = quotaUpdate(lotosPaid, 100, 'Клиент докупил место', NOW);
+    expect(body).toMatchObject({ status: 'active', periodEndsAt: '2027-03-31T21:00:00Z' });
+    const grace = quotaUpdate(
+      { ...cargo, status: 'grace', graceEndsAt: '2026-09-22T21:00:00Z' },
+      50,
+      'Клиент докупил место',
+      NOW,
+    );
+    expect(grace).toMatchObject({ status: 'grace', graceEndsAt: '2026-09-22T21:00:00Z' });
+    expect(grace.manualEntitlements).toHaveLength(1);
+  });
+});
+
+describe('плашка заявки (W4.84, opVM :3562)', () => {
+  it('«Заявка SR-12: переход на «Бизнес» от 29.09 16:40»', () => {
+    const req = {
+      id: 'd0b0c6c4-0000-5000-8000-000000000012',
+      number: 'SR-12',
+      tenantId: '00000000-0000-5000-8000-000000000002',
+      tenantName: 'SPA «Лотос»',
+      fromTierCode: 'team',
+      toTierCode: 'biz',
+      toTierName: 'Бизнес',
+      toSeatsLimit: 50,
+      termMonths: 12,
+      priceVersion: 2,
+      seatsUsed: 23,
+      status: 'pending',
+      requestedAt: '2026-09-29T13:40:00Z',
+      revision: 1,
+    } satisfies S['SubscriptionChangeRequest'];
+    expect(requestText(req)).toBe('Заявка SR-12: переход на «Бизнес» от 29.09 16:40');
   });
 });
 
@@ -309,6 +502,20 @@ describe('«Журнал действий»: строка по action и details
     ).toBe('Альта Групп: статус «Приостановлен»');
     expect(auditLine(row({ action: 'tenant.resumed', details: { toStatus: 'grace' } })).text).toBe(
       'Альта Групп: статус «Ограничен»',
+    );
+  });
+  it('квота оператора (updatePlatformSubscription, деталь quotaBytes) — «квота N ГБ» эталона', () => {
+    const line = auditLine(
+      row({
+        action: 'subscription.updated',
+        details: { quotaBytes: String(25 * GiB), toStatus: 'trialing' },
+        reason: 'Клиент докупил место',
+      }),
+    );
+    expect(line.text).toBe('Альта Групп: квота 25 ГБ');
+    expect(line.reason).toBe('Причина: Клиент докупил место');
+    expect(auditLine(row({ action: 'subscription.updated', details: {} })).text).toBe(
+      'Альта Групп: subscription.updated',
     );
   });
   it('неизвестное действие — общая строка; отказ помечается', () => {

@@ -10,6 +10,7 @@ import { fail } from '../core/problem.ts';
 import type { HandlerContext, Registry } from '../core/registry.ts';
 import type { TenantRow } from '../core/state.ts';
 import { addMs, DAY } from '../core/time.ts';
+import { audit } from './audit.ts';
 import { tenantView } from './usage.ts';
 
 type S = components['schemas'];
@@ -29,6 +30,12 @@ const STATUS_BY_SUBSCRIPTION: Partial<Record<S['Subscription']['status'], Tenant
   read_only: 'read_only',
   past_due: 'grace',
 };
+
+/** Действующая квота места: ручное право скрывает право тарифа (W1.08). */
+function quotaInForce(sub: S['Subscription']): number | undefined {
+  const all = sub.entitlements.filter((e) => e.key === 'storage_quota_bytes');
+  return (all.filter((e) => e.sourceType === 'manual').at(-1) ?? all.at(-1))?.value;
+}
 
 const reasonRequired = (field = 'reason'): never =>
   fail('validation_failed', 'Укажите причину изменения.', {
@@ -127,6 +134,24 @@ export const platformHandlers: Registry = {
       if (b.periodEndsAt) next.periodEndsAt = b.periodEndsAt;
       if (b.graceEndsAt) next.graceEndsAt = b.graceEndsAt;
       t.subscription = next;
+      // W4.84: строка журнала, как backend subscriptions.UpdateDetails — квота места, если она изменилась.
+      const details: Record<string, string> = {
+        fromStatus: prev.status,
+        toStatus: next.status,
+        planKey: next.planKey,
+        trialEndsAt: next.trialEndsAt ?? '',
+        periodEndsAt: next.periodEndsAt ?? '',
+        graceEndsAt: next.graceEndsAt ?? '',
+      };
+      const after = quotaInForce(next);
+      if (after !== undefined && after !== quotaInForce(prev)) details.quotaBytes = String(after);
+      audit(
+        ctx,
+        'subscription.updated',
+        { type: 'subscription', tenantId: t.id, name: t.name },
+        details,
+        b.reason,
+      );
       const status = STATUS_BY_SUBSCRIPTION[b.status];
       if (
         status &&

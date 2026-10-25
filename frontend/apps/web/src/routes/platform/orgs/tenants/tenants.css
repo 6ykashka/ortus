@@ -8,6 +8,9 @@
   --ox-orgs-track: #ecefea; /* :1547 подложка полосы */
   --ox-orgs-info-line: #c9d8e8; /* :1532 LINE.info баннера */
   --ox-orgs-danger-line: #e3b5af; /* :1577 рамка опасной вторичной кнопки */
+  --ox-orgs-warn-bar: #b7791f; /* opVM bar :3537, sBar :3561 — больше 85 % / 80 % */
+  --ox-orgs-req-bg: #faf1dc; /* :1565 плашка заявки */
+  --ox-orgs-req-fg: #7a5214;
 
   display: flex;
   flex-direction: column;
@@ -204,6 +207,15 @@
   background: var(--ox-accent);
 }
 
+/* W4.84: цвет заливки (opVM bar/sBar): warn — больше 85 % места / 80 % мест, danger — занято всё. */
+.ox-orgs-bar[data-tone='warn'] .ox-orgs-bar-fill {
+  background: var(--ox-orgs-warn-bar);
+}
+
+.ox-orgs-bar[data-tone='danger'] .ox-orgs-bar-fill {
+  background: var(--ox-danger-fg);
+}
+
 /* ── Карточка :1554–1580 ── */
 .ox-org-card {
   flex: 1 1 320px;
@@ -307,6 +319,68 @@
 .ox-org-action[data-variant='danger'] {
   border-color: var(--ox-orgs-danger-line);
   color: var(--ox-danger-fg);
+}
+
+/* ── W4.84: плашка заявки на тариф :1565 ── */
+.ox-org-request {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+  padding: 10px 12px;
+  border-radius: 10px;
+  background: var(--ox-orgs-req-bg);
+  color: var(--ox-orgs-req-fg);
+  font-size: 13px;
+}
+
+.ox-org-request-text {
+  flex: 1 1 180px;
+  text-wrap: pretty;
+}
+
+.ox-org-request-open {
+  min-height: 36px;
+  padding: 0 12px;
+  border-radius: 8px;
+  border: 1px solid var(--ox-orgs-req-fg);
+  background: var(--ox-card);
+  color: var(--ox-orgs-req-fg);
+  font-weight: 500;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+/* ── W4.84: «Квота места» + «Применить» :1568–1571 ── */
+.ox-org-quota {
+  display: flex;
+  gap: 8px;
+  align-items: flex-end;
+}
+
+.ox-org-quota-label {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  flex: 1;
+  min-width: 0;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--ox-orgs-label);
+}
+
+.ox-org-quota-select {
+  width: 100%;
+  min-height: 44px;
+  padding: 8px 12px;
+  border: 1px solid var(--ox-line-control);
+  border-radius: 8px;
+  background: var(--ox-card);
+  font-size: 16px;
+}
+
+.ox-org-action:disabled {
+  cursor: default;
 }
 
 .ox-org-note {

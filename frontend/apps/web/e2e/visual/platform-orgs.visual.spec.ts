@@ -1,6 +1,6 @@
 // W1.25 · Визуальная сверка `platform-orgs` и `platform-org-card` со снимком design-stage-1 (verification-protocol.md
 // §3, PD-22: 0,01): область страницы `#ox-main` оператора — список и карточка «Альта Групп», выбранной по умолчанию.
-// Эталон приведён к данным контракта этапа 1 (platform-orgs.compare.ts, allowlist/platform-orgs.md).
+// W4.84: данные W4.60 — как в эталоне, эталон не приводится (allowlist/platform-orgs.md).
 // `#ox-main` — область прокрутки оболочки: снимок берёт только первый экран. Поэтому страница и карточка целиком
 // сверяются ещё и на высоком окне (на 390 карточка целиком ниже первого экрана), а диалоги opConfirm — по тексту,
 // иконкам, кнопкам, положению и пикселям «Последствий».
@@ -12,8 +12,8 @@ import {
   consequencesTarget,
   dialogOutline,
   mainTarget,
-  normalizeReference,
   openDialog,
+  orgsArea,
   selectOrg,
 } from './platform-orgs.compare.ts';
 import { compareShots } from './shell.compare.ts';
@@ -36,7 +36,6 @@ test.describe('platform-orgs — визуальная сверка с этало
     reference,
   }, testInfo) => {
     const ref = await reference(undefined, { persona: 'operator', hidePanel: true });
-    await normalizeReference(ref.page);
     const impl = await app('/platform/tenants', { persona: 'operator' });
     await expect(page.locator('#ox-main .ox-audit-row')).toHaveCount(2);
     await page.waitForLoadState('networkidle');
@@ -58,7 +57,6 @@ test.describe('platform-orgs — визуальная сверка с этало
   }, testInfo) => {
     const ref = await reference(undefined, { persona: 'operator', hidePanel: true });
     await tall(ref.page);
-    await normalizeReference(ref.page);
     await tall(page);
     const impl = await app('/platform/tenants', { persona: 'operator' });
     await expect(page.locator('#ox-main .ox-audit-row')).toHaveCount(2);
@@ -88,8 +86,12 @@ test.describe('platform-orgs — визуальная сверка с этало
     { org: 'Альта Групп', action: 'Продлить пробный период на 14 дней' },
     { org: 'Альта Групп', action: 'Ограничить новые операции' },
     { org: 'Карго Сити', action: 'Снять ограничение' },
+    // W4.84: «Квота места» → «Применить» (opVM :3566): меньше занятого и больше занятого.
+    { org: 'Альта Групп', action: 'Применить', quota: '25' },
+    { org: 'SPA «Лотос»', action: 'Применить', quota: '250' },
   ] as const) {
-    test(`диалог «${d.action}» («${d.org}»): текст, иконки, кнопки, положение и «Последствия» как opConfirm`, async ({
+    const quota = 'quota' in d ? d.quota : undefined;
+    test(`диалог «${d.action}»${quota ? ` ${quota} ГБ` : ''} («${d.org}»): текст, иконки, кнопки, положение и «Последствия» как opConfirm`, async ({
       app,
       page,
       reference,
@@ -98,6 +100,11 @@ test.describe('platform-orgs — визуальная сверка с этало
       await selectOrg(ref.page, d.org);
       const impl = await app('/platform/tenants', { persona: 'operator' });
       await selectOrg(page, d.org);
+      if (quota) {
+        for (const p of [ref.page, page]) {
+          await orgsArea(p).locator('aside').getByLabel('Квота места').selectOption(quota);
+        }
+      }
       const refDialog = await openDialog(ref.page, d.action);
       const implDialog = await openDialog(page, d.action);
       // Поле «Причина» — no-reference (allowlist platform-org-card.md), в сверку текста не входит.
@@ -119,19 +126,26 @@ test.describe('platform-orgs — визуальная сверка с этало
       const refSection = consequencesTarget(ref);
       const refBox = await refSection.root.boundingBox();
       const implSection = consequencesTarget(impl);
+      if (!refBox) throw new Error('нет секции «Последствия»');
+      // Ширина — первой: она меняет перенос строк, высоту диалога и, при центрировании, дробную часть положения.
+      await implSection.root.evaluate((el, width) => {
+        (el as HTMLElement).style.width = `${width}px`;
+      }, refBox.width);
       const implBox = await implSection.root.boundingBox();
-      if (!refBox || !implBox) throw new Error('нет секции «Последствия»');
+      if (!implBox) throw new Error('нет секции «Последствия»');
       const frac = (v: number) => v - Math.floor(v);
       const dy = (frac(refBox.y) - frac(implBox.y) + 1) % 1;
+      // W4.84: и дробная часть горизонтального положения (у диалога квоты она расходится на 768 и 1440).
+      const dx = (frac(refBox.x) - frac(implBox.x) + 1) % 1;
       await implSection.root.evaluate(
         (el, v) => {
           Object.assign((el as HTMLElement).style, {
-            width: `${v.width}px`,
             position: 'relative',
             top: `${v.dy}px`,
+            left: `${v.dx}px`,
           });
         },
-        { width: refBox.width, dy },
+        { dy, dx },
       );
       const r = await compareShots(
         { target: implSection },

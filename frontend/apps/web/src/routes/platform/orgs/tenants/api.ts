@@ -12,6 +12,8 @@ type S = components['schemas'];
 export const PLATFORM_KEY = ['platform'] as const;
 const TENANTS_KEY = [...PLATFORM_KEY, 'tenants'] as const;
 const AUDIT_KEY = [...PLATFORM_KEY, 'audit'] as const;
+const USAGE_KEY = [...PLATFORM_KEY, 'orgs', 'usage'] as const;
+const REQUESTS_KEY = [...PLATFORM_KEY, 'orgs', 'pending-requests'] as const;
 const tenantKey = (id: string) => [...PLATFORM_KEY, 'tenant', id] as const;
 const subscriptionKey = (id: string) => [...PLATFORM_KEY, 'subscription', id] as const;
 
@@ -105,6 +107,40 @@ export function useSubscriptions(ids: readonly string[]): ReadonlyMap<string, Su
   });
 }
 
+/**
+ * W4.84: «Использование» (getPlatformUsage) — владелец, модули, занятое место и участники всех организаций одним
+ * запросом (только метаданные control DB); строка по id организации.
+ */
+export function useUsage() {
+  const api = useApi();
+  return useQuery({
+    queryKey: USAGE_KEY,
+    queryFn: async (): Promise<ReadonlyMap<string, S['PlatformUsageTenant']>> => {
+      const u = await unwrap(await api.GET('/api/v1/platform/usage'));
+      return new Map(u.tenants.map((t) => [t.tenantId, t]));
+    },
+  });
+}
+
+/**
+ * W4.84: заявки на тариф на рассмотрении (плашка карточки): одна на организацию, один запрос на страницу.
+ * Роль без `platform.billing.read` (поддержка) получает 403 — плашки нет (Q-W4.84-4).
+ */
+export function usePendingRequests() {
+  const api = useApi();
+  return useQuery({
+    queryKey: REQUESTS_KEY,
+    queryFn: async (): Promise<ReadonlyMap<string, S['SubscriptionChangeRequest']>> => {
+      const page = await unwrap(
+        await api.GET('/api/v1/platform/subscription-requests', {
+          params: { query: { status: 'pending', limit: TENANTS_LIMIT } },
+        }),
+      );
+      return new Map(page.items.map((r) => [r.tenantId, r]));
+    },
+  });
+}
+
 /** «Журнал действий»: общий журнал платформы, новые сверху (как эталон — без фильтра организации). */
 export function useAudit() {
   const api = useApi();
@@ -121,16 +157,22 @@ export function useAudit() {
   });
 }
 
-export type CommandKind = 'extend' | 'suspend' | 'resume';
+/** Команды карточки; `quota` — «Квота места» (updatePlatformSubscription, W4.84). */
+export type CommandKind = 'extend' | 'suspend' | 'resume' | 'quota';
+
+/** Тело «Квоты места» по причине (model.quotaUpdate): строится один раз на попытку. */
+export type QuotaBody = S['PlatformSubscriptionUpdate'];
 
 export interface CommandInput {
   kind: CommandKind;
   tenantId: string;
   reason: string;
-  /** ETag организации (suspend, resume) или подписки (extend). */
+  /** ETag организации (suspend, resume) или подписки (extend, quota). */
   etag: string;
   /** Ключ идемпотентности попытки (useCommandSender). */
   idempotencyKey: string;
+  /** Тело updatePlatformSubscription (только `quota`). */
+  quota?: QuotaBody;
 }
 
 /** Дней продления пробного периода — как эталон («на 14 дней», TrialExtension.days). */
@@ -141,12 +183,27 @@ export function usePlatformCommand(): (c: CommandInput) => Promise<void> {
   const api = useApi();
   const qc = useQueryClient();
   return useCallback(
-    async ({ kind, tenantId, reason, etag, idempotencyKey }: CommandInput): Promise<void> => {
+    async ({
+      kind,
+      tenantId,
+      reason,
+      etag,
+      idempotencyKey,
+      quota,
+    }: CommandInput): Promise<void> => {
       const header = { 'Idempotency-Key': idempotencyKey, 'If-Match': etag };
       const path = { tenantId };
       const body = { reason: reason.trim() };
       try {
-        if (kind === 'extend') {
+        if (kind === 'quota') {
+          if (!quota) throw new Error('quota: нет тела updatePlatformSubscription');
+          await unwrap(
+            await api.PUT('/api/v1/platform/tenants/{tenantId}/subscription', {
+              params: { header, path },
+              body: quota,
+            }),
+          );
+        } else if (kind === 'extend') {
           await unwrap(
             await api.POST('/api/v1/platform/tenants/{tenantId}/trial-extensions', {
               params: { header, path },
@@ -185,11 +242,12 @@ export function usePlatformCommand(): (c: CommandInput) => Promise<void> {
 
 const STALE: ReadonlySet<number> = new Set([409, 412]);
 
-/** Попытка команды: ключ идемпотентности, If-Match и причина, с которыми она ушла на сервер. */
+/** Попытка команды: ключ идемпотентности, If-Match, причина и тело квоты, с которыми она ушла на сервер. */
 interface Attempt {
   key: string;
   etag: string;
   reason: string;
+  quota?: QuotaBody;
 }
 
 /**
@@ -203,6 +261,8 @@ interface Attempt {
 export function useCommandSender(
   kind: CommandKind,
   tenantId: string,
+  /** «Квота места»: тело по причине (на попытку — дословно то же, повтор не меняет запрос). */
+  quotaFor?: (reason: string) => QuotaBody,
 ): (reason: string, etag: string) => Promise<void> {
   const command = usePlatformCommand();
   const attempt = useRef<Attempt | null>(null);
@@ -210,17 +270,29 @@ export function useCommandSender(
     async (reason: string, etag: string): Promise<void> => {
       const text = reason.trim();
       const prev = attempt.current;
-      const a: Attempt =
-        prev && prev.reason === text ? prev : { key: crypto.randomUUID(), etag, reason: text };
+      let a: Attempt;
+      if (prev && prev.reason === text) a = prev;
+      else {
+        a = { key: crypto.randomUUID(), etag, reason: text };
+        if (quotaFor) a.quota = quotaFor(text);
+      }
       attempt.current = a;
       try {
-        await command({ kind, tenantId, reason: a.reason, etag: a.etag, idempotencyKey: a.key });
+        const input: CommandInput = {
+          kind,
+          tenantId,
+          reason: a.reason,
+          etag: a.etag,
+          idempotencyKey: a.key,
+        };
+        if (a.quota) input.quota = a.quota;
+        await command(input);
         attempt.current = null;
       } catch (e) {
         if (e instanceof ProblemError && e.status >= 400 && e.status < 500) attempt.current = null;
         throw e;
       }
     },
-    [command, kind, tenantId],
+    [command, kind, tenantId, quotaFor],
   );
 }

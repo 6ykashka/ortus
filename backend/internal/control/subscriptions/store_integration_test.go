@@ -146,9 +146,10 @@ func (s *stand) checkUpdated(id, operator uuid.UUID) {
 	if st := s.one(`select state::text from tenants where id = $1`, id); st != "active" {
 		s.t.Errorf("tenant state %s", st)
 	}
-	if row := s.one(`select concat_ws('|', actor_kind, actor_id, target_type, reason, details->>'fromStatus', details->>'toStatus')
-		from platform_audit where action = 'subscription.updated' and target_id = $1`, id); row !=
-		"operator|"+operator.String()+"|subscription|Оплата по счёту 17|trialing|active" {
+	// W4.84: ручная квота 200 ГиБ вместо 100 ГиБ тарифа — деталь quotaBytes («квота 200 ГБ» журнала).
+	if row := s.one(`select concat_ws('|', actor_kind, actor_id, target_type, reason, details->>'fromStatus', details->>'toStatus',
+		details->>'quotaBytes') from platform_audit where action = 'subscription.updated' and target_id = $1`, id); row !=
+		"operator|"+operator.String()+"|subscription|Оплата по счёту 17|trialing|active|214748364800" {
 		s.t.Errorf("audit %q", row)
 	}
 }

@@ -153,16 +153,22 @@ describe('«Организации-клиенты»: список', () => {
     const text = (name: string, cls: string) => row(name).querySelector(cls)?.textContent;
     expect(text(ALTA, '.ox-org-mark')).toBe('А');
     expect(row(ALTA).querySelector('.ox-org-mark')?.getAttribute('aria-hidden')).toBe('true');
-    expect(text(ALTA, '.ox-org-owner')).toBe('Владелец: — · мест —/10');
+    expect(text(ALTA, '.ox-org-owner')).toBe('Владелец: Дарья Зимина · мест 9/10');
     expect(text(ALTA, '.ox-chip')).toContain('Пробный период');
-    expect(text(ALTA, '.ox-org-usage')).toBe('— из 100 ГБ');
+    expect(text(ALTA, '.ox-org-usage')).toBe('46,2 из 100 ГБ');
     expect(text(ALTA, '.ox-org-trial')).toBe('Осталось 12 дн. · до 13.10.2026');
     expect(text(LOTOS, '.ox-chip')).toContain('Действует');
     expect(text(LOTOS, '.ox-org-trial')).toBe('Не применяется');
     expect(text(REMSTROY, '.ox-chip')).toContain('Ограничен');
     expect(text(REMSTROY, '.ox-org-trial')).toBe('Завершён 20.09.2026');
     expect(text(CARGO, '.ox-chip')).toContain('Приостановлен');
-    expect(text(CARGO, '.ox-org-usage')).toBe('— из 100 ГБ');
+    expect(text(CARGO, '.ox-org-usage')).toBe('63 из 100 ГБ');
+    expect(text(CARGO, '.ox-org-owner')).toBe('Владелец: Денис Шишкин · мест 22/25');
+    const fill = (name: string) =>
+      row(name).querySelector<HTMLElement>('.ox-orgs-bar-fill')?.style.width;
+    expect(fill(ALTA)).toBe('46.2%');
+    expect(fill(REMSTROY)).toBe('79.2%');
+    expect(row(ALTA).querySelector('.ox-orgs-bar')?.getAttribute('data-tone')).toBe('accent');
   });
 
   it('клик по строке выбирает организацию и пишет ?org= в адрес', async () => {
@@ -276,18 +282,25 @@ describe('карточка организации', () => {
         .getAllByRole('term')
         .map((x) => x.textContent),
     ).toEqual(['Владелец', 'Пробный период', 'Модули', 'Участники', 'Место', 'Тариф', 'Оплата']);
-    expect(dd(c, 'Владелец')).toBe('—');
+    expect(dd(c, 'Владелец')).toBe('Дарья Зимина');
     expect(dd(c, 'Пробный период')).toBe('Осталось 12 дн. · до 13.10.2026');
-    expect(dd(c, 'Модули')).toBe('—');
-    expect(dd(c, 'Участники')).toBe('—');
-    expect(dd(c, 'Место')).toBe('— из 100 ГБ');
+    expect(dd(c, 'Модули')).toBe('Салон и SPA');
+    expect(dd(c, 'Участники')).toBe('10');
+    expect(dd(c, 'Место')).toBe('46,2 из 100 ГБ');
     expect(dd(c, 'Тариф')).toBe('«Старт» · пробный · цены v2');
     expect(dd(c, 'Оплата')).toBe('Пробный период');
-    expect(c.querySelector('.ox-org-seats')?.textContent).toBe('— из 10');
+    expect(c.querySelector('.ox-org-seats')?.textContent).toBe('9 из 10');
+    const fills = Array.from(c.querySelectorAll<HTMLElement>('.ox-orgs-bar-fill')).map(
+      (e) => e.style.width,
+    );
+    // Ширина — как pW/sW эталона («90.0%»); стиль браузера нормализует её до «90%».
+    expect(fills).toEqual(['46.2%', '90%']);
+    expect(c.querySelectorAll('.ox-orgs-bar')[1]?.getAttribute('data-tone')).toBe('warn');
     expect(within(c).getByRole('button', { name: EXTEND })).toBeTruthy();
     expect(within(c).getByRole('button', { name: RESTRICT })).toBeTruthy();
     expect(within(c).queryByRole('button', { name: LIFT })).toBeNull();
-    expect(within(c).queryByText('Квота места')).toBeNull();
+    expect(within(c).getByLabelText('Квота места')).toBeTruthy();
+    expect(c.querySelector('.ox-org-request')).toBeNull();
   });
 
   it('?org=<Карго Сити>: «Приостановлен», «Снять ограничение», без продления', async () => {
@@ -317,7 +330,7 @@ describe('карточка организации', () => {
     fireEvent.click(row(REMSTROY));
     await waitFor(() => expect(row(REMSTROY).getAttribute('aria-pressed')).toBe('true'));
     expect(a.router.state.location.search).toEqual({ org: tenantIdOf(a.scenario, REMSTROY) });
-    await waitFor(() => expect(dd(card(REMSTROY), 'Тариф')).toBe('«Старт» · цены v2'));
+    await waitFor(() => expect(dd(card(REMSTROY), 'Тариф')).toBe('«Старт» · цены v1'));
   });
 
   it('«Журнал действий»: строки сида дословно', async () => {
@@ -361,17 +374,19 @@ describe('карточка: загрузка и ошибки своих данн
     expect(alert.textContent).toContain('Не удалось загрузить подписку');
     expect(alert.textContent).toContain(errors.problem.rate_limited);
     expect(c.getAttribute('aria-busy')).not.toBe('true');
-    expect(c.querySelector('.ox-org-seats')?.textContent).toBe('—');
+    // Места — и в строке организации (Tenant.seats, W4.07): без подписки они остаются.
+    expect(c.querySelector('.ox-org-seats')?.textContent).toBe('9 из 10');
+    expect(dd(c, 'Место')).toBe('—');
     expect(within(c).queryByRole('button', { name: EXTEND })).toBeNull();
     a.scenario.setScenario(null);
     fireEvent.click(within(alert).getByRole('button', { name: 'Повторить' }));
     await waitFor(() => expect(dd(card(ALTA), 'Тариф')).toBe('«Старт» · пробный · цены v2'));
-    expect(card(ALTA).querySelector('.ox-org-seats')?.textContent).toBe('— из 10');
+    expect(card(ALTA).querySelector('.ox-org-seats')?.textContent).toBe('9 из 10');
     expect(within(card(ALTA)).getByRole('button', { name: EXTEND })).toBeTruthy();
     expect(within(card(ALTA)).queryByRole('alert')).toBeNull();
     // «Повторить» перечитывает подписки всех строк, не только выбранной.
     await waitFor(() =>
-      expect(row(CARGO).querySelector('.ox-org-usage')?.textContent).toBe('— из 100 ГБ'),
+      expect(row(CARGO).querySelector('.ox-org-usage')?.textContent).toBe('63 из 100 ГБ'),
     );
   });
 
@@ -424,6 +439,218 @@ describe('карточка: загрузка и ошибки своих данн
       .parentElement as HTMLElement;
     expect(within(audit).getByRole('status', { name: 'Загрузка' })).toBeTruthy();
     expect(c.getAttribute('aria-busy')).not.toBe('true');
+  });
+});
+
+describe('W4.84: данные W4.60 — срок и сумма, заявка, использование', () => {
+  const NB = ' ';
+  const selectOrg = async (a: MockApp, name: string) => {
+    fireEvent.click(row(name));
+    await waitFor(() =>
+      expect(a.router.state.location.search).toEqual({ org: tenantIdOf(a.scenario, name) }),
+    );
+  };
+
+  it('«SPA «Лотос»»: «Команда» · 12 мес · цены v1, оплата с суммой, плашка SR-12 → «Заявки на тариф»', async () => {
+    const a = await open();
+    await ready();
+    await selectOrg(a, LOTOS);
+    const c = card(LOTOS);
+    await waitFor(() => expect(dd(c, 'Тариф')).toBe('«Команда» · 12 мес · цены v1'));
+    expect(dd(c, 'Оплата')).toBe(`Оплачено до 31.03.2027 · 6${NB}800 ₽/мес`);
+    expect(dd(c, 'Модули')).toBe('Салон и SPA');
+    expect(dd(c, 'Участники')).toBe('23');
+    const plaque = await waitFor(() => {
+      const el = c.querySelector<HTMLElement>('.ox-org-request');
+      expect(el).not.toBeNull();
+      return el as HTMLElement;
+    });
+    expect(plaque.querySelector('.ox-org-request-text')?.textContent).toBe(
+      'Заявка SR-12: переход на «Бизнес» от 29.09 16:40',
+    );
+    fireEvent.click(within(plaque).getByRole('button', { name: 'Открыть заявку' }));
+    await waitFor(() => expect(a.router.state.location.pathname).toBe('/platform/requests'));
+  });
+
+  it('«Карго Сити»: «Команда» · 4 мес, «Оплачено до 15.09.2026 · 8 075 ₽/мес», «Логистика», места «22 из 25»', async () => {
+    const a = await open();
+    await ready();
+    await selectOrg(a, CARGO);
+    const c = card(CARGO);
+    await waitFor(() => expect(dd(c, 'Тариф')).toBe('«Команда» · 4 мес · цены v1'));
+    expect(dd(c, 'Оплата')).toBe(`Оплачено до 15.09.2026 · 8${NB}075 ₽/мес`);
+    expect(dd(c, 'Модули')).toBe('Логистика');
+    expect(c.querySelector('.ox-org-seats')?.textContent).toBe('22 из 25');
+    expect(c.querySelector('.ox-org-request')).toBeNull();
+  });
+
+  it('заявки не прочитаны (ошибка, 403 роли поддержки) — плашки нет, без alert', async () => {
+    const a = await open('/platform/tenants', {
+      scenario: 'listPlatformSubscriptionRequests=rate_limited',
+    });
+    await ready();
+    await selectOrg(a, LOTOS);
+    const c = card(LOTOS);
+    await waitFor(() => expect(dd(c, 'Тариф')).toBe('«Команда» · 12 мес · цены v1'));
+    expect(c.querySelector('.ox-org-request')).toBeNull();
+    expect(within(c).queryByRole('alert')).toBeNull();
+  });
+
+  it('использование загружается: владелец строки и значения карточки — скелетон, не «—»', async () => {
+    await open('/platform/tenants', { scenario: 'getPlatformUsage=loading' });
+    await ready();
+    expect(row(ALTA).querySelector<HTMLElement>('.ox-org-owner')?.dataset.loading).toBe('true');
+    expect(row(ALTA).querySelector<HTMLElement>('.ox-org-usage')?.dataset.loading).toBe('true');
+    const c = card(ALTA);
+    expect(dd(c, 'Владелец')).toBe(shell.a11y.loading);
+    expect(dd(c, 'Модули')).toBe(shell.a11y.loading);
+    expect(dd(c, 'Место')).toBe(shell.a11y.loading);
+    expect(dd(c, 'Тариф')).toBe('«Старт» · пробный · цены v2');
+  });
+
+  it('использование не загрузилось: «—», alert «Не удалось загрузить использование…» и «Повторить»', async () => {
+    const a = await open('/platform/tenants', { scenario: 'getPlatformUsage=rate_limited' });
+    await ready();
+    const c = card(ALTA);
+    const alert = await within(c).findByRole('alert');
+    expect(alert.textContent).toContain('Не удалось загрузить использование');
+    expect(alert.textContent).toContain(errors.problem.rate_limited);
+    expect(row(ALTA).querySelector('.ox-org-owner')?.textContent).toBe('Владелец: — · мест 9/10');
+    expect(row(ALTA).querySelector('.ox-org-usage')?.textContent).toBe('— из 100 ГБ');
+    expect(dd(c, 'Владелец')).toBe('—');
+    expect(dd(c, 'Модули')).toBe('—');
+    expect(dd(c, 'Участники')).toBe('10');
+    a.scenario.setScenario(null);
+    fireEvent.click(within(alert).getByRole('button', { name: 'Повторить' }));
+    await waitFor(() => expect(dd(card(ALTA), 'Владелец')).toBe('Дарья Зимина'));
+    expect(within(card(ALTA)).queryByRole('alert')).toBeNull();
+  });
+});
+
+describe('W4.84: «Квота места» (updatePlatformSubscription с причиной)', () => {
+  const quota = () => within(card(ALTA)).getByLabelText<HTMLSelectElement>('Квота места');
+  const apply = () => within(card(ALTA)).getByRole('button', { name: 'Применить' });
+
+  it('варианты 25–500 ГБ, «меньше занятого», текущая выбрана; «Применить» недоступна без смены', async () => {
+    await open();
+    await ready();
+    await waitFor(() => expect(quota().value).toBe('100'));
+    expect(Array.from(quota().options).map((o) => o.textContent)).toEqual([
+      '25 ГБ · меньше занятого',
+      '50 ГБ',
+      '100 ГБ',
+      '250 ГБ',
+      '500 ГБ',
+    ]);
+    expect(apply()).toHaveProperty('disabled', true);
+    fireEvent.change(quota(), { target: { value: '250' } });
+    expect(apply()).toHaveProperty('disabled', false);
+  });
+
+  it('квота меньше занятого: диалог эталона, тело с ручным правом, If-Match подписки; журнал и место обновлены', async () => {
+    const w = watchRequests();
+    const a = await open('/platform/tenants', { setup: w.setup });
+    await ready();
+    await waitFor(() => expect(quota().value).toBe('100'));
+    fireEvent.change(quota(), { target: { value: '25' } });
+    fireEvent.click(apply());
+    const dialog = await screen.findByRole('dialog', {
+      name: 'Изменить квоту «Альта Групп» на 25 ГБ?',
+    });
+    expect(dialog.textContent).toContain('Занято 46,2 ГБ.');
+    expect(
+      Array.from(dialog.querySelectorAll('.ox-orgs-conseq')).map((x) => x.textContent),
+    ).toEqual([
+      'Квота меньше занятого: клиенту будут заблокированы новые загрузки',
+      'Файлы клиента не удаляются',
+    ]);
+    const confirm = within(dialog).getByRole('button', { name: 'Изменить квоту' });
+    expect(confirm.getAttribute('data-variant')).toBe('danger');
+    expect(confirm).toHaveProperty('disabled', true);
+    fireEvent.change(reasonField(dialog), { target: { value: `  ${REASON}  ` } });
+    fireEvent.click(confirm);
+    expect(await screen.findByText(toast.platform.done)).toBeTruthy();
+    await waitFor(() => expect(screen.queryByRole('dialog')).toBeNull());
+    const id = tenantIdOf(a.scenario, ALTA);
+    const sub = `/api/v1/platform/tenants/${id}/subscription`;
+    const put = w.seen.find((x) => x.method === 'PUT' && x.path === sub);
+    const shown = w.seen.find((x) => x.method === 'GET' && x.path === sub)?.etag;
+    expect(put?.headers.get('If-Match')).toBe(shown);
+    expect(put?.headers.get('Idempotency-Key')).toMatch(UUID);
+    expect(JSON.parse(put?.body ?? '{}')).toEqual({
+      planKey: 'start',
+      status: 'trialing',
+      trialEndsAt: '2026-10-13T21:00:00Z',
+      cancelAtPeriodEnd: false,
+      manualEntitlements: [
+        {
+          key: 'storage_quota_bytes',
+          value: 25 * 1024 ** 3,
+          sourceType: 'manual',
+          sourceRef: REASON,
+          validUntil: '2027-10-01T21:00:00Z',
+        },
+      ],
+      reason: REASON,
+    });
+    await waitFor(() => expect(dd(card(ALTA), 'Место')).toBe('46,2 из 25 ГБ'));
+    expect(card(ALTA).querySelector('.ox-orgs-bar')?.getAttribute('data-tone')).toBe('danger');
+    expect(quota().value).toBe('25');
+    await waitFor(() =>
+      expect(journal(card(ALTA))[0]?.querySelector('.ox-audit-text')?.textContent).toBe(
+        'Альта Групп: квота 25 ГБ',
+      ),
+    );
+    expect(journal(card(ALTA))[0]?.querySelector('.ox-audit-reason')?.textContent).toBe(
+      `Причина: ${REASON}`,
+    );
+  });
+
+  it('квота больше занятого: «Новые загрузки остаются доступны», кнопка не опасная; «Отмена» — без запроса', async () => {
+    const w = watchRequests();
+    await open('/platform/tenants', { setup: w.setup });
+    await ready();
+    await waitFor(() => expect(quota().value).toBe('100'));
+    fireEvent.change(quota(), { target: { value: '500' } });
+    fireEvent.click(apply());
+    const dialog = await screen.findByRole('dialog', {
+      name: 'Изменить квоту «Альта Групп» на 500 ГБ?',
+    });
+    expect(
+      Array.from(dialog.querySelectorAll('.ox-orgs-conseq')).map((x) => x.textContent),
+    ).toEqual(['Новые загрузки остаются доступны']);
+    expect(
+      within(dialog).getByRole('button', { name: 'Изменить квоту' }).getAttribute('data-variant'),
+    ).toBe('primary');
+    fireEvent.click(within(dialog).getByRole('button', { name: 'Отмена' }));
+    await waitFor(() => expect(screen.queryByRole('dialog')).toBeNull());
+    expect(w.seen.some((x) => x.method === 'PUT')).toBe(false);
+  });
+
+  it('412: подписку изменил другой оператор — тост, диалог открыт; повтор — If-Match перечитанной подписки', async () => {
+    const w = watchRequests();
+    const a = await open('/platform/tenants', { setup: w.setup });
+    await ready();
+    await waitFor(() => expect(quota().value).toBe('100'));
+    const id = tenantIdOf(a.scenario, ALTA);
+    await extendElsewhere(a, id);
+    fireEvent.change(quota(), { target: { value: '250' } });
+    fireEvent.click(apply());
+    const dialog = await screen.findByRole('dialog', {
+      name: 'Изменить квоту «Альта Групп» на 250 ГБ?',
+    });
+    fireEvent.change(reasonField(dialog), { target: { value: REASON } });
+    fireEvent.click(within(dialog).getByRole('button', { name: 'Изменить квоту' }));
+    expect(await screen.findByText(errors.problem.revision_mismatch)).toBeTruthy();
+    expect(screen.getByRole('dialog')).toBeTruthy();
+    fireEvent.click(within(dialog).getByRole('button', { name: 'Изменить квоту' }));
+    await waitFor(() => expect(screen.queryByRole('dialog')).toBeNull());
+    const puts = w.seen.filter((x) => x.method === 'PUT');
+    expect(puts).toHaveLength(2);
+    expect(puts[1]?.headers.get('If-Match')).not.toBe(puts[0]?.headers.get('If-Match'));
+    expect(puts[1]?.headers.get('Idempotency-Key')).not.toBe(
+      puts[0]?.headers.get('Idempotency-Key'),
+    );
   });
 });
 
