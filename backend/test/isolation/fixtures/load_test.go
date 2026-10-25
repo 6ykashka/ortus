@@ -8,6 +8,7 @@ import (
 	"fmt"
 	"net/url"
 	"os"
+	"slices"
 	"testing"
 	"time"
 
@@ -60,8 +61,10 @@ func TestLoadControl(t *testing.T) {
 	if n := count(t, db, `select count(*) from tenants where state = 'active'`); n != 2 {
 		t.Errorf("active tenants = %d, want 2", n)
 	}
-	if n := count(t, db, `select count(*) from accounts where issuer = $1`, IssuerDev); n != len(w.Catalog.Actors) {
-		t.Errorf("accounts = %d, want %d", n, len(w.Catalog.Actors))
+	// W4.82: the inside actors are written only WithInTenant.
+	every := slices.DeleteFunc(slices.Clone(w.Catalog.Actors), func(a ActorDef) bool { return a.InTenant })
+	if n := count(t, db, `select count(*) from accounts where issuer = $1`, IssuerDev); n != len(every) {
+		t.Errorf("accounts = %d, want %d", n, len(every))
 	}
 	// 15 + a.manager-expired и a.manager-future: членство активно, назначения вне периода (возврат 1); + a.space-lead и
 	// a.later-scopes (W4.02): гранты видов этапов 4–7; + a.project-approver (W4.03): согласующий проекта.

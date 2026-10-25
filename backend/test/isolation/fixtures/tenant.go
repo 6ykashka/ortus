@@ -27,13 +27,17 @@ type tenantLoader struct {
 	owner  uuid.UUID // person id of the owner: granted_by, created_by, updated_by
 	actors []ActorDef
 	seq    int
-	// content: write TenantDef.Content too (WithContent).
-	content bool
+	// content: write TenantDef.Content too (WithContent); inTenant: the inside actors, roles and content (WithInTenant).
+	content, inTenant bool
 }
+
+// skip reports whether the loader leaves out an inside actor or role (InTenant) — written only WithInTenant.
+func (l *tenantLoader) skip(inTenant bool) bool { return inTenant && !l.inTenant }
 
 func (w *World) loadTenant(ctx context.Context, t TenantDef) (int64, error) {
 	return w.migrate(ctx, w.TenantDBs[t.Key], migrations.Tenant, func(tx *sql.Tx) error {
-		l := &tenantLoader{ctx: ctx, tx: tx, t: t, now: w.Now, owner: w.ownerPerson(t.Key), actors: w.Catalog.Actors, content: w.Content}
+		l := &tenantLoader{ctx: ctx, tx: tx, t: t, now: w.Now, owner: w.ownerPerson(t.Key), actors: w.Catalog.Actors,
+			content: w.Content, inTenant: w.InTenant}
 		return l.load()
 	})
 }
@@ -75,6 +79,9 @@ func (l *tenantLoader) load() error {
 	if l.content {
 		steps = append(steps, l.contentSteps()...)
 	}
+	if l.inTenant {
+		steps = append(steps, l.insideSteps()...) // W4.82 (content_inside.go)
+	}
 	for _, step := range steps {
 		if err := step(); err != nil {
 			return err
@@ -111,6 +118,9 @@ func (l *tenantLoader) units() error {
 
 func (l *tenantLoader) roles() error {
 	for _, r := range l.t.Roles {
+		if l.skip(r.InTenant) {
+			continue
+		}
 		id := nameID(localRef(refRole, l.t.Key, r.Key))
 		var tmpl *string
 		if r.Template != "" {
@@ -131,7 +141,7 @@ func (l *tenantLoader) roles() error {
 func (l *tenantLoader) people() error {
 	for _, a := range l.actors {
 		for _, m := range a.Memberships {
-			if m.Tenant != l.t.Key {
+			if m.Tenant != l.t.Key || l.skip(a.InTenant) {
 				continue
 			}
 			at := a.Key + "@" + m.Tenant
@@ -172,7 +182,7 @@ func (l *tenantLoader) groups() error {
 func (l *tenantLoader) groupMembers() error {
 	for _, a := range l.actors {
 		for _, m := range a.Memberships {
-			if m.Tenant != l.t.Key {
+			if m.Tenant != l.t.Key || l.skip(a.InTenant) {
 				continue
 			}
 			for _, g := range m.Groups {

@@ -1,0 +1,135 @@
+# Матрица изоляции: «Формы и опросы» внутри организации (W4.82; forms.md §6 и карточка W4.90 — self, подразделение;
+# Q-W4.00-forms-9). Фикстуры WithInTenant (content_inside.go) у формы всей организации «Осмотр машины» (form:a.insp):
+# ответ водителя Москвы-1 без объекта (form_response:a.insp-1, W4.21), свой ответ a.forms-self (form_response:a.insp-self),
+# ответы о рейсах Москвы-1 и Москвы-2 (form_response:a.insp-trip-msk1|msk2 → trip:a.msk1|msk2); форма подразделения
+# Москва-2 «Проверка Москвы-2» (form:a.msk2-check) с ответом form_response:a.msk2-1. Акторы: a.forms-self — forms.read на
+# Москва-1 и forms.responses.read в области self; a.forms-logist — то же и «Менеджер логистики» Москвы-1
+# (fleet.trips.read). Чужой ответ и форма вне подразделения — как несуществующие: нет в списках, по id — 404 (строка 404
+# повторяется с несуществующим id, AC-01). Формат — README.md. После правки: go -C backend generate ./test/isolation
+module: forms_w482
+endpoints:
+  - op: listForms
+    method: GET
+    path: /api/v1/tenants/{tenantId}/forms
+    rows:
+      - actor: a.forms-self
+        params: { tenantId: tenant:a }
+        status: 200
+        present: [form:a.insp]
+        absent: [form:a.msk2-check, unit:a.msk2, tenant:b]
+        note: форма всей организации видна; форма подразделения Москва-2 — нет
+      - actor: a.owner
+        params: { tenantId: tenant:a }
+        status: 200
+        present: [form:a.insp, form:a.msk2-check]
+        absent: [tenant:b]
+  - op: getForm
+    method: GET
+    path: /api/v1/tenants/{tenantId}/forms/{formId}
+    rows:
+      - actor: a.forms-self
+        params: { tenantId: tenant:a, formId: form:a.msk2-check }
+        status: 404
+        code: not_found
+        absent: [form:a.msk2-check, unit:a.msk2]
+        note: форма с доступом подразделения Москва-2 вне подразделения — как несуществующая
+      - actor: a.forms-logist
+        params: { tenantId: tenant:a, formId: form:a.msk2-check }
+        status: 404
+        code: not_found
+        absent: [form:a.msk2-check, unit:a.msk2]
+      - actor: a.owner
+        params: { tenantId: tenant:a, formId: form:a.msk2-check }
+        status: 200
+        present: [form:a.msk2-check, form_version:a.msk2-check, unit:a.msk2]
+        absent: [tenant:b]
+  - op: listFormResponses
+    method: GET
+    path: /api/v1/tenants/{tenantId}/forms/{formId}/responses
+    rows:
+      - actor: a.forms-self
+        params: { tenantId: tenant:a, formId: form:a.insp }
+        status: 200
+        present: [form_response:a.insp-self]
+        absent:
+          [
+            form_response:a.insp-1,
+            form_response:a.insp-trip-msk1,
+            form_response:a.insp-trip-msk2,
+            trip:a.msk1,
+            trip:a.msk2,
+          ]
+        note: область self — только свой ответ
+      - actor: a.forms-logist
+        params: { tenantId: tenant:a, formId: form:a.insp }
+        status: 200
+        present: [form_response:a.insp-trip-msk1, trip:a.msk1]
+        absent:
+          [
+            form_response:a.insp-trip-msk2,
+            trip:a.msk2,
+            form_response:a.insp-self,
+            form_response:a.insp-1,
+          ]
+        note: ответ о рейсе своего подразделения — по связи с объектом; о рейсе Москвы-2 — нет
+      - actor: a.owner
+        params: { tenantId: tenant:a, formId: form:a.insp }
+        status: 200
+        present:
+          [
+            form_response:a.insp-1,
+            form_response:a.insp-self,
+            form_response:a.insp-trip-msk1,
+            form_response:a.insp-trip-msk2,
+          ]
+        absent: [tenant:b]
+      - actor: a.forms-self
+        params: { tenantId: tenant:a, formId: form:a.msk2-check }
+        status: 404
+        code: not_found
+        absent: [form_response:a.msk2-1, form:a.msk2-check]
+        note: ответы формы вне подразделения — 404, как у несуществующей формы
+  - op: getFormResponse
+    method: GET
+    path: /api/v1/tenants/{tenantId}/forms/{formId}/responses/{responseId}
+    rows:
+      - actor: a.forms-self
+        params: { tenantId: tenant:a, formId: form:a.insp, responseId: form_response:a.insp-self }
+        status: 200
+        present: [form_response:a.insp-self]
+        absent: [tenant:b]
+        note: свой ответ
+      - actor: a.forms-self
+        params: { tenantId: tenant:a, formId: form:a.insp, responseId: form_response:a.insp-1 }
+        status: 404
+        code: not_found
+        absent: [form_response:a.insp-1]
+        note: чужой ответ в области self — как несуществующий
+      - actor: a.forms-self
+        params:
+          { tenantId: tenant:a, formId: form:a.insp, responseId: form_response:a.insp-trip-msk1 }
+        status: 404
+        code: not_found
+        absent: [form_response:a.insp-trip-msk1, trip:a.msk1]
+        note: ответ о рейсе, который сотрудник не видит, — 404
+      - actor: a.forms-logist
+        params:
+          { tenantId: tenant:a, formId: form:a.insp, responseId: form_response:a.insp-trip-msk1 }
+        status: 200
+        present: [form_response:a.insp-trip-msk1, trip:a.msk1]
+        absent: [tenant:b]
+        note: ответ о рейсе своего подразделения
+      - actor: a.forms-logist
+        params:
+          { tenantId: tenant:a, formId: form:a.insp, responseId: form_response:a.insp-trip-msk2 }
+        status: 404
+        code: not_found
+        absent: [form_response:a.insp-trip-msk2, trip:a.msk2]
+        note: ответ о рейсе Москвы-2 — как несуществующий
+      - actor: a.forms-logist
+        params:
+          { tenantId: tenant:a, formId: form:a.msk2-check, responseId: form_response:a.msk2-1 }
+        status: 404
+        code: not_found
+        absent: [form_response:a.msk2-1]
+        note: ответ формы вне подразделения — 404

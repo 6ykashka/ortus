@@ -1,0 +1,61 @@
+# Матрица изоляции: календарь ресурсов внутри организации (W4.82, Q-W4.40-6). Фикстуры WithInTenant (content_inside.go):
+# в A помещения cal_resource:a.room-msk1 (Москва-1) и cal_resource:a.room-msk2 (Москва-2) с бронями текущих суток
+# booking:a.msk1 и booking:a.msk2 (13:00–14:00 MSK по часам набора); a.calendar-msk1 — роль «Календарь»
+# (calendar.bookings.read|manage) на Москва-1. Ресурс и бронь Москвы-2 для него — как несуществующие: нет в списках, по id —
+# 404 (строка 404 повторяется с несуществующим id, AC-01). Перенос и отмена (updateCalendarBooking) — команда с If-Match —
+# и фильтр списка броней по ресурсу Москвы-2 — в isolation_w482_test.go. Формат — README.md.
+# После правки: go -C backend generate ./test/isolation
+module: calendar_w482
+endpoints:
+  - op: listCalendarResources
+    method: GET
+    path: /api/v1/tenants/{tenantId}/calendar/resources
+    rows:
+      - actor: a.calendar-msk1
+        params: { tenantId: tenant:a }
+        status: 200
+        present: [cal_resource:a.room-msk1, unit:a.msk1]
+        absent: [cal_resource:a.room-msk2, unit:a.msk2, tenant:b]
+        note: ресурсы своего подразделения; помещения Москвы-2 нет
+      - actor: a.owner
+        params: { tenantId: tenant:a }
+        status: 200
+        present: [cal_resource:a.room-msk1, cal_resource:a.room-msk2]
+        absent: [tenant:b]
+        note: владелец видит ресурсы обоих подразделений
+  - op: listCalendarBookings
+    method: GET
+    path: /api/v1/tenants/{tenantId}/calendar/bookings
+    rows:
+      - actor: a.calendar-msk1
+        params: { tenantId: tenant:a }
+        status: 200
+        present: [booking:a.msk1]
+        absent: [booking:a.msk2, cal_resource:a.room-msk2, unit:a.msk2, tenant:b]
+        note: брони текущих суток своего подразделения; брони Москвы-2 нет
+      - actor: a.owner
+        params: { tenantId: tenant:a }
+        status: 200
+        present: [booking:a.msk1, booking:a.msk2]
+        absent: [tenant:b]
+  - op: getCalendarBooking
+    method: GET
+    path: /api/v1/tenants/{tenantId}/calendar/bookings/{bookingId}
+    rows:
+      - actor: a.calendar-msk1
+        params: { tenantId: tenant:a, bookingId: booking:a.msk1 }
+        status: 200
+        present: [booking:a.msk1, cal_resource:a.room-msk1]
+        absent: [tenant:b]
+        note: своя бронь
+      - actor: a.calendar-msk1
+        params: { tenantId: tenant:a, bookingId: booking:a.msk2 }
+        status: 404
+        code: not_found
+        absent: [booking:a.msk2, cal_resource:a.room-msk2]
+        note: бронь Москвы-2 — как несуществующая (Q-W4.40-6)
+      - actor: a.owner
+        params: { tenantId: tenant:a, bookingId: booking:a.msk2 }
+        status: 200
+        present: [booking:a.msk2, cal_resource:a.room-msk2]
+        absent: [tenant:b]

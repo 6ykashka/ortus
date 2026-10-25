@@ -7,6 +7,8 @@ import (
 
 // keys returns the keys of the content of kind (an import, a vehicle, a file, a notification, a task, a rule of
 // automation, a request or a rule of the knowledge base).
+//
+//nolint:gocyclo // one case per kind of content: a flat lookup table
 func (c Content) keys(kind string) []string {
 	switch kind {
 	case refImport:
@@ -33,6 +35,16 @@ func (c Content) keys(kind string) []string {
 		return keysOf(c.FormRules, func(x FormRuleDef) string { return x.Key })
 	case refFormResponse:
 		return keysOf(c.FormResponses, func(x FormResponseDef) string { return x.Key })
+	case refTrip: // W4.82 (content_inside.go)
+		return keysOf(c.Trips, func(x TripDef) string { return x.Key })
+	case refCalResource:
+		return keysOf(c.CalendarResources, func(x CalendarResourceDef) string { return x.Key })
+	case refBooking:
+		return keysOf(c.Bookings, func(x BookingDef) string { return x.Key })
+	case refKBSpace:
+		return keysOf(c.KnowledgeSpaces, func(x KnowledgeSpaceDef) string { return x.Key })
+	case refKBNode:
+		return keysOf(c.KnowledgeNodes, func(x KnowledgeNodeDef) string { return x.Key })
 	}
 	return nil
 }
@@ -50,6 +62,7 @@ func keysOf[T any](xs []T, key func(T) string) []string {
 var contentKinds = []string{
 	refImport, refVehicle, refFile, refNotification, refTask, refAutomation, refKnowledgeRequest, refKnowledgeRule,
 	refFormGroup, refForm, refFormVersion, refFormRule, refFormResponse,
+	refTrip, refCalResource, refBooking, refKBSpace, refKBNode,
 }
 
 // has reports whether the content holds an object of kind with key.
@@ -91,7 +104,8 @@ func (c Catalog) validateContent(t TenantDef, fail failFunc) {
 	}
 	c.validateTasks(t, fail) // W4.11
 	validateKnowledge(t, member, fail)
-	c.validateForms(t, fail) // W4.21
+	c.validateForms(t, fail)  // W4.21
+	c.validateInside(t, fail) // W4.82
 }
 
 // validateKnowledge checks the knowledge base of t: requests and rules need the space and the page of the objects,

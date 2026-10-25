@@ -14,12 +14,18 @@ import (
 // Option changes what Load writes.
 type Option func(*options)
 
-type options struct{ content bool }
+type options struct{ content, inTenant bool }
 
 // WithContent makes Load write the content of the tenants too (TenantDef.Content: imports, vehicles with files,
 // notifications). The isolation suite needs it for its positive rows (W1.44). Integration tests of the modules seed
 // their own objects and count them, so they load the catalog without it.
 func WithContent() Option { return func(o *options) { o.content = true } }
+
+// WithInTenant makes Load write, on top of the content (it implies WithContent), the inside actors and roles
+// (ActorDef.InTenant, RoleDef.InTenant) and the inside content (TenantDef.InTenant) of the rows inside one tenant (W4.82,
+// content_inside.go). Only the isolation suite loads it: the integration tests of the modules that load WithContent
+// (tasks, sched/calendar) count the people and the bookings of A exactly.
+func WithInTenant() Option { return func(o *options) { o.content, o.inTenant = true, true } }
 
 // Times of the content relative to the «now» of Load: an import is a preview of a day (people.imports.expires_at),
 // files and notifications were made before «now».
@@ -30,8 +36,10 @@ const (
 
 // contentSteps are the steps of tenantLoader.load that write the content.
 func (l *tenantLoader) contentSteps() []func() error {
-	// tasks — W4.11 (content_tasks.go), knowledge — W4.31, forms — W4.21 (content_forms.go)
-	return []func() error{l.imports, l.vehicles, l.files, l.notifications, l.tasks, l.knowledge, l.forms}
+	// tasks — W4.11 (content_tasks.go), knowledge — W4.31, forms — W4.21 (content_forms.go); the kinds of W4.82
+	// (content_inside.go) before the forms: a response is about a trip.
+	return []func() error{l.imports, l.vehicles, l.files, l.notifications, l.tasks, l.knowledge, l.kbSpaces, l.trips, l.calendar,
+		l.forms}
 }
 
 func (l *tenantLoader) contentID(kind, key string) uuid.UUID {

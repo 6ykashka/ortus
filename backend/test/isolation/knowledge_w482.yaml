@@ -1,0 +1,115 @@
+# Матрица изоляции: «База знаний» внутри организации (W4.82, Q-W4.04-11 — «скрытое не видно нигде», knowledge.md §2.2).
+# Фикстуры WithInTenant (content_inside.go): закрытое пространство «Совет директоров» kb_space:a.closed со страницей
+# kb_node:a.closed-page и в открытом «Регламентах» (space:a.rules) страница kb_node:a.listed со своим доступом «Только
+# выбранные» — в списке только a.manager-msk2 («читает»). Читатель без доступа — a.manager-msk1 (knowledge.read
+# «Менеджера логистики» на Москва-1), перенос — a.kb-editor («Редактор базы знаний» Москвы-1 с knowledge.organize: шлюз
+# пропускает). Для них узел и закрытое пространство — как несуществующие: 404 (строка повторяется с несуществующим id,
+# AC-01), нет в дереве, списке пространств и поиске. Публикация версии (If-Match) — isolation_w482_test.go.
+# Формат — README.md. После правки: go -C backend generate ./test/isolation
+module: knowledge_w482
+endpoints:
+  - op: listKnowledgeSpaces
+    method: GET
+    path: /api/v1/tenants/{tenantId}/knowledge/spaces
+    rows:
+      - actor: a.manager-msk1
+        params: { tenantId: tenant:a }
+        status: 200
+        present: [space:a.rules]
+        absent: [kb_space:a.closed]
+        note: закрытого пространства нет в списке
+      - actor: a.owner
+        params: { tenantId: tenant:a }
+        status: 200
+        present: [space:a.rules, kb_space:a.closed]
+        absent: [tenant:b]
+  - op: getKnowledgeSpaceTree
+    method: GET
+    path: /api/v1/tenants/{tenantId}/knowledge/spaces/{spaceId}/tree
+    rows:
+      - actor: a.manager-msk1
+        params: { tenantId: tenant:a, spaceId: space:a.rules }
+        status: 200
+        present: [page:a.rules-intro]
+        absent: [kb_node:a.listed]
+        note: узла «Только выбранные» без читателя в списке нет в дереве
+      - actor: a.manager-msk2
+        params: { tenantId: tenant:a, spaceId: space:a.rules }
+        status: 200
+        present: [page:a.rules-intro, kb_node:a.listed]
+        absent: [tenant:b]
+        note: участник списка видит узел
+      - actor: a.manager-msk1
+        params: { tenantId: tenant:a, spaceId: kb_space:a.closed }
+        status: 404
+        code: not_found
+        absent: [kb_space:a.closed, kb_node:a.closed-page]
+        note: дерево закрытого пространства — как несуществующего
+      - actor: a.owner
+        params: { tenantId: tenant:a, spaceId: kb_space:a.closed }
+        status: 200
+        present: [kb_node:a.closed-page]
+        absent: [tenant:b]
+  - op: searchKnowledge
+    method: GET
+    path: /api/v1/tenants/{tenantId}/knowledge/search?q=W482
+    rows:
+      - actor: a.manager-msk1
+        params: { tenantId: tenant:a }
+        status: 200
+        absent: [kb_node:a.listed, kb_node:a.closed-page, kb_space:a.closed]
+        note: поиск не находит скрытое
+      - actor: a.manager-msk2
+        params: { tenantId: tenant:a }
+        status: 200
+        present: [kb_node:a.listed]
+        absent: [kb_node:a.closed-page, kb_space:a.closed]
+      - actor: a.owner
+        params: { tenantId: tenant:a }
+        status: 200
+        present: [kb_node:a.listed, kb_node:a.closed-page]
+        absent: [tenant:b]
+  - op: getKnowledgeNode
+    method: GET
+    path: /api/v1/tenants/{tenantId}/knowledge/nodes/{nodeId}
+    rows:
+      - actor: a.manager-msk1
+        params: { tenantId: tenant:a, nodeId: kb_node:a.listed }
+        status: 404
+        code: not_found
+        absent: [kb_node:a.listed]
+        note: узел «Только выбранные» без читателя в списке — как несуществующий
+      - actor: a.manager-msk1
+        params: { tenantId: tenant:a, nodeId: kb_node:a.closed-page }
+        status: 404
+        code: not_found
+        absent: [kb_node:a.closed-page, kb_space:a.closed]
+        note: страница закрытого пространства — как несуществующая
+      - actor: a.manager-msk2
+        params: { tenantId: tenant:a, nodeId: kb_node:a.listed }
+        status: 200
+        present: [kb_node:a.listed, space:a.rules]
+        absent: [tenant:b]
+      - actor: a.owner
+        params: { tenantId: tenant:a, nodeId: kb_node:a.closed-page }
+        status: 200
+        present: [kb_node:a.closed-page, kb_space:a.closed]
+        absent: [tenant:b]
+  - op: moveKnowledgeNode
+    method: POST
+    path: /api/v1/tenants/{tenantId}/knowledge/nodes/{nodeId}/move
+    rows:
+      - actor: a.kb-editor
+        params: { tenantId: tenant:a, nodeId: kb_node:a.listed }
+        status: 404
+        code: not_found
+        absent: [kb_node:a.listed]
+        body: '{"parentId": null, "dryRun": true}'
+        note: перенос скрытого узла — как несуществующего (шлюз пропускает по knowledge.organize)
+      - actor: a.kb-editor
+        params: { tenantId: tenant:a, nodeId: kb_node:a.closed-page }
+        status: 404
+        code: not_found
+        absent: [kb_node:a.closed-page, kb_space:a.closed]
+        body: '{"parentId": null, "dryRun": true}'
+        note: перенос страницы закрытого пространства — как несуществующей

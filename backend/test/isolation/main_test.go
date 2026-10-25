@@ -31,7 +31,8 @@ func runMain(m *testing.M) int {
 		return 1
 	}
 	defer stopPG()
-	world, err := fixtures.Load(ctx, cluster, "iso", harness.Now(), fixtures.WithContent())
+	// WithInTenant (W4.82): the content and, on top of it, the inside actors and content of the rows inside one tenant.
+	world, err := fixtures.Load(ctx, cluster, "iso", harness.Now(), fixtures.WithInTenant())
 	if err != nil {
 		fmt.Fprintln(os.Stderr, "isolation:", err)
 		return 1

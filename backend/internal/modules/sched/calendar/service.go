@@ -82,6 +82,21 @@ func (s *Service) run(ctx context.Context, tc tenantctx.TenantContext, write boo
 	if err != nil {
 		return problem.Wrap(problem.CodeDependencyUnavailable, err)
 	}
+	// The states of the modules are read before the transaction opens: the registry reads the tenant DB through the
+	// same pool, and an operation holds one connection of it at most (W4.82: with the transaction open, four of
+	// them held the whole pool and waited for the fifth). The states are therefore not in the snapshot of the
+	// transaction: a module switched off between the read and the first statement still serves this one operation; the
+	// state is the check of access, not data of the operation, and the next operation reads it again.
+	states := map[string]string{}
+	if s.Modules != nil {
+		got, err := s.Modules.States(ctx, tc.TenantID)
+		if err != nil {
+			return dependency(err)
+		}
+		if got != nil {
+			states = got
+		}
+	}
 	opts := pgx.TxOptions{AccessMode: pgx.ReadOnly, IsoLevel: pgx.RepeatableRead}
 	if write {
 		opts = pgx.TxOptions{}
@@ -91,16 +106,7 @@ func (s *Service) run(ctx context.Context, tc tenantctx.TenantContext, write boo
 		return problem.Wrap(problem.CodeDependencyUnavailable, err)
 	}
 	defer func() { _ = tx.Rollback(context.WithoutCancel(ctx)) }() // after Commit — a no-op
-	r := &request{tc: tc, tx: tx, now: s.now(), states: map[string]string{}}
-	if s.Modules != nil {
-		states, err := s.Modules.States(ctx, tc.TenantID)
-		if err != nil {
-			return dependency(err)
-		}
-		if states != nil {
-			r.states = states
-		}
-	}
+	r := &request{tc: tc, tx: tx, now: s.now(), states: states}
 	r.ev = s.within(tx, r.now)
 	if err := fn(r); err != nil {
 		return dependency(err)

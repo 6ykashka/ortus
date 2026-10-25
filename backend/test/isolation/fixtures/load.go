@@ -28,6 +28,7 @@ type World struct {
 	TenantDBs map[string]string // tenant key → database name
 	Now       time.Time         // «now» the grant periods were computed from
 	Content   bool              // the content of the tenants is written (WithContent)
+	InTenant  bool              // the inside actors, roles and content are written (WithInTenant, W4.82)
 }
 
 // ID resolves a reference (see Catalog.ID).
@@ -75,7 +76,8 @@ func Load(ctx context.Context, c *migratetest.Cluster, name string, now time.Tim
 	if err := cat.Validate(); err != nil {
 		return nil, err
 	}
-	w := &World{Catalog: cat, Cluster: c, Name: name, ControlDB: name + "_control", TenantDBs: map[string]string{}, Now: now, Content: o.content}
+	w := &World{Catalog: cat, Cluster: c, Name: name, ControlDB: name + "_control", TenantDBs: map[string]string{}, Now: now,
+		Content: o.content, InTenant: o.inTenant}
 	for _, t := range cat.Tenants {
 		w.TenantDBs[t.Key] = name + "_t_" + t.Key
 	}
@@ -172,6 +174,9 @@ func (w *World) loadControl(ctx context.Context, versions map[string]int64) erro
 			}
 		}
 		for _, a := range w.Catalog.Actors {
+			if a.InTenant && !w.InTenant {
+				continue // W4.82: an inside actor — only WithInTenant
+			}
 			if err := insertAccount(ctx, tx, a); err != nil {
 				return err
 			}

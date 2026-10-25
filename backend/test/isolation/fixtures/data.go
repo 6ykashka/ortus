@@ -44,6 +44,12 @@ var (
 		"members.read", "members.invite", "members.manage", "roles.read", "org_units.read",
 		"modules.read", "modules.manage", "modules.settings.read", "billing.read", "billing.manage",
 	}
+	// W4.82: the inside roles (written only WithInTenant) — the calendar of a unit; the forms of a unit to see and the
+	// responses «own» (scope self); the editor of the knowledge base of a unit with knowledge.organize.
+	calendarActions    = []string{"calendar.bookings.read", "calendar.bookings.manage", "calendar.availability.read"}
+	formsReaderActions = []string{"forms.read"}
+	formsOwnActions    = []string{"forms.responses.read"}
+	kbEditorActions    = []string{permKnowledgeRead, "knowledge.create", "knowledge.update", "knowledge.organize"}
 )
 
 const (
@@ -56,6 +62,10 @@ const (
 	roleAdmin      = "admin"
 	roleStaff      = "staff"
 	roleSpaceLead  = "space_lead"
+	roleCalendar   = "calendar"     // W4.82, inside
+	roleFormsRead  = "forms_reader" // W4.82, inside
+	roleFormsOwn   = "forms_own"    // W4.82, inside
+	roleKBEditor   = "kb_editor"    // W4.82, inside
 	fnDriver       = "driver"
 	zoneMoscow     = "Europe/Moscow"
 	zoneSamara     = "Europe/Samara"
@@ -84,6 +94,11 @@ func roles() []RoleDef {
 		{Key: roleAdmin, Name: "Администратор", Kind: RoleKindCustom, Actions: clone(adminActions)},
 		{Key: roleStaff, Name: "Кадры", Kind: RoleKindCustom, Actions: clone(staffActions)},
 		{Key: roleSpaceLead, Name: "Руководитель пространства", Kind: RoleKindCustom, Actions: clone(spaceLeadActions)},
+		// W4.82: written only WithInTenant (content_inside.go).
+		{Key: roleCalendar, Name: "Календарь", Kind: RoleKindCustom, Actions: clone(calendarActions), InTenant: true},
+		{Key: roleFormsRead, Name: "Формы: просмотр", Kind: RoleKindCustom, Actions: clone(formsReaderActions), InTenant: true},
+		{Key: roleFormsOwn, Name: "Формы: свои ответы", Kind: RoleKindCustom, Actions: clone(formsOwnActions), InTenant: true},
+		{Key: roleKBEditor, Name: "Редактор базы знаний", Kind: RoleKindCustom, Actions: clone(kbEditorActions), InTenant: true},
 	}
 }
 
@@ -152,10 +167,10 @@ func contentA() Content {
 		Projects: projects, Tasks: tasks, Rules: rules, // W4.11 (content_tasks.go)
 		FormGroups: groups, Forms: forms, FormRules: formRules, FormResponses: responses, // W4.21 (content_forms.go)
 		Imports: []ImportDef{
-			{Key: uMsk1, DefaultUnit: uMsk1, Rows: []ImportRowDef{{Person: "a.driver-msk1", Unit: uMsk1}}},
+			{Key: uMsk1, DefaultUnit: uMsk1, Rows: []ImportRowDef{{Person: actorDriverMsk1, Unit: uMsk1}}},
 			{Key: uMsk2, DefaultUnit: uMsk2, Rows: []ImportRowDef{
-				{Person: "a.driver-msk2", Unit: uMsk2},
-				{Person: "a.driver-msk1", Unit: uMsk1},
+				{Person: actorDriverMsk2, Unit: uMsk2},
+				{Person: actorDriverMsk1, Unit: uMsk1},
 			}},
 		},
 		Vehicles: []VehicleDef{{Key: uMsk1, Unit: uMsk1, Plate: "ИЗ-101"}, {Key: uSmr2, Unit: uSmr2, Plate: "ИЗ-202"}},
@@ -171,7 +186,7 @@ func contentA() Content {
 			{Key: "owner", Recipient: "a.owner", Title: "Пробный период продлён"},
 			{Key: "member", Recipient: "ab.member", Title: "Рейс Москвы-2 в пути", Permission: permTripsRead, Unit: uMsk2},
 		},
-		KnowledgeRequests: []KnowledgeRequestDef{{Key: kbAsk, Member: "a.driver-msk2"}},
+		KnowledgeRequests: []KnowledgeRequestDef{{Key: kbAsk, Member: actorDriverMsk2}},
 		KnowledgeRules:    []KnowledgeRuleDef{{Key: kbReview, Name: "Напоминать о пересмотре"}},
 	}
 }
@@ -209,6 +224,8 @@ const (
 // Tenant A «Холдинг»: Москва, Самара, Петербург × 4 firms (15-quality-security.md «Фикстуры изоляции»). Tenant B
 // «Чужой клиент» has namesake regions, firms and roles: Москва (Москва-1, Москва-2) and Самара (Самара-2). Keys of
 // actors start with the tenant they belong to; ab.member belongs to both; p.operator is a platform operator.
+//
+//nolint:funlen // the catalog is one literal: tenants, actors, roles and the content
 func Default() Catalog {
 	return Catalog{
 		Tenants: []TenantDef{
@@ -223,8 +240,9 @@ func Default() Catalog {
 				Groups: []GroupDef{
 					{Key: "finance", Name: "Финансы", Grants: unitGrant(roleEarnings, uMsk1)},
 				},
-				Objects: objects(),
-				Content: contentA(),
+				Objects:  objects(),
+				Content:  contentA(),
+				InTenant: insideContent(), // W4.82: только WithInTenant (content_inside.go)
 				// W4.60: решённая заявка — строки «чужая заявка через свой URL» и «своя решённая — 409».
 				Requests: []RequestDef{{Key: "rejected", Number: "SR-9001", Owner: "a.owner", Tier: TierTeam, Status: RequestRejected}},
 			},
@@ -263,11 +281,11 @@ func Default() Catalog {
 					{Role: roleObserver, Scope: uSmr2, Descendants: true},
 				}},
 			}},
-			{Key: "a.driver-msk1", Name: "Водитель Москва-1", Memberships: []MemberDef{
+			{Key: actorDriverMsk1, Name: "Водитель Москва-1", Memberships: []MemberDef{
 				{Tenant: TenantA, Home: uMsk1, Function: fnDriver, Grants: selfDriver()},
 			}},
 			// Водитель Москва-2 во временном назначении на Москва-1.
-			{Key: "a.driver-msk2", Name: "Водитель Москва-2", Memberships: []MemberDef{
+			{Key: actorDriverMsk2, Name: "Водитель Москва-2", Memberships: []MemberDef{
 				{Tenant: TenantA, Home: uMsk2, Function: fnDriver, Grants: []GrantDef{
 					{Role: roleDriver, Scope: ScopeSelf},
 					{Role: roleDriver, Scope: uMsk1, Period: PeriodTemporary},
@@ -325,6 +343,30 @@ func Default() Catalog {
 			// …и начнётся завтра по часам набора, хотя по часам машины уже идёт (cmd/api обязан взять APP_FIXED_NOW).
 			{Key: "a.manager-future", Name: "Менеджер Петербург-1 (назначение ещё не началось)", Memberships: []MemberDef{
 				{Tenant: TenantA, Home: uSpb1, Grants: []GrantDef{{Role: roleManager, Scope: uSpb1, Descendants: true, Period: PeriodFuture}}},
+			}},
+			// W4.82: акторы строк «внутри организации» — пишутся только WithInTenant (content_inside.go). Календарь Москвы-1
+			// не видит брони и ресурсы Москвы-2 (Q-W4.40-6).
+			{Key: "a.calendar-msk1", Name: "Диспетчер календаря Москва-1", InTenant: true, Memberships: []MemberDef{
+				{Tenant: TenantA, Home: uMsk1, Grants: unitGrant(roleCalendar, uMsk1)},
+			}},
+			// Формы Москвы-1 видит, ответы читает в области self — только свои (Q-W4.00-forms-9).
+			{Key: "a.forms-self", Name: "Сотрудник Москва-1 (свои ответы)", InTenant: true, Memberships: []MemberDef{
+				{Tenant: TenantA, Home: uMsk1, Grants: []GrantDef{
+					{Role: roleFormsRead, Scope: uMsk1, Descendants: true},
+					{Role: roleFormsOwn, Scope: ScopeSelf},
+				}},
+			}},
+			// Логист Москвы-1: рейсы своей фирмы (fleet.trips.read) — ответы о них видит по связи с объектом.
+			{Key: "a.forms-logist", Name: "Логист Москва-1", InTenant: true, Memberships: []MemberDef{
+				{Tenant: TenantA, Home: uMsk1, Grants: []GrantDef{
+					{Role: roleManager, Scope: uMsk1, Descendants: true},
+					{Role: roleFormsRead, Scope: uMsk1, Descendants: true},
+					{Role: roleFormsOwn, Scope: ScopeSelf},
+				}},
+			}},
+			// Редактор БЗ Москвы-1 с knowledge.organize: шлюз переноса пропускает, узел без доступа — 404 (Q-W4.04-11).
+			{Key: "a.kb-editor", Name: "Редактор базы знаний Москва-1", InTenant: true, Memberships: []MemberDef{
+				{Tenant: TenantA, Home: uMsk1, Grants: unitGrant(roleKBEditor, uMsk1)},
 			}},
 			// Оператор платформы (отдельный контур, без членств): положительные строки тега Platform.
 			{Key: "p.operator", Name: "Оператор платформы", Operator: "owner"},

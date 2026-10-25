@@ -20,10 +20,11 @@ const (
 	refFormGroup    = "form_group"
 )
 
-// FormDef is a form of the whole organization with its published v1 (reference form:<t>.<key>, its version
-// form_version:<t>.<key>) in a group (a key of FormGroups, "" — none).
+// FormDef is a form with its published v1 (reference form:<t>.<key>, its version form_version:<t>.<key>) in a group (a
+// key of FormGroups, "" — none); its area is the unit Unit ("" — the whole organization; W4.82).
 type FormDef struct {
 	Key, Name, Group string
+	Unit             string
 }
 
 // FormGroupDef is a group of forms. Reference form_group:<t>.<key>.
@@ -37,17 +38,18 @@ type FormRuleDef struct {
 }
 
 // FormResponseDef is an accepted response to the v1 of a form by Author (an actor with a membership in the tenant).
-// Reference form_response:<t>.<key>.
+// Reference form_response:<t>.<key>. Trip (W4.82) — a key of the trips of the content the response is about ("" — none).
 type FormResponseDef struct {
 	Key, Form, Author string
+	Trip              string
 }
 
 // formContent is the content of forms of tenant t.
 func formContent(t string) ([]FormGroupDef, []FormDef, []FormRuleDef, []FormResponseDef) {
 	return []FormGroupDef{{Key: "checks", Name: "Проверки"}},
-		[]FormDef{{Key: "insp", Name: "Осмотр машины", Group: "checks"}},
-		[]FormRuleDef{{Key: "insp-notify", Form: "insp"}},
-		[]FormResponseDef{{Key: "insp-1", Form: "insp", Author: t + ".driver-msk1"}}
+		[]FormDef{{Key: formInsp, Name: "Осмотр машины", Group: "checks"}},
+		[]FormRuleDef{{Key: "insp-notify", Form: formInsp}},
+		[]FormResponseDef{{Key: "insp-1", Form: formInsp, Author: t + ".driver-msk1"}}
 }
 
 // formDefinition is the v1 of a form of the fixtures (FormDefinitionV2): one optional text question q-text.
@@ -100,10 +102,16 @@ func (l *tenantLoader) forms() error {
 		}
 	}
 	for _, r := range l.t.Content.FormResponses {
+		var module, kind, subject, label any // W4.82: a response about a trip of the content
+		if r.Trip != "" {
+			id, name := l.tripRef(r.Trip)
+			module, kind, subject, label = "fleet", "trip", id, name
+		}
 		if err := l.exec("form response "+r.Key, `insert into forms.responses (id, form_id, version_number, channel, author_id, answers,
-			review_status, submitted_at) values ($1, $2, 1, 'member', $3, $4::jsonb, 'accepted', $5)`,
+			review_status, submitted_at, subject_module, subject_type, subject_id, subject_label)
+			values ($1, $2, 1, 'member', $3, $4::jsonb, 'accepted', $5, $6, $7, $8, $9)`,
 			l.contentID(refFormResponse, r.Key), l.contentID(refForm, r.Form), l.personID(r.Author),
-			`[{"fieldKey":"q-text","value":{"type":"text","value":"Без замечаний"}}]`, at); err != nil {
+			`[{"fieldKey":"q-text","value":{"type":"text","value":"Без замечаний"}}]`, at, module, kind, subject, label); err != nil {
 			return err
 		}
 	}
@@ -113,12 +121,15 @@ func (l *tenantLoader) forms() error {
 // form writes a published form of the whole organization with its v1 and its draft.
 func (l *tenantLoader) form(f FormDef) error {
 	at, id := l.now.Add(-contentAge), l.contentID(refForm, f.Key)
-	var group any
+	var group, unit any
 	if f.Group != "" {
 		group = l.contentID(refFormGroup, f.Group)
 	}
-	if err := l.exec("form "+f.Key, `insert into forms.forms (id, name, group_id, owner_id, status, current_version, created_at,
-		updated_at) values ($1, $2, $3, $4, 'published', 1, $5, $5)`, id, f.Name, group, l.owner, at); err != nil {
+	if f.Unit != "" {
+		unit = l.unitID(f.Unit)
+	}
+	if err := l.exec("form "+f.Key, `insert into forms.forms (id, name, group_id, org_unit_id, owner_id, status, current_version,
+		created_at, updated_at) values ($1, $2, $3, $4, $5, 'published', 1, $6, $6)`, id, f.Name, group, unit, l.owner, at); err != nil {
 		return err
 	}
 	if err := l.exec("form version "+f.Key, `insert into forms.versions (id, form_id, number, definition, question_count,

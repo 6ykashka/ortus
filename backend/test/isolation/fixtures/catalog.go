@@ -64,6 +64,7 @@ type TenantDef struct {
 	Groups          []GroupDef
 	Objects         []ObjectDef  // targets of object-bound grants (PD-53): projects, warehouses, resources
 	Content         Content      // objects of the modules for positive rows; Load writes them WithContent
+	InTenant        Content      // W4.82: the content of the rows inside one tenant; Load writes it WithInTenant
 	Requests        []RequestDef // tier requests of the control DB (W4.60, billing.go)
 }
 
@@ -86,6 +87,12 @@ type Content struct {
 	Forms         []FormDef
 	FormRules     []FormRuleDef
 	FormResponses []FormResponseDef
+	// W4.82: trips, the calendar and the spaces and pages of the knowledge base (content_inside.go).
+	Trips             []TripDef
+	CalendarResources []CalendarResourceDef
+	Bookings          []BookingDef
+	KnowledgeSpaces   []KnowledgeSpaceDef
+	KnowledgeNodes    []KnowledgeNodeDef
 }
 
 // KnowledgeRequestDef is an open request of a member of the tenant to read the page of the objects
@@ -152,6 +159,7 @@ type RoleDef struct {
 	Kind      string // system | template | custom
 	Template  string // template_key (design/docs/11-permissions.yaml templates)
 	Actions   []string
+	InTenant  bool // W4.82: written only WithInTenant; held only by inside actors
 }
 
 // GroupDef is a group of people with its own grants (access.groups).
@@ -204,6 +212,9 @@ type ActorDef struct {
 	Key, Name   string
 	Operator    string
 	Memberships []MemberDef
+	// InTenant (W4.82): the account, the person and the grants are written only WithInTenant — the rows inside one
+	// tenant; the integration tests of the modules count the people of A without them.
+	InTenant bool
 }
 
 // MemberDef is a membership and the person profile behind it.
@@ -297,6 +308,7 @@ var localKinds = []string{
 	ObjectDoc, ObjectAccount, ObjectChat, ObjectRepairProject,
 	refImport, refVehicle, refFile, refNotification, refRequest, refTask, refAutomation, refKnowledgeRequest, refKnowledgeRule,
 	refFormGroup, refForm, refFormVersion, refFormRule, refFormResponse,
+	refTrip, refCalResource, refBooking, refKBSpace, refKBNode, // W4.82
 }
 
 func tenantRef(t string) string              { return refTenant + ":" + t }
@@ -314,6 +326,7 @@ func accountRef(actor string) string         { return refAccount + ":" + actor }
 //	subscription_request:<t>.<key>
 //	kb_request:<t>.<key> · kb_rule:<t>.<key>
 //	form_group:<t>.<key> · form:<t>.<key> · form_version:<t>.<key> · form_rule:<t>.<key> · form_response:<t>.<key>
+//	trip:<t>.<key> · cal_resource:<t>.<key> · booking:<t>.<key> · kb_space:<t>.<key> · kb_node:<t>.<key> (W4.82)
 //	account:<actor> · person:<actor>@<t> · membership:<actor>@<t>
 //	tenant:missing (MissingTenant) — a tenant of no database
 //
@@ -343,6 +356,7 @@ func (c Catalog) Refs() []string {
 			out = append(out, localRef(o.Kind, t.Key, o.Key))
 		}
 		out = append(out, t.Content.refs(t.Key)...)
+		out = append(out, t.InTenant.refs(t.Key)...)
 		for _, r := range t.Requests {
 			out = append(out, localRef(refRequest, t.Key, r.Key))
 		}
@@ -422,7 +436,12 @@ func (c Catalog) validateTenants(fail failFunc) {
 		validateRoles(t, fail)
 		validateObjects(t, fail)
 		validateGroups(t, fail)
-		c.validateContent(t, fail)
+		// W4.82: the content of every load and the inside content are checked together (keys, references), and what
+		// is written always names nothing written only WithInTenant.
+		all := t
+		all.Content = t.Content.plus(t.InTenant)
+		c.validateContent(all, fail)
+		c.validateEvery(t, fail)
 		c.validateRequests(t, fail)
 		if !c.hasOwner(t.Key) {
 			fail("tenant %s: no owner", t.Key)
@@ -614,8 +633,9 @@ func (t TenantDef) hasLocal(kind, key string) bool {
 	case refGroup:
 		return t.hasGroup(key)
 	case refImport, refVehicle, refFile, refNotification, refTask, refAutomation, refKnowledgeRequest, refKnowledgeRule,
-		refFormGroup, refForm, refFormVersion, refFormRule, refFormResponse:
-		return t.Content.has(kind, key)
+		refFormGroup, refForm, refFormVersion, refFormRule, refFormResponse,
+		refTrip, refCalResource, refBooking, refKBSpace, refKBNode:
+		return t.Content.has(kind, key) || t.InTenant.has(kind, key)
 	case refRequest:
 		return slices.ContainsFunc(t.Requests, func(r RequestDef) bool { return r.Key == key })
 	default:

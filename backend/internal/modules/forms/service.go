@@ -4,7 +4,10 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"runtime"
+	"sync"
 	"time"
+	"weak"
 
 	"github.com/google/uuid"
 	"github.com/jackc/pgx/v5"
@@ -173,6 +176,8 @@ type Service struct {
 	Audience  inbox.Audience   // the audience of the notifications; nil — none
 	Now       func() time.Time // the clock of the application (APP_FIXED_NOW outside prod); nil: time.Now
 	Random    func([]byte)     // the random part of a nonce; nil: crypto/rand
+
+	gates txGates // the turns of the transactions per tenant pool, shared by every Service (W4.82)
 }
 
 func (s *Service) now() time.Time {
@@ -291,13 +296,78 @@ func (s *Service) pool(ctx context.Context, tenant uuid.UUID) (*pgxpool.Pool, er
 	return p, nil
 }
 
+// portConns is how many connections of the tenant pool an operation takes at a time beside its transaction: the port of
+// objects (Objects — cmd/api formObjects: the scope predicate, the rows, the hidden trips and tasks) reads the tenant DB
+// one statement after another through connections of its own; the ports of tasks and of the knowledge base write in the
+// transaction of the caller.
+const portConns = 1
+
+// txGates bound the operations holding a transaction of one tenant pool (W4.82). An operation that holds its
+// transaction and asks the port of objects waits for one more connection of the same pool; once every connection is held
+// by such transactions, each waits forever (the isolation suite hung: four listFormResponses of a logist reading
+// responses about trips, a pool of four, tenantctx.DefaultMaxConns). At most MaxConns − portConns operations of the
+// module (one at least) hold a transaction at once, so a connection for the port is always freed; the others wait for
+// their turn before they take a connection.
+//
+// The turns belong to the pool, not to a Service (return 1): cmd/api builds several Services over one pool (the module
+// and formFilesAccess), and the turns are shared by all of them. The pool of a tenant is never held by the listener of
+// realtime — that one takes a connection of the control pool (realtime.PoolDialer(control)) — so MaxConns − portConns
+// turns leave the port its connection. The transactions of other modules (tasks, files, authz) take connections of the
+// pool outside these turns; none of them waits for a second connection while it holds its own except through this
+// module's port, which is Q-W4.82-1.
+type txGates struct{}
+
+// sharedGates are the turns by pool; a gate goes with its pool (weak key, removed once the pool is collected).
+var sharedGates struct {
+	mu sync.Mutex
+	by map[weak.Pointer[pgxpool.Pool]]chan struct{}
+}
+
+// of is the gate of pool.
+func (txGates) of(pool *pgxpool.Pool) chan struct{} {
+	key := weak.Make(pool)
+	sharedGates.mu.Lock()
+	defer sharedGates.mu.Unlock()
+	if c, ok := sharedGates.by[key]; ok {
+		return c
+	}
+	if sharedGates.by == nil {
+		sharedGates.by = map[weak.Pointer[pgxpool.Pool]]chan struct{}{}
+	}
+	c := make(chan struct{}, max(1, int(pool.Config().MaxConns)-portConns))
+	sharedGates.by[key] = c
+	runtime.AddCleanup(pool, func(k weak.Pointer[pgxpool.Pool]) {
+		sharedGates.mu.Lock()
+		delete(sharedGates.by, k)
+		sharedGates.mu.Unlock()
+	}, key)
+	return c
+}
+
+// enter takes a turn of the gate of pool; it gives up with ctx (dependency_unavailable).
+func (g txGates) enter(ctx context.Context, pool *pgxpool.Pool) (leave func(), err error) {
+	c := g.of(pool)
+	select {
+	case c <- struct{}{}:
+		return func() { <-c }, nil
+	case <-ctx.Done():
+		return nil, problem.Wrap(problem.CodeDependencyUnavailable, ctx.Err())
+	}
+}
+
 // run runs fn in one transaction of the tenant DB of tc (read only unless write) with the request of the member; an
-// error rolls it back, a failure or a Problem error keeps its code, anything else is dependency_unavailable.
+// error rolls it back, a failure or a Problem error keeps its code, anything else is dependency_unavailable. The
+// transaction is taken in turn (txGates).
 func (s *Service) run(ctx context.Context, tc tenantctx.TenantContext, write bool, fn func(*req) error) error {
 	pool, err := s.pool(ctx, tc.TenantID)
 	if err != nil {
 		return err
 	}
+	leave, err := s.gates.enter(ctx, pool)
+	if err != nil {
+		return err
+	}
+	defer leave() // after the rollback below: the connection is back in the pool first
 	opts := pgx.TxOptions{AccessMode: pgx.ReadOnly, IsoLevel: pgx.RepeatableRead}
 	if write {
 		opts = pgx.TxOptions{}
