@@ -1,0 +1,18 @@
+{
+  "id": "7a6a997b-c057-5062-8f80-0edf5e6b05fe",
+  "orgUnitId": "c6d8949a-3c14-5cd1-9728-fe2e135332c3",
+  "serviceId": "882ac761-c607-598f-a1d3-26187ceaa725",
+  "serviceRevision": 3,
+  "clientId": "8f07e87e-6159-5494-960a-3c00e131a4d5",
+  "practitionerMemberId": "25097109-efb6-5471-880f-7a01ee6615a0",
+  "roomId": "ec0b63cc-ff45-51b6-a8a2-b232e895149d",
+  "equipmentIds": ["a6676803-e743-5440-ad23-6bce59252139"],
+  "window": {
+    "startsAt": "2026-10-02T11:00:00Z",
+    "endsAt": "2026-10-02T12:00:00Z",
+    "timeZone": "Europe/Moscow"
+  },
+  "bookingId": "8e34170b-eea1-58f5-987b-0b3edd8431ff",
+  "status": "confirmed",
+  "revision": 3
+}

@@ -6,6 +6,7 @@ import { authHandlers } from './auth/index.ts';
 import { realtimeHandlers } from './auth/realtime.ts';
 import { storageBreakdownHandlers } from './billing/breakdown.ts';
 import { calendarHandlers } from './calendar/index.ts';
+import { cashHandlers } from './cash/index.ts';
 import { billingHandlers } from './billing/index.ts';
 import { plansHandlers } from './billing/plans.ts';
 import { brandingHandlers } from './branding/index.ts';
@@ -63,4 +64,6 @@ export const defaultRegistry: Registry = {
   ...tasksHandlers,
   // 0.11.0-stage4 (W4.05): «Формы и опросы».
   ...formsHandlers,
+  // 0.12.0-stage5 (W5.00): «Касса».
+  ...cashHandlers,
 };

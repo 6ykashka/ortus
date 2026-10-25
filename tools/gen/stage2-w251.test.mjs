@@ -13,6 +13,7 @@ import { flattenActions, loadCatalog } from './lib/permissions.mjs';
 import { escapeToken, parsePointer } from './lib/refs.mjs';
 import { checkAgainstSource, loadDeltas } from './lib/source-diff.mjs';
 import { readYaml } from './lib/yaml-io.mjs';
+import { W5_ADDED_KEYS, W5_CODES } from './lib/stage5.mjs';
 
 const T = '/api/v1/tenants/{tenantId}';
 const PUBS = `${T}/fleet/driver-pool/publications`;
@@ -245,11 +246,16 @@ describe('контракт 0.6.0-stage2 (W2.51): пул водителей', () 
       ([k, a]) =>
         k !== 'fleet.reservations.choose' &&
         k !== 'branding.manage' &&
+        !W5_ADDED_KEYS.includes(k) &&
         a.module !== 'core.knowledge',
     );
-    assert.equal(own.length, 119);
+    // W5.00 (0.12.0-stage5): ключи и коды этапа 5 не считаются; cash.manage → cash.accounts.manage — на один ключ меньше.
+    assert.equal(own.length, 118);
     const codes = readYaml(ERRORS_PATH).codes;
-    assert.equal(Object.keys(codes).length - ('offer_closed' in codes ? 1 : 0), 52);
+    assert.equal(
+      Object.keys(codes).length - ('offer_closed' in codes ? 1 : 0) - W5_CODES.length,
+      52,
+    );
     // Ключи 11 сохраняются дословно (permissions.test.mjs W0.07) — пояснение W2.51 только комментарием каталога.
     const approve =
       readYaml(PERMISSIONS_PATH).modules.logistics.actions['fleet.driver_transfers.approve'];

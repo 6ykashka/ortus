@@ -1,0 +1,129 @@
+{
+  "items": [
+    {
+      "key": "visit:pr-1",
+      "kind": "visit",
+      "title": "Наталья С. · Массаж лица",
+      "amount": {
+        "amountMinor": 280000,
+        "currency": "RUB"
+      },
+      "direction": "in",
+      "defaultAccountId": "b7d1bdca-237d-5518-a179-d45b135bb0a6",
+      "categoryId": "revenue-spa",
+      "source": {
+        "key": "visit:pr-1",
+        "kind": "visit",
+        "id": "72f8d6b7-6c32-5e84-bc62-94001dff698c",
+        "label": "Визит 30.09 18:00"
+      },
+      "status": "open",
+      "parts": [
+        {
+          "label": "Наталья С. · Массаж лица",
+          "amount": {
+            "amountMinor": 280000,
+            "currency": "RUB"
+          }
+        }
+      ],
+      "createdAt": "2026-10-01T05:00:00Z",
+      "operationIds": [],
+      "dismissal": null
+    },
+    {
+      "key": "service_request:pr-2",
+      "kind": "refund",
+      "title": "Ирина П. · компенсация по жалобе",
+      "amount": {
+        "amountMinor": 160000,
+        "currency": "RUB"
+      },
+      "direction": "out",
+      "defaultAccountId": "b7d1bdca-237d-5518-a179-d45b135bb0a6",
+      "categoryId": "refund",
+      "source": {
+        "key": "service_request:pr-2",
+        "kind": "service_request",
+        "id": "a7a69465-55a2-5126-a442-01fc1839b90a",
+        "label": "Обращение · жалоба на визит"
+      },
+      "status": "open",
+      "parts": [
+        {
+          "label": "Ирина П. · компенсация по жалобе",
+          "amount": {
+            "amountMinor": 160000,
+            "currency": "RUB"
+          }
+        }
+      ],
+      "createdAt": "2026-10-01T05:00:00Z",
+      "operationIds": [],
+      "dismissal": null
+    },
+    {
+      "key": "repair_act:pr-3",
+      "kind": "invoice",
+      "title": "Оплата заказчика · акт № 3",
+      "amount": {
+        "amountMinor": 46200000,
+        "currency": "RUB"
+      },
+      "direction": "in",
+      "defaultAccountId": "c301c001-cfa2-5265-b78b-e5c6b899ab13",
+      "categoryId": "customer-payment",
+      "source": {
+        "key": "repair_act:pr-3",
+        "kind": "repair_act",
+        "id": "873740a7-1849-5b1e-8ee0-61708af8cf3e",
+        "label": "Акт № 3"
+      },
+      "status": "open",
+      "parts": [
+        {
+          "label": "Оплата заказчика · акт № 3",
+          "amount": {
+            "amountMinor": 46200000,
+            "currency": "RUB"
+          }
+        }
+      ],
+      "createdAt": "2026-10-01T05:00:00Z",
+      "operationIds": [],
+      "dismissal": null
+    },
+    {
+      "key": "repair_act:pr-4",
+      "kind": "payroll",
+      "title": "Бригада · сентябрь",
+      "amount": {
+        "amountMinor": 18600000,
+        "currency": "RUB"
+      },
+      "direction": "out",
+      "defaultAccountId": "c301c001-cfa2-5265-b78b-e5c6b899ab13",
+      "categoryId": "payroll-crew",
+      "source": {
+        "key": "repair_act:pr-4",
+        "kind": "repair_act",
+        "id": "c9e83098-7f70-5aa1-9afe-b3c2b4bc27ba",
+        "label": "Начисления бригаде"
+      },
+      "status": "open",
+      "parts": [
+        {
+          "label": "Бригада · сентябрь",
+          "amount": {
+            "amountMinor": 18600000,
+            "currency": "RUB"
+          }
+        }
+      ],
+      "createdAt": "2026-10-01T05:00:00Z",
+      "operationIds": [],
+      "dismissal": null
+    }
+  ],
+  "nextCursor": null
+}

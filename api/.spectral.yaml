@@ -110,6 +110,7 @@ rules:
           - tenant-or-org-unit
           - tenant-org-unit
           - tenant-org-unit-account
+          - tenant-org-unit-account-self
           - tenant-org-unit-assigned-driver
           - tenant-org-unit-project
           - tenant-org-unit-project-assigned

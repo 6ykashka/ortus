@@ -87,6 +87,8 @@ const (
 	ProblemCodeDelegationExceedsGrant     ProblemCode = "delegation_exceeds_grant"
 	ProblemCodeDependencyUnavailable      ProblemCode = "dependency_unavailable"
 	ProblemCodeDowngradeBelowUsage        ProblemCode = "downgrade_below_usage"
+	ProblemCodeDuplicateReceipt           ProblemCode = "duplicate_receipt"
+	ProblemCodeDuplicateSource            ProblemCode = "duplicate_source"
 	ProblemCodeEstimateDraftExists        ProblemCode = "estimate_draft_exists"
 	ProblemCodeEstimateVersionLocked      ProblemCode = "estimate_version_locked"
 	ProblemCodeFeatureRequiresPlan        ProblemCode = "feature_requires_plan"
@@ -95,6 +97,7 @@ const (
 	ProblemCodeIdempotencyInProgress      ProblemCode = "idempotency_in_progress"
 	ProblemCodeIdempotencyKeyReused       ProblemCode = "idempotency_key_reused"
 	ProblemCodeInspectionIncomplete       ProblemCode = "inspection_incomplete"
+	ProblemCodeInsufficientFunds          ProblemCode = "insufficient_funds"
 	ProblemCodeInvalidTransition          ProblemCode = "invalid_transition"
 	ProblemCodeLastOwnerRequired          ProblemCode = "last_owner_required"
 	ProblemCodeMalformedRequest           ProblemCode = "malformed_request"
@@ -118,8 +121,10 @@ const (
 	ProblemCodeRevisionMismatch           ProblemCode = "revision_mismatch"
 	ProblemCodeRevisionRequired           ProblemCode = "revision_required"
 	ProblemCodeSeatsExhausted             ProblemCode = "seats_exhausted"
+	ProblemCodeSelfApproval               ProblemCode = "self_approval"
 	ProblemCodeSeparationOfDutiesConflict ProblemCode = "separation_of_duties_conflict"
 	ProblemCodeSessionExpired             ProblemCode = "session_expired"
+	ProblemCodeShiftClosed                ProblemCode = "shift_closed"
 	ProblemCodeTenantReadOnly             ProblemCode = "tenant_read_only"
 	ProblemCodeTenantSuspended            ProblemCode = "tenant_suspended"
 	ProblemCodeTierBelowUsage             ProblemCode = "tier_below_usage"
@@ -159,6 +164,10 @@ func (e ProblemCode) Valid() bool {
 		return true
 	case ProblemCodeDowngradeBelowUsage:
 		return true
+	case ProblemCodeDuplicateReceipt:
+		return true
+	case ProblemCodeDuplicateSource:
+		return true
 	case ProblemCodeEstimateDraftExists:
 		return true
 	case ProblemCodeEstimateVersionLocked:
@@ -174,6 +183,8 @@ func (e ProblemCode) Valid() bool {
 	case ProblemCodeIdempotencyKeyReused:
 		return true
 	case ProblemCodeInspectionIncomplete:
+		return true
+	case ProblemCodeInsufficientFunds:
 		return true
 	case ProblemCodeInvalidTransition:
 		return true
@@ -221,9 +232,13 @@ func (e ProblemCode) Valid() bool {
 		return true
 	case ProblemCodeSeatsExhausted:
 		return true
+	case ProblemCodeSelfApproval:
+		return true
 	case ProblemCodeSeparationOfDutiesConflict:
 		return true
 	case ProblemCodeSessionExpired:
+		return true
+	case ProblemCodeShiftClosed:
 		return true
 	case ProblemCodeTenantReadOnly:
 		return true
@@ -411,6 +426,27 @@ type AutomationId = Id
 // BookingId Examples: 10000000-0000-4000-8000-000000000001
 type BookingId = Id
 
+// CashAccountId Examples: 10000000-0000-4000-8000-000000000001
+type CashAccountId = Id
+
+// CashApprovalRequestId Examples: 10000000-0000-4000-8000-000000000001
+type CashApprovalRequestId = Id
+
+// CashOperationId Examples: 10000000-0000-4000-8000-000000000001
+type CashOperationId = Id
+
+// CashProposalKey defines model for cashProposalKey.
+type CashProposalKey = string
+
+// CashReceiptId Examples: 10000000-0000-4000-8000-000000000001
+type CashReceiptId = Id
+
+// CashShiftId Examples: 10000000-0000-4000-8000-000000000001
+type CashShiftId = Id
+
+// CashTransferId Examples: 10000000-0000-4000-8000-000000000001
+type CashTransferId = Id
+
 // CategoryCode defines model for categoryCode.
 type CategoryCode = string
 
@@ -455,6 +491,12 @@ type ImportId = Id
 
 // InspectionId Examples: 10000000-0000-4000-8000-000000000001
 type InspectionId = Id
+
+// InventoryItemId Examples: 10000000-0000-4000-8000-000000000001
+type InventoryItemId = Id
+
+// InventoryReservationId Examples: 10000000-0000-4000-8000-000000000001
+type InventoryReservationId = Id
 
 // MemberId Examples: 10000000-0000-4000-8000-000000000001
 type MemberId = Id
@@ -503,6 +545,9 @@ type RoleId = Id
 
 // RuleId Examples: 10000000-0000-4000-8000-000000000001
 type RuleId = Id
+
+// SpaServiceId Examples: 10000000-0000-4000-8000-000000000001
+type SpaServiceId = Id
 
 // SpaceId Examples: 10000000-0000-4000-8000-000000000001
 type SpaceId = Id

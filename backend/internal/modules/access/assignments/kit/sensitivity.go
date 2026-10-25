@@ -14,7 +14,9 @@ const (
 
 // sensitivity is the level of every non-normal tenant action of the catalog (TestSensitivityMatchesCatalog guards it).
 var sensitivity = map[string]string{
-	"billing.read": Sensitive, "cash.manage": Sensitive, "cash.post": Sensitive, "cash.read": Sensitive,
+	"billing.read": Sensitive, "cash.accounts.manage": Sensitive, "cash.advance.issue": Sensitive,
+	"cash.balance.read": Sensitive, "cash.export": Sensitive, "cash.period.close": Sensitive, "cash.refund": Sensitive,
+	"cash.reverse": Sensitive, "cash.transfer": Sensitive, "inventory.consumption.override": Sensitive,
 	"chat.ephemeral.send": Sensitive, "chat.export": Sensitive, "chat.external": Sensitive,
 	"chat.members.manage": Sensitive, "chat.retention.manage": Sensitive, "data.export": Sensitive,
 	"fleet.driver_transfers.approve": Sensitive, "forms.publish_public": Sensitive,
@@ -24,7 +26,8 @@ var sensitivity = map[string]string{
 	"roles.assign": Sensitive, "roles.manage": Sensitive, "tasks.automation.manage": Sensitive,
 	"tasks.members.manage": Sensitive,
 
-	"chat.audit.read": Restricted, "chat.pdn.read": Restricted, "fleet.earnings.manage": Restricted,
+	"cash.payroll.post": Restricted, "cash.reports.finance": Restricted, "chat.audit.read": Restricted,
+	"chat.pdn.read": Restricted, "fleet.earnings.manage": Restricted,
 	"fleet.earnings.read": Restricted, "repairs.estimates.edit": Restricted, "repairs.finance.read": Restricted,
 }
 

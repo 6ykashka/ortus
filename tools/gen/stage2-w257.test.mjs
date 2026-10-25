@@ -15,6 +15,7 @@ import { flattenActions, loadCatalog } from './lib/permissions.mjs';
 import { parsePointer } from './lib/refs.mjs';
 import { checkAgainstSource, loadDeltas } from './lib/source-diff.mjs';
 import { readYaml } from './lib/yaml-io.mjs';
+import { W5_ADDED_KEYS, W5_CODES } from './lib/stage5.mjs';
 
 const doc = bundle();
 const source = readYaml(SOURCE_0_1);
@@ -117,11 +118,19 @@ describe('контракт 0.6.2-stage2 (W2.57): роль «Временный �
     // W4.07 (0.8.0-stage4) добавил branding.manage — не в шаблоне «Водитель»; W4.04 — ключи «Базы знаний»
     // (core.knowledge): остальных ключей вне БЗ без choose — 119, как в 0.6.x/0.7.0.
     const own = [...flattenActions(catalog)].filter(
-      ([k, a]) => choose(k) && k !== 'branding.manage' && a.module !== 'core.knowledge',
+      ([k, a]) =>
+        choose(k) &&
+        k !== 'branding.manage' &&
+        !W5_ADDED_KEYS.includes(k) &&
+        a.module !== 'core.knowledge',
     );
-    assert.equal(own.length, 119);
+    // W5.00 (0.12.0-stage5): ключи и коды этапа 5 не считаются; cash.manage → cash.accounts.manage — на один ключ меньше.
+    assert.equal(own.length, 118);
     const codes = readYaml(ERRORS_PATH).codes;
-    assert.equal(Object.keys(codes).filter((c) => c !== 'offer_closed').length, 52);
+    assert.equal(
+      Object.keys(codes).filter((c) => c !== 'offer_closed' && !W5_CODES.includes(c)).length,
+      52,
+    );
   });
 });
 

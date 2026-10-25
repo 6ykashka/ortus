@@ -2230,5 +2230,10 @@
   "forms.fill.pending",
   "forms.fill.searchAria",
   "forms.fill.truncated",
-  "forms.fill.noOptions"
+  "forms.fill.noOptions",
+  "errors.problem.shift_closed",
+  "errors.problem.duplicate_source",
+  "errors.problem.duplicate_receipt",
+  "errors.problem.self_approval",
+  "errors.problem.insufficient_funds"
 ]

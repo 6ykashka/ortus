@@ -624,8 +624,8 @@ describe('контракт W4.07: аддитивность, примеры, эк
     assert.match(readme, /`branding`/);
   });
 
-  it('версия контракта — 0.N.x-stage4, N ≥ 7', () => {
-    const m = /^0\.(\d+)\.\d+-stage4$/.exec(doc.info.version);
+  it('версия контракта — 0.N.x-stage4…stage9, N ≥ 7', () => {
+    const m = /^0\.(\d+)\.\d+-stage[4-9]$/.exec(doc.info.version);
     assert.ok(m, doc.info.version);
     assert.ok(Number(m[1]) >= 7, doc.info.version);
   });
@@ -810,7 +810,7 @@ describe('контракт W4.07, возврат 2: 412, тема в конте�
   });
 
   it('версия — следующий минор после 0.7.0-stage4 (W4.02); цепочка версий в source-delta', () => {
-    const m = /^0\.(\d+)\.\d+-stage4$/.exec(doc.info.version);
+    const m = /^0\.(\d+)\.\d+-stage[4-9]$/.exec(doc.info.version);
     assert.ok(m && Number(m[1]) >= 8, doc.info.version);
     const v = deltas.find((x) => x.pointer === '/info/version');
     // Интегратор: W2.71 (0.7.1-stage4) влит раньше — между 0.7.0-stage4 и 0.8.0-stage4 допустимы патч-версии.

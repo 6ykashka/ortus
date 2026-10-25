@@ -1,0 +1,27 @@
+{
+  "id": "6392343f-1685-5528-b8f6-38077b45544a",
+  "accountId": "0eab4a4f-fb0c-53f2-b423-4c82fe4f760e",
+  "amount": {
+    "amountMinor": 60000,
+    "currency": "RUB"
+  },
+  "categoryId": "wash",
+  "link": {
+    "key": "trip:r203",
+    "kind": "trip",
+    "id": "0143061a-26c8-52da-bafa-5f456249a448",
+    "label": "Рейс Р-203"
+  },
+  "note": null,
+  "fileId": "31a19146-0d07-5269-ba99-f74aa72da653",
+  "qr": null,
+  "status": "accepted",
+  "reason": null,
+  "operationId": "da14d1a0-5094-5b16-a839-7ad4d0860694",
+  "submittedByMemberId": "a560b4fe-78b7-585e-b960-f0ab3622570c",
+  "submittedAt": "2026-09-30T16:20:00Z",
+  "decidedByMemberId": "b8df06ec-317e-5f46-b54c-e76603e41b5b",
+  "decidedAt": "2026-10-01T07:30:00Z",
+  "redoOfReceiptId": null,
+  "revision": 2
+}

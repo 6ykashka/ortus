@@ -1,0 +1,116 @@
+{
+  "items": [
+    {
+      "id": "revenue-spa",
+      "title": "Выручка · услуги SPA",
+      "group": "income",
+      "direction": "in",
+      "moduleKey": "spa",
+      "expenseCategoryCode": null
+    },
+    {
+      "id": "revenue-subscriptions",
+      "title": "Выручка · абонементы и сертификаты",
+      "group": "income",
+      "direction": "in",
+      "moduleKey": "spa",
+      "expenseCategoryCode": null
+    },
+    {
+      "id": "customer-payment",
+      "title": "Оплата заказчика",
+      "group": "income",
+      "direction": "in",
+      "moduleKey": "repairs",
+      "expenseCategoryCode": null
+    },
+    {
+      "id": "refund",
+      "title": "Возврат клиенту",
+      "group": "expense",
+      "direction": "out",
+      "moduleKey": null,
+      "expenseCategoryCode": null
+    },
+    {
+      "id": "household",
+      "title": "Хозяйственные расходы",
+      "group": "expense",
+      "direction": "out",
+      "moduleKey": null,
+      "expenseCategoryCode": null
+    },
+    {
+      "id": "fuel",
+      "title": "Топливо",
+      "group": "expense",
+      "direction": "out",
+      "moduleKey": "logistics",
+      "expenseCategoryCode": "fuel"
+    },
+    {
+      "id": "wash",
+      "title": "Мойка",
+      "group": "expense",
+      "direction": "out",
+      "moduleKey": "logistics",
+      "expenseCategoryCode": null
+    },
+    {
+      "id": "parking",
+      "title": "Парковка",
+      "group": "expense",
+      "direction": "out",
+      "moduleKey": "logistics",
+      "expenseCategoryCode": null
+    },
+    {
+      "id": "repair-small",
+      "title": "Мелкий ремонт",
+      "group": "expense",
+      "direction": "out",
+      "moduleKey": null,
+      "expenseCategoryCode": null
+    },
+    {
+      "id": "materials",
+      "title": "Материалы",
+      "group": "expense",
+      "direction": "out",
+      "moduleKey": "repairs",
+      "expenseCategoryCode": null
+    },
+    {
+      "id": "payroll-crew",
+      "title": "Выплаты бригаде",
+      "group": "expense",
+      "direction": "out",
+      "moduleKey": "repairs",
+      "expenseCategoryCode": null
+    },
+    {
+      "id": "transfer",
+      "title": "Перемещение",
+      "group": "transfer",
+      "direction": null,
+      "moduleKey": null,
+      "expenseCategoryCode": null
+    },
+    {
+      "id": "opening",
+      "title": "Ввод остатка",
+      "group": "adjustment",
+      "direction": null,
+      "moduleKey": null,
+      "expenseCategoryCode": null
+    },
+    {
+      "id": "adjustment",
+      "title": "Корректировка",
+      "group": "adjustment",
+      "direction": null,
+      "moduleKey": null,
+      "expenseCategoryCode": null
+    }
+  ]
+}

@@ -1,0 +1,67 @@
+# Матрица изоляции: салон и SPA контракта 0.12.0-stage5 (W5.00, контрактный PR этапа 5); хендлеры — W5.20.
+# Строки пишутся до хендлера (pending): без сессии 401, чужая организация 404 (AC-02). Положительные строки и строки
+# «нет такого объекта» владельцу (404, список только своих, absent: tenant:b) требуют фикстур модуля (кассы, склады,
+# услуги) — их добавляет W5.20 вместе с хендлерами и снимает pending. Отказы шлюза (403 forbidden_action,
+# module_not_installed) — отдельный файл без pending. Визиты чужого практика видит только «область» роли.
+# Формат — README.md.
+# После правки: go -C backend generate ./test/isolation
+module: spa_w500
+endpoints:
+  - op: getSpaService
+    method: GET
+    path: /api/v1/tenants/{tenantId}/spa/services/{serviceId}
+    pending: W5.20
+    rows:
+      - actor: anonymous
+        params: { tenantId: tenant:a, serviceId: tenant:missing }
+        status: 401
+      - actor: b.owner
+        params: { tenantId: tenant:a, serviceId: tenant:missing }
+        status: 404
+        absent: [tenant:a]
+        note: чужая организация — как несуществующая (AC-02)
+  - op: updateSpaService
+    method: PATCH
+    path: /api/v1/tenants/{tenantId}/spa/services/{serviceId}
+    pending: W5.20
+    rows:
+      - actor: anonymous
+        params: { tenantId: tenant:a, serviceId: tenant:missing }
+        status: 401
+        body: "{}"
+      - actor: b.owner
+        params: { tenantId: tenant:a, serviceId: tenant:missing }
+        status: 404
+        absent: [tenant:a]
+        body: "{}"
+        note: чужая организация — как несуществующая (AC-02)
+  - op: cancelAppointment
+    method: POST
+    path: /api/v1/tenants/{tenantId}/spa/appointments/{appointmentId}/cancel
+    pending: W5.20
+    rows:
+      - actor: anonymous
+        params: { tenantId: tenant:a, appointmentId: tenant:missing }
+        status: 401
+        body: "{}"
+      - actor: b.owner
+        params: { tenantId: tenant:a, appointmentId: tenant:missing }
+        status: 404
+        absent: [tenant:a]
+        body: "{}"
+        note: чужая организация — как несуществующая (AC-02)
+  - op: rescheduleAppointment
+    method: POST
+    path: /api/v1/tenants/{tenantId}/spa/appointments/{appointmentId}/reschedule
+    pending: W5.20
+    rows:
+      - actor: anonymous
+        params: { tenantId: tenant:a, appointmentId: tenant:missing }
+        status: 401
+        body: "{}"
+      - actor: b.owner
+        params: { tenantId: tenant:a, appointmentId: tenant:missing }
+        status: 404
+        absent: [tenant:a]
+        body: "{}"
+        note: чужая организация — как несуществующая (AC-02)

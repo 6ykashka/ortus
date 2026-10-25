@@ -1,0 +1,21 @@
+{
+  "id": "da14d1a0-5094-5b16-a839-7ad4d0860694",
+  "fromAccountId": "27e3a4c8-20ac-5663-9eb3-6ea3c9f708b9",
+  "toAccountId": "0eab4a4f-fb0c-53f2-b423-4c82fe4f760e",
+  "amount": {
+    "amountMinor": 500000,
+    "currency": "RUB"
+  },
+  "note": "Выдача под отчёт · Илья Васильев",
+  "purpose": "advance_issue",
+  "status": "done",
+  "sentByMemberId": "b8df06ec-317e-5f46-b54c-e76603e41b5b",
+  "sentAt": "2026-10-01T07:30:00Z",
+  "decidedByMemberId": "b8df06ec-317e-5f46-b54c-e76603e41b5b",
+  "decidedAt": "2026-10-01T07:30:00Z",
+  "reason": null,
+  "outOperationId": "39354720-c647-533e-9435-f1308bd05aef",
+  "inOperationId": "833a70be-c24c-5c8c-af98-c66b3b300946",
+  "backOperationId": null,
+  "revision": 2
+}

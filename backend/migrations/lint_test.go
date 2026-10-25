@@ -46,12 +46,12 @@ var migrationBlocks = map[migrations.Kind][][2]int{
 // (блок закрыт); блок этапа 4 — 0020 (W4.02), 0021–0022 (W4.06), 0023 (W2.71, S2-20, после W4.02 и W4.06), 0024
 // (W4.04, в ветке — 0023, после W2.71), 0025 (W4.03, «Задачи и проекты», в ветке — 0023, после W4.04), 0026 (W4.05,
 // «Формы и опросы»), 0027 (W2.78, S2-20 «машина отпущена», Q-W2.72-1; следующий свободный, стюарду — подтвердить),
-// резерв 0028–0039. Без дублей и без дыр внутри блоков.
+// резерв 0028–0039; блок этапа 5 — 0040–0044 (W5.00: касса, склад, SPA), резерв 0045–0049. Без дублей и без дыр\n// внутри блоков.
 func TestNumberingContiguous(t *testing.T) {
 	t.Parallel()
 	want := map[migrations.Kind]struct{ files, latest int }{
 		migrations.Control: {9, 9},
-		migrations.Tenant:  {24, 27},
+		migrations.Tenant:  {29, 44}, // + 0040–0044 (W5.00, контракт 0.12.0-stage5)
 	}
 	for k, w := range want {
 		names := files(t, k)
@@ -143,11 +143,14 @@ func TestGooseMarkers(t *testing.T) {
 
 var tenantSchemas = []string{
 	"core", "org", "people", "access", "modules", "files", "sched", "audit", "outbox", "fleet", "finance",
-	"notify", // W0.08, tenant 0003: входящие уведомления
-	"data",   // W4.06, tenant 0022: сохранённые виды и задания выгрузки «Данных»
-	"kb",     // W4.04, tenant 0024: «База знаний» — пространства, дерево, версии, доступ, запросы, правила
-	"tasks",  // W4.03, tenant 0025: «Задачи и проекты»
-	"forms",  // W4.05, tenant 0026: «Формы и опросы»
+	"notify",    // W0.08, tenant 0003: входящие уведомления
+	"data",      // W4.06, tenant 0022: сохранённые виды и задания выгрузки «Данных»
+	"kb",        // W4.04, tenant 0024: «База знаний» — пространства, дерево, версии, доступ, запросы, правила
+	"tasks",     // W4.03, tenant 0025: «Задачи и проекты»
+	"forms",     // W4.05, tenant 0026: «Формы и опросы»
+	"cash",      // W5.00, tenant 0040–0042: касса
+	"inventory", // W5.00, tenant 0043: склад
+	"spa",       // W5.00, tenant 0044: салон и SPA
 }
 
 var objectRe = regexp.MustCompile(`(?im)^\s*(?:create\s+table|alter\s+table|create\s+view|create\s+type)\s+(?:if\s+(?:not\s+)?exists\s+)?([a-z0-9_."]+)` +

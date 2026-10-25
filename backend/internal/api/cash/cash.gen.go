@@ -17,18 +17,129 @@ import (
 	openapi_types "github.com/oapi-codegen/runtime/types"
 )
 
+// Defines values for AdvanceReceiptStatus.
+const (
+	AdvanceReceiptStatusAccepted AdvanceReceiptStatus = "accepted"
+	AdvanceReceiptStatusRejected AdvanceReceiptStatus = "rejected"
+	AdvanceReceiptStatusReview   AdvanceReceiptStatus = "review"
+)
+
+// Valid indicates whether the value is a known member of the AdvanceReceiptStatus enum.
+func (e AdvanceReceiptStatus) Valid() bool {
+	switch e {
+	case AdvanceReceiptStatusAccepted:
+		return true
+	case AdvanceReceiptStatusRejected:
+		return true
+	case AdvanceReceiptStatusReview:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for AdvanceReceiptDecisionDecision.
+const (
+	AdvanceReceiptDecisionDecisionAccept AdvanceReceiptDecisionDecision = "accept"
+	AdvanceReceiptDecisionDecisionReject AdvanceReceiptDecisionDecision = "reject"
+)
+
+// Valid indicates whether the value is a known member of the AdvanceReceiptDecisionDecision enum.
+func (e AdvanceReceiptDecisionDecision) Valid() bool {
+	switch e {
+	case AdvanceReceiptDecisionDecisionAccept:
+		return true
+	case AdvanceReceiptDecisionDecisionReject:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for CashAccessPersonVia.
+const (
+	CashAccessPersonViaOwner CashAccessPersonVia = "owner"
+	CashAccessPersonViaRole  CashAccessPersonVia = "role"
+	CashAccessPersonViaSelf  CashAccessPersonVia = "self"
+)
+
+// Valid indicates whether the value is a known member of the CashAccessPersonVia enum.
+func (e CashAccessPersonVia) Valid() bool {
+	switch e {
+	case CashAccessPersonViaOwner:
+		return true
+	case CashAccessPersonViaRole:
+		return true
+	case CashAccessPersonViaSelf:
+		return true
+	default:
+		return false
+	}
+}
+
 // Defines values for CashAccountKind.
 const (
-	CashAccountKindCash            CashAccountKind = "cash"
-	CashAccountKindInternalVirtual CashAccountKind = "internal_virtual"
+	CashAccountKindAcquiring  CashAccountKind = "acquiring"
+	CashAccountKindAdvance    CashAccountKind = "advance"
+	CashAccountKindBank       CashAccountKind = "bank"
+	CashAccountKindCashDrawer CashAccountKind = "cash_drawer"
+	CashAccountKindSafe       CashAccountKind = "safe"
+	CashAccountKindVirtual    CashAccountKind = "virtual"
 )
 
 // Valid indicates whether the value is a known member of the CashAccountKind enum.
 func (e CashAccountKind) Valid() bool {
 	switch e {
-	case CashAccountKindCash:
+	case CashAccountKindAcquiring:
 		return true
-	case CashAccountKindInternalVirtual:
+	case CashAccountKindAdvance:
+		return true
+	case CashAccountKindBank:
+		return true
+	case CashAccountKindCashDrawer:
+		return true
+	case CashAccountKindSafe:
+		return true
+	case CashAccountKindVirtual:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for CashAccountKktMode.
+const (
+	CashAccountKktModeManual CashAccountKktMode = "manual"
+	CashAccountKktModeNone   CashAccountKktMode = "none"
+)
+
+// Valid indicates whether the value is a known member of the CashAccountKktMode enum.
+func (e CashAccountKktMode) Valid() bool {
+	switch e {
+	case CashAccountKktModeManual:
+		return true
+	case CashAccountKktModeNone:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for CashAccountShiftMode.
+const (
+	CashAccountShiftModeBlind CashAccountShiftMode = "blind"
+	CashAccountShiftModeNone  CashAccountShiftMode = "none"
+	CashAccountShiftModeOpen  CashAccountShiftMode = "open"
+)
+
+// Valid indicates whether the value is a known member of the CashAccountShiftMode enum.
+func (e CashAccountShiftMode) Valid() bool {
+	switch e {
+	case CashAccountShiftModeBlind:
+		return true
+	case CashAccountShiftModeNone:
+		return true
+	case CashAccountShiftModeOpen:
 		return true
 	default:
 		return false
@@ -37,16 +148,220 @@ func (e CashAccountKind) Valid() bool {
 
 // Defines values for CashAccountCreateKind.
 const (
-	CashAccountCreateKindCash            CashAccountCreateKind = "cash"
-	CashAccountCreateKindInternalVirtual CashAccountCreateKind = "internal_virtual"
+	CashAccountCreateKindAcquiring  CashAccountCreateKind = "acquiring"
+	CashAccountCreateKindAdvance    CashAccountCreateKind = "advance"
+	CashAccountCreateKindBank       CashAccountCreateKind = "bank"
+	CashAccountCreateKindCashDrawer CashAccountCreateKind = "cash_drawer"
+	CashAccountCreateKindSafe       CashAccountCreateKind = "safe"
+	CashAccountCreateKindVirtual    CashAccountCreateKind = "virtual"
 )
 
 // Valid indicates whether the value is a known member of the CashAccountCreateKind enum.
 func (e CashAccountCreateKind) Valid() bool {
 	switch e {
-	case CashAccountCreateKindCash:
+	case CashAccountCreateKindAcquiring:
 		return true
-	case CashAccountCreateKindInternalVirtual:
+	case CashAccountCreateKindAdvance:
+		return true
+	case CashAccountCreateKindBank:
+		return true
+	case CashAccountCreateKindCashDrawer:
+		return true
+	case CashAccountCreateKindSafe:
+		return true
+	case CashAccountCreateKindVirtual:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for CashAccountCreateKktMode.
+const (
+	CashAccountCreateKktModeManual CashAccountCreateKktMode = "manual"
+	CashAccountCreateKktModeNone   CashAccountCreateKktMode = "none"
+)
+
+// Valid indicates whether the value is a known member of the CashAccountCreateKktMode enum.
+func (e CashAccountCreateKktMode) Valid() bool {
+	switch e {
+	case CashAccountCreateKktModeManual:
+		return true
+	case CashAccountCreateKktModeNone:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for CashAccountCreateShiftMode.
+const (
+	CashAccountCreateShiftModeBlind CashAccountCreateShiftMode = "blind"
+	CashAccountCreateShiftModeNone  CashAccountCreateShiftMode = "none"
+	CashAccountCreateShiftModeOpen  CashAccountCreateShiftMode = "open"
+)
+
+// Valid indicates whether the value is a known member of the CashAccountCreateShiftMode enum.
+func (e CashAccountCreateShiftMode) Valid() bool {
+	switch e {
+	case CashAccountCreateShiftModeBlind:
+		return true
+	case CashAccountCreateShiftModeNone:
+		return true
+	case CashAccountCreateShiftModeOpen:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for CashAccountMyVia.
+const (
+	CashAccountMyViaOwner CashAccountMyVia = "owner"
+	CashAccountMyViaRole  CashAccountMyVia = "role"
+	CashAccountMyViaSelf  CashAccountMyVia = "self"
+)
+
+// Valid indicates whether the value is a known member of the CashAccountMyVia enum.
+func (e CashAccountMyVia) Valid() bool {
+	switch e {
+	case CashAccountMyViaOwner:
+		return true
+	case CashAccountMyViaRole:
+		return true
+	case CashAccountMyViaSelf:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for CashApprovalDecisionDecision.
+const (
+	CashApprovalDecisionDecisionApprove CashApprovalDecisionDecision = "approve"
+	CashApprovalDecisionDecisionReject  CashApprovalDecisionDecision = "reject"
+)
+
+// Valid indicates whether the value is a known member of the CashApprovalDecisionDecision enum.
+func (e CashApprovalDecisionDecision) Valid() bool {
+	switch e {
+	case CashApprovalDecisionDecisionApprove:
+		return true
+	case CashApprovalDecisionDecisionReject:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for CashApprovalRequestMethod.
+const (
+	CashApprovalRequestMethodCard        CashApprovalRequestMethod = "card"
+	CashApprovalRequestMethodCash        CashApprovalRequestMethod = "cash"
+	CashApprovalRequestMethodLessThannil CashApprovalRequestMethod = "<nil>"
+	CashApprovalRequestMethodSbp         CashApprovalRequestMethod = "sbp"
+	CashApprovalRequestMethodTransfer    CashApprovalRequestMethod = "transfer"
+)
+
+// Valid indicates whether the value is a known member of the CashApprovalRequestMethod enum.
+func (e CashApprovalRequestMethod) Valid() bool {
+	switch e {
+	case CashApprovalRequestMethodCard:
+		return true
+	case CashApprovalRequestMethodCash:
+		return true
+	case CashApprovalRequestMethodLessThannil:
+		return true
+	case CashApprovalRequestMethodSbp:
+		return true
+	case CashApprovalRequestMethodTransfer:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for CashApprovalRequestStatus.
+const (
+	CashApprovalRequestStatusApproved CashApprovalRequestStatus = "approved"
+	CashApprovalRequestStatusPending  CashApprovalRequestStatus = "pending"
+	CashApprovalRequestStatusRejected CashApprovalRequestStatus = "rejected"
+)
+
+// Valid indicates whether the value is a known member of the CashApprovalRequestStatus enum.
+func (e CashApprovalRequestStatus) Valid() bool {
+	switch e {
+	case CashApprovalRequestStatusApproved:
+		return true
+	case CashApprovalRequestStatusPending:
+		return true
+	case CashApprovalRequestStatusRejected:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for CashApprovalRequestType.
+const (
+	CashApprovalRequestTypeIssue  CashApprovalRequestType = "issue"
+	CashApprovalRequestTypeOut    CashApprovalRequestType = "out"
+	CashApprovalRequestTypeRefund CashApprovalRequestType = "refund"
+)
+
+// Valid indicates whether the value is a known member of the CashApprovalRequestType enum.
+func (e CashApprovalRequestType) Valid() bool {
+	switch e {
+	case CashApprovalRequestTypeIssue:
+		return true
+	case CashApprovalRequestTypeOut:
+		return true
+	case CashApprovalRequestTypeRefund:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for CashCategoryDirection.
+const (
+	CashCategoryDirectionIn          CashCategoryDirection = "in"
+	CashCategoryDirectionLessThannil CashCategoryDirection = "<nil>"
+	CashCategoryDirectionOut         CashCategoryDirection = "out"
+)
+
+// Valid indicates whether the value is a known member of the CashCategoryDirection enum.
+func (e CashCategoryDirection) Valid() bool {
+	switch e {
+	case CashCategoryDirectionIn:
+		return true
+	case CashCategoryDirectionLessThannil:
+		return true
+	case CashCategoryDirectionOut:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for CashCategoryGroup.
+const (
+	CashCategoryGroupAdjustment CashCategoryGroup = "adjustment"
+	CashCategoryGroupExpense    CashCategoryGroup = "expense"
+	CashCategoryGroupIncome     CashCategoryGroup = "income"
+	CashCategoryGroupTransfer   CashCategoryGroup = "transfer"
+)
+
+// Valid indicates whether the value is a known member of the CashCategoryGroup enum.
+func (e CashCategoryGroup) Valid() bool {
+	switch e {
+	case CashCategoryGroupAdjustment:
+		return true
+	case CashCategoryGroupExpense:
+		return true
+	case CashCategoryGroupIncome:
+		return true
+	case CashCategoryGroupTransfer:
 		return true
 	default:
 		return false
@@ -98,6 +413,111 @@ func (e CashOperationDirection) Valid() bool {
 	}
 }
 
+// Defines values for CashOperationMethod.
+const (
+	CashOperationMethodCard     CashOperationMethod = "card"
+	CashOperationMethodCash     CashOperationMethod = "cash"
+	CashOperationMethodSbp      CashOperationMethod = "sbp"
+	CashOperationMethodTransfer CashOperationMethod = "transfer"
+)
+
+// Valid indicates whether the value is a known member of the CashOperationMethod enum.
+func (e CashOperationMethod) Valid() bool {
+	switch e {
+	case CashOperationMethodCard:
+		return true
+	case CashOperationMethodCash:
+		return true
+	case CashOperationMethodSbp:
+		return true
+	case CashOperationMethodTransfer:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for CashOperationOrigin.
+const (
+	CashOperationOriginImport      CashOperationOrigin = "import"
+	CashOperationOriginIntegration CashOperationOrigin = "integration"
+	CashOperationOriginManual      CashOperationOrigin = "manual"
+	CashOperationOriginProposal    CashOperationOrigin = "proposal"
+)
+
+// Valid indicates whether the value is a known member of the CashOperationOrigin enum.
+func (e CashOperationOrigin) Valid() bool {
+	switch e {
+	case CashOperationOriginImport:
+		return true
+	case CashOperationOriginIntegration:
+		return true
+	case CashOperationOriginManual:
+		return true
+	case CashOperationOriginProposal:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for CashOperationReconcileStatus.
+const (
+	Matched   CashOperationReconcileStatus = "matched"
+	Mismatch  CashOperationReconcileStatus = "mismatch"
+	Unmatched CashOperationReconcileStatus = "unmatched"
+)
+
+// Valid indicates whether the value is a known member of the CashOperationReconcileStatus enum.
+func (e CashOperationReconcileStatus) Valid() bool {
+	switch e {
+	case Matched:
+		return true
+	case Mismatch:
+		return true
+	case Unmatched:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for CashOperationType.
+const (
+	CashOperationTypeAdjust  CashOperationType = "adjust"
+	CashOperationTypeIn      CashOperationType = "in"
+	CashOperationTypeMoveIn  CashOperationType = "move_in"
+	CashOperationTypeMoveOut CashOperationType = "move_out"
+	CashOperationTypeOpening CashOperationType = "opening"
+	CashOperationTypeOut     CashOperationType = "out"
+	CashOperationTypeRefund  CashOperationType = "refund"
+	CashOperationTypeStorno  CashOperationType = "storno"
+)
+
+// Valid indicates whether the value is a known member of the CashOperationType enum.
+func (e CashOperationType) Valid() bool {
+	switch e {
+	case CashOperationTypeAdjust:
+		return true
+	case CashOperationTypeIn:
+		return true
+	case CashOperationTypeMoveIn:
+		return true
+	case CashOperationTypeMoveOut:
+		return true
+	case CashOperationTypeOpening:
+		return true
+	case CashOperationTypeOut:
+		return true
+	case CashOperationTypeRefund:
+		return true
+	case CashOperationTypeStorno:
+		return true
+	default:
+		return false
+	}
+}
+
 // Defines values for CashOperationCreateCategory.
 const (
 	CashOperationCreateCategoryAdjustment     CashOperationCreateCategory = "adjustment"
@@ -143,6 +563,291 @@ func (e CashOperationCreateDirection) Valid() bool {
 	}
 }
 
+// Defines values for CashOperationCreateMethod.
+const (
+	CashOperationCreateMethodCard     CashOperationCreateMethod = "card"
+	CashOperationCreateMethodCash     CashOperationCreateMethod = "cash"
+	CashOperationCreateMethodSbp      CashOperationCreateMethod = "sbp"
+	CashOperationCreateMethodTransfer CashOperationCreateMethod = "transfer"
+)
+
+// Valid indicates whether the value is a known member of the CashOperationCreateMethod enum.
+func (e CashOperationCreateMethod) Valid() bool {
+	switch e {
+	case CashOperationCreateMethodCard:
+		return true
+	case CashOperationCreateMethodCash:
+		return true
+	case CashOperationCreateMethodSbp:
+		return true
+	case CashOperationCreateMethodTransfer:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for CashOperationCreateType.
+const (
+	CashOperationCreateTypeIn      CashOperationCreateType = "in"
+	CashOperationCreateTypeOpening CashOperationCreateType = "opening"
+	CashOperationCreateTypeOut     CashOperationCreateType = "out"
+	CashOperationCreateTypeRefund  CashOperationCreateType = "refund"
+)
+
+// Valid indicates whether the value is a known member of the CashOperationCreateType enum.
+func (e CashOperationCreateType) Valid() bool {
+	switch e {
+	case CashOperationCreateTypeIn:
+		return true
+	case CashOperationCreateTypeOpening:
+		return true
+	case CashOperationCreateTypeOut:
+		return true
+	case CashOperationCreateTypeRefund:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for CashProposalDirection.
+const (
+	CashProposalDirectionIn  CashProposalDirection = "in"
+	CashProposalDirectionOut CashProposalDirection = "out"
+)
+
+// Valid indicates whether the value is a known member of the CashProposalDirection enum.
+func (e CashProposalDirection) Valid() bool {
+	switch e {
+	case CashProposalDirectionIn:
+		return true
+	case CashProposalDirectionOut:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for CashProposalKind.
+const (
+	CashProposalKindExpense  CashProposalKind = "expense"
+	CashProposalKindInvoice  CashProposalKind = "invoice"
+	CashProposalKindPayroll  CashProposalKind = "payroll"
+	CashProposalKindPurchase CashProposalKind = "purchase"
+	CashProposalKindRefund   CashProposalKind = "refund"
+	CashProposalKindVisit    CashProposalKind = "visit"
+)
+
+// Valid indicates whether the value is a known member of the CashProposalKind enum.
+func (e CashProposalKind) Valid() bool {
+	switch e {
+	case CashProposalKindExpense:
+		return true
+	case CashProposalKindInvoice:
+		return true
+	case CashProposalKindPayroll:
+		return true
+	case CashProposalKindPurchase:
+		return true
+	case CashProposalKindRefund:
+		return true
+	case CashProposalKindVisit:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for CashProposalStatus.
+const (
+	CashProposalStatusDismissed CashProposalStatus = "dismissed"
+	CashProposalStatusOpen      CashProposalStatus = "open"
+	CashProposalStatusPosted    CashProposalStatus = "posted"
+)
+
+// Valid indicates whether the value is a known member of the CashProposalStatus enum.
+func (e CashProposalStatus) Valid() bool {
+	switch e {
+	case CashProposalStatusDismissed:
+		return true
+	case CashProposalStatusOpen:
+		return true
+	case CashProposalStatusPosted:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for CashProposalPartMethod.
+const (
+	CashProposalPartMethodCard     CashProposalPartMethod = "card"
+	CashProposalPartMethodCash     CashProposalPartMethod = "cash"
+	CashProposalPartMethodSbp      CashProposalPartMethod = "sbp"
+	CashProposalPartMethodTransfer CashProposalPartMethod = "transfer"
+)
+
+// Valid indicates whether the value is a known member of the CashProposalPartMethod enum.
+func (e CashProposalPartMethod) Valid() bool {
+	switch e {
+	case CashProposalPartMethodCard:
+		return true
+	case CashProposalPartMethodCash:
+		return true
+	case CashProposalPartMethodSbp:
+		return true
+	case CashProposalPartMethodTransfer:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for CashProposalPostPartMethod.
+const (
+	CashProposalPostPartMethodCard     CashProposalPostPartMethod = "card"
+	CashProposalPostPartMethodCash     CashProposalPostPartMethod = "cash"
+	CashProposalPostPartMethodSbp      CashProposalPostPartMethod = "sbp"
+	CashProposalPostPartMethodTransfer CashProposalPostPartMethod = "transfer"
+)
+
+// Valid indicates whether the value is a known member of the CashProposalPostPartMethod enum.
+func (e CashProposalPostPartMethod) Valid() bool {
+	switch e {
+	case CashProposalPostPartMethodCard:
+		return true
+	case CashProposalPostPartMethodCash:
+		return true
+	case CashProposalPostPartMethodSbp:
+		return true
+	case CashProposalPostPartMethodTransfer:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for CashShiftStatus.
+const (
+	CashShiftStatusClosed CashShiftStatus = "closed"
+	CashShiftStatusOpen   CashShiftStatus = "open"
+	CashShiftStatusReview CashShiftStatus = "review"
+)
+
+// Valid indicates whether the value is a known member of the CashShiftStatus enum.
+func (e CashShiftStatus) Valid() bool {
+	switch e {
+	case CashShiftStatusClosed:
+		return true
+	case CashShiftStatusOpen:
+		return true
+	case CashShiftStatusReview:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for CashShiftDecisionKind.
+const (
+	CashShiftDecisionKindAccepted CashShiftDecisionKind = "accepted"
+	CashShiftDecisionKindAuto     CashShiftDecisionKind = "auto"
+)
+
+// Valid indicates whether the value is a known member of the CashShiftDecisionKind enum.
+func (e CashShiftDecisionKind) Valid() bool {
+	switch e {
+	case CashShiftDecisionKindAccepted:
+		return true
+	case CashShiftDecisionKindAuto:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for CashShiftReviewDecision.
+const (
+	CashShiftReviewDecisionAccept  CashShiftReviewDecision = "accept"
+	CashShiftReviewDecisionRecount CashShiftReviewDecision = "recount"
+)
+
+// Valid indicates whether the value is a known member of the CashShiftReviewDecision enum.
+func (e CashShiftReviewDecision) Valid() bool {
+	switch e {
+	case CashShiftReviewDecisionAccept:
+		return true
+	case CashShiftReviewDecisionRecount:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for CashTransferPurpose.
+const (
+	CashTransferPurposeAdvanceIssue  CashTransferPurpose = "advance_issue"
+	CashTransferPurposeAdvanceReturn CashTransferPurpose = "advance_return"
+	CashTransferPurposeShiftHandover CashTransferPurpose = "shift_handover"
+	CashTransferPurposeTransfer      CashTransferPurpose = "transfer"
+)
+
+// Valid indicates whether the value is a known member of the CashTransferPurpose enum.
+func (e CashTransferPurpose) Valid() bool {
+	switch e {
+	case CashTransferPurposeAdvanceIssue:
+		return true
+	case CashTransferPurposeAdvanceReturn:
+		return true
+	case CashTransferPurposeShiftHandover:
+		return true
+	case CashTransferPurposeTransfer:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for CashTransferStatus.
+const (
+	CashTransferStatusDone     CashTransferStatus = "done"
+	CashTransferStatusRejected CashTransferStatus = "rejected"
+	CashTransferStatusTransit  CashTransferStatus = "transit"
+)
+
+// Valid indicates whether the value is a known member of the CashTransferStatus enum.
+func (e CashTransferStatus) Valid() bool {
+	switch e {
+	case CashTransferStatusDone:
+		return true
+	case CashTransferStatusRejected:
+		return true
+	case CashTransferStatusTransit:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for CashTransferDecisionDecision.
+const (
+	CashTransferDecisionDecisionAccept CashTransferDecisionDecision = "accept"
+	CashTransferDecisionDecisionReject CashTransferDecisionDecision = "reject"
+)
+
+// Valid indicates whether the value is a known member of the CashTransferDecisionDecision enum.
+func (e CashTransferDecisionDecision) Valid() bool {
+	switch e {
+	case CashTransferDecisionDecisionAccept:
+		return true
+	case CashTransferDecisionDecisionReject:
+		return true
+	default:
+		return false
+	}
+}
+
 // Defines values for ProblemCode.
 const (
 	ProblemCodeAgreementPending           ProblemCode = "agreement_pending"
@@ -159,6 +864,8 @@ const (
 	ProblemCodeDelegationExceedsGrant     ProblemCode = "delegation_exceeds_grant"
 	ProblemCodeDependencyUnavailable      ProblemCode = "dependency_unavailable"
 	ProblemCodeDowngradeBelowUsage        ProblemCode = "downgrade_below_usage"
+	ProblemCodeDuplicateReceipt           ProblemCode = "duplicate_receipt"
+	ProblemCodeDuplicateSource            ProblemCode = "duplicate_source"
 	ProblemCodeEstimateDraftExists        ProblemCode = "estimate_draft_exists"
 	ProblemCodeEstimateVersionLocked      ProblemCode = "estimate_version_locked"
 	ProblemCodeFeatureRequiresPlan        ProblemCode = "feature_requires_plan"
@@ -167,6 +874,7 @@ const (
 	ProblemCodeIdempotencyInProgress      ProblemCode = "idempotency_in_progress"
 	ProblemCodeIdempotencyKeyReused       ProblemCode = "idempotency_key_reused"
 	ProblemCodeInspectionIncomplete       ProblemCode = "inspection_incomplete"
+	ProblemCodeInsufficientFunds          ProblemCode = "insufficient_funds"
 	ProblemCodeInvalidTransition          ProblemCode = "invalid_transition"
 	ProblemCodeLastOwnerRequired          ProblemCode = "last_owner_required"
 	ProblemCodeMalformedRequest           ProblemCode = "malformed_request"
@@ -190,8 +898,10 @@ const (
 	ProblemCodeRevisionMismatch           ProblemCode = "revision_mismatch"
 	ProblemCodeRevisionRequired           ProblemCode = "revision_required"
 	ProblemCodeSeatsExhausted             ProblemCode = "seats_exhausted"
+	ProblemCodeSelfApproval               ProblemCode = "self_approval"
 	ProblemCodeSeparationOfDutiesConflict ProblemCode = "separation_of_duties_conflict"
 	ProblemCodeSessionExpired             ProblemCode = "session_expired"
+	ProblemCodeShiftClosed                ProblemCode = "shift_closed"
 	ProblemCodeTenantReadOnly             ProblemCode = "tenant_read_only"
 	ProblemCodeTenantSuspended            ProblemCode = "tenant_suspended"
 	ProblemCodeTierBelowUsage             ProblemCode = "tier_below_usage"
@@ -231,6 +941,10 @@ func (e ProblemCode) Valid() bool {
 		return true
 	case ProblemCodeDowngradeBelowUsage:
 		return true
+	case ProblemCodeDuplicateReceipt:
+		return true
+	case ProblemCodeDuplicateSource:
+		return true
 	case ProblemCodeEstimateDraftExists:
 		return true
 	case ProblemCodeEstimateVersionLocked:
@@ -246,6 +960,8 @@ func (e ProblemCode) Valid() bool {
 	case ProblemCodeIdempotencyKeyReused:
 		return true
 	case ProblemCodeInspectionIncomplete:
+		return true
+	case ProblemCodeInsufficientFunds:
 		return true
 	case ProblemCodeInvalidTransition:
 		return true
@@ -293,9 +1009,13 @@ func (e ProblemCode) Valid() bool {
 		return true
 	case ProblemCodeSeatsExhausted:
 		return true
+	case ProblemCodeSelfApproval:
+		return true
 	case ProblemCodeSeparationOfDutiesConflict:
 		return true
 	case ProblemCodeSessionExpired:
+		return true
+	case ProblemCodeShiftClosed:
 		return true
 	case ProblemCodeTenantReadOnly:
 		return true
@@ -314,36 +1034,450 @@ func (e ProblemCode) Valid() bool {
 	}
 }
 
-// CashAccount defines model for CashAccount.
-type CashAccount struct {
-	Balance  SignedMoney `json:"balance"`
-	Currency string      `json:"currency"`
+// Defines values for ListCashAccountsParamsKind.
+const (
+	ListCashAccountsParamsKindAcquiring  ListCashAccountsParamsKind = "acquiring"
+	ListCashAccountsParamsKindAdvance    ListCashAccountsParamsKind = "advance"
+	ListCashAccountsParamsKindBank       ListCashAccountsParamsKind = "bank"
+	ListCashAccountsParamsKindCashDrawer ListCashAccountsParamsKind = "cash_drawer"
+	ListCashAccountsParamsKindSafe       ListCashAccountsParamsKind = "safe"
+	ListCashAccountsParamsKindVirtual    ListCashAccountsParamsKind = "virtual"
+)
+
+// Valid indicates whether the value is a known member of the ListCashAccountsParamsKind enum.
+func (e ListCashAccountsParamsKind) Valid() bool {
+	switch e {
+	case ListCashAccountsParamsKindAcquiring:
+		return true
+	case ListCashAccountsParamsKindAdvance:
+		return true
+	case ListCashAccountsParamsKindBank:
+		return true
+	case ListCashAccountsParamsKindCashDrawer:
+		return true
+	case ListCashAccountsParamsKindSafe:
+		return true
+	case ListCashAccountsParamsKindVirtual:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for PreviewCashAccountAccessParamsKind.
+const (
+	PreviewCashAccountAccessParamsKindAcquiring  PreviewCashAccountAccessParamsKind = "acquiring"
+	PreviewCashAccountAccessParamsKindAdvance    PreviewCashAccountAccessParamsKind = "advance"
+	PreviewCashAccountAccessParamsKindBank       PreviewCashAccountAccessParamsKind = "bank"
+	PreviewCashAccountAccessParamsKindCashDrawer PreviewCashAccountAccessParamsKind = "cash_drawer"
+	PreviewCashAccountAccessParamsKindSafe       PreviewCashAccountAccessParamsKind = "safe"
+	PreviewCashAccountAccessParamsKindVirtual    PreviewCashAccountAccessParamsKind = "virtual"
+)
+
+// Valid indicates whether the value is a known member of the PreviewCashAccountAccessParamsKind enum.
+func (e PreviewCashAccountAccessParamsKind) Valid() bool {
+	switch e {
+	case PreviewCashAccountAccessParamsKindAcquiring:
+		return true
+	case PreviewCashAccountAccessParamsKindAdvance:
+		return true
+	case PreviewCashAccountAccessParamsKindBank:
+		return true
+	case PreviewCashAccountAccessParamsKindCashDrawer:
+		return true
+	case PreviewCashAccountAccessParamsKindSafe:
+		return true
+	case PreviewCashAccountAccessParamsKindVirtual:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for ListCashApprovalRequestsParamsStatus.
+const (
+	ListCashApprovalRequestsParamsStatusApproved ListCashApprovalRequestsParamsStatus = "approved"
+	ListCashApprovalRequestsParamsStatusPending  ListCashApprovalRequestsParamsStatus = "pending"
+	ListCashApprovalRequestsParamsStatusRejected ListCashApprovalRequestsParamsStatus = "rejected"
+)
+
+// Valid indicates whether the value is a known member of the ListCashApprovalRequestsParamsStatus enum.
+func (e ListCashApprovalRequestsParamsStatus) Valid() bool {
+	switch e {
+	case ListCashApprovalRequestsParamsStatusApproved:
+		return true
+	case ListCashApprovalRequestsParamsStatusPending:
+		return true
+	case ListCashApprovalRequestsParamsStatusRejected:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for FindCashDuplicatesParamsMethod.
+const (
+	FindCashDuplicatesParamsMethodCard     FindCashDuplicatesParamsMethod = "card"
+	FindCashDuplicatesParamsMethodCash     FindCashDuplicatesParamsMethod = "cash"
+	FindCashDuplicatesParamsMethodSbp      FindCashDuplicatesParamsMethod = "sbp"
+	FindCashDuplicatesParamsMethodTransfer FindCashDuplicatesParamsMethod = "transfer"
+)
+
+// Valid indicates whether the value is a known member of the FindCashDuplicatesParamsMethod enum.
+func (e FindCashDuplicatesParamsMethod) Valid() bool {
+	switch e {
+	case FindCashDuplicatesParamsMethodCard:
+		return true
+	case FindCashDuplicatesParamsMethodCash:
+		return true
+	case FindCashDuplicatesParamsMethodSbp:
+		return true
+	case FindCashDuplicatesParamsMethodTransfer:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for FindCashDuplicatesParamsType.
+const (
+	FindCashDuplicatesParamsTypeIn     FindCashDuplicatesParamsType = "in"
+	FindCashDuplicatesParamsTypeOut    FindCashDuplicatesParamsType = "out"
+	FindCashDuplicatesParamsTypeRefund FindCashDuplicatesParamsType = "refund"
+)
+
+// Valid indicates whether the value is a known member of the FindCashDuplicatesParamsType enum.
+func (e FindCashDuplicatesParamsType) Valid() bool {
+	switch e {
+	case FindCashDuplicatesParamsTypeIn:
+		return true
+	case FindCashDuplicatesParamsTypeOut:
+		return true
+	case FindCashDuplicatesParamsTypeRefund:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for ListCashOperationsParamsType.
+const (
+	ListCashOperationsParamsTypeAdjust  ListCashOperationsParamsType = "adjust"
+	ListCashOperationsParamsTypeIn      ListCashOperationsParamsType = "in"
+	ListCashOperationsParamsTypeMoveIn  ListCashOperationsParamsType = "move_in"
+	ListCashOperationsParamsTypeMoveOut ListCashOperationsParamsType = "move_out"
+	ListCashOperationsParamsTypeOpening ListCashOperationsParamsType = "opening"
+	ListCashOperationsParamsTypeOut     ListCashOperationsParamsType = "out"
+	ListCashOperationsParamsTypeRefund  ListCashOperationsParamsType = "refund"
+	ListCashOperationsParamsTypeStorno  ListCashOperationsParamsType = "storno"
+)
+
+// Valid indicates whether the value is a known member of the ListCashOperationsParamsType enum.
+func (e ListCashOperationsParamsType) Valid() bool {
+	switch e {
+	case ListCashOperationsParamsTypeAdjust:
+		return true
+	case ListCashOperationsParamsTypeIn:
+		return true
+	case ListCashOperationsParamsTypeMoveIn:
+		return true
+	case ListCashOperationsParamsTypeMoveOut:
+		return true
+	case ListCashOperationsParamsTypeOpening:
+		return true
+	case ListCashOperationsParamsTypeOut:
+		return true
+	case ListCashOperationsParamsTypeRefund:
+		return true
+	case ListCashOperationsParamsTypeStorno:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for ListCashProposalsParamsStatus.
+const (
+	ListCashProposalsParamsStatusDismissed ListCashProposalsParamsStatus = "dismissed"
+	ListCashProposalsParamsStatusOpen      ListCashProposalsParamsStatus = "open"
+	ListCashProposalsParamsStatusPosted    ListCashProposalsParamsStatus = "posted"
+)
+
+// Valid indicates whether the value is a known member of the ListCashProposalsParamsStatus enum.
+func (e ListCashProposalsParamsStatus) Valid() bool {
+	switch e {
+	case ListCashProposalsParamsStatusDismissed:
+		return true
+	case ListCashProposalsParamsStatusOpen:
+		return true
+	case ListCashProposalsParamsStatusPosted:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for ListAdvanceReceiptsParamsStatus.
+const (
+	ListAdvanceReceiptsParamsStatusAccepted ListAdvanceReceiptsParamsStatus = "accepted"
+	ListAdvanceReceiptsParamsStatusRejected ListAdvanceReceiptsParamsStatus = "rejected"
+	ListAdvanceReceiptsParamsStatusReview   ListAdvanceReceiptsParamsStatus = "review"
+)
+
+// Valid indicates whether the value is a known member of the ListAdvanceReceiptsParamsStatus enum.
+func (e ListAdvanceReceiptsParamsStatus) Valid() bool {
+	switch e {
+	case ListAdvanceReceiptsParamsStatusAccepted:
+		return true
+	case ListAdvanceReceiptsParamsStatusRejected:
+		return true
+	case ListAdvanceReceiptsParamsStatusReview:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for ListCashShiftsParamsStatus.
+const (
+	ListCashShiftsParamsStatusClosed ListCashShiftsParamsStatus = "closed"
+	ListCashShiftsParamsStatusOpen   ListCashShiftsParamsStatus = "open"
+	ListCashShiftsParamsStatusReview ListCashShiftsParamsStatus = "review"
+)
+
+// Valid indicates whether the value is a known member of the ListCashShiftsParamsStatus enum.
+func (e ListCashShiftsParamsStatus) Valid() bool {
+	switch e {
+	case ListCashShiftsParamsStatusClosed:
+		return true
+	case ListCashShiftsParamsStatusOpen:
+		return true
+	case ListCashShiftsParamsStatusReview:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for ListCashTransfersParamsStatus.
+const (
+	ListCashTransfersParamsStatusDone     ListCashTransfersParamsStatus = "done"
+	ListCashTransfersParamsStatusRejected ListCashTransfersParamsStatus = "rejected"
+	ListCashTransfersParamsStatusTransit  ListCashTransfersParamsStatus = "transit"
+)
+
+// Valid indicates whether the value is a known member of the ListCashTransfersParamsStatus enum.
+func (e ListCashTransfersParamsStatus) Valid() bool {
+	switch e {
+	case ListCashTransfersParamsStatusDone:
+		return true
+	case ListCashTransfersParamsStatusRejected:
+		return true
+	case ListCashTransfersParamsStatusTransit:
+		return true
+	default:
+		return false
+	}
+}
+
+// AdvanceReceipt W5.00 (0.12.0-stage5). A receipt of an advance report; the photo is a Files object kept 5 years (Q-W4.00-cash-12). Accepting posts an out operation of the advance account.
+type AdvanceReceipt struct {
+	// AccountId Examples: 10000000-0000-4000-8000-000000000001
+	AccountId         Id                  `json:"accountId"`
+	Amount            Money               `json:"amount"`
+	CategoryId        string              `json:"categoryId"`
+	DecidedAt         *time.Time          `json:"decidedAt,omitempty"`
+	DecidedByMemberId *openapi_types.UUID `json:"decidedByMemberId,omitempty"`
+
+	// FileId Examples: 10000000-0000-4000-8000-000000000001
+	FileId Id `json:"fileId"`
 
 	// Id Examples: 10000000-0000-4000-8000-000000000001
-	Id   Id              `json:"id"`
-	Kind CashAccountKind `json:"kind"`
-	Name string          `json:"name"`
+	Id              Id                   `json:"id"`
+	Link            *CashSourceRef       `json:"link,omitempty"`
+	Note            *string              `json:"note,omitempty"`
+	OperationId     *openapi_types.UUID  `json:"operationId,omitempty"`
+	Qr              *string              `json:"qr,omitempty"`
+	Reason          *string              `json:"reason,omitempty"`
+	RedoOfReceiptId *openapi_types.UUID  `json:"redoOfReceiptId,omitempty"`
+	Revision        int64                `json:"revision"`
+	Status          AdvanceReceiptStatus `json:"status"`
 
-	// OrgUnitId Examples: 10000000-0000-4000-8000-000000000001
-	OrgUnitId Id    `json:"orgUnitId"`
-	Revision  int64 `json:"revision"`
+	// SubmittedAt UTC RFC3339 instant. Write requests must use the Z suffix; retain the IANA timezone separately for local calendars.
+	//
+	// Examples: 2026-10-05T06:00:00Z
+	SubmittedAt Instant `json:"submittedAt"`
+
+	// SubmittedByMemberId Examples: 10000000-0000-4000-8000-000000000001
+	SubmittedByMemberId Id `json:"submittedByMemberId"`
+}
+
+// AdvanceReceiptStatus defines model for AdvanceReceipt.Status.
+type AdvanceReceiptStatus string
+
+// AdvanceReceiptCreate defines model for AdvanceReceiptCreate.
+type AdvanceReceiptCreate struct {
+	Amount     Money  `json:"amount"`
+	CategoryId string `json:"categoryId"`
+
+	// FileId Examples: 10000000-0000-4000-8000-000000000001
+	FileId Id `json:"fileId"`
+
+	// Link W5.00 (0.12.0-stage5). The record of another module a posting is based on (visit, trip expense, repair act). One source gives one operation or group — a repeat is 409 duplicate_source.
+	Link *CashSourceRef `json:"link,omitempty"`
+	Note *string        `json:"note,omitempty"`
+	Qr   *string        `json:"qr,omitempty"`
+
+	// RedoOfReceiptId Examples: 10000000-0000-4000-8000-000000000001
+	RedoOfReceiptId *Id `json:"redoOfReceiptId,omitempty"`
+}
+
+// AdvanceReceiptDecision W5.00 (0.12.0-stage5). Not the author of the receipt (403 self_approval); rejecting needs a reason.
+type AdvanceReceiptDecision struct {
+	Decision AdvanceReceiptDecisionDecision `json:"decision"`
+	Reason   *string                        `json:"reason,omitempty"`
+}
+
+// AdvanceReceiptDecisionDecision defines model for AdvanceReceiptDecision.Decision.
+type AdvanceReceiptDecisionDecision string
+
+// AdvanceReceiptPage Opaque cursor is bound to tenant, principal, effective scopes, filters and sort. Permission changes invalidate the cursor.
+type AdvanceReceiptPage struct {
+	Items      []AdvanceReceipt `json:"items"`
+	NextCursor *string          `json:"nextCursor"`
+}
+
+// CashAccessPerson W5.00 (0.12.0-stage5). A person who would get access to the account being created («Кто получит доступ»); conflicts — pairs «вносит + согласует», «закрывает + принимает расхождение» (макет 1b).
+type CashAccessPerson struct {
+	Conflicts []string `json:"conflicts"`
+
+	// Limits W5.00 (0.12.0-stage5). Role limits «limit: amount» of docs/26-cash.md; with several roles the maximum wins and null wins over a number (cash.js :77–80).
+	Limits CashLimits `json:"limits"`
+
+	// MemberId Examples: 10000000-0000-4000-8000-000000000001
+	MemberId Id                  `json:"memberId"`
+	Name     string              `json:"name"`
+	Rights   []string            `json:"rights"`
+	Via      CashAccessPersonVia `json:"via"`
+}
+
+// CashAccessPersonVia defines model for CashAccessPerson.Via.
+type CashAccessPersonVia string
+
+// CashAccessPreview defines model for CashAccessPreview.
+type CashAccessPreview struct {
+	Items []CashAccessPerson `json:"items"`
+}
+
+// CashAccount W5.00 (0.12.0-stage5). Account v2 (docs/26-cash.md: six kinds). Mapping of 0.1 kinds: cash → cash_drawer, internal_virtual → virtual. Physical cash accounts cannot go below zero.
+type CashAccount struct {
+	AdvanceLimit *Money `json:"advanceLimit,omitempty"`
+
+	// Balance null — hidden: the actor has no cash.balance.read.
+	Balance *SignedMoney `json:"balance"`
+
+	// BalanceLimit Balance limit of the drawer: above it the card says «сдайте в сейф» (Q-W4.00-cash-10).
+	BalanceLimit *Money `json:"balanceLimit,omitempty"`
+
+	// CategoryIds Allowed expense categories of an advance account.
+	CategoryIds *[]string `json:"categoryIds,omitempty"`
+	Currency    string    `json:"currency"`
+
+	// DrawerAccountId Acquiring: the cash desk the terminal belongs to («Касса точки», required — PD-60).
+	DrawerAccountId *openapi_types.UUID `json:"drawerAccountId,omitempty"`
+	FeeBasisPoints  *int                `json:"feeBasisPoints,omitempty"`
+
+	// FloatAmount Float (размен) left in the drawer at the start of a shift.
+	FloatAmount *Money `json:"floatAmount,omitempty"`
+
+	// HolderMemberId Employee of an advance account.
+	HolderMemberId *openapi_types.UUID `json:"holderMemberId,omitempty"`
+
+	// Id Examples: 10000000-0000-4000-8000-000000000001
+	Id      Id                 `json:"id"`
+	Kind    CashAccountKind    `json:"kind"`
+	KktMode CashAccountKktMode `json:"kktMode"`
+
+	// My W5.00 (0.12.0-stage5). What the actor may do with this account — the buttons of the page «Касса».
+	My          CashAccountMy       `json:"my"`
+	Name        string              `json:"name"`
+	OpenShiftId *openapi_types.UUID `json:"openShiftId,omitempty"`
+
+	// OrgUnitId null — account of the organization (safe, bank), visible to the tenant scope only.
+	OrgUnitId           *openapi_types.UUID  `json:"orgUnitId"`
+	ResponsibleMemberId *openapi_types.UUID  `json:"responsibleMemberId,omitempty"`
+	Revision            int64                `json:"revision"`
+	SettleDays          *int                 `json:"settleDays,omitempty"`
+	ShiftMode           CashAccountShiftMode `json:"shiftMode"`
+
+	// Tolerance Allowed difference of a shift close (CASH-01: per account).
+	Tolerance *Money `json:"tolerance,omitempty"`
 }
 
 // CashAccountKind defines model for CashAccount.Kind.
 type CashAccountKind string
 
-// CashAccountCreate Creates zero balance; opening funds are an explicit ledger operation. This internal ledger is not fiscalization, bank acquiring or tax accounting.
-type CashAccountCreate struct {
-	Currency string                `json:"currency"`
-	Kind     CashAccountCreateKind `json:"kind"`
-	Name     string                `json:"name"`
+// CashAccountKktMode defines model for CashAccount.KktMode.
+type CashAccountKktMode string
 
-	// OrgUnitId Examples: 10000000-0000-4000-8000-000000000001
-	OrgUnitId Id `json:"orgUnitId"`
+// CashAccountShiftMode defines model for CashAccount.ShiftMode.
+type CashAccountShiftMode string
+
+// CashAccountCreate Creates zero balance; opening funds are an explicit ledger operation (type opening, Q-W4.00-cash-8). This internal ledger is not fiscalization, bank acquiring or tax accounting. W5.00 (0.12.0-stage5): v2 fields; a name already taken — 422 validation_failed (field name).
+type CashAccountCreate struct {
+	AdvanceLimit *Money `json:"advanceLimit,omitempty"`
+
+	// BalanceLimit Balance limit of the drawer: above it the card says «сдайте в сейф» (Q-W4.00-cash-10).
+	BalanceLimit *Money `json:"balanceLimit,omitempty"`
+
+	// CategoryIds Allowed expense categories of an advance account.
+	CategoryIds *[]string `json:"categoryIds,omitempty"`
+	Currency    string    `json:"currency"`
+
+	// DrawerAccountId Acquiring: the cash desk the terminal belongs to («Касса точки», required — PD-60).
+	DrawerAccountId *openapi_types.UUID `json:"drawerAccountId,omitempty"`
+	FeeBasisPoints  *int                `json:"feeBasisPoints,omitempty"`
+
+	// FloatAmount Float (размен) left in the drawer at the start of a shift.
+	FloatAmount *Money `json:"floatAmount,omitempty"`
+
+	// HolderMemberId Employee of an advance account.
+	HolderMemberId      *openapi_types.UUID         `json:"holderMemberId,omitempty"`
+	Kind                CashAccountCreateKind       `json:"kind"`
+	KktMode             *CashAccountCreateKktMode   `json:"kktMode,omitempty"`
+	Name                string                      `json:"name"`
+	OrgUnitId           *openapi_types.UUID         `json:"orgUnitId"`
+	ResponsibleMemberId *openapi_types.UUID         `json:"responsibleMemberId,omitempty"`
+	SettleDays          *int                        `json:"settleDays,omitempty"`
+	ShiftMode           *CashAccountCreateShiftMode `json:"shiftMode,omitempty"`
+
+	// Tolerance Allowed difference of a shift close (CASH-01: per account).
+	Tolerance *Money `json:"tolerance,omitempty"`
 }
 
 // CashAccountCreateKind defines model for CashAccountCreate.Kind.
 type CashAccountCreateKind string
+
+// CashAccountCreateKktMode defines model for CashAccountCreate.KktMode.
+type CashAccountCreateKktMode string
+
+// CashAccountCreateShiftMode defines model for CashAccountCreate.ShiftMode.
+type CashAccountCreateShiftMode string
+
+// CashAccountMy W5.00 (0.12.0-stage5). What the actor may do with this account — the buttons of the page «Касса».
+type CashAccountMy struct {
+	IsHolder *bool `json:"isHolder,omitempty"`
+
+	// Limits W5.00 (0.12.0-stage5). Role limits «limit: amount» of docs/26-cash.md; with several roles the maximum wins and null wins over a number (cash.js :77–80).
+	Limits CashLimits `json:"limits"`
+
+	// Rights Action keys of module cash the actor holds on this account.
+	Rights []string         `json:"rights"`
+	Via    CashAccountMyVia `json:"via"`
+}
+
+// CashAccountMyVia defines model for CashAccountMy.Via.
+type CashAccountMyVia string
 
 // CashAccountPage Opaque cursor is bound to tenant, principal, effective scopes, filters and sort. Permission changes invalidate the cursor.
 type CashAccountPage struct {
@@ -351,35 +1485,176 @@ type CashAccountPage struct {
 	NextCursor *string       `json:"nextCursor"`
 }
 
-// CashOperation defines model for CashOperation.
+// CashAdvanceIssue W5.00 (0.12.0-stage5). Issue under report from sourceAccountId to the advance account in the path. Over the role limit — 202 approval request. Not to oneself (403 self_approval).
+type CashAdvanceIssue struct {
+	Amount Money `json:"amount"`
+
+	// DueDate Report due date (full ISO date, Q-W4.00-cash-16).
+	DueDate openapi_types.Date `json:"dueDate"`
+	Note    *string            `json:"note,omitempty"`
+
+	// SourceAccountId Examples: 10000000-0000-4000-8000-000000000001
+	SourceAccountId Id `json:"sourceAccountId"`
+}
+
+// CashAdvanceReturn W5.00 (0.12.0-stage5). Return of the unspent rest: advance → the issuing desk.
+type CashAdvanceReturn struct {
+	Amount Money   `json:"amount"`
+	Note   *string `json:"note,omitempty"`
+
+	// TargetAccountId Examples: 10000000-0000-4000-8000-000000000001
+	TargetAccountId *Id `json:"targetAccountId,omitempty"`
+}
+
+// CashApprovalDecision defines model for CashApprovalDecision.
+type CashApprovalDecision struct {
+	Decision CashApprovalDecisionDecision `json:"decision"`
+	Reason   *string                      `json:"reason,omitempty"`
+}
+
+// CashApprovalDecisionDecision defines model for CashApprovalDecision.Decision.
+type CashApprovalDecisionDecision string
+
+// CashApprovalRequest W5.00 (0.12.0-stage5). Approval inside the module (Q-W4.00-cash-2): the operation is posted on behalf of the author with approvedByMemberId; not by the author (403 self_approval).
+type CashApprovalRequest struct {
+	// AccountId Examples: 10000000-0000-4000-8000-000000000001
+	AccountId         Id                  `json:"accountId"`
+	Amount            Money               `json:"amount"`
+	Basis             *string             `json:"basis,omitempty"`
+	CategoryId        *string             `json:"categoryId,omitempty"`
+	DecidedAt         *time.Time          `json:"decidedAt,omitempty"`
+	DecidedByMemberId *openapi_types.UUID `json:"decidedByMemberId,omitempty"`
+
+	// Id Examples: 10000000-0000-4000-8000-000000000001
+	Id Id `json:"id"`
+
+	// Limit The role limit that was exceeded; null — the role always goes with approval.
+	Limit       *Money                     `json:"limit,omitempty"`
+	Method      *CashApprovalRequestMethod `json:"method,omitempty"`
+	OperationId *openapi_types.UUID        `json:"operationId,omitempty"`
+	Reason      *string                    `json:"reason,omitempty"`
+
+	// RequestedAt UTC RFC3339 instant. Write requests must use the Z suffix; retain the IANA timezone separately for local calendars.
+	//
+	// Examples: 2026-10-05T06:00:00Z
+	RequestedAt Instant `json:"requestedAt"`
+
+	// RequestedByMemberId Examples: 10000000-0000-4000-8000-000000000001
+	RequestedByMemberId Id                        `json:"requestedByMemberId"`
+	Revision            int64                     `json:"revision"`
+	Source              *CashSourceRef            `json:"source,omitempty"`
+	Status              CashApprovalRequestStatus `json:"status"`
+	TransferId          *openapi_types.UUID       `json:"transferId,omitempty"`
+	Type                CashApprovalRequestType   `json:"type"`
+}
+
+// CashApprovalRequestMethod defines model for CashApprovalRequest.Method.
+type CashApprovalRequestMethod string
+
+// CashApprovalRequestStatus defines model for CashApprovalRequest.Status.
+type CashApprovalRequestStatus string
+
+// CashApprovalRequestType defines model for CashApprovalRequest.Type.
+type CashApprovalRequestType string
+
+// CashApprovalRequestPage Opaque cursor is bound to tenant, principal, effective scopes, filters and sort. Permission changes invalidate the cursor.
+type CashApprovalRequestPage struct {
+	Items      []CashApprovalRequest `json:"items"`
+	NextCursor *string               `json:"nextCursor"`
+}
+
+// CashCategory W5.00 (0.12.0-stage5). Seed list, read only in stage 5 (Q-W4.00-cash-9).
+type CashCategory struct {
+	Direction *CashCategoryDirection `json:"direction,omitempty"`
+
+	// ExpenseCategoryCode Code of a fleet expense category (W2.41) mapped to this category.
+	ExpenseCategoryCode *string           `json:"expenseCategoryCode,omitempty"`
+	Group               CashCategoryGroup `json:"group"`
+	Id                  string            `json:"id"`
+	ModuleKey           *string           `json:"moduleKey,omitempty"`
+	Title               string            `json:"title"`
+}
+
+// CashCategoryDirection defines model for CashCategory.Direction.
+type CashCategoryDirection string
+
+// CashCategoryGroup defines model for CashCategory.Group.
+type CashCategoryGroup string
+
+// CashCategoryList defines model for CashCategoryList.
+type CashCategoryList struct {
+	Items []CashCategory `json:"items"`
+}
+
+// CashDuplicateList W5.00 (0.12.0-stage5). Same account or its terminal, amount, method and type within ±10 minutes (Q-W4.00-cash-6).
+type CashDuplicateList struct {
+	Items []CashOperation `json:"items"`
+}
+
+// CashLimits W5.00 (0.12.0-stage5). Role limits «limit: amount» of docs/26-cash.md; with several roles the maximum wins and null wins over a number (cash.js :77–80).
+type CashLimits struct {
+	AdvanceMinor *int64 `json:"advanceMinor"`
+
+	// OutMinor Expense limit, minor units; null — no limit; 0 — always with approval (role.cash.out).
+	OutMinor    *int64 `json:"outMinor"`
+	RefundMinor *int64 `json:"refundMinor"`
+}
+
+// CashOperation W5.00 (0.12.0-stage5). Immutable ledger row v2: type (8), payment method, category, basis, receipt, source, shift, group. Money is integer minor units.
 type CashOperation struct {
 	// AccountId Examples: 10000000-0000-4000-8000-000000000001
-	AccountId Id                    `json:"accountId"`
-	Amount    Money                 `json:"amount"`
-	Category  CashOperationCategory `json:"category"`
+	AccountId          Id                    `json:"accountId"`
+	Amount             Money                 `json:"amount"`
+	ApprovedByMemberId *openapi_types.UUID   `json:"approvedByMemberId,omitempty"`
+	Basis              *string               `json:"basis,omitempty"`
+	Category           CashOperationCategory `json:"category"`
+
+	// CategoryId Category («статья») code from listCashCategories.
+	CategoryId *string `json:"categoryId,omitempty"`
 
 	// CreatedByMemberId Examples: 10000000-0000-4000-8000-000000000001
 	CreatedByMemberId Id                     `json:"createdByMemberId"`
 	Direction         CashOperationDirection `json:"direction"`
 
+	// GroupId One payment in parts = several operations with a common group.
+	GroupId *openapi_types.UUID `json:"groupId,omitempty"`
+
 	// Id Examples: 10000000-0000-4000-8000-000000000001
-	Id Id `json:"id"`
+	Id     Id                  `json:"id"`
+	Method CashOperationMethod `json:"method"`
 
 	// OccurredAt UTC RFC3339 instant. Write requests must use the Z suffix; retain the IANA timezone separately for local calendars.
 	//
 	// Examples: 2026-10-05T06:00:00Z
-	OccurredAt Instant `json:"occurredAt"`
+	OccurredAt Instant             `json:"occurredAt"`
+	Origin     CashOperationOrigin `json:"origin"`
+
+	// Own The owner reversed own operation (Q-W4.00-cash-3): a journal mark.
+	Own *bool `json:"own,omitempty"`
 
 	// PostedAt UTC RFC3339 instant. Write requests must use the Z suffix; retain the IANA timezone separately for local calendars.
 	//
 	// Examples: 2026-10-05T06:00:00Z
 	PostedAt Instant `json:"postedAt"`
 
+	// Receipt W5.00 (0.12.0-stage5). Receipt data of a manual entry: fd + kktShift (+receiptAt), or none + reason, or sellerMemberId. The fd number is unique in the pair «cash desk + ККТ shift» (Q-W4.00-cash-6); a repeat — 409 duplicate_receipt.
+	Receipt         *CashReceipt                  `json:"receipt,omitempty"`
+	ReconcileStatus *CashOperationReconcileStatus `json:"reconcileStatus,omitempty"`
+
 	// RelatedObject Server verifies same-tenant ownership and target visibility. A reference never grants access.
 	RelatedObject *ObjectRef `json:"relatedObject,omitempty"`
 
+	// ReversedByOperationId Derived: the storno that reversed this operation (an operation itself is never changed).
+	ReversedByOperationId *openapi_types.UUID `json:"reversedByOperationId,omitempty"`
+
 	// ReversesOperationId Examples: 10000000-0000-4000-8000-000000000001
-	ReversesOperationId *Id `json:"reversesOperationId,omitempty"`
+	ReversesOperationId *Id                 `json:"reversesOperationId,omitempty"`
+	ShiftId             *openapi_types.UUID `json:"shiftId,omitempty"`
+
+	// Source W5.00 (0.12.0-stage5). The record of another module a posting is based on (visit, trip expense, repair act). One source gives one operation or group — a repeat is 409 duplicate_source.
+	Source     *CashSourceRef      `json:"source,omitempty"`
+	TransferId *openapi_types.UUID `json:"transferId,omitempty"`
+	Type       CashOperationType   `json:"type"`
 }
 
 // CashOperationCategory defines model for CashOperation.Category.
@@ -388,25 +1663,52 @@ type CashOperationCategory string
 // CashOperationDirection defines model for CashOperation.Direction.
 type CashOperationDirection string
 
-// CashOperationCreate Currency must match account and amount > 0. Immutable append-only posting. Refund/correction references original operation; cumulative refunds cannot exceed its amount. No payment success is inferred from an appointment state. Negative internal_virtual balances require explicit account policy; physical cash accounts cannot go below zero.
+// CashOperationMethod defines model for CashOperation.Method.
+type CashOperationMethod string
+
+// CashOperationOrigin defines model for CashOperation.Origin.
+type CashOperationOrigin string
+
+// CashOperationReconcileStatus defines model for CashOperation.ReconcileStatus.
+type CashOperationReconcileStatus string
+
+// CashOperationType defines model for CashOperation.Type.
+type CashOperationType string
+
+// CashOperationCreate Currency must match account and amount > 0. Immutable append-only posting. Refund/correction references original operation; cumulative refunds cannot exceed its amount. No payment success is inferred from an appointment state. Negative internal_virtual balances require explicit account policy; physical cash accounts cannot go below zero. W5.00 (0.12.0-stage5): type, method, categoryId, basis, receipt, source; direction and category stay and must be consistent with type (the server derives and checks them). Over the role limit: 202 CashApprovalRequest instead of a posting. Errors: 409 insufficient_funds, 409 shift_closed, 409 duplicate_source, 409 duplicate_receipt.
 type CashOperationCreate struct {
 	// AccountId Examples: 10000000-0000-4000-8000-000000000001
-	AccountId Id                           `json:"accountId"`
-	Amount    Money                        `json:"amount"`
-	Category  CashOperationCreateCategory  `json:"category"`
-	Direction CashOperationCreateDirection `json:"direction"`
-	Note      *string                      `json:"note,omitempty"`
+	AccountId Id                          `json:"accountId"`
+	Amount    Money                       `json:"amount"`
+	Basis     *string                     `json:"basis,omitempty"`
+	Category  CashOperationCreateCategory `json:"category"`
+
+	// CategoryId Category («статья») code from listCashCategories.
+	CategoryId *string                      `json:"categoryId,omitempty"`
+	Direction  CashOperationCreateDirection `json:"direction"`
+	Method     *CashOperationCreateMethod   `json:"method,omitempty"`
+	Note       *string                      `json:"note,omitempty"`
 
 	// OccurredAt UTC RFC3339 instant. Write requests must use the Z suffix; retain the IANA timezone separately for local calendars.
 	//
 	// Examples: 2026-10-05T06:00:00Z
 	OccurredAt Instant `json:"occurredAt"`
 
+	// Receipt W5.00 (0.12.0-stage5). Receipt data of a manual entry: fd + kktShift (+receiptAt), or none + reason, or sellerMemberId. The fd number is unique in the pair «cash desk + ККТ shift» (Q-W4.00-cash-6); a repeat — 409 duplicate_receipt.
+	Receipt *CashReceipt `json:"receipt,omitempty"`
+
+	// RefundsOperationId Examples: 10000000-0000-4000-8000-000000000001
+	RefundsOperationId *Id `json:"refundsOperationId,omitempty"`
+
 	// RelatedObject Server verifies same-tenant ownership and target visibility. A reference never grants access.
 	RelatedObject *ObjectRef `json:"relatedObject,omitempty"`
 
 	// ReversesOperationId Examples: 10000000-0000-4000-8000-000000000001
 	ReversesOperationId *Id `json:"reversesOperationId,omitempty"`
+
+	// Source W5.00 (0.12.0-stage5). The record of another module a posting is based on (visit, trip expense, repair act). One source gives one operation or group — a repeat is 409 duplicate_source.
+	Source *CashSourceRef           `json:"source,omitempty"`
+	Type   *CashOperationCreateType `json:"type,omitempty"`
 }
 
 // CashOperationCreateCategory defines model for CashOperationCreate.Category.
@@ -415,10 +1717,371 @@ type CashOperationCreateCategory string
 // CashOperationCreateDirection defines model for CashOperationCreate.Direction.
 type CashOperationCreateDirection string
 
+// CashOperationCreateMethod defines model for CashOperationCreate.Method.
+type CashOperationCreateMethod string
+
+// CashOperationCreateType defines model for CashOperationCreate.Type.
+type CashOperationCreateType string
+
 // CashOperationPage Opaque cursor is bound to tenant, principal, effective scopes, filters and sort. Permission changes invalidate the cursor.
 type CashOperationPage struct {
 	Items      []CashOperation `json:"items"`
 	NextCursor *string         `json:"nextCursor"`
+}
+
+// CashOperationSourceLink W5.00 (0.12.0-stage5). A link of an operation to a source is a separate record (PD-60: the operation stays immutable).
+type CashOperationSourceLink struct {
+	// LinkedAt UTC RFC3339 instant. Write requests must use the Z suffix; retain the IANA timezone separately for local calendars.
+	//
+	// Examples: 2026-10-05T06:00:00Z
+	LinkedAt Instant `json:"linkedAt"`
+
+	// LinkedByMemberId Examples: 10000000-0000-4000-8000-000000000001
+	LinkedByMemberId Id `json:"linkedByMemberId"`
+
+	// OperationId Examples: 10000000-0000-4000-8000-000000000001
+	OperationId Id `json:"operationId"`
+
+	// Source W5.00 (0.12.0-stage5). The record of another module a posting is based on (visit, trip expense, repair act). One source gives one operation or group — a repeat is 409 duplicate_source.
+	Source CashSourceRef `json:"source"`
+}
+
+// CashProposal W5.00 (0.12.0-stage5). A proposal of a module: visit done, verified trip expense, payroll (needs cash.payroll.post), refund. The idempotency key is the source.
+type CashProposal struct {
+	Amount     Money   `json:"amount"`
+	CategoryId *string `json:"categoryId,omitempty"`
+
+	// CreatedAt UTC RFC3339 instant. Write requests must use the Z suffix; retain the IANA timezone separately for local calendars.
+	//
+	// Examples: 2026-10-05T06:00:00Z
+	CreatedAt        Instant                `json:"createdAt"`
+	DefaultAccountId *openapi_types.UUID    `json:"defaultAccountId,omitempty"`
+	Direction        CashProposalDirection  `json:"direction"`
+	Dismissal        *CashProposalDismissal `json:"dismissal,omitempty"`
+	Key              string                 `json:"key"`
+	Kind             CashProposalKind       `json:"kind"`
+	OperationIds     *[]Id                  `json:"operationIds,omitempty"`
+	Parts            *[]CashProposalPart    `json:"parts,omitempty"`
+
+	// Source W5.00 (0.12.0-stage5). The record of another module a posting is based on (visit, trip expense, repair act). One source gives one operation or group — a repeat is 409 duplicate_source.
+	Source CashSourceRef      `json:"source"`
+	Status CashProposalStatus `json:"status"`
+	Title  string             `json:"title"`
+}
+
+// CashProposalDirection defines model for CashProposal.Direction.
+type CashProposalDirection string
+
+// CashProposalKind defines model for CashProposal.Kind.
+type CashProposalKind string
+
+// CashProposalStatus defines model for CashProposal.Status.
+type CashProposalStatus string
+
+// CashProposalDismiss defines model for CashProposalDismiss.
+type CashProposalDismiss struct {
+	Reason string `json:"reason"`
+}
+
+// CashProposalDismissal defines model for CashProposalDismissal.
+type CashProposalDismissal struct {
+	// At UTC RFC3339 instant. Write requests must use the Z suffix; retain the IANA timezone separately for local calendars.
+	//
+	// Examples: 2026-10-05T06:00:00Z
+	At Instant `json:"at"`
+
+	// ByMemberId Examples: 10000000-0000-4000-8000-000000000001
+	ByMemberId Id     `json:"byMemberId"`
+	Reason     string `json:"reason"`
+}
+
+// CashProposalPage Opaque cursor is bound to tenant, principal, effective scopes, filters and sort. Permission changes invalidate the cursor.
+type CashProposalPage struct {
+	Items      []CashProposal `json:"items"`
+	NextCursor *string        `json:"nextCursor"`
+}
+
+// CashProposalPart defines model for CashProposalPart.
+type CashProposalPart struct {
+	Amount Money                   `json:"amount"`
+	Label  string                  `json:"label"`
+	Method *CashProposalPartMethod `json:"method,omitempty"`
+}
+
+// CashProposalPartMethod defines model for CashProposalPart.Method.
+type CashProposalPartMethod string
+
+// CashProposalPost W5.00 (0.12.0-stage5). Posts 1…N operations with a common group atomically; idempotent by source; a repeat — 409 duplicate_source.
+type CashProposalPost struct {
+	// AccountId Examples: 10000000-0000-4000-8000-000000000001
+	AccountId Id                     `json:"accountId"`
+	Basis     *string                `json:"basis,omitempty"`
+	Parts     []CashProposalPostPart `json:"parts"`
+
+	// Receipt W5.00 (0.12.0-stage5). Receipt data of a manual entry: fd + kktShift (+receiptAt), or none + reason, or sellerMemberId. The fd number is unique in the pair «cash desk + ККТ shift» (Q-W4.00-cash-6); a repeat — 409 duplicate_receipt.
+	Receipt *CashReceipt `json:"receipt,omitempty"`
+}
+
+// CashProposalPostPart defines model for CashProposalPostPart.
+type CashProposalPostPart struct {
+	Amount Money                      `json:"amount"`
+	Method CashProposalPostPartMethod `json:"method"`
+}
+
+// CashProposalPostPartMethod defines model for CashProposalPostPart.Method.
+type CashProposalPostPartMethod string
+
+// CashProposalPostResult defines model for CashProposalPostResult.
+type CashProposalPostResult struct {
+	Operations []CashOperation `json:"operations"`
+
+	// Proposal W5.00 (0.12.0-stage5). A proposal of a module: visit done, verified trip expense, payroll (needs cash.payroll.post), refund. The idempotency key is the source.
+	Proposal CashProposal `json:"proposal"`
+}
+
+// CashReceipt W5.00 (0.12.0-stage5). Receipt data of a manual entry: fd + kktShift (+receiptAt), or none + reason, or sellerMemberId. The fd number is unique in the pair «cash desk + ККТ shift» (Q-W4.00-cash-6); a repeat — 409 duplicate_receipt.
+type CashReceipt struct {
+	FdNumber *string `json:"fdNumber,omitempty"`
+
+	// FileId Examples: 10000000-0000-4000-8000-000000000001
+	FileId   *Id     `json:"fileId,omitempty"`
+	KktShift *string `json:"kktShift,omitempty"`
+
+	// None A receipt was not issued (needs reason).
+	None   *bool   `json:"none,omitempty"`
+	Reason *string `json:"reason,omitempty"`
+
+	// ReceiptAt UTC RFC3339 instant. Write requests must use the Z suffix; retain the IANA timezone separately for local calendars.
+	//
+	// Examples: 2026-10-05T06:00:00Z
+	ReceiptAt *Instant `json:"receiptAt,omitempty"`
+
+	// SellerMemberId Examples: 10000000-0000-4000-8000-000000000001
+	SellerMemberId *Id `json:"sellerMemberId,omitempty"`
+}
+
+// CashReverseRequest W5.00 (0.12.0-stage5). Storno: a new row of type storno; the original is never changed. The author may not reverse own operation (403 self_approval) except the owner (Q-W4.00-cash-3).
+type CashReverseRequest struct {
+	Reason string `json:"reason"`
+}
+
+// CashShift W5.00 (0.12.0-stage5). A cash shift: open → review (difference above tolerance) | closed. Closing by the cashier who opened it; the difference is accepted by another employee with cash.reconcile (403 self_approval).
+type CashShift struct {
+	// AccountId Examples: 10000000-0000-4000-8000-000000000001
+	AccountId        Id                      `json:"accountId"`
+	Attempts         []CashShiftCloseAttempt `json:"attempts"`
+	ClosedAt         *time.Time              `json:"closedAt,omitempty"`
+	ClosedByMemberId *openapi_types.UUID     `json:"closedByMemberId,omitempty"`
+	Coins            *Money                  `json:"coins,omitempty"`
+	Counted          *Money                  `json:"counted,omitempty"`
+
+	// Counts Denomination (RUB) → number of notes or coins.
+	Counts   *map[string]int    `json:"counts,omitempty"`
+	Decision *CashShiftDecision `json:"decision,omitempty"`
+	Diff     *CashShiftDiff     `json:"diff,omitempty"`
+	Expected *CashShiftExpected `json:"expected,omitempty"`
+
+	// Id Examples: 10000000-0000-4000-8000-000000000001
+	Id     Id    `json:"id"`
+	Number int64 `json:"number"`
+
+	// OpenedAt UTC RFC3339 instant. Write requests must use the Z suffix; retain the IANA timezone separately for local calendars.
+	//
+	// Examples: 2026-10-05T06:00:00Z
+	OpenedAt Instant `json:"openedAt"`
+
+	// OpenedByMemberId Examples: 10000000-0000-4000-8000-000000000001
+	OpenedByMemberId Id                  `json:"openedByMemberId"`
+	OpeningDiff      *SignedMoney        `json:"openingDiff,omitempty"`
+	OpeningFloat     Money               `json:"openingFloat"`
+	Revision         int64               `json:"revision"`
+	Status           CashShiftStatus     `json:"status"`
+	Terminal         *CashShiftTerminal  `json:"terminal,omitempty"`
+	ToSafeTransferId *openapi_types.UUID `json:"toSafeTransferId,omitempty"`
+	Z                *CashShiftZ         `json:"z,omitempty"`
+}
+
+// CashShiftStatus defines model for CashShift.Status.
+type CashShiftStatus string
+
+// CashShiftClose W5.00 (0.12.0-stage5). Close with the count; with kktMode manual the Z report is required (422 validation_failed). A difference within tolerance is posted automatically; above — the shift becomes review.
+type CashShiftClose struct {
+	Coins   *Money `json:"coins,omitempty"`
+	Counted Money  `json:"counted"`
+
+	// Counts Denomination (RUB) → number of notes or coins.
+	Counts   *map[string]int    `json:"counts,omitempty"`
+	Terminal *CashShiftTerminal `json:"terminal,omitempty"`
+
+	// ToSafe Hand the revenue over to the nearest safe (Q-W4.00-cash-15).
+	ToSafe *bool       `json:"toSafe,omitempty"`
+	Z      *CashShiftZ `json:"z,omitempty"`
+}
+
+// CashShiftCloseAttempt W5.00 (0.12.0-stage5). Every close attempt is an immutable record; «Вернуть на пересчёт» keeps it and reopens the shift (Q-W4.00-cash-4, PD-60).
+type CashShiftCloseAttempt struct {
+	// ClosedAt UTC RFC3339 instant. Write requests must use the Z suffix; retain the IANA timezone separately for local calendars.
+	//
+	// Examples: 2026-10-05T06:00:00Z
+	ClosedAt Instant `json:"closedAt"`
+
+	// ClosedByMemberId Examples: 10000000-0000-4000-8000-000000000001
+	ClosedByMemberId Id    `json:"closedByMemberId"`
+	Counted          Money `json:"counted"`
+
+	// Counts Denomination (RUB) → number of notes or coins.
+	Counts        *map[string]int    `json:"counts,omitempty"`
+	Diff          *CashShiftDiff     `json:"diff,omitempty"`
+	RecountReason *string            `json:"recountReason,omitempty"`
+	Terminal      *CashShiftTerminal `json:"terminal,omitempty"`
+	Z             *CashShiftZ        `json:"z,omitempty"`
+}
+
+// CashShiftDecision defines model for CashShiftDecision.
+type CashShiftDecision struct {
+	// At UTC RFC3339 instant. Write requests must use the Z suffix; retain the IANA timezone separately for local calendars.
+	//
+	// Examples: 2026-10-05T06:00:00Z
+	At          Instant               `json:"at"`
+	ByMemberId  *openapi_types.UUID   `json:"byMemberId,omitempty"`
+	Kind        CashShiftDecisionKind `json:"kind"`
+	OperationId *openapi_types.UUID   `json:"operationId,omitempty"`
+	Reason      string                `json:"reason"`
+}
+
+// CashShiftDecisionKind defines model for CashShiftDecision.Kind.
+type CashShiftDecisionKind string
+
+// CashShiftDiff defines model for CashShiftDiff.
+type CashShiftDiff struct {
+	Cash    SignedMoney `json:"cash"`
+	KktCard SignedMoney `json:"kktCard"`
+	KktCash SignedMoney `json:"kktCash"`
+	Term    SignedMoney `json:"term"`
+}
+
+// CashShiftExpected W5.00 (0.12.0-stage5). Expected sums — only with cash.balance.read (otherwise the field of the shift is null: blind close).
+type CashShiftExpected struct {
+	Card    SignedMoney `json:"card"`
+	Cash    SignedMoney `json:"cash"`
+	RevCard SignedMoney `json:"revCard"`
+	RevCash SignedMoney `json:"revCash"`
+	Sbp     SignedMoney `json:"sbp"`
+}
+
+// CashShiftOpen W5.00 (0.12.0-stage5). A float difference at the opening is posted as an adjustment with the event cash.shift.opened_with_diff.v1.
+type CashShiftOpen struct {
+	CountedFloat Money   `json:"countedFloat"`
+	Note         *string `json:"note,omitempty"`
+}
+
+// CashShiftPage Opaque cursor is bound to tenant, principal, effective scopes, filters and sort. Permission changes invalidate the cursor.
+type CashShiftPage struct {
+	Items      []CashShift `json:"items"`
+	NextCursor *string     `json:"nextCursor"`
+}
+
+// CashShiftReview defines model for CashShiftReview.
+type CashShiftReview struct {
+	Comment  *string                 `json:"comment,omitempty"`
+	Decision CashShiftReviewDecision `json:"decision"`
+	Reason   string                  `json:"reason"`
+}
+
+// CashShiftReviewDecision defines model for CashShiftReview.Decision.
+type CashShiftReviewDecision string
+
+// CashShiftTerminal defines model for CashShiftTerminal.
+type CashShiftTerminal struct {
+	Card Money `json:"card"`
+	Sbp  Money `json:"sbp"`
+}
+
+// CashShiftZ defines model for CashShiftZ.
+type CashShiftZ struct {
+	Card   Money  `json:"card"`
+	Cash   Money  `json:"cash"`
+	Number string `json:"number"`
+}
+
+// CashSourceLinkRequest defines model for CashSourceLinkRequest.
+type CashSourceLinkRequest struct {
+	// Source W5.00 (0.12.0-stage5). The record of another module a posting is based on (visit, trip expense, repair act). One source gives one operation or group — a repeat is 409 duplicate_source.
+	Source CashSourceRef `json:"source"`
+}
+
+// CashSourceRef W5.00 (0.12.0-stage5). The record of another module a posting is based on (visit, trip expense, repair act). One source gives one operation or group — a repeat is 409 duplicate_source.
+type CashSourceRef struct {
+	// Id Examples: 10000000-0000-4000-8000-000000000001
+	Id    Id      `json:"id"`
+	Key   string  `json:"key"`
+	Kind  string  `json:"kind"`
+	Label *string `json:"label,omitempty"`
+}
+
+// CashTransfer W5.00 (0.12.0-stage5). A transfer in two steps: in_transit (transit) → done (move_in at the receiver) | rejected (move back at the sender).
+type CashTransfer struct {
+	Amount            Money               `json:"amount"`
+	BackOperationId   *openapi_types.UUID `json:"backOperationId,omitempty"`
+	DecidedAt         *time.Time          `json:"decidedAt,omitempty"`
+	DecidedByMemberId *openapi_types.UUID `json:"decidedByMemberId,omitempty"`
+
+	// FromAccountId Examples: 10000000-0000-4000-8000-000000000001
+	FromAccountId Id `json:"fromAccountId"`
+
+	// Id Examples: 10000000-0000-4000-8000-000000000001
+	Id             Id                  `json:"id"`
+	InOperationId  *openapi_types.UUID `json:"inOperationId,omitempty"`
+	Note           *string             `json:"note,omitempty"`
+	OutOperationId *openapi_types.UUID `json:"outOperationId,omitempty"`
+	Purpose        CashTransferPurpose `json:"purpose"`
+	Reason         *string             `json:"reason,omitempty"`
+	Revision       int64               `json:"revision"`
+
+	// SentAt UTC RFC3339 instant. Write requests must use the Z suffix; retain the IANA timezone separately for local calendars.
+	//
+	// Examples: 2026-10-05T06:00:00Z
+	SentAt Instant `json:"sentAt"`
+
+	// SentByMemberId Examples: 10000000-0000-4000-8000-000000000001
+	SentByMemberId Id                 `json:"sentByMemberId"`
+	Status         CashTransferStatus `json:"status"`
+
+	// ToAccountId Examples: 10000000-0000-4000-8000-000000000001
+	ToAccountId Id `json:"toAccountId"`
+}
+
+// CashTransferPurpose defines model for CashTransfer.Purpose.
+type CashTransferPurpose string
+
+// CashTransferStatus defines model for CashTransfer.Status.
+type CashTransferStatus string
+
+// CashTransferCreate defines model for CashTransferCreate.
+type CashTransferCreate struct {
+	Amount Money `json:"amount"`
+
+	// FromAccountId Examples: 10000000-0000-4000-8000-000000000001
+	FromAccountId Id      `json:"fromAccountId"`
+	Note          *string `json:"note,omitempty"`
+
+	// ToAccountId Examples: 10000000-0000-4000-8000-000000000001
+	ToAccountId Id `json:"toAccountId"`
+}
+
+// CashTransferDecision W5.00 (0.12.0-stage5). Rejecting needs a reason.
+type CashTransferDecision struct {
+	Decision CashTransferDecisionDecision `json:"decision"`
+	Reason   *string                      `json:"reason,omitempty"`
+}
+
+// CashTransferDecisionDecision defines model for CashTransferDecision.Decision.
+type CashTransferDecisionDecision string
+
+// CashTransferPage Opaque cursor is bound to tenant, principal, effective scopes, filters and sort. Permission changes invalidate the cursor.
+type CashTransferPage struct {
+	Items      []CashTransfer `json:"items"`
+	NextCursor *string        `json:"nextCursor"`
 }
 
 // Id Examples: 10000000-0000-4000-8000-000000000001
@@ -489,6 +2152,9 @@ type Cursor = string
 // IdempotencyKey defines model for IdempotencyKey.
 type IdempotencyKey = string
 
+// IfMatch Examples: "rev-7"
+type IfMatch = string
+
 // Limit defines model for Limit.
 type Limit = int
 
@@ -509,6 +2175,27 @@ type AutomationId = Id
 
 // BookingId Examples: 10000000-0000-4000-8000-000000000001
 type BookingId = Id
+
+// CashAccountId Examples: 10000000-0000-4000-8000-000000000001
+type CashAccountId = Id
+
+// CashApprovalRequestId Examples: 10000000-0000-4000-8000-000000000001
+type CashApprovalRequestId = Id
+
+// CashOperationId Examples: 10000000-0000-4000-8000-000000000001
+type CashOperationId = Id
+
+// CashProposalKey defines model for cashProposalKey.
+type CashProposalKey = string
+
+// CashReceiptId Examples: 10000000-0000-4000-8000-000000000001
+type CashReceiptId = Id
+
+// CashShiftId Examples: 10000000-0000-4000-8000-000000000001
+type CashShiftId = Id
+
+// CashTransferId Examples: 10000000-0000-4000-8000-000000000001
+type CashTransferId = Id
 
 // CategoryCode defines model for categoryCode.
 type CategoryCode = string
@@ -554,6 +2241,12 @@ type ImportId = Id
 
 // InspectionId Examples: 10000000-0000-4000-8000-000000000001
 type InspectionId = Id
+
+// InventoryItemId Examples: 10000000-0000-4000-8000-000000000001
+type InventoryItemId = Id
+
+// InventoryReservationId Examples: 10000000-0000-4000-8000-000000000001
+type InventoryReservationId = Id
 
 // MemberId Examples: 10000000-0000-4000-8000-000000000001
 type MemberId = Id
@@ -603,6 +2296,9 @@ type RoleId = Id
 // RuleId Examples: 10000000-0000-4000-8000-000000000001
 type RuleId = Id
 
+// SpaServiceId Examples: 10000000-0000-4000-8000-000000000001
+type SpaServiceId = Id
+
 // SpaceId Examples: 10000000-0000-4000-8000-000000000001
 type SpaceId = Id
 
@@ -648,6 +2344,9 @@ type NotFound = Problem
 // PlanRequired Problem Details. No cross-tenant IDs, SQL, token values or storage keys in errors. Retryable conflict codes: reservation_overlap, resources_unavailable, idempotency_in_progress; quota errors: quota_exceeded, downgrade_below_usage.
 type PlanRequired = Problem
 
+// PreconditionFailed Problem Details. No cross-tenant IDs, SQL, token values or storage keys in errors. Retryable conflict codes: reservation_overlap, resources_unavailable, idempotency_in_progress; quota errors: quota_exceeded, downgrade_below_usage.
+type PreconditionFailed = Problem
+
 // PreconditionRequired Problem Details. No cross-tenant IDs, SQL, token values or storage keys in errors. Retryable conflict codes: reservation_overlap, resources_unavailable, idempotency_in_progress; quota errors: quota_exceeded, downgrade_below_usage.
 type PreconditionRequired = Problem
 
@@ -663,9 +2362,14 @@ type Validation = Problem
 // ListCashAccountsParams defines parameters for ListCashAccounts.
 type ListCashAccountsParams struct {
 	// Cursor Opaque cursor from the preceding response; no offset pagination.
-	Cursor *Cursor `form:"cursor,omitempty" json:"cursor,omitempty"`
-	Limit  *Limit  `form:"limit,omitempty" json:"limit,omitempty"`
+	Cursor    *Cursor                     `form:"cursor,omitempty" json:"cursor,omitempty"`
+	Limit     *Limit                      `form:"limit,omitempty" json:"limit,omitempty"`
+	Kind      *ListCashAccountsParamsKind `form:"kind,omitempty" json:"kind,omitempty"`
+	OrgUnitId *Id                         `form:"orgUnitId,omitempty" json:"orgUnitId,omitempty"`
 }
+
+// ListCashAccountsParamsKind defines parameters for ListCashAccounts.
+type ListCashAccountsParamsKind string
 
 // CreateCashAccountParams defines parameters for CreateCashAccount.
 type CreateCashAccountParams struct {
@@ -679,12 +2383,117 @@ type CreateCashAccountParams struct {
 	Origin *Origin `json:"Origin,omitempty"`
 }
 
+// PreviewCashAccountAccessParams defines parameters for PreviewCashAccountAccess.
+type PreviewCashAccountAccessParams struct {
+	Kind           *PreviewCashAccountAccessParamsKind `form:"kind,omitempty" json:"kind,omitempty"`
+	OrgUnitId      *Id                                 `form:"orgUnitId,omitempty" json:"orgUnitId,omitempty"`
+	HolderMemberId *Id                                 `form:"holderMemberId,omitempty" json:"holderMemberId,omitempty"`
+}
+
+// PreviewCashAccountAccessParamsKind defines parameters for PreviewCashAccountAccess.
+type PreviewCashAccountAccessParamsKind string
+
+// IssueCashAdvanceParams defines parameters for IssueCashAdvance.
+type IssueCashAdvanceParams struct {
+	// IdempotencyKey Stable per intended command. Retain record at least 7 days; financial deduplication also retains a durable tenant+actor+operation+key digest receipt. Key is scoped to tenant+actor+operation. Reuse only for an identical request.
+	IdempotencyKey IdempotencyKey `json:"Idempotency-Key"`
+
+	// XCSRFToken Required for cookie-authenticated state changes; not required with bearer-only authentication. Invalid/missing token or Origin yields 403. Conditional requirement cannot be represented by OpenAPI required=true.
+	XCSRFToken *Csrf `json:"X-CSRF-Token,omitempty"`
+
+	// Origin Required and checked against the deployment allowlist for cookie-authenticated state changes and browser public-form submissions/uploads. Never accept wildcard with credentialed requests.
+	Origin *Origin `json:"Origin,omitempty"`
+}
+
+// ReturnCashAdvanceParams defines parameters for ReturnCashAdvance.
+type ReturnCashAdvanceParams struct {
+	// IdempotencyKey Stable per intended command. Retain record at least 7 days; financial deduplication also retains a durable tenant+actor+operation+key digest receipt. Key is scoped to tenant+actor+operation. Reuse only for an identical request.
+	IdempotencyKey IdempotencyKey `json:"Idempotency-Key"`
+
+	// XCSRFToken Required for cookie-authenticated state changes; not required with bearer-only authentication. Invalid/missing token or Origin yields 403. Conditional requirement cannot be represented by OpenAPI required=true.
+	XCSRFToken *Csrf `json:"X-CSRF-Token,omitempty"`
+
+	// Origin Required and checked against the deployment allowlist for cookie-authenticated state changes and browser public-form submissions/uploads. Never accept wildcard with credentialed requests.
+	Origin *Origin `json:"Origin,omitempty"`
+}
+
+// SubmitAdvanceReceiptParams defines parameters for SubmitAdvanceReceipt.
+type SubmitAdvanceReceiptParams struct {
+	// IdempotencyKey Stable per intended command. Retain record at least 7 days; financial deduplication also retains a durable tenant+actor+operation+key digest receipt. Key is scoped to tenant+actor+operation. Reuse only for an identical request.
+	IdempotencyKey IdempotencyKey `json:"Idempotency-Key"`
+
+	// XCSRFToken Required for cookie-authenticated state changes; not required with bearer-only authentication. Invalid/missing token or Origin yields 403. Conditional requirement cannot be represented by OpenAPI required=true.
+	XCSRFToken *Csrf `json:"X-CSRF-Token,omitempty"`
+
+	// Origin Required and checked against the deployment allowlist for cookie-authenticated state changes and browser public-form submissions/uploads. Never accept wildcard with credentialed requests.
+	Origin *Origin `json:"Origin,omitempty"`
+}
+
+// OpenCashShiftParams defines parameters for OpenCashShift.
+type OpenCashShiftParams struct {
+	// IdempotencyKey Stable per intended command. Retain record at least 7 days; financial deduplication also retains a durable tenant+actor+operation+key digest receipt. Key is scoped to tenant+actor+operation. Reuse only for an identical request.
+	IdempotencyKey IdempotencyKey `json:"Idempotency-Key"`
+
+	// XCSRFToken Required for cookie-authenticated state changes; not required with bearer-only authentication. Invalid/missing token or Origin yields 403. Conditional requirement cannot be represented by OpenAPI required=true.
+	XCSRFToken *Csrf `json:"X-CSRF-Token,omitempty"`
+
+	// Origin Required and checked against the deployment allowlist for cookie-authenticated state changes and browser public-form submissions/uploads. Never accept wildcard with credentialed requests.
+	Origin *Origin `json:"Origin,omitempty"`
+}
+
+// ListCashApprovalRequestsParams defines parameters for ListCashApprovalRequests.
+type ListCashApprovalRequestsParams struct {
+	// Cursor Opaque cursor from the preceding response; no offset pagination.
+	Cursor *Cursor                               `form:"cursor,omitempty" json:"cursor,omitempty"`
+	Limit  *Limit                                `form:"limit,omitempty" json:"limit,omitempty"`
+	Status *ListCashApprovalRequestsParamsStatus `form:"status,omitempty" json:"status,omitempty"`
+}
+
+// ListCashApprovalRequestsParamsStatus defines parameters for ListCashApprovalRequests.
+type ListCashApprovalRequestsParamsStatus string
+
+// DecideCashApprovalRequestParams defines parameters for DecideCashApprovalRequest.
+type DecideCashApprovalRequestParams struct {
+	// IdempotencyKey Stable per intended command. Retain record at least 7 days; financial deduplication also retains a durable tenant+actor+operation+key digest receipt. Key is scoped to tenant+actor+operation. Reuse only for an identical request.
+	IdempotencyKey IdempotencyKey `json:"Idempotency-Key"`
+
+	// XCSRFToken Required for cookie-authenticated state changes; not required with bearer-only authentication. Invalid/missing token or Origin yields 403. Conditional requirement cannot be represented by OpenAPI required=true.
+	XCSRFToken *Csrf `json:"X-CSRF-Token,omitempty"`
+
+	// Origin Required and checked against the deployment allowlist for cookie-authenticated state changes and browser public-form submissions/uploads. Never accept wildcard with credentialed requests.
+	Origin *Origin `json:"Origin,omitempty"`
+
+	// IfMatch Strong ETag obtained from latest GET or mutation response. * is not accepted. Missing=428; stale=412. Idempotent replay is checked before current revision precondition.
+	IfMatch IfMatch `json:"If-Match"`
+}
+
+// FindCashDuplicatesParams defines parameters for FindCashDuplicates.
+type FindCashDuplicatesParams struct {
+	AccountId   *Id                             `form:"accountId,omitempty" json:"accountId,omitempty"`
+	AmountMinor *int                            `form:"amountMinor,omitempty" json:"amountMinor,omitempty"`
+	Method      *FindCashDuplicatesParamsMethod `form:"method,omitempty" json:"method,omitempty"`
+	Type        *FindCashDuplicatesParamsType   `form:"type,omitempty" json:"type,omitempty"`
+	At          *Instant                        `form:"at,omitempty" json:"at,omitempty"`
+}
+
+// FindCashDuplicatesParamsMethod defines parameters for FindCashDuplicates.
+type FindCashDuplicatesParamsMethod string
+
+// FindCashDuplicatesParamsType defines parameters for FindCashDuplicates.
+type FindCashDuplicatesParamsType string
+
 // ListCashOperationsParams defines parameters for ListCashOperations.
 type ListCashOperationsParams struct {
 	// Cursor Opaque cursor from the preceding response; no offset pagination.
-	Cursor *Cursor `form:"cursor,omitempty" json:"cursor,omitempty"`
-	Limit  *Limit  `form:"limit,omitempty" json:"limit,omitempty"`
+	Cursor    *Cursor                       `form:"cursor,omitempty" json:"cursor,omitempty"`
+	Limit     *Limit                        `form:"limit,omitempty" json:"limit,omitempty"`
+	AccountId *Id                           `form:"accountId,omitempty" json:"accountId,omitempty"`
+	Type      *ListCashOperationsParamsType `form:"type,omitempty" json:"type,omitempty"`
+	ShiftId   *Id                           `form:"shiftId,omitempty" json:"shiftId,omitempty"`
 }
+
+// ListCashOperationsParamsType defines parameters for ListCashOperations.
+type ListCashOperationsParamsType string
 
 // PostCashOperationParams defines parameters for PostCashOperation.
 type PostCashOperationParams struct {
@@ -698,11 +2507,220 @@ type PostCashOperationParams struct {
 	Origin *Origin `json:"Origin,omitempty"`
 }
 
+// ReverseCashOperationParams defines parameters for ReverseCashOperation.
+type ReverseCashOperationParams struct {
+	// IdempotencyKey Stable per intended command. Retain record at least 7 days; financial deduplication also retains a durable tenant+actor+operation+key digest receipt. Key is scoped to tenant+actor+operation. Reuse only for an identical request.
+	IdempotencyKey IdempotencyKey `json:"Idempotency-Key"`
+
+	// XCSRFToken Required for cookie-authenticated state changes; not required with bearer-only authentication. Invalid/missing token or Origin yields 403. Conditional requirement cannot be represented by OpenAPI required=true.
+	XCSRFToken *Csrf `json:"X-CSRF-Token,omitempty"`
+
+	// Origin Required and checked against the deployment allowlist for cookie-authenticated state changes and browser public-form submissions/uploads. Never accept wildcard with credentialed requests.
+	Origin *Origin `json:"Origin,omitempty"`
+}
+
+// LinkCashOperationSourceParams defines parameters for LinkCashOperationSource.
+type LinkCashOperationSourceParams struct {
+	// IdempotencyKey Stable per intended command. Retain record at least 7 days; financial deduplication also retains a durable tenant+actor+operation+key digest receipt. Key is scoped to tenant+actor+operation. Reuse only for an identical request.
+	IdempotencyKey IdempotencyKey `json:"Idempotency-Key"`
+
+	// XCSRFToken Required for cookie-authenticated state changes; not required with bearer-only authentication. Invalid/missing token or Origin yields 403. Conditional requirement cannot be represented by OpenAPI required=true.
+	XCSRFToken *Csrf `json:"X-CSRF-Token,omitempty"`
+
+	// Origin Required and checked against the deployment allowlist for cookie-authenticated state changes and browser public-form submissions/uploads. Never accept wildcard with credentialed requests.
+	Origin *Origin `json:"Origin,omitempty"`
+}
+
+// ListCashProposalsParams defines parameters for ListCashProposals.
+type ListCashProposalsParams struct {
+	// Cursor Opaque cursor from the preceding response; no offset pagination.
+	Cursor *Cursor                        `form:"cursor,omitempty" json:"cursor,omitempty"`
+	Limit  *Limit                         `form:"limit,omitempty" json:"limit,omitempty"`
+	Status *ListCashProposalsParamsStatus `form:"status,omitempty" json:"status,omitempty"`
+}
+
+// ListCashProposalsParamsStatus defines parameters for ListCashProposals.
+type ListCashProposalsParamsStatus string
+
+// DismissCashProposalParams defines parameters for DismissCashProposal.
+type DismissCashProposalParams struct {
+	// IdempotencyKey Stable per intended command. Retain record at least 7 days; financial deduplication also retains a durable tenant+actor+operation+key digest receipt. Key is scoped to tenant+actor+operation. Reuse only for an identical request.
+	IdempotencyKey IdempotencyKey `json:"Idempotency-Key"`
+
+	// XCSRFToken Required for cookie-authenticated state changes; not required with bearer-only authentication. Invalid/missing token or Origin yields 403. Conditional requirement cannot be represented by OpenAPI required=true.
+	XCSRFToken *Csrf `json:"X-CSRF-Token,omitempty"`
+
+	// Origin Required and checked against the deployment allowlist for cookie-authenticated state changes and browser public-form submissions/uploads. Never accept wildcard with credentialed requests.
+	Origin *Origin `json:"Origin,omitempty"`
+}
+
+// PostCashProposalParams defines parameters for PostCashProposal.
+type PostCashProposalParams struct {
+	// IdempotencyKey Stable per intended command. Retain record at least 7 days; financial deduplication also retains a durable tenant+actor+operation+key digest receipt. Key is scoped to tenant+actor+operation. Reuse only for an identical request.
+	IdempotencyKey IdempotencyKey `json:"Idempotency-Key"`
+
+	// XCSRFToken Required for cookie-authenticated state changes; not required with bearer-only authentication. Invalid/missing token or Origin yields 403. Conditional requirement cannot be represented by OpenAPI required=true.
+	XCSRFToken *Csrf `json:"X-CSRF-Token,omitempty"`
+
+	// Origin Required and checked against the deployment allowlist for cookie-authenticated state changes and browser public-form submissions/uploads. Never accept wildcard with credentialed requests.
+	Origin *Origin `json:"Origin,omitempty"`
+}
+
+// ListAdvanceReceiptsParams defines parameters for ListAdvanceReceipts.
+type ListAdvanceReceiptsParams struct {
+	// Cursor Opaque cursor from the preceding response; no offset pagination.
+	Cursor    *Cursor                          `form:"cursor,omitempty" json:"cursor,omitempty"`
+	Limit     *Limit                           `form:"limit,omitempty" json:"limit,omitempty"`
+	AccountId *Id                              `form:"accountId,omitempty" json:"accountId,omitempty"`
+	Status    *ListAdvanceReceiptsParamsStatus `form:"status,omitempty" json:"status,omitempty"`
+}
+
+// ListAdvanceReceiptsParamsStatus defines parameters for ListAdvanceReceipts.
+type ListAdvanceReceiptsParamsStatus string
+
+// DecideAdvanceReceiptParams defines parameters for DecideAdvanceReceipt.
+type DecideAdvanceReceiptParams struct {
+	// IdempotencyKey Stable per intended command. Retain record at least 7 days; financial deduplication also retains a durable tenant+actor+operation+key digest receipt. Key is scoped to tenant+actor+operation. Reuse only for an identical request.
+	IdempotencyKey IdempotencyKey `json:"Idempotency-Key"`
+
+	// XCSRFToken Required for cookie-authenticated state changes; not required with bearer-only authentication. Invalid/missing token or Origin yields 403. Conditional requirement cannot be represented by OpenAPI required=true.
+	XCSRFToken *Csrf `json:"X-CSRF-Token,omitempty"`
+
+	// Origin Required and checked against the deployment allowlist for cookie-authenticated state changes and browser public-form submissions/uploads. Never accept wildcard with credentialed requests.
+	Origin *Origin `json:"Origin,omitempty"`
+
+	// IfMatch Strong ETag obtained from latest GET or mutation response. * is not accepted. Missing=428; stale=412. Idempotent replay is checked before current revision precondition.
+	IfMatch IfMatch `json:"If-Match"`
+}
+
+// ListCashShiftsParams defines parameters for ListCashShifts.
+type ListCashShiftsParams struct {
+	// Cursor Opaque cursor from the preceding response; no offset pagination.
+	Cursor    *Cursor                     `form:"cursor,omitempty" json:"cursor,omitempty"`
+	Limit     *Limit                      `form:"limit,omitempty" json:"limit,omitempty"`
+	AccountId *Id                         `form:"accountId,omitempty" json:"accountId,omitempty"`
+	Status    *ListCashShiftsParamsStatus `form:"status,omitempty" json:"status,omitempty"`
+}
+
+// ListCashShiftsParamsStatus defines parameters for ListCashShifts.
+type ListCashShiftsParamsStatus string
+
+// CloseCashShiftParams defines parameters for CloseCashShift.
+type CloseCashShiftParams struct {
+	// IdempotencyKey Stable per intended command. Retain record at least 7 days; financial deduplication also retains a durable tenant+actor+operation+key digest receipt. Key is scoped to tenant+actor+operation. Reuse only for an identical request.
+	IdempotencyKey IdempotencyKey `json:"Idempotency-Key"`
+
+	// XCSRFToken Required for cookie-authenticated state changes; not required with bearer-only authentication. Invalid/missing token or Origin yields 403. Conditional requirement cannot be represented by OpenAPI required=true.
+	XCSRFToken *Csrf `json:"X-CSRF-Token,omitempty"`
+
+	// Origin Required and checked against the deployment allowlist for cookie-authenticated state changes and browser public-form submissions/uploads. Never accept wildcard with credentialed requests.
+	Origin *Origin `json:"Origin,omitempty"`
+
+	// IfMatch Strong ETag obtained from latest GET or mutation response. * is not accepted. Missing=428; stale=412. Idempotent replay is checked before current revision precondition.
+	IfMatch IfMatch `json:"If-Match"`
+}
+
+// ReviewCashShiftParams defines parameters for ReviewCashShift.
+type ReviewCashShiftParams struct {
+	// IdempotencyKey Stable per intended command. Retain record at least 7 days; financial deduplication also retains a durable tenant+actor+operation+key digest receipt. Key is scoped to tenant+actor+operation. Reuse only for an identical request.
+	IdempotencyKey IdempotencyKey `json:"Idempotency-Key"`
+
+	// XCSRFToken Required for cookie-authenticated state changes; not required with bearer-only authentication. Invalid/missing token or Origin yields 403. Conditional requirement cannot be represented by OpenAPI required=true.
+	XCSRFToken *Csrf `json:"X-CSRF-Token,omitempty"`
+
+	// Origin Required and checked against the deployment allowlist for cookie-authenticated state changes and browser public-form submissions/uploads. Never accept wildcard with credentialed requests.
+	Origin *Origin `json:"Origin,omitempty"`
+
+	// IfMatch Strong ETag obtained from latest GET or mutation response. * is not accepted. Missing=428; stale=412. Idempotent replay is checked before current revision precondition.
+	IfMatch IfMatch `json:"If-Match"`
+}
+
+// ListCashTransfersParams defines parameters for ListCashTransfers.
+type ListCashTransfersParams struct {
+	// Cursor Opaque cursor from the preceding response; no offset pagination.
+	Cursor    *Cursor                        `form:"cursor,omitempty" json:"cursor,omitempty"`
+	Limit     *Limit                         `form:"limit,omitempty" json:"limit,omitempty"`
+	Status    *ListCashTransfersParamsStatus `form:"status,omitempty" json:"status,omitempty"`
+	AccountId *Id                            `form:"accountId,omitempty" json:"accountId,omitempty"`
+}
+
+// ListCashTransfersParamsStatus defines parameters for ListCashTransfers.
+type ListCashTransfersParamsStatus string
+
+// CreateCashTransferParams defines parameters for CreateCashTransfer.
+type CreateCashTransferParams struct {
+	// IdempotencyKey Stable per intended command. Retain record at least 7 days; financial deduplication also retains a durable tenant+actor+operation+key digest receipt. Key is scoped to tenant+actor+operation. Reuse only for an identical request.
+	IdempotencyKey IdempotencyKey `json:"Idempotency-Key"`
+
+	// XCSRFToken Required for cookie-authenticated state changes; not required with bearer-only authentication. Invalid/missing token or Origin yields 403. Conditional requirement cannot be represented by OpenAPI required=true.
+	XCSRFToken *Csrf `json:"X-CSRF-Token,omitempty"`
+
+	// Origin Required and checked against the deployment allowlist for cookie-authenticated state changes and browser public-form submissions/uploads. Never accept wildcard with credentialed requests.
+	Origin *Origin `json:"Origin,omitempty"`
+}
+
+// DecideCashTransferParams defines parameters for DecideCashTransfer.
+type DecideCashTransferParams struct {
+	// IdempotencyKey Stable per intended command. Retain record at least 7 days; financial deduplication also retains a durable tenant+actor+operation+key digest receipt. Key is scoped to tenant+actor+operation. Reuse only for an identical request.
+	IdempotencyKey IdempotencyKey `json:"Idempotency-Key"`
+
+	// XCSRFToken Required for cookie-authenticated state changes; not required with bearer-only authentication. Invalid/missing token or Origin yields 403. Conditional requirement cannot be represented by OpenAPI required=true.
+	XCSRFToken *Csrf `json:"X-CSRF-Token,omitempty"`
+
+	// Origin Required and checked against the deployment allowlist for cookie-authenticated state changes and browser public-form submissions/uploads. Never accept wildcard with credentialed requests.
+	Origin *Origin `json:"Origin,omitempty"`
+
+	// IfMatch Strong ETag obtained from latest GET or mutation response. * is not accepted. Missing=428; stale=412. Idempotent replay is checked before current revision precondition.
+	IfMatch IfMatch `json:"If-Match"`
+}
+
 // CreateCashAccountJSONRequestBody defines body for CreateCashAccount for application/json ContentType.
 type CreateCashAccountJSONRequestBody = CashAccountCreate
 
+// IssueCashAdvanceJSONRequestBody defines body for IssueCashAdvance for application/json ContentType.
+type IssueCashAdvanceJSONRequestBody = CashAdvanceIssue
+
+// ReturnCashAdvanceJSONRequestBody defines body for ReturnCashAdvance for application/json ContentType.
+type ReturnCashAdvanceJSONRequestBody = CashAdvanceReturn
+
+// SubmitAdvanceReceiptJSONRequestBody defines body for SubmitAdvanceReceipt for application/json ContentType.
+type SubmitAdvanceReceiptJSONRequestBody = AdvanceReceiptCreate
+
+// OpenCashShiftJSONRequestBody defines body for OpenCashShift for application/json ContentType.
+type OpenCashShiftJSONRequestBody = CashShiftOpen
+
+// DecideCashApprovalRequestJSONRequestBody defines body for DecideCashApprovalRequest for application/json ContentType.
+type DecideCashApprovalRequestJSONRequestBody = CashApprovalDecision
+
 // PostCashOperationJSONRequestBody defines body for PostCashOperation for application/json ContentType.
 type PostCashOperationJSONRequestBody = CashOperationCreate
+
+// ReverseCashOperationJSONRequestBody defines body for ReverseCashOperation for application/json ContentType.
+type ReverseCashOperationJSONRequestBody = CashReverseRequest
+
+// LinkCashOperationSourceJSONRequestBody defines body for LinkCashOperationSource for application/json ContentType.
+type LinkCashOperationSourceJSONRequestBody = CashSourceLinkRequest
+
+// DismissCashProposalJSONRequestBody defines body for DismissCashProposal for application/json ContentType.
+type DismissCashProposalJSONRequestBody = CashProposalDismiss
+
+// PostCashProposalJSONRequestBody defines body for PostCashProposal for application/json ContentType.
+type PostCashProposalJSONRequestBody = CashProposalPost
+
+// DecideAdvanceReceiptJSONRequestBody defines body for DecideAdvanceReceipt for application/json ContentType.
+type DecideAdvanceReceiptJSONRequestBody = AdvanceReceiptDecision
+
+// CloseCashShiftJSONRequestBody defines body for CloseCashShift for application/json ContentType.
+type CloseCashShiftJSONRequestBody = CashShiftClose
+
+// ReviewCashShiftJSONRequestBody defines body for ReviewCashShift for application/json ContentType.
+type ReviewCashShiftJSONRequestBody = CashShiftReview
+
+// CreateCashTransferJSONRequestBody defines body for CreateCashTransfer for application/json ContentType.
+type CreateCashTransferJSONRequestBody = CashTransferCreate
+
+// DecideCashTransferJSONRequestBody defines body for DecideCashTransfer for application/json ContentType.
+type DecideCashTransferJSONRequestBody = CashTransferDecision
 
 // ServerInterface represents all server handlers.
 type ServerInterface interface {
@@ -712,12 +2730,78 @@ type ServerInterface interface {
 	// CreateCashAccount Create a zero-balance internal cash account
 	// (POST /api/v1/tenants/{tenantId}/cash/accounts)
 	CreateCashAccount(w http.ResponseWriter, r *http.Request, tenantId TenantId, params CreateCashAccountParams)
+	// PreviewCashAccountAccess Preview who would get access to an account being created
+	// (GET /api/v1/tenants/{tenantId}/cash/accounts/access-preview)
+	PreviewCashAccountAccess(w http.ResponseWriter, r *http.Request, tenantId TenantId, params PreviewCashAccountAccessParams)
+	// IssueCashAdvance Issue money under report to an advance account
+	// (POST /api/v1/tenants/{tenantId}/cash/accounts/{accountId}/advance-issues)
+	IssueCashAdvance(w http.ResponseWriter, r *http.Request, tenantId TenantId, accountId CashAccountId, params IssueCashAdvanceParams)
+	// ReturnCashAdvance Return the unspent rest of an advance
+	// (POST /api/v1/tenants/{tenantId}/cash/accounts/{accountId}/advance-returns)
+	ReturnCashAdvance(w http.ResponseWriter, r *http.Request, tenantId TenantId, accountId CashAccountId, params ReturnCashAdvanceParams)
+	// SubmitAdvanceReceipt Submit a receipt of an advance report
+	// (POST /api/v1/tenants/{tenantId}/cash/accounts/{accountId}/receipts)
+	SubmitAdvanceReceipt(w http.ResponseWriter, r *http.Request, tenantId TenantId, accountId CashAccountId, params SubmitAdvanceReceiptParams)
+	// OpenCashShift Open a shift with the count of the float
+	// (POST /api/v1/tenants/{tenantId}/cash/accounts/{accountId}/shifts)
+	OpenCashShift(w http.ResponseWriter, r *http.Request, tenantId TenantId, accountId CashAccountId, params OpenCashShiftParams)
+	// ListCashApprovalRequests List approval requests over role limits
+	// (GET /api/v1/tenants/{tenantId}/cash/approval-requests)
+	ListCashApprovalRequests(w http.ResponseWriter, r *http.Request, tenantId TenantId, params ListCashApprovalRequestsParams)
+	// DecideCashApprovalRequest Approve or reject an approval request
+	// (POST /api/v1/tenants/{tenantId}/cash/approval-requests/{approvalRequestId}/decision)
+	DecideCashApprovalRequest(w http.ResponseWriter, r *http.Request, tenantId TenantId, approvalRequestId CashApprovalRequestId, params DecideCashApprovalRequestParams)
+	// ListCashCategories List cash categories («статьи»)
+	// (GET /api/v1/tenants/{tenantId}/cash/categories)
+	ListCashCategories(w http.ResponseWriter, r *http.Request, tenantId TenantId)
+	// FindCashDuplicates Find possible duplicates of an operation being entered
+	// (GET /api/v1/tenants/{tenantId}/cash/duplicates)
+	FindCashDuplicates(w http.ResponseWriter, r *http.Request, tenantId TenantId, params FindCashDuplicatesParams)
 	// ListCashOperations List visible append-only ledger postings
 	// (GET /api/v1/tenants/{tenantId}/cash/operations)
 	ListCashOperations(w http.ResponseWriter, r *http.Request, tenantId TenantId, params ListCashOperationsParams)
 	// PostCashOperation Record an internal receipt, expense or linked reversal
 	// (POST /api/v1/tenants/{tenantId}/cash/operations)
 	PostCashOperation(w http.ResponseWriter, r *http.Request, tenantId TenantId, params PostCashOperationParams)
+	// ReverseCashOperation Reverse a ledger operation by a new storno row
+	// (POST /api/v1/tenants/{tenantId}/cash/operations/{operationId}/reverse)
+	ReverseCashOperation(w http.ResponseWriter, r *http.Request, tenantId TenantId, operationId CashOperationId, params ReverseCashOperationParams)
+	// LinkCashOperationSource Link an operation to a source record
+	// (POST /api/v1/tenants/{tenantId}/cash/operations/{operationId}/source-link)
+	LinkCashOperationSource(w http.ResponseWriter, r *http.Request, tenantId TenantId, operationId CashOperationId, params LinkCashOperationSourceParams)
+	// ListCashProposals List proposals of modules for the cash desks of the scope
+	// (GET /api/v1/tenants/{tenantId}/cash/proposals)
+	ListCashProposals(w http.ResponseWriter, r *http.Request, tenantId TenantId, params ListCashProposalsParams)
+	// DismissCashProposal Dismiss a proposal with a reason
+	// (POST /api/v1/tenants/{tenantId}/cash/proposals/{proposalKey}/dismiss)
+	DismissCashProposal(w http.ResponseWriter, r *http.Request, tenantId TenantId, proposalKey CashProposalKey, params DismissCashProposalParams)
+	// PostCashProposal Post a proposal as 1…N operations of one group
+	// (POST /api/v1/tenants/{tenantId}/cash/proposals/{proposalKey}/post)
+	PostCashProposal(w http.ResponseWriter, r *http.Request, tenantId TenantId, proposalKey CashProposalKey, params PostCashProposalParams)
+	// ListAdvanceReceipts List receipts of advance reports
+	// (GET /api/v1/tenants/{tenantId}/cash/receipts)
+	ListAdvanceReceipts(w http.ResponseWriter, r *http.Request, tenantId TenantId, params ListAdvanceReceiptsParams)
+	// DecideAdvanceReceipt Accept or reject a receipt of an advance report
+	// (POST /api/v1/tenants/{tenantId}/cash/receipts/{receiptId}/decision)
+	DecideAdvanceReceipt(w http.ResponseWriter, r *http.Request, tenantId TenantId, receiptId CashReceiptId, params DecideAdvanceReceiptParams)
+	// ListCashShifts List cash shifts of the visible accounts
+	// (GET /api/v1/tenants/{tenantId}/cash/shifts)
+	ListCashShifts(w http.ResponseWriter, r *http.Request, tenantId TenantId, params ListCashShiftsParams)
+	// CloseCashShift Close a shift: count, Z report, terminal, hand-over to the safe
+	// (POST /api/v1/tenants/{tenantId}/cash/shifts/{shiftId}/close)
+	CloseCashShift(w http.ResponseWriter, r *http.Request, tenantId TenantId, shiftId CashShiftId, params CloseCashShiftParams)
+	// ReviewCashShift Accept a shift difference or send the shift to a recount
+	// (POST /api/v1/tenants/{tenantId}/cash/shifts/{shiftId}/review)
+	ReviewCashShift(w http.ResponseWriter, r *http.Request, tenantId TenantId, shiftId CashShiftId, params ReviewCashShiftParams)
+	// ListCashTransfers List transfers between cash accounts
+	// (GET /api/v1/tenants/{tenantId}/cash/transfers)
+	ListCashTransfers(w http.ResponseWriter, r *http.Request, tenantId TenantId, params ListCashTransfersParams)
+	// CreateCashTransfer Send money to another cash account (in transit)
+	// (POST /api/v1/tenants/{tenantId}/cash/transfers)
+	CreateCashTransfer(w http.ResponseWriter, r *http.Request, tenantId TenantId, params CreateCashTransferParams)
+	// DecideCashTransfer Accept or reject a transfer in transit
+	// (POST /api/v1/tenants/{tenantId}/cash/transfers/{transferId}/decision)
+	DecideCashTransfer(w http.ResponseWriter, r *http.Request, tenantId TenantId, transferId CashTransferId, params DecideCashTransferParams)
 }
 
 // Unimplemented server implementation that returns http.StatusNotImplemented for each endpoint.
@@ -736,6 +2820,60 @@ func (_ Unimplemented) CreateCashAccount(w http.ResponseWriter, r *http.Request,
 	w.WriteHeader(http.StatusNotImplemented)
 }
 
+// PreviewCashAccountAccess Preview who would get access to an account being created
+// (GET /api/v1/tenants/{tenantId}/cash/accounts/access-preview)
+func (_ Unimplemented) PreviewCashAccountAccess(w http.ResponseWriter, r *http.Request, tenantId TenantId, params PreviewCashAccountAccessParams) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// IssueCashAdvance Issue money under report to an advance account
+// (POST /api/v1/tenants/{tenantId}/cash/accounts/{accountId}/advance-issues)
+func (_ Unimplemented) IssueCashAdvance(w http.ResponseWriter, r *http.Request, tenantId TenantId, accountId CashAccountId, params IssueCashAdvanceParams) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// ReturnCashAdvance Return the unspent rest of an advance
+// (POST /api/v1/tenants/{tenantId}/cash/accounts/{accountId}/advance-returns)
+func (_ Unimplemented) ReturnCashAdvance(w http.ResponseWriter, r *http.Request, tenantId TenantId, accountId CashAccountId, params ReturnCashAdvanceParams) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// SubmitAdvanceReceipt Submit a receipt of an advance report
+// (POST /api/v1/tenants/{tenantId}/cash/accounts/{accountId}/receipts)
+func (_ Unimplemented) SubmitAdvanceReceipt(w http.ResponseWriter, r *http.Request, tenantId TenantId, accountId CashAccountId, params SubmitAdvanceReceiptParams) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// OpenCashShift Open a shift with the count of the float
+// (POST /api/v1/tenants/{tenantId}/cash/accounts/{accountId}/shifts)
+func (_ Unimplemented) OpenCashShift(w http.ResponseWriter, r *http.Request, tenantId TenantId, accountId CashAccountId, params OpenCashShiftParams) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// ListCashApprovalRequests List approval requests over role limits
+// (GET /api/v1/tenants/{tenantId}/cash/approval-requests)
+func (_ Unimplemented) ListCashApprovalRequests(w http.ResponseWriter, r *http.Request, tenantId TenantId, params ListCashApprovalRequestsParams) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// DecideCashApprovalRequest Approve or reject an approval request
+// (POST /api/v1/tenants/{tenantId}/cash/approval-requests/{approvalRequestId}/decision)
+func (_ Unimplemented) DecideCashApprovalRequest(w http.ResponseWriter, r *http.Request, tenantId TenantId, approvalRequestId CashApprovalRequestId, params DecideCashApprovalRequestParams) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// ListCashCategories List cash categories («статьи»)
+// (GET /api/v1/tenants/{tenantId}/cash/categories)
+func (_ Unimplemented) ListCashCategories(w http.ResponseWriter, r *http.Request, tenantId TenantId) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// FindCashDuplicates Find possible duplicates of an operation being entered
+// (GET /api/v1/tenants/{tenantId}/cash/duplicates)
+func (_ Unimplemented) FindCashDuplicates(w http.ResponseWriter, r *http.Request, tenantId TenantId, params FindCashDuplicatesParams) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
 // ListCashOperations List visible append-only ledger postings
 // (GET /api/v1/tenants/{tenantId}/cash/operations)
 func (_ Unimplemented) ListCashOperations(w http.ResponseWriter, r *http.Request, tenantId TenantId, params ListCashOperationsParams) {
@@ -745,6 +2883,84 @@ func (_ Unimplemented) ListCashOperations(w http.ResponseWriter, r *http.Request
 // PostCashOperation Record an internal receipt, expense or linked reversal
 // (POST /api/v1/tenants/{tenantId}/cash/operations)
 func (_ Unimplemented) PostCashOperation(w http.ResponseWriter, r *http.Request, tenantId TenantId, params PostCashOperationParams) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// ReverseCashOperation Reverse a ledger operation by a new storno row
+// (POST /api/v1/tenants/{tenantId}/cash/operations/{operationId}/reverse)
+func (_ Unimplemented) ReverseCashOperation(w http.ResponseWriter, r *http.Request, tenantId TenantId, operationId CashOperationId, params ReverseCashOperationParams) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// LinkCashOperationSource Link an operation to a source record
+// (POST /api/v1/tenants/{tenantId}/cash/operations/{operationId}/source-link)
+func (_ Unimplemented) LinkCashOperationSource(w http.ResponseWriter, r *http.Request, tenantId TenantId, operationId CashOperationId, params LinkCashOperationSourceParams) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// ListCashProposals List proposals of modules for the cash desks of the scope
+// (GET /api/v1/tenants/{tenantId}/cash/proposals)
+func (_ Unimplemented) ListCashProposals(w http.ResponseWriter, r *http.Request, tenantId TenantId, params ListCashProposalsParams) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// DismissCashProposal Dismiss a proposal with a reason
+// (POST /api/v1/tenants/{tenantId}/cash/proposals/{proposalKey}/dismiss)
+func (_ Unimplemented) DismissCashProposal(w http.ResponseWriter, r *http.Request, tenantId TenantId, proposalKey CashProposalKey, params DismissCashProposalParams) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// PostCashProposal Post a proposal as 1…N operations of one group
+// (POST /api/v1/tenants/{tenantId}/cash/proposals/{proposalKey}/post)
+func (_ Unimplemented) PostCashProposal(w http.ResponseWriter, r *http.Request, tenantId TenantId, proposalKey CashProposalKey, params PostCashProposalParams) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// ListAdvanceReceipts List receipts of advance reports
+// (GET /api/v1/tenants/{tenantId}/cash/receipts)
+func (_ Unimplemented) ListAdvanceReceipts(w http.ResponseWriter, r *http.Request, tenantId TenantId, params ListAdvanceReceiptsParams) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// DecideAdvanceReceipt Accept or reject a receipt of an advance report
+// (POST /api/v1/tenants/{tenantId}/cash/receipts/{receiptId}/decision)
+func (_ Unimplemented) DecideAdvanceReceipt(w http.ResponseWriter, r *http.Request, tenantId TenantId, receiptId CashReceiptId, params DecideAdvanceReceiptParams) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// ListCashShifts List cash shifts of the visible accounts
+// (GET /api/v1/tenants/{tenantId}/cash/shifts)
+func (_ Unimplemented) ListCashShifts(w http.ResponseWriter, r *http.Request, tenantId TenantId, params ListCashShiftsParams) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// CloseCashShift Close a shift: count, Z report, terminal, hand-over to the safe
+// (POST /api/v1/tenants/{tenantId}/cash/shifts/{shiftId}/close)
+func (_ Unimplemented) CloseCashShift(w http.ResponseWriter, r *http.Request, tenantId TenantId, shiftId CashShiftId, params CloseCashShiftParams) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// ReviewCashShift Accept a shift difference or send the shift to a recount
+// (POST /api/v1/tenants/{tenantId}/cash/shifts/{shiftId}/review)
+func (_ Unimplemented) ReviewCashShift(w http.ResponseWriter, r *http.Request, tenantId TenantId, shiftId CashShiftId, params ReviewCashShiftParams) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// ListCashTransfers List transfers between cash accounts
+// (GET /api/v1/tenants/{tenantId}/cash/transfers)
+func (_ Unimplemented) ListCashTransfers(w http.ResponseWriter, r *http.Request, tenantId TenantId, params ListCashTransfersParams) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// CreateCashTransfer Send money to another cash account (in transit)
+// (POST /api/v1/tenants/{tenantId}/cash/transfers)
+func (_ Unimplemented) CreateCashTransfer(w http.ResponseWriter, r *http.Request, tenantId TenantId, params CreateCashTransferParams) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// DecideCashTransfer Accept or reject a transfer in transit
+// (POST /api/v1/tenants/{tenantId}/cash/transfers/{transferId}/decision)
+func (_ Unimplemented) DecideCashTransfer(w http.ResponseWriter, r *http.Request, tenantId TenantId, transferId CashTransferId, params DecideCashTransferParams) {
 	w.WriteHeader(http.StatusNotImplemented)
 }
 
@@ -797,6 +3013,32 @@ func (siw *ServerInterfaceWrapper) ListCashAccounts(w http.ResponseWriter, r *ht
 			siw.ErrorHandlerFunc(w, r, &RequiredParamError{ParamName: "limit"})
 		} else {
 			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "limit", Err: err})
+		}
+		return
+	}
+
+	// ------------- Optional query parameter "kind" -------------
+
+	err = runtime.BindQueryParameterWithOptions("form", true, false, "kind", r.URL.Query(), &params.Kind, runtime.BindQueryParameterOptions{Type: "string", Format: ""})
+	if err != nil {
+		var requiredError *runtime.RequiredParameterError
+		if errors.As(err, &requiredError) {
+			siw.ErrorHandlerFunc(w, r, &RequiredParamError{ParamName: "kind"})
+		} else {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "kind", Err: err})
+		}
+		return
+	}
+
+	// ------------- Optional query parameter "orgUnitId" -------------
+
+	err = runtime.BindQueryParameterWithOptions("form", true, false, "orgUnitId", r.URL.Query(), &params.OrgUnitId, runtime.BindQueryParameterOptions{Type: "string", Format: "uuid"})
+	if err != nil {
+		var requiredError *runtime.RequiredParameterError
+		if errors.As(err, &requiredError) {
+			siw.ErrorHandlerFunc(w, r, &RequiredParamError{ParamName: "orgUnitId"})
+		} else {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "orgUnitId", Err: err})
 		}
 		return
 	}
@@ -904,6 +3146,790 @@ func (siw *ServerInterfaceWrapper) CreateCashAccount(w http.ResponseWriter, r *h
 	handler.ServeHTTP(w, r)
 }
 
+// PreviewCashAccountAccess operation middleware
+func (siw *ServerInterfaceWrapper) PreviewCashAccountAccess(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+	_ = err
+
+	// ------------- Path parameter "tenantId" -------------
+	var tenantId TenantId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "tenantId", chi.URLParam(r, "tenantId"), &tenantId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "tenantId", Err: err})
+		return
+	}
+
+	// Parameter object where we will unmarshal all parameters from the context
+	var params PreviewCashAccountAccessParams
+
+	// ------------- Optional query parameter "kind" -------------
+
+	err = runtime.BindQueryParameterWithOptions("form", true, false, "kind", r.URL.Query(), &params.Kind, runtime.BindQueryParameterOptions{Type: "string", Format: ""})
+	if err != nil {
+		var requiredError *runtime.RequiredParameterError
+		if errors.As(err, &requiredError) {
+			siw.ErrorHandlerFunc(w, r, &RequiredParamError{ParamName: "kind"})
+		} else {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "kind", Err: err})
+		}
+		return
+	}
+
+	// ------------- Optional query parameter "orgUnitId" -------------
+
+	err = runtime.BindQueryParameterWithOptions("form", true, false, "orgUnitId", r.URL.Query(), &params.OrgUnitId, runtime.BindQueryParameterOptions{Type: "string", Format: "uuid"})
+	if err != nil {
+		var requiredError *runtime.RequiredParameterError
+		if errors.As(err, &requiredError) {
+			siw.ErrorHandlerFunc(w, r, &RequiredParamError{ParamName: "orgUnitId"})
+		} else {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "orgUnitId", Err: err})
+		}
+		return
+	}
+
+	// ------------- Optional query parameter "holderMemberId" -------------
+
+	err = runtime.BindQueryParameterWithOptions("form", true, false, "holderMemberId", r.URL.Query(), &params.HolderMemberId, runtime.BindQueryParameterOptions{Type: "string", Format: "uuid"})
+	if err != nil {
+		var requiredError *runtime.RequiredParameterError
+		if errors.As(err, &requiredError) {
+			siw.ErrorHandlerFunc(w, r, &RequiredParamError{ParamName: "holderMemberId"})
+		} else {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "holderMemberId", Err: err})
+		}
+		return
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.PreviewCashAccountAccess(w, r, tenantId, params)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// IssueCashAdvance operation middleware
+func (siw *ServerInterfaceWrapper) IssueCashAdvance(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+	_ = err
+
+	// ------------- Path parameter "tenantId" -------------
+	var tenantId TenantId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "tenantId", chi.URLParam(r, "tenantId"), &tenantId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "tenantId", Err: err})
+		return
+	}
+
+	// ------------- Path parameter "accountId" -------------
+	var accountId CashAccountId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "accountId", chi.URLParam(r, "accountId"), &accountId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "accountId", Err: err})
+		return
+	}
+
+	// Parameter object where we will unmarshal all parameters from the context
+	var params IssueCashAdvanceParams
+
+	headers := r.Header
+
+	// ------------- Required header parameter "Idempotency-Key" -------------
+	if valueList, found := headers[http.CanonicalHeaderKey("Idempotency-Key")]; found {
+		var IdempotencyKey IdempotencyKey
+		n := len(valueList)
+		if n != 1 {
+			siw.ErrorHandlerFunc(w, r, &TooManyValuesForParamError{ParamName: "Idempotency-Key", Count: n})
+			return
+		}
+
+		err = runtime.BindStyledParameterWithOptions("simple", "Idempotency-Key", valueList[0], &IdempotencyKey, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: true, Type: "string", Format: ""})
+		if err != nil {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "Idempotency-Key", Err: err})
+			return
+		}
+
+		params.IdempotencyKey = IdempotencyKey
+
+	} else {
+		err := fmt.Errorf("Header parameter Idempotency-Key is required, but not found")
+		siw.ErrorHandlerFunc(w, r, &RequiredHeaderError{ParamName: "Idempotency-Key", Err: err})
+		return
+	}
+
+	// ------------- Optional header parameter "X-CSRF-Token" -------------
+	if valueList, found := headers[http.CanonicalHeaderKey("X-CSRF-Token")]; found {
+		var XCSRFToken Csrf
+		n := len(valueList)
+		if n != 1 {
+			siw.ErrorHandlerFunc(w, r, &TooManyValuesForParamError{ParamName: "X-CSRF-Token", Count: n})
+			return
+		}
+
+		err = runtime.BindStyledParameterWithOptions("simple", "X-CSRF-Token", valueList[0], &XCSRFToken, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: false, Type: "string", Format: ""})
+		if err != nil {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "X-CSRF-Token", Err: err})
+			return
+		}
+
+		params.XCSRFToken = &XCSRFToken
+
+	}
+
+	// ------------- Optional header parameter "Origin" -------------
+	if valueList, found := headers[http.CanonicalHeaderKey("Origin")]; found {
+		var Origin Origin
+		n := len(valueList)
+		if n != 1 {
+			siw.ErrorHandlerFunc(w, r, &TooManyValuesForParamError{ParamName: "Origin", Count: n})
+			return
+		}
+
+		err = runtime.BindStyledParameterWithOptions("simple", "Origin", valueList[0], &Origin, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: false, Type: "string", Format: "uri"})
+		if err != nil {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "Origin", Err: err})
+			return
+		}
+
+		params.Origin = &Origin
+
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.IssueCashAdvance(w, r, tenantId, accountId, params)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// ReturnCashAdvance operation middleware
+func (siw *ServerInterfaceWrapper) ReturnCashAdvance(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+	_ = err
+
+	// ------------- Path parameter "tenantId" -------------
+	var tenantId TenantId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "tenantId", chi.URLParam(r, "tenantId"), &tenantId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "tenantId", Err: err})
+		return
+	}
+
+	// ------------- Path parameter "accountId" -------------
+	var accountId CashAccountId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "accountId", chi.URLParam(r, "accountId"), &accountId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "accountId", Err: err})
+		return
+	}
+
+	// Parameter object where we will unmarshal all parameters from the context
+	var params ReturnCashAdvanceParams
+
+	headers := r.Header
+
+	// ------------- Required header parameter "Idempotency-Key" -------------
+	if valueList, found := headers[http.CanonicalHeaderKey("Idempotency-Key")]; found {
+		var IdempotencyKey IdempotencyKey
+		n := len(valueList)
+		if n != 1 {
+			siw.ErrorHandlerFunc(w, r, &TooManyValuesForParamError{ParamName: "Idempotency-Key", Count: n})
+			return
+		}
+
+		err = runtime.BindStyledParameterWithOptions("simple", "Idempotency-Key", valueList[0], &IdempotencyKey, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: true, Type: "string", Format: ""})
+		if err != nil {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "Idempotency-Key", Err: err})
+			return
+		}
+
+		params.IdempotencyKey = IdempotencyKey
+
+	} else {
+		err := fmt.Errorf("Header parameter Idempotency-Key is required, but not found")
+		siw.ErrorHandlerFunc(w, r, &RequiredHeaderError{ParamName: "Idempotency-Key", Err: err})
+		return
+	}
+
+	// ------------- Optional header parameter "X-CSRF-Token" -------------
+	if valueList, found := headers[http.CanonicalHeaderKey("X-CSRF-Token")]; found {
+		var XCSRFToken Csrf
+		n := len(valueList)
+		if n != 1 {
+			siw.ErrorHandlerFunc(w, r, &TooManyValuesForParamError{ParamName: "X-CSRF-Token", Count: n})
+			return
+		}
+
+		err = runtime.BindStyledParameterWithOptions("simple", "X-CSRF-Token", valueList[0], &XCSRFToken, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: false, Type: "string", Format: ""})
+		if err != nil {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "X-CSRF-Token", Err: err})
+			return
+		}
+
+		params.XCSRFToken = &XCSRFToken
+
+	}
+
+	// ------------- Optional header parameter "Origin" -------------
+	if valueList, found := headers[http.CanonicalHeaderKey("Origin")]; found {
+		var Origin Origin
+		n := len(valueList)
+		if n != 1 {
+			siw.ErrorHandlerFunc(w, r, &TooManyValuesForParamError{ParamName: "Origin", Count: n})
+			return
+		}
+
+		err = runtime.BindStyledParameterWithOptions("simple", "Origin", valueList[0], &Origin, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: false, Type: "string", Format: "uri"})
+		if err != nil {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "Origin", Err: err})
+			return
+		}
+
+		params.Origin = &Origin
+
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.ReturnCashAdvance(w, r, tenantId, accountId, params)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// SubmitAdvanceReceipt operation middleware
+func (siw *ServerInterfaceWrapper) SubmitAdvanceReceipt(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+	_ = err
+
+	// ------------- Path parameter "tenantId" -------------
+	var tenantId TenantId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "tenantId", chi.URLParam(r, "tenantId"), &tenantId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "tenantId", Err: err})
+		return
+	}
+
+	// ------------- Path parameter "accountId" -------------
+	var accountId CashAccountId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "accountId", chi.URLParam(r, "accountId"), &accountId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "accountId", Err: err})
+		return
+	}
+
+	// Parameter object where we will unmarshal all parameters from the context
+	var params SubmitAdvanceReceiptParams
+
+	headers := r.Header
+
+	// ------------- Required header parameter "Idempotency-Key" -------------
+	if valueList, found := headers[http.CanonicalHeaderKey("Idempotency-Key")]; found {
+		var IdempotencyKey IdempotencyKey
+		n := len(valueList)
+		if n != 1 {
+			siw.ErrorHandlerFunc(w, r, &TooManyValuesForParamError{ParamName: "Idempotency-Key", Count: n})
+			return
+		}
+
+		err = runtime.BindStyledParameterWithOptions("simple", "Idempotency-Key", valueList[0], &IdempotencyKey, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: true, Type: "string", Format: ""})
+		if err != nil {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "Idempotency-Key", Err: err})
+			return
+		}
+
+		params.IdempotencyKey = IdempotencyKey
+
+	} else {
+		err := fmt.Errorf("Header parameter Idempotency-Key is required, but not found")
+		siw.ErrorHandlerFunc(w, r, &RequiredHeaderError{ParamName: "Idempotency-Key", Err: err})
+		return
+	}
+
+	// ------------- Optional header parameter "X-CSRF-Token" -------------
+	if valueList, found := headers[http.CanonicalHeaderKey("X-CSRF-Token")]; found {
+		var XCSRFToken Csrf
+		n := len(valueList)
+		if n != 1 {
+			siw.ErrorHandlerFunc(w, r, &TooManyValuesForParamError{ParamName: "X-CSRF-Token", Count: n})
+			return
+		}
+
+		err = runtime.BindStyledParameterWithOptions("simple", "X-CSRF-Token", valueList[0], &XCSRFToken, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: false, Type: "string", Format: ""})
+		if err != nil {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "X-CSRF-Token", Err: err})
+			return
+		}
+
+		params.XCSRFToken = &XCSRFToken
+
+	}
+
+	// ------------- Optional header parameter "Origin" -------------
+	if valueList, found := headers[http.CanonicalHeaderKey("Origin")]; found {
+		var Origin Origin
+		n := len(valueList)
+		if n != 1 {
+			siw.ErrorHandlerFunc(w, r, &TooManyValuesForParamError{ParamName: "Origin", Count: n})
+			return
+		}
+
+		err = runtime.BindStyledParameterWithOptions("simple", "Origin", valueList[0], &Origin, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: false, Type: "string", Format: "uri"})
+		if err != nil {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "Origin", Err: err})
+			return
+		}
+
+		params.Origin = &Origin
+
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.SubmitAdvanceReceipt(w, r, tenantId, accountId, params)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// OpenCashShift operation middleware
+func (siw *ServerInterfaceWrapper) OpenCashShift(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+	_ = err
+
+	// ------------- Path parameter "tenantId" -------------
+	var tenantId TenantId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "tenantId", chi.URLParam(r, "tenantId"), &tenantId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "tenantId", Err: err})
+		return
+	}
+
+	// ------------- Path parameter "accountId" -------------
+	var accountId CashAccountId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "accountId", chi.URLParam(r, "accountId"), &accountId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "accountId", Err: err})
+		return
+	}
+
+	// Parameter object where we will unmarshal all parameters from the context
+	var params OpenCashShiftParams
+
+	headers := r.Header
+
+	// ------------- Required header parameter "Idempotency-Key" -------------
+	if valueList, found := headers[http.CanonicalHeaderKey("Idempotency-Key")]; found {
+		var IdempotencyKey IdempotencyKey
+		n := len(valueList)
+		if n != 1 {
+			siw.ErrorHandlerFunc(w, r, &TooManyValuesForParamError{ParamName: "Idempotency-Key", Count: n})
+			return
+		}
+
+		err = runtime.BindStyledParameterWithOptions("simple", "Idempotency-Key", valueList[0], &IdempotencyKey, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: true, Type: "string", Format: ""})
+		if err != nil {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "Idempotency-Key", Err: err})
+			return
+		}
+
+		params.IdempotencyKey = IdempotencyKey
+
+	} else {
+		err := fmt.Errorf("Header parameter Idempotency-Key is required, but not found")
+		siw.ErrorHandlerFunc(w, r, &RequiredHeaderError{ParamName: "Idempotency-Key", Err: err})
+		return
+	}
+
+	// ------------- Optional header parameter "X-CSRF-Token" -------------
+	if valueList, found := headers[http.CanonicalHeaderKey("X-CSRF-Token")]; found {
+		var XCSRFToken Csrf
+		n := len(valueList)
+		if n != 1 {
+			siw.ErrorHandlerFunc(w, r, &TooManyValuesForParamError{ParamName: "X-CSRF-Token", Count: n})
+			return
+		}
+
+		err = runtime.BindStyledParameterWithOptions("simple", "X-CSRF-Token", valueList[0], &XCSRFToken, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: false, Type: "string", Format: ""})
+		if err != nil {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "X-CSRF-Token", Err: err})
+			return
+		}
+
+		params.XCSRFToken = &XCSRFToken
+
+	}
+
+	// ------------- Optional header parameter "Origin" -------------
+	if valueList, found := headers[http.CanonicalHeaderKey("Origin")]; found {
+		var Origin Origin
+		n := len(valueList)
+		if n != 1 {
+			siw.ErrorHandlerFunc(w, r, &TooManyValuesForParamError{ParamName: "Origin", Count: n})
+			return
+		}
+
+		err = runtime.BindStyledParameterWithOptions("simple", "Origin", valueList[0], &Origin, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: false, Type: "string", Format: "uri"})
+		if err != nil {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "Origin", Err: err})
+			return
+		}
+
+		params.Origin = &Origin
+
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.OpenCashShift(w, r, tenantId, accountId, params)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// ListCashApprovalRequests operation middleware
+func (siw *ServerInterfaceWrapper) ListCashApprovalRequests(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+	_ = err
+
+	// ------------- Path parameter "tenantId" -------------
+	var tenantId TenantId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "tenantId", chi.URLParam(r, "tenantId"), &tenantId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "tenantId", Err: err})
+		return
+	}
+
+	// Parameter object where we will unmarshal all parameters from the context
+	var params ListCashApprovalRequestsParams
+
+	// ------------- Optional query parameter "cursor" -------------
+
+	err = runtime.BindQueryParameterWithOptions("form", true, false, "cursor", r.URL.Query(), &params.Cursor, runtime.BindQueryParameterOptions{Type: "string", Format: ""})
+	if err != nil {
+		var requiredError *runtime.RequiredParameterError
+		if errors.As(err, &requiredError) {
+			siw.ErrorHandlerFunc(w, r, &RequiredParamError{ParamName: "cursor"})
+		} else {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "cursor", Err: err})
+		}
+		return
+	}
+
+	// ------------- Optional query parameter "limit" -------------
+
+	err = runtime.BindQueryParameterWithOptions("form", true, false, "limit", r.URL.Query(), &params.Limit, runtime.BindQueryParameterOptions{Type: "integer", Format: ""})
+	if err != nil {
+		var requiredError *runtime.RequiredParameterError
+		if errors.As(err, &requiredError) {
+			siw.ErrorHandlerFunc(w, r, &RequiredParamError{ParamName: "limit"})
+		} else {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "limit", Err: err})
+		}
+		return
+	}
+
+	// ------------- Optional query parameter "status" -------------
+
+	err = runtime.BindQueryParameterWithOptions("form", true, false, "status", r.URL.Query(), &params.Status, runtime.BindQueryParameterOptions{Type: "string", Format: ""})
+	if err != nil {
+		var requiredError *runtime.RequiredParameterError
+		if errors.As(err, &requiredError) {
+			siw.ErrorHandlerFunc(w, r, &RequiredParamError{ParamName: "status"})
+		} else {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "status", Err: err})
+		}
+		return
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.ListCashApprovalRequests(w, r, tenantId, params)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// DecideCashApprovalRequest operation middleware
+func (siw *ServerInterfaceWrapper) DecideCashApprovalRequest(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+	_ = err
+
+	// ------------- Path parameter "tenantId" -------------
+	var tenantId TenantId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "tenantId", chi.URLParam(r, "tenantId"), &tenantId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "tenantId", Err: err})
+		return
+	}
+
+	// ------------- Path parameter "approvalRequestId" -------------
+	var approvalRequestId CashApprovalRequestId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "approvalRequestId", chi.URLParam(r, "approvalRequestId"), &approvalRequestId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "approvalRequestId", Err: err})
+		return
+	}
+
+	// Parameter object where we will unmarshal all parameters from the context
+	var params DecideCashApprovalRequestParams
+
+	headers := r.Header
+
+	// ------------- Required header parameter "Idempotency-Key" -------------
+	if valueList, found := headers[http.CanonicalHeaderKey("Idempotency-Key")]; found {
+		var IdempotencyKey IdempotencyKey
+		n := len(valueList)
+		if n != 1 {
+			siw.ErrorHandlerFunc(w, r, &TooManyValuesForParamError{ParamName: "Idempotency-Key", Count: n})
+			return
+		}
+
+		err = runtime.BindStyledParameterWithOptions("simple", "Idempotency-Key", valueList[0], &IdempotencyKey, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: true, Type: "string", Format: ""})
+		if err != nil {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "Idempotency-Key", Err: err})
+			return
+		}
+
+		params.IdempotencyKey = IdempotencyKey
+
+	} else {
+		err := fmt.Errorf("Header parameter Idempotency-Key is required, but not found")
+		siw.ErrorHandlerFunc(w, r, &RequiredHeaderError{ParamName: "Idempotency-Key", Err: err})
+		return
+	}
+
+	// ------------- Optional header parameter "X-CSRF-Token" -------------
+	if valueList, found := headers[http.CanonicalHeaderKey("X-CSRF-Token")]; found {
+		var XCSRFToken Csrf
+		n := len(valueList)
+		if n != 1 {
+			siw.ErrorHandlerFunc(w, r, &TooManyValuesForParamError{ParamName: "X-CSRF-Token", Count: n})
+			return
+		}
+
+		err = runtime.BindStyledParameterWithOptions("simple", "X-CSRF-Token", valueList[0], &XCSRFToken, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: false, Type: "string", Format: ""})
+		if err != nil {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "X-CSRF-Token", Err: err})
+			return
+		}
+
+		params.XCSRFToken = &XCSRFToken
+
+	}
+
+	// ------------- Optional header parameter "Origin" -------------
+	if valueList, found := headers[http.CanonicalHeaderKey("Origin")]; found {
+		var Origin Origin
+		n := len(valueList)
+		if n != 1 {
+			siw.ErrorHandlerFunc(w, r, &TooManyValuesForParamError{ParamName: "Origin", Count: n})
+			return
+		}
+
+		err = runtime.BindStyledParameterWithOptions("simple", "Origin", valueList[0], &Origin, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: false, Type: "string", Format: "uri"})
+		if err != nil {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "Origin", Err: err})
+			return
+		}
+
+		params.Origin = &Origin
+
+	}
+
+	// ------------- Required header parameter "If-Match" -------------
+	if valueList, found := headers[http.CanonicalHeaderKey("If-Match")]; found {
+		var IfMatch IfMatch
+		n := len(valueList)
+		if n != 1 {
+			siw.ErrorHandlerFunc(w, r, &TooManyValuesForParamError{ParamName: "If-Match", Count: n})
+			return
+		}
+
+		err = runtime.BindStyledParameterWithOptions("simple", "If-Match", valueList[0], &IfMatch, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: true, Type: "string", Format: ""})
+		if err != nil {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "If-Match", Err: err})
+			return
+		}
+
+		params.IfMatch = IfMatch
+
+	} else {
+		err := fmt.Errorf("Header parameter If-Match is required, but not found")
+		siw.ErrorHandlerFunc(w, r, &RequiredHeaderError{ParamName: "If-Match", Err: err})
+		return
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.DecideCashApprovalRequest(w, r, tenantId, approvalRequestId, params)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// ListCashCategories operation middleware
+func (siw *ServerInterfaceWrapper) ListCashCategories(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+	_ = err
+
+	// ------------- Path parameter "tenantId" -------------
+	var tenantId TenantId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "tenantId", chi.URLParam(r, "tenantId"), &tenantId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "tenantId", Err: err})
+		return
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.ListCashCategories(w, r, tenantId)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// FindCashDuplicates operation middleware
+func (siw *ServerInterfaceWrapper) FindCashDuplicates(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+	_ = err
+
+	// ------------- Path parameter "tenantId" -------------
+	var tenantId TenantId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "tenantId", chi.URLParam(r, "tenantId"), &tenantId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "tenantId", Err: err})
+		return
+	}
+
+	// Parameter object where we will unmarshal all parameters from the context
+	var params FindCashDuplicatesParams
+
+	// ------------- Optional query parameter "accountId" -------------
+
+	err = runtime.BindQueryParameterWithOptions("form", true, false, "accountId", r.URL.Query(), &params.AccountId, runtime.BindQueryParameterOptions{Type: "string", Format: "uuid"})
+	if err != nil {
+		var requiredError *runtime.RequiredParameterError
+		if errors.As(err, &requiredError) {
+			siw.ErrorHandlerFunc(w, r, &RequiredParamError{ParamName: "accountId"})
+		} else {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "accountId", Err: err})
+		}
+		return
+	}
+
+	// ------------- Optional query parameter "amountMinor" -------------
+
+	err = runtime.BindQueryParameterWithOptions("form", true, false, "amountMinor", r.URL.Query(), &params.AmountMinor, runtime.BindQueryParameterOptions{Type: "integer", Format: ""})
+	if err != nil {
+		var requiredError *runtime.RequiredParameterError
+		if errors.As(err, &requiredError) {
+			siw.ErrorHandlerFunc(w, r, &RequiredParamError{ParamName: "amountMinor"})
+		} else {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "amountMinor", Err: err})
+		}
+		return
+	}
+
+	// ------------- Optional query parameter "method" -------------
+
+	err = runtime.BindQueryParameterWithOptions("form", true, false, "method", r.URL.Query(), &params.Method, runtime.BindQueryParameterOptions{Type: "string", Format: ""})
+	if err != nil {
+		var requiredError *runtime.RequiredParameterError
+		if errors.As(err, &requiredError) {
+			siw.ErrorHandlerFunc(w, r, &RequiredParamError{ParamName: "method"})
+		} else {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "method", Err: err})
+		}
+		return
+	}
+
+	// ------------- Optional query parameter "type" -------------
+
+	err = runtime.BindQueryParameterWithOptions("form", true, false, "type", r.URL.Query(), &params.Type, runtime.BindQueryParameterOptions{Type: "string", Format: ""})
+	if err != nil {
+		var requiredError *runtime.RequiredParameterError
+		if errors.As(err, &requiredError) {
+			siw.ErrorHandlerFunc(w, r, &RequiredParamError{ParamName: "type"})
+		} else {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "type", Err: err})
+		}
+		return
+	}
+
+	// ------------- Optional query parameter "at" -------------
+
+	err = runtime.BindQueryParameterWithOptions("form", true, false, "at", r.URL.Query(), &params.At, runtime.BindQueryParameterOptions{Type: "string", Format: "date-time"})
+	if err != nil {
+		var requiredError *runtime.RequiredParameterError
+		if errors.As(err, &requiredError) {
+			siw.ErrorHandlerFunc(w, r, &RequiredParamError{ParamName: "at"})
+		} else {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "at", Err: err})
+		}
+		return
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.FindCashDuplicates(w, r, tenantId, params)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
 // ListCashOperations operation middleware
 func (siw *ServerInterfaceWrapper) ListCashOperations(w http.ResponseWriter, r *http.Request) {
 
@@ -944,6 +3970,45 @@ func (siw *ServerInterfaceWrapper) ListCashOperations(w http.ResponseWriter, r *
 			siw.ErrorHandlerFunc(w, r, &RequiredParamError{ParamName: "limit"})
 		} else {
 			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "limit", Err: err})
+		}
+		return
+	}
+
+	// ------------- Optional query parameter "accountId" -------------
+
+	err = runtime.BindQueryParameterWithOptions("form", true, false, "accountId", r.URL.Query(), &params.AccountId, runtime.BindQueryParameterOptions{Type: "string", Format: "uuid"})
+	if err != nil {
+		var requiredError *runtime.RequiredParameterError
+		if errors.As(err, &requiredError) {
+			siw.ErrorHandlerFunc(w, r, &RequiredParamError{ParamName: "accountId"})
+		} else {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "accountId", Err: err})
+		}
+		return
+	}
+
+	// ------------- Optional query parameter "type" -------------
+
+	err = runtime.BindQueryParameterWithOptions("form", true, false, "type", r.URL.Query(), &params.Type, runtime.BindQueryParameterOptions{Type: "string", Format: ""})
+	if err != nil {
+		var requiredError *runtime.RequiredParameterError
+		if errors.As(err, &requiredError) {
+			siw.ErrorHandlerFunc(w, r, &RequiredParamError{ParamName: "type"})
+		} else {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "type", Err: err})
+		}
+		return
+	}
+
+	// ------------- Optional query parameter "shiftId" -------------
+
+	err = runtime.BindQueryParameterWithOptions("form", true, false, "shiftId", r.URL.Query(), &params.ShiftId, runtime.BindQueryParameterOptions{Type: "string", Format: "uuid"})
+	if err != nil {
+		var requiredError *runtime.RequiredParameterError
+		if errors.As(err, &requiredError) {
+			siw.ErrorHandlerFunc(w, r, &RequiredParamError{ParamName: "shiftId"})
+		} else {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "shiftId", Err: err})
 		}
 		return
 	}
@@ -1042,6 +4107,1309 @@ func (siw *ServerInterfaceWrapper) PostCashOperation(w http.ResponseWriter, r *h
 
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		siw.Handler.PostCashOperation(w, r, tenantId, params)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// ReverseCashOperation operation middleware
+func (siw *ServerInterfaceWrapper) ReverseCashOperation(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+	_ = err
+
+	// ------------- Path parameter "tenantId" -------------
+	var tenantId TenantId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "tenantId", chi.URLParam(r, "tenantId"), &tenantId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "tenantId", Err: err})
+		return
+	}
+
+	// ------------- Path parameter "operationId" -------------
+	var operationId CashOperationId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "operationId", chi.URLParam(r, "operationId"), &operationId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "operationId", Err: err})
+		return
+	}
+
+	// Parameter object where we will unmarshal all parameters from the context
+	var params ReverseCashOperationParams
+
+	headers := r.Header
+
+	// ------------- Required header parameter "Idempotency-Key" -------------
+	if valueList, found := headers[http.CanonicalHeaderKey("Idempotency-Key")]; found {
+		var IdempotencyKey IdempotencyKey
+		n := len(valueList)
+		if n != 1 {
+			siw.ErrorHandlerFunc(w, r, &TooManyValuesForParamError{ParamName: "Idempotency-Key", Count: n})
+			return
+		}
+
+		err = runtime.BindStyledParameterWithOptions("simple", "Idempotency-Key", valueList[0], &IdempotencyKey, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: true, Type: "string", Format: ""})
+		if err != nil {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "Idempotency-Key", Err: err})
+			return
+		}
+
+		params.IdempotencyKey = IdempotencyKey
+
+	} else {
+		err := fmt.Errorf("Header parameter Idempotency-Key is required, but not found")
+		siw.ErrorHandlerFunc(w, r, &RequiredHeaderError{ParamName: "Idempotency-Key", Err: err})
+		return
+	}
+
+	// ------------- Optional header parameter "X-CSRF-Token" -------------
+	if valueList, found := headers[http.CanonicalHeaderKey("X-CSRF-Token")]; found {
+		var XCSRFToken Csrf
+		n := len(valueList)
+		if n != 1 {
+			siw.ErrorHandlerFunc(w, r, &TooManyValuesForParamError{ParamName: "X-CSRF-Token", Count: n})
+			return
+		}
+
+		err = runtime.BindStyledParameterWithOptions("simple", "X-CSRF-Token", valueList[0], &XCSRFToken, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: false, Type: "string", Format: ""})
+		if err != nil {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "X-CSRF-Token", Err: err})
+			return
+		}
+
+		params.XCSRFToken = &XCSRFToken
+
+	}
+
+	// ------------- Optional header parameter "Origin" -------------
+	if valueList, found := headers[http.CanonicalHeaderKey("Origin")]; found {
+		var Origin Origin
+		n := len(valueList)
+		if n != 1 {
+			siw.ErrorHandlerFunc(w, r, &TooManyValuesForParamError{ParamName: "Origin", Count: n})
+			return
+		}
+
+		err = runtime.BindStyledParameterWithOptions("simple", "Origin", valueList[0], &Origin, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: false, Type: "string", Format: "uri"})
+		if err != nil {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "Origin", Err: err})
+			return
+		}
+
+		params.Origin = &Origin
+
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.ReverseCashOperation(w, r, tenantId, operationId, params)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// LinkCashOperationSource operation middleware
+func (siw *ServerInterfaceWrapper) LinkCashOperationSource(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+	_ = err
+
+	// ------------- Path parameter "tenantId" -------------
+	var tenantId TenantId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "tenantId", chi.URLParam(r, "tenantId"), &tenantId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "tenantId", Err: err})
+		return
+	}
+
+	// ------------- Path parameter "operationId" -------------
+	var operationId CashOperationId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "operationId", chi.URLParam(r, "operationId"), &operationId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "operationId", Err: err})
+		return
+	}
+
+	// Parameter object where we will unmarshal all parameters from the context
+	var params LinkCashOperationSourceParams
+
+	headers := r.Header
+
+	// ------------- Required header parameter "Idempotency-Key" -------------
+	if valueList, found := headers[http.CanonicalHeaderKey("Idempotency-Key")]; found {
+		var IdempotencyKey IdempotencyKey
+		n := len(valueList)
+		if n != 1 {
+			siw.ErrorHandlerFunc(w, r, &TooManyValuesForParamError{ParamName: "Idempotency-Key", Count: n})
+			return
+		}
+
+		err = runtime.BindStyledParameterWithOptions("simple", "Idempotency-Key", valueList[0], &IdempotencyKey, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: true, Type: "string", Format: ""})
+		if err != nil {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "Idempotency-Key", Err: err})
+			return
+		}
+
+		params.IdempotencyKey = IdempotencyKey
+
+	} else {
+		err := fmt.Errorf("Header parameter Idempotency-Key is required, but not found")
+		siw.ErrorHandlerFunc(w, r, &RequiredHeaderError{ParamName: "Idempotency-Key", Err: err})
+		return
+	}
+
+	// ------------- Optional header parameter "X-CSRF-Token" -------------
+	if valueList, found := headers[http.CanonicalHeaderKey("X-CSRF-Token")]; found {
+		var XCSRFToken Csrf
+		n := len(valueList)
+		if n != 1 {
+			siw.ErrorHandlerFunc(w, r, &TooManyValuesForParamError{ParamName: "X-CSRF-Token", Count: n})
+			return
+		}
+
+		err = runtime.BindStyledParameterWithOptions("simple", "X-CSRF-Token", valueList[0], &XCSRFToken, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: false, Type: "string", Format: ""})
+		if err != nil {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "X-CSRF-Token", Err: err})
+			return
+		}
+
+		params.XCSRFToken = &XCSRFToken
+
+	}
+
+	// ------------- Optional header parameter "Origin" -------------
+	if valueList, found := headers[http.CanonicalHeaderKey("Origin")]; found {
+		var Origin Origin
+		n := len(valueList)
+		if n != 1 {
+			siw.ErrorHandlerFunc(w, r, &TooManyValuesForParamError{ParamName: "Origin", Count: n})
+			return
+		}
+
+		err = runtime.BindStyledParameterWithOptions("simple", "Origin", valueList[0], &Origin, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: false, Type: "string", Format: "uri"})
+		if err != nil {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "Origin", Err: err})
+			return
+		}
+
+		params.Origin = &Origin
+
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.LinkCashOperationSource(w, r, tenantId, operationId, params)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// ListCashProposals operation middleware
+func (siw *ServerInterfaceWrapper) ListCashProposals(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+	_ = err
+
+	// ------------- Path parameter "tenantId" -------------
+	var tenantId TenantId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "tenantId", chi.URLParam(r, "tenantId"), &tenantId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "tenantId", Err: err})
+		return
+	}
+
+	// Parameter object where we will unmarshal all parameters from the context
+	var params ListCashProposalsParams
+
+	// ------------- Optional query parameter "cursor" -------------
+
+	err = runtime.BindQueryParameterWithOptions("form", true, false, "cursor", r.URL.Query(), &params.Cursor, runtime.BindQueryParameterOptions{Type: "string", Format: ""})
+	if err != nil {
+		var requiredError *runtime.RequiredParameterError
+		if errors.As(err, &requiredError) {
+			siw.ErrorHandlerFunc(w, r, &RequiredParamError{ParamName: "cursor"})
+		} else {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "cursor", Err: err})
+		}
+		return
+	}
+
+	// ------------- Optional query parameter "limit" -------------
+
+	err = runtime.BindQueryParameterWithOptions("form", true, false, "limit", r.URL.Query(), &params.Limit, runtime.BindQueryParameterOptions{Type: "integer", Format: ""})
+	if err != nil {
+		var requiredError *runtime.RequiredParameterError
+		if errors.As(err, &requiredError) {
+			siw.ErrorHandlerFunc(w, r, &RequiredParamError{ParamName: "limit"})
+		} else {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "limit", Err: err})
+		}
+		return
+	}
+
+	// ------------- Optional query parameter "status" -------------
+
+	err = runtime.BindQueryParameterWithOptions("form", true, false, "status", r.URL.Query(), &params.Status, runtime.BindQueryParameterOptions{Type: "string", Format: ""})
+	if err != nil {
+		var requiredError *runtime.RequiredParameterError
+		if errors.As(err, &requiredError) {
+			siw.ErrorHandlerFunc(w, r, &RequiredParamError{ParamName: "status"})
+		} else {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "status", Err: err})
+		}
+		return
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.ListCashProposals(w, r, tenantId, params)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// DismissCashProposal operation middleware
+func (siw *ServerInterfaceWrapper) DismissCashProposal(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+	_ = err
+
+	// ------------- Path parameter "tenantId" -------------
+	var tenantId TenantId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "tenantId", chi.URLParam(r, "tenantId"), &tenantId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "tenantId", Err: err})
+		return
+	}
+
+	// ------------- Path parameter "proposalKey" -------------
+	var proposalKey CashProposalKey
+
+	err = runtime.BindStyledParameterWithOptions("simple", "proposalKey", chi.URLParam(r, "proposalKey"), &proposalKey, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "proposalKey", Err: err})
+		return
+	}
+
+	// Parameter object where we will unmarshal all parameters from the context
+	var params DismissCashProposalParams
+
+	headers := r.Header
+
+	// ------------- Required header parameter "Idempotency-Key" -------------
+	if valueList, found := headers[http.CanonicalHeaderKey("Idempotency-Key")]; found {
+		var IdempotencyKey IdempotencyKey
+		n := len(valueList)
+		if n != 1 {
+			siw.ErrorHandlerFunc(w, r, &TooManyValuesForParamError{ParamName: "Idempotency-Key", Count: n})
+			return
+		}
+
+		err = runtime.BindStyledParameterWithOptions("simple", "Idempotency-Key", valueList[0], &IdempotencyKey, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: true, Type: "string", Format: ""})
+		if err != nil {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "Idempotency-Key", Err: err})
+			return
+		}
+
+		params.IdempotencyKey = IdempotencyKey
+
+	} else {
+		err := fmt.Errorf("Header parameter Idempotency-Key is required, but not found")
+		siw.ErrorHandlerFunc(w, r, &RequiredHeaderError{ParamName: "Idempotency-Key", Err: err})
+		return
+	}
+
+	// ------------- Optional header parameter "X-CSRF-Token" -------------
+	if valueList, found := headers[http.CanonicalHeaderKey("X-CSRF-Token")]; found {
+		var XCSRFToken Csrf
+		n := len(valueList)
+		if n != 1 {
+			siw.ErrorHandlerFunc(w, r, &TooManyValuesForParamError{ParamName: "X-CSRF-Token", Count: n})
+			return
+		}
+
+		err = runtime.BindStyledParameterWithOptions("simple", "X-CSRF-Token", valueList[0], &XCSRFToken, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: false, Type: "string", Format: ""})
+		if err != nil {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "X-CSRF-Token", Err: err})
+			return
+		}
+
+		params.XCSRFToken = &XCSRFToken
+
+	}
+
+	// ------------- Optional header parameter "Origin" -------------
+	if valueList, found := headers[http.CanonicalHeaderKey("Origin")]; found {
+		var Origin Origin
+		n := len(valueList)
+		if n != 1 {
+			siw.ErrorHandlerFunc(w, r, &TooManyValuesForParamError{ParamName: "Origin", Count: n})
+			return
+		}
+
+		err = runtime.BindStyledParameterWithOptions("simple", "Origin", valueList[0], &Origin, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: false, Type: "string", Format: "uri"})
+		if err != nil {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "Origin", Err: err})
+			return
+		}
+
+		params.Origin = &Origin
+
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.DismissCashProposal(w, r, tenantId, proposalKey, params)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// PostCashProposal operation middleware
+func (siw *ServerInterfaceWrapper) PostCashProposal(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+	_ = err
+
+	// ------------- Path parameter "tenantId" -------------
+	var tenantId TenantId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "tenantId", chi.URLParam(r, "tenantId"), &tenantId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "tenantId", Err: err})
+		return
+	}
+
+	// ------------- Path parameter "proposalKey" -------------
+	var proposalKey CashProposalKey
+
+	err = runtime.BindStyledParameterWithOptions("simple", "proposalKey", chi.URLParam(r, "proposalKey"), &proposalKey, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "proposalKey", Err: err})
+		return
+	}
+
+	// Parameter object where we will unmarshal all parameters from the context
+	var params PostCashProposalParams
+
+	headers := r.Header
+
+	// ------------- Required header parameter "Idempotency-Key" -------------
+	if valueList, found := headers[http.CanonicalHeaderKey("Idempotency-Key")]; found {
+		var IdempotencyKey IdempotencyKey
+		n := len(valueList)
+		if n != 1 {
+			siw.ErrorHandlerFunc(w, r, &TooManyValuesForParamError{ParamName: "Idempotency-Key", Count: n})
+			return
+		}
+
+		err = runtime.BindStyledParameterWithOptions("simple", "Idempotency-Key", valueList[0], &IdempotencyKey, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: true, Type: "string", Format: ""})
+		if err != nil {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "Idempotency-Key", Err: err})
+			return
+		}
+
+		params.IdempotencyKey = IdempotencyKey
+
+	} else {
+		err := fmt.Errorf("Header parameter Idempotency-Key is required, but not found")
+		siw.ErrorHandlerFunc(w, r, &RequiredHeaderError{ParamName: "Idempotency-Key", Err: err})
+		return
+	}
+
+	// ------------- Optional header parameter "X-CSRF-Token" -------------
+	if valueList, found := headers[http.CanonicalHeaderKey("X-CSRF-Token")]; found {
+		var XCSRFToken Csrf
+		n := len(valueList)
+		if n != 1 {
+			siw.ErrorHandlerFunc(w, r, &TooManyValuesForParamError{ParamName: "X-CSRF-Token", Count: n})
+			return
+		}
+
+		err = runtime.BindStyledParameterWithOptions("simple", "X-CSRF-Token", valueList[0], &XCSRFToken, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: false, Type: "string", Format: ""})
+		if err != nil {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "X-CSRF-Token", Err: err})
+			return
+		}
+
+		params.XCSRFToken = &XCSRFToken
+
+	}
+
+	// ------------- Optional header parameter "Origin" -------------
+	if valueList, found := headers[http.CanonicalHeaderKey("Origin")]; found {
+		var Origin Origin
+		n := len(valueList)
+		if n != 1 {
+			siw.ErrorHandlerFunc(w, r, &TooManyValuesForParamError{ParamName: "Origin", Count: n})
+			return
+		}
+
+		err = runtime.BindStyledParameterWithOptions("simple", "Origin", valueList[0], &Origin, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: false, Type: "string", Format: "uri"})
+		if err != nil {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "Origin", Err: err})
+			return
+		}
+
+		params.Origin = &Origin
+
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.PostCashProposal(w, r, tenantId, proposalKey, params)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// ListAdvanceReceipts operation middleware
+func (siw *ServerInterfaceWrapper) ListAdvanceReceipts(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+	_ = err
+
+	// ------------- Path parameter "tenantId" -------------
+	var tenantId TenantId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "tenantId", chi.URLParam(r, "tenantId"), &tenantId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "tenantId", Err: err})
+		return
+	}
+
+	// Parameter object where we will unmarshal all parameters from the context
+	var params ListAdvanceReceiptsParams
+
+	// ------------- Optional query parameter "cursor" -------------
+
+	err = runtime.BindQueryParameterWithOptions("form", true, false, "cursor", r.URL.Query(), &params.Cursor, runtime.BindQueryParameterOptions{Type: "string", Format: ""})
+	if err != nil {
+		var requiredError *runtime.RequiredParameterError
+		if errors.As(err, &requiredError) {
+			siw.ErrorHandlerFunc(w, r, &RequiredParamError{ParamName: "cursor"})
+		} else {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "cursor", Err: err})
+		}
+		return
+	}
+
+	// ------------- Optional query parameter "limit" -------------
+
+	err = runtime.BindQueryParameterWithOptions("form", true, false, "limit", r.URL.Query(), &params.Limit, runtime.BindQueryParameterOptions{Type: "integer", Format: ""})
+	if err != nil {
+		var requiredError *runtime.RequiredParameterError
+		if errors.As(err, &requiredError) {
+			siw.ErrorHandlerFunc(w, r, &RequiredParamError{ParamName: "limit"})
+		} else {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "limit", Err: err})
+		}
+		return
+	}
+
+	// ------------- Optional query parameter "accountId" -------------
+
+	err = runtime.BindQueryParameterWithOptions("form", true, false, "accountId", r.URL.Query(), &params.AccountId, runtime.BindQueryParameterOptions{Type: "string", Format: "uuid"})
+	if err != nil {
+		var requiredError *runtime.RequiredParameterError
+		if errors.As(err, &requiredError) {
+			siw.ErrorHandlerFunc(w, r, &RequiredParamError{ParamName: "accountId"})
+		} else {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "accountId", Err: err})
+		}
+		return
+	}
+
+	// ------------- Optional query parameter "status" -------------
+
+	err = runtime.BindQueryParameterWithOptions("form", true, false, "status", r.URL.Query(), &params.Status, runtime.BindQueryParameterOptions{Type: "string", Format: ""})
+	if err != nil {
+		var requiredError *runtime.RequiredParameterError
+		if errors.As(err, &requiredError) {
+			siw.ErrorHandlerFunc(w, r, &RequiredParamError{ParamName: "status"})
+		} else {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "status", Err: err})
+		}
+		return
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.ListAdvanceReceipts(w, r, tenantId, params)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// DecideAdvanceReceipt operation middleware
+func (siw *ServerInterfaceWrapper) DecideAdvanceReceipt(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+	_ = err
+
+	// ------------- Path parameter "tenantId" -------------
+	var tenantId TenantId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "tenantId", chi.URLParam(r, "tenantId"), &tenantId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "tenantId", Err: err})
+		return
+	}
+
+	// ------------- Path parameter "receiptId" -------------
+	var receiptId CashReceiptId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "receiptId", chi.URLParam(r, "receiptId"), &receiptId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "receiptId", Err: err})
+		return
+	}
+
+	// Parameter object where we will unmarshal all parameters from the context
+	var params DecideAdvanceReceiptParams
+
+	headers := r.Header
+
+	// ------------- Required header parameter "Idempotency-Key" -------------
+	if valueList, found := headers[http.CanonicalHeaderKey("Idempotency-Key")]; found {
+		var IdempotencyKey IdempotencyKey
+		n := len(valueList)
+		if n != 1 {
+			siw.ErrorHandlerFunc(w, r, &TooManyValuesForParamError{ParamName: "Idempotency-Key", Count: n})
+			return
+		}
+
+		err = runtime.BindStyledParameterWithOptions("simple", "Idempotency-Key", valueList[0], &IdempotencyKey, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: true, Type: "string", Format: ""})
+		if err != nil {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "Idempotency-Key", Err: err})
+			return
+		}
+
+		params.IdempotencyKey = IdempotencyKey
+
+	} else {
+		err := fmt.Errorf("Header parameter Idempotency-Key is required, but not found")
+		siw.ErrorHandlerFunc(w, r, &RequiredHeaderError{ParamName: "Idempotency-Key", Err: err})
+		return
+	}
+
+	// ------------- Optional header parameter "X-CSRF-Token" -------------
+	if valueList, found := headers[http.CanonicalHeaderKey("X-CSRF-Token")]; found {
+		var XCSRFToken Csrf
+		n := len(valueList)
+		if n != 1 {
+			siw.ErrorHandlerFunc(w, r, &TooManyValuesForParamError{ParamName: "X-CSRF-Token", Count: n})
+			return
+		}
+
+		err = runtime.BindStyledParameterWithOptions("simple", "X-CSRF-Token", valueList[0], &XCSRFToken, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: false, Type: "string", Format: ""})
+		if err != nil {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "X-CSRF-Token", Err: err})
+			return
+		}
+
+		params.XCSRFToken = &XCSRFToken
+
+	}
+
+	// ------------- Optional header parameter "Origin" -------------
+	if valueList, found := headers[http.CanonicalHeaderKey("Origin")]; found {
+		var Origin Origin
+		n := len(valueList)
+		if n != 1 {
+			siw.ErrorHandlerFunc(w, r, &TooManyValuesForParamError{ParamName: "Origin", Count: n})
+			return
+		}
+
+		err = runtime.BindStyledParameterWithOptions("simple", "Origin", valueList[0], &Origin, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: false, Type: "string", Format: "uri"})
+		if err != nil {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "Origin", Err: err})
+			return
+		}
+
+		params.Origin = &Origin
+
+	}
+
+	// ------------- Required header parameter "If-Match" -------------
+	if valueList, found := headers[http.CanonicalHeaderKey("If-Match")]; found {
+		var IfMatch IfMatch
+		n := len(valueList)
+		if n != 1 {
+			siw.ErrorHandlerFunc(w, r, &TooManyValuesForParamError{ParamName: "If-Match", Count: n})
+			return
+		}
+
+		err = runtime.BindStyledParameterWithOptions("simple", "If-Match", valueList[0], &IfMatch, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: true, Type: "string", Format: ""})
+		if err != nil {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "If-Match", Err: err})
+			return
+		}
+
+		params.IfMatch = IfMatch
+
+	} else {
+		err := fmt.Errorf("Header parameter If-Match is required, but not found")
+		siw.ErrorHandlerFunc(w, r, &RequiredHeaderError{ParamName: "If-Match", Err: err})
+		return
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.DecideAdvanceReceipt(w, r, tenantId, receiptId, params)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// ListCashShifts operation middleware
+func (siw *ServerInterfaceWrapper) ListCashShifts(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+	_ = err
+
+	// ------------- Path parameter "tenantId" -------------
+	var tenantId TenantId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "tenantId", chi.URLParam(r, "tenantId"), &tenantId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "tenantId", Err: err})
+		return
+	}
+
+	// Parameter object where we will unmarshal all parameters from the context
+	var params ListCashShiftsParams
+
+	// ------------- Optional query parameter "cursor" -------------
+
+	err = runtime.BindQueryParameterWithOptions("form", true, false, "cursor", r.URL.Query(), &params.Cursor, runtime.BindQueryParameterOptions{Type: "string", Format: ""})
+	if err != nil {
+		var requiredError *runtime.RequiredParameterError
+		if errors.As(err, &requiredError) {
+			siw.ErrorHandlerFunc(w, r, &RequiredParamError{ParamName: "cursor"})
+		} else {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "cursor", Err: err})
+		}
+		return
+	}
+
+	// ------------- Optional query parameter "limit" -------------
+
+	err = runtime.BindQueryParameterWithOptions("form", true, false, "limit", r.URL.Query(), &params.Limit, runtime.BindQueryParameterOptions{Type: "integer", Format: ""})
+	if err != nil {
+		var requiredError *runtime.RequiredParameterError
+		if errors.As(err, &requiredError) {
+			siw.ErrorHandlerFunc(w, r, &RequiredParamError{ParamName: "limit"})
+		} else {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "limit", Err: err})
+		}
+		return
+	}
+
+	// ------------- Optional query parameter "accountId" -------------
+
+	err = runtime.BindQueryParameterWithOptions("form", true, false, "accountId", r.URL.Query(), &params.AccountId, runtime.BindQueryParameterOptions{Type: "string", Format: "uuid"})
+	if err != nil {
+		var requiredError *runtime.RequiredParameterError
+		if errors.As(err, &requiredError) {
+			siw.ErrorHandlerFunc(w, r, &RequiredParamError{ParamName: "accountId"})
+		} else {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "accountId", Err: err})
+		}
+		return
+	}
+
+	// ------------- Optional query parameter "status" -------------
+
+	err = runtime.BindQueryParameterWithOptions("form", true, false, "status", r.URL.Query(), &params.Status, runtime.BindQueryParameterOptions{Type: "string", Format: ""})
+	if err != nil {
+		var requiredError *runtime.RequiredParameterError
+		if errors.As(err, &requiredError) {
+			siw.ErrorHandlerFunc(w, r, &RequiredParamError{ParamName: "status"})
+		} else {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "status", Err: err})
+		}
+		return
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.ListCashShifts(w, r, tenantId, params)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// CloseCashShift operation middleware
+func (siw *ServerInterfaceWrapper) CloseCashShift(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+	_ = err
+
+	// ------------- Path parameter "tenantId" -------------
+	var tenantId TenantId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "tenantId", chi.URLParam(r, "tenantId"), &tenantId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "tenantId", Err: err})
+		return
+	}
+
+	// ------------- Path parameter "shiftId" -------------
+	var shiftId CashShiftId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "shiftId", chi.URLParam(r, "shiftId"), &shiftId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "shiftId", Err: err})
+		return
+	}
+
+	// Parameter object where we will unmarshal all parameters from the context
+	var params CloseCashShiftParams
+
+	headers := r.Header
+
+	// ------------- Required header parameter "Idempotency-Key" -------------
+	if valueList, found := headers[http.CanonicalHeaderKey("Idempotency-Key")]; found {
+		var IdempotencyKey IdempotencyKey
+		n := len(valueList)
+		if n != 1 {
+			siw.ErrorHandlerFunc(w, r, &TooManyValuesForParamError{ParamName: "Idempotency-Key", Count: n})
+			return
+		}
+
+		err = runtime.BindStyledParameterWithOptions("simple", "Idempotency-Key", valueList[0], &IdempotencyKey, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: true, Type: "string", Format: ""})
+		if err != nil {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "Idempotency-Key", Err: err})
+			return
+		}
+
+		params.IdempotencyKey = IdempotencyKey
+
+	} else {
+		err := fmt.Errorf("Header parameter Idempotency-Key is required, but not found")
+		siw.ErrorHandlerFunc(w, r, &RequiredHeaderError{ParamName: "Idempotency-Key", Err: err})
+		return
+	}
+
+	// ------------- Optional header parameter "X-CSRF-Token" -------------
+	if valueList, found := headers[http.CanonicalHeaderKey("X-CSRF-Token")]; found {
+		var XCSRFToken Csrf
+		n := len(valueList)
+		if n != 1 {
+			siw.ErrorHandlerFunc(w, r, &TooManyValuesForParamError{ParamName: "X-CSRF-Token", Count: n})
+			return
+		}
+
+		err = runtime.BindStyledParameterWithOptions("simple", "X-CSRF-Token", valueList[0], &XCSRFToken, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: false, Type: "string", Format: ""})
+		if err != nil {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "X-CSRF-Token", Err: err})
+			return
+		}
+
+		params.XCSRFToken = &XCSRFToken
+
+	}
+
+	// ------------- Optional header parameter "Origin" -------------
+	if valueList, found := headers[http.CanonicalHeaderKey("Origin")]; found {
+		var Origin Origin
+		n := len(valueList)
+		if n != 1 {
+			siw.ErrorHandlerFunc(w, r, &TooManyValuesForParamError{ParamName: "Origin", Count: n})
+			return
+		}
+
+		err = runtime.BindStyledParameterWithOptions("simple", "Origin", valueList[0], &Origin, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: false, Type: "string", Format: "uri"})
+		if err != nil {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "Origin", Err: err})
+			return
+		}
+
+		params.Origin = &Origin
+
+	}
+
+	// ------------- Required header parameter "If-Match" -------------
+	if valueList, found := headers[http.CanonicalHeaderKey("If-Match")]; found {
+		var IfMatch IfMatch
+		n := len(valueList)
+		if n != 1 {
+			siw.ErrorHandlerFunc(w, r, &TooManyValuesForParamError{ParamName: "If-Match", Count: n})
+			return
+		}
+
+		err = runtime.BindStyledParameterWithOptions("simple", "If-Match", valueList[0], &IfMatch, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: true, Type: "string", Format: ""})
+		if err != nil {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "If-Match", Err: err})
+			return
+		}
+
+		params.IfMatch = IfMatch
+
+	} else {
+		err := fmt.Errorf("Header parameter If-Match is required, but not found")
+		siw.ErrorHandlerFunc(w, r, &RequiredHeaderError{ParamName: "If-Match", Err: err})
+		return
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.CloseCashShift(w, r, tenantId, shiftId, params)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// ReviewCashShift operation middleware
+func (siw *ServerInterfaceWrapper) ReviewCashShift(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+	_ = err
+
+	// ------------- Path parameter "tenantId" -------------
+	var tenantId TenantId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "tenantId", chi.URLParam(r, "tenantId"), &tenantId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "tenantId", Err: err})
+		return
+	}
+
+	// ------------- Path parameter "shiftId" -------------
+	var shiftId CashShiftId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "shiftId", chi.URLParam(r, "shiftId"), &shiftId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "shiftId", Err: err})
+		return
+	}
+
+	// Parameter object where we will unmarshal all parameters from the context
+	var params ReviewCashShiftParams
+
+	headers := r.Header
+
+	// ------------- Required header parameter "Idempotency-Key" -------------
+	if valueList, found := headers[http.CanonicalHeaderKey("Idempotency-Key")]; found {
+		var IdempotencyKey IdempotencyKey
+		n := len(valueList)
+		if n != 1 {
+			siw.ErrorHandlerFunc(w, r, &TooManyValuesForParamError{ParamName: "Idempotency-Key", Count: n})
+			return
+		}
+
+		err = runtime.BindStyledParameterWithOptions("simple", "Idempotency-Key", valueList[0], &IdempotencyKey, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: true, Type: "string", Format: ""})
+		if err != nil {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "Idempotency-Key", Err: err})
+			return
+		}
+
+		params.IdempotencyKey = IdempotencyKey
+
+	} else {
+		err := fmt.Errorf("Header parameter Idempotency-Key is required, but not found")
+		siw.ErrorHandlerFunc(w, r, &RequiredHeaderError{ParamName: "Idempotency-Key", Err: err})
+		return
+	}
+
+	// ------------- Optional header parameter "X-CSRF-Token" -------------
+	if valueList, found := headers[http.CanonicalHeaderKey("X-CSRF-Token")]; found {
+		var XCSRFToken Csrf
+		n := len(valueList)
+		if n != 1 {
+			siw.ErrorHandlerFunc(w, r, &TooManyValuesForParamError{ParamName: "X-CSRF-Token", Count: n})
+			return
+		}
+
+		err = runtime.BindStyledParameterWithOptions("simple", "X-CSRF-Token", valueList[0], &XCSRFToken, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: false, Type: "string", Format: ""})
+		if err != nil {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "X-CSRF-Token", Err: err})
+			return
+		}
+
+		params.XCSRFToken = &XCSRFToken
+
+	}
+
+	// ------------- Optional header parameter "Origin" -------------
+	if valueList, found := headers[http.CanonicalHeaderKey("Origin")]; found {
+		var Origin Origin
+		n := len(valueList)
+		if n != 1 {
+			siw.ErrorHandlerFunc(w, r, &TooManyValuesForParamError{ParamName: "Origin", Count: n})
+			return
+		}
+
+		err = runtime.BindStyledParameterWithOptions("simple", "Origin", valueList[0], &Origin, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: false, Type: "string", Format: "uri"})
+		if err != nil {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "Origin", Err: err})
+			return
+		}
+
+		params.Origin = &Origin
+
+	}
+
+	// ------------- Required header parameter "If-Match" -------------
+	if valueList, found := headers[http.CanonicalHeaderKey("If-Match")]; found {
+		var IfMatch IfMatch
+		n := len(valueList)
+		if n != 1 {
+			siw.ErrorHandlerFunc(w, r, &TooManyValuesForParamError{ParamName: "If-Match", Count: n})
+			return
+		}
+
+		err = runtime.BindStyledParameterWithOptions("simple", "If-Match", valueList[0], &IfMatch, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: true, Type: "string", Format: ""})
+		if err != nil {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "If-Match", Err: err})
+			return
+		}
+
+		params.IfMatch = IfMatch
+
+	} else {
+		err := fmt.Errorf("Header parameter If-Match is required, but not found")
+		siw.ErrorHandlerFunc(w, r, &RequiredHeaderError{ParamName: "If-Match", Err: err})
+		return
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.ReviewCashShift(w, r, tenantId, shiftId, params)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// ListCashTransfers operation middleware
+func (siw *ServerInterfaceWrapper) ListCashTransfers(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+	_ = err
+
+	// ------------- Path parameter "tenantId" -------------
+	var tenantId TenantId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "tenantId", chi.URLParam(r, "tenantId"), &tenantId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "tenantId", Err: err})
+		return
+	}
+
+	// Parameter object where we will unmarshal all parameters from the context
+	var params ListCashTransfersParams
+
+	// ------------- Optional query parameter "cursor" -------------
+
+	err = runtime.BindQueryParameterWithOptions("form", true, false, "cursor", r.URL.Query(), &params.Cursor, runtime.BindQueryParameterOptions{Type: "string", Format: ""})
+	if err != nil {
+		var requiredError *runtime.RequiredParameterError
+		if errors.As(err, &requiredError) {
+			siw.ErrorHandlerFunc(w, r, &RequiredParamError{ParamName: "cursor"})
+		} else {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "cursor", Err: err})
+		}
+		return
+	}
+
+	// ------------- Optional query parameter "limit" -------------
+
+	err = runtime.BindQueryParameterWithOptions("form", true, false, "limit", r.URL.Query(), &params.Limit, runtime.BindQueryParameterOptions{Type: "integer", Format: ""})
+	if err != nil {
+		var requiredError *runtime.RequiredParameterError
+		if errors.As(err, &requiredError) {
+			siw.ErrorHandlerFunc(w, r, &RequiredParamError{ParamName: "limit"})
+		} else {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "limit", Err: err})
+		}
+		return
+	}
+
+	// ------------- Optional query parameter "status" -------------
+
+	err = runtime.BindQueryParameterWithOptions("form", true, false, "status", r.URL.Query(), &params.Status, runtime.BindQueryParameterOptions{Type: "string", Format: ""})
+	if err != nil {
+		var requiredError *runtime.RequiredParameterError
+		if errors.As(err, &requiredError) {
+			siw.ErrorHandlerFunc(w, r, &RequiredParamError{ParamName: "status"})
+		} else {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "status", Err: err})
+		}
+		return
+	}
+
+	// ------------- Optional query parameter "accountId" -------------
+
+	err = runtime.BindQueryParameterWithOptions("form", true, false, "accountId", r.URL.Query(), &params.AccountId, runtime.BindQueryParameterOptions{Type: "string", Format: "uuid"})
+	if err != nil {
+		var requiredError *runtime.RequiredParameterError
+		if errors.As(err, &requiredError) {
+			siw.ErrorHandlerFunc(w, r, &RequiredParamError{ParamName: "accountId"})
+		} else {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "accountId", Err: err})
+		}
+		return
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.ListCashTransfers(w, r, tenantId, params)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// CreateCashTransfer operation middleware
+func (siw *ServerInterfaceWrapper) CreateCashTransfer(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+	_ = err
+
+	// ------------- Path parameter "tenantId" -------------
+	var tenantId TenantId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "tenantId", chi.URLParam(r, "tenantId"), &tenantId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "tenantId", Err: err})
+		return
+	}
+
+	// Parameter object where we will unmarshal all parameters from the context
+	var params CreateCashTransferParams
+
+	headers := r.Header
+
+	// ------------- Required header parameter "Idempotency-Key" -------------
+	if valueList, found := headers[http.CanonicalHeaderKey("Idempotency-Key")]; found {
+		var IdempotencyKey IdempotencyKey
+		n := len(valueList)
+		if n != 1 {
+			siw.ErrorHandlerFunc(w, r, &TooManyValuesForParamError{ParamName: "Idempotency-Key", Count: n})
+			return
+		}
+
+		err = runtime.BindStyledParameterWithOptions("simple", "Idempotency-Key", valueList[0], &IdempotencyKey, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: true, Type: "string", Format: ""})
+		if err != nil {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "Idempotency-Key", Err: err})
+			return
+		}
+
+		params.IdempotencyKey = IdempotencyKey
+
+	} else {
+		err := fmt.Errorf("Header parameter Idempotency-Key is required, but not found")
+		siw.ErrorHandlerFunc(w, r, &RequiredHeaderError{ParamName: "Idempotency-Key", Err: err})
+		return
+	}
+
+	// ------------- Optional header parameter "X-CSRF-Token" -------------
+	if valueList, found := headers[http.CanonicalHeaderKey("X-CSRF-Token")]; found {
+		var XCSRFToken Csrf
+		n := len(valueList)
+		if n != 1 {
+			siw.ErrorHandlerFunc(w, r, &TooManyValuesForParamError{ParamName: "X-CSRF-Token", Count: n})
+			return
+		}
+
+		err = runtime.BindStyledParameterWithOptions("simple", "X-CSRF-Token", valueList[0], &XCSRFToken, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: false, Type: "string", Format: ""})
+		if err != nil {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "X-CSRF-Token", Err: err})
+			return
+		}
+
+		params.XCSRFToken = &XCSRFToken
+
+	}
+
+	// ------------- Optional header parameter "Origin" -------------
+	if valueList, found := headers[http.CanonicalHeaderKey("Origin")]; found {
+		var Origin Origin
+		n := len(valueList)
+		if n != 1 {
+			siw.ErrorHandlerFunc(w, r, &TooManyValuesForParamError{ParamName: "Origin", Count: n})
+			return
+		}
+
+		err = runtime.BindStyledParameterWithOptions("simple", "Origin", valueList[0], &Origin, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: false, Type: "string", Format: "uri"})
+		if err != nil {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "Origin", Err: err})
+			return
+		}
+
+		params.Origin = &Origin
+
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.CreateCashTransfer(w, r, tenantId, params)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// DecideCashTransfer operation middleware
+func (siw *ServerInterfaceWrapper) DecideCashTransfer(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+	_ = err
+
+	// ------------- Path parameter "tenantId" -------------
+	var tenantId TenantId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "tenantId", chi.URLParam(r, "tenantId"), &tenantId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "tenantId", Err: err})
+		return
+	}
+
+	// ------------- Path parameter "transferId" -------------
+	var transferId CashTransferId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "transferId", chi.URLParam(r, "transferId"), &transferId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "transferId", Err: err})
+		return
+	}
+
+	// Parameter object where we will unmarshal all parameters from the context
+	var params DecideCashTransferParams
+
+	headers := r.Header
+
+	// ------------- Required header parameter "Idempotency-Key" -------------
+	if valueList, found := headers[http.CanonicalHeaderKey("Idempotency-Key")]; found {
+		var IdempotencyKey IdempotencyKey
+		n := len(valueList)
+		if n != 1 {
+			siw.ErrorHandlerFunc(w, r, &TooManyValuesForParamError{ParamName: "Idempotency-Key", Count: n})
+			return
+		}
+
+		err = runtime.BindStyledParameterWithOptions("simple", "Idempotency-Key", valueList[0], &IdempotencyKey, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: true, Type: "string", Format: ""})
+		if err != nil {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "Idempotency-Key", Err: err})
+			return
+		}
+
+		params.IdempotencyKey = IdempotencyKey
+
+	} else {
+		err := fmt.Errorf("Header parameter Idempotency-Key is required, but not found")
+		siw.ErrorHandlerFunc(w, r, &RequiredHeaderError{ParamName: "Idempotency-Key", Err: err})
+		return
+	}
+
+	// ------------- Optional header parameter "X-CSRF-Token" -------------
+	if valueList, found := headers[http.CanonicalHeaderKey("X-CSRF-Token")]; found {
+		var XCSRFToken Csrf
+		n := len(valueList)
+		if n != 1 {
+			siw.ErrorHandlerFunc(w, r, &TooManyValuesForParamError{ParamName: "X-CSRF-Token", Count: n})
+			return
+		}
+
+		err = runtime.BindStyledParameterWithOptions("simple", "X-CSRF-Token", valueList[0], &XCSRFToken, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: false, Type: "string", Format: ""})
+		if err != nil {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "X-CSRF-Token", Err: err})
+			return
+		}
+
+		params.XCSRFToken = &XCSRFToken
+
+	}
+
+	// ------------- Optional header parameter "Origin" -------------
+	if valueList, found := headers[http.CanonicalHeaderKey("Origin")]; found {
+		var Origin Origin
+		n := len(valueList)
+		if n != 1 {
+			siw.ErrorHandlerFunc(w, r, &TooManyValuesForParamError{ParamName: "Origin", Count: n})
+			return
+		}
+
+		err = runtime.BindStyledParameterWithOptions("simple", "Origin", valueList[0], &Origin, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: false, Type: "string", Format: "uri"})
+		if err != nil {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "Origin", Err: err})
+			return
+		}
+
+		params.Origin = &Origin
+
+	}
+
+	// ------------- Required header parameter "If-Match" -------------
+	if valueList, found := headers[http.CanonicalHeaderKey("If-Match")]; found {
+		var IfMatch IfMatch
+		n := len(valueList)
+		if n != 1 {
+			siw.ErrorHandlerFunc(w, r, &TooManyValuesForParamError{ParamName: "If-Match", Count: n})
+			return
+		}
+
+		err = runtime.BindStyledParameterWithOptions("simple", "If-Match", valueList[0], &IfMatch, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: true, Type: "string", Format: ""})
+		if err != nil {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "If-Match", Err: err})
+			return
+		}
+
+		params.IfMatch = IfMatch
+
+	} else {
+		err := fmt.Errorf("Header parameter If-Match is required, but not found")
+		siw.ErrorHandlerFunc(w, r, &RequiredHeaderError{ParamName: "If-Match", Err: err})
+		return
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.DecideCashTransfer(w, r, tenantId, transferId, params)
 	}))
 
 	for _, middleware := range siw.HandlerMiddlewares {
@@ -1176,6 +5544,72 @@ func HandlerWithOptions(si ServerInterface, options ChiServerOptions) http.Handl
 	r.Group(func(r chi.Router) {
 		r.Post(options.BaseURL+"/api/v1/tenants/{tenantId}/cash/operations", wrapper.PostCashOperation)
 	})
+	r.Group(func(r chi.Router) {
+		r.Get(options.BaseURL+"/api/v1/tenants/{tenantId}/cash/accounts/access-preview", wrapper.PreviewCashAccountAccess)
+	})
+	r.Group(func(r chi.Router) {
+		r.Post(options.BaseURL+"/api/v1/tenants/{tenantId}/cash/operations/{operationId}/reverse", wrapper.ReverseCashOperation)
+	})
+	r.Group(func(r chi.Router) {
+		r.Post(options.BaseURL+"/api/v1/tenants/{tenantId}/cash/operations/{operationId}/source-link", wrapper.LinkCashOperationSource)
+	})
+	r.Group(func(r chi.Router) {
+		r.Get(options.BaseURL+"/api/v1/tenants/{tenantId}/cash/duplicates", wrapper.FindCashDuplicates)
+	})
+	r.Group(func(r chi.Router) {
+		r.Get(options.BaseURL+"/api/v1/tenants/{tenantId}/cash/proposals", wrapper.ListCashProposals)
+	})
+	r.Group(func(r chi.Router) {
+		r.Post(options.BaseURL+"/api/v1/tenants/{tenantId}/cash/proposals/{proposalKey}/post", wrapper.PostCashProposal)
+	})
+	r.Group(func(r chi.Router) {
+		r.Post(options.BaseURL+"/api/v1/tenants/{tenantId}/cash/proposals/{proposalKey}/dismiss", wrapper.DismissCashProposal)
+	})
+	r.Group(func(r chi.Router) {
+		r.Get(options.BaseURL+"/api/v1/tenants/{tenantId}/cash/shifts", wrapper.ListCashShifts)
+	})
+	r.Group(func(r chi.Router) {
+		r.Post(options.BaseURL+"/api/v1/tenants/{tenantId}/cash/accounts/{accountId}/shifts", wrapper.OpenCashShift)
+	})
+	r.Group(func(r chi.Router) {
+		r.Post(options.BaseURL+"/api/v1/tenants/{tenantId}/cash/shifts/{shiftId}/close", wrapper.CloseCashShift)
+	})
+	r.Group(func(r chi.Router) {
+		r.Post(options.BaseURL+"/api/v1/tenants/{tenantId}/cash/shifts/{shiftId}/review", wrapper.ReviewCashShift)
+	})
+	r.Group(func(r chi.Router) {
+		r.Get(options.BaseURL+"/api/v1/tenants/{tenantId}/cash/transfers", wrapper.ListCashTransfers)
+	})
+	r.Group(func(r chi.Router) {
+		r.Post(options.BaseURL+"/api/v1/tenants/{tenantId}/cash/transfers", wrapper.CreateCashTransfer)
+	})
+	r.Group(func(r chi.Router) {
+		r.Post(options.BaseURL+"/api/v1/tenants/{tenantId}/cash/transfers/{transferId}/decision", wrapper.DecideCashTransfer)
+	})
+	r.Group(func(r chi.Router) {
+		r.Post(options.BaseURL+"/api/v1/tenants/{tenantId}/cash/accounts/{accountId}/advance-issues", wrapper.IssueCashAdvance)
+	})
+	r.Group(func(r chi.Router) {
+		r.Post(options.BaseURL+"/api/v1/tenants/{tenantId}/cash/accounts/{accountId}/receipts", wrapper.SubmitAdvanceReceipt)
+	})
+	r.Group(func(r chi.Router) {
+		r.Get(options.BaseURL+"/api/v1/tenants/{tenantId}/cash/receipts", wrapper.ListAdvanceReceipts)
+	})
+	r.Group(func(r chi.Router) {
+		r.Post(options.BaseURL+"/api/v1/tenants/{tenantId}/cash/receipts/{receiptId}/decision", wrapper.DecideAdvanceReceipt)
+	})
+	r.Group(func(r chi.Router) {
+		r.Post(options.BaseURL+"/api/v1/tenants/{tenantId}/cash/accounts/{accountId}/advance-returns", wrapper.ReturnCashAdvance)
+	})
+	r.Group(func(r chi.Router) {
+		r.Get(options.BaseURL+"/api/v1/tenants/{tenantId}/cash/approval-requests", wrapper.ListCashApprovalRequests)
+	})
+	r.Group(func(r chi.Router) {
+		r.Post(options.BaseURL+"/api/v1/tenants/{tenantId}/cash/approval-requests/{approvalRequestId}/decision", wrapper.DecideCashApprovalRequest)
+	})
+	r.Group(func(r chi.Router) {
+		r.Get(options.BaseURL+"/api/v1/tenants/{tenantId}/cash/categories", wrapper.ListCashCategories)
+	})
 
 	return r
 }
@@ -1224,6 +5658,15 @@ type PlanRequiredApplicationProblemPlusJSONResponse struct {
 	Body Problem
 
 	Headers PlanRequiredResponseHeaders
+}
+
+type PreconditionFailedResponseHeaders struct {
+	XRequestId *string
+}
+type PreconditionFailedApplicationProblemPlusJSONResponse struct {
+	Body Problem
+
+	Headers PreconditionFailedResponseHeaders
 }
 
 type PreconditionRequiredResponseHeaders struct {
@@ -1640,6 +6083,1776 @@ func (response CreateCashAccount429ApplicationProblemPlusJSONResponse) VisitCrea
 	return err
 }
 
+type PreviewCashAccountAccessRequestObject struct {
+	TenantId TenantId `json:"tenantId"`
+	Params   PreviewCashAccountAccessParams
+}
+
+type PreviewCashAccountAccessResponseObject interface {
+	VisitPreviewCashAccountAccessResponse(w http.ResponseWriter) error
+}
+
+type PreviewCashAccountAccess200ResponseHeaders struct {
+	CacheControl *string
+	XRequestId   *string
+}
+
+type PreviewCashAccountAccess200JSONResponse struct {
+	Body    CashAccessPreview
+	Headers PreviewCashAccountAccess200ResponseHeaders
+}
+
+func (response PreviewCashAccountAccess200JSONResponse) VisitPreviewCashAccountAccessResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	if response.Headers.CacheControl != nil {
+		w.Header().Set("Cache-Control", fmt.Sprint(*response.Headers.CacheControl))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(200)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type PreviewCashAccountAccess400ApplicationProblemPlusJSONResponse struct {
+	BadRequestApplicationProblemPlusJSONResponse
+}
+
+func (response PreviewCashAccountAccess400ApplicationProblemPlusJSONResponse) VisitPreviewCashAccountAccessResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(400)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type PreviewCashAccountAccess401ApplicationProblemPlusJSONResponse struct {
+	UnauthenticatedApplicationProblemPlusJSONResponse
+}
+
+func (response PreviewCashAccountAccess401ApplicationProblemPlusJSONResponse) VisitPreviewCashAccountAccessResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(401)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type PreviewCashAccountAccess403ApplicationProblemPlusJSONResponse struct {
+	ForbiddenApplicationProblemPlusJSONResponse
+}
+
+func (response PreviewCashAccountAccess403ApplicationProblemPlusJSONResponse) VisitPreviewCashAccountAccessResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(403)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type PreviewCashAccountAccess404ApplicationProblemPlusJSONResponse struct {
+	NotFoundApplicationProblemPlusJSONResponse
+}
+
+func (response PreviewCashAccountAccess404ApplicationProblemPlusJSONResponse) VisitPreviewCashAccountAccessResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(404)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type PreviewCashAccountAccess422ApplicationProblemPlusJSONResponse struct {
+	ValidationApplicationProblemPlusJSONResponse
+}
+
+func (response PreviewCashAccountAccess422ApplicationProblemPlusJSONResponse) VisitPreviewCashAccountAccessResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(422)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type PreviewCashAccountAccess429ApplicationProblemPlusJSONResponse struct {
+	RateLimitedApplicationProblemPlusJSONResponse
+}
+
+func (response PreviewCashAccountAccess429ApplicationProblemPlusJSONResponse) VisitPreviewCashAccountAccessResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.RetryAfter != nil {
+		w.Header().Set("Retry-After", fmt.Sprint(*response.Headers.RetryAfter))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(429)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type IssueCashAdvanceRequestObject struct {
+	TenantId  TenantId      `json:"tenantId"`
+	AccountId CashAccountId `json:"accountId"`
+	Params    IssueCashAdvanceParams
+	Body      *IssueCashAdvanceJSONRequestBody
+}
+
+type IssueCashAdvanceResponseObject interface {
+	VisitIssueCashAdvanceResponse(w http.ResponseWriter) error
+}
+
+type IssueCashAdvance201ResponseHeaders struct {
+	CacheControl        *string
+	IdempotencyReplayed *bool
+	XRequestId          *string
+}
+
+type IssueCashAdvance201JSONResponse struct {
+	Body    CashTransfer
+	Headers IssueCashAdvance201ResponseHeaders
+}
+
+func (response IssueCashAdvance201JSONResponse) VisitIssueCashAdvanceResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	if response.Headers.CacheControl != nil {
+		w.Header().Set("Cache-Control", fmt.Sprint(*response.Headers.CacheControl))
+	}
+	if response.Headers.IdempotencyReplayed != nil {
+		w.Header().Set("Idempotency-Replayed", fmt.Sprint(*response.Headers.IdempotencyReplayed))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(201)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type IssueCashAdvance202ResponseHeaders struct {
+	CacheControl        *string
+	ETag                *string
+	IdempotencyReplayed *bool
+	XRequestId          *string
+}
+
+type IssueCashAdvance202JSONResponse struct {
+	Body    CashApprovalRequest
+	Headers IssueCashAdvance202ResponseHeaders
+}
+
+func (response IssueCashAdvance202JSONResponse) VisitIssueCashAdvanceResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	if response.Headers.CacheControl != nil {
+		w.Header().Set("Cache-Control", fmt.Sprint(*response.Headers.CacheControl))
+	}
+	if response.Headers.ETag != nil {
+		w.Header().Set("ETag", fmt.Sprint(*response.Headers.ETag))
+	}
+	if response.Headers.IdempotencyReplayed != nil {
+		w.Header().Set("Idempotency-Replayed", fmt.Sprint(*response.Headers.IdempotencyReplayed))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(202)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type IssueCashAdvance400ApplicationProblemPlusJSONResponse struct {
+	BadRequestApplicationProblemPlusJSONResponse
+}
+
+func (response IssueCashAdvance400ApplicationProblemPlusJSONResponse) VisitIssueCashAdvanceResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(400)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type IssueCashAdvance401ApplicationProblemPlusJSONResponse struct {
+	UnauthenticatedApplicationProblemPlusJSONResponse
+}
+
+func (response IssueCashAdvance401ApplicationProblemPlusJSONResponse) VisitIssueCashAdvanceResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(401)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type IssueCashAdvance402ApplicationProblemPlusJSONResponse struct {
+	PlanRequiredApplicationProblemPlusJSONResponse
+}
+
+func (response IssueCashAdvance402ApplicationProblemPlusJSONResponse) VisitIssueCashAdvanceResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(402)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type IssueCashAdvance403ApplicationProblemPlusJSONResponse struct {
+	ForbiddenApplicationProblemPlusJSONResponse
+}
+
+func (response IssueCashAdvance403ApplicationProblemPlusJSONResponse) VisitIssueCashAdvanceResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(403)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type IssueCashAdvance404ApplicationProblemPlusJSONResponse struct {
+	NotFoundApplicationProblemPlusJSONResponse
+}
+
+func (response IssueCashAdvance404ApplicationProblemPlusJSONResponse) VisitIssueCashAdvanceResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(404)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type IssueCashAdvance409ApplicationProblemPlusJSONResponse struct {
+	ConflictApplicationProblemPlusJSONResponse
+}
+
+func (response IssueCashAdvance409ApplicationProblemPlusJSONResponse) VisitIssueCashAdvanceResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.RetryAfter != nil {
+		w.Header().Set("Retry-After", fmt.Sprint(*response.Headers.RetryAfter))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(409)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type IssueCashAdvance422ApplicationProblemPlusJSONResponse struct {
+	ValidationApplicationProblemPlusJSONResponse
+}
+
+func (response IssueCashAdvance422ApplicationProblemPlusJSONResponse) VisitIssueCashAdvanceResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(422)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type IssueCashAdvance428ApplicationProblemPlusJSONResponse struct {
+	PreconditionRequiredApplicationProblemPlusJSONResponse
+}
+
+func (response IssueCashAdvance428ApplicationProblemPlusJSONResponse) VisitIssueCashAdvanceResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(428)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type IssueCashAdvance429ApplicationProblemPlusJSONResponse struct {
+	RateLimitedApplicationProblemPlusJSONResponse
+}
+
+func (response IssueCashAdvance429ApplicationProblemPlusJSONResponse) VisitIssueCashAdvanceResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.RetryAfter != nil {
+		w.Header().Set("Retry-After", fmt.Sprint(*response.Headers.RetryAfter))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(429)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type ReturnCashAdvanceRequestObject struct {
+	TenantId  TenantId      `json:"tenantId"`
+	AccountId CashAccountId `json:"accountId"`
+	Params    ReturnCashAdvanceParams
+	Body      *ReturnCashAdvanceJSONRequestBody
+}
+
+type ReturnCashAdvanceResponseObject interface {
+	VisitReturnCashAdvanceResponse(w http.ResponseWriter) error
+}
+
+type ReturnCashAdvance201ResponseHeaders struct {
+	CacheControl        *string
+	IdempotencyReplayed *bool
+	XRequestId          *string
+}
+
+type ReturnCashAdvance201JSONResponse struct {
+	Body    CashTransfer
+	Headers ReturnCashAdvance201ResponseHeaders
+}
+
+func (response ReturnCashAdvance201JSONResponse) VisitReturnCashAdvanceResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	if response.Headers.CacheControl != nil {
+		w.Header().Set("Cache-Control", fmt.Sprint(*response.Headers.CacheControl))
+	}
+	if response.Headers.IdempotencyReplayed != nil {
+		w.Header().Set("Idempotency-Replayed", fmt.Sprint(*response.Headers.IdempotencyReplayed))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(201)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type ReturnCashAdvance400ApplicationProblemPlusJSONResponse struct {
+	BadRequestApplicationProblemPlusJSONResponse
+}
+
+func (response ReturnCashAdvance400ApplicationProblemPlusJSONResponse) VisitReturnCashAdvanceResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(400)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type ReturnCashAdvance401ApplicationProblemPlusJSONResponse struct {
+	UnauthenticatedApplicationProblemPlusJSONResponse
+}
+
+func (response ReturnCashAdvance401ApplicationProblemPlusJSONResponse) VisitReturnCashAdvanceResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(401)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type ReturnCashAdvance402ApplicationProblemPlusJSONResponse struct {
+	PlanRequiredApplicationProblemPlusJSONResponse
+}
+
+func (response ReturnCashAdvance402ApplicationProblemPlusJSONResponse) VisitReturnCashAdvanceResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(402)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type ReturnCashAdvance403ApplicationProblemPlusJSONResponse struct {
+	ForbiddenApplicationProblemPlusJSONResponse
+}
+
+func (response ReturnCashAdvance403ApplicationProblemPlusJSONResponse) VisitReturnCashAdvanceResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(403)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type ReturnCashAdvance404ApplicationProblemPlusJSONResponse struct {
+	NotFoundApplicationProblemPlusJSONResponse
+}
+
+func (response ReturnCashAdvance404ApplicationProblemPlusJSONResponse) VisitReturnCashAdvanceResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(404)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type ReturnCashAdvance409ApplicationProblemPlusJSONResponse struct {
+	ConflictApplicationProblemPlusJSONResponse
+}
+
+func (response ReturnCashAdvance409ApplicationProblemPlusJSONResponse) VisitReturnCashAdvanceResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.RetryAfter != nil {
+		w.Header().Set("Retry-After", fmt.Sprint(*response.Headers.RetryAfter))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(409)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type ReturnCashAdvance422ApplicationProblemPlusJSONResponse struct {
+	ValidationApplicationProblemPlusJSONResponse
+}
+
+func (response ReturnCashAdvance422ApplicationProblemPlusJSONResponse) VisitReturnCashAdvanceResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(422)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type ReturnCashAdvance428ApplicationProblemPlusJSONResponse struct {
+	PreconditionRequiredApplicationProblemPlusJSONResponse
+}
+
+func (response ReturnCashAdvance428ApplicationProblemPlusJSONResponse) VisitReturnCashAdvanceResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(428)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type ReturnCashAdvance429ApplicationProblemPlusJSONResponse struct {
+	RateLimitedApplicationProblemPlusJSONResponse
+}
+
+func (response ReturnCashAdvance429ApplicationProblemPlusJSONResponse) VisitReturnCashAdvanceResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.RetryAfter != nil {
+		w.Header().Set("Retry-After", fmt.Sprint(*response.Headers.RetryAfter))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(429)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type SubmitAdvanceReceiptRequestObject struct {
+	TenantId  TenantId      `json:"tenantId"`
+	AccountId CashAccountId `json:"accountId"`
+	Params    SubmitAdvanceReceiptParams
+	Body      *SubmitAdvanceReceiptJSONRequestBody
+}
+
+type SubmitAdvanceReceiptResponseObject interface {
+	VisitSubmitAdvanceReceiptResponse(w http.ResponseWriter) error
+}
+
+type SubmitAdvanceReceipt201ResponseHeaders struct {
+	CacheControl        *string
+	IdempotencyReplayed *bool
+	XRequestId          *string
+}
+
+type SubmitAdvanceReceipt201JSONResponse struct {
+	Body    AdvanceReceipt
+	Headers SubmitAdvanceReceipt201ResponseHeaders
+}
+
+func (response SubmitAdvanceReceipt201JSONResponse) VisitSubmitAdvanceReceiptResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	if response.Headers.CacheControl != nil {
+		w.Header().Set("Cache-Control", fmt.Sprint(*response.Headers.CacheControl))
+	}
+	if response.Headers.IdempotencyReplayed != nil {
+		w.Header().Set("Idempotency-Replayed", fmt.Sprint(*response.Headers.IdempotencyReplayed))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(201)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type SubmitAdvanceReceipt400ApplicationProblemPlusJSONResponse struct {
+	BadRequestApplicationProblemPlusJSONResponse
+}
+
+func (response SubmitAdvanceReceipt400ApplicationProblemPlusJSONResponse) VisitSubmitAdvanceReceiptResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(400)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type SubmitAdvanceReceipt401ApplicationProblemPlusJSONResponse struct {
+	UnauthenticatedApplicationProblemPlusJSONResponse
+}
+
+func (response SubmitAdvanceReceipt401ApplicationProblemPlusJSONResponse) VisitSubmitAdvanceReceiptResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(401)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type SubmitAdvanceReceipt402ApplicationProblemPlusJSONResponse struct {
+	PlanRequiredApplicationProblemPlusJSONResponse
+}
+
+func (response SubmitAdvanceReceipt402ApplicationProblemPlusJSONResponse) VisitSubmitAdvanceReceiptResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(402)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type SubmitAdvanceReceipt403ApplicationProblemPlusJSONResponse struct {
+	ForbiddenApplicationProblemPlusJSONResponse
+}
+
+func (response SubmitAdvanceReceipt403ApplicationProblemPlusJSONResponse) VisitSubmitAdvanceReceiptResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(403)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type SubmitAdvanceReceipt404ApplicationProblemPlusJSONResponse struct {
+	NotFoundApplicationProblemPlusJSONResponse
+}
+
+func (response SubmitAdvanceReceipt404ApplicationProblemPlusJSONResponse) VisitSubmitAdvanceReceiptResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(404)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type SubmitAdvanceReceipt409ApplicationProblemPlusJSONResponse struct {
+	ConflictApplicationProblemPlusJSONResponse
+}
+
+func (response SubmitAdvanceReceipt409ApplicationProblemPlusJSONResponse) VisitSubmitAdvanceReceiptResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.RetryAfter != nil {
+		w.Header().Set("Retry-After", fmt.Sprint(*response.Headers.RetryAfter))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(409)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type SubmitAdvanceReceipt422ApplicationProblemPlusJSONResponse struct {
+	ValidationApplicationProblemPlusJSONResponse
+}
+
+func (response SubmitAdvanceReceipt422ApplicationProblemPlusJSONResponse) VisitSubmitAdvanceReceiptResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(422)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type SubmitAdvanceReceipt428ApplicationProblemPlusJSONResponse struct {
+	PreconditionRequiredApplicationProblemPlusJSONResponse
+}
+
+func (response SubmitAdvanceReceipt428ApplicationProblemPlusJSONResponse) VisitSubmitAdvanceReceiptResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(428)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type SubmitAdvanceReceipt429ApplicationProblemPlusJSONResponse struct {
+	RateLimitedApplicationProblemPlusJSONResponse
+}
+
+func (response SubmitAdvanceReceipt429ApplicationProblemPlusJSONResponse) VisitSubmitAdvanceReceiptResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.RetryAfter != nil {
+		w.Header().Set("Retry-After", fmt.Sprint(*response.Headers.RetryAfter))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(429)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type OpenCashShiftRequestObject struct {
+	TenantId  TenantId      `json:"tenantId"`
+	AccountId CashAccountId `json:"accountId"`
+	Params    OpenCashShiftParams
+	Body      *OpenCashShiftJSONRequestBody
+}
+
+type OpenCashShiftResponseObject interface {
+	VisitOpenCashShiftResponse(w http.ResponseWriter) error
+}
+
+type OpenCashShift201ResponseHeaders struct {
+	CacheControl        *string
+	IdempotencyReplayed *bool
+	XRequestId          *string
+}
+
+type OpenCashShift201JSONResponse struct {
+	Body    CashShift
+	Headers OpenCashShift201ResponseHeaders
+}
+
+func (response OpenCashShift201JSONResponse) VisitOpenCashShiftResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	if response.Headers.CacheControl != nil {
+		w.Header().Set("Cache-Control", fmt.Sprint(*response.Headers.CacheControl))
+	}
+	if response.Headers.IdempotencyReplayed != nil {
+		w.Header().Set("Idempotency-Replayed", fmt.Sprint(*response.Headers.IdempotencyReplayed))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(201)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type OpenCashShift400ApplicationProblemPlusJSONResponse struct {
+	BadRequestApplicationProblemPlusJSONResponse
+}
+
+func (response OpenCashShift400ApplicationProblemPlusJSONResponse) VisitOpenCashShiftResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(400)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type OpenCashShift401ApplicationProblemPlusJSONResponse struct {
+	UnauthenticatedApplicationProblemPlusJSONResponse
+}
+
+func (response OpenCashShift401ApplicationProblemPlusJSONResponse) VisitOpenCashShiftResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(401)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type OpenCashShift402ApplicationProblemPlusJSONResponse struct {
+	PlanRequiredApplicationProblemPlusJSONResponse
+}
+
+func (response OpenCashShift402ApplicationProblemPlusJSONResponse) VisitOpenCashShiftResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(402)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type OpenCashShift403ApplicationProblemPlusJSONResponse struct {
+	ForbiddenApplicationProblemPlusJSONResponse
+}
+
+func (response OpenCashShift403ApplicationProblemPlusJSONResponse) VisitOpenCashShiftResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(403)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type OpenCashShift404ApplicationProblemPlusJSONResponse struct {
+	NotFoundApplicationProblemPlusJSONResponse
+}
+
+func (response OpenCashShift404ApplicationProblemPlusJSONResponse) VisitOpenCashShiftResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(404)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type OpenCashShift409ApplicationProblemPlusJSONResponse struct {
+	ConflictApplicationProblemPlusJSONResponse
+}
+
+func (response OpenCashShift409ApplicationProblemPlusJSONResponse) VisitOpenCashShiftResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.RetryAfter != nil {
+		w.Header().Set("Retry-After", fmt.Sprint(*response.Headers.RetryAfter))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(409)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type OpenCashShift422ApplicationProblemPlusJSONResponse struct {
+	ValidationApplicationProblemPlusJSONResponse
+}
+
+func (response OpenCashShift422ApplicationProblemPlusJSONResponse) VisitOpenCashShiftResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(422)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type OpenCashShift428ApplicationProblemPlusJSONResponse struct {
+	PreconditionRequiredApplicationProblemPlusJSONResponse
+}
+
+func (response OpenCashShift428ApplicationProblemPlusJSONResponse) VisitOpenCashShiftResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(428)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type OpenCashShift429ApplicationProblemPlusJSONResponse struct {
+	RateLimitedApplicationProblemPlusJSONResponse
+}
+
+func (response OpenCashShift429ApplicationProblemPlusJSONResponse) VisitOpenCashShiftResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.RetryAfter != nil {
+		w.Header().Set("Retry-After", fmt.Sprint(*response.Headers.RetryAfter))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(429)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type ListCashApprovalRequestsRequestObject struct {
+	TenantId TenantId `json:"tenantId"`
+	Params   ListCashApprovalRequestsParams
+}
+
+type ListCashApprovalRequestsResponseObject interface {
+	VisitListCashApprovalRequestsResponse(w http.ResponseWriter) error
+}
+
+type ListCashApprovalRequests200ResponseHeaders struct {
+	CacheControl *string
+	XRequestId   *string
+}
+
+type ListCashApprovalRequests200JSONResponse struct {
+	Body    CashApprovalRequestPage
+	Headers ListCashApprovalRequests200ResponseHeaders
+}
+
+func (response ListCashApprovalRequests200JSONResponse) VisitListCashApprovalRequestsResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	if response.Headers.CacheControl != nil {
+		w.Header().Set("Cache-Control", fmt.Sprint(*response.Headers.CacheControl))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(200)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type ListCashApprovalRequests400ApplicationProblemPlusJSONResponse struct {
+	BadRequestApplicationProblemPlusJSONResponse
+}
+
+func (response ListCashApprovalRequests400ApplicationProblemPlusJSONResponse) VisitListCashApprovalRequestsResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(400)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type ListCashApprovalRequests401ApplicationProblemPlusJSONResponse struct {
+	UnauthenticatedApplicationProblemPlusJSONResponse
+}
+
+func (response ListCashApprovalRequests401ApplicationProblemPlusJSONResponse) VisitListCashApprovalRequestsResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(401)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type ListCashApprovalRequests403ApplicationProblemPlusJSONResponse struct {
+	ForbiddenApplicationProblemPlusJSONResponse
+}
+
+func (response ListCashApprovalRequests403ApplicationProblemPlusJSONResponse) VisitListCashApprovalRequestsResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(403)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type ListCashApprovalRequests404ApplicationProblemPlusJSONResponse struct {
+	NotFoundApplicationProblemPlusJSONResponse
+}
+
+func (response ListCashApprovalRequests404ApplicationProblemPlusJSONResponse) VisitListCashApprovalRequestsResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(404)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type ListCashApprovalRequests422ApplicationProblemPlusJSONResponse struct {
+	ValidationApplicationProblemPlusJSONResponse
+}
+
+func (response ListCashApprovalRequests422ApplicationProblemPlusJSONResponse) VisitListCashApprovalRequestsResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(422)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type ListCashApprovalRequests429ApplicationProblemPlusJSONResponse struct {
+	RateLimitedApplicationProblemPlusJSONResponse
+}
+
+func (response ListCashApprovalRequests429ApplicationProblemPlusJSONResponse) VisitListCashApprovalRequestsResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.RetryAfter != nil {
+		w.Header().Set("Retry-After", fmt.Sprint(*response.Headers.RetryAfter))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(429)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type DecideCashApprovalRequestRequestObject struct {
+	TenantId          TenantId              `json:"tenantId"`
+	ApprovalRequestId CashApprovalRequestId `json:"approvalRequestId"`
+	Params            DecideCashApprovalRequestParams
+	Body              *DecideCashApprovalRequestJSONRequestBody
+}
+
+type DecideCashApprovalRequestResponseObject interface {
+	VisitDecideCashApprovalRequestResponse(w http.ResponseWriter) error
+}
+
+type DecideCashApprovalRequest200ResponseHeaders struct {
+	CacheControl        *string
+	IdempotencyReplayed *bool
+	XRequestId          *string
+}
+
+type DecideCashApprovalRequest200JSONResponse struct {
+	Body    CashApprovalRequest
+	Headers DecideCashApprovalRequest200ResponseHeaders
+}
+
+func (response DecideCashApprovalRequest200JSONResponse) VisitDecideCashApprovalRequestResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	if response.Headers.CacheControl != nil {
+		w.Header().Set("Cache-Control", fmt.Sprint(*response.Headers.CacheControl))
+	}
+	if response.Headers.IdempotencyReplayed != nil {
+		w.Header().Set("Idempotency-Replayed", fmt.Sprint(*response.Headers.IdempotencyReplayed))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(200)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type DecideCashApprovalRequest400ApplicationProblemPlusJSONResponse struct {
+	BadRequestApplicationProblemPlusJSONResponse
+}
+
+func (response DecideCashApprovalRequest400ApplicationProblemPlusJSONResponse) VisitDecideCashApprovalRequestResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(400)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type DecideCashApprovalRequest401ApplicationProblemPlusJSONResponse struct {
+	UnauthenticatedApplicationProblemPlusJSONResponse
+}
+
+func (response DecideCashApprovalRequest401ApplicationProblemPlusJSONResponse) VisitDecideCashApprovalRequestResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(401)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type DecideCashApprovalRequest402ApplicationProblemPlusJSONResponse struct {
+	PlanRequiredApplicationProblemPlusJSONResponse
+}
+
+func (response DecideCashApprovalRequest402ApplicationProblemPlusJSONResponse) VisitDecideCashApprovalRequestResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(402)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type DecideCashApprovalRequest403ApplicationProblemPlusJSONResponse struct {
+	ForbiddenApplicationProblemPlusJSONResponse
+}
+
+func (response DecideCashApprovalRequest403ApplicationProblemPlusJSONResponse) VisitDecideCashApprovalRequestResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(403)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type DecideCashApprovalRequest404ApplicationProblemPlusJSONResponse struct {
+	NotFoundApplicationProblemPlusJSONResponse
+}
+
+func (response DecideCashApprovalRequest404ApplicationProblemPlusJSONResponse) VisitDecideCashApprovalRequestResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(404)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type DecideCashApprovalRequest409ApplicationProblemPlusJSONResponse struct {
+	ConflictApplicationProblemPlusJSONResponse
+}
+
+func (response DecideCashApprovalRequest409ApplicationProblemPlusJSONResponse) VisitDecideCashApprovalRequestResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.RetryAfter != nil {
+		w.Header().Set("Retry-After", fmt.Sprint(*response.Headers.RetryAfter))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(409)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type DecideCashApprovalRequest412ApplicationProblemPlusJSONResponse struct {
+	PreconditionFailedApplicationProblemPlusJSONResponse
+}
+
+func (response DecideCashApprovalRequest412ApplicationProblemPlusJSONResponse) VisitDecideCashApprovalRequestResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(412)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type DecideCashApprovalRequest422ApplicationProblemPlusJSONResponse struct {
+	ValidationApplicationProblemPlusJSONResponse
+}
+
+func (response DecideCashApprovalRequest422ApplicationProblemPlusJSONResponse) VisitDecideCashApprovalRequestResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(422)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type DecideCashApprovalRequest428ApplicationProblemPlusJSONResponse struct {
+	PreconditionRequiredApplicationProblemPlusJSONResponse
+}
+
+func (response DecideCashApprovalRequest428ApplicationProblemPlusJSONResponse) VisitDecideCashApprovalRequestResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(428)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type DecideCashApprovalRequest429ApplicationProblemPlusJSONResponse struct {
+	RateLimitedApplicationProblemPlusJSONResponse
+}
+
+func (response DecideCashApprovalRequest429ApplicationProblemPlusJSONResponse) VisitDecideCashApprovalRequestResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.RetryAfter != nil {
+		w.Header().Set("Retry-After", fmt.Sprint(*response.Headers.RetryAfter))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(429)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type ListCashCategoriesRequestObject struct {
+	TenantId TenantId `json:"tenantId"`
+}
+
+type ListCashCategoriesResponseObject interface {
+	VisitListCashCategoriesResponse(w http.ResponseWriter) error
+}
+
+type ListCashCategories200ResponseHeaders struct {
+	CacheControl *string
+	XRequestId   *string
+}
+
+type ListCashCategories200JSONResponse struct {
+	Body    CashCategoryList
+	Headers ListCashCategories200ResponseHeaders
+}
+
+func (response ListCashCategories200JSONResponse) VisitListCashCategoriesResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	if response.Headers.CacheControl != nil {
+		w.Header().Set("Cache-Control", fmt.Sprint(*response.Headers.CacheControl))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(200)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type ListCashCategories400ApplicationProblemPlusJSONResponse struct {
+	BadRequestApplicationProblemPlusJSONResponse
+}
+
+func (response ListCashCategories400ApplicationProblemPlusJSONResponse) VisitListCashCategoriesResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(400)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type ListCashCategories401ApplicationProblemPlusJSONResponse struct {
+	UnauthenticatedApplicationProblemPlusJSONResponse
+}
+
+func (response ListCashCategories401ApplicationProblemPlusJSONResponse) VisitListCashCategoriesResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(401)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type ListCashCategories403ApplicationProblemPlusJSONResponse struct {
+	ForbiddenApplicationProblemPlusJSONResponse
+}
+
+func (response ListCashCategories403ApplicationProblemPlusJSONResponse) VisitListCashCategoriesResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(403)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type ListCashCategories404ApplicationProblemPlusJSONResponse struct {
+	NotFoundApplicationProblemPlusJSONResponse
+}
+
+func (response ListCashCategories404ApplicationProblemPlusJSONResponse) VisitListCashCategoriesResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(404)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type ListCashCategories422ApplicationProblemPlusJSONResponse struct {
+	ValidationApplicationProblemPlusJSONResponse
+}
+
+func (response ListCashCategories422ApplicationProblemPlusJSONResponse) VisitListCashCategoriesResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(422)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type ListCashCategories429ApplicationProblemPlusJSONResponse struct {
+	RateLimitedApplicationProblemPlusJSONResponse
+}
+
+func (response ListCashCategories429ApplicationProblemPlusJSONResponse) VisitListCashCategoriesResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.RetryAfter != nil {
+		w.Header().Set("Retry-After", fmt.Sprint(*response.Headers.RetryAfter))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(429)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type FindCashDuplicatesRequestObject struct {
+	TenantId TenantId `json:"tenantId"`
+	Params   FindCashDuplicatesParams
+}
+
+type FindCashDuplicatesResponseObject interface {
+	VisitFindCashDuplicatesResponse(w http.ResponseWriter) error
+}
+
+type FindCashDuplicates200ResponseHeaders struct {
+	CacheControl *string
+	XRequestId   *string
+}
+
+type FindCashDuplicates200JSONResponse struct {
+	Body    CashDuplicateList
+	Headers FindCashDuplicates200ResponseHeaders
+}
+
+func (response FindCashDuplicates200JSONResponse) VisitFindCashDuplicatesResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	if response.Headers.CacheControl != nil {
+		w.Header().Set("Cache-Control", fmt.Sprint(*response.Headers.CacheControl))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(200)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type FindCashDuplicates400ApplicationProblemPlusJSONResponse struct {
+	BadRequestApplicationProblemPlusJSONResponse
+}
+
+func (response FindCashDuplicates400ApplicationProblemPlusJSONResponse) VisitFindCashDuplicatesResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(400)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type FindCashDuplicates401ApplicationProblemPlusJSONResponse struct {
+	UnauthenticatedApplicationProblemPlusJSONResponse
+}
+
+func (response FindCashDuplicates401ApplicationProblemPlusJSONResponse) VisitFindCashDuplicatesResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(401)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type FindCashDuplicates403ApplicationProblemPlusJSONResponse struct {
+	ForbiddenApplicationProblemPlusJSONResponse
+}
+
+func (response FindCashDuplicates403ApplicationProblemPlusJSONResponse) VisitFindCashDuplicatesResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(403)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type FindCashDuplicates404ApplicationProblemPlusJSONResponse struct {
+	NotFoundApplicationProblemPlusJSONResponse
+}
+
+func (response FindCashDuplicates404ApplicationProblemPlusJSONResponse) VisitFindCashDuplicatesResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(404)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type FindCashDuplicates422ApplicationProblemPlusJSONResponse struct {
+	ValidationApplicationProblemPlusJSONResponse
+}
+
+func (response FindCashDuplicates422ApplicationProblemPlusJSONResponse) VisitFindCashDuplicatesResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(422)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type FindCashDuplicates429ApplicationProblemPlusJSONResponse struct {
+	RateLimitedApplicationProblemPlusJSONResponse
+}
+
+func (response FindCashDuplicates429ApplicationProblemPlusJSONResponse) VisitFindCashDuplicatesResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.RetryAfter != nil {
+		w.Header().Set("Retry-After", fmt.Sprint(*response.Headers.RetryAfter))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(429)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
 type ListCashOperationsRequestObject struct {
 	TenantId TenantId `json:"tenantId"`
 	Params   ListCashOperationsParams
@@ -1836,6 +8049,42 @@ func (response PostCashOperation201JSONResponse) VisitPostCashOperationResponse(
 	return err
 }
 
+type PostCashOperation202ResponseHeaders struct {
+	CacheControl        *string
+	ETag                *string
+	IdempotencyReplayed *bool
+	XRequestId          *string
+}
+
+type PostCashOperation202JSONResponse struct {
+	Body    CashApprovalRequest
+	Headers PostCashOperation202ResponseHeaders
+}
+
+func (response PostCashOperation202JSONResponse) VisitPostCashOperationResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	if response.Headers.CacheControl != nil {
+		w.Header().Set("Cache-Control", fmt.Sprint(*response.Headers.CacheControl))
+	}
+	if response.Headers.ETag != nil {
+		w.Header().Set("ETag", fmt.Sprint(*response.Headers.ETag))
+	}
+	if response.Headers.IdempotencyReplayed != nil {
+		w.Header().Set("Idempotency-Replayed", fmt.Sprint(*response.Headers.IdempotencyReplayed))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(202)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
 type PostCashOperation400ApplicationProblemPlusJSONResponse struct {
 	BadRequestApplicationProblemPlusJSONResponse
 }
@@ -2013,6 +8262,2713 @@ func (response PostCashOperation429ApplicationProblemPlusJSONResponse) VisitPost
 	return err
 }
 
+type ReverseCashOperationRequestObject struct {
+	TenantId    TenantId        `json:"tenantId"`
+	OperationId CashOperationId `json:"operationId"`
+	Params      ReverseCashOperationParams
+	Body        *ReverseCashOperationJSONRequestBody
+}
+
+type ReverseCashOperationResponseObject interface {
+	VisitReverseCashOperationResponse(w http.ResponseWriter) error
+}
+
+type ReverseCashOperation201ResponseHeaders struct {
+	CacheControl        *string
+	IdempotencyReplayed *bool
+	XRequestId          *string
+}
+
+type ReverseCashOperation201JSONResponse struct {
+	Body    CashOperation
+	Headers ReverseCashOperation201ResponseHeaders
+}
+
+func (response ReverseCashOperation201JSONResponse) VisitReverseCashOperationResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	if response.Headers.CacheControl != nil {
+		w.Header().Set("Cache-Control", fmt.Sprint(*response.Headers.CacheControl))
+	}
+	if response.Headers.IdempotencyReplayed != nil {
+		w.Header().Set("Idempotency-Replayed", fmt.Sprint(*response.Headers.IdempotencyReplayed))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(201)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type ReverseCashOperation400ApplicationProblemPlusJSONResponse struct {
+	BadRequestApplicationProblemPlusJSONResponse
+}
+
+func (response ReverseCashOperation400ApplicationProblemPlusJSONResponse) VisitReverseCashOperationResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(400)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type ReverseCashOperation401ApplicationProblemPlusJSONResponse struct {
+	UnauthenticatedApplicationProblemPlusJSONResponse
+}
+
+func (response ReverseCashOperation401ApplicationProblemPlusJSONResponse) VisitReverseCashOperationResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(401)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type ReverseCashOperation402ApplicationProblemPlusJSONResponse struct {
+	PlanRequiredApplicationProblemPlusJSONResponse
+}
+
+func (response ReverseCashOperation402ApplicationProblemPlusJSONResponse) VisitReverseCashOperationResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(402)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type ReverseCashOperation403ApplicationProblemPlusJSONResponse struct {
+	ForbiddenApplicationProblemPlusJSONResponse
+}
+
+func (response ReverseCashOperation403ApplicationProblemPlusJSONResponse) VisitReverseCashOperationResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(403)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type ReverseCashOperation404ApplicationProblemPlusJSONResponse struct {
+	NotFoundApplicationProblemPlusJSONResponse
+}
+
+func (response ReverseCashOperation404ApplicationProblemPlusJSONResponse) VisitReverseCashOperationResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(404)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type ReverseCashOperation409ApplicationProblemPlusJSONResponse struct {
+	ConflictApplicationProblemPlusJSONResponse
+}
+
+func (response ReverseCashOperation409ApplicationProblemPlusJSONResponse) VisitReverseCashOperationResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.RetryAfter != nil {
+		w.Header().Set("Retry-After", fmt.Sprint(*response.Headers.RetryAfter))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(409)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type ReverseCashOperation422ApplicationProblemPlusJSONResponse struct {
+	ValidationApplicationProblemPlusJSONResponse
+}
+
+func (response ReverseCashOperation422ApplicationProblemPlusJSONResponse) VisitReverseCashOperationResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(422)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type ReverseCashOperation428ApplicationProblemPlusJSONResponse struct {
+	PreconditionRequiredApplicationProblemPlusJSONResponse
+}
+
+func (response ReverseCashOperation428ApplicationProblemPlusJSONResponse) VisitReverseCashOperationResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(428)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type ReverseCashOperation429ApplicationProblemPlusJSONResponse struct {
+	RateLimitedApplicationProblemPlusJSONResponse
+}
+
+func (response ReverseCashOperation429ApplicationProblemPlusJSONResponse) VisitReverseCashOperationResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.RetryAfter != nil {
+		w.Header().Set("Retry-After", fmt.Sprint(*response.Headers.RetryAfter))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(429)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type LinkCashOperationSourceRequestObject struct {
+	TenantId    TenantId        `json:"tenantId"`
+	OperationId CashOperationId `json:"operationId"`
+	Params      LinkCashOperationSourceParams
+	Body        *LinkCashOperationSourceJSONRequestBody
+}
+
+type LinkCashOperationSourceResponseObject interface {
+	VisitLinkCashOperationSourceResponse(w http.ResponseWriter) error
+}
+
+type LinkCashOperationSource201ResponseHeaders struct {
+	CacheControl        *string
+	IdempotencyReplayed *bool
+	XRequestId          *string
+}
+
+type LinkCashOperationSource201JSONResponse struct {
+	Body    CashOperationSourceLink
+	Headers LinkCashOperationSource201ResponseHeaders
+}
+
+func (response LinkCashOperationSource201JSONResponse) VisitLinkCashOperationSourceResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	if response.Headers.CacheControl != nil {
+		w.Header().Set("Cache-Control", fmt.Sprint(*response.Headers.CacheControl))
+	}
+	if response.Headers.IdempotencyReplayed != nil {
+		w.Header().Set("Idempotency-Replayed", fmt.Sprint(*response.Headers.IdempotencyReplayed))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(201)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type LinkCashOperationSource400ApplicationProblemPlusJSONResponse struct {
+	BadRequestApplicationProblemPlusJSONResponse
+}
+
+func (response LinkCashOperationSource400ApplicationProblemPlusJSONResponse) VisitLinkCashOperationSourceResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(400)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type LinkCashOperationSource401ApplicationProblemPlusJSONResponse struct {
+	UnauthenticatedApplicationProblemPlusJSONResponse
+}
+
+func (response LinkCashOperationSource401ApplicationProblemPlusJSONResponse) VisitLinkCashOperationSourceResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(401)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type LinkCashOperationSource402ApplicationProblemPlusJSONResponse struct {
+	PlanRequiredApplicationProblemPlusJSONResponse
+}
+
+func (response LinkCashOperationSource402ApplicationProblemPlusJSONResponse) VisitLinkCashOperationSourceResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(402)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type LinkCashOperationSource403ApplicationProblemPlusJSONResponse struct {
+	ForbiddenApplicationProblemPlusJSONResponse
+}
+
+func (response LinkCashOperationSource403ApplicationProblemPlusJSONResponse) VisitLinkCashOperationSourceResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(403)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type LinkCashOperationSource404ApplicationProblemPlusJSONResponse struct {
+	NotFoundApplicationProblemPlusJSONResponse
+}
+
+func (response LinkCashOperationSource404ApplicationProblemPlusJSONResponse) VisitLinkCashOperationSourceResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(404)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type LinkCashOperationSource409ApplicationProblemPlusJSONResponse struct {
+	ConflictApplicationProblemPlusJSONResponse
+}
+
+func (response LinkCashOperationSource409ApplicationProblemPlusJSONResponse) VisitLinkCashOperationSourceResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.RetryAfter != nil {
+		w.Header().Set("Retry-After", fmt.Sprint(*response.Headers.RetryAfter))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(409)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type LinkCashOperationSource422ApplicationProblemPlusJSONResponse struct {
+	ValidationApplicationProblemPlusJSONResponse
+}
+
+func (response LinkCashOperationSource422ApplicationProblemPlusJSONResponse) VisitLinkCashOperationSourceResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(422)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type LinkCashOperationSource428ApplicationProblemPlusJSONResponse struct {
+	PreconditionRequiredApplicationProblemPlusJSONResponse
+}
+
+func (response LinkCashOperationSource428ApplicationProblemPlusJSONResponse) VisitLinkCashOperationSourceResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(428)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type LinkCashOperationSource429ApplicationProblemPlusJSONResponse struct {
+	RateLimitedApplicationProblemPlusJSONResponse
+}
+
+func (response LinkCashOperationSource429ApplicationProblemPlusJSONResponse) VisitLinkCashOperationSourceResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.RetryAfter != nil {
+		w.Header().Set("Retry-After", fmt.Sprint(*response.Headers.RetryAfter))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(429)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type ListCashProposalsRequestObject struct {
+	TenantId TenantId `json:"tenantId"`
+	Params   ListCashProposalsParams
+}
+
+type ListCashProposalsResponseObject interface {
+	VisitListCashProposalsResponse(w http.ResponseWriter) error
+}
+
+type ListCashProposals200ResponseHeaders struct {
+	CacheControl *string
+	XRequestId   *string
+}
+
+type ListCashProposals200JSONResponse struct {
+	Body    CashProposalPage
+	Headers ListCashProposals200ResponseHeaders
+}
+
+func (response ListCashProposals200JSONResponse) VisitListCashProposalsResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	if response.Headers.CacheControl != nil {
+		w.Header().Set("Cache-Control", fmt.Sprint(*response.Headers.CacheControl))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(200)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type ListCashProposals400ApplicationProblemPlusJSONResponse struct {
+	BadRequestApplicationProblemPlusJSONResponse
+}
+
+func (response ListCashProposals400ApplicationProblemPlusJSONResponse) VisitListCashProposalsResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(400)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type ListCashProposals401ApplicationProblemPlusJSONResponse struct {
+	UnauthenticatedApplicationProblemPlusJSONResponse
+}
+
+func (response ListCashProposals401ApplicationProblemPlusJSONResponse) VisitListCashProposalsResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(401)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type ListCashProposals403ApplicationProblemPlusJSONResponse struct {
+	ForbiddenApplicationProblemPlusJSONResponse
+}
+
+func (response ListCashProposals403ApplicationProblemPlusJSONResponse) VisitListCashProposalsResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(403)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type ListCashProposals404ApplicationProblemPlusJSONResponse struct {
+	NotFoundApplicationProblemPlusJSONResponse
+}
+
+func (response ListCashProposals404ApplicationProblemPlusJSONResponse) VisitListCashProposalsResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(404)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type ListCashProposals422ApplicationProblemPlusJSONResponse struct {
+	ValidationApplicationProblemPlusJSONResponse
+}
+
+func (response ListCashProposals422ApplicationProblemPlusJSONResponse) VisitListCashProposalsResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(422)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type ListCashProposals429ApplicationProblemPlusJSONResponse struct {
+	RateLimitedApplicationProblemPlusJSONResponse
+}
+
+func (response ListCashProposals429ApplicationProblemPlusJSONResponse) VisitListCashProposalsResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.RetryAfter != nil {
+		w.Header().Set("Retry-After", fmt.Sprint(*response.Headers.RetryAfter))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(429)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type DismissCashProposalRequestObject struct {
+	TenantId    TenantId        `json:"tenantId"`
+	ProposalKey CashProposalKey `json:"proposalKey"`
+	Params      DismissCashProposalParams
+	Body        *DismissCashProposalJSONRequestBody
+}
+
+type DismissCashProposalResponseObject interface {
+	VisitDismissCashProposalResponse(w http.ResponseWriter) error
+}
+
+type DismissCashProposal200ResponseHeaders struct {
+	CacheControl        *string
+	IdempotencyReplayed *bool
+	XRequestId          *string
+}
+
+type DismissCashProposal200JSONResponse struct {
+	Body    CashProposal
+	Headers DismissCashProposal200ResponseHeaders
+}
+
+func (response DismissCashProposal200JSONResponse) VisitDismissCashProposalResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	if response.Headers.CacheControl != nil {
+		w.Header().Set("Cache-Control", fmt.Sprint(*response.Headers.CacheControl))
+	}
+	if response.Headers.IdempotencyReplayed != nil {
+		w.Header().Set("Idempotency-Replayed", fmt.Sprint(*response.Headers.IdempotencyReplayed))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(200)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type DismissCashProposal400ApplicationProblemPlusJSONResponse struct {
+	BadRequestApplicationProblemPlusJSONResponse
+}
+
+func (response DismissCashProposal400ApplicationProblemPlusJSONResponse) VisitDismissCashProposalResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(400)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type DismissCashProposal401ApplicationProblemPlusJSONResponse struct {
+	UnauthenticatedApplicationProblemPlusJSONResponse
+}
+
+func (response DismissCashProposal401ApplicationProblemPlusJSONResponse) VisitDismissCashProposalResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(401)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type DismissCashProposal402ApplicationProblemPlusJSONResponse struct {
+	PlanRequiredApplicationProblemPlusJSONResponse
+}
+
+func (response DismissCashProposal402ApplicationProblemPlusJSONResponse) VisitDismissCashProposalResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(402)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type DismissCashProposal403ApplicationProblemPlusJSONResponse struct {
+	ForbiddenApplicationProblemPlusJSONResponse
+}
+
+func (response DismissCashProposal403ApplicationProblemPlusJSONResponse) VisitDismissCashProposalResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(403)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type DismissCashProposal404ApplicationProblemPlusJSONResponse struct {
+	NotFoundApplicationProblemPlusJSONResponse
+}
+
+func (response DismissCashProposal404ApplicationProblemPlusJSONResponse) VisitDismissCashProposalResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(404)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type DismissCashProposal409ApplicationProblemPlusJSONResponse struct {
+	ConflictApplicationProblemPlusJSONResponse
+}
+
+func (response DismissCashProposal409ApplicationProblemPlusJSONResponse) VisitDismissCashProposalResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.RetryAfter != nil {
+		w.Header().Set("Retry-After", fmt.Sprint(*response.Headers.RetryAfter))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(409)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type DismissCashProposal422ApplicationProblemPlusJSONResponse struct {
+	ValidationApplicationProblemPlusJSONResponse
+}
+
+func (response DismissCashProposal422ApplicationProblemPlusJSONResponse) VisitDismissCashProposalResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(422)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type DismissCashProposal428ApplicationProblemPlusJSONResponse struct {
+	PreconditionRequiredApplicationProblemPlusJSONResponse
+}
+
+func (response DismissCashProposal428ApplicationProblemPlusJSONResponse) VisitDismissCashProposalResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(428)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type DismissCashProposal429ApplicationProblemPlusJSONResponse struct {
+	RateLimitedApplicationProblemPlusJSONResponse
+}
+
+func (response DismissCashProposal429ApplicationProblemPlusJSONResponse) VisitDismissCashProposalResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.RetryAfter != nil {
+		w.Header().Set("Retry-After", fmt.Sprint(*response.Headers.RetryAfter))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(429)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type PostCashProposalRequestObject struct {
+	TenantId    TenantId        `json:"tenantId"`
+	ProposalKey CashProposalKey `json:"proposalKey"`
+	Params      PostCashProposalParams
+	Body        *PostCashProposalJSONRequestBody
+}
+
+type PostCashProposalResponseObject interface {
+	VisitPostCashProposalResponse(w http.ResponseWriter) error
+}
+
+type PostCashProposal201ResponseHeaders struct {
+	CacheControl        *string
+	IdempotencyReplayed *bool
+	XRequestId          *string
+}
+
+type PostCashProposal201JSONResponse struct {
+	Body    CashProposalPostResult
+	Headers PostCashProposal201ResponseHeaders
+}
+
+func (response PostCashProposal201JSONResponse) VisitPostCashProposalResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	if response.Headers.CacheControl != nil {
+		w.Header().Set("Cache-Control", fmt.Sprint(*response.Headers.CacheControl))
+	}
+	if response.Headers.IdempotencyReplayed != nil {
+		w.Header().Set("Idempotency-Replayed", fmt.Sprint(*response.Headers.IdempotencyReplayed))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(201)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type PostCashProposal202ResponseHeaders struct {
+	CacheControl        *string
+	ETag                *string
+	IdempotencyReplayed *bool
+	XRequestId          *string
+}
+
+type PostCashProposal202JSONResponse struct {
+	Body    CashApprovalRequest
+	Headers PostCashProposal202ResponseHeaders
+}
+
+func (response PostCashProposal202JSONResponse) VisitPostCashProposalResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	if response.Headers.CacheControl != nil {
+		w.Header().Set("Cache-Control", fmt.Sprint(*response.Headers.CacheControl))
+	}
+	if response.Headers.ETag != nil {
+		w.Header().Set("ETag", fmt.Sprint(*response.Headers.ETag))
+	}
+	if response.Headers.IdempotencyReplayed != nil {
+		w.Header().Set("Idempotency-Replayed", fmt.Sprint(*response.Headers.IdempotencyReplayed))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(202)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type PostCashProposal400ApplicationProblemPlusJSONResponse struct {
+	BadRequestApplicationProblemPlusJSONResponse
+}
+
+func (response PostCashProposal400ApplicationProblemPlusJSONResponse) VisitPostCashProposalResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(400)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type PostCashProposal401ApplicationProblemPlusJSONResponse struct {
+	UnauthenticatedApplicationProblemPlusJSONResponse
+}
+
+func (response PostCashProposal401ApplicationProblemPlusJSONResponse) VisitPostCashProposalResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(401)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type PostCashProposal402ApplicationProblemPlusJSONResponse struct {
+	PlanRequiredApplicationProblemPlusJSONResponse
+}
+
+func (response PostCashProposal402ApplicationProblemPlusJSONResponse) VisitPostCashProposalResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(402)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type PostCashProposal403ApplicationProblemPlusJSONResponse struct {
+	ForbiddenApplicationProblemPlusJSONResponse
+}
+
+func (response PostCashProposal403ApplicationProblemPlusJSONResponse) VisitPostCashProposalResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(403)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type PostCashProposal404ApplicationProblemPlusJSONResponse struct {
+	NotFoundApplicationProblemPlusJSONResponse
+}
+
+func (response PostCashProposal404ApplicationProblemPlusJSONResponse) VisitPostCashProposalResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(404)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type PostCashProposal409ApplicationProblemPlusJSONResponse struct {
+	ConflictApplicationProblemPlusJSONResponse
+}
+
+func (response PostCashProposal409ApplicationProblemPlusJSONResponse) VisitPostCashProposalResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.RetryAfter != nil {
+		w.Header().Set("Retry-After", fmt.Sprint(*response.Headers.RetryAfter))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(409)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type PostCashProposal422ApplicationProblemPlusJSONResponse struct {
+	ValidationApplicationProblemPlusJSONResponse
+}
+
+func (response PostCashProposal422ApplicationProblemPlusJSONResponse) VisitPostCashProposalResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(422)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type PostCashProposal428ApplicationProblemPlusJSONResponse struct {
+	PreconditionRequiredApplicationProblemPlusJSONResponse
+}
+
+func (response PostCashProposal428ApplicationProblemPlusJSONResponse) VisitPostCashProposalResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(428)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type PostCashProposal429ApplicationProblemPlusJSONResponse struct {
+	RateLimitedApplicationProblemPlusJSONResponse
+}
+
+func (response PostCashProposal429ApplicationProblemPlusJSONResponse) VisitPostCashProposalResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.RetryAfter != nil {
+		w.Header().Set("Retry-After", fmt.Sprint(*response.Headers.RetryAfter))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(429)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type ListAdvanceReceiptsRequestObject struct {
+	TenantId TenantId `json:"tenantId"`
+	Params   ListAdvanceReceiptsParams
+}
+
+type ListAdvanceReceiptsResponseObject interface {
+	VisitListAdvanceReceiptsResponse(w http.ResponseWriter) error
+}
+
+type ListAdvanceReceipts200ResponseHeaders struct {
+	CacheControl *string
+	XRequestId   *string
+}
+
+type ListAdvanceReceipts200JSONResponse struct {
+	Body    AdvanceReceiptPage
+	Headers ListAdvanceReceipts200ResponseHeaders
+}
+
+func (response ListAdvanceReceipts200JSONResponse) VisitListAdvanceReceiptsResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	if response.Headers.CacheControl != nil {
+		w.Header().Set("Cache-Control", fmt.Sprint(*response.Headers.CacheControl))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(200)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type ListAdvanceReceipts400ApplicationProblemPlusJSONResponse struct {
+	BadRequestApplicationProblemPlusJSONResponse
+}
+
+func (response ListAdvanceReceipts400ApplicationProblemPlusJSONResponse) VisitListAdvanceReceiptsResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(400)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type ListAdvanceReceipts401ApplicationProblemPlusJSONResponse struct {
+	UnauthenticatedApplicationProblemPlusJSONResponse
+}
+
+func (response ListAdvanceReceipts401ApplicationProblemPlusJSONResponse) VisitListAdvanceReceiptsResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(401)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type ListAdvanceReceipts403ApplicationProblemPlusJSONResponse struct {
+	ForbiddenApplicationProblemPlusJSONResponse
+}
+
+func (response ListAdvanceReceipts403ApplicationProblemPlusJSONResponse) VisitListAdvanceReceiptsResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(403)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type ListAdvanceReceipts404ApplicationProblemPlusJSONResponse struct {
+	NotFoundApplicationProblemPlusJSONResponse
+}
+
+func (response ListAdvanceReceipts404ApplicationProblemPlusJSONResponse) VisitListAdvanceReceiptsResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(404)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type ListAdvanceReceipts422ApplicationProblemPlusJSONResponse struct {
+	ValidationApplicationProblemPlusJSONResponse
+}
+
+func (response ListAdvanceReceipts422ApplicationProblemPlusJSONResponse) VisitListAdvanceReceiptsResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(422)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type ListAdvanceReceipts429ApplicationProblemPlusJSONResponse struct {
+	RateLimitedApplicationProblemPlusJSONResponse
+}
+
+func (response ListAdvanceReceipts429ApplicationProblemPlusJSONResponse) VisitListAdvanceReceiptsResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.RetryAfter != nil {
+		w.Header().Set("Retry-After", fmt.Sprint(*response.Headers.RetryAfter))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(429)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type DecideAdvanceReceiptRequestObject struct {
+	TenantId  TenantId      `json:"tenantId"`
+	ReceiptId CashReceiptId `json:"receiptId"`
+	Params    DecideAdvanceReceiptParams
+	Body      *DecideAdvanceReceiptJSONRequestBody
+}
+
+type DecideAdvanceReceiptResponseObject interface {
+	VisitDecideAdvanceReceiptResponse(w http.ResponseWriter) error
+}
+
+type DecideAdvanceReceipt200ResponseHeaders struct {
+	CacheControl        *string
+	IdempotencyReplayed *bool
+	XRequestId          *string
+}
+
+type DecideAdvanceReceipt200JSONResponse struct {
+	Body    AdvanceReceipt
+	Headers DecideAdvanceReceipt200ResponseHeaders
+}
+
+func (response DecideAdvanceReceipt200JSONResponse) VisitDecideAdvanceReceiptResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	if response.Headers.CacheControl != nil {
+		w.Header().Set("Cache-Control", fmt.Sprint(*response.Headers.CacheControl))
+	}
+	if response.Headers.IdempotencyReplayed != nil {
+		w.Header().Set("Idempotency-Replayed", fmt.Sprint(*response.Headers.IdempotencyReplayed))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(200)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type DecideAdvanceReceipt400ApplicationProblemPlusJSONResponse struct {
+	BadRequestApplicationProblemPlusJSONResponse
+}
+
+func (response DecideAdvanceReceipt400ApplicationProblemPlusJSONResponse) VisitDecideAdvanceReceiptResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(400)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type DecideAdvanceReceipt401ApplicationProblemPlusJSONResponse struct {
+	UnauthenticatedApplicationProblemPlusJSONResponse
+}
+
+func (response DecideAdvanceReceipt401ApplicationProblemPlusJSONResponse) VisitDecideAdvanceReceiptResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(401)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type DecideAdvanceReceipt402ApplicationProblemPlusJSONResponse struct {
+	PlanRequiredApplicationProblemPlusJSONResponse
+}
+
+func (response DecideAdvanceReceipt402ApplicationProblemPlusJSONResponse) VisitDecideAdvanceReceiptResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(402)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type DecideAdvanceReceipt403ApplicationProblemPlusJSONResponse struct {
+	ForbiddenApplicationProblemPlusJSONResponse
+}
+
+func (response DecideAdvanceReceipt403ApplicationProblemPlusJSONResponse) VisitDecideAdvanceReceiptResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(403)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type DecideAdvanceReceipt404ApplicationProblemPlusJSONResponse struct {
+	NotFoundApplicationProblemPlusJSONResponse
+}
+
+func (response DecideAdvanceReceipt404ApplicationProblemPlusJSONResponse) VisitDecideAdvanceReceiptResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(404)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type DecideAdvanceReceipt409ApplicationProblemPlusJSONResponse struct {
+	ConflictApplicationProblemPlusJSONResponse
+}
+
+func (response DecideAdvanceReceipt409ApplicationProblemPlusJSONResponse) VisitDecideAdvanceReceiptResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.RetryAfter != nil {
+		w.Header().Set("Retry-After", fmt.Sprint(*response.Headers.RetryAfter))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(409)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type DecideAdvanceReceipt412ApplicationProblemPlusJSONResponse struct {
+	PreconditionFailedApplicationProblemPlusJSONResponse
+}
+
+func (response DecideAdvanceReceipt412ApplicationProblemPlusJSONResponse) VisitDecideAdvanceReceiptResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(412)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type DecideAdvanceReceipt422ApplicationProblemPlusJSONResponse struct {
+	ValidationApplicationProblemPlusJSONResponse
+}
+
+func (response DecideAdvanceReceipt422ApplicationProblemPlusJSONResponse) VisitDecideAdvanceReceiptResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(422)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type DecideAdvanceReceipt428ApplicationProblemPlusJSONResponse struct {
+	PreconditionRequiredApplicationProblemPlusJSONResponse
+}
+
+func (response DecideAdvanceReceipt428ApplicationProblemPlusJSONResponse) VisitDecideAdvanceReceiptResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(428)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type DecideAdvanceReceipt429ApplicationProblemPlusJSONResponse struct {
+	RateLimitedApplicationProblemPlusJSONResponse
+}
+
+func (response DecideAdvanceReceipt429ApplicationProblemPlusJSONResponse) VisitDecideAdvanceReceiptResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.RetryAfter != nil {
+		w.Header().Set("Retry-After", fmt.Sprint(*response.Headers.RetryAfter))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(429)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type ListCashShiftsRequestObject struct {
+	TenantId TenantId `json:"tenantId"`
+	Params   ListCashShiftsParams
+}
+
+type ListCashShiftsResponseObject interface {
+	VisitListCashShiftsResponse(w http.ResponseWriter) error
+}
+
+type ListCashShifts200ResponseHeaders struct {
+	CacheControl *string
+	XRequestId   *string
+}
+
+type ListCashShifts200JSONResponse struct {
+	Body    CashShiftPage
+	Headers ListCashShifts200ResponseHeaders
+}
+
+func (response ListCashShifts200JSONResponse) VisitListCashShiftsResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	if response.Headers.CacheControl != nil {
+		w.Header().Set("Cache-Control", fmt.Sprint(*response.Headers.CacheControl))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(200)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type ListCashShifts400ApplicationProblemPlusJSONResponse struct {
+	BadRequestApplicationProblemPlusJSONResponse
+}
+
+func (response ListCashShifts400ApplicationProblemPlusJSONResponse) VisitListCashShiftsResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(400)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type ListCashShifts401ApplicationProblemPlusJSONResponse struct {
+	UnauthenticatedApplicationProblemPlusJSONResponse
+}
+
+func (response ListCashShifts401ApplicationProblemPlusJSONResponse) VisitListCashShiftsResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(401)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type ListCashShifts403ApplicationProblemPlusJSONResponse struct {
+	ForbiddenApplicationProblemPlusJSONResponse
+}
+
+func (response ListCashShifts403ApplicationProblemPlusJSONResponse) VisitListCashShiftsResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(403)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type ListCashShifts404ApplicationProblemPlusJSONResponse struct {
+	NotFoundApplicationProblemPlusJSONResponse
+}
+
+func (response ListCashShifts404ApplicationProblemPlusJSONResponse) VisitListCashShiftsResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(404)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type ListCashShifts422ApplicationProblemPlusJSONResponse struct {
+	ValidationApplicationProblemPlusJSONResponse
+}
+
+func (response ListCashShifts422ApplicationProblemPlusJSONResponse) VisitListCashShiftsResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(422)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type ListCashShifts429ApplicationProblemPlusJSONResponse struct {
+	RateLimitedApplicationProblemPlusJSONResponse
+}
+
+func (response ListCashShifts429ApplicationProblemPlusJSONResponse) VisitListCashShiftsResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.RetryAfter != nil {
+		w.Header().Set("Retry-After", fmt.Sprint(*response.Headers.RetryAfter))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(429)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type CloseCashShiftRequestObject struct {
+	TenantId TenantId    `json:"tenantId"`
+	ShiftId  CashShiftId `json:"shiftId"`
+	Params   CloseCashShiftParams
+	Body     *CloseCashShiftJSONRequestBody
+}
+
+type CloseCashShiftResponseObject interface {
+	VisitCloseCashShiftResponse(w http.ResponseWriter) error
+}
+
+type CloseCashShift200ResponseHeaders struct {
+	CacheControl        *string
+	IdempotencyReplayed *bool
+	XRequestId          *string
+}
+
+type CloseCashShift200JSONResponse struct {
+	Body    CashShift
+	Headers CloseCashShift200ResponseHeaders
+}
+
+func (response CloseCashShift200JSONResponse) VisitCloseCashShiftResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	if response.Headers.CacheControl != nil {
+		w.Header().Set("Cache-Control", fmt.Sprint(*response.Headers.CacheControl))
+	}
+	if response.Headers.IdempotencyReplayed != nil {
+		w.Header().Set("Idempotency-Replayed", fmt.Sprint(*response.Headers.IdempotencyReplayed))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(200)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type CloseCashShift400ApplicationProblemPlusJSONResponse struct {
+	BadRequestApplicationProblemPlusJSONResponse
+}
+
+func (response CloseCashShift400ApplicationProblemPlusJSONResponse) VisitCloseCashShiftResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(400)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type CloseCashShift401ApplicationProblemPlusJSONResponse struct {
+	UnauthenticatedApplicationProblemPlusJSONResponse
+}
+
+func (response CloseCashShift401ApplicationProblemPlusJSONResponse) VisitCloseCashShiftResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(401)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type CloseCashShift402ApplicationProblemPlusJSONResponse struct {
+	PlanRequiredApplicationProblemPlusJSONResponse
+}
+
+func (response CloseCashShift402ApplicationProblemPlusJSONResponse) VisitCloseCashShiftResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(402)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type CloseCashShift403ApplicationProblemPlusJSONResponse struct {
+	ForbiddenApplicationProblemPlusJSONResponse
+}
+
+func (response CloseCashShift403ApplicationProblemPlusJSONResponse) VisitCloseCashShiftResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(403)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type CloseCashShift404ApplicationProblemPlusJSONResponse struct {
+	NotFoundApplicationProblemPlusJSONResponse
+}
+
+func (response CloseCashShift404ApplicationProblemPlusJSONResponse) VisitCloseCashShiftResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(404)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type CloseCashShift409ApplicationProblemPlusJSONResponse struct {
+	ConflictApplicationProblemPlusJSONResponse
+}
+
+func (response CloseCashShift409ApplicationProblemPlusJSONResponse) VisitCloseCashShiftResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.RetryAfter != nil {
+		w.Header().Set("Retry-After", fmt.Sprint(*response.Headers.RetryAfter))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(409)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type CloseCashShift412ApplicationProblemPlusJSONResponse struct {
+	PreconditionFailedApplicationProblemPlusJSONResponse
+}
+
+func (response CloseCashShift412ApplicationProblemPlusJSONResponse) VisitCloseCashShiftResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(412)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type CloseCashShift422ApplicationProblemPlusJSONResponse struct {
+	ValidationApplicationProblemPlusJSONResponse
+}
+
+func (response CloseCashShift422ApplicationProblemPlusJSONResponse) VisitCloseCashShiftResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(422)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type CloseCashShift428ApplicationProblemPlusJSONResponse struct {
+	PreconditionRequiredApplicationProblemPlusJSONResponse
+}
+
+func (response CloseCashShift428ApplicationProblemPlusJSONResponse) VisitCloseCashShiftResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(428)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type CloseCashShift429ApplicationProblemPlusJSONResponse struct {
+	RateLimitedApplicationProblemPlusJSONResponse
+}
+
+func (response CloseCashShift429ApplicationProblemPlusJSONResponse) VisitCloseCashShiftResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.RetryAfter != nil {
+		w.Header().Set("Retry-After", fmt.Sprint(*response.Headers.RetryAfter))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(429)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type ReviewCashShiftRequestObject struct {
+	TenantId TenantId    `json:"tenantId"`
+	ShiftId  CashShiftId `json:"shiftId"`
+	Params   ReviewCashShiftParams
+	Body     *ReviewCashShiftJSONRequestBody
+}
+
+type ReviewCashShiftResponseObject interface {
+	VisitReviewCashShiftResponse(w http.ResponseWriter) error
+}
+
+type ReviewCashShift200ResponseHeaders struct {
+	CacheControl        *string
+	IdempotencyReplayed *bool
+	XRequestId          *string
+}
+
+type ReviewCashShift200JSONResponse struct {
+	Body    CashShift
+	Headers ReviewCashShift200ResponseHeaders
+}
+
+func (response ReviewCashShift200JSONResponse) VisitReviewCashShiftResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	if response.Headers.CacheControl != nil {
+		w.Header().Set("Cache-Control", fmt.Sprint(*response.Headers.CacheControl))
+	}
+	if response.Headers.IdempotencyReplayed != nil {
+		w.Header().Set("Idempotency-Replayed", fmt.Sprint(*response.Headers.IdempotencyReplayed))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(200)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type ReviewCashShift400ApplicationProblemPlusJSONResponse struct {
+	BadRequestApplicationProblemPlusJSONResponse
+}
+
+func (response ReviewCashShift400ApplicationProblemPlusJSONResponse) VisitReviewCashShiftResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(400)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type ReviewCashShift401ApplicationProblemPlusJSONResponse struct {
+	UnauthenticatedApplicationProblemPlusJSONResponse
+}
+
+func (response ReviewCashShift401ApplicationProblemPlusJSONResponse) VisitReviewCashShiftResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(401)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type ReviewCashShift402ApplicationProblemPlusJSONResponse struct {
+	PlanRequiredApplicationProblemPlusJSONResponse
+}
+
+func (response ReviewCashShift402ApplicationProblemPlusJSONResponse) VisitReviewCashShiftResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(402)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type ReviewCashShift403ApplicationProblemPlusJSONResponse struct {
+	ForbiddenApplicationProblemPlusJSONResponse
+}
+
+func (response ReviewCashShift403ApplicationProblemPlusJSONResponse) VisitReviewCashShiftResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(403)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type ReviewCashShift404ApplicationProblemPlusJSONResponse struct {
+	NotFoundApplicationProblemPlusJSONResponse
+}
+
+func (response ReviewCashShift404ApplicationProblemPlusJSONResponse) VisitReviewCashShiftResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(404)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type ReviewCashShift409ApplicationProblemPlusJSONResponse struct {
+	ConflictApplicationProblemPlusJSONResponse
+}
+
+func (response ReviewCashShift409ApplicationProblemPlusJSONResponse) VisitReviewCashShiftResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.RetryAfter != nil {
+		w.Header().Set("Retry-After", fmt.Sprint(*response.Headers.RetryAfter))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(409)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type ReviewCashShift412ApplicationProblemPlusJSONResponse struct {
+	PreconditionFailedApplicationProblemPlusJSONResponse
+}
+
+func (response ReviewCashShift412ApplicationProblemPlusJSONResponse) VisitReviewCashShiftResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(412)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type ReviewCashShift422ApplicationProblemPlusJSONResponse struct {
+	ValidationApplicationProblemPlusJSONResponse
+}
+
+func (response ReviewCashShift422ApplicationProblemPlusJSONResponse) VisitReviewCashShiftResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(422)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type ReviewCashShift428ApplicationProblemPlusJSONResponse struct {
+	PreconditionRequiredApplicationProblemPlusJSONResponse
+}
+
+func (response ReviewCashShift428ApplicationProblemPlusJSONResponse) VisitReviewCashShiftResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(428)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type ReviewCashShift429ApplicationProblemPlusJSONResponse struct {
+	RateLimitedApplicationProblemPlusJSONResponse
+}
+
+func (response ReviewCashShift429ApplicationProblemPlusJSONResponse) VisitReviewCashShiftResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.RetryAfter != nil {
+		w.Header().Set("Retry-After", fmt.Sprint(*response.Headers.RetryAfter))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(429)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type ListCashTransfersRequestObject struct {
+	TenantId TenantId `json:"tenantId"`
+	Params   ListCashTransfersParams
+}
+
+type ListCashTransfersResponseObject interface {
+	VisitListCashTransfersResponse(w http.ResponseWriter) error
+}
+
+type ListCashTransfers200ResponseHeaders struct {
+	CacheControl *string
+	XRequestId   *string
+}
+
+type ListCashTransfers200JSONResponse struct {
+	Body    CashTransferPage
+	Headers ListCashTransfers200ResponseHeaders
+}
+
+func (response ListCashTransfers200JSONResponse) VisitListCashTransfersResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	if response.Headers.CacheControl != nil {
+		w.Header().Set("Cache-Control", fmt.Sprint(*response.Headers.CacheControl))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(200)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type ListCashTransfers400ApplicationProblemPlusJSONResponse struct {
+	BadRequestApplicationProblemPlusJSONResponse
+}
+
+func (response ListCashTransfers400ApplicationProblemPlusJSONResponse) VisitListCashTransfersResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(400)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type ListCashTransfers401ApplicationProblemPlusJSONResponse struct {
+	UnauthenticatedApplicationProblemPlusJSONResponse
+}
+
+func (response ListCashTransfers401ApplicationProblemPlusJSONResponse) VisitListCashTransfersResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(401)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type ListCashTransfers403ApplicationProblemPlusJSONResponse struct {
+	ForbiddenApplicationProblemPlusJSONResponse
+}
+
+func (response ListCashTransfers403ApplicationProblemPlusJSONResponse) VisitListCashTransfersResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(403)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type ListCashTransfers404ApplicationProblemPlusJSONResponse struct {
+	NotFoundApplicationProblemPlusJSONResponse
+}
+
+func (response ListCashTransfers404ApplicationProblemPlusJSONResponse) VisitListCashTransfersResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(404)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type ListCashTransfers422ApplicationProblemPlusJSONResponse struct {
+	ValidationApplicationProblemPlusJSONResponse
+}
+
+func (response ListCashTransfers422ApplicationProblemPlusJSONResponse) VisitListCashTransfersResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(422)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type ListCashTransfers429ApplicationProblemPlusJSONResponse struct {
+	RateLimitedApplicationProblemPlusJSONResponse
+}
+
+func (response ListCashTransfers429ApplicationProblemPlusJSONResponse) VisitListCashTransfersResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.RetryAfter != nil {
+		w.Header().Set("Retry-After", fmt.Sprint(*response.Headers.RetryAfter))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(429)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type CreateCashTransferRequestObject struct {
+	TenantId TenantId `json:"tenantId"`
+	Params   CreateCashTransferParams
+	Body     *CreateCashTransferJSONRequestBody
+}
+
+type CreateCashTransferResponseObject interface {
+	VisitCreateCashTransferResponse(w http.ResponseWriter) error
+}
+
+type CreateCashTransfer201ResponseHeaders struct {
+	CacheControl        *string
+	IdempotencyReplayed *bool
+	XRequestId          *string
+}
+
+type CreateCashTransfer201JSONResponse struct {
+	Body    CashTransfer
+	Headers CreateCashTransfer201ResponseHeaders
+}
+
+func (response CreateCashTransfer201JSONResponse) VisitCreateCashTransferResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	if response.Headers.CacheControl != nil {
+		w.Header().Set("Cache-Control", fmt.Sprint(*response.Headers.CacheControl))
+	}
+	if response.Headers.IdempotencyReplayed != nil {
+		w.Header().Set("Idempotency-Replayed", fmt.Sprint(*response.Headers.IdempotencyReplayed))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(201)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type CreateCashTransfer400ApplicationProblemPlusJSONResponse struct {
+	BadRequestApplicationProblemPlusJSONResponse
+}
+
+func (response CreateCashTransfer400ApplicationProblemPlusJSONResponse) VisitCreateCashTransferResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(400)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type CreateCashTransfer401ApplicationProblemPlusJSONResponse struct {
+	UnauthenticatedApplicationProblemPlusJSONResponse
+}
+
+func (response CreateCashTransfer401ApplicationProblemPlusJSONResponse) VisitCreateCashTransferResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(401)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type CreateCashTransfer402ApplicationProblemPlusJSONResponse struct {
+	PlanRequiredApplicationProblemPlusJSONResponse
+}
+
+func (response CreateCashTransfer402ApplicationProblemPlusJSONResponse) VisitCreateCashTransferResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(402)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type CreateCashTransfer403ApplicationProblemPlusJSONResponse struct {
+	ForbiddenApplicationProblemPlusJSONResponse
+}
+
+func (response CreateCashTransfer403ApplicationProblemPlusJSONResponse) VisitCreateCashTransferResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(403)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type CreateCashTransfer404ApplicationProblemPlusJSONResponse struct {
+	NotFoundApplicationProblemPlusJSONResponse
+}
+
+func (response CreateCashTransfer404ApplicationProblemPlusJSONResponse) VisitCreateCashTransferResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(404)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type CreateCashTransfer409ApplicationProblemPlusJSONResponse struct {
+	ConflictApplicationProblemPlusJSONResponse
+}
+
+func (response CreateCashTransfer409ApplicationProblemPlusJSONResponse) VisitCreateCashTransferResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.RetryAfter != nil {
+		w.Header().Set("Retry-After", fmt.Sprint(*response.Headers.RetryAfter))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(409)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type CreateCashTransfer422ApplicationProblemPlusJSONResponse struct {
+	ValidationApplicationProblemPlusJSONResponse
+}
+
+func (response CreateCashTransfer422ApplicationProblemPlusJSONResponse) VisitCreateCashTransferResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(422)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type CreateCashTransfer428ApplicationProblemPlusJSONResponse struct {
+	PreconditionRequiredApplicationProblemPlusJSONResponse
+}
+
+func (response CreateCashTransfer428ApplicationProblemPlusJSONResponse) VisitCreateCashTransferResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(428)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type CreateCashTransfer429ApplicationProblemPlusJSONResponse struct {
+	RateLimitedApplicationProblemPlusJSONResponse
+}
+
+func (response CreateCashTransfer429ApplicationProblemPlusJSONResponse) VisitCreateCashTransferResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.RetryAfter != nil {
+		w.Header().Set("Retry-After", fmt.Sprint(*response.Headers.RetryAfter))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(429)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type DecideCashTransferRequestObject struct {
+	TenantId   TenantId       `json:"tenantId"`
+	TransferId CashTransferId `json:"transferId"`
+	Params     DecideCashTransferParams
+	Body       *DecideCashTransferJSONRequestBody
+}
+
+type DecideCashTransferResponseObject interface {
+	VisitDecideCashTransferResponse(w http.ResponseWriter) error
+}
+
+type DecideCashTransfer200ResponseHeaders struct {
+	CacheControl        *string
+	IdempotencyReplayed *bool
+	XRequestId          *string
+}
+
+type DecideCashTransfer200JSONResponse struct {
+	Body    CashTransfer
+	Headers DecideCashTransfer200ResponseHeaders
+}
+
+func (response DecideCashTransfer200JSONResponse) VisitDecideCashTransferResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	if response.Headers.CacheControl != nil {
+		w.Header().Set("Cache-Control", fmt.Sprint(*response.Headers.CacheControl))
+	}
+	if response.Headers.IdempotencyReplayed != nil {
+		w.Header().Set("Idempotency-Replayed", fmt.Sprint(*response.Headers.IdempotencyReplayed))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(200)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type DecideCashTransfer400ApplicationProblemPlusJSONResponse struct {
+	BadRequestApplicationProblemPlusJSONResponse
+}
+
+func (response DecideCashTransfer400ApplicationProblemPlusJSONResponse) VisitDecideCashTransferResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(400)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type DecideCashTransfer401ApplicationProblemPlusJSONResponse struct {
+	UnauthenticatedApplicationProblemPlusJSONResponse
+}
+
+func (response DecideCashTransfer401ApplicationProblemPlusJSONResponse) VisitDecideCashTransferResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(401)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type DecideCashTransfer402ApplicationProblemPlusJSONResponse struct {
+	PlanRequiredApplicationProblemPlusJSONResponse
+}
+
+func (response DecideCashTransfer402ApplicationProblemPlusJSONResponse) VisitDecideCashTransferResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(402)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type DecideCashTransfer403ApplicationProblemPlusJSONResponse struct {
+	ForbiddenApplicationProblemPlusJSONResponse
+}
+
+func (response DecideCashTransfer403ApplicationProblemPlusJSONResponse) VisitDecideCashTransferResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(403)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type DecideCashTransfer404ApplicationProblemPlusJSONResponse struct {
+	NotFoundApplicationProblemPlusJSONResponse
+}
+
+func (response DecideCashTransfer404ApplicationProblemPlusJSONResponse) VisitDecideCashTransferResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(404)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type DecideCashTransfer409ApplicationProblemPlusJSONResponse struct {
+	ConflictApplicationProblemPlusJSONResponse
+}
+
+func (response DecideCashTransfer409ApplicationProblemPlusJSONResponse) VisitDecideCashTransferResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.RetryAfter != nil {
+		w.Header().Set("Retry-After", fmt.Sprint(*response.Headers.RetryAfter))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(409)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type DecideCashTransfer412ApplicationProblemPlusJSONResponse struct {
+	PreconditionFailedApplicationProblemPlusJSONResponse
+}
+
+func (response DecideCashTransfer412ApplicationProblemPlusJSONResponse) VisitDecideCashTransferResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(412)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type DecideCashTransfer422ApplicationProblemPlusJSONResponse struct {
+	ValidationApplicationProblemPlusJSONResponse
+}
+
+func (response DecideCashTransfer422ApplicationProblemPlusJSONResponse) VisitDecideCashTransferResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(422)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type DecideCashTransfer428ApplicationProblemPlusJSONResponse struct {
+	PreconditionRequiredApplicationProblemPlusJSONResponse
+}
+
+func (response DecideCashTransfer428ApplicationProblemPlusJSONResponse) VisitDecideCashTransferResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(428)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type DecideCashTransfer429ApplicationProblemPlusJSONResponse struct {
+	RateLimitedApplicationProblemPlusJSONResponse
+}
+
+func (response DecideCashTransfer429ApplicationProblemPlusJSONResponse) VisitDecideCashTransferResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.RetryAfter != nil {
+		w.Header().Set("Retry-After", fmt.Sprint(*response.Headers.RetryAfter))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(429)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
 // StrictServerInterface represents all server handlers.
 type StrictServerInterface interface {
 	// ListCashAccounts Read internal cash accounts and balances
@@ -2021,12 +10977,78 @@ type StrictServerInterface interface {
 	// CreateCashAccount Create a zero-balance internal cash account
 	// (POST /api/v1/tenants/{tenantId}/cash/accounts)
 	CreateCashAccount(ctx context.Context, request CreateCashAccountRequestObject) (CreateCashAccountResponseObject, error)
+	// PreviewCashAccountAccess Preview who would get access to an account being created
+	// (GET /api/v1/tenants/{tenantId}/cash/accounts/access-preview)
+	PreviewCashAccountAccess(ctx context.Context, request PreviewCashAccountAccessRequestObject) (PreviewCashAccountAccessResponseObject, error)
+	// IssueCashAdvance Issue money under report to an advance account
+	// (POST /api/v1/tenants/{tenantId}/cash/accounts/{accountId}/advance-issues)
+	IssueCashAdvance(ctx context.Context, request IssueCashAdvanceRequestObject) (IssueCashAdvanceResponseObject, error)
+	// ReturnCashAdvance Return the unspent rest of an advance
+	// (POST /api/v1/tenants/{tenantId}/cash/accounts/{accountId}/advance-returns)
+	ReturnCashAdvance(ctx context.Context, request ReturnCashAdvanceRequestObject) (ReturnCashAdvanceResponseObject, error)
+	// SubmitAdvanceReceipt Submit a receipt of an advance report
+	// (POST /api/v1/tenants/{tenantId}/cash/accounts/{accountId}/receipts)
+	SubmitAdvanceReceipt(ctx context.Context, request SubmitAdvanceReceiptRequestObject) (SubmitAdvanceReceiptResponseObject, error)
+	// OpenCashShift Open a shift with the count of the float
+	// (POST /api/v1/tenants/{tenantId}/cash/accounts/{accountId}/shifts)
+	OpenCashShift(ctx context.Context, request OpenCashShiftRequestObject) (OpenCashShiftResponseObject, error)
+	// ListCashApprovalRequests List approval requests over role limits
+	// (GET /api/v1/tenants/{tenantId}/cash/approval-requests)
+	ListCashApprovalRequests(ctx context.Context, request ListCashApprovalRequestsRequestObject) (ListCashApprovalRequestsResponseObject, error)
+	// DecideCashApprovalRequest Approve or reject an approval request
+	// (POST /api/v1/tenants/{tenantId}/cash/approval-requests/{approvalRequestId}/decision)
+	DecideCashApprovalRequest(ctx context.Context, request DecideCashApprovalRequestRequestObject) (DecideCashApprovalRequestResponseObject, error)
+	// ListCashCategories List cash categories («статьи»)
+	// (GET /api/v1/tenants/{tenantId}/cash/categories)
+	ListCashCategories(ctx context.Context, request ListCashCategoriesRequestObject) (ListCashCategoriesResponseObject, error)
+	// FindCashDuplicates Find possible duplicates of an operation being entered
+	// (GET /api/v1/tenants/{tenantId}/cash/duplicates)
+	FindCashDuplicates(ctx context.Context, request FindCashDuplicatesRequestObject) (FindCashDuplicatesResponseObject, error)
 	// ListCashOperations List visible append-only ledger postings
 	// (GET /api/v1/tenants/{tenantId}/cash/operations)
 	ListCashOperations(ctx context.Context, request ListCashOperationsRequestObject) (ListCashOperationsResponseObject, error)
 	// PostCashOperation Record an internal receipt, expense or linked reversal
 	// (POST /api/v1/tenants/{tenantId}/cash/operations)
 	PostCashOperation(ctx context.Context, request PostCashOperationRequestObject) (PostCashOperationResponseObject, error)
+	// ReverseCashOperation Reverse a ledger operation by a new storno row
+	// (POST /api/v1/tenants/{tenantId}/cash/operations/{operationId}/reverse)
+	ReverseCashOperation(ctx context.Context, request ReverseCashOperationRequestObject) (ReverseCashOperationResponseObject, error)
+	// LinkCashOperationSource Link an operation to a source record
+	// (POST /api/v1/tenants/{tenantId}/cash/operations/{operationId}/source-link)
+	LinkCashOperationSource(ctx context.Context, request LinkCashOperationSourceRequestObject) (LinkCashOperationSourceResponseObject, error)
+	// ListCashProposals List proposals of modules for the cash desks of the scope
+	// (GET /api/v1/tenants/{tenantId}/cash/proposals)
+	ListCashProposals(ctx context.Context, request ListCashProposalsRequestObject) (ListCashProposalsResponseObject, error)
+	// DismissCashProposal Dismiss a proposal with a reason
+	// (POST /api/v1/tenants/{tenantId}/cash/proposals/{proposalKey}/dismiss)
+	DismissCashProposal(ctx context.Context, request DismissCashProposalRequestObject) (DismissCashProposalResponseObject, error)
+	// PostCashProposal Post a proposal as 1…N operations of one group
+	// (POST /api/v1/tenants/{tenantId}/cash/proposals/{proposalKey}/post)
+	PostCashProposal(ctx context.Context, request PostCashProposalRequestObject) (PostCashProposalResponseObject, error)
+	// ListAdvanceReceipts List receipts of advance reports
+	// (GET /api/v1/tenants/{tenantId}/cash/receipts)
+	ListAdvanceReceipts(ctx context.Context, request ListAdvanceReceiptsRequestObject) (ListAdvanceReceiptsResponseObject, error)
+	// DecideAdvanceReceipt Accept or reject a receipt of an advance report
+	// (POST /api/v1/tenants/{tenantId}/cash/receipts/{receiptId}/decision)
+	DecideAdvanceReceipt(ctx context.Context, request DecideAdvanceReceiptRequestObject) (DecideAdvanceReceiptResponseObject, error)
+	// ListCashShifts List cash shifts of the visible accounts
+	// (GET /api/v1/tenants/{tenantId}/cash/shifts)
+	ListCashShifts(ctx context.Context, request ListCashShiftsRequestObject) (ListCashShiftsResponseObject, error)
+	// CloseCashShift Close a shift: count, Z report, terminal, hand-over to the safe
+	// (POST /api/v1/tenants/{tenantId}/cash/shifts/{shiftId}/close)
+	CloseCashShift(ctx context.Context, request CloseCashShiftRequestObject) (CloseCashShiftResponseObject, error)
+	// ReviewCashShift Accept a shift difference or send the shift to a recount
+	// (POST /api/v1/tenants/{tenantId}/cash/shifts/{shiftId}/review)
+	ReviewCashShift(ctx context.Context, request ReviewCashShiftRequestObject) (ReviewCashShiftResponseObject, error)
+	// ListCashTransfers List transfers between cash accounts
+	// (GET /api/v1/tenants/{tenantId}/cash/transfers)
+	ListCashTransfers(ctx context.Context, request ListCashTransfersRequestObject) (ListCashTransfersResponseObject, error)
+	// CreateCashTransfer Send money to another cash account (in transit)
+	// (POST /api/v1/tenants/{tenantId}/cash/transfers)
+	CreateCashTransfer(ctx context.Context, request CreateCashTransferRequestObject) (CreateCashTransferResponseObject, error)
+	// DecideCashTransfer Accept or reject a transfer in transit
+	// (POST /api/v1/tenants/{tenantId}/cash/transfers/{transferId}/decision)
+	DecideCashTransfer(ctx context.Context, request DecideCashTransferRequestObject) (DecideCashTransferResponseObject, error)
 }
 
 type StrictHandlerFunc func(ctx context.Context, w http.ResponseWriter, r *http.Request, request any) (any, error)
@@ -2129,6 +11151,288 @@ func (sh *strictHandler) CreateCashAccount(w http.ResponseWriter, r *http.Reques
 	}
 }
 
+// PreviewCashAccountAccess operation middleware
+func (sh *strictHandler) PreviewCashAccountAccess(w http.ResponseWriter, r *http.Request, tenantId TenantId, params PreviewCashAccountAccessParams) {
+	var request PreviewCashAccountAccessRequestObject
+
+	request.TenantId = tenantId
+	request.Params = params
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.PreviewCashAccountAccess(ctx, request.(PreviewCashAccountAccessRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "PreviewCashAccountAccess")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(PreviewCashAccountAccessResponseObject); ok {
+		if err := validResponse.VisitPreviewCashAccountAccessResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// IssueCashAdvance operation middleware
+func (sh *strictHandler) IssueCashAdvance(w http.ResponseWriter, r *http.Request, tenantId TenantId, accountId CashAccountId, params IssueCashAdvanceParams) {
+	var request IssueCashAdvanceRequestObject
+
+	request.TenantId = tenantId
+	request.AccountId = accountId
+	request.Params = params
+
+	var body IssueCashAdvanceJSONRequestBody
+	if err := json.NewDecoder(r.Body).Decode(&body); err != nil {
+		sh.options.RequestErrorHandlerFunc(w, r, fmt.Errorf("can't decode JSON body: %w", err))
+		return
+	}
+	request.Body = &body
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.IssueCashAdvance(ctx, request.(IssueCashAdvanceRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "IssueCashAdvance")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(IssueCashAdvanceResponseObject); ok {
+		if err := validResponse.VisitIssueCashAdvanceResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// ReturnCashAdvance operation middleware
+func (sh *strictHandler) ReturnCashAdvance(w http.ResponseWriter, r *http.Request, tenantId TenantId, accountId CashAccountId, params ReturnCashAdvanceParams) {
+	var request ReturnCashAdvanceRequestObject
+
+	request.TenantId = tenantId
+	request.AccountId = accountId
+	request.Params = params
+
+	var body ReturnCashAdvanceJSONRequestBody
+	if err := json.NewDecoder(r.Body).Decode(&body); err != nil {
+		sh.options.RequestErrorHandlerFunc(w, r, fmt.Errorf("can't decode JSON body: %w", err))
+		return
+	}
+	request.Body = &body
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.ReturnCashAdvance(ctx, request.(ReturnCashAdvanceRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "ReturnCashAdvance")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(ReturnCashAdvanceResponseObject); ok {
+		if err := validResponse.VisitReturnCashAdvanceResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// SubmitAdvanceReceipt operation middleware
+func (sh *strictHandler) SubmitAdvanceReceipt(w http.ResponseWriter, r *http.Request, tenantId TenantId, accountId CashAccountId, params SubmitAdvanceReceiptParams) {
+	var request SubmitAdvanceReceiptRequestObject
+
+	request.TenantId = tenantId
+	request.AccountId = accountId
+	request.Params = params
+
+	var body SubmitAdvanceReceiptJSONRequestBody
+	if err := json.NewDecoder(r.Body).Decode(&body); err != nil {
+		sh.options.RequestErrorHandlerFunc(w, r, fmt.Errorf("can't decode JSON body: %w", err))
+		return
+	}
+	request.Body = &body
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.SubmitAdvanceReceipt(ctx, request.(SubmitAdvanceReceiptRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "SubmitAdvanceReceipt")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(SubmitAdvanceReceiptResponseObject); ok {
+		if err := validResponse.VisitSubmitAdvanceReceiptResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// OpenCashShift operation middleware
+func (sh *strictHandler) OpenCashShift(w http.ResponseWriter, r *http.Request, tenantId TenantId, accountId CashAccountId, params OpenCashShiftParams) {
+	var request OpenCashShiftRequestObject
+
+	request.TenantId = tenantId
+	request.AccountId = accountId
+	request.Params = params
+
+	var body OpenCashShiftJSONRequestBody
+	if err := json.NewDecoder(r.Body).Decode(&body); err != nil {
+		sh.options.RequestErrorHandlerFunc(w, r, fmt.Errorf("can't decode JSON body: %w", err))
+		return
+	}
+	request.Body = &body
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.OpenCashShift(ctx, request.(OpenCashShiftRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "OpenCashShift")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(OpenCashShiftResponseObject); ok {
+		if err := validResponse.VisitOpenCashShiftResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// ListCashApprovalRequests operation middleware
+func (sh *strictHandler) ListCashApprovalRequests(w http.ResponseWriter, r *http.Request, tenantId TenantId, params ListCashApprovalRequestsParams) {
+	var request ListCashApprovalRequestsRequestObject
+
+	request.TenantId = tenantId
+	request.Params = params
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.ListCashApprovalRequests(ctx, request.(ListCashApprovalRequestsRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "ListCashApprovalRequests")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(ListCashApprovalRequestsResponseObject); ok {
+		if err := validResponse.VisitListCashApprovalRequestsResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// DecideCashApprovalRequest operation middleware
+func (sh *strictHandler) DecideCashApprovalRequest(w http.ResponseWriter, r *http.Request, tenantId TenantId, approvalRequestId CashApprovalRequestId, params DecideCashApprovalRequestParams) {
+	var request DecideCashApprovalRequestRequestObject
+
+	request.TenantId = tenantId
+	request.ApprovalRequestId = approvalRequestId
+	request.Params = params
+
+	var body DecideCashApprovalRequestJSONRequestBody
+	if err := json.NewDecoder(r.Body).Decode(&body); err != nil {
+		sh.options.RequestErrorHandlerFunc(w, r, fmt.Errorf("can't decode JSON body: %w", err))
+		return
+	}
+	request.Body = &body
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.DecideCashApprovalRequest(ctx, request.(DecideCashApprovalRequestRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "DecideCashApprovalRequest")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(DecideCashApprovalRequestResponseObject); ok {
+		if err := validResponse.VisitDecideCashApprovalRequestResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// ListCashCategories operation middleware
+func (sh *strictHandler) ListCashCategories(w http.ResponseWriter, r *http.Request, tenantId TenantId) {
+	var request ListCashCategoriesRequestObject
+
+	request.TenantId = tenantId
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.ListCashCategories(ctx, request.(ListCashCategoriesRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "ListCashCategories")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(ListCashCategoriesResponseObject); ok {
+		if err := validResponse.VisitListCashCategoriesResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// FindCashDuplicates operation middleware
+func (sh *strictHandler) FindCashDuplicates(w http.ResponseWriter, r *http.Request, tenantId TenantId, params FindCashDuplicatesParams) {
+	var request FindCashDuplicatesRequestObject
+
+	request.TenantId = tenantId
+	request.Params = params
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.FindCashDuplicates(ctx, request.(FindCashDuplicatesRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "FindCashDuplicates")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(FindCashDuplicatesResponseObject); ok {
+		if err := validResponse.VisitFindCashDuplicatesResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
 // ListCashOperations operation middleware
 func (sh *strictHandler) ListCashOperations(w http.ResponseWriter, r *http.Request, tenantId TenantId, params ListCashOperationsParams) {
 	var request ListCashOperationsRequestObject
@@ -2183,6 +11487,428 @@ func (sh *strictHandler) PostCashOperation(w http.ResponseWriter, r *http.Reques
 		sh.options.ResponseErrorHandlerFunc(w, r, err)
 	} else if validResponse, ok := response.(PostCashOperationResponseObject); ok {
 		if err := validResponse.VisitPostCashOperationResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// ReverseCashOperation operation middleware
+func (sh *strictHandler) ReverseCashOperation(w http.ResponseWriter, r *http.Request, tenantId TenantId, operationId CashOperationId, params ReverseCashOperationParams) {
+	var request ReverseCashOperationRequestObject
+
+	request.TenantId = tenantId
+	request.OperationId = operationId
+	request.Params = params
+
+	var body ReverseCashOperationJSONRequestBody
+	if err := json.NewDecoder(r.Body).Decode(&body); err != nil {
+		sh.options.RequestErrorHandlerFunc(w, r, fmt.Errorf("can't decode JSON body: %w", err))
+		return
+	}
+	request.Body = &body
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.ReverseCashOperation(ctx, request.(ReverseCashOperationRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "ReverseCashOperation")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(ReverseCashOperationResponseObject); ok {
+		if err := validResponse.VisitReverseCashOperationResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// LinkCashOperationSource operation middleware
+func (sh *strictHandler) LinkCashOperationSource(w http.ResponseWriter, r *http.Request, tenantId TenantId, operationId CashOperationId, params LinkCashOperationSourceParams) {
+	var request LinkCashOperationSourceRequestObject
+
+	request.TenantId = tenantId
+	request.OperationId = operationId
+	request.Params = params
+
+	var body LinkCashOperationSourceJSONRequestBody
+	if err := json.NewDecoder(r.Body).Decode(&body); err != nil {
+		sh.options.RequestErrorHandlerFunc(w, r, fmt.Errorf("can't decode JSON body: %w", err))
+		return
+	}
+	request.Body = &body
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.LinkCashOperationSource(ctx, request.(LinkCashOperationSourceRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "LinkCashOperationSource")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(LinkCashOperationSourceResponseObject); ok {
+		if err := validResponse.VisitLinkCashOperationSourceResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// ListCashProposals operation middleware
+func (sh *strictHandler) ListCashProposals(w http.ResponseWriter, r *http.Request, tenantId TenantId, params ListCashProposalsParams) {
+	var request ListCashProposalsRequestObject
+
+	request.TenantId = tenantId
+	request.Params = params
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.ListCashProposals(ctx, request.(ListCashProposalsRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "ListCashProposals")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(ListCashProposalsResponseObject); ok {
+		if err := validResponse.VisitListCashProposalsResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// DismissCashProposal operation middleware
+func (sh *strictHandler) DismissCashProposal(w http.ResponseWriter, r *http.Request, tenantId TenantId, proposalKey CashProposalKey, params DismissCashProposalParams) {
+	var request DismissCashProposalRequestObject
+
+	request.TenantId = tenantId
+	request.ProposalKey = proposalKey
+	request.Params = params
+
+	var body DismissCashProposalJSONRequestBody
+	if err := json.NewDecoder(r.Body).Decode(&body); err != nil {
+		sh.options.RequestErrorHandlerFunc(w, r, fmt.Errorf("can't decode JSON body: %w", err))
+		return
+	}
+	request.Body = &body
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.DismissCashProposal(ctx, request.(DismissCashProposalRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "DismissCashProposal")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(DismissCashProposalResponseObject); ok {
+		if err := validResponse.VisitDismissCashProposalResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// PostCashProposal operation middleware
+func (sh *strictHandler) PostCashProposal(w http.ResponseWriter, r *http.Request, tenantId TenantId, proposalKey CashProposalKey, params PostCashProposalParams) {
+	var request PostCashProposalRequestObject
+
+	request.TenantId = tenantId
+	request.ProposalKey = proposalKey
+	request.Params = params
+
+	var body PostCashProposalJSONRequestBody
+	if err := json.NewDecoder(r.Body).Decode(&body); err != nil {
+		sh.options.RequestErrorHandlerFunc(w, r, fmt.Errorf("can't decode JSON body: %w", err))
+		return
+	}
+	request.Body = &body
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.PostCashProposal(ctx, request.(PostCashProposalRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "PostCashProposal")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(PostCashProposalResponseObject); ok {
+		if err := validResponse.VisitPostCashProposalResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// ListAdvanceReceipts operation middleware
+func (sh *strictHandler) ListAdvanceReceipts(w http.ResponseWriter, r *http.Request, tenantId TenantId, params ListAdvanceReceiptsParams) {
+	var request ListAdvanceReceiptsRequestObject
+
+	request.TenantId = tenantId
+	request.Params = params
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.ListAdvanceReceipts(ctx, request.(ListAdvanceReceiptsRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "ListAdvanceReceipts")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(ListAdvanceReceiptsResponseObject); ok {
+		if err := validResponse.VisitListAdvanceReceiptsResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// DecideAdvanceReceipt operation middleware
+func (sh *strictHandler) DecideAdvanceReceipt(w http.ResponseWriter, r *http.Request, tenantId TenantId, receiptId CashReceiptId, params DecideAdvanceReceiptParams) {
+	var request DecideAdvanceReceiptRequestObject
+
+	request.TenantId = tenantId
+	request.ReceiptId = receiptId
+	request.Params = params
+
+	var body DecideAdvanceReceiptJSONRequestBody
+	if err := json.NewDecoder(r.Body).Decode(&body); err != nil {
+		sh.options.RequestErrorHandlerFunc(w, r, fmt.Errorf("can't decode JSON body: %w", err))
+		return
+	}
+	request.Body = &body
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.DecideAdvanceReceipt(ctx, request.(DecideAdvanceReceiptRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "DecideAdvanceReceipt")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(DecideAdvanceReceiptResponseObject); ok {
+		if err := validResponse.VisitDecideAdvanceReceiptResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// ListCashShifts operation middleware
+func (sh *strictHandler) ListCashShifts(w http.ResponseWriter, r *http.Request, tenantId TenantId, params ListCashShiftsParams) {
+	var request ListCashShiftsRequestObject
+
+	request.TenantId = tenantId
+	request.Params = params
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.ListCashShifts(ctx, request.(ListCashShiftsRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "ListCashShifts")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(ListCashShiftsResponseObject); ok {
+		if err := validResponse.VisitListCashShiftsResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// CloseCashShift operation middleware
+func (sh *strictHandler) CloseCashShift(w http.ResponseWriter, r *http.Request, tenantId TenantId, shiftId CashShiftId, params CloseCashShiftParams) {
+	var request CloseCashShiftRequestObject
+
+	request.TenantId = tenantId
+	request.ShiftId = shiftId
+	request.Params = params
+
+	var body CloseCashShiftJSONRequestBody
+	if err := json.NewDecoder(r.Body).Decode(&body); err != nil {
+		sh.options.RequestErrorHandlerFunc(w, r, fmt.Errorf("can't decode JSON body: %w", err))
+		return
+	}
+	request.Body = &body
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.CloseCashShift(ctx, request.(CloseCashShiftRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "CloseCashShift")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(CloseCashShiftResponseObject); ok {
+		if err := validResponse.VisitCloseCashShiftResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// ReviewCashShift operation middleware
+func (sh *strictHandler) ReviewCashShift(w http.ResponseWriter, r *http.Request, tenantId TenantId, shiftId CashShiftId, params ReviewCashShiftParams) {
+	var request ReviewCashShiftRequestObject
+
+	request.TenantId = tenantId
+	request.ShiftId = shiftId
+	request.Params = params
+
+	var body ReviewCashShiftJSONRequestBody
+	if err := json.NewDecoder(r.Body).Decode(&body); err != nil {
+		sh.options.RequestErrorHandlerFunc(w, r, fmt.Errorf("can't decode JSON body: %w", err))
+		return
+	}
+	request.Body = &body
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.ReviewCashShift(ctx, request.(ReviewCashShiftRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "ReviewCashShift")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(ReviewCashShiftResponseObject); ok {
+		if err := validResponse.VisitReviewCashShiftResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// ListCashTransfers operation middleware
+func (sh *strictHandler) ListCashTransfers(w http.ResponseWriter, r *http.Request, tenantId TenantId, params ListCashTransfersParams) {
+	var request ListCashTransfersRequestObject
+
+	request.TenantId = tenantId
+	request.Params = params
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.ListCashTransfers(ctx, request.(ListCashTransfersRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "ListCashTransfers")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(ListCashTransfersResponseObject); ok {
+		if err := validResponse.VisitListCashTransfersResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// CreateCashTransfer operation middleware
+func (sh *strictHandler) CreateCashTransfer(w http.ResponseWriter, r *http.Request, tenantId TenantId, params CreateCashTransferParams) {
+	var request CreateCashTransferRequestObject
+
+	request.TenantId = tenantId
+	request.Params = params
+
+	var body CreateCashTransferJSONRequestBody
+	if err := json.NewDecoder(r.Body).Decode(&body); err != nil {
+		sh.options.RequestErrorHandlerFunc(w, r, fmt.Errorf("can't decode JSON body: %w", err))
+		return
+	}
+	request.Body = &body
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.CreateCashTransfer(ctx, request.(CreateCashTransferRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "CreateCashTransfer")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(CreateCashTransferResponseObject); ok {
+		if err := validResponse.VisitCreateCashTransferResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// DecideCashTransfer operation middleware
+func (sh *strictHandler) DecideCashTransfer(w http.ResponseWriter, r *http.Request, tenantId TenantId, transferId CashTransferId, params DecideCashTransferParams) {
+	var request DecideCashTransferRequestObject
+
+	request.TenantId = tenantId
+	request.TransferId = transferId
+	request.Params = params
+
+	var body DecideCashTransferJSONRequestBody
+	if err := json.NewDecoder(r.Body).Decode(&body); err != nil {
+		sh.options.RequestErrorHandlerFunc(w, r, fmt.Errorf("can't decode JSON body: %w", err))
+		return
+	}
+	request.Body = &body
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.DecideCashTransfer(ctx, request.(DecideCashTransferRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "DecideCashTransfer")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(DecideCashTransferResponseObject); ok {
+		if err := validResponse.VisitDecideCashTransferResponse(w); err != nil {
 			sh.options.ResponseErrorHandlerFunc(w, r, err)
 		}
 	} else if response != nil {

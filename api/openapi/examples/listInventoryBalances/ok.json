@@ -1,0 +1,26 @@
+{
+  "items": [
+    {
+      "warehouseId": "4eb6fbdf-2e12-5cb1-867f-1db2bf71e92d",
+      "itemId": "4c3c7bcf-2669-5b70-a9c9-9909e9505abe",
+      "onHand": "1200",
+      "reserved": "50",
+      "available": "1150",
+      "minLevel": "500",
+      "belowMinimum": false,
+      "lots": [
+        {
+          "lotId": "412d32a8-3a0d-51c1-9251-3ab5a1743da2",
+          "expiresOn": "2026-12-31",
+          "onHand": "400"
+        },
+        {
+          "lotId": "919a56cc-bb95-5481-b0d5-20230275b507",
+          "expiresOn": "2027-06-30",
+          "onHand": "800"
+        }
+      ]
+    }
+  ],
+  "nextCursor": null
+}

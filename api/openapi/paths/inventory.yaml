@@ -151,7 +151,7 @@
     x-permissions:
       - inventory.movements.post
     x-scope: tenant-org-unit-warehouse
-    description: "Requires kind-specific permission: receipts, issues, transfers, adjustments or reversals. Transfer checks both warehouses. Service completion uses its dedicated endpoint to prevent duplicate recipe issues."
+    description: "Requires kind-specific permission: receipts, issues, transfers, adjustments or reversals. Transfer checks both warehouses. Service completion uses its dedicated endpoint to prevent duplicate recipe issues. W5.00 (0.12.0-stage5) (D-20 комплекта): an issue without lotId takes lots in FEFO order (the earliest expiry first); more than available — 409 invalid_transition, reason insufficient_stock; an expired lot — reason lot_expired."
     responses:
       "201":
         description: Successful result.
@@ -198,4 +198,393 @@
         application/json:
           schema:
             $ref: ../components/inventory/schemas.yaml#/InventoryMovementCreate
+    x-permissions-mode: all
+/api/v1/tenants/{tenantId}/inventory/warehouses:
+  parameters:
+    - $ref: ../components/common/parameters.yaml#/tenantId
+  get:
+    operationId: listWarehouses
+    tags:
+      - Inventory
+    summary: List warehouses
+    x-permissions:
+      - inventory.items.read
+    x-scope: tenant-org-unit-warehouse
+    description: "W5.00 (0.12.0-stage5) (D-20 комплекта, B-6: no screen in the prototype): warehouses of the org units in the scope of the actor."
+    responses:
+      "200":
+        description: Successful result.
+        headers:
+          X-Request-Id:
+            $ref: ../components/common/headers.yaml#/RequestId
+          Cache-Control:
+            description: Never cache authenticated, confidential or capability-bearing API responses in shared caches.
+            schema:
+              type: string
+              const: private, no-store
+        content:
+          application/json:
+            schema:
+              $ref: ../components/inventory/schemas.yaml#/WarehousePage
+      "400":
+        $ref: ../components/common/responses.yaml#/BadRequest
+      "401":
+        $ref: ../components/common/responses.yaml#/Unauthenticated
+      "403":
+        $ref: ../components/common/responses.yaml#/Forbidden
+      "404":
+        $ref: ../components/common/responses.yaml#/NotFound
+      "422":
+        $ref: ../components/common/responses.yaml#/Validation
+      "429":
+        $ref: ../components/common/responses.yaml#/RateLimited
+    parameters:
+      - $ref: ../components/common/parameters.yaml#/Cursor
+      - $ref: ../components/common/parameters.yaml#/Limit
+    x-permissions-mode: all
+  post:
+    operationId: createWarehouse
+    tags:
+      - Inventory
+    summary: Create a warehouse
+    x-permissions:
+      - inventory.warehouses.manage
+    x-scope: tenant-org-unit
+    description: "W5.00 (0.12.0-stage5): a warehouse belongs to an org unit; its id is the scope of kind warehouse in role assignments."
+    responses:
+      "201":
+        description: Successful result.
+        headers:
+          X-Request-Id:
+            $ref: ../components/common/headers.yaml#/RequestId
+          Idempotency-Replayed:
+            $ref: ../components/common/headers.yaml#/IdempotencyReplayed
+          Cache-Control:
+            description: Never cache authenticated, confidential or capability-bearing API responses in shared caches.
+            schema:
+              type: string
+              const: private, no-store
+        content:
+          application/json:
+            schema:
+              $ref: ../components/inventory/schemas.yaml#/Warehouse
+      "400":
+        $ref: ../components/common/responses.yaml#/BadRequest
+      "401":
+        $ref: ../components/common/responses.yaml#/Unauthenticated
+      "402":
+        $ref: ../components/common/responses.yaml#/PlanRequired
+      "403":
+        $ref: ../components/common/responses.yaml#/Forbidden
+      "404":
+        $ref: ../components/common/responses.yaml#/NotFound
+      "409":
+        $ref: ../components/common/responses.yaml#/Conflict
+      "422":
+        $ref: ../components/common/responses.yaml#/Validation
+      "428":
+        $ref: ../components/common/responses.yaml#/PreconditionRequired
+      "429":
+        $ref: ../components/common/responses.yaml#/RateLimited
+    x-csrf-required-for-cookie: true
+    parameters:
+      - $ref: ../components/common/parameters.yaml#/IdempotencyKey
+      - $ref: ../components/common/parameters.yaml#/Csrf
+      - $ref: ../components/common/parameters.yaml#/Origin
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: ../components/inventory/schemas.yaml#/WarehouseCreate
+    x-permissions-mode: all
+/api/v1/tenants/{tenantId}/inventory/items/{itemId}:
+  parameters:
+    - $ref: ../components/common/parameters.yaml#/tenantId
+    - $ref: ../components/common/parameters.yaml#/inventoryItemId
+  patch:
+    operationId: updateInventoryItem
+    tags:
+      - Inventory
+    summary: "Edit a stock item: name, minimum level, archive"
+    x-permissions:
+      - inventory.items.manage
+    x-scope: tenant-org-unit
+    description: "W5.00 (0.12.0-stage5): sku and baseUnit are immutable once movements exist (409 invalid_transition). If-Match — revision of the item."
+    responses:
+      "200":
+        description: Successful result.
+        headers:
+          X-Request-Id:
+            $ref: ../components/common/headers.yaml#/RequestId
+          ETag:
+            $ref: ../components/common/headers.yaml#/ETag
+          Idempotency-Replayed:
+            $ref: ../components/common/headers.yaml#/IdempotencyReplayed
+          Cache-Control:
+            description: Never cache authenticated, confidential or capability-bearing API responses in shared caches.
+            schema:
+              type: string
+              const: private, no-store
+        content:
+          application/json:
+            schema:
+              $ref: ../components/inventory/schemas.yaml#/InventoryItem
+      "400":
+        $ref: ../components/common/responses.yaml#/BadRequest
+      "401":
+        $ref: ../components/common/responses.yaml#/Unauthenticated
+      "402":
+        $ref: ../components/common/responses.yaml#/PlanRequired
+      "403":
+        $ref: ../components/common/responses.yaml#/Forbidden
+      "404":
+        $ref: ../components/common/responses.yaml#/NotFound
+      "409":
+        $ref: ../components/common/responses.yaml#/Conflict
+      "412":
+        $ref: ../components/common/responses.yaml#/PreconditionFailed
+      "422":
+        $ref: ../components/common/responses.yaml#/Validation
+      "428":
+        $ref: ../components/common/responses.yaml#/PreconditionRequired
+      "429":
+        $ref: ../components/common/responses.yaml#/RateLimited
+    x-csrf-required-for-cookie: true
+    parameters:
+      - $ref: ../components/common/parameters.yaml#/IdempotencyKey
+      - $ref: ../components/common/parameters.yaml#/Csrf
+      - $ref: ../components/common/parameters.yaml#/Origin
+      - $ref: ../components/common/parameters.yaml#/IfMatch
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: ../components/inventory/schemas.yaml#/InventoryItemPatch
+    x-permissions-mode: all
+/api/v1/tenants/{tenantId}/inventory/balances:
+  parameters:
+    - $ref: ../components/common/parameters.yaml#/tenantId
+  get:
+    operationId: listInventoryBalances
+    tags:
+      - Inventory
+    summary: List stock balances by warehouse and lot in FEFO order
+    x-permissions:
+      - inventory.items.read
+    x-scope: tenant-org-unit-warehouse
+    description: "W5.00 (0.12.0-stage5) (D-20 комплекта): onHand, reserved and available per item and warehouse; lots in FEFO order (the earliest expiry first, lots without expiry last)."
+    responses:
+      "200":
+        description: Successful result.
+        headers:
+          X-Request-Id:
+            $ref: ../components/common/headers.yaml#/RequestId
+          Cache-Control:
+            description: Never cache authenticated, confidential or capability-bearing API responses in shared caches.
+            schema:
+              type: string
+              const: private, no-store
+        content:
+          application/json:
+            schema:
+              $ref: ../components/inventory/schemas.yaml#/InventoryBalancePage
+      "400":
+        $ref: ../components/common/responses.yaml#/BadRequest
+      "401":
+        $ref: ../components/common/responses.yaml#/Unauthenticated
+      "403":
+        $ref: ../components/common/responses.yaml#/Forbidden
+      "404":
+        $ref: ../components/common/responses.yaml#/NotFound
+      "422":
+        $ref: ../components/common/responses.yaml#/Validation
+      "429":
+        $ref: ../components/common/responses.yaml#/RateLimited
+    parameters:
+      - $ref: ../components/common/parameters.yaml#/Cursor
+      - $ref: ../components/common/parameters.yaml#/Limit
+      - name: warehouseId
+        in: query
+        required: false
+        schema:
+          $ref: ../components/common/schemas.yaml#/Id
+      - name: itemId
+        in: query
+        required: false
+        schema:
+          $ref: ../components/common/schemas.yaml#/Id
+      - name: belowMinimum
+        in: query
+        required: false
+        schema:
+          type: boolean
+    x-permissions-mode: all
+/api/v1/tenants/{tenantId}/inventory/reservations:
+  parameters:
+    - $ref: ../components/common/parameters.yaml#/tenantId
+  get:
+    operationId: listInventoryReservations
+    tags:
+      - Inventory
+    summary: List stock reservations
+    x-permissions:
+      - inventory.movements.read
+    x-scope: tenant-org-unit-warehouse
+    description: "W5.00 (0.12.0-stage5): reservations hold quantity for a source object (an appointment, a repair purchase) without moving stock."
+    responses:
+      "200":
+        description: Successful result.
+        headers:
+          X-Request-Id:
+            $ref: ../components/common/headers.yaml#/RequestId
+          Cache-Control:
+            description: Never cache authenticated, confidential or capability-bearing API responses in shared caches.
+            schema:
+              type: string
+              const: private, no-store
+        content:
+          application/json:
+            schema:
+              $ref: ../components/inventory/schemas.yaml#/InventoryReservationPage
+      "400":
+        $ref: ../components/common/responses.yaml#/BadRequest
+      "401":
+        $ref: ../components/common/responses.yaml#/Unauthenticated
+      "403":
+        $ref: ../components/common/responses.yaml#/Forbidden
+      "404":
+        $ref: ../components/common/responses.yaml#/NotFound
+      "422":
+        $ref: ../components/common/responses.yaml#/Validation
+      "429":
+        $ref: ../components/common/responses.yaml#/RateLimited
+    parameters:
+      - $ref: ../components/common/parameters.yaml#/Cursor
+      - $ref: ../components/common/parameters.yaml#/Limit
+      - name: warehouseId
+        in: query
+        required: false
+        schema:
+          $ref: ../components/common/schemas.yaml#/Id
+      - name: status
+        in: query
+        required: false
+        schema:
+          type: string
+          enum:
+            - active
+            - consumed
+            - released
+    x-permissions-mode: all
+  post:
+    operationId: createInventoryReservation
+    tags:
+      - Inventory
+    summary: Reserve stock for a source object
+    x-permissions:
+      - inventory.movements.post
+    x-scope: tenant-org-unit-warehouse
+    description: "W5.00 (0.12.0-stage5): more than the available quantity — 409 invalid_transition, reason insufficient_stock."
+    responses:
+      "201":
+        description: Successful result.
+        headers:
+          X-Request-Id:
+            $ref: ../components/common/headers.yaml#/RequestId
+          Idempotency-Replayed:
+            $ref: ../components/common/headers.yaml#/IdempotencyReplayed
+          Cache-Control:
+            description: Never cache authenticated, confidential or capability-bearing API responses in shared caches.
+            schema:
+              type: string
+              const: private, no-store
+        content:
+          application/json:
+            schema:
+              $ref: ../components/inventory/schemas.yaml#/InventoryReservation
+      "400":
+        $ref: ../components/common/responses.yaml#/BadRequest
+      "401":
+        $ref: ../components/common/responses.yaml#/Unauthenticated
+      "402":
+        $ref: ../components/common/responses.yaml#/PlanRequired
+      "403":
+        $ref: ../components/common/responses.yaml#/Forbidden
+      "404":
+        $ref: ../components/common/responses.yaml#/NotFound
+      "409":
+        $ref: ../components/common/responses.yaml#/Conflict
+      "422":
+        $ref: ../components/common/responses.yaml#/Validation
+      "428":
+        $ref: ../components/common/responses.yaml#/PreconditionRequired
+      "429":
+        $ref: ../components/common/responses.yaml#/RateLimited
+    x-csrf-required-for-cookie: true
+    parameters:
+      - $ref: ../components/common/parameters.yaml#/IdempotencyKey
+      - $ref: ../components/common/parameters.yaml#/Csrf
+      - $ref: ../components/common/parameters.yaml#/Origin
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: ../components/inventory/schemas.yaml#/InventoryReservationCreate
+    x-permissions-mode: all
+/api/v1/tenants/{tenantId}/inventory/reservations/{reservationId}/release:
+  parameters:
+    - $ref: ../components/common/parameters.yaml#/tenantId
+    - $ref: ../components/common/parameters.yaml#/inventoryReservationId
+  post:
+    operationId: releaseInventoryReservation
+    tags:
+      - Inventory
+    summary: Release a stock reservation
+    x-permissions:
+      - inventory.movements.post
+    x-scope: tenant-org-unit-warehouse
+    description: "W5.00 (0.12.0-stage5): an inactive reservation — 409 invalid_transition, reason reservation_not_active."
+    responses:
+      "200":
+        description: Successful result.
+        headers:
+          X-Request-Id:
+            $ref: ../components/common/headers.yaml#/RequestId
+          Idempotency-Replayed:
+            $ref: ../components/common/headers.yaml#/IdempotencyReplayed
+          Cache-Control:
+            description: Never cache authenticated, confidential or capability-bearing API responses in shared caches.
+            schema:
+              type: string
+              const: private, no-store
+        content:
+          application/json:
+            schema:
+              $ref: ../components/inventory/schemas.yaml#/InventoryReservation
+      "400":
+        $ref: ../components/common/responses.yaml#/BadRequest
+      "401":
+        $ref: ../components/common/responses.yaml#/Unauthenticated
+      "402":
+        $ref: ../components/common/responses.yaml#/PlanRequired
+      "403":
+        $ref: ../components/common/responses.yaml#/Forbidden
+      "404":
+        $ref: ../components/common/responses.yaml#/NotFound
+      "409":
+        $ref: ../components/common/responses.yaml#/Conflict
+      "422":
+        $ref: ../components/common/responses.yaml#/Validation
+      "428":
+        $ref: ../components/common/responses.yaml#/PreconditionRequired
+      "429":
+        $ref: ../components/common/responses.yaml#/RateLimited
+    x-csrf-required-for-cookie: true
+    parameters:
+      - $ref: ../components/common/parameters.yaml#/IdempotencyKey
+      - $ref: ../components/common/parameters.yaml#/Csrf
+      - $ref: ../components/common/parameters.yaml#/Origin
     x-permissions-mode: all

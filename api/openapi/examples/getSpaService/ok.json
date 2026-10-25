@@ -1,0 +1,21 @@
+{
+  "id": "882ac761-c607-598f-a1d3-26187ceaa725",
+  "orgUnitId": "c6d8949a-3c14-5cd1-9728-fe2e135332c3",
+  "name": "Классический массаж",
+  "durationMinutes": 60,
+  "bufferBeforeMinutes": 5,
+  "bufferAfterMinutes": 10,
+  "price": {
+    "amountMinor": 320000,
+    "currency": "RUB"
+  },
+  "requiredEquipmentIds": ["a6676803-e743-5440-ad23-6bce59252139"],
+  "recipe": [
+    {
+      "itemId": "4c3c7bcf-2669-5b70-a9c9-9909e9505abe",
+      "quantity": "25",
+      "unit": "ml"
+    }
+  ],
+  "revision": 3
+}

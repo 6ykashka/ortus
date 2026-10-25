@@ -24,7 +24,9 @@ begin
     revoke insert, update, delete, truncate on public.goose_db_version from ortus_api, ortus_worker;
   end if;
   foreach t in array array['public.platform_audit', 'audit.events', 'access.role_versions',
-                           'fleet.checklist_versions', 'files.quota_ledger', 'forms.versions'] loop
+                           'fleet.checklist_versions', 'files.quota_ledger', 'forms.versions',
+                           'cash.operations', 'cash.operation_links', 'cash.shift_close_attempts', 'cash.shift_reviews',
+                           'inventory.movements', 'inventory.movement_lines', 'spa.service_revisions'] loop
     if to_regclass(t) is not null then
       execute format('revoke update, delete, truncate on %s from ortus_api, ortus_worker', to_regclass(t));
     end if;

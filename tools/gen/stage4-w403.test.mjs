@@ -14,6 +14,7 @@ import { flattenActions, loadCatalog } from './lib/permissions.mjs';
 import { escapeToken, parsePointer } from './lib/refs.mjs';
 import { checkAgainstSource, loadDeltas } from './lib/source-diff.mjs';
 import { readYaml } from './lib/yaml-io.mjs';
+import { W5_ADDED_KEYS, W5_CODES } from './lib/stage5.mjs';
 
 const T = '/api/v1/tenants/{tenantId}';
 const P = `${T}/projects/{projectId}`;
@@ -319,7 +320,8 @@ describe('контракт 0.10.0-stage4 (W4.03): операции и права
     const actions = flattenActions(loadCatalog());
     // W4.03 своих ключей не добавляет: 125 — после W2.71 (fleet.reservations.choose) и W4.07 (branding.manage);
     // W4.04 (влит раньше) — ещё 5 ключей «Базы знаний»: 130.
-    assert.equal(actions.size, 130);
+    // W5.00 (0.12.0-stage5): ключи и коды этапа 5 не считаются; cash.manage → cash.accounts.manage — на один ключ меньше.
+    assert.equal(actions.size - W5_ADDED_KEYS.length, 129);
     assert.deepEqual(actions.get('tasks.projects.manage').scopes, ['tenant', 'unit', 'project']);
     for (const [k, scopes] of [
       ['tasks.read', ['tenant', 'unit', 'project', 'self']],
@@ -345,7 +347,7 @@ describe('контракт 0.10.0-stage4 (W4.03): операции и права
   it('ошибки: кодов не прибавилось; причины invalid_transition — workflow_exists, funnel_fixed', () => {
     const reg = readYaml(ERRORS_PATH);
     // W4.03 кодов не добавляет: 53 — после W2.71 (offer_closed).
-    assert.equal(Object.keys(reg.codes).length, 53);
+    assert.equal(Object.keys(reg.codes).length - W5_CODES.length, 53);
     const reasons = reg.codes.invalid_transition.reasons;
     for (const r of ['workflow_exists', 'funnel_fixed']) {
       assert.ok(reasons[r]?.title, r);

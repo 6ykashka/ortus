@@ -25,6 +25,9 @@ InventoryItem:
       type: integer
       minimum: 1
       format: int64
+    minLevel:
+      $ref: ../common/schemas.yaml#/Quantity
+      description: W5.00 (0.12.0-stage5). Minimum stock level in the base unit (D-20 комплекта); belowMinimum in balances compares onHand with it.
   required:
     - id
     - orgUnitId
@@ -133,7 +136,7 @@ InventoryMovementCreate:
     - kind
     - warehouseId
     - lines
-  description: "Quantity must be positive. Transfers require targetWarehouseId and authorize both warehouses. Adjustment requires adjustmentDirection and a reason; reversal requires reversesMovementId and reason. Server derives the reversal direction from the original and rejects lines/warehouse/currency inconsistent with it. Both require dedicated permission. Immutable ledger: correct by compensating movement; never edit posted balances. Negative stock is disabled in v0.1."
+  description: "Quantity must be positive. Transfers require targetWarehouseId and authorize both warehouses. Adjustment requires adjustmentDirection and a reason; reversal requires reversesMovementId and reason. Server derives the reversal direction from the original and rejects lines/warehouse/currency inconsistent with it. Both require dedicated permission. Immutable ledger: correct by compensating movement; never edit posted balances. Negative stock is disabled in v0.1. W5.00 (0.12.0-stage5) (D-20 комплекта): an issue without lotId consumes lots in FEFO order."
 InventoryMovement:
   type: object
   additionalProperties: false
@@ -183,3 +186,233 @@ InventoryMovementPage:
     - items
     - nextCursor
   description: Opaque cursor is bound to tenant, principal, effective scopes, filters and sort. Permission changes invalidate the cursor.
+InventoryItemPatch:
+  type: object
+  additionalProperties: false
+  properties:
+    name:
+      type: string
+      minLength: 1
+      maxLength: 150
+    minLevel:
+      $ref: ../common/schemas.yaml#/Quantity
+    archived:
+      type: boolean
+  description: W5.00 (0.12.0-stage5). Edit a stock item; sku and baseUnit are immutable once movements exist.
+  minProperties: 1
+Warehouse:
+  type: object
+  additionalProperties: false
+  properties:
+    id:
+      $ref: ../common/schemas.yaml#/Id
+    orgUnitId:
+      $ref: ../common/schemas.yaml#/Id
+    name:
+      type: string
+    code:
+      type: string
+    archived:
+      type: boolean
+    revision:
+      type: integer
+      minimum: 1
+      format: int64
+  required:
+    - id
+    - orgUnitId
+    - name
+    - archived
+    - revision
+  description: W5.00 (0.12.0-stage5). A warehouse of an org unit; its id is the warehouse scope of role assignments.
+WarehouseCreate:
+  type: object
+  additionalProperties: false
+  properties:
+    orgUnitId:
+      $ref: ../common/schemas.yaml#/Id
+    name:
+      type: string
+      minLength: 1
+      maxLength: 150
+    code:
+      type: string
+      maxLength: 32
+  required:
+    - orgUnitId
+    - name
+WarehousePage:
+  type: object
+  additionalProperties: false
+  properties:
+    items:
+      type: array
+      items:
+        $ref: ./schemas.yaml#/Warehouse
+    nextCursor:
+      type:
+        - string
+        - "null"
+      maxLength: 2048
+  required:
+    - items
+    - nextCursor
+  description: Opaque cursor is bound to tenant, principal, effective scopes, filters and sort. Permission changes invalidate the cursor.
+InventoryLotBalance:
+  type: object
+  additionalProperties: false
+  properties:
+    lotId:
+      type:
+        - string
+        - "null"
+      format: uuid
+    expiresOn:
+      type:
+        - string
+        - "null"
+      format: date
+    onHand:
+      $ref: ../common/schemas.yaml#/Quantity
+  required:
+    - lotId
+    - expiresOn
+    - onHand
+InventoryBalance:
+  type: object
+  additionalProperties: false
+  properties:
+    warehouseId:
+      $ref: ../common/schemas.yaml#/Id
+    itemId:
+      $ref: ../common/schemas.yaml#/Id
+    onHand:
+      $ref: ../common/schemas.yaml#/Quantity
+    reserved:
+      $ref: ../common/schemas.yaml#/Quantity
+    available:
+      $ref: ../common/schemas.yaml#/Quantity
+    minLevel:
+      oneOf:
+        - $ref: ../common/schemas.yaml#/Quantity
+        - type: "null"
+    belowMinimum:
+      type: boolean
+    lots:
+      type: array
+      items:
+        $ref: ./schemas.yaml#/InventoryLotBalance
+  required:
+    - warehouseId
+    - itemId
+    - onHand
+    - reserved
+    - available
+    - belowMinimum
+    - lots
+  description: "W5.00 (0.12.0-stage5) (D-20 комплекта). Balance of an item in a warehouse; available = onHand − reserved. FEFO: lots are listed and consumed by expiry date, the earliest first, lots without expiry last."
+InventoryBalancePage:
+  type: object
+  additionalProperties: false
+  properties:
+    items:
+      type: array
+      items:
+        $ref: ./schemas.yaml#/InventoryBalance
+    nextCursor:
+      type:
+        - string
+        - "null"
+      maxLength: 2048
+  required:
+    - items
+    - nextCursor
+  description: Opaque cursor is bound to tenant, principal, effective scopes, filters and sort. Permission changes invalidate the cursor.
+InventoryReservationLine:
+  type: object
+  additionalProperties: false
+  properties:
+    itemId:
+      $ref: ../common/schemas.yaml#/Id
+    quantity:
+      $ref: ../common/schemas.yaml#/Quantity
+  required:
+    - itemId
+    - quantity
+InventoryReservation:
+  type: object
+  additionalProperties: false
+  properties:
+    id:
+      $ref: ../common/schemas.yaml#/Id
+    warehouseId:
+      $ref: ../common/schemas.yaml#/Id
+    source:
+      $ref: ../common/schemas.yaml#/ObjectRef
+    lines:
+      type: array
+      items:
+        $ref: ./schemas.yaml#/InventoryReservationLine
+    status:
+      type: string
+      enum:
+        - active
+        - consumed
+        - released
+    expiresAt:
+      type:
+        - string
+        - "null"
+      format: date-time
+    createdAt:
+      $ref: ../common/schemas.yaml#/Instant
+    revision:
+      type: integer
+      minimum: 1
+      format: int64
+  required:
+    - id
+    - warehouseId
+    - source
+    - lines
+    - status
+    - createdAt
+    - revision
+  description: W5.00 (0.12.0-stage5). A reservation holds quantity for a source object without a movement; it becomes consumed when the movement of the source is posted.
+InventoryReservationPage:
+  type: object
+  additionalProperties: false
+  properties:
+    items:
+      type: array
+      items:
+        $ref: ./schemas.yaml#/InventoryReservation
+    nextCursor:
+      type:
+        - string
+        - "null"
+      maxLength: 2048
+  required:
+    - items
+    - nextCursor
+  description: Opaque cursor is bound to tenant, principal, effective scopes, filters and sort. Permission changes invalidate the cursor.
+InventoryReservationCreate:
+  type: object
+  additionalProperties: false
+  properties:
+    warehouseId:
+      $ref: ../common/schemas.yaml#/Id
+    source:
+      $ref: ../common/schemas.yaml#/ObjectRef
+    lines:
+      type: array
+      items:
+        $ref: ./schemas.yaml#/InventoryReservationLine
+      minItems: 1
+      maxItems: 200
+    expiresAt:
+      $ref: ../common/schemas.yaml#/Instant
+  required:
+    - warehouseId
+    - source
+    - lines

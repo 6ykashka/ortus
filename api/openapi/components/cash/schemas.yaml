@@ -6,7 +6,11 @@ CashAccount:
     id:
       $ref: ../common/schemas.yaml#/Id
     orgUnitId:
-      $ref: ../common/schemas.yaml#/Id
+      type:
+        - string
+        - "null"
+      format: uuid
+      description: null — account of the organization (safe, bank), visible to the tenant scope only.
     name:
       type: string
     currency:
@@ -15,14 +19,93 @@ CashAccount:
     kind:
       type: string
       enum:
-        - cash
-        - internal_virtual
+        - cash_drawer
+        - safe
+        - advance
+        - acquiring
+        - bank
+        - virtual
     balance:
-      $ref: ./schemas.yaml#/SignedMoney
+      oneOf:
+        - $ref: ./schemas.yaml#/SignedMoney
+        - type: "null"
+      description: "null — hidden: the actor has no cash.balance.read."
     revision:
       type: integer
       minimum: 1
       format: int64
+    shiftMode:
+      type: string
+      enum:
+        - none
+        - open
+        - blind
+    kktMode:
+      type: string
+      enum:
+        - none
+        - manual
+    balanceLimit:
+      oneOf:
+        - $ref: ../common/schemas.yaml#/Money
+        - type: "null"
+      description: "Balance limit of the drawer: above it the card says «сдайте в сейф» (Q-W4.00-cash-10)."
+    floatAmount:
+      oneOf:
+        - $ref: ../common/schemas.yaml#/Money
+        - type: "null"
+      description: Float (размен) left in the drawer at the start of a shift.
+    tolerance:
+      oneOf:
+        - $ref: ../common/schemas.yaml#/Money
+        - type: "null"
+      description: "Allowed difference of a shift close (CASH-01: per account)."
+    responsibleMemberId:
+      type:
+        - string
+        - "null"
+      format: uuid
+    holderMemberId:
+      type:
+        - string
+        - "null"
+      format: uuid
+      description: Employee of an advance account.
+    advanceLimit:
+      oneOf:
+        - $ref: ../common/schemas.yaml#/Money
+        - type: "null"
+    drawerAccountId:
+      type:
+        - string
+        - "null"
+      format: uuid
+      description: "Acquiring: the cash desk the terminal belongs to («Касса точки», required — PD-60)."
+    settleDays:
+      type:
+        - integer
+        - "null"
+      minimum: 0
+      maximum: 30
+    feeBasisPoints:
+      type:
+        - integer
+        - "null"
+      minimum: 0
+      maximum: 10000
+    categoryIds:
+      type: array
+      items:
+        type: string
+        maxLength: 64
+      description: Allowed expense categories of an advance account.
+    openShiftId:
+      type:
+        - string
+        - "null"
+      format: uuid
+    my:
+      $ref: ./schemas.yaml#/CashAccountMy
   required:
     - id
     - orgUnitId
@@ -31,12 +114,19 @@ CashAccount:
     - kind
     - balance
     - revision
+    - shiftMode
+    - kktMode
+    - my
+  description: "W5.00 (0.12.0-stage5). Account v2 (docs/26-cash.md: six kinds). Mapping of 0.1 kinds: cash → cash_drawer, internal_virtual → virtual. Physical cash accounts cannot go below zero."
 CashAccountCreate:
   type: object
   additionalProperties: false
   properties:
     orgUnitId:
-      $ref: ../common/schemas.yaml#/Id
+      type:
+        - string
+        - "null"
+      format: uuid
     name:
       type: string
       minLength: 1
@@ -47,14 +137,83 @@ CashAccountCreate:
     kind:
       type: string
       enum:
-        - cash
-        - internal_virtual
+        - cash_drawer
+        - safe
+        - advance
+        - acquiring
+        - bank
+        - virtual
+    shiftMode:
+      type: string
+      enum:
+        - none
+        - open
+        - blind
+    kktMode:
+      type: string
+      enum:
+        - none
+        - manual
+    balanceLimit:
+      oneOf:
+        - $ref: ../common/schemas.yaml#/Money
+        - type: "null"
+      description: "Balance limit of the drawer: above it the card says «сдайте в сейф» (Q-W4.00-cash-10)."
+    floatAmount:
+      oneOf:
+        - $ref: ../common/schemas.yaml#/Money
+        - type: "null"
+      description: Float (размен) left in the drawer at the start of a shift.
+    tolerance:
+      oneOf:
+        - $ref: ../common/schemas.yaml#/Money
+        - type: "null"
+      description: "Allowed difference of a shift close (CASH-01: per account)."
+    responsibleMemberId:
+      type:
+        - string
+        - "null"
+      format: uuid
+    holderMemberId:
+      type:
+        - string
+        - "null"
+      format: uuid
+      description: Employee of an advance account.
+    advanceLimit:
+      oneOf:
+        - $ref: ../common/schemas.yaml#/Money
+        - type: "null"
+    drawerAccountId:
+      type:
+        - string
+        - "null"
+      format: uuid
+      description: "Acquiring: the cash desk the terminal belongs to («Касса точки», required — PD-60)."
+    settleDays:
+      type:
+        - integer
+        - "null"
+      minimum: 0
+      maximum: 30
+    feeBasisPoints:
+      type:
+        - integer
+        - "null"
+      minimum: 0
+      maximum: 10000
+    categoryIds:
+      type: array
+      items:
+        type: string
+        maxLength: 64
+      description: Allowed expense categories of an advance account.
   required:
     - orgUnitId
     - name
     - currency
     - kind
-  description: Creates zero balance; opening funds are an explicit ledger operation. This internal ledger is not fiscalization, bank acquiring or tax accounting.
+  description: "Creates zero balance; opening funds are an explicit ledger operation (type opening, Q-W4.00-cash-8). This internal ledger is not fiscalization, bank acquiring or tax accounting. W5.00 (0.12.0-stage5): v2 fields; a name already taken — 422 validation_failed (field name)."
 CashAccountPage:
   type: object
   additionalProperties: false
@@ -102,13 +261,42 @@ CashOperationCreate:
     note:
       type: string
       maxLength: 2000
+    type:
+      type: string
+      enum:
+        - in
+        - out
+        - refund
+        - opening
+    method:
+      type: string
+      enum:
+        - cash
+        - card
+        - sbp
+        - transfer
+    categoryId:
+      type:
+        - string
+        - "null"
+      maxLength: 64
+      description: Category («статья») code from listCashCategories.
+    basis:
+      type: string
+      maxLength: 500
+    receipt:
+      $ref: ./schemas.yaml#/CashReceipt
+    source:
+      $ref: ./schemas.yaml#/CashSourceRef
+    refundsOperationId:
+      $ref: ../common/schemas.yaml#/Id
   required:
     - accountId
     - direction
     - amount
     - category
     - occurredAt
-  description: Currency must match account and amount > 0. Immutable append-only posting. Refund/correction references original operation; cumulative refunds cannot exceed its amount. No payment success is inferred from an appointment state. Negative internal_virtual balances require explicit account policy; physical cash accounts cannot go below zero.
+  description: "Currency must match account and amount > 0. Immutable append-only posting. Refund/correction references original operation; cumulative refunds cannot exceed its amount. No payment success is inferred from an appointment state. Negative internal_virtual balances require explicit account policy; physical cash accounts cannot go below zero. W5.00 (0.12.0-stage5): type, method, categoryId, basis, receipt, source; direction and category stay and must be consistent with type (the server derives and checks them). Over the role limit: 202 CashApprovalRequest instead of a posting. Errors: 409 insufficient_funds, 409 shift_closed, 409 duplicate_source, 409 duplicate_receipt."
 CashOperation:
   type: object
   additionalProperties: false
@@ -142,6 +330,80 @@ CashOperation:
       $ref: ../common/schemas.yaml#/ObjectRef
     reversesOperationId:
       $ref: ../common/schemas.yaml#/Id
+    type:
+      type: string
+      enum:
+        - in
+        - out
+        - refund
+        - move_in
+        - move_out
+        - opening
+        - adjust
+        - storno
+    method:
+      type: string
+      enum:
+        - cash
+        - card
+        - sbp
+        - transfer
+    origin:
+      type: string
+      enum:
+        - manual
+        - proposal
+        - import
+        - integration
+    categoryId:
+      type:
+        - string
+        - "null"
+      maxLength: 64
+      description: Category («статья») code from listCashCategories.
+    basis:
+      type: string
+      maxLength: 500
+    receipt:
+      $ref: ./schemas.yaml#/CashReceipt
+    source:
+      $ref: ./schemas.yaml#/CashSourceRef
+    shiftId:
+      type:
+        - string
+        - "null"
+      format: uuid
+    groupId:
+      type:
+        - string
+        - "null"
+      format: uuid
+      description: One payment in parts = several operations with a common group.
+    transferId:
+      type:
+        - string
+        - "null"
+      format: uuid
+    approvedByMemberId:
+      type:
+        - string
+        - "null"
+      format: uuid
+    reversedByOperationId:
+      type:
+        - string
+        - "null"
+      format: uuid
+      description: "Derived: the storno that reversed this operation (an operation itself is never changed)."
+    reconcileStatus:
+      type: string
+      enum:
+        - unmatched
+        - matched
+        - mismatch
+    own:
+      type: boolean
+      description: "The owner reversed own operation (Q-W4.00-cash-3): a journal mark."
   required:
     - id
     - accountId
@@ -151,6 +413,10 @@ CashOperation:
     - occurredAt
     - postedAt
     - createdByMemberId
+    - type
+    - method
+    - origin
+  description: "W5.00 (0.12.0-stage5). Immutable ledger row v2: type (8), payment method, category, basis, receipt, source, shift, group. Money is integer minor units."
 CashOperationPage:
   type: object
   additionalProperties: false
@@ -182,3 +448,1143 @@ SignedMoney:
   required:
     - amountMinor
     - currency
+CashLimits:
+  type: object
+  additionalProperties: false
+  properties:
+    outMinor:
+      type:
+        - integer
+        - "null"
+      minimum: 0
+      format: int64
+      description: Expense limit, minor units; null — no limit; 0 — always with approval (role.cash.out).
+    refundMinor:
+      type:
+        - integer
+        - "null"
+      minimum: 0
+      format: int64
+    advanceMinor:
+      type:
+        - integer
+        - "null"
+      minimum: 0
+      format: int64
+  required:
+    - outMinor
+    - refundMinor
+    - advanceMinor
+  description: "W5.00 (0.12.0-stage5). Role limits «limit: amount» of docs/26-cash.md; with several roles the maximum wins and null wins over a number (cash.js :77–80)."
+CashAccountMy:
+  type: object
+  additionalProperties: false
+  properties:
+    via:
+      type: string
+      enum:
+        - role
+        - self
+        - owner
+    rights:
+      type: array
+      items:
+        type: string
+        pattern: ^[a-z][a-z0-9_]*(\.[a-z][a-z0-9_]*)+$
+        maxLength: 64
+      description: Action keys of module cash the actor holds on this account.
+    limits:
+      $ref: ./schemas.yaml#/CashLimits
+    isHolder:
+      type: boolean
+  required:
+    - via
+    - rights
+    - limits
+  description: W5.00 (0.12.0-stage5). What the actor may do with this account — the buttons of the page «Касса».
+CashAccessPerson:
+  type: object
+  additionalProperties: false
+  properties:
+    memberId:
+      $ref: ../common/schemas.yaml#/Id
+    name:
+      type: string
+    via:
+      type: string
+      enum:
+        - role
+        - self
+        - owner
+    rights:
+      type: array
+      items:
+        type: string
+        pattern: ^[a-z][a-z0-9_]*(\.[a-z][a-z0-9_]*)+$
+        maxLength: 64
+    limits:
+      $ref: ./schemas.yaml#/CashLimits
+    conflicts:
+      type: array
+      items:
+        type: string
+        maxLength: 200
+  required:
+    - memberId
+    - name
+    - via
+    - rights
+    - limits
+    - conflicts
+  description: W5.00 (0.12.0-stage5). A person who would get access to the account being created («Кто получит доступ»); conflicts — pairs «вносит + согласует», «закрывает + принимает расхождение» (макет 1b).
+CashAccessPreview:
+  type: object
+  additionalProperties: false
+  properties:
+    items:
+      type: array
+      items:
+        $ref: ./schemas.yaml#/CashAccessPerson
+  required:
+    - items
+CashReceipt:
+  type: object
+  additionalProperties: false
+  properties:
+    fdNumber:
+      type: string
+      pattern: ^[0-9]{1,20}$
+    kktShift:
+      type: string
+      maxLength: 20
+    receiptAt:
+      $ref: ../common/schemas.yaml#/Instant
+    none:
+      type: boolean
+      description: A receipt was not issued (needs reason).
+    reason:
+      type: string
+      maxLength: 300
+    sellerMemberId:
+      $ref: ../common/schemas.yaml#/Id
+    fileId:
+      $ref: ../common/schemas.yaml#/Id
+  description: "W5.00 (0.12.0-stage5). Receipt data of a manual entry: fd + kktShift (+receiptAt), or none + reason, or sellerMemberId. The fd number is unique in the pair «cash desk + ККТ shift» (Q-W4.00-cash-6); a repeat — 409 duplicate_receipt."
+CashSourceRef:
+  type: object
+  additionalProperties: false
+  properties:
+    key:
+      type: string
+      maxLength: 128
+    kind:
+      type: string
+      pattern: ^[a-z][a-z0-9_]{1,49}$
+    id:
+      $ref: ../common/schemas.yaml#/Id
+    label:
+      type: string
+      maxLength: 200
+  required:
+    - key
+    - kind
+    - id
+  description: W5.00 (0.12.0-stage5). The record of another module a posting is based on (visit, trip expense, repair act). One source gives one operation or group — a repeat is 409 duplicate_source.
+CashReverseRequest:
+  type: object
+  additionalProperties: false
+  properties:
+    reason:
+      type: string
+      minLength: 3
+      maxLength: 500
+  required:
+    - reason
+  description: "W5.00 (0.12.0-stage5). Storno: a new row of type storno; the original is never changed. The author may not reverse own operation (403 self_approval) except the owner (Q-W4.00-cash-3)."
+CashSourceLinkRequest:
+  type: object
+  additionalProperties: false
+  properties:
+    source:
+      $ref: ./schemas.yaml#/CashSourceRef
+  required:
+    - source
+CashOperationSourceLink:
+  type: object
+  additionalProperties: false
+  properties:
+    operationId:
+      $ref: ../common/schemas.yaml#/Id
+    source:
+      $ref: ./schemas.yaml#/CashSourceRef
+    linkedAt:
+      $ref: ../common/schemas.yaml#/Instant
+    linkedByMemberId:
+      $ref: ../common/schemas.yaml#/Id
+  required:
+    - operationId
+    - source
+    - linkedAt
+    - linkedByMemberId
+  description: "W5.00 (0.12.0-stage5). A link of an operation to a source is a separate record (PD-60: the operation stays immutable)."
+CashDuplicateList:
+  type: object
+  additionalProperties: false
+  properties:
+    items:
+      type: array
+      items:
+        $ref: ./schemas.yaml#/CashOperation
+  required:
+    - items
+  description: W5.00 (0.12.0-stage5). Same account or its terminal, amount, method and type within ±10 minutes (Q-W4.00-cash-6).
+CashProposalPart:
+  type: object
+  additionalProperties: false
+  properties:
+    label:
+      type: string
+      maxLength: 200
+    amount:
+      $ref: ../common/schemas.yaml#/Money
+    method:
+      type: string
+      enum:
+        - cash
+        - card
+        - sbp
+        - transfer
+  required:
+    - label
+    - amount
+CashProposalDismissal:
+  type: object
+  additionalProperties: false
+  properties:
+    reason:
+      type: string
+    byMemberId:
+      $ref: ../common/schemas.yaml#/Id
+    at:
+      $ref: ../common/schemas.yaml#/Instant
+  required:
+    - reason
+    - byMemberId
+    - at
+CashProposal:
+  type: object
+  additionalProperties: false
+  properties:
+    key:
+      type: string
+      pattern: ^[a-z][a-z0-9_]*:[A-Za-z0-9_.-]{1,100}$
+      maxLength: 128
+    kind:
+      type: string
+      enum:
+        - visit
+        - expense
+        - payroll
+        - refund
+        - purchase
+        - invoice
+    title:
+      type: string
+      maxLength: 300
+    amount:
+      $ref: ../common/schemas.yaml#/Money
+    direction:
+      type: string
+      enum:
+        - in
+        - out
+    defaultAccountId:
+      type:
+        - string
+        - "null"
+      format: uuid
+    categoryId:
+      type:
+        - string
+        - "null"
+      maxLength: 64
+    source:
+      $ref: ./schemas.yaml#/CashSourceRef
+    status:
+      type: string
+      enum:
+        - open
+        - posted
+        - dismissed
+    parts:
+      type: array
+      items:
+        $ref: ./schemas.yaml#/CashProposalPart
+    createdAt:
+      $ref: ../common/schemas.yaml#/Instant
+    operationIds:
+      type: array
+      items:
+        $ref: ../common/schemas.yaml#/Id
+    dismissal:
+      oneOf:
+        - $ref: ./schemas.yaml#/CashProposalDismissal
+        - type: "null"
+  required:
+    - key
+    - kind
+    - title
+    - amount
+    - direction
+    - source
+    - status
+    - createdAt
+  description: "W5.00 (0.12.0-stage5). A proposal of a module: visit done, verified trip expense, payroll (needs cash.payroll.post), refund. The idempotency key is the source."
+CashProposalPage:
+  type: object
+  additionalProperties: false
+  properties:
+    items:
+      type: array
+      items:
+        $ref: ./schemas.yaml#/CashProposal
+    nextCursor:
+      type:
+        - string
+        - "null"
+      maxLength: 2048
+  required:
+    - items
+    - nextCursor
+  description: Opaque cursor is bound to tenant, principal, effective scopes, filters and sort. Permission changes invalidate the cursor.
+CashProposalPostPart:
+  type: object
+  additionalProperties: false
+  properties:
+    method:
+      type: string
+      enum:
+        - cash
+        - card
+        - sbp
+        - transfer
+    amount:
+      $ref: ../common/schemas.yaml#/Money
+  required:
+    - method
+    - amount
+CashProposalPost:
+  type: object
+  additionalProperties: false
+  properties:
+    accountId:
+      $ref: ../common/schemas.yaml#/Id
+    parts:
+      type: array
+      items:
+        $ref: ./schemas.yaml#/CashProposalPostPart
+      minItems: 1
+      maxItems: 10
+    receipt:
+      $ref: ./schemas.yaml#/CashReceipt
+    basis:
+      type: string
+      maxLength: 500
+  required:
+    - accountId
+    - parts
+  description: W5.00 (0.12.0-stage5). Posts 1…N operations with a common group atomically; idempotent by source; a repeat — 409 duplicate_source.
+CashProposalPostResult:
+  type: object
+  additionalProperties: false
+  properties:
+    proposal:
+      $ref: ./schemas.yaml#/CashProposal
+    operations:
+      type: array
+      items:
+        $ref: ./schemas.yaml#/CashOperation
+  required:
+    - proposal
+    - operations
+CashProposalDismiss:
+  type: object
+  additionalProperties: false
+  properties:
+    reason:
+      type: string
+      minLength: 3
+      maxLength: 500
+  required:
+    - reason
+CashShiftExpected:
+  type: object
+  additionalProperties: false
+  properties:
+    cash:
+      $ref: ./schemas.yaml#/SignedMoney
+    revCash:
+      $ref: ./schemas.yaml#/SignedMoney
+    revCard:
+      $ref: ./schemas.yaml#/SignedMoney
+    card:
+      $ref: ./schemas.yaml#/SignedMoney
+    sbp:
+      $ref: ./schemas.yaml#/SignedMoney
+  required:
+    - cash
+    - revCash
+    - revCard
+    - card
+    - sbp
+  description: "W5.00 (0.12.0-stage5). Expected sums — only with cash.balance.read (otherwise the field of the shift is null: blind close)."
+CashShiftDiff:
+  type: object
+  additionalProperties: false
+  properties:
+    cash:
+      $ref: ./schemas.yaml#/SignedMoney
+    kktCash:
+      $ref: ./schemas.yaml#/SignedMoney
+    kktCard:
+      $ref: ./schemas.yaml#/SignedMoney
+    term:
+      $ref: ./schemas.yaml#/SignedMoney
+  required:
+    - cash
+    - kktCash
+    - kktCard
+    - term
+CashShiftZ:
+  type: object
+  additionalProperties: false
+  properties:
+    number:
+      type: string
+      maxLength: 20
+    cash:
+      $ref: ../common/schemas.yaml#/Money
+    card:
+      $ref: ../common/schemas.yaml#/Money
+  required:
+    - number
+    - cash
+    - card
+CashShiftTerminal:
+  type: object
+  additionalProperties: false
+  properties:
+    card:
+      $ref: ../common/schemas.yaml#/Money
+    sbp:
+      $ref: ../common/schemas.yaml#/Money
+  required:
+    - card
+    - sbp
+CashShiftDecision:
+  type: object
+  additionalProperties: false
+  properties:
+    kind:
+      type: string
+      enum:
+        - auto
+        - accepted
+    byMemberId:
+      type:
+        - string
+        - "null"
+      format: uuid
+    at:
+      $ref: ../common/schemas.yaml#/Instant
+    reason:
+      type: string
+      maxLength: 500
+    operationId:
+      type:
+        - string
+        - "null"
+      format: uuid
+  required:
+    - kind
+    - at
+    - reason
+CashShiftCloseAttempt:
+  type: object
+  additionalProperties: false
+  properties:
+    closedAt:
+      $ref: ../common/schemas.yaml#/Instant
+    closedByMemberId:
+      $ref: ../common/schemas.yaml#/Id
+    counted:
+      $ref: ../common/schemas.yaml#/Money
+    counts:
+      type: object
+      additionalProperties:
+        type: integer
+        minimum: 0
+        maximum: 1000000
+      description: Denomination (RUB) → number of notes or coins.
+    z:
+      oneOf:
+        - $ref: ./schemas.yaml#/CashShiftZ
+        - type: "null"
+    terminal:
+      oneOf:
+        - $ref: ./schemas.yaml#/CashShiftTerminal
+        - type: "null"
+    diff:
+      oneOf:
+        - $ref: ./schemas.yaml#/CashShiftDiff
+        - type: "null"
+    recountReason:
+      type:
+        - string
+        - "null"
+  required:
+    - closedAt
+    - closedByMemberId
+    - counted
+  description: W5.00 (0.12.0-stage5). Every close attempt is an immutable record; «Вернуть на пересчёт» keeps it and reopens the shift (Q-W4.00-cash-4, PD-60).
+CashShift:
+  type: object
+  additionalProperties: false
+  properties:
+    id:
+      $ref: ../common/schemas.yaml#/Id
+    accountId:
+      $ref: ../common/schemas.yaml#/Id
+    number:
+      type: integer
+      minimum: 1
+      format: int64
+    status:
+      type: string
+      enum:
+        - open
+        - review
+        - closed
+    openedAt:
+      $ref: ../common/schemas.yaml#/Instant
+    openedByMemberId:
+      $ref: ../common/schemas.yaml#/Id
+    openingFloat:
+      $ref: ../common/schemas.yaml#/Money
+    openingDiff:
+      oneOf:
+        - $ref: ./schemas.yaml#/SignedMoney
+        - type: "null"
+    closedAt:
+      type:
+        - string
+        - "null"
+      format: date-time
+    closedByMemberId:
+      type:
+        - string
+        - "null"
+      format: uuid
+    counted:
+      oneOf:
+        - $ref: ../common/schemas.yaml#/Money
+        - type: "null"
+    counts:
+      type: object
+      additionalProperties:
+        type: integer
+        minimum: 0
+        maximum: 1000000
+      description: Denomination (RUB) → number of notes or coins.
+    coins:
+      oneOf:
+        - $ref: ../common/schemas.yaml#/Money
+        - type: "null"
+    z:
+      oneOf:
+        - $ref: ./schemas.yaml#/CashShiftZ
+        - type: "null"
+    terminal:
+      oneOf:
+        - $ref: ./schemas.yaml#/CashShiftTerminal
+        - type: "null"
+    expected:
+      oneOf:
+        - $ref: ./schemas.yaml#/CashShiftExpected
+        - type: "null"
+    diff:
+      oneOf:
+        - $ref: ./schemas.yaml#/CashShiftDiff
+        - type: "null"
+    decision:
+      oneOf:
+        - $ref: ./schemas.yaml#/CashShiftDecision
+        - type: "null"
+    attempts:
+      type: array
+      items:
+        $ref: ./schemas.yaml#/CashShiftCloseAttempt
+    toSafeTransferId:
+      type:
+        - string
+        - "null"
+      format: uuid
+    revision:
+      type: integer
+      minimum: 1
+      format: int64
+  required:
+    - id
+    - accountId
+    - number
+    - status
+    - openedAt
+    - openedByMemberId
+    - openingFloat
+    - attempts
+    - revision
+  description: "W5.00 (0.12.0-stage5). A cash shift: open → review (difference above tolerance) | closed. Closing by the cashier who opened it; the difference is accepted by another employee with cash.reconcile (403 self_approval)."
+CashShiftPage:
+  type: object
+  additionalProperties: false
+  properties:
+    items:
+      type: array
+      items:
+        $ref: ./schemas.yaml#/CashShift
+    nextCursor:
+      type:
+        - string
+        - "null"
+      maxLength: 2048
+  required:
+    - items
+    - nextCursor
+  description: Opaque cursor is bound to tenant, principal, effective scopes, filters and sort. Permission changes invalidate the cursor.
+CashShiftOpen:
+  type: object
+  additionalProperties: false
+  properties:
+    countedFloat:
+      $ref: ../common/schemas.yaml#/Money
+    note:
+      type: string
+      maxLength: 300
+  required:
+    - countedFloat
+  description: W5.00 (0.12.0-stage5). A float difference at the opening is posted as an adjustment with the event cash.shift.opened_with_diff.v1.
+CashShiftClose:
+  type: object
+  additionalProperties: false
+  properties:
+    counted:
+      $ref: ../common/schemas.yaml#/Money
+    counts:
+      type: object
+      additionalProperties:
+        type: integer
+        minimum: 0
+        maximum: 1000000
+      description: Denomination (RUB) → number of notes or coins.
+    coins:
+      $ref: ../common/schemas.yaml#/Money
+    z:
+      $ref: ./schemas.yaml#/CashShiftZ
+    terminal:
+      $ref: ./schemas.yaml#/CashShiftTerminal
+    toSafe:
+      type: boolean
+      description: Hand the revenue over to the nearest safe (Q-W4.00-cash-15).
+  required:
+    - counted
+  description: W5.00 (0.12.0-stage5). Close with the count; with kktMode manual the Z report is required (422 validation_failed). A difference within tolerance is posted automatically; above — the shift becomes review.
+CashShiftReview:
+  type: object
+  additionalProperties: false
+  properties:
+    decision:
+      type: string
+      enum:
+        - accept
+        - recount
+    reason:
+      type: string
+      minLength: 1
+      maxLength: 500
+    comment:
+      type: string
+      maxLength: 500
+  required:
+    - decision
+    - reason
+CashTransfer:
+  type: object
+  additionalProperties: false
+  properties:
+    id:
+      $ref: ../common/schemas.yaml#/Id
+    fromAccountId:
+      $ref: ../common/schemas.yaml#/Id
+    toAccountId:
+      $ref: ../common/schemas.yaml#/Id
+    amount:
+      $ref: ../common/schemas.yaml#/Money
+    note:
+      type:
+        - string
+        - "null"
+      maxLength: 300
+    purpose:
+      type: string
+      enum:
+        - transfer
+        - shift_handover
+        - advance_issue
+        - advance_return
+    status:
+      type: string
+      enum:
+        - transit
+        - done
+        - rejected
+    sentByMemberId:
+      $ref: ../common/schemas.yaml#/Id
+    sentAt:
+      $ref: ../common/schemas.yaml#/Instant
+    decidedByMemberId:
+      type:
+        - string
+        - "null"
+      format: uuid
+    decidedAt:
+      type:
+        - string
+        - "null"
+      format: date-time
+    reason:
+      type:
+        - string
+        - "null"
+    outOperationId:
+      type:
+        - string
+        - "null"
+      format: uuid
+    inOperationId:
+      type:
+        - string
+        - "null"
+      format: uuid
+    backOperationId:
+      type:
+        - string
+        - "null"
+      format: uuid
+    revision:
+      type: integer
+      minimum: 1
+      format: int64
+  required:
+    - id
+    - fromAccountId
+    - toAccountId
+    - amount
+    - purpose
+    - status
+    - sentByMemberId
+    - sentAt
+    - revision
+  description: "W5.00 (0.12.0-stage5). A transfer in two steps: in_transit (transit) → done (move_in at the receiver) | rejected (move back at the sender)."
+CashTransferPage:
+  type: object
+  additionalProperties: false
+  properties:
+    items:
+      type: array
+      items:
+        $ref: ./schemas.yaml#/CashTransfer
+    nextCursor:
+      type:
+        - string
+        - "null"
+      maxLength: 2048
+  required:
+    - items
+    - nextCursor
+  description: Opaque cursor is bound to tenant, principal, effective scopes, filters and sort. Permission changes invalidate the cursor.
+CashTransferCreate:
+  type: object
+  additionalProperties: false
+  properties:
+    fromAccountId:
+      $ref: ../common/schemas.yaml#/Id
+    toAccountId:
+      $ref: ../common/schemas.yaml#/Id
+    amount:
+      $ref: ../common/schemas.yaml#/Money
+    note:
+      type: string
+      maxLength: 300
+  required:
+    - fromAccountId
+    - toAccountId
+    - amount
+CashTransferDecision:
+  type: object
+  additionalProperties: false
+  properties:
+    decision:
+      type: string
+      enum:
+        - accept
+        - reject
+    reason:
+      type: string
+      maxLength: 500
+  required:
+    - decision
+  description: W5.00 (0.12.0-stage5). Rejecting needs a reason.
+CashAdvanceIssue:
+  type: object
+  additionalProperties: false
+  properties:
+    sourceAccountId:
+      $ref: ../common/schemas.yaml#/Id
+    amount:
+      $ref: ../common/schemas.yaml#/Money
+    dueDate:
+      type: string
+      format: date
+      description: Report due date (full ISO date, Q-W4.00-cash-16).
+    note:
+      type: string
+      maxLength: 300
+  required:
+    - sourceAccountId
+    - amount
+    - dueDate
+  description: W5.00 (0.12.0-stage5). Issue under report from sourceAccountId to the advance account in the path. Over the role limit — 202 approval request. Not to oneself (403 self_approval).
+CashAdvanceReturn:
+  type: object
+  additionalProperties: false
+  properties:
+    amount:
+      $ref: ../common/schemas.yaml#/Money
+    targetAccountId:
+      $ref: ../common/schemas.yaml#/Id
+    note:
+      type: string
+      maxLength: 300
+  required:
+    - amount
+  description: "W5.00 (0.12.0-stage5). Return of the unspent rest: advance → the issuing desk."
+AdvanceReceipt:
+  type: object
+  additionalProperties: false
+  properties:
+    id:
+      $ref: ../common/schemas.yaml#/Id
+    accountId:
+      $ref: ../common/schemas.yaml#/Id
+    amount:
+      $ref: ../common/schemas.yaml#/Money
+    categoryId:
+      type: string
+      maxLength: 64
+    link:
+      oneOf:
+        - $ref: ./schemas.yaml#/CashSourceRef
+        - type: "null"
+    note:
+      type:
+        - string
+        - "null"
+      maxLength: 500
+    fileId:
+      $ref: ../common/schemas.yaml#/Id
+    qr:
+      type:
+        - string
+        - "null"
+      maxLength: 500
+    status:
+      type: string
+      enum:
+        - review
+        - accepted
+        - rejected
+    reason:
+      type:
+        - string
+        - "null"
+    operationId:
+      type:
+        - string
+        - "null"
+      format: uuid
+    submittedByMemberId:
+      $ref: ../common/schemas.yaml#/Id
+    submittedAt:
+      $ref: ../common/schemas.yaml#/Instant
+    decidedByMemberId:
+      type:
+        - string
+        - "null"
+      format: uuid
+    decidedAt:
+      type:
+        - string
+        - "null"
+      format: date-time
+    redoOfReceiptId:
+      type:
+        - string
+        - "null"
+      format: uuid
+    revision:
+      type: integer
+      minimum: 1
+      format: int64
+  required:
+    - id
+    - accountId
+    - amount
+    - categoryId
+    - fileId
+    - status
+    - submittedByMemberId
+    - submittedAt
+    - revision
+  description: W5.00 (0.12.0-stage5). A receipt of an advance report; the photo is a Files object kept 5 years (Q-W4.00-cash-12). Accepting posts an out operation of the advance account.
+AdvanceReceiptPage:
+  type: object
+  additionalProperties: false
+  properties:
+    items:
+      type: array
+      items:
+        $ref: ./schemas.yaml#/AdvanceReceipt
+    nextCursor:
+      type:
+        - string
+        - "null"
+      maxLength: 2048
+  required:
+    - items
+    - nextCursor
+  description: Opaque cursor is bound to tenant, principal, effective scopes, filters and sort. Permission changes invalidate the cursor.
+AdvanceReceiptCreate:
+  type: object
+  additionalProperties: false
+  properties:
+    amount:
+      $ref: ../common/schemas.yaml#/Money
+    categoryId:
+      type: string
+      maxLength: 64
+    fileId:
+      $ref: ../common/schemas.yaml#/Id
+    note:
+      type: string
+      maxLength: 500
+    link:
+      $ref: ./schemas.yaml#/CashSourceRef
+    qr:
+      type: string
+      maxLength: 500
+    redoOfReceiptId:
+      $ref: ../common/schemas.yaml#/Id
+  required:
+    - amount
+    - categoryId
+    - fileId
+AdvanceReceiptDecision:
+  type: object
+  additionalProperties: false
+  properties:
+    decision:
+      type: string
+      enum:
+        - accept
+        - reject
+    reason:
+      type: string
+      maxLength: 500
+  required:
+    - decision
+  description: W5.00 (0.12.0-stage5). Not the author of the receipt (403 self_approval); rejecting needs a reason.
+CashApprovalRequest:
+  type: object
+  additionalProperties: false
+  properties:
+    id:
+      $ref: ../common/schemas.yaml#/Id
+    accountId:
+      $ref: ../common/schemas.yaml#/Id
+    type:
+      type: string
+      enum:
+        - out
+        - refund
+        - issue
+    amount:
+      $ref: ../common/schemas.yaml#/Money
+    method:
+      type:
+        - string
+        - "null"
+      enum:
+        - cash
+        - card
+        - sbp
+        - transfer
+        - null
+    categoryId:
+      type:
+        - string
+        - "null"
+      maxLength: 64
+    basis:
+      type:
+        - string
+        - "null"
+      maxLength: 500
+    source:
+      oneOf:
+        - $ref: ./schemas.yaml#/CashSourceRef
+        - type: "null"
+    status:
+      type: string
+      enum:
+        - pending
+        - approved
+        - rejected
+    limit:
+      oneOf:
+        - $ref: ../common/schemas.yaml#/Money
+        - type: "null"
+      description: The role limit that was exceeded; null — the role always goes with approval.
+    requestedByMemberId:
+      $ref: ../common/schemas.yaml#/Id
+    requestedAt:
+      $ref: ../common/schemas.yaml#/Instant
+    decidedByMemberId:
+      type:
+        - string
+        - "null"
+      format: uuid
+    decidedAt:
+      type:
+        - string
+        - "null"
+      format: date-time
+    reason:
+      type:
+        - string
+        - "null"
+    operationId:
+      type:
+        - string
+        - "null"
+      format: uuid
+    transferId:
+      type:
+        - string
+        - "null"
+      format: uuid
+    revision:
+      type: integer
+      minimum: 1
+      format: int64
+  required:
+    - id
+    - accountId
+    - type
+    - amount
+    - status
+    - requestedByMemberId
+    - requestedAt
+    - revision
+  description: "W5.00 (0.12.0-stage5). Approval inside the module (Q-W4.00-cash-2): the operation is posted on behalf of the author with approvedByMemberId; not by the author (403 self_approval)."
+CashApprovalRequestPage:
+  type: object
+  additionalProperties: false
+  properties:
+    items:
+      type: array
+      items:
+        $ref: ./schemas.yaml#/CashApprovalRequest
+    nextCursor:
+      type:
+        - string
+        - "null"
+      maxLength: 2048
+  required:
+    - items
+    - nextCursor
+  description: Opaque cursor is bound to tenant, principal, effective scopes, filters and sort. Permission changes invalidate the cursor.
+CashApprovalDecision:
+  type: object
+  additionalProperties: false
+  properties:
+    decision:
+      type: string
+      enum:
+        - approve
+        - reject
+    reason:
+      type: string
+      maxLength: 500
+  required:
+    - decision
+CashCategory:
+  type: object
+  additionalProperties: false
+  properties:
+    id:
+      type: string
+      maxLength: 64
+    title:
+      type: string
+      maxLength: 120
+    group:
+      type: string
+      enum:
+        - income
+        - expense
+        - transfer
+        - adjustment
+    direction:
+      type:
+        - string
+        - "null"
+      enum:
+        - in
+        - out
+        - null
+    moduleKey:
+      type:
+        - string
+        - "null"
+      maxLength: 50
+    expenseCategoryCode:
+      type:
+        - string
+        - "null"
+      maxLength: 64
+      description: Code of a fleet expense category (W2.41) mapped to this category.
+  required:
+    - id
+    - title
+    - group
+  description: W5.00 (0.12.0-stage5). Seed list, read only in stage 5 (Q-W4.00-cash-9).
+CashCategoryList:
+  type: object
+  additionalProperties: false
+  properties:
+    items:
+      type: array
+      items:
+        $ref: ./schemas.yaml#/CashCategory
+  required:
+    - items

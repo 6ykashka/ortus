@@ -1,0 +1,35 @@
+{
+  "key": "service_request:pr-2",
+  "kind": "refund",
+  "title": "Ирина П. · компенсация по жалобе",
+  "amount": {
+    "amountMinor": 160000,
+    "currency": "RUB"
+  },
+  "direction": "out",
+  "defaultAccountId": "b7d1bdca-237d-5518-a179-d45b135bb0a6",
+  "categoryId": "refund",
+  "source": {
+    "key": "service_request:pr-2",
+    "kind": "service_request",
+    "id": "a7a69465-55a2-5126-a442-01fc1839b90a",
+    "label": "Обращение · жалоба на визит"
+  },
+  "status": "dismissed",
+  "parts": [
+    {
+      "label": "Ирина П. · компенсация по жалобе",
+      "amount": {
+        "amountMinor": 160000,
+        "currency": "RUB"
+      }
+    }
+  ],
+  "createdAt": "2026-10-01T05:00:00Z",
+  "operationIds": [],
+  "dismissal": {
+    "reason": "Клиент отказался от компенсации",
+    "byMemberId": "b8df06ec-317e-5f46-b54c-e76603e41b5b",
+    "at": "2026-10-01T07:30:00Z"
+  }
+}

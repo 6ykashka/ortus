@@ -1,0 +1,10 @@
+{
+  "id": "4c3c7bcf-2669-5b70-a9c9-9909e9505abe",
+  "orgUnitId": "c6d8949a-3c14-5cd1-9728-fe2e135332c3",
+  "name": "Масло массажное",
+  "sku": "OIL-1",
+  "baseUnit": "ml",
+  "trackLots": true,
+  "minLevel": "500",
+  "revision": 2
+}

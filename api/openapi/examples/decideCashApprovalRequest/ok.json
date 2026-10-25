@@ -1,0 +1,26 @@
+{
+  "id": "f9b75fff-d4bc-58a6-a6bc-2f3c6bb97de2",
+  "accountId": "27e3a4c8-20ac-5663-9eb3-6ea3c9f708b9",
+  "type": "out",
+  "amount": {
+    "amountMinor": 650000,
+    "currency": "RUB"
+  },
+  "method": "cash",
+  "categoryId": "repair-small",
+  "basis": "Ремонт ворот склада · ИП Гаврилов",
+  "source": null,
+  "status": "approved",
+  "limit": {
+    "amountMinor": 500000,
+    "currency": "RUB"
+  },
+  "requestedByMemberId": "ac41932c-dbd9-53b1-a84b-42cbc1d6629a",
+  "requestedAt": "2026-10-01T05:50:00Z",
+  "decidedByMemberId": "b8df06ec-317e-5f46-b54c-e76603e41b5b",
+  "decidedAt": "2026-10-01T07:30:00Z",
+  "reason": null,
+  "operationId": "da14d1a0-5094-5b16-a839-7ad4d0860694",
+  "transferId": null,
+  "revision": 2
+}

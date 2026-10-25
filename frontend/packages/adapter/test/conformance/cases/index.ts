@@ -5,6 +5,7 @@ import { authCases } from './auth.ts';
 import { billingCases } from './billing.ts';
 import { billingW407Cases } from './billing-w407.ts';
 import { calendarCases } from './calendar.ts';
+import { cashCases } from './cash.ts';
 import { contextCases } from './context.ts';
 import { dataCases } from './data.ts';
 import { dataW406Cases } from './data-w406.ts';
@@ -53,4 +54,6 @@ export const ALL_CASES: readonly ConformanceCase[] = [
   ...w262Cases,
   // W4.05 (0.11.0-stage4): «Формы и опросы».
   ...formsCases,
+  // W5.00 (0.12.0-stage5): «Касса».
+  ...cashCases,
 ];

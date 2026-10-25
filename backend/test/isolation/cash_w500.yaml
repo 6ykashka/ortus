@@ -1,0 +1,323 @@
+# Матрица изоляции: касса контракта 0.12.0-stage5 (W5.00, контрактный PR этапа 5); хендлеры — W5.31.
+# Строки пишутся до хендлера (pending): без сессии 401, чужая организация 404 (AC-02). Положительные строки и строки
+# «нет такого объекта» владельцу (404, список только своих, absent: tenant:b) требуют фикстур модуля (кассы, склады,
+# услуги) — их добавляет W5.31 вместе с хендлерами и снимает pending. Отказы шлюза (403 forbidden_action,
+# module_not_installed) — отдельный файл без pending. Деньги: ответы по кассам вне области актора — 404, как несуществующие.
+# Формат — README.md.
+# После правки: go -C backend generate ./test/isolation
+module: cash_w500
+endpoints:
+  - op: previewCashAccountAccess
+    method: GET
+    path: /api/v1/tenants/{tenantId}/cash/accounts/access-preview
+    pending: W5.31
+    rows:
+      - actor: anonymous
+        params: { tenantId: tenant:a }
+        status: 401
+      - actor: b.owner
+        params: { tenantId: tenant:a }
+        status: 404
+        absent: [tenant:a]
+        note: чужая организация — как несуществующая (AC-02)
+  - op: reverseCashOperation
+    method: POST
+    path: /api/v1/tenants/{tenantId}/cash/operations/{operationId}/reverse
+    pending: W5.31
+    rows:
+      - actor: anonymous
+        params: { tenantId: tenant:a, operationId: tenant:missing }
+        status: 401
+        body: "{}"
+      - actor: b.owner
+        params: { tenantId: tenant:a, operationId: tenant:missing }
+        status: 404
+        absent: [tenant:a]
+        body: "{}"
+        note: чужая организация — как несуществующая (AC-02)
+  - op: linkCashOperationSource
+    method: POST
+    path: /api/v1/tenants/{tenantId}/cash/operations/{operationId}/source-link
+    pending: W5.31
+    rows:
+      - actor: anonymous
+        params: { tenantId: tenant:a, operationId: tenant:missing }
+        status: 401
+        body: "{}"
+      - actor: b.owner
+        params: { tenantId: tenant:a, operationId: tenant:missing }
+        status: 404
+        absent: [tenant:a]
+        body: "{}"
+        note: чужая организация — как несуществующая (AC-02)
+  - op: findCashDuplicates
+    method: GET
+    path: /api/v1/tenants/{tenantId}/cash/duplicates
+    pending: W5.31
+    rows:
+      - actor: anonymous
+        params: { tenantId: tenant:a }
+        status: 401
+      - actor: b.owner
+        params: { tenantId: tenant:a }
+        status: 404
+        absent: [tenant:a]
+        note: чужая организация — как несуществующая (AC-02)
+  - op: listCashProposals
+    method: GET
+    path: /api/v1/tenants/{tenantId}/cash/proposals
+    pending: W5.31
+    rows:
+      - actor: anonymous
+        params: { tenantId: tenant:a }
+        status: 401
+      - actor: b.owner
+        params: { tenantId: tenant:a }
+        status: 404
+        absent: [tenant:a]
+        note: чужая организация — как несуществующая (AC-02)
+  - op: postCashProposal
+    method: POST
+    path: /api/v1/tenants/{tenantId}/cash/proposals/{proposalKey}/post
+    pending: W5.31
+    rows:
+      - actor: anonymous
+        params: { tenantId: tenant:a, proposalKey: tenant:missing }
+        status: 401
+        body: "{}"
+      - actor: b.owner
+        params: { tenantId: tenant:a, proposalKey: tenant:missing }
+        status: 404
+        absent: [tenant:a]
+        body: "{}"
+        note: чужая организация — как несуществующая (AC-02)
+  - op: dismissCashProposal
+    method: POST
+    path: /api/v1/tenants/{tenantId}/cash/proposals/{proposalKey}/dismiss
+    pending: W5.31
+    rows:
+      - actor: anonymous
+        params: { tenantId: tenant:a, proposalKey: tenant:missing }
+        status: 401
+        body: "{}"
+      - actor: b.owner
+        params: { tenantId: tenant:a, proposalKey: tenant:missing }
+        status: 404
+        absent: [tenant:a]
+        body: "{}"
+        note: чужая организация — как несуществующая (AC-02)
+  - op: listCashShifts
+    method: GET
+    path: /api/v1/tenants/{tenantId}/cash/shifts
+    pending: W5.31
+    rows:
+      - actor: anonymous
+        params: { tenantId: tenant:a }
+        status: 401
+      - actor: b.owner
+        params: { tenantId: tenant:a }
+        status: 404
+        absent: [tenant:a]
+        note: чужая организация — как несуществующая (AC-02)
+  - op: openCashShift
+    method: POST
+    path: /api/v1/tenants/{tenantId}/cash/accounts/{accountId}/shifts
+    pending: W5.31
+    rows:
+      - actor: anonymous
+        params: { tenantId: tenant:a, accountId: tenant:missing }
+        status: 401
+        body: "{}"
+      - actor: b.owner
+        params: { tenantId: tenant:a, accountId: tenant:missing }
+        status: 404
+        absent: [tenant:a]
+        body: "{}"
+        note: чужая организация — как несуществующая (AC-02)
+  - op: closeCashShift
+    method: POST
+    path: /api/v1/tenants/{tenantId}/cash/shifts/{shiftId}/close
+    pending: W5.31
+    rows:
+      - actor: anonymous
+        params: { tenantId: tenant:a, shiftId: tenant:missing }
+        status: 401
+        body: "{}"
+      - actor: b.owner
+        params: { tenantId: tenant:a, shiftId: tenant:missing }
+        status: 404
+        absent: [tenant:a]
+        body: "{}"
+        note: чужая организация — как несуществующая (AC-02)
+  - op: reviewCashShift
+    method: POST
+    path: /api/v1/tenants/{tenantId}/cash/shifts/{shiftId}/review
+    pending: W5.31
+    rows:
+      - actor: anonymous
+        params: { tenantId: tenant:a, shiftId: tenant:missing }
+        status: 401
+        body: "{}"
+      - actor: b.owner
+        params: { tenantId: tenant:a, shiftId: tenant:missing }
+        status: 404
+        absent: [tenant:a]
+        body: "{}"
+        note: чужая организация — как несуществующая (AC-02)
+  - op: listCashTransfers
+    method: GET
+    path: /api/v1/tenants/{tenantId}/cash/transfers
+    pending: W5.31
+    rows:
+      - actor: anonymous
+        params: { tenantId: tenant:a }
+        status: 401
+      - actor: b.owner
+        params: { tenantId: tenant:a }
+        status: 404
+        absent: [tenant:a]
+        note: чужая организация — как несуществующая (AC-02)
+  - op: createCashTransfer
+    method: POST
+    path: /api/v1/tenants/{tenantId}/cash/transfers
+    pending: W5.31
+    rows:
+      - actor: anonymous
+        params: { tenantId: tenant:a }
+        status: 401
+        body: "{}"
+      - actor: b.owner
+        params: { tenantId: tenant:a }
+        status: 404
+        absent: [tenant:a]
+        body: "{}"
+        note: чужая организация — как несуществующая (AC-02)
+  - op: decideCashTransfer
+    method: POST
+    path: /api/v1/tenants/{tenantId}/cash/transfers/{transferId}/decision
+    pending: W5.31
+    rows:
+      - actor: anonymous
+        params: { tenantId: tenant:a, transferId: tenant:missing }
+        status: 401
+        body: "{}"
+      - actor: b.owner
+        params: { tenantId: tenant:a, transferId: tenant:missing }
+        status: 404
+        absent: [tenant:a]
+        body: "{}"
+        note: чужая организация — как несуществующая (AC-02)
+  - op: issueCashAdvance
+    method: POST
+    path: /api/v1/tenants/{tenantId}/cash/accounts/{accountId}/advance-issues
+    pending: W5.31
+    rows:
+      - actor: anonymous
+        params: { tenantId: tenant:a, accountId: tenant:missing }
+        status: 401
+        body: "{}"
+      - actor: b.owner
+        params: { tenantId: tenant:a, accountId: tenant:missing }
+        status: 404
+        absent: [tenant:a]
+        body: "{}"
+        note: чужая организация — как несуществующая (AC-02)
+  - op: submitAdvanceReceipt
+    method: POST
+    path: /api/v1/tenants/{tenantId}/cash/accounts/{accountId}/receipts
+    pending: W5.31
+    rows:
+      - actor: anonymous
+        params: { tenantId: tenant:a, accountId: tenant:missing }
+        status: 401
+        body: "{}"
+      - actor: b.owner
+        params: { tenantId: tenant:a, accountId: tenant:missing }
+        status: 404
+        absent: [tenant:a]
+        body: "{}"
+        note: чужая организация — как несуществующая (AC-02)
+  - op: listAdvanceReceipts
+    method: GET
+    path: /api/v1/tenants/{tenantId}/cash/receipts
+    pending: W5.31
+    rows:
+      - actor: anonymous
+        params: { tenantId: tenant:a }
+        status: 401
+      - actor: b.owner
+        params: { tenantId: tenant:a }
+        status: 404
+        absent: [tenant:a]
+        note: чужая организация — как несуществующая (AC-02)
+  - op: decideAdvanceReceipt
+    method: POST
+    path: /api/v1/tenants/{tenantId}/cash/receipts/{receiptId}/decision
+    pending: W5.31
+    rows:
+      - actor: anonymous
+        params: { tenantId: tenant:a, receiptId: tenant:missing }
+        status: 401
+        body: "{}"
+      - actor: b.owner
+        params: { tenantId: tenant:a, receiptId: tenant:missing }
+        status: 404
+        absent: [tenant:a]
+        body: "{}"
+        note: чужая организация — как несуществующая (AC-02)
+  - op: returnCashAdvance
+    method: POST
+    path: /api/v1/tenants/{tenantId}/cash/accounts/{accountId}/advance-returns
+    pending: W5.31
+    rows:
+      - actor: anonymous
+        params: { tenantId: tenant:a, accountId: tenant:missing }
+        status: 401
+        body: "{}"
+      - actor: b.owner
+        params: { tenantId: tenant:a, accountId: tenant:missing }
+        status: 404
+        absent: [tenant:a]
+        body: "{}"
+        note: чужая организация — как несуществующая (AC-02)
+  - op: listCashApprovalRequests
+    method: GET
+    path: /api/v1/tenants/{tenantId}/cash/approval-requests
+    pending: W5.31
+    rows:
+      - actor: anonymous
+        params: { tenantId: tenant:a }
+        status: 401
+      - actor: b.owner
+        params: { tenantId: tenant:a }
+        status: 404
+        absent: [tenant:a]
+        note: чужая организация — как несуществующая (AC-02)
+  - op: decideCashApprovalRequest
+    method: POST
+    path: /api/v1/tenants/{tenantId}/cash/approval-requests/{approvalRequestId}/decision
+    pending: W5.31
+    rows:
+      - actor: anonymous
+        params: { tenantId: tenant:a, approvalRequestId: tenant:missing }
+        status: 401
+        body: "{}"
+      - actor: b.owner
+        params: { tenantId: tenant:a, approvalRequestId: tenant:missing }
+        status: 404
+        absent: [tenant:a]
+        body: "{}"
+        note: чужая организация — как несуществующая (AC-02)
+  - op: listCashCategories
+    method: GET
+    path: /api/v1/tenants/{tenantId}/cash/categories
+    pending: W5.31
+    rows:
+      - actor: anonymous
+        params: { tenantId: tenant:a }
+        status: 401
+      - actor: b.owner
+        params: { tenantId: tenant:a }
+        status: 404
+        absent: [tenant:a]
+        note: чужая организация — как несуществующая (AC-02)

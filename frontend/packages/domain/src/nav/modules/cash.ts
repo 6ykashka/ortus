@@ -30,7 +30,7 @@ export const manifest: NavManifest = {
       key: 'cash',
       segment: 'cash',
       icon: 'account_balance_wallet',
-      view: ['cash.read', 'cash.post', 'cash.manage'],
+      view: ['cash.read', 'cash.post', 'cash.accounts.manage'],
       gate: 'A',
       nav: {
         owner: { group: 'core', label: 'items.cash' },

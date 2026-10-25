@@ -4,7 +4,7 @@ openapi: 3.1.0
 jsonSchemaDialect: https://json-schema.org/draft/2020-12/schema
 info:
   title: ORTUS CRM Constructor — Design API
-  version: 0.11.1-stage4
+  version: 0.12.0-stage5
   summary: Reviewable starting contract for a tenant-isolated modular CRM on Go; not an implemented or exhaustive API.
   description: |-
     Design snapshot, 2026-10-01. A tenant is one business holding; regions/companies/branches are scoped organization units within it. Platform administration is a separate control plane and never implies business-data access.
@@ -5234,7 +5234,7 @@ paths:
       x-permissions:
         - spa.appointments.read
       x-scope: tenant-org-unit-self
-      description: List allowed appointments or own practitioner schedule
+      description: "List allowed appointments or own practitioner schedule W5.00 (0.12.0-stage5): filters by status (performed_pending_posting — the unfinished accounting), period and practitioner."
       responses:
         "200":
           description: Successful result.
@@ -5265,6 +5265,32 @@ paths:
       parameters:
         - $ref: "#/components/parameters/Cursor"
         - $ref: "#/components/parameters/Limit"
+        - name: status
+          in: query
+          required: false
+          schema:
+            type: string
+            enum:
+              - confirmed
+              - performed_pending_posting
+              - completed
+              - cancelled
+              - no_show
+        - name: from
+          in: query
+          required: false
+          schema:
+            $ref: "#/components/schemas/Instant"
+        - name: to
+          in: query
+          required: false
+          schema:
+            $ref: "#/components/schemas/Instant"
+        - name: practitionerMemberId
+          in: query
+          required: false
+          schema:
+            $ref: "#/components/schemas/Id"
       x-permissions-mode: all
     post:
       operationId: createAppointment
@@ -5554,7 +5580,7 @@ paths:
       x-permissions:
         - inventory.movements.post
       x-scope: tenant-org-unit-warehouse
-      description: "Requires kind-specific permission: receipts, issues, transfers, adjustments or reversals. Transfer checks both warehouses. Service completion uses its dedicated endpoint to prevent duplicate recipe issues."
+      description: "Requires kind-specific permission: receipts, issues, transfers, adjustments or reversals. Transfer checks both warehouses. Service completion uses its dedicated endpoint to prevent duplicate recipe issues. W5.00 (0.12.0-stage5) (D-20 комплекта): an issue without lotId takes lots in FEFO order (the earliest expiry first); more than available — 409 invalid_transition, reason insufficient_stock; an expired lot — reason lot_expired."
       responses:
         "201":
           description: Successful result.
@@ -5612,8 +5638,9 @@ paths:
       summary: Read internal cash accounts and balances
       x-permissions:
         - cash.read
-      x-scope: tenant-org-unit-account
-      description: Read internal cash accounts and balances
+        - cash.advance.self
+      x-scope: tenant-org-unit-account-self
+      description: "W5.00 (0.12.0-stage5): the accounts of the scope with v2 fields (kind, shift mode, limits, my rights); balance is null without cash.balance.read. The holder of an advance account sees it with cash.advance.self (scope self)."
       responses:
         "200":
           description: Successful result.
@@ -5644,16 +5671,33 @@ paths:
       parameters:
         - $ref: "#/components/parameters/Cursor"
         - $ref: "#/components/parameters/Limit"
-      x-permissions-mode: all
+        - name: kind
+          in: query
+          required: false
+          schema:
+            type: string
+            enum:
+              - cash_drawer
+              - safe
+              - advance
+              - acquiring
+              - bank
+              - virtual
+        - name: orgUnitId
+          in: query
+          required: false
+          schema:
+            $ref: "#/components/schemas/Id"
+      x-permissions-mode: any
     post:
       operationId: createCashAccount
       tags:
         - Cash
       summary: Create a zero-balance internal cash account
       x-permissions:
-        - cash.manage
+        - cash.accounts.manage
       x-scope: tenant-org-unit
-      description: Create a zero-balance internal cash account
+      description: "W5.00 (0.12.0-stage5): Create an internal cash account of one of six kinds with zero balance (cash.manage of 0.1 is renamed cash.accounts.manage). A terminal (acquiring) is bound to its cash desk (drawerAccountId)."
       responses:
         "201":
           description: Successful result.
@@ -5713,8 +5757,9 @@ paths:
       summary: List visible append-only ledger postings
       x-permissions:
         - cash.read
-      x-scope: tenant-org-unit-account
-      description: List visible append-only ledger postings
+        - cash.advance.self
+      x-scope: tenant-org-unit-account-self
+      description: "W5.00 (0.12.0-stage5): the visible ledger rows with filters by account, type and shift."
       responses:
         "200":
           description: Successful result.
@@ -5745,7 +5790,31 @@ paths:
       parameters:
         - $ref: "#/components/parameters/Cursor"
         - $ref: "#/components/parameters/Limit"
-      x-permissions-mode: all
+        - name: accountId
+          in: query
+          required: false
+          schema:
+            $ref: "#/components/schemas/Id"
+        - name: type
+          in: query
+          required: false
+          schema:
+            type: string
+            enum:
+              - in
+              - out
+              - refund
+              - move_in
+              - move_out
+              - opening
+              - adjust
+              - storno
+        - name: shiftId
+          in: query
+          required: false
+          schema:
+            $ref: "#/components/schemas/Id"
+      x-permissions-mode: any
     post:
       operationId: postCashOperation
       tags:
@@ -5754,7 +5823,7 @@ paths:
       x-permissions:
         - cash.post
       x-scope: tenant-org-unit-account
-      description: A financial posting is atomic, idempotent and immutable. Refund/adjustment additionally requires cash.refund/cash.adjust. This records internal management cash, not a fiscal receipt or bank transaction.
+      description: "A financial posting is atomic, idempotent and immutable. W5.00 (0.12.0-stage5): refund additionally requires cash.refund, opening (the first row of an account) cash.accounts.manage (Q-W4.00-cash-8); a reversal is reverseCashOperation. Over the role limit the response is 202 with an approval request (Q-W4.00-cash-2). A closed shift — 409 shift_closed; the same source — 409 duplicate_source; the same receipt — 409 duplicate_receipt; not enough funds — 409 insufficient_funds. This records internal management cash, not a fiscal receipt or bank transaction."
       responses:
         "201":
           description: Successful result.
@@ -5772,6 +5841,24 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/CashOperation"
+        "202":
+          description: "Accepted: the amount exceeds the role limit; an approval request is created instead of a ledger posting (Q-W4.00-cash-2)."
+          headers:
+            X-Request-Id:
+              $ref: "#/components/headers/RequestId"
+            ETag:
+              $ref: "#/components/headers/ETag"
+            Idempotency-Replayed:
+              $ref: "#/components/headers/IdempotencyReplayed"
+            Cache-Control:
+              description: Never cache authenticated, confidential or capability-bearing API responses in shared caches.
+              schema:
+                type: string
+                const: private, no-store
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CashApprovalRequest"
         "400":
           $ref: "#/components/responses/BadRequest"
         "401":
@@ -5803,17 +5890,24 @@ paths:
               $ref: "#/components/schemas/CashOperationCreate"
             example:
               accountId: 10000000-0000-4000-8000-000000000001
+              type: in
               direction: in
+              method: cash
               amount:
                 amountMinor: 500000
                 currency: RUB
               category: service_payment
+              categoryId: service
+              basis: Оплата визита
               occurredAt: "2026-10-05T09:30:00Z"
               relatedObject:
                 moduleKey: spa
                 entityType: appointment
                 entityId: 20000000-0000-4000-8000-000000000002
       x-permissions-mode: all
+      x-events:
+        - cash.operation.posted.v1
+        - cash.approval.requested.v1
   /api/v1/tenants/{tenantId}/repairs/projects:
     parameters:
       - $ref: "#/components/parameters/tenantId"
@@ -15218,6 +15312,1998 @@ paths:
         - $ref: "#/components/parameters/Csrf"
         - $ref: "#/components/parameters/Origin"
       x-permissions-mode: all
+  /api/v1/tenants/{tenantId}/cash/accounts/access-preview:
+    parameters:
+      - $ref: "#/components/parameters/tenantId"
+    get:
+      operationId: previewCashAccountAccess
+      tags:
+        - Cash
+      summary: Preview who would get access to an account being created
+      x-permissions:
+        - cash.accounts.manage
+      x-scope: tenant-org-unit
+      description: "W5.00 (0.12.0-stage5) (cash.md §2.2 п. 3, мастер «Кто получит доступ»): a read by the draft in the query — nothing is created. Lists members whose roles (or ownership, or «self» advance) reach the account with their rights, limits and separation-of-duties conflicts."
+      responses:
+        "200":
+          description: Successful result.
+          headers:
+            X-Request-Id:
+              $ref: "#/components/headers/RequestId"
+            Cache-Control:
+              description: Never cache authenticated, confidential or capability-bearing API responses in shared caches.
+              schema:
+                type: string
+                const: private, no-store
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CashAccessPreview"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthenticated"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "422":
+          $ref: "#/components/responses/Validation"
+        "429":
+          $ref: "#/components/responses/RateLimited"
+      parameters:
+        - name: kind
+          in: query
+          required: false
+          schema:
+            type: string
+            enum:
+              - cash_drawer
+              - safe
+              - advance
+              - acquiring
+              - bank
+              - virtual
+        - name: orgUnitId
+          in: query
+          required: false
+          schema:
+            $ref: "#/components/schemas/Id"
+        - name: holderMemberId
+          in: query
+          required: false
+          schema:
+            $ref: "#/components/schemas/Id"
+      x-permissions-mode: all
+  /api/v1/tenants/{tenantId}/cash/operations/{operationId}/reverse:
+    parameters:
+      - $ref: "#/components/parameters/tenantId"
+      - $ref: "#/components/parameters/cashOperationId"
+    post:
+      operationId: reverseCashOperation
+      tags:
+        - Cash
+      summary: Reverse a ledger operation by a new storno row
+      x-permissions:
+        - cash.reverse
+      x-scope: tenant-org-unit-account
+      description: "W5.00 (0.12.0-stage5) (cash.md §2.2 п. 7): creates a row of type storno linked to the original; the original is never changed (reversedByOperationId is derived). One operation is reversed once (409 invalid_transition). The author may not reverse own operation (403 self_approval), except the business owner (Q-W4.00-cash-3, journal mark own). Needs the balance of the account to stay valid (409 insufficient_funds)."
+      responses:
+        "201":
+          description: Successful result.
+          headers:
+            X-Request-Id:
+              $ref: "#/components/headers/RequestId"
+            Idempotency-Replayed:
+              $ref: "#/components/headers/IdempotencyReplayed"
+            Cache-Control:
+              description: Never cache authenticated, confidential or capability-bearing API responses in shared caches.
+              schema:
+                type: string
+                const: private, no-store
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CashOperation"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthenticated"
+        "402":
+          $ref: "#/components/responses/PlanRequired"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "409":
+          $ref: "#/components/responses/Conflict"
+        "422":
+          $ref: "#/components/responses/Validation"
+        "428":
+          $ref: "#/components/responses/PreconditionRequired"
+        "429":
+          $ref: "#/components/responses/RateLimited"
+      x-csrf-required-for-cookie: true
+      parameters:
+        - $ref: "#/components/parameters/IdempotencyKey"
+        - $ref: "#/components/parameters/Csrf"
+        - $ref: "#/components/parameters/Origin"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CashReverseRequest"
+      x-permissions-mode: all
+      x-events:
+        - cash.operation.posted.v1
+  /api/v1/tenants/{tenantId}/cash/operations/{operationId}/source-link:
+    parameters:
+      - $ref: "#/components/parameters/tenantId"
+      - $ref: "#/components/parameters/cashOperationId"
+    post:
+      operationId: linkCashOperationSource
+      tags:
+        - Cash
+      summary: Link an operation to a source record
+      x-permissions:
+        - cash.post
+      x-scope: tenant-org-unit-account
+      description: "W5.00 (0.12.0-stage5) (cash.md §2.2 п. 8, «Это она — связать»): the link is a separate record, the operation stays immutable (PD-60). A source already used by another operation — 409 duplicate_source."
+      responses:
+        "201":
+          description: Successful result.
+          headers:
+            X-Request-Id:
+              $ref: "#/components/headers/RequestId"
+            Idempotency-Replayed:
+              $ref: "#/components/headers/IdempotencyReplayed"
+            Cache-Control:
+              description: Never cache authenticated, confidential or capability-bearing API responses in shared caches.
+              schema:
+                type: string
+                const: private, no-store
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CashOperationSourceLink"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthenticated"
+        "402":
+          $ref: "#/components/responses/PlanRequired"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "409":
+          $ref: "#/components/responses/Conflict"
+        "422":
+          $ref: "#/components/responses/Validation"
+        "428":
+          $ref: "#/components/responses/PreconditionRequired"
+        "429":
+          $ref: "#/components/responses/RateLimited"
+      x-csrf-required-for-cookie: true
+      parameters:
+        - $ref: "#/components/parameters/IdempotencyKey"
+        - $ref: "#/components/parameters/Csrf"
+        - $ref: "#/components/parameters/Origin"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CashSourceLinkRequest"
+      x-permissions-mode: all
+  /api/v1/tenants/{tenantId}/cash/duplicates:
+    parameters:
+      - $ref: "#/components/parameters/tenantId"
+    get:
+      operationId: findCashDuplicates
+      tags:
+        - Cash
+      summary: Find possible duplicates of an operation being entered
+      x-permissions:
+        - cash.post
+      x-scope: tenant-org-unit-account
+      description: "W5.00 (0.12.0-stage5) (cash.md §2.2 п. 9, Q-W4.00-cash-6): operations of the same account (or its terminal), amount, method and type within ±10 minutes of «at». A hint only — the posting is not blocked."
+      responses:
+        "200":
+          description: Successful result.
+          headers:
+            X-Request-Id:
+              $ref: "#/components/headers/RequestId"
+            Cache-Control:
+              description: Never cache authenticated, confidential or capability-bearing API responses in shared caches.
+              schema:
+                type: string
+                const: private, no-store
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CashDuplicateList"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthenticated"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "422":
+          $ref: "#/components/responses/Validation"
+        "429":
+          $ref: "#/components/responses/RateLimited"
+      parameters:
+        - name: accountId
+          in: query
+          required: false
+          schema:
+            $ref: "#/components/schemas/Id"
+        - name: amountMinor
+          in: query
+          required: false
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 9007199254740991
+        - name: method
+          in: query
+          required: false
+          schema:
+            type: string
+            enum:
+              - cash
+              - card
+              - sbp
+              - transfer
+        - name: type
+          in: query
+          required: false
+          schema:
+            type: string
+            enum:
+              - in
+              - out
+              - refund
+        - name: at
+          in: query
+          required: false
+          schema:
+            $ref: "#/components/schemas/Instant"
+      x-permissions-mode: all
+  /api/v1/tenants/{tenantId}/cash/proposals:
+    parameters:
+      - $ref: "#/components/parameters/tenantId"
+    get:
+      operationId: listCashProposals
+      tags:
+        - Cash
+      summary: List proposals of modules for the cash desks of the scope
+      x-permissions:
+        - cash.read
+      x-scope: tenant-org-unit-account
+      description: "W5.00 (0.12.0-stage5) (cash.md §2.2 п. 10): «Входящие» — visit done (by the fact after discount, CASH-03), verified trip expense (fleet.expense.verified.v1), payroll (only with cash.payroll.post), refund. Seed proposals pr-2…pr-4 until stages 6–7."
+      responses:
+        "200":
+          description: Successful result.
+          headers:
+            X-Request-Id:
+              $ref: "#/components/headers/RequestId"
+            Cache-Control:
+              description: Never cache authenticated, confidential or capability-bearing API responses in shared caches.
+              schema:
+                type: string
+                const: private, no-store
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CashProposalPage"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthenticated"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "422":
+          $ref: "#/components/responses/Validation"
+        "429":
+          $ref: "#/components/responses/RateLimited"
+      parameters:
+        - $ref: "#/components/parameters/Cursor"
+        - $ref: "#/components/parameters/Limit"
+        - name: status
+          in: query
+          required: false
+          schema:
+            type: string
+            enum:
+              - open
+              - posted
+              - dismissed
+      x-permissions-mode: all
+  /api/v1/tenants/{tenantId}/cash/proposals/{proposalKey}/post:
+    parameters:
+      - $ref: "#/components/parameters/tenantId"
+      - $ref: "#/components/parameters/cashProposalKey"
+    post:
+      operationId: postCashProposal
+      tags:
+        - Cash
+      summary: Post a proposal as 1…N operations of one group
+      x-permissions:
+        - cash.proposals.post
+      x-scope: tenant-org-unit-account
+      description: "W5.00 (0.12.0-stage5) (cash.md §2.2 п. 11): atomic and idempotent by source (409 duplicate_source). Over the role limit (expense, refund) — 202 with an approval request. A closed shift of the target — 409 shift_closed."
+      responses:
+        "201":
+          description: Successful result.
+          headers:
+            X-Request-Id:
+              $ref: "#/components/headers/RequestId"
+            Idempotency-Replayed:
+              $ref: "#/components/headers/IdempotencyReplayed"
+            Cache-Control:
+              description: Never cache authenticated, confidential or capability-bearing API responses in shared caches.
+              schema:
+                type: string
+                const: private, no-store
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CashProposalPostResult"
+        "202":
+          description: "Accepted: the amount exceeds the role limit; an approval request is created instead of a ledger posting (Q-W4.00-cash-2)."
+          headers:
+            X-Request-Id:
+              $ref: "#/components/headers/RequestId"
+            ETag:
+              $ref: "#/components/headers/ETag"
+            Idempotency-Replayed:
+              $ref: "#/components/headers/IdempotencyReplayed"
+            Cache-Control:
+              description: Never cache authenticated, confidential or capability-bearing API responses in shared caches.
+              schema:
+                type: string
+                const: private, no-store
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CashApprovalRequest"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthenticated"
+        "402":
+          $ref: "#/components/responses/PlanRequired"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "409":
+          $ref: "#/components/responses/Conflict"
+        "422":
+          $ref: "#/components/responses/Validation"
+        "428":
+          $ref: "#/components/responses/PreconditionRequired"
+        "429":
+          $ref: "#/components/responses/RateLimited"
+      x-csrf-required-for-cookie: true
+      parameters:
+        - $ref: "#/components/parameters/IdempotencyKey"
+        - $ref: "#/components/parameters/Csrf"
+        - $ref: "#/components/parameters/Origin"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CashProposalPost"
+      x-permissions-mode: all
+      x-events:
+        - cash.operation.posted.v1
+        - cash.approval.requested.v1
+  /api/v1/tenants/{tenantId}/cash/proposals/{proposalKey}/dismiss:
+    parameters:
+      - $ref: "#/components/parameters/tenantId"
+      - $ref: "#/components/parameters/cashProposalKey"
+    post:
+      operationId: dismissCashProposal
+      tags:
+        - Cash
+      summary: Dismiss a proposal with a reason
+      x-permissions:
+        - cash.proposals.post
+      x-scope: tenant-org-unit-account
+      description: "W5.00 (0.12.0-stage5) (cash.md §2.2 п. 12): «Не проводить» with a reason; an already posted proposal — 409 invalid_transition."
+      responses:
+        "200":
+          description: Successful result.
+          headers:
+            X-Request-Id:
+              $ref: "#/components/headers/RequestId"
+            Idempotency-Replayed:
+              $ref: "#/components/headers/IdempotencyReplayed"
+            Cache-Control:
+              description: Never cache authenticated, confidential or capability-bearing API responses in shared caches.
+              schema:
+                type: string
+                const: private, no-store
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CashProposal"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthenticated"
+        "402":
+          $ref: "#/components/responses/PlanRequired"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "409":
+          $ref: "#/components/responses/Conflict"
+        "422":
+          $ref: "#/components/responses/Validation"
+        "428":
+          $ref: "#/components/responses/PreconditionRequired"
+        "429":
+          $ref: "#/components/responses/RateLimited"
+      x-csrf-required-for-cookie: true
+      parameters:
+        - $ref: "#/components/parameters/IdempotencyKey"
+        - $ref: "#/components/parameters/Csrf"
+        - $ref: "#/components/parameters/Origin"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CashProposalDismiss"
+      x-permissions-mode: all
+  /api/v1/tenants/{tenantId}/cash/shifts:
+    parameters:
+      - $ref: "#/components/parameters/tenantId"
+    get:
+      operationId: listCashShifts
+      tags:
+        - Cash
+      summary: List cash shifts of the visible accounts
+      x-permissions:
+        - cash.read
+      x-scope: tenant-org-unit-account
+      description: "W5.00 (0.12.0-stage5) (cash.md §2.2 п. 13): sums (expected, diff) only with cash.balance.read, otherwise null."
+      responses:
+        "200":
+          description: Successful result.
+          headers:
+            X-Request-Id:
+              $ref: "#/components/headers/RequestId"
+            Cache-Control:
+              description: Never cache authenticated, confidential or capability-bearing API responses in shared caches.
+              schema:
+                type: string
+                const: private, no-store
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CashShiftPage"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthenticated"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "422":
+          $ref: "#/components/responses/Validation"
+        "429":
+          $ref: "#/components/responses/RateLimited"
+      parameters:
+        - $ref: "#/components/parameters/Cursor"
+        - $ref: "#/components/parameters/Limit"
+        - name: accountId
+          in: query
+          required: false
+          schema:
+            $ref: "#/components/schemas/Id"
+        - name: status
+          in: query
+          required: false
+          schema:
+            type: string
+            enum:
+              - open
+              - review
+              - closed
+      x-permissions-mode: all
+  /api/v1/tenants/{tenantId}/cash/accounts/{accountId}/shifts:
+    parameters:
+      - $ref: "#/components/parameters/tenantId"
+      - $ref: "#/components/parameters/cashAccountId"
+    post:
+      operationId: openCashShift
+      tags:
+        - Cash
+      summary: Open a shift with the count of the float
+      x-permissions:
+        - cash.shift.operate
+      x-scope: tenant-org-unit-account
+      description: "W5.00 (0.12.0-stage5) (cash.md §2.2 п. 14): one open shift per account (409 invalid_transition, reason shift_not_open when the account has none to close). A float difference is posted as an adjustment atomically with the shift."
+      responses:
+        "201":
+          description: Successful result.
+          headers:
+            X-Request-Id:
+              $ref: "#/components/headers/RequestId"
+            Idempotency-Replayed:
+              $ref: "#/components/headers/IdempotencyReplayed"
+            Cache-Control:
+              description: Never cache authenticated, confidential or capability-bearing API responses in shared caches.
+              schema:
+                type: string
+                const: private, no-store
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CashShift"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthenticated"
+        "402":
+          $ref: "#/components/responses/PlanRequired"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "409":
+          $ref: "#/components/responses/Conflict"
+        "422":
+          $ref: "#/components/responses/Validation"
+        "428":
+          $ref: "#/components/responses/PreconditionRequired"
+        "429":
+          $ref: "#/components/responses/RateLimited"
+      x-csrf-required-for-cookie: true
+      parameters:
+        - $ref: "#/components/parameters/IdempotencyKey"
+        - $ref: "#/components/parameters/Csrf"
+        - $ref: "#/components/parameters/Origin"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CashShiftOpen"
+      x-permissions-mode: all
+      x-events:
+        - cash.shift.opened_with_diff.v1
+  /api/v1/tenants/{tenantId}/cash/shifts/{shiftId}/close:
+    parameters:
+      - $ref: "#/components/parameters/tenantId"
+      - $ref: "#/components/parameters/cashShiftId"
+    post:
+      operationId: closeCashShift
+      tags:
+        - Cash
+      summary: "Close a shift: count, Z report, terminal, hand-over to the safe"
+      x-permissions:
+        - cash.shift.operate
+      x-scope: tenant-org-unit-account
+      description: "W5.00 (0.12.0-stage5) (cash.md §2.2 п. 15): a difference within tolerance is posted automatically (closed); above it the shift becomes review and the attempt is kept. Hand-over goes to the nearest safe (Q-W4.00-cash-15). A shift already closed — 409 shift_closed."
+      responses:
+        "200":
+          description: Successful result.
+          headers:
+            X-Request-Id:
+              $ref: "#/components/headers/RequestId"
+            Idempotency-Replayed:
+              $ref: "#/components/headers/IdempotencyReplayed"
+            Cache-Control:
+              description: Never cache authenticated, confidential or capability-bearing API responses in shared caches.
+              schema:
+                type: string
+                const: private, no-store
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CashShift"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthenticated"
+        "402":
+          $ref: "#/components/responses/PlanRequired"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "409":
+          $ref: "#/components/responses/Conflict"
+        "412":
+          $ref: "#/components/responses/PreconditionFailed"
+        "422":
+          $ref: "#/components/responses/Validation"
+        "428":
+          $ref: "#/components/responses/PreconditionRequired"
+        "429":
+          $ref: "#/components/responses/RateLimited"
+      x-csrf-required-for-cookie: true
+      parameters:
+        - $ref: "#/components/parameters/IdempotencyKey"
+        - $ref: "#/components/parameters/Csrf"
+        - $ref: "#/components/parameters/Origin"
+        - $ref: "#/components/parameters/IfMatch"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CashShiftClose"
+      x-permissions-mode: all
+      x-events:
+        - cash.shift.closed.v1
+  /api/v1/tenants/{tenantId}/cash/shifts/{shiftId}/review:
+    parameters:
+      - $ref: "#/components/parameters/tenantId"
+      - $ref: "#/components/parameters/cashShiftId"
+    post:
+      operationId: reviewCashShift
+      tags:
+        - Cash
+      summary: Accept a shift difference or send the shift to a recount
+      x-permissions:
+        - cash.reconcile
+      x-scope: tenant-org-unit-account
+      description: "W5.00 (0.12.0-stage5) (cash.md §2.2 п. 16): not the employee who closed the shift (403 self_approval). «Вернуть на пересчёт» keeps the close attempt and reopens the shift (Q-W4.00-cash-4)."
+      responses:
+        "200":
+          description: Successful result.
+          headers:
+            X-Request-Id:
+              $ref: "#/components/headers/RequestId"
+            Idempotency-Replayed:
+              $ref: "#/components/headers/IdempotencyReplayed"
+            Cache-Control:
+              description: Never cache authenticated, confidential or capability-bearing API responses in shared caches.
+              schema:
+                type: string
+                const: private, no-store
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CashShift"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthenticated"
+        "402":
+          $ref: "#/components/responses/PlanRequired"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "409":
+          $ref: "#/components/responses/Conflict"
+        "412":
+          $ref: "#/components/responses/PreconditionFailed"
+        "422":
+          $ref: "#/components/responses/Validation"
+        "428":
+          $ref: "#/components/responses/PreconditionRequired"
+        "429":
+          $ref: "#/components/responses/RateLimited"
+      x-csrf-required-for-cookie: true
+      parameters:
+        - $ref: "#/components/parameters/IdempotencyKey"
+        - $ref: "#/components/parameters/Csrf"
+        - $ref: "#/components/parameters/Origin"
+        - $ref: "#/components/parameters/IfMatch"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CashShiftReview"
+      x-permissions-mode: all
+      x-events:
+        - cash.shift.recount_requested.v1
+        - cash.shift.diff_accepted.v1
+  /api/v1/tenants/{tenantId}/cash/transfers:
+    parameters:
+      - $ref: "#/components/parameters/tenantId"
+    get:
+      operationId: listCashTransfers
+      tags:
+        - Cash
+      summary: List transfers between cash accounts
+      x-permissions:
+        - cash.read
+      x-scope: tenant-org-unit-account
+      description: "W5.00 (0.12.0-stage5) (cash.md §2.2 п. 18): «В пути» — status transit."
+      responses:
+        "200":
+          description: Successful result.
+          headers:
+            X-Request-Id:
+              $ref: "#/components/headers/RequestId"
+            Cache-Control:
+              description: Never cache authenticated, confidential or capability-bearing API responses in shared caches.
+              schema:
+                type: string
+                const: private, no-store
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CashTransferPage"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthenticated"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "422":
+          $ref: "#/components/responses/Validation"
+        "429":
+          $ref: "#/components/responses/RateLimited"
+      parameters:
+        - $ref: "#/components/parameters/Cursor"
+        - $ref: "#/components/parameters/Limit"
+        - name: status
+          in: query
+          required: false
+          schema:
+            type: string
+            enum:
+              - transit
+              - done
+              - rejected
+        - name: accountId
+          in: query
+          required: false
+          schema:
+            $ref: "#/components/schemas/Id"
+      x-permissions-mode: all
+    post:
+      operationId: createCashTransfer
+      tags:
+        - Cash
+      summary: Send money to another cash account (in transit)
+      x-permissions:
+        - cash.transfer
+      x-scope: tenant-org-unit-account
+      description: "W5.00 (0.12.0-stage5) (cash.md §2.2 п. 17): a move_out row at the sender, the transfer is in transit until accepted. Not more than the balance (409 insufficient_funds)."
+      responses:
+        "201":
+          description: Successful result.
+          headers:
+            X-Request-Id:
+              $ref: "#/components/headers/RequestId"
+            Idempotency-Replayed:
+              $ref: "#/components/headers/IdempotencyReplayed"
+            Cache-Control:
+              description: Never cache authenticated, confidential or capability-bearing API responses in shared caches.
+              schema:
+                type: string
+                const: private, no-store
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CashTransfer"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthenticated"
+        "402":
+          $ref: "#/components/responses/PlanRequired"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "409":
+          $ref: "#/components/responses/Conflict"
+        "422":
+          $ref: "#/components/responses/Validation"
+        "428":
+          $ref: "#/components/responses/PreconditionRequired"
+        "429":
+          $ref: "#/components/responses/RateLimited"
+      x-csrf-required-for-cookie: true
+      parameters:
+        - $ref: "#/components/parameters/IdempotencyKey"
+        - $ref: "#/components/parameters/Csrf"
+        - $ref: "#/components/parameters/Origin"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CashTransferCreate"
+      x-permissions-mode: all
+      x-events:
+        - cash.transfer.sent.v1
+  /api/v1/tenants/{tenantId}/cash/transfers/{transferId}/decision:
+    parameters:
+      - $ref: "#/components/parameters/tenantId"
+      - $ref: "#/components/parameters/cashTransferId"
+    post:
+      operationId: decideCashTransfer
+      tags:
+        - Cash
+      summary: Accept or reject a transfer in transit
+      x-permissions:
+        - cash.transfer
+      x-scope: tenant-org-unit-account
+      description: "W5.00 (0.12.0-stage5) (cash.md §2.2 п. 18): accept — move_in at the receiver; reject (with a reason) — the money returns to the sender. A transfer already decided — 409 invalid_transition, reason transfer_decided."
+      responses:
+        "200":
+          description: Successful result.
+          headers:
+            X-Request-Id:
+              $ref: "#/components/headers/RequestId"
+            Idempotency-Replayed:
+              $ref: "#/components/headers/IdempotencyReplayed"
+            Cache-Control:
+              description: Never cache authenticated, confidential or capability-bearing API responses in shared caches.
+              schema:
+                type: string
+                const: private, no-store
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CashTransfer"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthenticated"
+        "402":
+          $ref: "#/components/responses/PlanRequired"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "409":
+          $ref: "#/components/responses/Conflict"
+        "412":
+          $ref: "#/components/responses/PreconditionFailed"
+        "422":
+          $ref: "#/components/responses/Validation"
+        "428":
+          $ref: "#/components/responses/PreconditionRequired"
+        "429":
+          $ref: "#/components/responses/RateLimited"
+      x-csrf-required-for-cookie: true
+      parameters:
+        - $ref: "#/components/parameters/IdempotencyKey"
+        - $ref: "#/components/parameters/Csrf"
+        - $ref: "#/components/parameters/Origin"
+        - $ref: "#/components/parameters/IfMatch"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CashTransferDecision"
+      x-permissions-mode: all
+      x-events:
+        - cash.transfer.decided.v1
+  /api/v1/tenants/{tenantId}/cash/accounts/{accountId}/advance-issues:
+    parameters:
+      - $ref: "#/components/parameters/tenantId"
+      - $ref: "#/components/parameters/cashAccountId"
+    post:
+      operationId: issueCashAdvance
+      tags:
+        - Cash
+      summary: Issue money under report to an advance account
+      x-permissions:
+        - cash.advance.issue
+      x-scope: tenant-org-unit-account
+      description: "W5.00 (0.12.0-stage5) (cash.md §2.2 п. 19): a transfer into the advance account with a report due date; over the role limit (limit advance) — 202 approval request. Not to oneself (403 self_approval)."
+      responses:
+        "201":
+          description: Successful result.
+          headers:
+            X-Request-Id:
+              $ref: "#/components/headers/RequestId"
+            Idempotency-Replayed:
+              $ref: "#/components/headers/IdempotencyReplayed"
+            Cache-Control:
+              description: Never cache authenticated, confidential or capability-bearing API responses in shared caches.
+              schema:
+                type: string
+                const: private, no-store
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CashTransfer"
+        "202":
+          description: "Accepted: the amount exceeds the role limit; an approval request is created instead of a ledger posting (Q-W4.00-cash-2)."
+          headers:
+            X-Request-Id:
+              $ref: "#/components/headers/RequestId"
+            ETag:
+              $ref: "#/components/headers/ETag"
+            Idempotency-Replayed:
+              $ref: "#/components/headers/IdempotencyReplayed"
+            Cache-Control:
+              description: Never cache authenticated, confidential or capability-bearing API responses in shared caches.
+              schema:
+                type: string
+                const: private, no-store
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CashApprovalRequest"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthenticated"
+        "402":
+          $ref: "#/components/responses/PlanRequired"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "409":
+          $ref: "#/components/responses/Conflict"
+        "422":
+          $ref: "#/components/responses/Validation"
+        "428":
+          $ref: "#/components/responses/PreconditionRequired"
+        "429":
+          $ref: "#/components/responses/RateLimited"
+      x-csrf-required-for-cookie: true
+      parameters:
+        - $ref: "#/components/parameters/IdempotencyKey"
+        - $ref: "#/components/parameters/Csrf"
+        - $ref: "#/components/parameters/Origin"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CashAdvanceIssue"
+      x-permissions-mode: all
+      x-events:
+        - cash.transfer.sent.v1
+        - cash.approval.requested.v1
+  /api/v1/tenants/{tenantId}/cash/accounts/{accountId}/receipts:
+    parameters:
+      - $ref: "#/components/parameters/tenantId"
+      - $ref: "#/components/parameters/cashAccountId"
+    post:
+      operationId: submitAdvanceReceipt
+      tags:
+        - Cash
+      summary: Submit a receipt of an advance report
+      x-permissions:
+        - cash.advance.self
+      x-scope: tenant-org-unit-account-self
+      description: "W5.00 (0.12.0-stage5) (cash.md §2.2 п. 20): by the holder of the advance account only (scope self); the photo is uploaded through Files first (initiateUpload / completeUpload), fileId required (Q-W4.00-cash-12). Not more than the balance of the advance (409 insufficient_funds). «Переснять» — redoOfReceiptId."
+      responses:
+        "201":
+          description: Successful result.
+          headers:
+            X-Request-Id:
+              $ref: "#/components/headers/RequestId"
+            Idempotency-Replayed:
+              $ref: "#/components/headers/IdempotencyReplayed"
+            Cache-Control:
+              description: Never cache authenticated, confidential or capability-bearing API responses in shared caches.
+              schema:
+                type: string
+                const: private, no-store
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AdvanceReceipt"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthenticated"
+        "402":
+          $ref: "#/components/responses/PlanRequired"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "409":
+          $ref: "#/components/responses/Conflict"
+        "422":
+          $ref: "#/components/responses/Validation"
+        "428":
+          $ref: "#/components/responses/PreconditionRequired"
+        "429":
+          $ref: "#/components/responses/RateLimited"
+      x-csrf-required-for-cookie: true
+      parameters:
+        - $ref: "#/components/parameters/IdempotencyKey"
+        - $ref: "#/components/parameters/Csrf"
+        - $ref: "#/components/parameters/Origin"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/AdvanceReceiptCreate"
+      x-permissions-mode: all
+      x-events:
+        - cash.advance_receipt.submitted.v1
+  /api/v1/tenants/{tenantId}/cash/receipts:
+    parameters:
+      - $ref: "#/components/parameters/tenantId"
+    get:
+      operationId: listAdvanceReceipts
+      tags:
+        - Cash
+      summary: List receipts of advance reports
+      x-permissions:
+        - cash.read
+        - cash.advance.self
+      x-scope: tenant-org-unit-account-self
+      description: "W5.00 (0.12.0-stage5) (cash.md §2.2 п. 21): the holder sees own receipts, the issuer sees receipts of the accounts of the scope."
+      responses:
+        "200":
+          description: Successful result.
+          headers:
+            X-Request-Id:
+              $ref: "#/components/headers/RequestId"
+            Cache-Control:
+              description: Never cache authenticated, confidential or capability-bearing API responses in shared caches.
+              schema:
+                type: string
+                const: private, no-store
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AdvanceReceiptPage"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthenticated"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "422":
+          $ref: "#/components/responses/Validation"
+        "429":
+          $ref: "#/components/responses/RateLimited"
+      parameters:
+        - $ref: "#/components/parameters/Cursor"
+        - $ref: "#/components/parameters/Limit"
+        - name: accountId
+          in: query
+          required: false
+          schema:
+            $ref: "#/components/schemas/Id"
+        - name: status
+          in: query
+          required: false
+          schema:
+            type: string
+            enum:
+              - review
+              - accepted
+              - rejected
+      x-permissions-mode: any
+  /api/v1/tenants/{tenantId}/cash/receipts/{receiptId}/decision:
+    parameters:
+      - $ref: "#/components/parameters/tenantId"
+      - $ref: "#/components/parameters/cashReceiptId"
+    post:
+      operationId: decideAdvanceReceipt
+      tags:
+        - Cash
+      summary: Accept or reject a receipt of an advance report
+      x-permissions:
+        - cash.advance.issue
+      x-scope: tenant-org-unit-account
+      description: "W5.00 (0.12.0-stage5) (cash.md §2.2 п. 21): accept posts an out operation of the advance account; not the author (403 self_approval); a receipt already decided — 409 invalid_transition."
+      responses:
+        "200":
+          description: Successful result.
+          headers:
+            X-Request-Id:
+              $ref: "#/components/headers/RequestId"
+            Idempotency-Replayed:
+              $ref: "#/components/headers/IdempotencyReplayed"
+            Cache-Control:
+              description: Never cache authenticated, confidential or capability-bearing API responses in shared caches.
+              schema:
+                type: string
+                const: private, no-store
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AdvanceReceipt"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthenticated"
+        "402":
+          $ref: "#/components/responses/PlanRequired"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "409":
+          $ref: "#/components/responses/Conflict"
+        "412":
+          $ref: "#/components/responses/PreconditionFailed"
+        "422":
+          $ref: "#/components/responses/Validation"
+        "428":
+          $ref: "#/components/responses/PreconditionRequired"
+        "429":
+          $ref: "#/components/responses/RateLimited"
+      x-csrf-required-for-cookie: true
+      parameters:
+        - $ref: "#/components/parameters/IdempotencyKey"
+        - $ref: "#/components/parameters/Csrf"
+        - $ref: "#/components/parameters/Origin"
+        - $ref: "#/components/parameters/IfMatch"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/AdvanceReceiptDecision"
+      x-permissions-mode: all
+      x-events:
+        - cash.advance_receipt.decided.v1
+  /api/v1/tenants/{tenantId}/cash/accounts/{accountId}/advance-returns:
+    parameters:
+      - $ref: "#/components/parameters/tenantId"
+      - $ref: "#/components/parameters/cashAccountId"
+    post:
+      operationId: returnCashAdvance
+      tags:
+        - Cash
+      summary: Return the unspent rest of an advance
+      x-permissions:
+        - cash.advance.self
+      x-scope: tenant-org-unit-account-self
+      description: "W5.00 (0.12.0-stage5) (cash.md §2.2 п. 22): advance account → the issuing desk, in transit until accepted (decideCashTransfer). Not more than the balance (409 insufficient_funds)."
+      responses:
+        "201":
+          description: Successful result.
+          headers:
+            X-Request-Id:
+              $ref: "#/components/headers/RequestId"
+            Idempotency-Replayed:
+              $ref: "#/components/headers/IdempotencyReplayed"
+            Cache-Control:
+              description: Never cache authenticated, confidential or capability-bearing API responses in shared caches.
+              schema:
+                type: string
+                const: private, no-store
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CashTransfer"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthenticated"
+        "402":
+          $ref: "#/components/responses/PlanRequired"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "409":
+          $ref: "#/components/responses/Conflict"
+        "422":
+          $ref: "#/components/responses/Validation"
+        "428":
+          $ref: "#/components/responses/PreconditionRequired"
+        "429":
+          $ref: "#/components/responses/RateLimited"
+      x-csrf-required-for-cookie: true
+      parameters:
+        - $ref: "#/components/parameters/IdempotencyKey"
+        - $ref: "#/components/parameters/Csrf"
+        - $ref: "#/components/parameters/Origin"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CashAdvanceReturn"
+      x-permissions-mode: all
+  /api/v1/tenants/{tenantId}/cash/approval-requests:
+    parameters:
+      - $ref: "#/components/parameters/tenantId"
+    get:
+      operationId: listCashApprovalRequests
+      tags:
+        - Cash
+      summary: List approval requests over role limits
+      x-permissions:
+        - cash.read
+      x-scope: tenant-org-unit-account
+      description: "W5.00 (0.12.0-stage5) (cash.md §2.2 п. 23, Q-W4.00-cash-2): approval inside the module; pending requests feed «Требует решения» of the home page (source cash)."
+      responses:
+        "200":
+          description: Successful result.
+          headers:
+            X-Request-Id:
+              $ref: "#/components/headers/RequestId"
+            Cache-Control:
+              description: Never cache authenticated, confidential or capability-bearing API responses in shared caches.
+              schema:
+                type: string
+                const: private, no-store
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CashApprovalRequestPage"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthenticated"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "422":
+          $ref: "#/components/responses/Validation"
+        "429":
+          $ref: "#/components/responses/RateLimited"
+      parameters:
+        - $ref: "#/components/parameters/Cursor"
+        - $ref: "#/components/parameters/Limit"
+        - name: status
+          in: query
+          required: false
+          schema:
+            type: string
+            enum:
+              - pending
+              - approved
+              - rejected
+      x-permissions-mode: all
+  /api/v1/tenants/{tenantId}/cash/approval-requests/{approvalRequestId}/decision:
+    parameters:
+      - $ref: "#/components/parameters/tenantId"
+      - $ref: "#/components/parameters/cashApprovalRequestId"
+    post:
+      operationId: decideCashApprovalRequest
+      tags:
+        - Cash
+      summary: Approve or reject an approval request
+      x-permissions:
+        - cash.approve
+      x-scope: tenant-org-unit-account
+      description: "W5.00 (0.12.0-stage5) (cash.md §2.2 п. 23): approve posts the operation on behalf of the author with approvedByMemberId (balance and limits are checked again: 409 insufficient_funds); not the author (403 self_approval); a request already decided — 409 invalid_transition."
+      responses:
+        "200":
+          description: Successful result.
+          headers:
+            X-Request-Id:
+              $ref: "#/components/headers/RequestId"
+            Idempotency-Replayed:
+              $ref: "#/components/headers/IdempotencyReplayed"
+            Cache-Control:
+              description: Never cache authenticated, confidential or capability-bearing API responses in shared caches.
+              schema:
+                type: string
+                const: private, no-store
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CashApprovalRequest"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthenticated"
+        "402":
+          $ref: "#/components/responses/PlanRequired"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "409":
+          $ref: "#/components/responses/Conflict"
+        "412":
+          $ref: "#/components/responses/PreconditionFailed"
+        "422":
+          $ref: "#/components/responses/Validation"
+        "428":
+          $ref: "#/components/responses/PreconditionRequired"
+        "429":
+          $ref: "#/components/responses/RateLimited"
+      x-csrf-required-for-cookie: true
+      parameters:
+        - $ref: "#/components/parameters/IdempotencyKey"
+        - $ref: "#/components/parameters/Csrf"
+        - $ref: "#/components/parameters/Origin"
+        - $ref: "#/components/parameters/IfMatch"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CashApprovalDecision"
+      x-permissions-mode: all
+      x-events:
+        - cash.approval.decided.v1
+        - cash.operation.posted.v1
+  /api/v1/tenants/{tenantId}/cash/categories:
+    parameters:
+      - $ref: "#/components/parameters/tenantId"
+    get:
+      operationId: listCashCategories
+      tags:
+        - Cash
+      summary: List cash categories («статьи»)
+      x-permissions:
+        - cash.read
+      x-scope: tenant-org-unit-account
+      description: "W5.00 (0.12.0-stage5) (cash.md §2.2 п. 24, Q-W4.00-cash-9): seed list, read only; fleet expense categories (W2.41) map to a category by code."
+      responses:
+        "200":
+          description: Successful result.
+          headers:
+            X-Request-Id:
+              $ref: "#/components/headers/RequestId"
+            Cache-Control:
+              description: Never cache authenticated, confidential or capability-bearing API responses in shared caches.
+              schema:
+                type: string
+                const: private, no-store
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CashCategoryList"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthenticated"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "422":
+          $ref: "#/components/responses/Validation"
+        "429":
+          $ref: "#/components/responses/RateLimited"
+      x-permissions-mode: all
+  /api/v1/tenants/{tenantId}/inventory/warehouses:
+    parameters:
+      - $ref: "#/components/parameters/tenantId"
+    get:
+      operationId: listWarehouses
+      tags:
+        - Inventory
+      summary: List warehouses
+      x-permissions:
+        - inventory.items.read
+      x-scope: tenant-org-unit-warehouse
+      description: "W5.00 (0.12.0-stage5) (D-20 комплекта, B-6: no screen in the prototype): warehouses of the org units in the scope of the actor."
+      responses:
+        "200":
+          description: Successful result.
+          headers:
+            X-Request-Id:
+              $ref: "#/components/headers/RequestId"
+            Cache-Control:
+              description: Never cache authenticated, confidential or capability-bearing API responses in shared caches.
+              schema:
+                type: string
+                const: private, no-store
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/WarehousePage"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthenticated"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "422":
+          $ref: "#/components/responses/Validation"
+        "429":
+          $ref: "#/components/responses/RateLimited"
+      parameters:
+        - $ref: "#/components/parameters/Cursor"
+        - $ref: "#/components/parameters/Limit"
+      x-permissions-mode: all
+    post:
+      operationId: createWarehouse
+      tags:
+        - Inventory
+      summary: Create a warehouse
+      x-permissions:
+        - inventory.warehouses.manage
+      x-scope: tenant-org-unit
+      description: "W5.00 (0.12.0-stage5): a warehouse belongs to an org unit; its id is the scope of kind warehouse in role assignments."
+      responses:
+        "201":
+          description: Successful result.
+          headers:
+            X-Request-Id:
+              $ref: "#/components/headers/RequestId"
+            Idempotency-Replayed:
+              $ref: "#/components/headers/IdempotencyReplayed"
+            Cache-Control:
+              description: Never cache authenticated, confidential or capability-bearing API responses in shared caches.
+              schema:
+                type: string
+                const: private, no-store
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Warehouse"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthenticated"
+        "402":
+          $ref: "#/components/responses/PlanRequired"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "409":
+          $ref: "#/components/responses/Conflict"
+        "422":
+          $ref: "#/components/responses/Validation"
+        "428":
+          $ref: "#/components/responses/PreconditionRequired"
+        "429":
+          $ref: "#/components/responses/RateLimited"
+      x-csrf-required-for-cookie: true
+      parameters:
+        - $ref: "#/components/parameters/IdempotencyKey"
+        - $ref: "#/components/parameters/Csrf"
+        - $ref: "#/components/parameters/Origin"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/WarehouseCreate"
+      x-permissions-mode: all
+  /api/v1/tenants/{tenantId}/inventory/items/{itemId}:
+    parameters:
+      - $ref: "#/components/parameters/tenantId"
+      - $ref: "#/components/parameters/inventoryItemId"
+    patch:
+      operationId: updateInventoryItem
+      tags:
+        - Inventory
+      summary: "Edit a stock item: name, minimum level, archive"
+      x-permissions:
+        - inventory.items.manage
+      x-scope: tenant-org-unit
+      description: "W5.00 (0.12.0-stage5): sku and baseUnit are immutable once movements exist (409 invalid_transition). If-Match — revision of the item."
+      responses:
+        "200":
+          description: Successful result.
+          headers:
+            X-Request-Id:
+              $ref: "#/components/headers/RequestId"
+            ETag:
+              $ref: "#/components/headers/ETag"
+            Idempotency-Replayed:
+              $ref: "#/components/headers/IdempotencyReplayed"
+            Cache-Control:
+              description: Never cache authenticated, confidential or capability-bearing API responses in shared caches.
+              schema:
+                type: string
+                const: private, no-store
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/InventoryItem"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthenticated"
+        "402":
+          $ref: "#/components/responses/PlanRequired"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "409":
+          $ref: "#/components/responses/Conflict"
+        "412":
+          $ref: "#/components/responses/PreconditionFailed"
+        "422":
+          $ref: "#/components/responses/Validation"
+        "428":
+          $ref: "#/components/responses/PreconditionRequired"
+        "429":
+          $ref: "#/components/responses/RateLimited"
+      x-csrf-required-for-cookie: true
+      parameters:
+        - $ref: "#/components/parameters/IdempotencyKey"
+        - $ref: "#/components/parameters/Csrf"
+        - $ref: "#/components/parameters/Origin"
+        - $ref: "#/components/parameters/IfMatch"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/InventoryItemPatch"
+      x-permissions-mode: all
+  /api/v1/tenants/{tenantId}/inventory/balances:
+    parameters:
+      - $ref: "#/components/parameters/tenantId"
+    get:
+      operationId: listInventoryBalances
+      tags:
+        - Inventory
+      summary: List stock balances by warehouse and lot in FEFO order
+      x-permissions:
+        - inventory.items.read
+      x-scope: tenant-org-unit-warehouse
+      description: "W5.00 (0.12.0-stage5) (D-20 комплекта): onHand, reserved and available per item and warehouse; lots in FEFO order (the earliest expiry first, lots without expiry last)."
+      responses:
+        "200":
+          description: Successful result.
+          headers:
+            X-Request-Id:
+              $ref: "#/components/headers/RequestId"
+            Cache-Control:
+              description: Never cache authenticated, confidential or capability-bearing API responses in shared caches.
+              schema:
+                type: string
+                const: private, no-store
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/InventoryBalancePage"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthenticated"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "422":
+          $ref: "#/components/responses/Validation"
+        "429":
+          $ref: "#/components/responses/RateLimited"
+      parameters:
+        - $ref: "#/components/parameters/Cursor"
+        - $ref: "#/components/parameters/Limit"
+        - name: warehouseId
+          in: query
+          required: false
+          schema:
+            $ref: "#/components/schemas/Id"
+        - name: itemId
+          in: query
+          required: false
+          schema:
+            $ref: "#/components/schemas/Id"
+        - name: belowMinimum
+          in: query
+          required: false
+          schema:
+            type: boolean
+      x-permissions-mode: all
+  /api/v1/tenants/{tenantId}/inventory/reservations:
+    parameters:
+      - $ref: "#/components/parameters/tenantId"
+    get:
+      operationId: listInventoryReservations
+      tags:
+        - Inventory
+      summary: List stock reservations
+      x-permissions:
+        - inventory.movements.read
+      x-scope: tenant-org-unit-warehouse
+      description: "W5.00 (0.12.0-stage5): reservations hold quantity for a source object (an appointment, a repair purchase) without moving stock."
+      responses:
+        "200":
+          description: Successful result.
+          headers:
+            X-Request-Id:
+              $ref: "#/components/headers/RequestId"
+            Cache-Control:
+              description: Never cache authenticated, confidential or capability-bearing API responses in shared caches.
+              schema:
+                type: string
+                const: private, no-store
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/InventoryReservationPage"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthenticated"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "422":
+          $ref: "#/components/responses/Validation"
+        "429":
+          $ref: "#/components/responses/RateLimited"
+      parameters:
+        - $ref: "#/components/parameters/Cursor"
+        - $ref: "#/components/parameters/Limit"
+        - name: warehouseId
+          in: query
+          required: false
+          schema:
+            $ref: "#/components/schemas/Id"
+        - name: status
+          in: query
+          required: false
+          schema:
+            type: string
+            enum:
+              - active
+              - consumed
+              - released
+      x-permissions-mode: all
+    post:
+      operationId: createInventoryReservation
+      tags:
+        - Inventory
+      summary: Reserve stock for a source object
+      x-permissions:
+        - inventory.movements.post
+      x-scope: tenant-org-unit-warehouse
+      description: "W5.00 (0.12.0-stage5): more than the available quantity — 409 invalid_transition, reason insufficient_stock."
+      responses:
+        "201":
+          description: Successful result.
+          headers:
+            X-Request-Id:
+              $ref: "#/components/headers/RequestId"
+            Idempotency-Replayed:
+              $ref: "#/components/headers/IdempotencyReplayed"
+            Cache-Control:
+              description: Never cache authenticated, confidential or capability-bearing API responses in shared caches.
+              schema:
+                type: string
+                const: private, no-store
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/InventoryReservation"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthenticated"
+        "402":
+          $ref: "#/components/responses/PlanRequired"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "409":
+          $ref: "#/components/responses/Conflict"
+        "422":
+          $ref: "#/components/responses/Validation"
+        "428":
+          $ref: "#/components/responses/PreconditionRequired"
+        "429":
+          $ref: "#/components/responses/RateLimited"
+      x-csrf-required-for-cookie: true
+      parameters:
+        - $ref: "#/components/parameters/IdempotencyKey"
+        - $ref: "#/components/parameters/Csrf"
+        - $ref: "#/components/parameters/Origin"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/InventoryReservationCreate"
+      x-permissions-mode: all
+  /api/v1/tenants/{tenantId}/inventory/reservations/{reservationId}/release:
+    parameters:
+      - $ref: "#/components/parameters/tenantId"
+      - $ref: "#/components/parameters/inventoryReservationId"
+    post:
+      operationId: releaseInventoryReservation
+      tags:
+        - Inventory
+      summary: Release a stock reservation
+      x-permissions:
+        - inventory.movements.post
+      x-scope: tenant-org-unit-warehouse
+      description: "W5.00 (0.12.0-stage5): an inactive reservation — 409 invalid_transition, reason reservation_not_active."
+      responses:
+        "200":
+          description: Successful result.
+          headers:
+            X-Request-Id:
+              $ref: "#/components/headers/RequestId"
+            Idempotency-Replayed:
+              $ref: "#/components/headers/IdempotencyReplayed"
+            Cache-Control:
+              description: Never cache authenticated, confidential or capability-bearing API responses in shared caches.
+              schema:
+                type: string
+                const: private, no-store
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/InventoryReservation"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthenticated"
+        "402":
+          $ref: "#/components/responses/PlanRequired"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "409":
+          $ref: "#/components/responses/Conflict"
+        "422":
+          $ref: "#/components/responses/Validation"
+        "428":
+          $ref: "#/components/responses/PreconditionRequired"
+        "429":
+          $ref: "#/components/responses/RateLimited"
+      x-csrf-required-for-cookie: true
+      parameters:
+        - $ref: "#/components/parameters/IdempotencyKey"
+        - $ref: "#/components/parameters/Csrf"
+        - $ref: "#/components/parameters/Origin"
+      x-permissions-mode: all
+  /api/v1/tenants/{tenantId}/spa/services/{serviceId}:
+    parameters:
+      - $ref: "#/components/parameters/tenantId"
+      - $ref: "#/components/parameters/spaServiceId"
+    get:
+      operationId: getSpaService
+      tags:
+        - Spa
+      summary: Read a service with its recipe
+      x-permissions:
+        - spa.services.read
+      x-scope: tenant-org-unit
+      description: "W5.00 (0.12.0-stage5) (B-6: no screen in the prototype): duration, buffers, equipment, price and the recipe («техкарта») of a service."
+      responses:
+        "200":
+          description: Successful result.
+          headers:
+            X-Request-Id:
+              $ref: "#/components/headers/RequestId"
+            ETag:
+              $ref: "#/components/headers/ETag"
+            Cache-Control:
+              description: Never cache authenticated, confidential or capability-bearing API responses in shared caches.
+              schema:
+                type: string
+                const: private, no-store
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SpaService"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthenticated"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "422":
+          $ref: "#/components/responses/Validation"
+        "429":
+          $ref: "#/components/responses/RateLimited"
+      x-permissions-mode: all
+    patch:
+      operationId: updateSpaService
+      tags:
+        - Spa
+      summary: "Edit a service: duration, buffers, price, equipment, recipe"
+      x-permissions:
+        - spa.services.manage
+      x-scope: tenant-org-unit
+      description: "W5.00 (0.12.0-stage5): existing appointments keep the snapshot of the service revision they were booked with."
+      responses:
+        "200":
+          description: Successful result.
+          headers:
+            X-Request-Id:
+              $ref: "#/components/headers/RequestId"
+            ETag:
+              $ref: "#/components/headers/ETag"
+            Idempotency-Replayed:
+              $ref: "#/components/headers/IdempotencyReplayed"
+            Cache-Control:
+              description: Never cache authenticated, confidential or capability-bearing API responses in shared caches.
+              schema:
+                type: string
+                const: private, no-store
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SpaService"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthenticated"
+        "402":
+          $ref: "#/components/responses/PlanRequired"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "409":
+          $ref: "#/components/responses/Conflict"
+        "412":
+          $ref: "#/components/responses/PreconditionFailed"
+        "422":
+          $ref: "#/components/responses/Validation"
+        "428":
+          $ref: "#/components/responses/PreconditionRequired"
+        "429":
+          $ref: "#/components/responses/RateLimited"
+      x-csrf-required-for-cookie: true
+      parameters:
+        - $ref: "#/components/parameters/IdempotencyKey"
+        - $ref: "#/components/parameters/Csrf"
+        - $ref: "#/components/parameters/Origin"
+        - $ref: "#/components/parameters/IfMatch"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/SpaServicePatch"
+      x-permissions-mode: all
+  /api/v1/tenants/{tenantId}/spa/appointments/{appointmentId}/cancel:
+    parameters:
+      - $ref: "#/components/parameters/tenantId"
+      - $ref: "#/components/parameters/appointmentId"
+    post:
+      operationId: cancelAppointment
+      tags:
+        - Spa
+      summary: Cancel a confirmed appointment and release its resources
+      x-permissions:
+        - spa.appointments.create
+      x-scope: tenant-org-unit-self
+      description: "W5.00 (0.12.0-stage5): only a confirmed appointment (409 invalid_transition otherwise); the booking of practitioner, room and equipment is released."
+      responses:
+        "200":
+          description: Successful result.
+          headers:
+            X-Request-Id:
+              $ref: "#/components/headers/RequestId"
+            ETag:
+              $ref: "#/components/headers/ETag"
+            Idempotency-Replayed:
+              $ref: "#/components/headers/IdempotencyReplayed"
+            Cache-Control:
+              description: Never cache authenticated, confidential or capability-bearing API responses in shared caches.
+              schema:
+                type: string
+                const: private, no-store
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Appointment"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthenticated"
+        "402":
+          $ref: "#/components/responses/PlanRequired"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "409":
+          $ref: "#/components/responses/Conflict"
+        "412":
+          $ref: "#/components/responses/PreconditionFailed"
+        "422":
+          $ref: "#/components/responses/Validation"
+        "428":
+          $ref: "#/components/responses/PreconditionRequired"
+        "429":
+          $ref: "#/components/responses/RateLimited"
+      x-csrf-required-for-cookie: true
+      parameters:
+        - $ref: "#/components/parameters/IdempotencyKey"
+        - $ref: "#/components/parameters/Csrf"
+        - $ref: "#/components/parameters/Origin"
+        - $ref: "#/components/parameters/IfMatch"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/AppointmentCancel"
+      x-permissions-mode: all
+  /api/v1/tenants/{tenantId}/spa/appointments/{appointmentId}/reschedule:
+    parameters:
+      - $ref: "#/components/parameters/tenantId"
+      - $ref: "#/components/parameters/appointmentId"
+    post:
+      operationId: rescheduleAppointment
+      tags:
+        - Spa
+      summary: Move a confirmed appointment to another time or resources
+      x-permissions:
+        - spa.appointments.create
+      x-scope: tenant-org-unit-self
+      description: "W5.00 (0.12.0-stage5): re-reserves practitioner, room and equipment with the service buffers atomically; a conflict — 409 (booking overlap)."
+      responses:
+        "200":
+          description: Successful result.
+          headers:
+            X-Request-Id:
+              $ref: "#/components/headers/RequestId"
+            ETag:
+              $ref: "#/components/headers/ETag"
+            Idempotency-Replayed:
+              $ref: "#/components/headers/IdempotencyReplayed"
+            Cache-Control:
+              description: Never cache authenticated, confidential or capability-bearing API responses in shared caches.
+              schema:
+                type: string
+                const: private, no-store
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Appointment"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthenticated"
+        "402":
+          $ref: "#/components/responses/PlanRequired"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "409":
+          $ref: "#/components/responses/Conflict"
+        "412":
+          $ref: "#/components/responses/PreconditionFailed"
+        "422":
+          $ref: "#/components/responses/Validation"
+        "428":
+          $ref: "#/components/responses/PreconditionRequired"
+        "429":
+          $ref: "#/components/responses/RateLimited"
+      x-csrf-required-for-cookie: true
+      parameters:
+        - $ref: "#/components/parameters/IdempotencyKey"
+        - $ref: "#/components/parameters/Csrf"
+        - $ref: "#/components/parameters/Origin"
+        - $ref: "#/components/parameters/IfMatch"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/AppointmentReschedule"
+      x-permissions-mode: all
 components:
   securitySchemes:
     bearerAuth:
@@ -15328,6 +17414,57 @@ components:
       description: Opaque UUID; same-tenant and visibility checks are mandatory.
       schema:
         $ref: "#/components/schemas/Id"
+    cashAccountId:
+      name: accountId
+      in: path
+      required: true
+      description: W5.00 (0.12.0-stage5). Opaque UUID of a cash account (CashAccount.id).
+      schema:
+        $ref: "#/components/schemas/Id"
+    cashApprovalRequestId:
+      name: approvalRequestId
+      in: path
+      required: true
+      description: W5.00 (0.12.0-stage5). Opaque UUID of an approval request (CashApprovalRequest.id).
+      schema:
+        $ref: "#/components/schemas/Id"
+    cashOperationId:
+      name: operationId
+      in: path
+      required: true
+      description: W5.00 (0.12.0-stage5). Opaque UUID of a cash ledger operation (CashOperation.id).
+      schema:
+        $ref: "#/components/schemas/Id"
+    cashProposalKey:
+      name: proposalKey
+      in: path
+      required: true
+      description: W5.00 (0.12.0-stage5). Key of a cash proposal «kind:source» (CashProposal.key); the source is the idempotency key.
+      schema:
+        type: string
+        pattern: ^[a-z][a-z0-9_]*:[A-Za-z0-9_.-]{1,100}$
+        maxLength: 128
+    cashReceiptId:
+      name: receiptId
+      in: path
+      required: true
+      description: W5.00 (0.12.0-stage5). Opaque UUID of an advance receipt (AdvanceReceipt.id).
+      schema:
+        $ref: "#/components/schemas/Id"
+    cashShiftId:
+      name: shiftId
+      in: path
+      required: true
+      description: W5.00 (0.12.0-stage5). Opaque UUID of a cash shift (CashShift.id).
+      schema:
+        $ref: "#/components/schemas/Id"
+    cashTransferId:
+      name: transferId
+      in: path
+      required: true
+      description: W5.00 (0.12.0-stage5). Opaque UUID of a cash transfer (CashTransfer.id).
+      schema:
+        $ref: "#/components/schemas/Id"
     categoryCode:
       name: categoryCode
       in: path
@@ -15436,6 +17573,20 @@ components:
       in: path
       required: true
       description: Opaque UUID; same-tenant and visibility checks are mandatory.
+      schema:
+        $ref: "#/components/schemas/Id"
+    inventoryItemId:
+      name: itemId
+      in: path
+      required: true
+      description: W5.00 (0.12.0-stage5). Opaque UUID of a stock item (InventoryItem.id).
+      schema:
+        $ref: "#/components/schemas/Id"
+    inventoryReservationId:
+      name: reservationId
+      in: path
+      required: true
+      description: W5.00 (0.12.0-stage5). Opaque UUID of a stock reservation (InventoryReservation.id).
       schema:
         $ref: "#/components/schemas/Id"
     memberId:
@@ -15555,6 +17706,13 @@ components:
       in: path
       required: true
       description: W4.04. Opaque UUID of an automation rule of a knowledge space; visible to the lead of the space only.
+      schema:
+        $ref: "#/components/schemas/Id"
+    spaServiceId:
+      name: serviceId
+      in: path
+      required: true
+      description: W5.00 (0.12.0-stage5). Opaque UUID of a SPA service (SpaService.id).
       schema:
         $ref: "#/components/schemas/Id"
     spaceId:
@@ -15895,6 +18053,141 @@ components:
       required:
         - displayName
       description: Who acted, as shown at the time of the action (control DB accounts). accountId is absent where the reader must not learn it.
+    AdvanceReceipt:
+      type: object
+      additionalProperties: false
+      properties:
+        id:
+          $ref: "#/components/schemas/Id"
+        accountId:
+          $ref: "#/components/schemas/Id"
+        amount:
+          $ref: "#/components/schemas/Money"
+        categoryId:
+          type: string
+          maxLength: 64
+        link:
+          oneOf:
+            - $ref: "#/components/schemas/CashSourceRef"
+            - type: "null"
+        note:
+          type:
+            - string
+            - "null"
+          maxLength: 500
+        fileId:
+          $ref: "#/components/schemas/Id"
+        qr:
+          type:
+            - string
+            - "null"
+          maxLength: 500
+        status:
+          type: string
+          enum:
+            - review
+            - accepted
+            - rejected
+        reason:
+          type:
+            - string
+            - "null"
+        operationId:
+          type:
+            - string
+            - "null"
+          format: uuid
+        submittedByMemberId:
+          $ref: "#/components/schemas/Id"
+        submittedAt:
+          $ref: "#/components/schemas/Instant"
+        decidedByMemberId:
+          type:
+            - string
+            - "null"
+          format: uuid
+        decidedAt:
+          type:
+            - string
+            - "null"
+          format: date-time
+        redoOfReceiptId:
+          type:
+            - string
+            - "null"
+          format: uuid
+        revision:
+          type: integer
+          minimum: 1
+          format: int64
+      required:
+        - id
+        - accountId
+        - amount
+        - categoryId
+        - fileId
+        - status
+        - submittedByMemberId
+        - submittedAt
+        - revision
+      description: W5.00 (0.12.0-stage5). A receipt of an advance report; the photo is a Files object kept 5 years (Q-W4.00-cash-12). Accepting posts an out operation of the advance account.
+    AdvanceReceiptCreate:
+      type: object
+      additionalProperties: false
+      properties:
+        amount:
+          $ref: "#/components/schemas/Money"
+        categoryId:
+          type: string
+          maxLength: 64
+        fileId:
+          $ref: "#/components/schemas/Id"
+        note:
+          type: string
+          maxLength: 500
+        link:
+          $ref: "#/components/schemas/CashSourceRef"
+        qr:
+          type: string
+          maxLength: 500
+        redoOfReceiptId:
+          $ref: "#/components/schemas/Id"
+      required:
+        - amount
+        - categoryId
+        - fileId
+    AdvanceReceiptDecision:
+      type: object
+      additionalProperties: false
+      properties:
+        decision:
+          type: string
+          enum:
+            - accept
+            - reject
+        reason:
+          type: string
+          maxLength: 500
+      required:
+        - decision
+      description: W5.00 (0.12.0-stage5). Not the author of the receipt (403 self_approval); rejecting needs a reason.
+    AdvanceReceiptPage:
+      type: object
+      additionalProperties: false
+      properties:
+        items:
+          type: array
+          items:
+            $ref: "#/components/schemas/AdvanceReceipt"
+        nextCursor:
+          type:
+            - string
+            - "null"
+          maxLength: 2048
+      required:
+        - items
+        - nextCursor
+      description: Opaque cursor is bound to tenant, principal, effective scopes, filters and sort. Permission changes invalidate the cursor.
     Appointment:
       type: object
       additionalProperties: false
@@ -15937,6 +18230,9 @@ components:
           format: int64
         performedAt:
           $ref: "#/components/schemas/Instant"
+        finalPrice:
+          $ref: "#/components/schemas/Money"
+          description: W5.00 (0.12.0-stage5) (CASH-03). The price of the visit by the fact after discount; the cash proposal «визит» takes this amount, not the list price.
       required:
         - id
         - orgUnitId
@@ -15951,6 +18247,19 @@ components:
         - status
         - revision
       description: No complete cash ledger or other practitioners schedule is included. Sensitive client fields are resolved by their own field-level grants. Status performed_pending_posting records the factual treatment before inventory accounting closes. It does not claim stock posting or client payment.
+    AppointmentCancel:
+      type: object
+      additionalProperties: false
+      properties:
+        reason:
+          type: string
+          minLength: 1
+          maxLength: 500
+        noShow:
+          type: boolean
+          description: "The client did not come: status no_show instead of cancelled."
+      required:
+        - reason
     AppointmentComplete:
       type: object
       additionalProperties: false
@@ -15964,6 +18273,9 @@ components:
         note:
           type: string
           maxLength: 2000
+        finalPrice:
+          $ref: "#/components/schemas/Money"
+          description: W5.00 (0.12.0-stage5) (CASH-03). The price of the visit by the fact after discount; the cash proposal «визит» takes this amount, not the list price.
       required:
         - warehouseId
         - overrides
@@ -16042,6 +18354,25 @@ components:
       required:
         - performedAt
       description: Record that the assigned treatment happened. Server validates the time and confirmed appointment, stores an immutable factual event and moves to performed_pending_posting. No materials or money are posted.
+    AppointmentReschedule:
+      type: object
+      additionalProperties: false
+      properties:
+        startsAt:
+          $ref: "#/components/schemas/Instant"
+        timeZone:
+          $ref: "#/components/schemas/TimeZone"
+        practitionerMemberId:
+          $ref: "#/components/schemas/Id"
+        roomId:
+          $ref: "#/components/schemas/Id"
+        equipmentIds:
+          type: array
+          items:
+            $ref: "#/components/schemas/Id"
+      required:
+        - startsAt
+        - timeZone
     Assignment:
       type: object
       additionalProperties: false
@@ -16816,6 +19147,51 @@ components:
         - heightM
         - requiredEquipment
         - stackable
+    CashAccessPerson:
+      type: object
+      additionalProperties: false
+      properties:
+        memberId:
+          $ref: "#/components/schemas/Id"
+        name:
+          type: string
+        via:
+          type: string
+          enum:
+            - role
+            - self
+            - owner
+        rights:
+          type: array
+          items:
+            type: string
+            pattern: ^[a-z][a-z0-9_]*(\.[a-z][a-z0-9_]*)+$
+            maxLength: 64
+        limits:
+          $ref: "#/components/schemas/CashLimits"
+        conflicts:
+          type: array
+          items:
+            type: string
+            maxLength: 200
+      required:
+        - memberId
+        - name
+        - via
+        - rights
+        - limits
+        - conflicts
+      description: W5.00 (0.12.0-stage5). A person who would get access to the account being created («Кто получит доступ»); conflicts — pairs «вносит + согласует», «закрывает + принимает расхождение» (макет 1b).
+    CashAccessPreview:
+      type: object
+      additionalProperties: false
+      properties:
+        items:
+          type: array
+          items:
+            $ref: "#/components/schemas/CashAccessPerson"
+      required:
+        - items
     CashAccount:
       type: object
       additionalProperties: false
@@ -16823,7 +19199,11 @@ components:
         id:
           $ref: "#/components/schemas/Id"
         orgUnitId:
-          $ref: "#/components/schemas/Id"
+          type:
+            - string
+            - "null"
+          format: uuid
+          description: null — account of the organization (safe, bank), visible to the tenant scope only.
         name:
           type: string
         currency:
@@ -16832,14 +19212,93 @@ components:
         kind:
           type: string
           enum:
-            - cash
-            - internal_virtual
+            - cash_drawer
+            - safe
+            - advance
+            - acquiring
+            - bank
+            - virtual
         balance:
-          $ref: "#/components/schemas/SignedMoney"
+          oneOf:
+            - $ref: "#/components/schemas/SignedMoney"
+            - type: "null"
+          description: "null — hidden: the actor has no cash.balance.read."
         revision:
           type: integer
           minimum: 1
           format: int64
+        shiftMode:
+          type: string
+          enum:
+            - none
+            - open
+            - blind
+        kktMode:
+          type: string
+          enum:
+            - none
+            - manual
+        balanceLimit:
+          oneOf:
+            - $ref: "#/components/schemas/Money"
+            - type: "null"
+          description: "Balance limit of the drawer: above it the card says «сдайте в сейф» (Q-W4.00-cash-10)."
+        floatAmount:
+          oneOf:
+            - $ref: "#/components/schemas/Money"
+            - type: "null"
+          description: Float (размен) left in the drawer at the start of a shift.
+        tolerance:
+          oneOf:
+            - $ref: "#/components/schemas/Money"
+            - type: "null"
+          description: "Allowed difference of a shift close (CASH-01: per account)."
+        responsibleMemberId:
+          type:
+            - string
+            - "null"
+          format: uuid
+        holderMemberId:
+          type:
+            - string
+            - "null"
+          format: uuid
+          description: Employee of an advance account.
+        advanceLimit:
+          oneOf:
+            - $ref: "#/components/schemas/Money"
+            - type: "null"
+        drawerAccountId:
+          type:
+            - string
+            - "null"
+          format: uuid
+          description: "Acquiring: the cash desk the terminal belongs to («Касса точки», required — PD-60)."
+        settleDays:
+          type:
+            - integer
+            - "null"
+          minimum: 0
+          maximum: 30
+        feeBasisPoints:
+          type:
+            - integer
+            - "null"
+          minimum: 0
+          maximum: 10000
+        categoryIds:
+          type: array
+          items:
+            type: string
+            maxLength: 64
+          description: Allowed expense categories of an advance account.
+        openShiftId:
+          type:
+            - string
+            - "null"
+          format: uuid
+        my:
+          $ref: "#/components/schemas/CashAccountMy"
       required:
         - id
         - orgUnitId
@@ -16848,12 +19307,19 @@ components:
         - kind
         - balance
         - revision
+        - shiftMode
+        - kktMode
+        - my
+      description: "W5.00 (0.12.0-stage5). Account v2 (docs/26-cash.md: six kinds). Mapping of 0.1 kinds: cash → cash_drawer, internal_virtual → virtual. Physical cash accounts cannot go below zero."
     CashAccountCreate:
       type: object
       additionalProperties: false
       properties:
         orgUnitId:
-          $ref: "#/components/schemas/Id"
+          type:
+            - string
+            - "null"
+          format: uuid
         name:
           type: string
           minLength: 1
@@ -16864,14 +19330,109 @@ components:
         kind:
           type: string
           enum:
-            - cash
-            - internal_virtual
+            - cash_drawer
+            - safe
+            - advance
+            - acquiring
+            - bank
+            - virtual
+        shiftMode:
+          type: string
+          enum:
+            - none
+            - open
+            - blind
+        kktMode:
+          type: string
+          enum:
+            - none
+            - manual
+        balanceLimit:
+          oneOf:
+            - $ref: "#/components/schemas/Money"
+            - type: "null"
+          description: "Balance limit of the drawer: above it the card says «сдайте в сейф» (Q-W4.00-cash-10)."
+        floatAmount:
+          oneOf:
+            - $ref: "#/components/schemas/Money"
+            - type: "null"
+          description: Float (размен) left in the drawer at the start of a shift.
+        tolerance:
+          oneOf:
+            - $ref: "#/components/schemas/Money"
+            - type: "null"
+          description: "Allowed difference of a shift close (CASH-01: per account)."
+        responsibleMemberId:
+          type:
+            - string
+            - "null"
+          format: uuid
+        holderMemberId:
+          type:
+            - string
+            - "null"
+          format: uuid
+          description: Employee of an advance account.
+        advanceLimit:
+          oneOf:
+            - $ref: "#/components/schemas/Money"
+            - type: "null"
+        drawerAccountId:
+          type:
+            - string
+            - "null"
+          format: uuid
+          description: "Acquiring: the cash desk the terminal belongs to («Касса точки», required — PD-60)."
+        settleDays:
+          type:
+            - integer
+            - "null"
+          minimum: 0
+          maximum: 30
+        feeBasisPoints:
+          type:
+            - integer
+            - "null"
+          minimum: 0
+          maximum: 10000
+        categoryIds:
+          type: array
+          items:
+            type: string
+            maxLength: 64
+          description: Allowed expense categories of an advance account.
       required:
         - orgUnitId
         - name
         - currency
         - kind
-      description: Creates zero balance; opening funds are an explicit ledger operation. This internal ledger is not fiscalization, bank acquiring or tax accounting.
+      description: "Creates zero balance; opening funds are an explicit ledger operation (type opening, Q-W4.00-cash-8). This internal ledger is not fiscalization, bank acquiring or tax accounting. W5.00 (0.12.0-stage5): v2 fields; a name already taken — 422 validation_failed (field name)."
+    CashAccountMy:
+      type: object
+      additionalProperties: false
+      properties:
+        via:
+          type: string
+          enum:
+            - role
+            - self
+            - owner
+        rights:
+          type: array
+          items:
+            type: string
+            pattern: ^[a-z][a-z0-9_]*(\.[a-z][a-z0-9_]*)+$
+            maxLength: 64
+          description: Action keys of module cash the actor holds on this account.
+        limits:
+          $ref: "#/components/schemas/CashLimits"
+        isHolder:
+          type: boolean
+      required:
+        - via
+        - rights
+        - limits
+      description: W5.00 (0.12.0-stage5). What the actor may do with this account — the buttons of the page «Касса».
     CashAccountPage:
       type: object
       additionalProperties: false
@@ -16889,6 +19450,254 @@ components:
         - items
         - nextCursor
       description: Opaque cursor is bound to tenant, principal, effective scopes, filters and sort. Permission changes invalidate the cursor.
+    CashAdvanceIssue:
+      type: object
+      additionalProperties: false
+      properties:
+        sourceAccountId:
+          $ref: "#/components/schemas/Id"
+        amount:
+          $ref: "#/components/schemas/Money"
+        dueDate:
+          type: string
+          format: date
+          description: Report due date (full ISO date, Q-W4.00-cash-16).
+        note:
+          type: string
+          maxLength: 300
+      required:
+        - sourceAccountId
+        - amount
+        - dueDate
+      description: W5.00 (0.12.0-stage5). Issue under report from sourceAccountId to the advance account in the path. Over the role limit — 202 approval request. Not to oneself (403 self_approval).
+    CashAdvanceReturn:
+      type: object
+      additionalProperties: false
+      properties:
+        amount:
+          $ref: "#/components/schemas/Money"
+        targetAccountId:
+          $ref: "#/components/schemas/Id"
+        note:
+          type: string
+          maxLength: 300
+      required:
+        - amount
+      description: "W5.00 (0.12.0-stage5). Return of the unspent rest: advance → the issuing desk."
+    CashApprovalDecision:
+      type: object
+      additionalProperties: false
+      properties:
+        decision:
+          type: string
+          enum:
+            - approve
+            - reject
+        reason:
+          type: string
+          maxLength: 500
+      required:
+        - decision
+    CashApprovalRequest:
+      type: object
+      additionalProperties: false
+      properties:
+        id:
+          $ref: "#/components/schemas/Id"
+        accountId:
+          $ref: "#/components/schemas/Id"
+        type:
+          type: string
+          enum:
+            - out
+            - refund
+            - issue
+        amount:
+          $ref: "#/components/schemas/Money"
+        method:
+          type:
+            - string
+            - "null"
+          enum:
+            - cash
+            - card
+            - sbp
+            - transfer
+            - null
+        categoryId:
+          type:
+            - string
+            - "null"
+          maxLength: 64
+        basis:
+          type:
+            - string
+            - "null"
+          maxLength: 500
+        source:
+          oneOf:
+            - $ref: "#/components/schemas/CashSourceRef"
+            - type: "null"
+        status:
+          type: string
+          enum:
+            - pending
+            - approved
+            - rejected
+        limit:
+          oneOf:
+            - $ref: "#/components/schemas/Money"
+            - type: "null"
+          description: The role limit that was exceeded; null — the role always goes with approval.
+        requestedByMemberId:
+          $ref: "#/components/schemas/Id"
+        requestedAt:
+          $ref: "#/components/schemas/Instant"
+        decidedByMemberId:
+          type:
+            - string
+            - "null"
+          format: uuid
+        decidedAt:
+          type:
+            - string
+            - "null"
+          format: date-time
+        reason:
+          type:
+            - string
+            - "null"
+        operationId:
+          type:
+            - string
+            - "null"
+          format: uuid
+        transferId:
+          type:
+            - string
+            - "null"
+          format: uuid
+        revision:
+          type: integer
+          minimum: 1
+          format: int64
+      required:
+        - id
+        - accountId
+        - type
+        - amount
+        - status
+        - requestedByMemberId
+        - requestedAt
+        - revision
+      description: "W5.00 (0.12.0-stage5). Approval inside the module (Q-W4.00-cash-2): the operation is posted on behalf of the author with approvedByMemberId; not by the author (403 self_approval)."
+    CashApprovalRequestPage:
+      type: object
+      additionalProperties: false
+      properties:
+        items:
+          type: array
+          items:
+            $ref: "#/components/schemas/CashApprovalRequest"
+        nextCursor:
+          type:
+            - string
+            - "null"
+          maxLength: 2048
+      required:
+        - items
+        - nextCursor
+      description: Opaque cursor is bound to tenant, principal, effective scopes, filters and sort. Permission changes invalidate the cursor.
+    CashCategory:
+      type: object
+      additionalProperties: false
+      properties:
+        id:
+          type: string
+          maxLength: 64
+        title:
+          type: string
+          maxLength: 120
+        group:
+          type: string
+          enum:
+            - income
+            - expense
+            - transfer
+            - adjustment
+        direction:
+          type:
+            - string
+            - "null"
+          enum:
+            - in
+            - out
+            - null
+        moduleKey:
+          type:
+            - string
+            - "null"
+          maxLength: 50
+        expenseCategoryCode:
+          type:
+            - string
+            - "null"
+          maxLength: 64
+          description: Code of a fleet expense category (W2.41) mapped to this category.
+      required:
+        - id
+        - title
+        - group
+      description: W5.00 (0.12.0-stage5). Seed list, read only in stage 5 (Q-W4.00-cash-9).
+    CashCategoryList:
+      type: object
+      additionalProperties: false
+      properties:
+        items:
+          type: array
+          items:
+            $ref: "#/components/schemas/CashCategory"
+      required:
+        - items
+    CashDuplicateList:
+      type: object
+      additionalProperties: false
+      properties:
+        items:
+          type: array
+          items:
+            $ref: "#/components/schemas/CashOperation"
+      required:
+        - items
+      description: W5.00 (0.12.0-stage5). Same account or its terminal, amount, method and type within ±10 minutes (Q-W4.00-cash-6).
+    CashLimits:
+      type: object
+      additionalProperties: false
+      properties:
+        outMinor:
+          type:
+            - integer
+            - "null"
+          minimum: 0
+          format: int64
+          description: Expense limit, minor units; null — no limit; 0 — always with approval (role.cash.out).
+        refundMinor:
+          type:
+            - integer
+            - "null"
+          minimum: 0
+          format: int64
+        advanceMinor:
+          type:
+            - integer
+            - "null"
+          minimum: 0
+          format: int64
+      required:
+        - outMinor
+        - refundMinor
+        - advanceMinor
+      description: "W5.00 (0.12.0-stage5). Role limits «limit: amount» of docs/26-cash.md; with several roles the maximum wins and null wins over a number (cash.js :77–80)."
     CashOperation:
       type: object
       additionalProperties: false
@@ -16922,6 +19731,80 @@ components:
           $ref: "#/components/schemas/ObjectRef"
         reversesOperationId:
           $ref: "#/components/schemas/Id"
+        type:
+          type: string
+          enum:
+            - in
+            - out
+            - refund
+            - move_in
+            - move_out
+            - opening
+            - adjust
+            - storno
+        method:
+          type: string
+          enum:
+            - cash
+            - card
+            - sbp
+            - transfer
+        origin:
+          type: string
+          enum:
+            - manual
+            - proposal
+            - import
+            - integration
+        categoryId:
+          type:
+            - string
+            - "null"
+          maxLength: 64
+          description: Category («статья») code from listCashCategories.
+        basis:
+          type: string
+          maxLength: 500
+        receipt:
+          $ref: "#/components/schemas/CashReceipt"
+        source:
+          $ref: "#/components/schemas/CashSourceRef"
+        shiftId:
+          type:
+            - string
+            - "null"
+          format: uuid
+        groupId:
+          type:
+            - string
+            - "null"
+          format: uuid
+          description: One payment in parts = several operations with a common group.
+        transferId:
+          type:
+            - string
+            - "null"
+          format: uuid
+        approvedByMemberId:
+          type:
+            - string
+            - "null"
+          format: uuid
+        reversedByOperationId:
+          type:
+            - string
+            - "null"
+          format: uuid
+          description: "Derived: the storno that reversed this operation (an operation itself is never changed)."
+        reconcileStatus:
+          type: string
+          enum:
+            - unmatched
+            - matched
+            - mismatch
+        own:
+          type: boolean
+          description: "The owner reversed own operation (Q-W4.00-cash-3): a journal mark."
       required:
         - id
         - accountId
@@ -16931,6 +19814,10 @@ components:
         - occurredAt
         - postedAt
         - createdByMemberId
+        - type
+        - method
+        - origin
+      description: "W5.00 (0.12.0-stage5). Immutable ledger row v2: type (8), payment method, category, basis, receipt, source, shift, group. Money is integer minor units."
     CashOperationCreate:
       type: object
       additionalProperties: false
@@ -16961,13 +19848,42 @@ components:
         note:
           type: string
           maxLength: 2000
+        type:
+          type: string
+          enum:
+            - in
+            - out
+            - refund
+            - opening
+        method:
+          type: string
+          enum:
+            - cash
+            - card
+            - sbp
+            - transfer
+        categoryId:
+          type:
+            - string
+            - "null"
+          maxLength: 64
+          description: Category («статья») code from listCashCategories.
+        basis:
+          type: string
+          maxLength: 500
+        receipt:
+          $ref: "#/components/schemas/CashReceipt"
+        source:
+          $ref: "#/components/schemas/CashSourceRef"
+        refundsOperationId:
+          $ref: "#/components/schemas/Id"
       required:
         - accountId
         - direction
         - amount
         - category
         - occurredAt
-      description: Currency must match account and amount > 0. Immutable append-only posting. Refund/correction references original operation; cumulative refunds cannot exceed its amount. No payment success is inferred from an appointment state. Negative internal_virtual balances require explicit account policy; physical cash accounts cannot go below zero.
+      description: "Currency must match account and amount > 0. Immutable append-only posting. Refund/correction references original operation; cumulative refunds cannot exceed its amount. No payment success is inferred from an appointment state. Negative internal_virtual balances require explicit account policy; physical cash accounts cannot go below zero. W5.00 (0.12.0-stage5): type, method, categoryId, basis, receipt, source; direction and category stay and must be consistent with type (the server derives and checks them). Over the role limit: 202 CashApprovalRequest instead of a posting. Errors: 409 insufficient_funds, 409 shift_closed, 409 duplicate_source, 409 duplicate_receipt."
     CashOperationPage:
       type: object
       additionalProperties: false
@@ -16976,6 +19892,692 @@ components:
           type: array
           items:
             $ref: "#/components/schemas/CashOperation"
+        nextCursor:
+          type:
+            - string
+            - "null"
+          maxLength: 2048
+      required:
+        - items
+        - nextCursor
+      description: Opaque cursor is bound to tenant, principal, effective scopes, filters and sort. Permission changes invalidate the cursor.
+    CashOperationSourceLink:
+      type: object
+      additionalProperties: false
+      properties:
+        operationId:
+          $ref: "#/components/schemas/Id"
+        source:
+          $ref: "#/components/schemas/CashSourceRef"
+        linkedAt:
+          $ref: "#/components/schemas/Instant"
+        linkedByMemberId:
+          $ref: "#/components/schemas/Id"
+      required:
+        - operationId
+        - source
+        - linkedAt
+        - linkedByMemberId
+      description: "W5.00 (0.12.0-stage5). A link of an operation to a source is a separate record (PD-60: the operation stays immutable)."
+    CashProposal:
+      type: object
+      additionalProperties: false
+      properties:
+        key:
+          type: string
+          pattern: ^[a-z][a-z0-9_]*:[A-Za-z0-9_.-]{1,100}$
+          maxLength: 128
+        kind:
+          type: string
+          enum:
+            - visit
+            - expense
+            - payroll
+            - refund
+            - purchase
+            - invoice
+        title:
+          type: string
+          maxLength: 300
+        amount:
+          $ref: "#/components/schemas/Money"
+        direction:
+          type: string
+          enum:
+            - in
+            - out
+        defaultAccountId:
+          type:
+            - string
+            - "null"
+          format: uuid
+        categoryId:
+          type:
+            - string
+            - "null"
+          maxLength: 64
+        source:
+          $ref: "#/components/schemas/CashSourceRef"
+        status:
+          type: string
+          enum:
+            - open
+            - posted
+            - dismissed
+        parts:
+          type: array
+          items:
+            $ref: "#/components/schemas/CashProposalPart"
+        createdAt:
+          $ref: "#/components/schemas/Instant"
+        operationIds:
+          type: array
+          items:
+            $ref: "#/components/schemas/Id"
+        dismissal:
+          oneOf:
+            - $ref: "#/components/schemas/CashProposalDismissal"
+            - type: "null"
+      required:
+        - key
+        - kind
+        - title
+        - amount
+        - direction
+        - source
+        - status
+        - createdAt
+      description: "W5.00 (0.12.0-stage5). A proposal of a module: visit done, verified trip expense, payroll (needs cash.payroll.post), refund. The idempotency key is the source."
+    CashProposalDismiss:
+      type: object
+      additionalProperties: false
+      properties:
+        reason:
+          type: string
+          minLength: 3
+          maxLength: 500
+      required:
+        - reason
+    CashProposalDismissal:
+      type: object
+      additionalProperties: false
+      properties:
+        reason:
+          type: string
+        byMemberId:
+          $ref: "#/components/schemas/Id"
+        at:
+          $ref: "#/components/schemas/Instant"
+      required:
+        - reason
+        - byMemberId
+        - at
+    CashProposalPage:
+      type: object
+      additionalProperties: false
+      properties:
+        items:
+          type: array
+          items:
+            $ref: "#/components/schemas/CashProposal"
+        nextCursor:
+          type:
+            - string
+            - "null"
+          maxLength: 2048
+      required:
+        - items
+        - nextCursor
+      description: Opaque cursor is bound to tenant, principal, effective scopes, filters and sort. Permission changes invalidate the cursor.
+    CashProposalPart:
+      type: object
+      additionalProperties: false
+      properties:
+        label:
+          type: string
+          maxLength: 200
+        amount:
+          $ref: "#/components/schemas/Money"
+        method:
+          type: string
+          enum:
+            - cash
+            - card
+            - sbp
+            - transfer
+      required:
+        - label
+        - amount
+    CashProposalPost:
+      type: object
+      additionalProperties: false
+      properties:
+        accountId:
+          $ref: "#/components/schemas/Id"
+        parts:
+          type: array
+          items:
+            $ref: "#/components/schemas/CashProposalPostPart"
+          minItems: 1
+          maxItems: 10
+        receipt:
+          $ref: "#/components/schemas/CashReceipt"
+        basis:
+          type: string
+          maxLength: 500
+      required:
+        - accountId
+        - parts
+      description: W5.00 (0.12.0-stage5). Posts 1…N operations with a common group atomically; idempotent by source; a repeat — 409 duplicate_source.
+    CashProposalPostPart:
+      type: object
+      additionalProperties: false
+      properties:
+        method:
+          type: string
+          enum:
+            - cash
+            - card
+            - sbp
+            - transfer
+        amount:
+          $ref: "#/components/schemas/Money"
+      required:
+        - method
+        - amount
+    CashProposalPostResult:
+      type: object
+      additionalProperties: false
+      properties:
+        proposal:
+          $ref: "#/components/schemas/CashProposal"
+        operations:
+          type: array
+          items:
+            $ref: "#/components/schemas/CashOperation"
+      required:
+        - proposal
+        - operations
+    CashReceipt:
+      type: object
+      additionalProperties: false
+      properties:
+        fdNumber:
+          type: string
+          pattern: ^[0-9]{1,20}$
+        kktShift:
+          type: string
+          maxLength: 20
+        receiptAt:
+          $ref: "#/components/schemas/Instant"
+        none:
+          type: boolean
+          description: A receipt was not issued (needs reason).
+        reason:
+          type: string
+          maxLength: 300
+        sellerMemberId:
+          $ref: "#/components/schemas/Id"
+        fileId:
+          $ref: "#/components/schemas/Id"
+      description: "W5.00 (0.12.0-stage5). Receipt data of a manual entry: fd + kktShift (+receiptAt), or none + reason, or sellerMemberId. The fd number is unique in the pair «cash desk + ККТ shift» (Q-W4.00-cash-6); a repeat — 409 duplicate_receipt."
+    CashReverseRequest:
+      type: object
+      additionalProperties: false
+      properties:
+        reason:
+          type: string
+          minLength: 3
+          maxLength: 500
+      required:
+        - reason
+      description: "W5.00 (0.12.0-stage5). Storno: a new row of type storno; the original is never changed. The author may not reverse own operation (403 self_approval) except the owner (Q-W4.00-cash-3)."
+    CashShift:
+      type: object
+      additionalProperties: false
+      properties:
+        id:
+          $ref: "#/components/schemas/Id"
+        accountId:
+          $ref: "#/components/schemas/Id"
+        number:
+          type: integer
+          minimum: 1
+          format: int64
+        status:
+          type: string
+          enum:
+            - open
+            - review
+            - closed
+        openedAt:
+          $ref: "#/components/schemas/Instant"
+        openedByMemberId:
+          $ref: "#/components/schemas/Id"
+        openingFloat:
+          $ref: "#/components/schemas/Money"
+        openingDiff:
+          oneOf:
+            - $ref: "#/components/schemas/SignedMoney"
+            - type: "null"
+        closedAt:
+          type:
+            - string
+            - "null"
+          format: date-time
+        closedByMemberId:
+          type:
+            - string
+            - "null"
+          format: uuid
+        counted:
+          oneOf:
+            - $ref: "#/components/schemas/Money"
+            - type: "null"
+        counts:
+          type: object
+          additionalProperties:
+            type: integer
+            minimum: 0
+            maximum: 1000000
+          description: Denomination (RUB) → number of notes or coins.
+        coins:
+          oneOf:
+            - $ref: "#/components/schemas/Money"
+            - type: "null"
+        z:
+          oneOf:
+            - $ref: "#/components/schemas/CashShiftZ"
+            - type: "null"
+        terminal:
+          oneOf:
+            - $ref: "#/components/schemas/CashShiftTerminal"
+            - type: "null"
+        expected:
+          oneOf:
+            - $ref: "#/components/schemas/CashShiftExpected"
+            - type: "null"
+        diff:
+          oneOf:
+            - $ref: "#/components/schemas/CashShiftDiff"
+            - type: "null"
+        decision:
+          oneOf:
+            - $ref: "#/components/schemas/CashShiftDecision"
+            - type: "null"
+        attempts:
+          type: array
+          items:
+            $ref: "#/components/schemas/CashShiftCloseAttempt"
+        toSafeTransferId:
+          type:
+            - string
+            - "null"
+          format: uuid
+        revision:
+          type: integer
+          minimum: 1
+          format: int64
+      required:
+        - id
+        - accountId
+        - number
+        - status
+        - openedAt
+        - openedByMemberId
+        - openingFloat
+        - attempts
+        - revision
+      description: "W5.00 (0.12.0-stage5). A cash shift: open → review (difference above tolerance) | closed. Closing by the cashier who opened it; the difference is accepted by another employee with cash.reconcile (403 self_approval)."
+    CashShiftClose:
+      type: object
+      additionalProperties: false
+      properties:
+        counted:
+          $ref: "#/components/schemas/Money"
+        counts:
+          type: object
+          additionalProperties:
+            type: integer
+            minimum: 0
+            maximum: 1000000
+          description: Denomination (RUB) → number of notes or coins.
+        coins:
+          $ref: "#/components/schemas/Money"
+        z:
+          $ref: "#/components/schemas/CashShiftZ"
+        terminal:
+          $ref: "#/components/schemas/CashShiftTerminal"
+        toSafe:
+          type: boolean
+          description: Hand the revenue over to the nearest safe (Q-W4.00-cash-15).
+      required:
+        - counted
+      description: W5.00 (0.12.0-stage5). Close with the count; with kktMode manual the Z report is required (422 validation_failed). A difference within tolerance is posted automatically; above — the shift becomes review.
+    CashShiftCloseAttempt:
+      type: object
+      additionalProperties: false
+      properties:
+        closedAt:
+          $ref: "#/components/schemas/Instant"
+        closedByMemberId:
+          $ref: "#/components/schemas/Id"
+        counted:
+          $ref: "#/components/schemas/Money"
+        counts:
+          type: object
+          additionalProperties:
+            type: integer
+            minimum: 0
+            maximum: 1000000
+          description: Denomination (RUB) → number of notes or coins.
+        z:
+          oneOf:
+            - $ref: "#/components/schemas/CashShiftZ"
+            - type: "null"
+        terminal:
+          oneOf:
+            - $ref: "#/components/schemas/CashShiftTerminal"
+            - type: "null"
+        diff:
+          oneOf:
+            - $ref: "#/components/schemas/CashShiftDiff"
+            - type: "null"
+        recountReason:
+          type:
+            - string
+            - "null"
+      required:
+        - closedAt
+        - closedByMemberId
+        - counted
+      description: W5.00 (0.12.0-stage5). Every close attempt is an immutable record; «Вернуть на пересчёт» keeps it and reopens the shift (Q-W4.00-cash-4, PD-60).
+    CashShiftDecision:
+      type: object
+      additionalProperties: false
+      properties:
+        kind:
+          type: string
+          enum:
+            - auto
+            - accepted
+        byMemberId:
+          type:
+            - string
+            - "null"
+          format: uuid
+        at:
+          $ref: "#/components/schemas/Instant"
+        reason:
+          type: string
+          maxLength: 500
+        operationId:
+          type:
+            - string
+            - "null"
+          format: uuid
+      required:
+        - kind
+        - at
+        - reason
+    CashShiftDiff:
+      type: object
+      additionalProperties: false
+      properties:
+        cash:
+          $ref: "#/components/schemas/SignedMoney"
+        kktCash:
+          $ref: "#/components/schemas/SignedMoney"
+        kktCard:
+          $ref: "#/components/schemas/SignedMoney"
+        term:
+          $ref: "#/components/schemas/SignedMoney"
+      required:
+        - cash
+        - kktCash
+        - kktCard
+        - term
+    CashShiftExpected:
+      type: object
+      additionalProperties: false
+      properties:
+        cash:
+          $ref: "#/components/schemas/SignedMoney"
+        revCash:
+          $ref: "#/components/schemas/SignedMoney"
+        revCard:
+          $ref: "#/components/schemas/SignedMoney"
+        card:
+          $ref: "#/components/schemas/SignedMoney"
+        sbp:
+          $ref: "#/components/schemas/SignedMoney"
+      required:
+        - cash
+        - revCash
+        - revCard
+        - card
+        - sbp
+      description: "W5.00 (0.12.0-stage5). Expected sums — only with cash.balance.read (otherwise the field of the shift is null: blind close)."
+    CashShiftOpen:
+      type: object
+      additionalProperties: false
+      properties:
+        countedFloat:
+          $ref: "#/components/schemas/Money"
+        note:
+          type: string
+          maxLength: 300
+      required:
+        - countedFloat
+      description: W5.00 (0.12.0-stage5). A float difference at the opening is posted as an adjustment with the event cash.shift.opened_with_diff.v1.
+    CashShiftPage:
+      type: object
+      additionalProperties: false
+      properties:
+        items:
+          type: array
+          items:
+            $ref: "#/components/schemas/CashShift"
+        nextCursor:
+          type:
+            - string
+            - "null"
+          maxLength: 2048
+      required:
+        - items
+        - nextCursor
+      description: Opaque cursor is bound to tenant, principal, effective scopes, filters and sort. Permission changes invalidate the cursor.
+    CashShiftReview:
+      type: object
+      additionalProperties: false
+      properties:
+        decision:
+          type: string
+          enum:
+            - accept
+            - recount
+        reason:
+          type: string
+          minLength: 1
+          maxLength: 500
+        comment:
+          type: string
+          maxLength: 500
+      required:
+        - decision
+        - reason
+    CashShiftTerminal:
+      type: object
+      additionalProperties: false
+      properties:
+        card:
+          $ref: "#/components/schemas/Money"
+        sbp:
+          $ref: "#/components/schemas/Money"
+      required:
+        - card
+        - sbp
+    CashShiftZ:
+      type: object
+      additionalProperties: false
+      properties:
+        number:
+          type: string
+          maxLength: 20
+        cash:
+          $ref: "#/components/schemas/Money"
+        card:
+          $ref: "#/components/schemas/Money"
+      required:
+        - number
+        - cash
+        - card
+    CashSourceLinkRequest:
+      type: object
+      additionalProperties: false
+      properties:
+        source:
+          $ref: "#/components/schemas/CashSourceRef"
+      required:
+        - source
+    CashSourceRef:
+      type: object
+      additionalProperties: false
+      properties:
+        key:
+          type: string
+          maxLength: 128
+        kind:
+          type: string
+          pattern: ^[a-z][a-z0-9_]{1,49}$
+        id:
+          $ref: "#/components/schemas/Id"
+        label:
+          type: string
+          maxLength: 200
+      required:
+        - key
+        - kind
+        - id
+      description: W5.00 (0.12.0-stage5). The record of another module a posting is based on (visit, trip expense, repair act). One source gives one operation or group — a repeat is 409 duplicate_source.
+    CashTransfer:
+      type: object
+      additionalProperties: false
+      properties:
+        id:
+          $ref: "#/components/schemas/Id"
+        fromAccountId:
+          $ref: "#/components/schemas/Id"
+        toAccountId:
+          $ref: "#/components/schemas/Id"
+        amount:
+          $ref: "#/components/schemas/Money"
+        note:
+          type:
+            - string
+            - "null"
+          maxLength: 300
+        purpose:
+          type: string
+          enum:
+            - transfer
+            - shift_handover
+            - advance_issue
+            - advance_return
+        status:
+          type: string
+          enum:
+            - transit
+            - done
+            - rejected
+        sentByMemberId:
+          $ref: "#/components/schemas/Id"
+        sentAt:
+          $ref: "#/components/schemas/Instant"
+        decidedByMemberId:
+          type:
+            - string
+            - "null"
+          format: uuid
+        decidedAt:
+          type:
+            - string
+            - "null"
+          format: date-time
+        reason:
+          type:
+            - string
+            - "null"
+        outOperationId:
+          type:
+            - string
+            - "null"
+          format: uuid
+        inOperationId:
+          type:
+            - string
+            - "null"
+          format: uuid
+        backOperationId:
+          type:
+            - string
+            - "null"
+          format: uuid
+        revision:
+          type: integer
+          minimum: 1
+          format: int64
+      required:
+        - id
+        - fromAccountId
+        - toAccountId
+        - amount
+        - purpose
+        - status
+        - sentByMemberId
+        - sentAt
+        - revision
+      description: "W5.00 (0.12.0-stage5). A transfer in two steps: in_transit (transit) → done (move_in at the receiver) | rejected (move back at the sender)."
+    CashTransferCreate:
+      type: object
+      additionalProperties: false
+      properties:
+        fromAccountId:
+          $ref: "#/components/schemas/Id"
+        toAccountId:
+          $ref: "#/components/schemas/Id"
+        amount:
+          $ref: "#/components/schemas/Money"
+        note:
+          type: string
+          maxLength: 300
+      required:
+        - fromAccountId
+        - toAccountId
+        - amount
+    CashTransferDecision:
+      type: object
+      additionalProperties: false
+      properties:
+        decision:
+          type: string
+          enum:
+            - accept
+            - reject
+        reason:
+          type: string
+          maxLength: 500
+      required:
+        - decision
+      description: W5.00 (0.12.0-stage5). Rejecting needs a reason.
+    CashTransferPage:
+      type: object
+      additionalProperties: false
+      properties:
+        items:
+          type: array
+          items:
+            $ref: "#/components/schemas/CashTransfer"
         nextCursor:
           type:
             - string
@@ -20833,6 +24435,56 @@ components:
       required:
         - type
         - value
+    InventoryBalance:
+      type: object
+      additionalProperties: false
+      properties:
+        warehouseId:
+          $ref: "#/components/schemas/Id"
+        itemId:
+          $ref: "#/components/schemas/Id"
+        onHand:
+          $ref: "#/components/schemas/Quantity"
+        reserved:
+          $ref: "#/components/schemas/Quantity"
+        available:
+          $ref: "#/components/schemas/Quantity"
+        minLevel:
+          oneOf:
+            - $ref: "#/components/schemas/Quantity"
+            - type: "null"
+        belowMinimum:
+          type: boolean
+        lots:
+          type: array
+          items:
+            $ref: "#/components/schemas/InventoryLotBalance"
+      required:
+        - warehouseId
+        - itemId
+        - onHand
+        - reserved
+        - available
+        - belowMinimum
+        - lots
+      description: "W5.00 (0.12.0-stage5) (D-20 комплекта). Balance of an item in a warehouse; available = onHand − reserved. FEFO: lots are listed and consumed by expiry date, the earliest first, lots without expiry last."
+    InventoryBalancePage:
+      type: object
+      additionalProperties: false
+      properties:
+        items:
+          type: array
+          items:
+            $ref: "#/components/schemas/InventoryBalance"
+        nextCursor:
+          type:
+            - string
+            - "null"
+          maxLength: 2048
+      required:
+        - items
+        - nextCursor
+      description: Opaque cursor is bound to tenant, principal, effective scopes, filters and sort. Permission changes invalidate the cursor.
     InventoryItem:
       type: object
       additionalProperties: false
@@ -20859,6 +24511,9 @@ components:
           type: integer
           minimum: 1
           format: int64
+        minLevel:
+          $ref: "#/components/schemas/Quantity"
+          description: W5.00 (0.12.0-stage5). Minimum stock level in the base unit (D-20 комплекта); belowMinimum in balances compares onHand with it.
       required:
         - id
         - orgUnitId
@@ -20913,6 +24568,40 @@ components:
         - items
         - nextCursor
       description: Opaque cursor is bound to tenant, principal, effective scopes, filters and sort. Permission changes invalidate the cursor.
+    InventoryItemPatch:
+      type: object
+      additionalProperties: false
+      properties:
+        name:
+          type: string
+          minLength: 1
+          maxLength: 150
+        minLevel:
+          $ref: "#/components/schemas/Quantity"
+        archived:
+          type: boolean
+      description: W5.00 (0.12.0-stage5). Edit a stock item; sku and baseUnit are immutable once movements exist.
+      minProperties: 1
+    InventoryLotBalance:
+      type: object
+      additionalProperties: false
+      properties:
+        lotId:
+          type:
+            - string
+            - "null"
+          format: uuid
+        expiresOn:
+          type:
+            - string
+            - "null"
+          format: date
+        onHand:
+          $ref: "#/components/schemas/Quantity"
+      required:
+        - lotId
+        - expiresOn
+        - onHand
     InventoryMovement:
       type: object
       additionalProperties: false
@@ -20983,7 +24672,7 @@ components:
         - kind
         - warehouseId
         - lines
-      description: "Quantity must be positive. Transfers require targetWarehouseId and authorize both warehouses. Adjustment requires adjustmentDirection and a reason; reversal requires reversesMovementId and reason. Server derives the reversal direction from the original and rejects lines/warehouse/currency inconsistent with it. Both require dedicated permission. Immutable ledger: correct by compensating movement; never edit posted balances. Negative stock is disabled in v0.1."
+      description: "Quantity must be positive. Transfers require targetWarehouseId and authorize both warehouses. Adjustment requires adjustmentDirection and a reason; reversal requires reversesMovementId and reason. Server derives the reversal direction from the original and rejects lines/warehouse/currency inconsistent with it. Both require dedicated permission. Immutable ledger: correct by compensating movement; never edit posted balances. Negative stock is disabled in v0.1. W5.00 (0.12.0-stage5) (D-20 комплекта): an issue without lotId consumes lots in FEFO order."
     InventoryMovementLine:
       type: object
       additionalProperties: false
@@ -21008,6 +24697,94 @@ components:
           type: array
           items:
             $ref: "#/components/schemas/InventoryMovement"
+        nextCursor:
+          type:
+            - string
+            - "null"
+          maxLength: 2048
+      required:
+        - items
+        - nextCursor
+      description: Opaque cursor is bound to tenant, principal, effective scopes, filters and sort. Permission changes invalidate the cursor.
+    InventoryReservation:
+      type: object
+      additionalProperties: false
+      properties:
+        id:
+          $ref: "#/components/schemas/Id"
+        warehouseId:
+          $ref: "#/components/schemas/Id"
+        source:
+          $ref: "#/components/schemas/ObjectRef"
+        lines:
+          type: array
+          items:
+            $ref: "#/components/schemas/InventoryReservationLine"
+        status:
+          type: string
+          enum:
+            - active
+            - consumed
+            - released
+        expiresAt:
+          type:
+            - string
+            - "null"
+          format: date-time
+        createdAt:
+          $ref: "#/components/schemas/Instant"
+        revision:
+          type: integer
+          minimum: 1
+          format: int64
+      required:
+        - id
+        - warehouseId
+        - source
+        - lines
+        - status
+        - createdAt
+        - revision
+      description: W5.00 (0.12.0-stage5). A reservation holds quantity for a source object without a movement; it becomes consumed when the movement of the source is posted.
+    InventoryReservationCreate:
+      type: object
+      additionalProperties: false
+      properties:
+        warehouseId:
+          $ref: "#/components/schemas/Id"
+        source:
+          $ref: "#/components/schemas/ObjectRef"
+        lines:
+          type: array
+          items:
+            $ref: "#/components/schemas/InventoryReservationLine"
+          minItems: 1
+          maxItems: 200
+        expiresAt:
+          $ref: "#/components/schemas/Instant"
+      required:
+        - warehouseId
+        - source
+        - lines
+    InventoryReservationLine:
+      type: object
+      additionalProperties: false
+      properties:
+        itemId:
+          $ref: "#/components/schemas/Id"
+        quantity:
+          $ref: "#/components/schemas/Quantity"
+      required:
+        - itemId
+        - quantity
+    InventoryReservationPage:
+      type: object
+      additionalProperties: false
+      properties:
+        items:
+          type: array
+          items:
+            $ref: "#/components/schemas/InventoryReservation"
         nextCursor:
           type:
             - string
@@ -25207,6 +28984,11 @@ components:
         - tier_below_usage
         - not_implemented
         - offer_closed
+        - shift_closed
+        - duplicate_source
+        - duplicate_receipt
+        - self_approval
+        - insufficient_funds
     ProblemViolation:
       type: object
       additionalProperties: false
@@ -26419,6 +30201,38 @@ components:
         - items
         - nextCursor
       description: Opaque cursor is bound to tenant, principal, effective scopes, filters and sort. Permission changes invalidate the cursor.
+    SpaServicePatch:
+      type: object
+      additionalProperties: false
+      minProperties: 1
+      properties:
+        name:
+          type: string
+          minLength: 1
+          maxLength: 150
+        durationMinutes:
+          type: integer
+          minimum: 1
+          format: int64
+        bufferBeforeMinutes:
+          type: integer
+          minimum: 0
+          format: int64
+        bufferAfterMinutes:
+          type: integer
+          minimum: 0
+          format: int64
+        price:
+          $ref: "#/components/schemas/Money"
+        requiredEquipmentIds:
+          type: array
+          items:
+            $ref: "#/components/schemas/Id"
+        recipe:
+          type: array
+          items:
+            $ref: "#/components/schemas/ConsumptionRecipeLine"
+      description: W5.00 (0.12.0-stage5). Edit a service and its recipe («техкарта»); the revision grows, booked appointments keep their snapshot.
     SpaSettings:
       type: object
       additionalProperties: false
@@ -29433,6 +33247,64 @@ components:
         - sourceFieldKey
         - operator
         - value
+    Warehouse:
+      type: object
+      additionalProperties: false
+      properties:
+        id:
+          $ref: "#/components/schemas/Id"
+        orgUnitId:
+          $ref: "#/components/schemas/Id"
+        name:
+          type: string
+        code:
+          type: string
+        archived:
+          type: boolean
+        revision:
+          type: integer
+          minimum: 1
+          format: int64
+      required:
+        - id
+        - orgUnitId
+        - name
+        - archived
+        - revision
+      description: W5.00 (0.12.0-stage5). A warehouse of an org unit; its id is the warehouse scope of role assignments.
+    WarehouseCreate:
+      type: object
+      additionalProperties: false
+      properties:
+        orgUnitId:
+          $ref: "#/components/schemas/Id"
+        name:
+          type: string
+          minLength: 1
+          maxLength: 150
+        code:
+          type: string
+          maxLength: 32
+      required:
+        - orgUnitId
+        - name
+    WarehousePage:
+      type: object
+      additionalProperties: false
+      properties:
+        items:
+          type: array
+          items:
+            $ref: "#/components/schemas/Warehouse"
+        nextCursor:
+          type:
+            - string
+            - "null"
+          maxLength: 2048
+      required:
+        - items
+        - nextCursor
+      description: Opaque cursor is bound to tenant, principal, effective scopes, filters and sort. Permission changes invalidate the cursor.
     WorkLog:
       type: object
       additionalProperties: false

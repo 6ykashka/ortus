@@ -28,6 +28,10 @@ const (
 // FunctionDriver is the work function that closes restricted actions (AUTH-05, ADR-0011).
 const FunctionDriver = "driver"
 
+// FunctionForeman is the work function that, with the driver, closes the finance block of the cash desk (W5.00:
+// cash.payroll.post, cash.reports.finance — blocked_by_function [driver, foreman]).
+const FunctionForeman = "foreman"
+
 // Policy is what the evaluator needs of the permission catalog besides role contents.
 type Policy struct {
 	Actions   []string            // tenant actions (catalog.TenantActions): any other action is denied
@@ -39,6 +43,7 @@ type Policy struct {
 // the tables below against it).
 func DefaultPolicy() Policy {
 	driverOnly := []string{FunctionDriver}
+	driverAndForeman := []string{FunctionDriver, FunctionForeman}
 	return Policy{
 		Actions: slices.Clone(catalog.TenantActions),
 		OwnerOnly: map[string]bool{
@@ -47,6 +52,7 @@ func DefaultPolicy() Policy {
 		},
 		BlockedBy: map[string][]string{
 			"chat.pdn.read": driverOnly, "fleet.earnings.read": driverOnly, "fleet.earnings.manage": driverOnly,
+			"cash.payroll.post": driverAndForeman, "cash.reports.finance": driverAndForeman,
 		},
 	}
 }

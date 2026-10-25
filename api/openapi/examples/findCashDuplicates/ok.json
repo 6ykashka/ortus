@@ -1,0 +1,34 @@
+{
+  "items": [
+    {
+      "id": "a610ddaf-a010-5083-885c-05e081bdde71",
+      "accountId": "b7d1bdca-237d-5518-a179-d45b135bb0a6",
+      "direction": "in",
+      "amount": {
+        "amountMinor": 300000,
+        "currency": "RUB"
+      },
+      "category": "service_payment",
+      "occurredAt": "2026-10-01T07:15:00Z",
+      "postedAt": "2026-10-01T07:15:00Z",
+      "createdByMemberId": "25097109-efb6-5471-880f-7a01ee6615a0",
+      "type": "in",
+      "method": "cash",
+      "origin": "manual",
+      "categoryId": "revenue-subscriptions",
+      "basis": "Подарочный сертификат № 214",
+      "receipt": {
+        "fdNumber": "4520",
+        "kktShift": "118",
+        "receiptAt": "2026-10-01T07:16:00Z"
+      },
+      "shiftId": "790fb875-091f-53a3-ae3b-ae062b4ab9ac",
+      "groupId": null,
+      "transferId": null,
+      "approvedByMemberId": null,
+      "reconcileStatus": "unmatched",
+      "own": false,
+      "reversedByOperationId": null
+    }
+  ]
+}

@@ -64,4 +64,9 @@ var Problems = map[string]Problem{
 	"tier_below_usage":              {Status: 422, Title: "Выбранный тариф меньше занятых мест"},
 	"not_implemented":               {Status: 501, Title: "Операция объявлена в контракте, но ещё не реализована"},
 	"offer_closed":                  {Status: 409, Title: "Выбор машины закрыт — срок выбора прошёл или машина уже выбрана"},
+	"shift_closed":                  {Status: 409, Title: "Смена кассы закрыта"},
+	"duplicate_source":              {Status: 409, Title: "Источник уже проведён в кассе"},
+	"duplicate_receipt":             {Status: 409, Title: "Чек с таким № ФД уже внесён"},
+	"self_approval":                 {Status: 403, Title: "Автор не принимает собственное решение"},
+	"insufficient_funds":            {Status: 409, Title: "В кассе недостаточно средств"},
 }

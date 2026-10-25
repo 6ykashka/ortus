@@ -1,0 +1,53 @@
+{
+  "id": "da14d1a0-5094-5b16-a839-7ad4d0860694",
+  "orgUnitId": "6de355d2-b019-5bb6-b66a-ddae6a13fb65",
+  "name": "Касса бара",
+  "currency": "RUB",
+  "kind": "cash_drawer",
+  "balance": {
+    "amountMinor": 0,
+    "currency": "RUB"
+  },
+  "revision": 1,
+  "shiftMode": "open",
+  "kktMode": "none",
+  "balanceLimit": null,
+  "floatAmount": null,
+  "tolerance": null,
+  "responsibleMemberId": null,
+  "holderMemberId": null,
+  "advanceLimit": null,
+  "drawerAccountId": null,
+  "settleDays": null,
+  "feeBasisPoints": null,
+  "categoryIds": [],
+  "openShiftId": null,
+  "my": {
+    "via": "owner",
+    "rights": [
+      "cash.read",
+      "cash.balance.read",
+      "cash.post",
+      "cash.proposals.post",
+      "cash.shift.operate",
+      "cash.refund",
+      "cash.transfer",
+      "cash.advance.issue",
+      "cash.approve",
+      "cash.reconcile",
+      "cash.reverse",
+      "cash.payroll.post",
+      "cash.reports.finance",
+      "cash.accounts.manage",
+      "cash.period.close",
+      "cash.advance.self",
+      "cash.export"
+    ],
+    "limits": {
+      "outMinor": null,
+      "refundMinor": null,
+      "advanceMinor": null
+    },
+    "isHolder": false
+  }
+}

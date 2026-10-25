@@ -1,0 +1,2275 @@
+{
+  "decideAdvanceReceipt": {
+    "ok": {
+      "id": "@@t-alta|rc-3@@",
+      "accountId": "@@t-alta|ca-adv-vas@@",
+      "amount": {
+        "amountMinor": 60000,
+        "currency": "RUB"
+      },
+      "categoryId": "wash",
+      "link": {
+        "key": "trip:r203",
+        "kind": "trip",
+        "id": "@@t-alta|trip-r203@@",
+        "label": "Рейс Р-203"
+      },
+      "note": null,
+      "fileId": "@@t-alta|file-rc-3@@",
+      "qr": null,
+      "status": "accepted",
+      "reason": null,
+      "operationId": "@@t-alta:new|1@@",
+      "submittedByMemberId": "@@t-alta|m-vasiliev@@",
+      "submittedAt": "2026-09-30T16:20:00Z",
+      "decidedByMemberId": "@@t-alta|m-owner@@",
+      "decidedAt": "2026-10-01T07:30:00Z",
+      "redoOfReceiptId": null,
+      "revision": 2
+    },
+    "self_approval": {
+      "type": "https://docs.ortus.example/errors/self_approval",
+      "title": "Автор не принимает собственное решение",
+      "status": 403,
+      "code": "self_approval",
+      "detail": "Чек принимает не его автор.",
+      "requestId": "01J9Z4QK8M6T2V5X7Y9A1B3C5D"
+    }
+  },
+  "listCashApprovalRequests": {
+    "ok": {
+      "items": [
+        {
+          "id": "@@t-alta|rq-1@@",
+          "accountId": "@@t-alta|ca-sever@@",
+          "type": "out",
+          "amount": {
+            "amountMinor": 650000,
+            "currency": "RUB"
+          },
+          "method": "cash",
+          "categoryId": "repair-small",
+          "basis": "Ремонт ворот склада · ИП Гаврилов",
+          "source": null,
+          "status": "pending",
+          "limit": {
+            "amountMinor": 500000,
+            "currency": "RUB"
+          },
+          "requestedByMemberId": "@@t-alta|m-kotova@@",
+          "requestedAt": "2026-10-01T05:50:00Z",
+          "decidedByMemberId": null,
+          "decidedAt": null,
+          "reason": null,
+          "operationId": null,
+          "transferId": null,
+          "revision": 1
+        }
+      ],
+      "nextCursor": null
+    },
+    "forbidden_action": {
+      "type": "https://docs.ortus.example/errors/forbidden_action",
+      "title": "Нет действия ни в одной роли",
+      "status": 403,
+      "code": "forbidden_action",
+      "requestId": "01J9Z4QK8M6T2V5X7Y9A1B3C5D"
+    }
+  },
+  "listCashOperations": {
+    "ok": {
+      "items": [
+        {
+          "id": "@@t-alta|K-326@@",
+          "accountId": "@@t-alta|ca-spa@@",
+          "direction": "out",
+          "amount": {
+            "amountMinor": 65000,
+            "currency": "RUB"
+          },
+          "category": "expense",
+          "occurredAt": "2026-10-01T07:30:00Z",
+          "postedAt": "2026-10-01T07:30:00Z",
+          "createdByMemberId": "@@t-alta|m-morozova@@",
+          "type": "out",
+          "method": "cash",
+          "origin": "manual",
+          "categoryId": "household",
+          "basis": "Вода и салфетки для кабинетов",
+          "receipt": {
+            "sellerMemberId": "@@t-alta|m-morozova@@"
+          },
+          "shiftId": "@@t-alta|sh-118@@",
+          "groupId": null,
+          "transferId": null,
+          "approvedByMemberId": null,
+          "reconcileStatus": "unmatched",
+          "own": false,
+          "reversedByOperationId": null
+        },
+        {
+          "id": "@@t-alta|K-325@@",
+          "accountId": "@@t-alta|ca-spa@@",
+          "direction": "in",
+          "amount": {
+            "amountMinor": 300000,
+            "currency": "RUB"
+          },
+          "category": "service_payment",
+          "occurredAt": "2026-10-01T07:15:00Z",
+          "postedAt": "2026-10-01T07:15:00Z",
+          "createdByMemberId": "@@t-alta|m-morozova@@",
+          "type": "in",
+          "method": "cash",
+          "origin": "manual",
+          "categoryId": "revenue-subscriptions",
+          "basis": "Подарочный сертификат № 214",
+          "receipt": {
+            "fdNumber": "4520",
+            "kktShift": "118",
+            "receiptAt": "2026-10-01T07:16:00Z"
+          },
+          "shiftId": "@@t-alta|sh-118@@",
+          "groupId": null,
+          "transferId": null,
+          "approvedByMemberId": null,
+          "reconcileStatus": "unmatched",
+          "own": false,
+          "reversedByOperationId": null
+        },
+        {
+          "id": "@@t-alta|K-324@@",
+          "accountId": "@@t-alta|ca-term@@",
+          "direction": "in",
+          "amount": {
+            "amountMinor": 1200000,
+            "currency": "RUB"
+          },
+          "category": "service_payment",
+          "occurredAt": "2026-10-01T06:40:00Z",
+          "postedAt": "2026-10-01T06:40:00Z",
+          "createdByMemberId": "@@t-alta|m-morozova@@",
+          "type": "in",
+          "method": "card",
+          "origin": "manual",
+          "categoryId": "revenue-subscriptions",
+          "basis": "Абонемент на 5 визитов · Светлана Д.",
+          "receipt": {
+            "fdNumber": "4519",
+            "kktShift": "118",
+            "receiptAt": "2026-10-01T06:41:00Z"
+          },
+          "shiftId": "@@t-alta|sh-118@@",
+          "groupId": null,
+          "transferId": null,
+          "approvedByMemberId": null,
+          "reconcileStatus": "unmatched",
+          "own": false,
+          "reversedByOperationId": null
+        }
+      ],
+      "nextCursor": "YzM"
+    },
+    "forbidden_action": {
+      "type": "https://docs.ortus.example/errors/forbidden_action",
+      "title": "Нет действия ни в одной роли",
+      "status": 403,
+      "code": "forbidden_action",
+      "requestId": "01J9Z4QK8M6T2V5X7Y9A1B3C5D"
+    }
+  },
+  "postCashOperation": {
+    "created": {
+      "id": "@@t-alta:new|1@@",
+      "accountId": "@@t-alta|ca-spa@@",
+      "direction": "in",
+      "amount": {
+        "amountMinor": 280000,
+        "currency": "RUB"
+      },
+      "category": "service_payment",
+      "occurredAt": "2026-10-01T07:40:00Z",
+      "postedAt": "2026-10-01T07:40:00Z",
+      "createdByMemberId": "@@t-alta|m-owner@@",
+      "type": "in",
+      "method": "cash",
+      "origin": "manual",
+      "categoryId": "revenue-spa",
+      "basis": "Массаж лица · Наталья С.",
+      "receipt": {
+        "fdNumber": "4521",
+        "kktShift": "118",
+        "receiptAt": "2026-10-01T07:41:00Z"
+      },
+      "shiftId": "@@t-alta|sh-118@@",
+      "groupId": null,
+      "transferId": null,
+      "approvedByMemberId": null,
+      "reconcileStatus": "unmatched",
+      "own": false,
+      "reversedByOperationId": null
+    },
+    "insufficient_funds": {
+      "type": "https://docs.ortus.example/errors/insufficient_funds",
+      "title": "В кассе недостаточно средств",
+      "status": 409,
+      "code": "insufficient_funds",
+      "detail": "В кассе нет столько наличных.",
+      "requestId": "01J9Z4QK8M6T2V5X7Y9A1B3C5D"
+    },
+    "shift_closed": {
+      "type": "https://docs.ortus.example/errors/shift_closed",
+      "title": "Смена кассы закрыта",
+      "status": 409,
+      "code": "shift_closed",
+      "detail": "Смена кассы «Касса салона · ресепшен» закрыта — откройте смену.",
+      "requestId": "01J9Z4QK8M6T2V5X7Y9A1B3C5D"
+    },
+    "duplicate_receipt": {
+      "type": "https://docs.ortus.example/errors/duplicate_receipt",
+      "title": "Чек с таким № ФД уже внесён",
+      "status": 409,
+      "code": "duplicate_receipt",
+      "detail": "Чек № ФД 4520 уже внесён.",
+      "requestId": "01J9Z4QK8M6T2V5X7Y9A1B3C5D"
+    }
+  },
+  "listAdvanceReceipts": {
+    "ok": {
+      "items": [
+        {
+          "id": "@@t-alta|rc-4@@",
+          "accountId": "@@t-alta|ca-adv-vas@@",
+          "amount": {
+            "amountMinor": 40000,
+            "currency": "RUB"
+          },
+          "categoryId": "parking",
+          "link": {
+            "key": "trip:r203",
+            "kind": "trip",
+            "id": "@@t-alta|trip-r203@@",
+            "label": "Рейс Р-203"
+          },
+          "note": null,
+          "fileId": "@@t-alta|file-rc-4@@",
+          "qr": null,
+          "status": "rejected",
+          "reason": "Не видна сумма на фото — переснимите чек",
+          "operationId": null,
+          "submittedByMemberId": "@@t-alta|m-vasiliev@@",
+          "submittedAt": "2026-09-30T16:22:00Z",
+          "decidedByMemberId": "@@t-alta|m-owner@@",
+          "decidedAt": "2026-09-30T17:05:00Z",
+          "redoOfReceiptId": null,
+          "revision": 2
+        },
+        {
+          "id": "@@t-alta|rc-3@@",
+          "accountId": "@@t-alta|ca-adv-vas@@",
+          "amount": {
+            "amountMinor": 60000,
+            "currency": "RUB"
+          },
+          "categoryId": "wash",
+          "link": {
+            "key": "trip:r203",
+            "kind": "trip",
+            "id": "@@t-alta|trip-r203@@",
+            "label": "Рейс Р-203"
+          },
+          "note": null,
+          "fileId": "@@t-alta|file-rc-3@@",
+          "qr": null,
+          "status": "review",
+          "reason": null,
+          "operationId": null,
+          "submittedByMemberId": "@@t-alta|m-vasiliev@@",
+          "submittedAt": "2026-09-30T16:20:00Z",
+          "decidedByMemberId": null,
+          "decidedAt": null,
+          "redoOfReceiptId": null,
+          "revision": 1
+        }
+      ],
+      "nextCursor": "YzI"
+    },
+    "forbidden_action": {
+      "type": "https://docs.ortus.example/errors/forbidden_action",
+      "title": "Нет действия ни в одной роли",
+      "status": 403,
+      "code": "forbidden_action",
+      "requestId": "01J9Z4QK8M6T2V5X7Y9A1B3C5D"
+    }
+  },
+  "decideCashApprovalRequest": {
+    "ok": {
+      "id": "@@t-alta|rq-1@@",
+      "accountId": "@@t-alta|ca-sever@@",
+      "type": "out",
+      "amount": {
+        "amountMinor": 650000,
+        "currency": "RUB"
+      },
+      "method": "cash",
+      "categoryId": "repair-small",
+      "basis": "Ремонт ворот склада · ИП Гаврилов",
+      "source": null,
+      "status": "approved",
+      "limit": {
+        "amountMinor": 500000,
+        "currency": "RUB"
+      },
+      "requestedByMemberId": "@@t-alta|m-kotova@@",
+      "requestedAt": "2026-10-01T05:50:00Z",
+      "decidedByMemberId": "@@t-alta|m-owner@@",
+      "decidedAt": "2026-10-01T07:30:00Z",
+      "reason": null,
+      "operationId": "@@t-alta:new|1@@",
+      "transferId": null,
+      "revision": 2
+    },
+    "self_approval": {
+      "type": "https://docs.ortus.example/errors/self_approval",
+      "title": "Автор не принимает собственное решение",
+      "status": 403,
+      "code": "self_approval",
+      "detail": "Заявку согласует не её автор.",
+      "requestId": "01J9Z4QK8M6T2V5X7Y9A1B3C5D"
+    }
+  },
+  "postCashProposal": {
+    "created": {
+      "proposal": {
+        "key": "visit:pr-1",
+        "kind": "visit",
+        "title": "Наталья С. · Массаж лица",
+        "amount": {
+          "amountMinor": 280000,
+          "currency": "RUB"
+        },
+        "direction": "in",
+        "defaultAccountId": "@@t-alta|ca-spa@@",
+        "categoryId": "revenue-spa",
+        "source": {
+          "key": "visit:pr-1",
+          "kind": "visit",
+          "id": "@@t-alta|visit-pr-1@@",
+          "label": "Визит 30.09 18:00"
+        },
+        "status": "posted",
+        "parts": [
+          {
+            "label": "Наталья С. · Массаж лица",
+            "amount": {
+              "amountMinor": 280000,
+              "currency": "RUB"
+            }
+          }
+        ],
+        "createdAt": "2026-10-01T05:00:00Z",
+        "operationIds": ["@@t-alta:new|2@@"],
+        "dismissal": null
+      },
+      "operations": [
+        {
+          "id": "@@t-alta:new|2@@",
+          "accountId": "@@t-alta|ca-spa@@",
+          "direction": "in",
+          "amount": {
+            "amountMinor": 280000,
+            "currency": "RUB"
+          },
+          "category": "service_payment",
+          "occurredAt": "2026-10-01T07:30:00Z",
+          "postedAt": "2026-10-01T07:30:00Z",
+          "createdByMemberId": "@@t-alta|m-owner@@",
+          "type": "in",
+          "method": "cash",
+          "origin": "proposal",
+          "categoryId": "revenue-spa",
+          "basis": "Наталья С. · Массаж лица",
+          "receipt": {
+            "fdNumber": "4521",
+            "kktShift": "118",
+            "receiptAt": "2026-10-01T07:41:00Z"
+          },
+          "source": {
+            "key": "visit:pr-1",
+            "kind": "visit",
+            "id": "@@t-alta|visit-pr-1@@",
+            "label": "Визит 30.09 18:00"
+          },
+          "shiftId": "@@t-alta|sh-118@@",
+          "groupId": "@@t-alta:new|1@@",
+          "transferId": null,
+          "approvedByMemberId": null,
+          "reconcileStatus": "unmatched",
+          "own": false,
+          "reversedByOperationId": null
+        }
+      ]
+    },
+    "duplicate_source": {
+      "type": "https://docs.ortus.example/errors/duplicate_source",
+      "title": "Источник уже проведён в кассе",
+      "status": 409,
+      "code": "duplicate_source",
+      "detail": "Этот источник уже проведён в кассе.",
+      "requestId": "01J9Z4QK8M6T2V5X7Y9A1B3C5D"
+    }
+  },
+  "returnCashAdvance": {
+    "created": {
+      "id": "@@t-alta:new|1@@",
+      "fromAccountId": "@@t-alta|ca-adv-vas@@",
+      "toAccountId": "@@t-alta|ca-sever@@",
+      "amount": {
+        "amountMinor": 100000,
+        "currency": "RUB"
+      },
+      "note": "Возврат остатка",
+      "purpose": "advance_return",
+      "status": "transit",
+      "sentByMemberId": "@@t-alta|m-owner@@",
+      "sentAt": "2026-10-01T07:30:00Z",
+      "decidedByMemberId": null,
+      "decidedAt": null,
+      "reason": null,
+      "outOperationId": "@@t-alta:new|2@@",
+      "inOperationId": null,
+      "backOperationId": null,
+      "revision": 1
+    },
+    "insufficient_funds": {
+      "type": "https://docs.ortus.example/errors/insufficient_funds",
+      "title": "В кассе недостаточно средств",
+      "status": 409,
+      "code": "insufficient_funds",
+      "detail": "Возвращаемая сумма больше остатка подотчёта.",
+      "requestId": "01J9Z4QK8M6T2V5X7Y9A1B3C5D"
+    }
+  },
+  "previewCashAccountAccess": {
+    "ok": {
+      "items": [
+        {
+          "memberId": "@@t-alta|m-owner@@",
+          "name": "Дарья Зимина",
+          "via": "owner",
+          "rights": [
+            "cash.read",
+            "cash.balance.read",
+            "cash.post",
+            "cash.proposals.post",
+            "cash.shift.operate",
+            "cash.refund",
+            "cash.transfer",
+            "cash.advance.issue",
+            "cash.approve",
+            "cash.reconcile",
+            "cash.reverse",
+            "cash.payroll.post",
+            "cash.reports.finance",
+            "cash.accounts.manage",
+            "cash.period.close",
+            "cash.advance.self",
+            "cash.export"
+          ],
+          "limits": {
+            "outMinor": null,
+            "refundMinor": null,
+            "advanceMinor": null
+          },
+          "conflicts": [
+            "Вносит и согласует расходы: назначьте разных людей",
+            "Закрывает смену и принимает расхождение: назначьте разных людей"
+          ]
+        }
+      ]
+    },
+    "validation_failed": {
+      "type": "https://docs.ortus.example/errors/validation_failed",
+      "title": "Ошибки полей",
+      "status": 422,
+      "code": "validation_failed",
+      "detail": "Для терминала укажите кассу точки.",
+      "requestId": "01J9Z4QK8M6T2V5X7Y9A1B3C5D",
+      "violations": [
+        {
+          "field": "drawerAccountId",
+          "code": "required",
+          "message": "Для терминала укажите кассу точки."
+        }
+      ]
+    }
+  },
+  "findCashDuplicates": {
+    "ok": {
+      "items": [
+        {
+          "id": "@@t-alta|K-325@@",
+          "accountId": "@@t-alta|ca-spa@@",
+          "direction": "in",
+          "amount": {
+            "amountMinor": 300000,
+            "currency": "RUB"
+          },
+          "category": "service_payment",
+          "occurredAt": "2026-10-01T07:15:00Z",
+          "postedAt": "2026-10-01T07:15:00Z",
+          "createdByMemberId": "@@t-alta|m-morozova@@",
+          "type": "in",
+          "method": "cash",
+          "origin": "manual",
+          "categoryId": "revenue-subscriptions",
+          "basis": "Подарочный сертификат № 214",
+          "receipt": {
+            "fdNumber": "4520",
+            "kktShift": "118",
+            "receiptAt": "2026-10-01T07:16:00Z"
+          },
+          "shiftId": "@@t-alta|sh-118@@",
+          "groupId": null,
+          "transferId": null,
+          "approvedByMemberId": null,
+          "reconcileStatus": "unmatched",
+          "own": false,
+          "reversedByOperationId": null
+        }
+      ]
+    }
+  },
+  "listCashShifts": {
+    "ok": {
+      "items": [
+        {
+          "id": "@@t-alta|sh-118@@",
+          "accountId": "@@t-alta|ca-spa@@",
+          "number": 118,
+          "status": "open",
+          "openedAt": "2026-10-01T06:02:00Z",
+          "openedByMemberId": "@@t-alta|m-morozova@@",
+          "openingFloat": {
+            "amountMinor": 500000,
+            "currency": "RUB"
+          },
+          "openingDiff": null,
+          "closedAt": null,
+          "closedByMemberId": null,
+          "counted": null,
+          "counts": {},
+          "coins": null,
+          "z": null,
+          "terminal": null,
+          "expected": null,
+          "diff": null,
+          "decision": null,
+          "attempts": [],
+          "toSafeTransferId": null,
+          "revision": 1
+        },
+        {
+          "id": "@@t-alta|sh-117@@",
+          "accountId": "@@t-alta|ca-spa@@",
+          "number": 117,
+          "status": "closed",
+          "openedAt": "2026-09-30T06:00:00Z",
+          "openedByMemberId": "@@t-alta|m-morozova@@",
+          "openingFloat": {
+            "amountMinor": 500000,
+            "currency": "RUB"
+          },
+          "openingDiff": null,
+          "closedAt": "2026-09-30T18:04:00Z",
+          "closedByMemberId": "@@t-alta|m-morozova@@",
+          "counted": {
+            "amountMinor": 3184000,
+            "currency": "RUB"
+          },
+          "counts": {
+            "100": 2,
+            "200": 2,
+            "500": 3,
+            "1000": 6,
+            "2000": 4,
+            "5000": 3
+          },
+          "coins": {
+            "amountMinor": 24000,
+            "currency": "RUB"
+          },
+          "z": {
+            "number": "117",
+            "cash": {
+              "amountMinor": 2690000,
+              "currency": "RUB"
+            },
+            "card": {
+              "amountMinor": 960000,
+              "currency": "RUB"
+            }
+          },
+          "terminal": {
+            "card": {
+              "amountMinor": 960000,
+              "currency": "RUB"
+            },
+            "sbp": {
+              "amountMinor": 0,
+              "currency": "RUB"
+            }
+          },
+          "expected": {
+            "cash": {
+              "amountMinor": 3190000,
+              "currency": "RUB"
+            },
+            "revCash": {
+              "amountMinor": 2690000,
+              "currency": "RUB"
+            },
+            "revCard": {
+              "amountMinor": 960000,
+              "currency": "RUB"
+            },
+            "card": {
+              "amountMinor": 960000,
+              "currency": "RUB"
+            },
+            "sbp": {
+              "amountMinor": 0,
+              "currency": "RUB"
+            }
+          },
+          "diff": {
+            "cash": {
+              "amountMinor": -6000,
+              "currency": "RUB"
+            },
+            "kktCash": {
+              "amountMinor": 0,
+              "currency": "RUB"
+            },
+            "kktCard": {
+              "amountMinor": 0,
+              "currency": "RUB"
+            },
+            "term": {
+              "amountMinor": 0,
+              "currency": "RUB"
+            }
+          },
+          "decision": {
+            "kind": "auto",
+            "byMemberId": null,
+            "at": "2026-09-30T18:04:00Z",
+            "reason": "В пределах допуска 100 ₽",
+            "operationId": "@@t-alta|K-321@@"
+          },
+          "attempts": [
+            {
+              "closedAt": "2026-09-30T18:04:00Z",
+              "closedByMemberId": "@@t-alta|m-morozova@@",
+              "counted": {
+                "amountMinor": 3184000,
+                "currency": "RUB"
+              },
+              "counts": {
+                "100": 2,
+                "200": 2,
+                "500": 3,
+                "1000": 6,
+                "2000": 4,
+                "5000": 3
+              },
+              "z": {
+                "number": "117",
+                "cash": {
+                  "amountMinor": 2690000,
+                  "currency": "RUB"
+                },
+                "card": {
+                  "amountMinor": 960000,
+                  "currency": "RUB"
+                }
+              },
+              "terminal": {
+                "card": {
+                  "amountMinor": 960000,
+                  "currency": "RUB"
+                },
+                "sbp": {
+                  "amountMinor": 0,
+                  "currency": "RUB"
+                }
+              },
+              "diff": {
+                "cash": {
+                  "amountMinor": -6000,
+                  "currency": "RUB"
+                },
+                "kktCash": {
+                  "amountMinor": 0,
+                  "currency": "RUB"
+                },
+                "kktCard": {
+                  "amountMinor": 0,
+                  "currency": "RUB"
+                },
+                "term": {
+                  "amountMinor": 0,
+                  "currency": "RUB"
+                }
+              },
+              "recountReason": null
+            }
+          ],
+          "toSafeTransferId": "@@t-alta|tr-2@@",
+          "revision": 3
+        }
+      ],
+      "nextCursor": null
+    },
+    "forbidden_action": {
+      "type": "https://docs.ortus.example/errors/forbidden_action",
+      "title": "Нет действия ни в одной роли",
+      "status": 403,
+      "code": "forbidden_action",
+      "requestId": "01J9Z4QK8M6T2V5X7Y9A1B3C5D"
+    }
+  },
+  "reviewCashShift": {
+    "ok": {
+      "id": "@@t-alta|sh-118@@",
+      "accountId": "@@t-alta|ca-spa@@",
+      "number": 118,
+      "status": "closed",
+      "openedAt": "2026-10-01T06:02:00Z",
+      "openedByMemberId": "@@t-alta|m-morozova@@",
+      "openingFloat": {
+        "amountMinor": 500000,
+        "currency": "RUB"
+      },
+      "openingDiff": null,
+      "closedAt": "2026-10-01T07:30:00Z",
+      "closedByMemberId": "@@t-alta|m-morozova@@",
+      "counted": {
+        "amountMinor": 700000,
+        "currency": "RUB"
+      },
+      "counts": {
+        "1000": 2,
+        "5000": 1
+      },
+      "coins": null,
+      "z": {
+        "number": "118",
+        "cash": {
+          "amountMinor": 300000,
+          "currency": "RUB"
+        },
+        "card": {
+          "amountMinor": 1200000,
+          "currency": "RUB"
+        }
+      },
+      "terminal": {
+        "card": {
+          "amountMinor": 1200000,
+          "currency": "RUB"
+        },
+        "sbp": {
+          "amountMinor": 0,
+          "currency": "RUB"
+        }
+      },
+      "expected": {
+        "cash": {
+          "amountMinor": 735000,
+          "currency": "RUB"
+        },
+        "revCash": {
+          "amountMinor": 300000,
+          "currency": "RUB"
+        },
+        "revCard": {
+          "amountMinor": 1200000,
+          "currency": "RUB"
+        },
+        "card": {
+          "amountMinor": 1200000,
+          "currency": "RUB"
+        },
+        "sbp": {
+          "amountMinor": 0,
+          "currency": "RUB"
+        }
+      },
+      "diff": {
+        "cash": {
+          "amountMinor": -35000,
+          "currency": "RUB"
+        },
+        "kktCash": {
+          "amountMinor": 0,
+          "currency": "RUB"
+        },
+        "kktCard": {
+          "amountMinor": 0,
+          "currency": "RUB"
+        },
+        "term": {
+          "amountMinor": 0,
+          "currency": "RUB"
+        }
+      },
+      "decision": {
+        "kind": "accepted",
+        "byMemberId": "@@t-alta|m-owner@@",
+        "at": "2026-10-01T07:30:00Z",
+        "reason": "Сдача мелочью",
+        "operationId": "@@t-alta:new|3@@"
+      },
+      "attempts": [
+        {
+          "closedAt": "2026-10-01T07:30:00Z",
+          "closedByMemberId": "@@t-alta|m-morozova@@",
+          "counted": {
+            "amountMinor": 700000,
+            "currency": "RUB"
+          },
+          "counts": {
+            "1000": 2,
+            "5000": 1
+          },
+          "z": {
+            "number": "118",
+            "cash": {
+              "amountMinor": 300000,
+              "currency": "RUB"
+            },
+            "card": {
+              "amountMinor": 1200000,
+              "currency": "RUB"
+            }
+          },
+          "terminal": {
+            "card": {
+              "amountMinor": 1200000,
+              "currency": "RUB"
+            },
+            "sbp": {
+              "amountMinor": 0,
+              "currency": "RUB"
+            }
+          },
+          "diff": {
+            "cash": {
+              "amountMinor": -35000,
+              "currency": "RUB"
+            },
+            "kktCash": {
+              "amountMinor": 0,
+              "currency": "RUB"
+            },
+            "kktCard": {
+              "amountMinor": 0,
+              "currency": "RUB"
+            },
+            "term": {
+              "amountMinor": 0,
+              "currency": "RUB"
+            }
+          },
+          "recountReason": null
+        }
+      ],
+      "toSafeTransferId": null,
+      "revision": 3
+    },
+    "self_approval": {
+      "type": "https://docs.ortus.example/errors/self_approval",
+      "title": "Автор не принимает собственное решение",
+      "status": 403,
+      "code": "self_approval",
+      "detail": "Расхождение принимает не тот, кто закрывал смену.",
+      "requestId": "01J9Z4QK8M6T2V5X7Y9A1B3C5D"
+    }
+  },
+  "createCashAccount": {
+    "created": {
+      "id": "@@t-alta:new|1@@",
+      "orgUnitId": "@@t-alta|f-msk-sever@@",
+      "name": "Касса бара",
+      "currency": "RUB",
+      "kind": "cash_drawer",
+      "balance": {
+        "amountMinor": 0,
+        "currency": "RUB"
+      },
+      "revision": 1,
+      "shiftMode": "open",
+      "kktMode": "none",
+      "balanceLimit": null,
+      "floatAmount": null,
+      "tolerance": null,
+      "responsibleMemberId": null,
+      "holderMemberId": null,
+      "advanceLimit": null,
+      "drawerAccountId": null,
+      "settleDays": null,
+      "feeBasisPoints": null,
+      "categoryIds": [],
+      "openShiftId": null,
+      "my": {
+        "via": "owner",
+        "rights": [
+          "cash.read",
+          "cash.balance.read",
+          "cash.post",
+          "cash.proposals.post",
+          "cash.shift.operate",
+          "cash.refund",
+          "cash.transfer",
+          "cash.advance.issue",
+          "cash.approve",
+          "cash.reconcile",
+          "cash.reverse",
+          "cash.payroll.post",
+          "cash.reports.finance",
+          "cash.accounts.manage",
+          "cash.period.close",
+          "cash.advance.self",
+          "cash.export"
+        ],
+        "limits": {
+          "outMinor": null,
+          "refundMinor": null,
+          "advanceMinor": null
+        },
+        "isHolder": false
+      }
+    },
+    "validation_failed": {
+      "type": "https://docs.ortus.example/errors/validation_failed",
+      "title": "Ошибки полей",
+      "status": 422,
+      "code": "validation_failed",
+      "detail": "Касса с таким названием уже есть.",
+      "requestId": "01J9Z4QK8M6T2V5X7Y9A1B3C5D",
+      "violations": [
+        {
+          "field": "name",
+          "code": "taken",
+          "message": "Касса с таким названием уже есть."
+        }
+      ]
+    },
+    "forbidden_action": {
+      "type": "https://docs.ortus.example/errors/forbidden_action",
+      "title": "Нет действия ни в одной роли",
+      "status": 403,
+      "code": "forbidden_action",
+      "requestId": "01J9Z4QK8M6T2V5X7Y9A1B3C5D"
+    }
+  },
+  "listCashTransfers": {
+    "ok": {
+      "items": [
+        {
+          "id": "@@t-alta:new|1@@",
+          "fromAccountId": "@@t-alta|ca-sever@@",
+          "toAccountId": "@@t-alta|ca-safe@@",
+          "amount": {
+            "amountMinor": 2000000,
+            "currency": "RUB"
+          },
+          "note": "Сдача в сейф",
+          "purpose": "transfer",
+          "status": "transit",
+          "sentByMemberId": "@@t-alta|m-owner@@",
+          "sentAt": "2026-10-01T07:30:00Z",
+          "decidedByMemberId": null,
+          "decidedAt": null,
+          "reason": null,
+          "outOperationId": "@@t-alta:new|2@@",
+          "inOperationId": null,
+          "backOperationId": null,
+          "revision": 1
+        },
+        {
+          "id": "@@t-alta:new|3@@",
+          "fromAccountId": "@@t-alta|ca-sever@@",
+          "toAccountId": "@@t-alta|ca-adv-vas@@",
+          "amount": {
+            "amountMinor": 500000,
+            "currency": "RUB"
+          },
+          "note": "Выдача под отчёт · Илья Васильев",
+          "purpose": "advance_issue",
+          "status": "done",
+          "sentByMemberId": "@@t-alta|m-owner@@",
+          "sentAt": "2026-10-01T07:30:00Z",
+          "decidedByMemberId": "@@t-alta|m-owner@@",
+          "decidedAt": "2026-10-01T07:30:00Z",
+          "reason": null,
+          "outOperationId": "@@t-alta:new|4@@",
+          "inOperationId": "@@t-alta:new|5@@",
+          "backOperationId": null,
+          "revision": 2
+        },
+        {
+          "id": "@@t-alta|tr-2@@",
+          "fromAccountId": "@@t-alta|ca-spa@@",
+          "toAccountId": "@@t-alta|ca-safe@@",
+          "amount": {
+            "amountMinor": 2684000,
+            "currency": "RUB"
+          },
+          "note": "Выручка · смена 117",
+          "purpose": "shift_handover",
+          "status": "done",
+          "sentByMemberId": "@@t-alta|m-morozova@@",
+          "sentAt": "2026-09-30T18:06:00Z",
+          "decidedByMemberId": "@@t-alta|m-owner@@",
+          "decidedAt": "2026-09-30T18:30:00Z",
+          "reason": null,
+          "outOperationId": "@@t-alta|K-322@@",
+          "inOperationId": "@@t-alta|K-323@@",
+          "backOperationId": null,
+          "revision": 2
+        },
+        {
+          "id": "@@t-alta|tr-4@@",
+          "fromAccountId": "@@t-alta|ca-safe@@",
+          "toAccountId": "@@t-alta|ca-adv-sok@@",
+          "amount": {
+            "amountMinor": 3000000,
+            "currency": "RUB"
+          },
+          "note": "Выдача под отчёт · Алексей Соколов",
+          "purpose": "advance_issue",
+          "status": "done",
+          "sentByMemberId": "@@t-alta|m-owner@@",
+          "sentAt": "2026-09-30T06:30:00Z",
+          "decidedByMemberId": "@@t-alta|m-owner@@",
+          "decidedAt": "2026-09-30T06:30:00Z",
+          "reason": null,
+          "outOperationId": "@@t-alta|K-311@@",
+          "inOperationId": "@@t-alta|K-312@@",
+          "backOperationId": null,
+          "revision": 2
+        },
+        {
+          "id": "@@t-alta|tr-3@@",
+          "fromAccountId": "@@t-alta|ca-sever@@",
+          "toAccountId": "@@t-alta|ca-adv-akh@@",
+          "amount": {
+            "amountMinor": 800000,
+            "currency": "RUB"
+          },
+          "note": "Выдача под отчёт · Тимур Ахмедов",
+          "purpose": "advance_issue",
+          "status": "done",
+          "sentByMemberId": "@@t-alta|m-owner@@",
+          "sentAt": "2026-09-30T05:05:00Z",
+          "decidedByMemberId": "@@t-alta|m-owner@@",
+          "decidedAt": "2026-09-30T05:05:00Z",
+          "reason": null,
+          "outOperationId": "@@t-alta|K-307@@",
+          "inOperationId": "@@t-alta|K-308@@",
+          "backOperationId": null,
+          "revision": 2
+        },
+        {
+          "id": "@@t-alta|tr-1@@",
+          "fromAccountId": "@@t-alta|ca-sever@@",
+          "toAccountId": "@@t-alta|ca-adv-vas@@",
+          "amount": {
+            "amountMinor": 1000000,
+            "currency": "RUB"
+          },
+          "note": "Выдача под отчёт · Илья Васильев",
+          "purpose": "advance_issue",
+          "status": "done",
+          "sentByMemberId": "@@t-alta|m-owner@@",
+          "sentAt": "2026-09-28T05:10:00Z",
+          "decidedByMemberId": "@@t-alta|m-owner@@",
+          "decidedAt": "2026-09-28T05:10:00Z",
+          "reason": null,
+          "outOperationId": "@@t-alta|K-303@@",
+          "inOperationId": "@@t-alta|K-304@@",
+          "backOperationId": null,
+          "revision": 2
+        }
+      ],
+      "nextCursor": null
+    },
+    "forbidden_action": {
+      "type": "https://docs.ortus.example/errors/forbidden_action",
+      "title": "Нет действия ни в одной роли",
+      "status": 403,
+      "code": "forbidden_action",
+      "requestId": "01J9Z4QK8M6T2V5X7Y9A1B3C5D"
+    }
+  },
+  "listCashProposals": {
+    "ok": {
+      "items": [
+        {
+          "key": "visit:pr-1",
+          "kind": "visit",
+          "title": "Наталья С. · Массаж лица",
+          "amount": {
+            "amountMinor": 280000,
+            "currency": "RUB"
+          },
+          "direction": "in",
+          "defaultAccountId": "@@t-alta|ca-spa@@",
+          "categoryId": "revenue-spa",
+          "source": {
+            "key": "visit:pr-1",
+            "kind": "visit",
+            "id": "@@t-alta|visit-pr-1@@",
+            "label": "Визит 30.09 18:00"
+          },
+          "status": "open",
+          "parts": [
+            {
+              "label": "Наталья С. · Массаж лица",
+              "amount": {
+                "amountMinor": 280000,
+                "currency": "RUB"
+              }
+            }
+          ],
+          "createdAt": "2026-10-01T05:00:00Z",
+          "operationIds": [],
+          "dismissal": null
+        },
+        {
+          "key": "service_request:pr-2",
+          "kind": "refund",
+          "title": "Ирина П. · компенсация по жалобе",
+          "amount": {
+            "amountMinor": 160000,
+            "currency": "RUB"
+          },
+          "direction": "out",
+          "defaultAccountId": "@@t-alta|ca-spa@@",
+          "categoryId": "refund",
+          "source": {
+            "key": "service_request:pr-2",
+            "kind": "service_request",
+            "id": "@@t-alta|service_request-pr-2@@",
+            "label": "Обращение · жалоба на визит"
+          },
+          "status": "open",
+          "parts": [
+            {
+              "label": "Ирина П. · компенсация по жалобе",
+              "amount": {
+                "amountMinor": 160000,
+                "currency": "RUB"
+              }
+            }
+          ],
+          "createdAt": "2026-10-01T05:00:00Z",
+          "operationIds": [],
+          "dismissal": null
+        },
+        {
+          "key": "repair_act:pr-3",
+          "kind": "invoice",
+          "title": "Оплата заказчика · акт № 3",
+          "amount": {
+            "amountMinor": 46200000,
+            "currency": "RUB"
+          },
+          "direction": "in",
+          "defaultAccountId": "@@t-alta|ca-bank@@",
+          "categoryId": "customer-payment",
+          "source": {
+            "key": "repair_act:pr-3",
+            "kind": "repair_act",
+            "id": "@@t-alta|repair_act-pr-3@@",
+            "label": "Акт № 3"
+          },
+          "status": "open",
+          "parts": [
+            {
+              "label": "Оплата заказчика · акт № 3",
+              "amount": {
+                "amountMinor": 46200000,
+                "currency": "RUB"
+              }
+            }
+          ],
+          "createdAt": "2026-10-01T05:00:00Z",
+          "operationIds": [],
+          "dismissal": null
+        },
+        {
+          "key": "repair_act:pr-4",
+          "kind": "payroll",
+          "title": "Бригада · сентябрь",
+          "amount": {
+            "amountMinor": 18600000,
+            "currency": "RUB"
+          },
+          "direction": "out",
+          "defaultAccountId": "@@t-alta|ca-bank@@",
+          "categoryId": "payroll-crew",
+          "source": {
+            "key": "repair_act:pr-4",
+            "kind": "repair_act",
+            "id": "@@t-alta|repair_act-pr-4@@",
+            "label": "Начисления бригаде"
+          },
+          "status": "open",
+          "parts": [
+            {
+              "label": "Бригада · сентябрь",
+              "amount": {
+                "amountMinor": 18600000,
+                "currency": "RUB"
+              }
+            }
+          ],
+          "createdAt": "2026-10-01T05:00:00Z",
+          "operationIds": [],
+          "dismissal": null
+        }
+      ],
+      "nextCursor": null
+    },
+    "forbidden_action": {
+      "type": "https://docs.ortus.example/errors/forbidden_action",
+      "title": "Нет действия ни в одной роли",
+      "status": 403,
+      "code": "forbidden_action",
+      "requestId": "01J9Z4QK8M6T2V5X7Y9A1B3C5D"
+    }
+  },
+  "decideCashTransfer": {
+    "ok": {
+      "id": "@@t-alta:new|1@@",
+      "fromAccountId": "@@t-alta|ca-sever@@",
+      "toAccountId": "@@t-alta|ca-safe@@",
+      "amount": {
+        "amountMinor": 2000000,
+        "currency": "RUB"
+      },
+      "note": "Сдача в сейф",
+      "purpose": "transfer",
+      "status": "done",
+      "sentByMemberId": "@@t-alta|m-owner@@",
+      "sentAt": "2026-10-01T07:30:00Z",
+      "decidedByMemberId": "@@t-alta|m-owner@@",
+      "decidedAt": "2026-10-01T07:30:00Z",
+      "reason": null,
+      "outOperationId": "@@t-alta:new|2@@",
+      "inOperationId": "@@t-alta:new|3@@",
+      "backOperationId": null,
+      "revision": 2
+    },
+    "invalid_transition": {
+      "type": "https://docs.ortus.example/errors/invalid_transition",
+      "title": "Переход статуса не разрешён",
+      "status": 409,
+      "code": "invalid_transition",
+      "detail": "Перемещение уже принято или отклонено.",
+      "requestId": "01J9Z4QK8M6T2V5X7Y9A1B3C5D",
+      "reason": "transfer_decided"
+    }
+  },
+  "listCashCategories": {
+    "ok": {
+      "items": [
+        {
+          "id": "revenue-spa",
+          "title": "Выручка · услуги SPA",
+          "group": "income",
+          "direction": "in",
+          "moduleKey": "spa",
+          "expenseCategoryCode": null
+        },
+        {
+          "id": "revenue-subscriptions",
+          "title": "Выручка · абонементы и сертификаты",
+          "group": "income",
+          "direction": "in",
+          "moduleKey": "spa",
+          "expenseCategoryCode": null
+        },
+        {
+          "id": "customer-payment",
+          "title": "Оплата заказчика",
+          "group": "income",
+          "direction": "in",
+          "moduleKey": "repairs",
+          "expenseCategoryCode": null
+        },
+        {
+          "id": "refund",
+          "title": "Возврат клиенту",
+          "group": "expense",
+          "direction": "out",
+          "moduleKey": null,
+          "expenseCategoryCode": null
+        },
+        {
+          "id": "household",
+          "title": "Хозяйственные расходы",
+          "group": "expense",
+          "direction": "out",
+          "moduleKey": null,
+          "expenseCategoryCode": null
+        },
+        {
+          "id": "fuel",
+          "title": "Топливо",
+          "group": "expense",
+          "direction": "out",
+          "moduleKey": "logistics",
+          "expenseCategoryCode": "fuel"
+        },
+        {
+          "id": "wash",
+          "title": "Мойка",
+          "group": "expense",
+          "direction": "out",
+          "moduleKey": "logistics",
+          "expenseCategoryCode": null
+        },
+        {
+          "id": "parking",
+          "title": "Парковка",
+          "group": "expense",
+          "direction": "out",
+          "moduleKey": "logistics",
+          "expenseCategoryCode": null
+        },
+        {
+          "id": "repair-small",
+          "title": "Мелкий ремонт",
+          "group": "expense",
+          "direction": "out",
+          "moduleKey": null,
+          "expenseCategoryCode": null
+        },
+        {
+          "id": "materials",
+          "title": "Материалы",
+          "group": "expense",
+          "direction": "out",
+          "moduleKey": "repairs",
+          "expenseCategoryCode": null
+        },
+        {
+          "id": "payroll-crew",
+          "title": "Выплаты бригаде",
+          "group": "expense",
+          "direction": "out",
+          "moduleKey": "repairs",
+          "expenseCategoryCode": null
+        },
+        {
+          "id": "transfer",
+          "title": "Перемещение",
+          "group": "transfer",
+          "direction": null,
+          "moduleKey": null,
+          "expenseCategoryCode": null
+        },
+        {
+          "id": "opening",
+          "title": "Ввод остатка",
+          "group": "adjustment",
+          "direction": null,
+          "moduleKey": null,
+          "expenseCategoryCode": null
+        },
+        {
+          "id": "adjustment",
+          "title": "Корректировка",
+          "group": "adjustment",
+          "direction": null,
+          "moduleKey": null,
+          "expenseCategoryCode": null
+        }
+      ]
+    },
+    "forbidden_action": {
+      "type": "https://docs.ortus.example/errors/forbidden_action",
+      "title": "Нет действия ни в одной роли",
+      "status": 403,
+      "code": "forbidden_action",
+      "requestId": "01J9Z4QK8M6T2V5X7Y9A1B3C5D"
+    }
+  },
+  "createCashTransfer": {
+    "created": {
+      "id": "@@t-alta:new|1@@",
+      "fromAccountId": "@@t-alta|ca-sever@@",
+      "toAccountId": "@@t-alta|ca-safe@@",
+      "amount": {
+        "amountMinor": 2000000,
+        "currency": "RUB"
+      },
+      "note": "Сдача в сейф",
+      "purpose": "transfer",
+      "status": "transit",
+      "sentByMemberId": "@@t-alta|m-owner@@",
+      "sentAt": "2026-10-01T07:30:00Z",
+      "decidedByMemberId": null,
+      "decidedAt": null,
+      "reason": null,
+      "outOperationId": "@@t-alta:new|2@@",
+      "inOperationId": null,
+      "backOperationId": null,
+      "revision": 1
+    },
+    "insufficient_funds": {
+      "type": "https://docs.ortus.example/errors/insufficient_funds",
+      "title": "В кассе недостаточно средств",
+      "status": 409,
+      "code": "insufficient_funds",
+      "detail": "В кассе нет столько наличных.",
+      "requestId": "01J9Z4QK8M6T2V5X7Y9A1B3C5D"
+    }
+  },
+  "submitAdvanceReceipt": {
+    "created": {
+      "id": "@@t-alta:new|1@@",
+      "accountId": "@@t-alta|ca-adv-vas@@",
+      "amount": {
+        "amountMinor": 50000,
+        "currency": "RUB"
+      },
+      "categoryId": "wash",
+      "link": {
+        "key": "trip:r203",
+        "kind": "trip",
+        "id": "@@t-alta|trip-r203@@",
+        "label": "Рейс Р-203"
+      },
+      "note": null,
+      "fileId": "@@t-alta|file-w500@@",
+      "qr": null,
+      "status": "review",
+      "reason": null,
+      "operationId": null,
+      "submittedByMemberId": "@@t-alta|m-owner@@",
+      "submittedAt": "2026-10-01T07:30:00Z",
+      "decidedByMemberId": null,
+      "decidedAt": null,
+      "redoOfReceiptId": "@@t-alta|rc-4@@",
+      "revision": 1
+    },
+    "insufficient_funds": {
+      "type": "https://docs.ortus.example/errors/insufficient_funds",
+      "title": "В кассе недостаточно средств",
+      "status": 409,
+      "code": "insufficient_funds",
+      "detail": "Сумма чека больше остатка подотчёта.",
+      "requestId": "01J9Z4QK8M6T2V5X7Y9A1B3C5D"
+    }
+  },
+  "listCashAccounts": {
+    "ok": {
+      "items": [
+        {
+          "id": "@@t-alta|ca-spa@@",
+          "orgUnitId": "@@t-alta|f-msk-sever@@",
+          "name": "Касса салона · ресепшен",
+          "currency": "RUB",
+          "kind": "cash_drawer",
+          "balance": {
+            "amountMinor": 735000,
+            "currency": "RUB"
+          },
+          "revision": 4,
+          "shiftMode": "blind",
+          "kktMode": "manual",
+          "balanceLimit": {
+            "amountMinor": 3000000,
+            "currency": "RUB"
+          },
+          "floatAmount": {
+            "amountMinor": 500000,
+            "currency": "RUB"
+          },
+          "tolerance": {
+            "amountMinor": 10000,
+            "currency": "RUB"
+          },
+          "responsibleMemberId": "@@t-alta|m-morozova@@",
+          "holderMemberId": null,
+          "advanceLimit": null,
+          "drawerAccountId": null,
+          "settleDays": null,
+          "feeBasisPoints": null,
+          "categoryIds": [],
+          "openShiftId": "@@t-alta|sh-118@@",
+          "my": {
+            "via": "owner",
+            "rights": [
+              "cash.read",
+              "cash.balance.read",
+              "cash.post",
+              "cash.proposals.post",
+              "cash.shift.operate",
+              "cash.refund",
+              "cash.transfer",
+              "cash.advance.issue",
+              "cash.approve",
+              "cash.reconcile",
+              "cash.reverse",
+              "cash.payroll.post",
+              "cash.reports.finance",
+              "cash.accounts.manage",
+              "cash.period.close",
+              "cash.advance.self",
+              "cash.export"
+            ],
+            "limits": {
+              "outMinor": null,
+              "refundMinor": null,
+              "advanceMinor": null
+            },
+            "isHolder": false
+          }
+        },
+        {
+          "id": "@@t-alta|ca-term@@",
+          "orgUnitId": "@@t-alta|f-msk-sever@@",
+          "name": "Терминал и СБП · салон",
+          "currency": "RUB",
+          "kind": "acquiring",
+          "balance": {
+            "amountMinor": 2160000,
+            "currency": "RUB"
+          },
+          "revision": 2,
+          "shiftMode": "none",
+          "kktMode": "none",
+          "balanceLimit": null,
+          "floatAmount": null,
+          "tolerance": null,
+          "responsibleMemberId": null,
+          "holderMemberId": null,
+          "advanceLimit": null,
+          "drawerAccountId": "@@t-alta|ca-spa@@",
+          "settleDays": 1,
+          "feeBasisPoints": 180,
+          "categoryIds": [],
+          "openShiftId": null,
+          "my": {
+            "via": "owner",
+            "rights": [
+              "cash.read",
+              "cash.balance.read",
+              "cash.post",
+              "cash.proposals.post",
+              "cash.shift.operate",
+              "cash.refund",
+              "cash.transfer",
+              "cash.advance.issue",
+              "cash.approve",
+              "cash.reconcile",
+              "cash.reverse",
+              "cash.payroll.post",
+              "cash.reports.finance",
+              "cash.accounts.manage",
+              "cash.period.close",
+              "cash.advance.self",
+              "cash.export"
+            ],
+            "limits": {
+              "outMinor": null,
+              "refundMinor": null,
+              "advanceMinor": null
+            },
+            "isHolder": false
+          }
+        },
+        {
+          "id": "@@t-alta|ca-sever@@",
+          "orgUnitId": "@@t-alta|f-msk-sever@@",
+          "name": "Касса офиса",
+          "currency": "RUB",
+          "kind": "cash_drawer",
+          "balance": {
+            "amountMinor": 3076000,
+            "currency": "RUB"
+          },
+          "revision": 9,
+          "shiftMode": "none",
+          "kktMode": "none",
+          "balanceLimit": {
+            "amountMinor": 6000000,
+            "currency": "RUB"
+          },
+          "floatAmount": null,
+          "tolerance": null,
+          "responsibleMemberId": "@@t-alta|m-kotova@@",
+          "holderMemberId": null,
+          "advanceLimit": null,
+          "drawerAccountId": null,
+          "settleDays": null,
+          "feeBasisPoints": null,
+          "categoryIds": [],
+          "openShiftId": null,
+          "my": {
+            "via": "owner",
+            "rights": [
+              "cash.read",
+              "cash.balance.read",
+              "cash.post",
+              "cash.proposals.post",
+              "cash.shift.operate",
+              "cash.refund",
+              "cash.transfer",
+              "cash.advance.issue",
+              "cash.approve",
+              "cash.reconcile",
+              "cash.reverse",
+              "cash.payroll.post",
+              "cash.reports.finance",
+              "cash.accounts.manage",
+              "cash.period.close",
+              "cash.advance.self",
+              "cash.export"
+            ],
+            "limits": {
+              "outMinor": null,
+              "refundMinor": null,
+              "advanceMinor": null
+            },
+            "isHolder": false
+          }
+        },
+        {
+          "id": "@@t-alta|ca-adv-vas@@",
+          "orgUnitId": "@@t-alta|f-msk-sever@@",
+          "name": "Подотчёт · Илья Васильев",
+          "currency": "RUB",
+          "kind": "advance",
+          "balance": {
+            "amountMinor": 445000,
+            "currency": "RUB"
+          },
+          "revision": 6,
+          "shiftMode": "none",
+          "kktMode": "none",
+          "balanceLimit": null,
+          "floatAmount": null,
+          "tolerance": null,
+          "responsibleMemberId": null,
+          "holderMemberId": "@@t-alta|m-vasiliev@@",
+          "advanceLimit": {
+            "amountMinor": 1500000,
+            "currency": "RUB"
+          },
+          "drawerAccountId": null,
+          "settleDays": null,
+          "feeBasisPoints": null,
+          "categoryIds": ["fuel", "wash", "parking", "repair-small"],
+          "openShiftId": null,
+          "my": {
+            "via": "owner",
+            "rights": [
+              "cash.read",
+              "cash.balance.read",
+              "cash.post",
+              "cash.proposals.post",
+              "cash.shift.operate",
+              "cash.refund",
+              "cash.transfer",
+              "cash.advance.issue",
+              "cash.approve",
+              "cash.reconcile",
+              "cash.reverse",
+              "cash.payroll.post",
+              "cash.reports.finance",
+              "cash.accounts.manage",
+              "cash.period.close",
+              "cash.advance.self",
+              "cash.export"
+            ],
+            "limits": {
+              "outMinor": null,
+              "refundMinor": null,
+              "advanceMinor": null
+            },
+            "isHolder": false
+          }
+        },
+        {
+          "id": "@@t-alta|ca-adv-akh@@",
+          "orgUnitId": "@@t-alta|f-msk-sever@@",
+          "name": "Подотчёт · Тимур Ахмедов",
+          "currency": "RUB",
+          "kind": "advance",
+          "balance": {
+            "amountMinor": 500000,
+            "currency": "RUB"
+          },
+          "revision": 3,
+          "shiftMode": "none",
+          "kktMode": "none",
+          "balanceLimit": null,
+          "floatAmount": null,
+          "tolerance": null,
+          "responsibleMemberId": null,
+          "holderMemberId": "@@t-alta|m-akhmedov@@",
+          "advanceLimit": {
+            "amountMinor": 1500000,
+            "currency": "RUB"
+          },
+          "drawerAccountId": null,
+          "settleDays": null,
+          "feeBasisPoints": null,
+          "categoryIds": ["fuel", "wash", "parking", "repair-small"],
+          "openShiftId": null,
+          "my": {
+            "via": "owner",
+            "rights": [
+              "cash.read",
+              "cash.balance.read",
+              "cash.post",
+              "cash.proposals.post",
+              "cash.shift.operate",
+              "cash.refund",
+              "cash.transfer",
+              "cash.advance.issue",
+              "cash.approve",
+              "cash.reconcile",
+              "cash.reverse",
+              "cash.payroll.post",
+              "cash.reports.finance",
+              "cash.accounts.manage",
+              "cash.period.close",
+              "cash.advance.self",
+              "cash.export"
+            ],
+            "limits": {
+              "outMinor": null,
+              "refundMinor": null,
+              "advanceMinor": null
+            },
+            "isHolder": false
+          }
+        },
+        {
+          "id": "@@t-alta|ca-adv-sok@@",
+          "orgUnitId": null,
+          "name": "Подотчёт · Алексей Соколов",
+          "currency": "RUB",
+          "kind": "advance",
+          "balance": {
+            "amountMinor": 1127000,
+            "currency": "RUB"
+          },
+          "revision": 3,
+          "shiftMode": "none",
+          "kktMode": "none",
+          "balanceLimit": null,
+          "floatAmount": null,
+          "tolerance": null,
+          "responsibleMemberId": null,
+          "holderMemberId": "@@t-alta|m-sokolov@@",
+          "advanceLimit": {
+            "amountMinor": 3000000,
+            "currency": "RUB"
+          },
+          "drawerAccountId": null,
+          "settleDays": null,
+          "feeBasisPoints": null,
+          "categoryIds": ["materials", "household"],
+          "openShiftId": null,
+          "my": {
+            "via": "owner",
+            "rights": [
+              "cash.read",
+              "cash.balance.read",
+              "cash.post",
+              "cash.proposals.post",
+              "cash.shift.operate",
+              "cash.refund",
+              "cash.transfer",
+              "cash.advance.issue",
+              "cash.approve",
+              "cash.reconcile",
+              "cash.reverse",
+              "cash.payroll.post",
+              "cash.reports.finance",
+              "cash.accounts.manage",
+              "cash.period.close",
+              "cash.advance.self",
+              "cash.export"
+            ],
+            "limits": {
+              "outMinor": null,
+              "refundMinor": null,
+              "advanceMinor": null
+            },
+            "isHolder": false
+          }
+        },
+        {
+          "id": "@@t-alta|ca-safe@@",
+          "orgUnitId": null,
+          "name": "Сейф офиса",
+          "currency": "RUB",
+          "kind": "safe",
+          "balance": {
+            "amountMinor": 11684000,
+            "currency": "RUB"
+          },
+          "revision": 5,
+          "shiftMode": "none",
+          "kktMode": "none",
+          "balanceLimit": null,
+          "floatAmount": null,
+          "tolerance": null,
+          "responsibleMemberId": "@@t-alta|m-owner@@",
+          "holderMemberId": null,
+          "advanceLimit": null,
+          "drawerAccountId": null,
+          "settleDays": null,
+          "feeBasisPoints": null,
+          "categoryIds": [],
+          "openShiftId": null,
+          "my": {
+            "via": "owner",
+            "rights": [
+              "cash.read",
+              "cash.balance.read",
+              "cash.post",
+              "cash.proposals.post",
+              "cash.shift.operate",
+              "cash.refund",
+              "cash.transfer",
+              "cash.advance.issue",
+              "cash.approve",
+              "cash.reconcile",
+              "cash.reverse",
+              "cash.payroll.post",
+              "cash.reports.finance",
+              "cash.accounts.manage",
+              "cash.period.close",
+              "cash.advance.self",
+              "cash.export"
+            ],
+            "limits": {
+              "outMinor": null,
+              "refundMinor": null,
+              "advanceMinor": null
+            },
+            "isHolder": false
+          }
+        },
+        {
+          "id": "@@t-alta|ca-bank@@",
+          "orgUnitId": null,
+          "name": "Расчётный счёт ··4417",
+          "currency": "RUB",
+          "kind": "bank",
+          "balance": {
+            "amountMinor": 128400000,
+            "currency": "RUB"
+          },
+          "revision": 2,
+          "shiftMode": "none",
+          "kktMode": "none",
+          "balanceLimit": null,
+          "floatAmount": null,
+          "tolerance": null,
+          "responsibleMemberId": "@@t-alta|m-owner@@",
+          "holderMemberId": null,
+          "advanceLimit": null,
+          "drawerAccountId": null,
+          "settleDays": null,
+          "feeBasisPoints": null,
+          "categoryIds": [],
+          "openShiftId": null,
+          "my": {
+            "via": "owner",
+            "rights": [
+              "cash.read",
+              "cash.balance.read",
+              "cash.post",
+              "cash.proposals.post",
+              "cash.shift.operate",
+              "cash.refund",
+              "cash.transfer",
+              "cash.advance.issue",
+              "cash.approve",
+              "cash.reconcile",
+              "cash.reverse",
+              "cash.payroll.post",
+              "cash.reports.finance",
+              "cash.accounts.manage",
+              "cash.period.close",
+              "cash.advance.self",
+              "cash.export"
+            ],
+            "limits": {
+              "outMinor": null,
+              "refundMinor": null,
+              "advanceMinor": null
+            },
+            "isHolder": false
+          }
+        }
+      ],
+      "nextCursor": null
+    },
+    "forbidden_action": {
+      "type": "https://docs.ortus.example/errors/forbidden_action",
+      "title": "Нет действия ни в одной роли",
+      "status": 403,
+      "code": "forbidden_action",
+      "requestId": "01J9Z4QK8M6T2V5X7Y9A1B3C5D"
+    }
+  },
+  "dismissCashProposal": {
+    "ok": {
+      "key": "service_request:pr-2",
+      "kind": "refund",
+      "title": "Ирина П. · компенсация по жалобе",
+      "amount": {
+        "amountMinor": 160000,
+        "currency": "RUB"
+      },
+      "direction": "out",
+      "defaultAccountId": "@@t-alta|ca-spa@@",
+      "categoryId": "refund",
+      "source": {
+        "key": "service_request:pr-2",
+        "kind": "service_request",
+        "id": "@@t-alta|service_request-pr-2@@",
+        "label": "Обращение · жалоба на визит"
+      },
+      "status": "dismissed",
+      "parts": [
+        {
+          "label": "Ирина П. · компенсация по жалобе",
+          "amount": {
+            "amountMinor": 160000,
+            "currency": "RUB"
+          }
+        }
+      ],
+      "createdAt": "2026-10-01T05:00:00Z",
+      "operationIds": [],
+      "dismissal": {
+        "reason": "Клиент отказался от компенсации",
+        "byMemberId": "@@t-alta|m-owner@@",
+        "at": "2026-10-01T07:30:00Z"
+      }
+    },
+    "invalid_transition": {
+      "type": "https://docs.ortus.example/errors/invalid_transition",
+      "title": "Переход статуса не разрешён",
+      "status": 409,
+      "code": "invalid_transition",
+      "detail": "Предложение уже проведено или отклонено.",
+      "requestId": "01J9Z4QK8M6T2V5X7Y9A1B3C5D"
+    }
+  },
+  "reverseCashOperation": {
+    "created": {
+      "id": "@@t-alta:new|1@@",
+      "accountId": "@@t-alta|ca-spa@@",
+      "direction": "out",
+      "amount": {
+        "amountMinor": 300000,
+        "currency": "RUB"
+      },
+      "category": "adjustment",
+      "occurredAt": "2026-10-01T07:30:00Z",
+      "postedAt": "2026-10-01T07:30:00Z",
+      "createdByMemberId": "@@t-alta|m-owner@@",
+      "type": "storno",
+      "method": "cash",
+      "origin": "manual",
+      "categoryId": "revenue-subscriptions",
+      "basis": "Сторно K-325: Ошибочная оплата",
+      "shiftId": "@@t-alta|sh-118@@",
+      "groupId": null,
+      "transferId": null,
+      "approvedByMemberId": null,
+      "reconcileStatus": "unmatched",
+      "own": false,
+      "reversesOperationId": "@@t-alta|K-325@@",
+      "reversedByOperationId": null
+    },
+    "self_approval": {
+      "type": "https://docs.ortus.example/errors/self_approval",
+      "title": "Автор не принимает собственное решение",
+      "status": 403,
+      "code": "self_approval",
+      "detail": "Свою операцию сторнирует другой сотрудник.",
+      "requestId": "01J9Z4QK8M6T2V5X7Y9A1B3C5D"
+    },
+    "invalid_transition": {
+      "type": "https://docs.ortus.example/errors/invalid_transition",
+      "title": "Переход статуса не разрешён",
+      "status": 409,
+      "code": "invalid_transition",
+      "detail": "Операция уже сторнирована.",
+      "requestId": "01J9Z4QK8M6T2V5X7Y9A1B3C5D"
+    }
+  },
+  "closeCashShift": {
+    "ok": {
+      "id": "@@t-alta|sh-118@@",
+      "accountId": "@@t-alta|ca-spa@@",
+      "number": 118,
+      "status": "review",
+      "openedAt": "2026-10-01T06:02:00Z",
+      "openedByMemberId": "@@t-alta|m-morozova@@",
+      "openingFloat": {
+        "amountMinor": 500000,
+        "currency": "RUB"
+      },
+      "openingDiff": null,
+      "closedAt": "2026-10-01T07:30:00Z",
+      "closedByMemberId": "@@t-alta|m-owner@@",
+      "counted": {
+        "amountMinor": 700000,
+        "currency": "RUB"
+      },
+      "counts": {
+        "1000": 2,
+        "5000": 1
+      },
+      "coins": null,
+      "z": {
+        "number": "118",
+        "cash": {
+          "amountMinor": 300000,
+          "currency": "RUB"
+        },
+        "card": {
+          "amountMinor": 1200000,
+          "currency": "RUB"
+        }
+      },
+      "terminal": {
+        "card": {
+          "amountMinor": 1200000,
+          "currency": "RUB"
+        },
+        "sbp": {
+          "amountMinor": 0,
+          "currency": "RUB"
+        }
+      },
+      "expected": {
+        "cash": {
+          "amountMinor": 735000,
+          "currency": "RUB"
+        },
+        "revCash": {
+          "amountMinor": 300000,
+          "currency": "RUB"
+        },
+        "revCard": {
+          "amountMinor": 1200000,
+          "currency": "RUB"
+        },
+        "card": {
+          "amountMinor": 1200000,
+          "currency": "RUB"
+        },
+        "sbp": {
+          "amountMinor": 0,
+          "currency": "RUB"
+        }
+      },
+      "diff": {
+        "cash": {
+          "amountMinor": -35000,
+          "currency": "RUB"
+        },
+        "kktCash": {
+          "amountMinor": 0,
+          "currency": "RUB"
+        },
+        "kktCard": {
+          "amountMinor": 0,
+          "currency": "RUB"
+        },
+        "term": {
+          "amountMinor": 0,
+          "currency": "RUB"
+        }
+      },
+      "decision": null,
+      "attempts": [
+        {
+          "closedAt": "2026-10-01T07:30:00Z",
+          "closedByMemberId": "@@t-alta|m-owner@@",
+          "counted": {
+            "amountMinor": 700000,
+            "currency": "RUB"
+          },
+          "counts": {
+            "1000": 2,
+            "5000": 1
+          },
+          "z": {
+            "number": "118",
+            "cash": {
+              "amountMinor": 300000,
+              "currency": "RUB"
+            },
+            "card": {
+              "amountMinor": 1200000,
+              "currency": "RUB"
+            }
+          },
+          "terminal": {
+            "card": {
+              "amountMinor": 1200000,
+              "currency": "RUB"
+            },
+            "sbp": {
+              "amountMinor": 0,
+              "currency": "RUB"
+            }
+          },
+          "diff": {
+            "cash": {
+              "amountMinor": -35000,
+              "currency": "RUB"
+            },
+            "kktCash": {
+              "amountMinor": 0,
+              "currency": "RUB"
+            },
+            "kktCard": {
+              "amountMinor": 0,
+              "currency": "RUB"
+            },
+            "term": {
+              "amountMinor": 0,
+              "currency": "RUB"
+            }
+          },
+          "recountReason": null
+        }
+      ],
+      "toSafeTransferId": null,
+      "revision": 2
+    },
+    "shift_closed": {
+      "type": "https://docs.ortus.example/errors/shift_closed",
+      "title": "Смена кассы закрыта",
+      "status": 409,
+      "code": "shift_closed",
+      "detail": "Смена уже закрыта.",
+      "requestId": "01J9Z4QK8M6T2V5X7Y9A1B3C5D"
+    },
+    "revision_mismatch": {
+      "type": "https://docs.ortus.example/errors/revision_mismatch",
+      "title": "Устаревший If-Match",
+      "status": 412,
+      "code": "revision_mismatch",
+      "requestId": "01J9Z4QK8M6T2V5X7Y9A1B3C5D"
+    }
+  },
+  "openCashShift": {
+    "created": {
+      "id": "@@t-alta:new|3@@",
+      "accountId": "@@t-alta|ca-spa@@",
+      "number": 119,
+      "status": "open",
+      "openedAt": "2026-10-01T07:30:00Z",
+      "openedByMemberId": "@@t-alta|m-owner@@",
+      "openingFloat": {
+        "amountMinor": 500000,
+        "currency": "RUB"
+      },
+      "openingDiff": null,
+      "closedAt": null,
+      "closedByMemberId": null,
+      "counted": null,
+      "counts": {},
+      "coins": null,
+      "z": null,
+      "terminal": null,
+      "expected": null,
+      "diff": null,
+      "decision": null,
+      "attempts": [],
+      "toSafeTransferId": null,
+      "revision": 1
+    },
+    "invalid_transition": {
+      "type": "https://docs.ortus.example/errors/invalid_transition",
+      "title": "Переход статуса не разрешён",
+      "status": 409,
+      "code": "invalid_transition",
+      "detail": "Смена уже открыта.",
+      "requestId": "01J9Z4QK8M6T2V5X7Y9A1B3C5D"
+    }
+  },
+  "issueCashAdvance": {
+    "created": {
+      "id": "@@t-alta:new|1@@",
+      "fromAccountId": "@@t-alta|ca-sever@@",
+      "toAccountId": "@@t-alta|ca-adv-vas@@",
+      "amount": {
+        "amountMinor": 500000,
+        "currency": "RUB"
+      },
+      "note": "Выдача под отчёт · Илья Васильев",
+      "purpose": "advance_issue",
+      "status": "done",
+      "sentByMemberId": "@@t-alta|m-owner@@",
+      "sentAt": "2026-10-01T07:30:00Z",
+      "decidedByMemberId": "@@t-alta|m-owner@@",
+      "decidedAt": "2026-10-01T07:30:00Z",
+      "reason": null,
+      "outOperationId": "@@t-alta:new|2@@",
+      "inOperationId": "@@t-alta:new|3@@",
+      "backOperationId": null,
+      "revision": 2
+    },
+    "self_approval": {
+      "type": "https://docs.ortus.example/errors/self_approval",
+      "title": "Автор не принимает собственное решение",
+      "status": 403,
+      "code": "self_approval",
+      "detail": "Под отчёт себе выдаёт другой сотрудник.",
+      "requestId": "01J9Z4QK8M6T2V5X7Y9A1B3C5D"
+    }
+  },
+  "linkCashOperationSource": {
+    "created": {
+      "operationId": "@@t-alta|K-326@@",
+      "source": {
+        "key": "visit:ap-pr1",
+        "kind": "visit",
+        "id": "@@t-alta|ap-pr1@@",
+        "label": "Визит 30.09 18:00"
+      },
+      "linkedAt": "2026-10-01T07:30:00Z",
+      "linkedByMemberId": "@@t-alta|m-owner@@"
+    },
+    "duplicate_source": {
+      "type": "https://docs.ortus.example/errors/duplicate_source",
+      "title": "Источник уже проведён в кассе",
+      "status": 409,
+      "code": "duplicate_source",
+      "detail": "Этот источник уже проведён в кассе.",
+      "requestId": "01J9Z4QK8M6T2V5X7Y9A1B3C5D"
+    }
+  }
+}

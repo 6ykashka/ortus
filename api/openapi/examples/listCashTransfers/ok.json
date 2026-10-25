@@ -1,0 +1,131 @@
+{
+  "items": [
+    {
+      "id": "da14d1a0-5094-5b16-a839-7ad4d0860694",
+      "fromAccountId": "27e3a4c8-20ac-5663-9eb3-6ea3c9f708b9",
+      "toAccountId": "7dfc0a25-f62d-5637-892b-e28d94e99832",
+      "amount": {
+        "amountMinor": 2000000,
+        "currency": "RUB"
+      },
+      "note": "Сдача в сейф",
+      "purpose": "transfer",
+      "status": "transit",
+      "sentByMemberId": "b8df06ec-317e-5f46-b54c-e76603e41b5b",
+      "sentAt": "2026-10-01T07:30:00Z",
+      "decidedByMemberId": null,
+      "decidedAt": null,
+      "reason": null,
+      "outOperationId": "39354720-c647-533e-9435-f1308bd05aef",
+      "inOperationId": null,
+      "backOperationId": null,
+      "revision": 1
+    },
+    {
+      "id": "833a70be-c24c-5c8c-af98-c66b3b300946",
+      "fromAccountId": "27e3a4c8-20ac-5663-9eb3-6ea3c9f708b9",
+      "toAccountId": "0eab4a4f-fb0c-53f2-b423-4c82fe4f760e",
+      "amount": {
+        "amountMinor": 500000,
+        "currency": "RUB"
+      },
+      "note": "Выдача под отчёт · Илья Васильев",
+      "purpose": "advance_issue",
+      "status": "done",
+      "sentByMemberId": "b8df06ec-317e-5f46-b54c-e76603e41b5b",
+      "sentAt": "2026-10-01T07:30:00Z",
+      "decidedByMemberId": "b8df06ec-317e-5f46-b54c-e76603e41b5b",
+      "decidedAt": "2026-10-01T07:30:00Z",
+      "reason": null,
+      "outOperationId": "2be06bc1-29a6-59ee-ab14-9955e0435b46",
+      "inOperationId": "d5412224-9efc-5737-b835-34632f40422e",
+      "backOperationId": null,
+      "revision": 2
+    },
+    {
+      "id": "4e08a7e4-31c2-595f-aa74-725f1bfedd2a",
+      "fromAccountId": "b7d1bdca-237d-5518-a179-d45b135bb0a6",
+      "toAccountId": "7dfc0a25-f62d-5637-892b-e28d94e99832",
+      "amount": {
+        "amountMinor": 2684000,
+        "currency": "RUB"
+      },
+      "note": "Выручка · смена 117",
+      "purpose": "shift_handover",
+      "status": "done",
+      "sentByMemberId": "25097109-efb6-5471-880f-7a01ee6615a0",
+      "sentAt": "2026-09-30T18:06:00Z",
+      "decidedByMemberId": "b8df06ec-317e-5f46-b54c-e76603e41b5b",
+      "decidedAt": "2026-09-30T18:30:00Z",
+      "reason": null,
+      "outOperationId": "6790143d-e1d2-582c-9f73-c3121ab8c13e",
+      "inOperationId": "57d6dd0d-68b1-5035-9674-e743326a5b58",
+      "backOperationId": null,
+      "revision": 2
+    },
+    {
+      "id": "0a246b1e-ad85-5c7e-acf3-70d675547b1f",
+      "fromAccountId": "7dfc0a25-f62d-5637-892b-e28d94e99832",
+      "toAccountId": "a1ea005d-20fd-5381-b6f2-db2a9b8bea71",
+      "amount": {
+        "amountMinor": 3000000,
+        "currency": "RUB"
+      },
+      "note": "Выдача под отчёт · Алексей Соколов",
+      "purpose": "advance_issue",
+      "status": "done",
+      "sentByMemberId": "b8df06ec-317e-5f46-b54c-e76603e41b5b",
+      "sentAt": "2026-09-30T06:30:00Z",
+      "decidedByMemberId": "b8df06ec-317e-5f46-b54c-e76603e41b5b",
+      "decidedAt": "2026-09-30T06:30:00Z",
+      "reason": null,
+      "outOperationId": "6f464827-8dfb-5da3-bfd1-965456b0735f",
+      "inOperationId": "1a0a7ed7-f938-5b99-96f9-7612b8c9befb",
+      "backOperationId": null,
+      "revision": 2
+    },
+    {
+      "id": "b85630fe-8410-5785-95cd-3529677d1933",
+      "fromAccountId": "27e3a4c8-20ac-5663-9eb3-6ea3c9f708b9",
+      "toAccountId": "457bc389-8a47-525d-a700-dff0adab92b2",
+      "amount": {
+        "amountMinor": 800000,
+        "currency": "RUB"
+      },
+      "note": "Выдача под отчёт · Тимур Ахмедов",
+      "purpose": "advance_issue",
+      "status": "done",
+      "sentByMemberId": "b8df06ec-317e-5f46-b54c-e76603e41b5b",
+      "sentAt": "2026-09-30T05:05:00Z",
+      "decidedByMemberId": "b8df06ec-317e-5f46-b54c-e76603e41b5b",
+      "decidedAt": "2026-09-30T05:05:00Z",
+      "reason": null,
+      "outOperationId": "906f1a04-f88b-57fa-a689-2ae2af8cd6ed",
+      "inOperationId": "83675993-5db5-5154-8a54-429a6396fc03",
+      "backOperationId": null,
+      "revision": 2
+    },
+    {
+      "id": "c26f9abd-3783-5a20-bfd5-7151de61f46b",
+      "fromAccountId": "27e3a4c8-20ac-5663-9eb3-6ea3c9f708b9",
+      "toAccountId": "0eab4a4f-fb0c-53f2-b423-4c82fe4f760e",
+      "amount": {
+        "amountMinor": 1000000,
+        "currency": "RUB"
+      },
+      "note": "Выдача под отчёт · Илья Васильев",
+      "purpose": "advance_issue",
+      "status": "done",
+      "sentByMemberId": "b8df06ec-317e-5f46-b54c-e76603e41b5b",
+      "sentAt": "2026-09-28T05:10:00Z",
+      "decidedByMemberId": "b8df06ec-317e-5f46-b54c-e76603e41b5b",
+      "decidedAt": "2026-09-28T05:10:00Z",
+      "reason": null,
+      "outOperationId": "60741402-ad64-5955-8583-3ceb8897dc35",
+      "inOperationId": "24c2439d-7b54-58e4-bec5-73a66b516b34",
+      "backOperationId": null,
+      "revision": 2
+    }
+  ],
+  "nextCursor": null
+}

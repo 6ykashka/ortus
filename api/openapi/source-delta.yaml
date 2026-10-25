@@ -5,7 +5,7 @@
 deltas:
   - pointer: /info/version
     kind: change
-    source: план v2 PD-56, W0.07, W0.08, W1.00, W2.00, W2.40, W2.51, W2.52, W2.57, W4.02, W4.06, W2.71, W4.07, W4.04, W4.03, W4.05
+    source: план v2 PD-56, W0.07, W0.08, W1.00, W2.00, W2.40, W2.51, W2.52, W2.57, W4.02, W4.06, W2.71, W4.07, W4.04, W4.03, W4.05, W5.00
     reason: 0.1.0-design → 0.2.0-stage0 (W0.07, шаг 0.2, разложен по тегам) → 0.3.0-stage1 (W0.08, шаг 0.3, контракт этапа 1) → 0.4.0-stage1 (W1.00, второй контрактный PR этапа 1) → 0.5.0-stage2 (W2.00, контракт этапа 2) → 0.5.1-stage2 (W2.40, аддитивный PR стюарда этапа 2 для показа 18.10) → 0.6.0-stage2 (W2.51, стюард этапа 2 — пул водителей, наборы «Данных») → 0.6.1-stage2 (W2.52, стюард этапа 2, часть 2 — ответы владельца 17.10 — справочник расходов, история машины, антифрод фото, чек-лист-форма, задача дефекта, заменители интеграций D-11 комплекта) → 0.6.2-stage2 (W2.57, контрактная дельта решения Q-W2.07-1 — временный водитель «только рейс», продление) → 0.7.0-stage4 (W4.02, контрактный PR 1 этапа 4 — виды областей этапов 4–7, объяснение доступа с объектом, вложения задач, Problem.reason, экраны этапа 4; W4.06, контрактный PR 5 этапа 4 — календарь ресурсов, сохранённые виды и выгрузка заданием «Данных») → 0.7.1-stage4 (W2.71, контрактная дельта S2-20 — машина для временного водителя, решение владельца 19.10 по Q-W2.32-1; в ветке 0.6.3-stage2, перенумерована интегратором при вливании после W4.02 и W4.06) → 0.8.0-stage4 (W4.07, контрактный PR 6 этапа 4 — места и тарифная сетка, заявки на тариф, «Использование», каталог аккаунтов и операторы платформы, оформление организации; номер версии согласован интегратором при вливании после W2.71) → 0.9.0-stage4 (W4.04, контрактный PR 3 этапа 4 — «База знаний» — пространства, дерево, версии, доступ узла, запросы, участники, автоматизация; влит интегратором после W4.07) → 0.10.0-stage4 (W4.03, контрактный PR 2 этапа 4 — «Задачи и проекты» — проекты, участники, процесс с версиями, задачи, история, автоматизация; в ветке 0.9.0-stage4, перенумерована интегратором при вливании после W4.04) → 0.11.0-stage4 (W4.05, контрактный PR 4 этапа 4 — «Формы и опросы» — черновик, FormDefinition v2, настройки, группы, правила, ответы v2, сводка, CSV).
   - pointer: /components/schemas/Tenant/properties/status/enum
     kind: change
@@ -2973,3 +2973,755 @@ deltas:
     kind: add
     source: "W4.05; forms.md §2.2, §2.5, §3; design/docs/20-forms.md; эталон «Формы и опросы.dc.html» (design-2026-10-19); домен W4.20"
     reason: "новая схема тега Forms (W4.05)."
+  - pointer: /paths/~1api~1v1~1tenants~1{tenantId}~1spa~1appointments/get/description
+    kind: change
+    source: "W5.00; план v2 §4 (W5.20, W5.21); CASH-03; B-6"
+    reason: "изменено в контракте этапа 5 (0.12.0-stage5, SPA): операция/путь /api/v1/tenants/{tenantId}/spa/appointments · get/description"
+  - pointer: /paths/~1api~1v1~1tenants~1{tenantId}~1spa~1appointments/get/parameters
+    kind: change
+    source: "W5.00; план v2 §4 (W5.20, W5.21); CASH-03; B-6"
+    reason: "изменено в контракте этапа 5 (0.12.0-stage5, SPA): операция/путь /api/v1/tenants/{tenantId}/spa/appointments · get/parameters"
+  - pointer: /paths/~1api~1v1~1tenants~1{tenantId}~1inventory~1movements/post/description
+    kind: change
+    source: "W5.00; план v2 §4 (W5.10, W5.11), D-20 комплекта; B-6 (склада в прототипе нет)"
+    reason: "изменено в контракте этапа 5 (0.12.0-stage5, склад): операция/путь /api/v1/tenants/{tenantId}/inventory/movements · post/description"
+  - pointer: /paths/~1api~1v1~1tenants~1{tenantId}~1cash~1accounts/get/x-permissions
+    kind: change
+    source: "W5.00; analysis/dor/cash.md §2, §3, §5; design/docs/26-cash.md; эталон «Касса.dc.html» (design-2026-10-19)"
+    reason: "изменено в контракте этапа 5 (0.12.0-stage5, касса): операция/путь /api/v1/tenants/{tenantId}/cash/accounts · get/x-permissions"
+  - pointer: /paths/~1api~1v1~1tenants~1{tenantId}~1cash~1accounts/get/x-scope
+    kind: change
+    source: "W5.00; analysis/dor/cash.md §2, §3, §5; design/docs/26-cash.md; эталон «Касса.dc.html» (design-2026-10-19)"
+    reason: "изменено в контракте этапа 5 (0.12.0-stage5, касса): операция/путь /api/v1/tenants/{tenantId}/cash/accounts · get/x-scope"
+  - pointer: /paths/~1api~1v1~1tenants~1{tenantId}~1cash~1accounts/get/description
+    kind: change
+    source: "W5.00; analysis/dor/cash.md §2, §3, §5; design/docs/26-cash.md; эталон «Касса.dc.html» (design-2026-10-19)"
+    reason: "изменено в контракте этапа 5 (0.12.0-stage5, касса): операция/путь /api/v1/tenants/{tenantId}/cash/accounts · get/description"
+  - pointer: /paths/~1api~1v1~1tenants~1{tenantId}~1cash~1accounts/get/parameters
+    kind: change
+    source: "W5.00; analysis/dor/cash.md §2, §3, §5; design/docs/26-cash.md; эталон «Касса.dc.html» (design-2026-10-19)"
+    reason: "изменено в контракте этапа 5 (0.12.0-stage5, касса): операция/путь /api/v1/tenants/{tenantId}/cash/accounts · get/parameters"
+  - pointer: /paths/~1api~1v1~1tenants~1{tenantId}~1cash~1accounts/get/x-permissions-mode
+    kind: change
+    source: "W5.00; analysis/dor/cash.md §2, §3, §5; design/docs/26-cash.md; эталон «Касса.dc.html» (design-2026-10-19)"
+    reason: "изменено в контракте этапа 5 (0.12.0-stage5, касса): операция/путь /api/v1/tenants/{tenantId}/cash/accounts · get/x-permissions-mode"
+  - pointer: /paths/~1api~1v1~1tenants~1{tenantId}~1cash~1accounts/post/x-permissions
+    kind: change
+    source: "W5.00; analysis/dor/cash.md §2, §3, §5; design/docs/26-cash.md; эталон «Касса.dc.html» (design-2026-10-19)"
+    reason: "изменено в контракте этапа 5 (0.12.0-stage5, касса): операция/путь /api/v1/tenants/{tenantId}/cash/accounts · post/x-permissions"
+  - pointer: /paths/~1api~1v1~1tenants~1{tenantId}~1cash~1accounts/post/description
+    kind: change
+    source: "W5.00; analysis/dor/cash.md §2, §3, §5; design/docs/26-cash.md; эталон «Касса.dc.html» (design-2026-10-19)"
+    reason: "изменено в контракте этапа 5 (0.12.0-stage5, касса): операция/путь /api/v1/tenants/{tenantId}/cash/accounts · post/description"
+  - pointer: /paths/~1api~1v1~1tenants~1{tenantId}~1cash~1operations/get/x-permissions
+    kind: change
+    source: "W5.00; analysis/dor/cash.md §2, §3, §5; design/docs/26-cash.md; эталон «Касса.dc.html» (design-2026-10-19)"
+    reason: "изменено в контракте этапа 5 (0.12.0-stage5, касса): операция/путь /api/v1/tenants/{tenantId}/cash/operations · get/x-permissions"
+  - pointer: /paths/~1api~1v1~1tenants~1{tenantId}~1cash~1operations/get/x-scope
+    kind: change
+    source: "W5.00; analysis/dor/cash.md §2, §3, §5; design/docs/26-cash.md; эталон «Касса.dc.html» (design-2026-10-19)"
+    reason: "изменено в контракте этапа 5 (0.12.0-stage5, касса): операция/путь /api/v1/tenants/{tenantId}/cash/operations · get/x-scope"
+  - pointer: /paths/~1api~1v1~1tenants~1{tenantId}~1cash~1operations/get/description
+    kind: change
+    source: "W5.00; analysis/dor/cash.md §2, §3, §5; design/docs/26-cash.md; эталон «Касса.dc.html» (design-2026-10-19)"
+    reason: "изменено в контракте этапа 5 (0.12.0-stage5, касса): операция/путь /api/v1/tenants/{tenantId}/cash/operations · get/description"
+  - pointer: /paths/~1api~1v1~1tenants~1{tenantId}~1cash~1operations/get/parameters
+    kind: change
+    source: "W5.00; analysis/dor/cash.md §2, §3, §5; design/docs/26-cash.md; эталон «Касса.dc.html» (design-2026-10-19)"
+    reason: "изменено в контракте этапа 5 (0.12.0-stage5, касса): операция/путь /api/v1/tenants/{tenantId}/cash/operations · get/parameters"
+  - pointer: /paths/~1api~1v1~1tenants~1{tenantId}~1cash~1operations/get/x-permissions-mode
+    kind: change
+    source: "W5.00; analysis/dor/cash.md §2, §3, §5; design/docs/26-cash.md; эталон «Касса.dc.html» (design-2026-10-19)"
+    reason: "изменено в контракте этапа 5 (0.12.0-stage5, касса): операция/путь /api/v1/tenants/{tenantId}/cash/operations · get/x-permissions-mode"
+  - pointer: /paths/~1api~1v1~1tenants~1{tenantId}~1cash~1operations/post/description
+    kind: change
+    source: "W5.00; analysis/dor/cash.md §2, §3, §5; design/docs/26-cash.md; эталон «Касса.dc.html» (design-2026-10-19)"
+    reason: "изменено в контракте этапа 5 (0.12.0-stage5, касса): операция/путь /api/v1/tenants/{tenantId}/cash/operations · post/description"
+  - pointer: /paths/~1api~1v1~1tenants~1{tenantId}~1cash~1operations/post/responses/202
+    kind: add
+    source: "W5.00; analysis/dor/cash.md §2, §3, §5; design/docs/26-cash.md; эталон «Касса.dc.html» (design-2026-10-19)"
+    reason: "добавлено в контракте этапа 5 (0.12.0-stage5, касса): операция/путь /api/v1/tenants/{tenantId}/cash/operations · post/responses/202"
+  - pointer: /paths/~1api~1v1~1tenants~1{tenantId}~1cash~1operations/post/requestBody/content/application~1json/example/type
+    kind: add
+    source: "W5.00; analysis/dor/cash.md §2, §3, §5; design/docs/26-cash.md; эталон «Касса.dc.html» (design-2026-10-19)"
+    reason: "добавлено в контракте этапа 5 (0.12.0-stage5, касса): операция/путь /api/v1/tenants/{tenantId}/cash/operations · post/requestBody/content/application/json/example/type"
+  - pointer: /paths/~1api~1v1~1tenants~1{tenantId}~1cash~1operations/post/requestBody/content/application~1json/example/method
+    kind: add
+    source: "W5.00; analysis/dor/cash.md §2, §3, §5; design/docs/26-cash.md; эталон «Касса.dc.html» (design-2026-10-19)"
+    reason: "добавлено в контракте этапа 5 (0.12.0-stage5, касса): операция/путь /api/v1/tenants/{tenantId}/cash/operations · post/requestBody/content/application/json/example/method"
+  - pointer: /paths/~1api~1v1~1tenants~1{tenantId}~1cash~1operations/post/requestBody/content/application~1json/example/categoryId
+    kind: add
+    source: "W5.00; analysis/dor/cash.md §2, §3, §5; design/docs/26-cash.md; эталон «Касса.dc.html» (design-2026-10-19)"
+    reason: "добавлено в контракте этапа 5 (0.12.0-stage5, касса): операция/путь /api/v1/tenants/{tenantId}/cash/operations · post/requestBody/content/application/json/example/categoryId"
+  - pointer: /paths/~1api~1v1~1tenants~1{tenantId}~1cash~1operations/post/requestBody/content/application~1json/example/basis
+    kind: add
+    source: "W5.00; analysis/dor/cash.md §2, §3, §5; design/docs/26-cash.md; эталон «Касса.dc.html» (design-2026-10-19)"
+    reason: "добавлено в контракте этапа 5 (0.12.0-stage5, касса): операция/путь /api/v1/tenants/{tenantId}/cash/operations · post/requestBody/content/application/json/example/basis"
+  - pointer: /paths/~1api~1v1~1tenants~1{tenantId}~1cash~1operations/post/x-events
+    kind: add
+    source: "W5.00; analysis/dor/cash.md §2, §3, §5; design/docs/26-cash.md; эталон «Касса.dc.html» (design-2026-10-19)"
+    reason: "добавлено в контракте этапа 5 (0.12.0-stage5, касса): операция/путь /api/v1/tenants/{tenantId}/cash/operations · post/x-events"
+  - pointer: /paths/~1api~1v1~1tenants~1{tenantId}~1cash~1accounts~1access-preview
+    kind: add
+    source: "W5.00; analysis/dor/cash.md §2, §3, §5; design/docs/26-cash.md; эталон «Касса.dc.html» (design-2026-10-19)"
+    reason: "добавлено в контракте этапа 5 (0.12.0-stage5, касса): операция/путь /api/v1/tenants/{tenantId}/cash/accounts/access-preview"
+  - pointer: /paths/~1api~1v1~1tenants~1{tenantId}~1cash~1operations~1{operationId}~1reverse
+    kind: add
+    source: "W5.00; analysis/dor/cash.md §2, §3, §5; design/docs/26-cash.md; эталон «Касса.dc.html» (design-2026-10-19)"
+    reason: "добавлено в контракте этапа 5 (0.12.0-stage5, касса): операция/путь /api/v1/tenants/{tenantId}/cash/operations/{operationId}/reverse"
+  - pointer: /paths/~1api~1v1~1tenants~1{tenantId}~1cash~1operations~1{operationId}~1source-link
+    kind: add
+    source: "W5.00; analysis/dor/cash.md §2, §3, §5; design/docs/26-cash.md; эталон «Касса.dc.html» (design-2026-10-19)"
+    reason: "добавлено в контракте этапа 5 (0.12.0-stage5, касса): операция/путь /api/v1/tenants/{tenantId}/cash/operations/{operationId}/source-link"
+  - pointer: /paths/~1api~1v1~1tenants~1{tenantId}~1cash~1duplicates
+    kind: add
+    source: "W5.00; analysis/dor/cash.md §2, §3, §5; design/docs/26-cash.md; эталон «Касса.dc.html» (design-2026-10-19)"
+    reason: "добавлено в контракте этапа 5 (0.12.0-stage5, касса): операция/путь /api/v1/tenants/{tenantId}/cash/duplicates"
+  - pointer: /paths/~1api~1v1~1tenants~1{tenantId}~1cash~1proposals
+    kind: add
+    source: "W5.00; analysis/dor/cash.md §2, §3, §5; design/docs/26-cash.md; эталон «Касса.dc.html» (design-2026-10-19)"
+    reason: "добавлено в контракте этапа 5 (0.12.0-stage5, касса): операция/путь /api/v1/tenants/{tenantId}/cash/proposals"
+  - pointer: /paths/~1api~1v1~1tenants~1{tenantId}~1cash~1proposals~1{proposalKey}~1post
+    kind: add
+    source: "W5.00; analysis/dor/cash.md §2, §3, §5; design/docs/26-cash.md; эталон «Касса.dc.html» (design-2026-10-19)"
+    reason: "добавлено в контракте этапа 5 (0.12.0-stage5, касса): операция/путь /api/v1/tenants/{tenantId}/cash/proposals/{proposalKey}/post"
+  - pointer: /paths/~1api~1v1~1tenants~1{tenantId}~1cash~1proposals~1{proposalKey}~1dismiss
+    kind: add
+    source: "W5.00; analysis/dor/cash.md §2, §3, §5; design/docs/26-cash.md; эталон «Касса.dc.html» (design-2026-10-19)"
+    reason: "добавлено в контракте этапа 5 (0.12.0-stage5, касса): операция/путь /api/v1/tenants/{tenantId}/cash/proposals/{proposalKey}/dismiss"
+  - pointer: /paths/~1api~1v1~1tenants~1{tenantId}~1cash~1shifts
+    kind: add
+    source: "W5.00; analysis/dor/cash.md §2, §3, §5; design/docs/26-cash.md; эталон «Касса.dc.html» (design-2026-10-19)"
+    reason: "добавлено в контракте этапа 5 (0.12.0-stage5, касса): операция/путь /api/v1/tenants/{tenantId}/cash/shifts"
+  - pointer: /paths/~1api~1v1~1tenants~1{tenantId}~1cash~1accounts~1{accountId}~1shifts
+    kind: add
+    source: "W5.00; analysis/dor/cash.md §2, §3, §5; design/docs/26-cash.md; эталон «Касса.dc.html» (design-2026-10-19)"
+    reason: "добавлено в контракте этапа 5 (0.12.0-stage5, касса): операция/путь /api/v1/tenants/{tenantId}/cash/accounts/{accountId}/shifts"
+  - pointer: /paths/~1api~1v1~1tenants~1{tenantId}~1cash~1shifts~1{shiftId}~1close
+    kind: add
+    source: "W5.00; analysis/dor/cash.md §2, §3, §5; design/docs/26-cash.md; эталон «Касса.dc.html» (design-2026-10-19)"
+    reason: "добавлено в контракте этапа 5 (0.12.0-stage5, касса): операция/путь /api/v1/tenants/{tenantId}/cash/shifts/{shiftId}/close"
+  - pointer: /paths/~1api~1v1~1tenants~1{tenantId}~1cash~1shifts~1{shiftId}~1review
+    kind: add
+    source: "W5.00; analysis/dor/cash.md §2, §3, §5; design/docs/26-cash.md; эталон «Касса.dc.html» (design-2026-10-19)"
+    reason: "добавлено в контракте этапа 5 (0.12.0-stage5, касса): операция/путь /api/v1/tenants/{tenantId}/cash/shifts/{shiftId}/review"
+  - pointer: /paths/~1api~1v1~1tenants~1{tenantId}~1cash~1transfers
+    kind: add
+    source: "W5.00; analysis/dor/cash.md §2, §3, §5; design/docs/26-cash.md; эталон «Касса.dc.html» (design-2026-10-19)"
+    reason: "добавлено в контракте этапа 5 (0.12.0-stage5, касса): операция/путь /api/v1/tenants/{tenantId}/cash/transfers"
+  - pointer: /paths/~1api~1v1~1tenants~1{tenantId}~1cash~1transfers~1{transferId}~1decision
+    kind: add
+    source: "W5.00; analysis/dor/cash.md §2, §3, §5; design/docs/26-cash.md; эталон «Касса.dc.html» (design-2026-10-19)"
+    reason: "добавлено в контракте этапа 5 (0.12.0-stage5, касса): операция/путь /api/v1/tenants/{tenantId}/cash/transfers/{transferId}/decision"
+  - pointer: /paths/~1api~1v1~1tenants~1{tenantId}~1cash~1accounts~1{accountId}~1advance-issues
+    kind: add
+    source: "W5.00; analysis/dor/cash.md §2, §3, §5; design/docs/26-cash.md; эталон «Касса.dc.html» (design-2026-10-19)"
+    reason: "добавлено в контракте этапа 5 (0.12.0-stage5, касса): операция/путь /api/v1/tenants/{tenantId}/cash/accounts/{accountId}/advance-issues"
+  - pointer: /paths/~1api~1v1~1tenants~1{tenantId}~1cash~1accounts~1{accountId}~1receipts
+    kind: add
+    source: "W5.00; analysis/dor/cash.md §2, §3, §5; design/docs/26-cash.md; эталон «Касса.dc.html» (design-2026-10-19)"
+    reason: "добавлено в контракте этапа 5 (0.12.0-stage5, касса): операция/путь /api/v1/tenants/{tenantId}/cash/accounts/{accountId}/receipts"
+  - pointer: /paths/~1api~1v1~1tenants~1{tenantId}~1cash~1receipts
+    kind: add
+    source: "W5.00; analysis/dor/cash.md §2, §3, §5; design/docs/26-cash.md; эталон «Касса.dc.html» (design-2026-10-19)"
+    reason: "добавлено в контракте этапа 5 (0.12.0-stage5, касса): операция/путь /api/v1/tenants/{tenantId}/cash/receipts"
+  - pointer: /paths/~1api~1v1~1tenants~1{tenantId}~1cash~1receipts~1{receiptId}~1decision
+    kind: add
+    source: "W5.00; analysis/dor/cash.md §2, §3, §5; design/docs/26-cash.md; эталон «Касса.dc.html» (design-2026-10-19)"
+    reason: "добавлено в контракте этапа 5 (0.12.0-stage5, касса): операция/путь /api/v1/tenants/{tenantId}/cash/receipts/{receiptId}/decision"
+  - pointer: /paths/~1api~1v1~1tenants~1{tenantId}~1cash~1accounts~1{accountId}~1advance-returns
+    kind: add
+    source: "W5.00; analysis/dor/cash.md §2, §3, §5; design/docs/26-cash.md; эталон «Касса.dc.html» (design-2026-10-19)"
+    reason: "добавлено в контракте этапа 5 (0.12.0-stage5, касса): операция/путь /api/v1/tenants/{tenantId}/cash/accounts/{accountId}/advance-returns"
+  - pointer: /paths/~1api~1v1~1tenants~1{tenantId}~1cash~1approval-requests
+    kind: add
+    source: "W5.00; analysis/dor/cash.md §2, §3, §5; design/docs/26-cash.md; эталон «Касса.dc.html» (design-2026-10-19)"
+    reason: "добавлено в контракте этапа 5 (0.12.0-stage5, касса): операция/путь /api/v1/tenants/{tenantId}/cash/approval-requests"
+  - pointer: /paths/~1api~1v1~1tenants~1{tenantId}~1cash~1approval-requests~1{approvalRequestId}~1decision
+    kind: add
+    source: "W5.00; analysis/dor/cash.md §2, §3, §5; design/docs/26-cash.md; эталон «Касса.dc.html» (design-2026-10-19)"
+    reason: "добавлено в контракте этапа 5 (0.12.0-stage5, касса): операция/путь /api/v1/tenants/{tenantId}/cash/approval-requests/{approvalRequestId}/decision"
+  - pointer: /paths/~1api~1v1~1tenants~1{tenantId}~1cash~1categories
+    kind: add
+    source: "W5.00; analysis/dor/cash.md §2, §3, §5; design/docs/26-cash.md; эталон «Касса.dc.html» (design-2026-10-19)"
+    reason: "добавлено в контракте этапа 5 (0.12.0-stage5, касса): операция/путь /api/v1/tenants/{tenantId}/cash/categories"
+  - pointer: /paths/~1api~1v1~1tenants~1{tenantId}~1inventory~1warehouses
+    kind: add
+    source: "W5.00; план v2 §4 (W5.10, W5.11), D-20 комплекта; B-6 (склада в прототипе нет)"
+    reason: "добавлено в контракте этапа 5 (0.12.0-stage5, склад): операция/путь /api/v1/tenants/{tenantId}/inventory/warehouses"
+  - pointer: /paths/~1api~1v1~1tenants~1{tenantId}~1inventory~1items~1{itemId}
+    kind: add
+    source: "W5.00; план v2 §4 (W5.10, W5.11), D-20 комплекта; B-6 (склада в прототипе нет)"
+    reason: "добавлено в контракте этапа 5 (0.12.0-stage5, склад): операция/путь /api/v1/tenants/{tenantId}/inventory/items/{itemId}"
+  - pointer: /paths/~1api~1v1~1tenants~1{tenantId}~1inventory~1balances
+    kind: add
+    source: "W5.00; план v2 §4 (W5.10, W5.11), D-20 комплекта; B-6 (склада в прототипе нет)"
+    reason: "добавлено в контракте этапа 5 (0.12.0-stage5, склад): операция/путь /api/v1/tenants/{tenantId}/inventory/balances"
+  - pointer: /paths/~1api~1v1~1tenants~1{tenantId}~1inventory~1reservations
+    kind: add
+    source: "W5.00; план v2 §4 (W5.10, W5.11), D-20 комплекта; B-6 (склада в прототипе нет)"
+    reason: "добавлено в контракте этапа 5 (0.12.0-stage5, склад): операция/путь /api/v1/tenants/{tenantId}/inventory/reservations"
+  - pointer: /paths/~1api~1v1~1tenants~1{tenantId}~1inventory~1reservations~1{reservationId}~1release
+    kind: add
+    source: "W5.00; план v2 §4 (W5.10, W5.11), D-20 комплекта; B-6 (склада в прототипе нет)"
+    reason: "добавлено в контракте этапа 5 (0.12.0-stage5, склад): операция/путь /api/v1/tenants/{tenantId}/inventory/reservations/{reservationId}/release"
+  - pointer: /paths/~1api~1v1~1tenants~1{tenantId}~1spa~1services~1{serviceId}
+    kind: add
+    source: "W5.00; план v2 §4 (W5.20, W5.21); CASH-03; B-6"
+    reason: "добавлено в контракте этапа 5 (0.12.0-stage5, SPA): операция/путь /api/v1/tenants/{tenantId}/spa/services/{serviceId}"
+  - pointer: /paths/~1api~1v1~1tenants~1{tenantId}~1spa~1appointments~1{appointmentId}~1cancel
+    kind: add
+    source: "W5.00; план v2 §4 (W5.20, W5.21); CASH-03; B-6"
+    reason: "добавлено в контракте этапа 5 (0.12.0-stage5, SPA): операция/путь /api/v1/tenants/{tenantId}/spa/appointments/{appointmentId}/cancel"
+  - pointer: /paths/~1api~1v1~1tenants~1{tenantId}~1spa~1appointments~1{appointmentId}~1reschedule
+    kind: add
+    source: "W5.00; план v2 §4 (W5.20, W5.21); CASH-03; B-6"
+    reason: "добавлено в контракте этапа 5 (0.12.0-stage5, SPA): операция/путь /api/v1/tenants/{tenantId}/spa/appointments/{appointmentId}/reschedule"
+  - pointer: /components/parameters/cashAccountId
+    kind: add
+    source: "W5.00; analysis/dor/cash.md §2, §3, §5; design/docs/26-cash.md; эталон «Касса.dc.html» (design-2026-10-19)"
+    reason: "добавлено в контракте этапа 5 (0.12.0-stage5, касса): parameters cashAccountId"
+  - pointer: /components/parameters/cashApprovalRequestId
+    kind: add
+    source: "W5.00; analysis/dor/cash.md §2, §3, §5; design/docs/26-cash.md; эталон «Касса.dc.html» (design-2026-10-19)"
+    reason: "добавлено в контракте этапа 5 (0.12.0-stage5, касса): parameters cashApprovalRequestId"
+  - pointer: /components/parameters/cashOperationId
+    kind: add
+    source: "W5.00; analysis/dor/cash.md §2, §3, §5; design/docs/26-cash.md; эталон «Касса.dc.html» (design-2026-10-19)"
+    reason: "добавлено в контракте этапа 5 (0.12.0-stage5, касса): parameters cashOperationId"
+  - pointer: /components/parameters/cashProposalKey
+    kind: add
+    source: "W5.00; analysis/dor/cash.md §2, §3, §5; design/docs/26-cash.md; эталон «Касса.dc.html» (design-2026-10-19)"
+    reason: "добавлено в контракте этапа 5 (0.12.0-stage5, касса): parameters cashProposalKey"
+  - pointer: /components/parameters/cashReceiptId
+    kind: add
+    source: "W5.00; analysis/dor/cash.md §2, §3, §5; design/docs/26-cash.md; эталон «Касса.dc.html» (design-2026-10-19)"
+    reason: "добавлено в контракте этапа 5 (0.12.0-stage5, касса): parameters cashReceiptId"
+  - pointer: /components/parameters/cashShiftId
+    kind: add
+    source: "W5.00; analysis/dor/cash.md §2, §3, §5; design/docs/26-cash.md; эталон «Касса.dc.html» (design-2026-10-19)"
+    reason: "добавлено в контракте этапа 5 (0.12.0-stage5, касса): parameters cashShiftId"
+  - pointer: /components/parameters/cashTransferId
+    kind: add
+    source: "W5.00; analysis/dor/cash.md §2, §3, §5; design/docs/26-cash.md; эталон «Касса.dc.html» (design-2026-10-19)"
+    reason: "добавлено в контракте этапа 5 (0.12.0-stage5, касса): parameters cashTransferId"
+  - pointer: /components/parameters/inventoryItemId
+    kind: add
+    source: "W5.00; план v2 §4 (W5.10, W5.11), D-20 комплекта; B-6 (склада в прототипе нет)"
+    reason: "добавлено в контракте этапа 5 (0.12.0-stage5, склад): parameters inventoryItemId"
+  - pointer: /components/parameters/inventoryReservationId
+    kind: add
+    source: "W5.00; план v2 §4 (W5.10, W5.11), D-20 комплекта; B-6 (склада в прототипе нет)"
+    reason: "добавлено в контракте этапа 5 (0.12.0-stage5, склад): parameters inventoryReservationId"
+  - pointer: /components/parameters/spaServiceId
+    kind: add
+    source: "W5.00; план v2 §4 (W5.20, W5.21); CASH-03; B-6"
+    reason: "добавлено в контракте этапа 5 (0.12.0-stage5, SPA): parameters spaServiceId"
+  - pointer: /components/schemas/Appointment/properties/finalPrice
+    kind: add
+    source: "W5.00; план v2 §4 (W5.20, W5.21); CASH-03; B-6"
+    reason: "добавлено в контракте этапа 5 (0.12.0-stage5, SPA): schemas Appointment · properties/finalPrice"
+  - pointer: /components/schemas/AppointmentComplete/properties/finalPrice
+    kind: add
+    source: "W5.00; план v2 §4 (W5.20, W5.21); CASH-03; B-6"
+    reason: "добавлено в контракте этапа 5 (0.12.0-stage5, SPA): schemas AppointmentComplete · properties/finalPrice"
+  - pointer: /components/schemas/InventoryItem/properties/minLevel
+    kind: add
+    source: "W5.00; план v2 §4 (W5.10, W5.11), D-20 комплекта; B-6 (склада в прототипе нет)"
+    reason: "добавлено в контракте этапа 5 (0.12.0-stage5, склад): schemas InventoryItem · properties/minLevel"
+  - pointer: /components/schemas/InventoryMovementCreate/description
+    kind: change
+    source: "W5.00; план v2 §4 (W5.10, W5.11), D-20 комплекта; B-6 (склада в прототипе нет)"
+    reason: "изменено в контракте этапа 5 (0.12.0-stage5, склад): schemas InventoryMovementCreate · description"
+  - pointer: /components/schemas/CashAccount/properties/orgUnitId/$ref
+    kind: remove
+    source: "W5.00; analysis/dor/cash.md §2, §3, §5; design/docs/26-cash.md; эталон «Касса.dc.html» (design-2026-10-19)"
+    reason: "изменено в контракте этапа 5 (0.12.0-stage5, касса): schemas CashAccount · properties/orgUnitId/$ref"
+  - pointer: /components/schemas/CashAccount/properties/orgUnitId/type
+    kind: add
+    source: "W5.00; analysis/dor/cash.md §2, §3, §5; design/docs/26-cash.md; эталон «Касса.dc.html» (design-2026-10-19)"
+    reason: "добавлено в контракте этапа 5 (0.12.0-stage5, касса): schemas CashAccount · properties/orgUnitId/type"
+  - pointer: /components/schemas/CashAccount/properties/orgUnitId/format
+    kind: add
+    source: "W5.00; analysis/dor/cash.md §2, §3, §5; design/docs/26-cash.md; эталон «Касса.dc.html» (design-2026-10-19)"
+    reason: "добавлено в контракте этапа 5 (0.12.0-stage5, касса): schemas CashAccount · properties/orgUnitId/format"
+  - pointer: /components/schemas/CashAccount/properties/orgUnitId/description
+    kind: add
+    source: "W5.00; analysis/dor/cash.md §2, §3, §5; design/docs/26-cash.md; эталон «Касса.dc.html» (design-2026-10-19)"
+    reason: "добавлено в контракте этапа 5 (0.12.0-stage5, касса): schemas CashAccount · properties/orgUnitId/description"
+  - pointer: /components/schemas/CashAccount/properties/kind/enum
+    kind: change
+    source: "W5.00; analysis/dor/cash.md §2, §3, §5; design/docs/26-cash.md; эталон «Касса.dc.html» (design-2026-10-19)"
+    reason: "изменено в контракте этапа 5 (0.12.0-stage5, касса): schemas CashAccount · properties/kind/enum"
+  - pointer: /components/schemas/CashAccount/properties/balance/$ref
+    kind: remove
+    source: "W5.00; analysis/dor/cash.md §2, §3, §5; design/docs/26-cash.md; эталон «Касса.dc.html» (design-2026-10-19)"
+    reason: "изменено в контракте этапа 5 (0.12.0-stage5, касса): schemas CashAccount · properties/balance/$ref"
+  - pointer: /components/schemas/CashAccount/properties/balance/oneOf
+    kind: add
+    source: "W5.00; analysis/dor/cash.md §2, §3, §5; design/docs/26-cash.md; эталон «Касса.dc.html» (design-2026-10-19)"
+    reason: "добавлено в контракте этапа 5 (0.12.0-stage5, касса): schemas CashAccount · properties/balance/oneOf"
+  - pointer: /components/schemas/CashAccount/properties/balance/description
+    kind: add
+    source: "W5.00; analysis/dor/cash.md §2, §3, §5; design/docs/26-cash.md; эталон «Касса.dc.html» (design-2026-10-19)"
+    reason: "добавлено в контракте этапа 5 (0.12.0-stage5, касса): schemas CashAccount · properties/balance/description"
+  - pointer: /components/schemas/CashAccount/properties/shiftMode
+    kind: add
+    source: "W5.00; analysis/dor/cash.md §2, §3, §5; design/docs/26-cash.md; эталон «Касса.dc.html» (design-2026-10-19)"
+    reason: "добавлено в контракте этапа 5 (0.12.0-stage5, касса): schemas CashAccount · properties/shiftMode"
+  - pointer: /components/schemas/CashAccount/properties/kktMode
+    kind: add
+    source: "W5.00; analysis/dor/cash.md §2, §3, §5; design/docs/26-cash.md; эталон «Касса.dc.html» (design-2026-10-19)"
+    reason: "добавлено в контракте этапа 5 (0.12.0-stage5, касса): schemas CashAccount · properties/kktMode"
+  - pointer: /components/schemas/CashAccount/properties/balanceLimit
+    kind: add
+    source: "W5.00; analysis/dor/cash.md §2, §3, §5; design/docs/26-cash.md; эталон «Касса.dc.html» (design-2026-10-19)"
+    reason: "добавлено в контракте этапа 5 (0.12.0-stage5, касса): schemas CashAccount · properties/balanceLimit"
+  - pointer: /components/schemas/CashAccount/properties/floatAmount
+    kind: add
+    source: "W5.00; analysis/dor/cash.md §2, §3, §5; design/docs/26-cash.md; эталон «Касса.dc.html» (design-2026-10-19)"
+    reason: "добавлено в контракте этапа 5 (0.12.0-stage5, касса): schemas CashAccount · properties/floatAmount"
+  - pointer: /components/schemas/CashAccount/properties/tolerance
+    kind: add
+    source: "W5.00; analysis/dor/cash.md §2, §3, §5; design/docs/26-cash.md; эталон «Касса.dc.html» (design-2026-10-19)"
+    reason: "добавлено в контракте этапа 5 (0.12.0-stage5, касса): schemas CashAccount · properties/tolerance"
+  - pointer: /components/schemas/CashAccount/properties/responsibleMemberId
+    kind: add
+    source: "W5.00; analysis/dor/cash.md §2, §3, §5; design/docs/26-cash.md; эталон «Касса.dc.html» (design-2026-10-19)"
+    reason: "добавлено в контракте этапа 5 (0.12.0-stage5, касса): schemas CashAccount · properties/responsibleMemberId"
+  - pointer: /components/schemas/CashAccount/properties/holderMemberId
+    kind: add
+    source: "W5.00; analysis/dor/cash.md §2, §3, §5; design/docs/26-cash.md; эталон «Касса.dc.html» (design-2026-10-19)"
+    reason: "добавлено в контракте этапа 5 (0.12.0-stage5, касса): schemas CashAccount · properties/holderMemberId"
+  - pointer: /components/schemas/CashAccount/properties/advanceLimit
+    kind: add
+    source: "W5.00; analysis/dor/cash.md §2, §3, §5; design/docs/26-cash.md; эталон «Касса.dc.html» (design-2026-10-19)"
+    reason: "добавлено в контракте этапа 5 (0.12.0-stage5, касса): schemas CashAccount · properties/advanceLimit"
+  - pointer: /components/schemas/CashAccount/properties/drawerAccountId
+    kind: add
+    source: "W5.00; analysis/dor/cash.md §2, §3, §5; design/docs/26-cash.md; эталон «Касса.dc.html» (design-2026-10-19)"
+    reason: "добавлено в контракте этапа 5 (0.12.0-stage5, касса): schemas CashAccount · properties/drawerAccountId"
+  - pointer: /components/schemas/CashAccount/properties/settleDays
+    kind: add
+    source: "W5.00; analysis/dor/cash.md §2, §3, §5; design/docs/26-cash.md; эталон «Касса.dc.html» (design-2026-10-19)"
+    reason: "добавлено в контракте этапа 5 (0.12.0-stage5, касса): schemas CashAccount · properties/settleDays"
+  - pointer: /components/schemas/CashAccount/properties/feeBasisPoints
+    kind: add
+    source: "W5.00; analysis/dor/cash.md §2, §3, §5; design/docs/26-cash.md; эталон «Касса.dc.html» (design-2026-10-19)"
+    reason: "добавлено в контракте этапа 5 (0.12.0-stage5, касса): schemas CashAccount · properties/feeBasisPoints"
+  - pointer: /components/schemas/CashAccount/properties/categoryIds
+    kind: add
+    source: "W5.00; analysis/dor/cash.md §2, §3, §5; design/docs/26-cash.md; эталон «Касса.dc.html» (design-2026-10-19)"
+    reason: "добавлено в контракте этапа 5 (0.12.0-stage5, касса): schemas CashAccount · properties/categoryIds"
+  - pointer: /components/schemas/CashAccount/properties/openShiftId
+    kind: add
+    source: "W5.00; analysis/dor/cash.md §2, §3, §5; design/docs/26-cash.md; эталон «Касса.dc.html» (design-2026-10-19)"
+    reason: "добавлено в контракте этапа 5 (0.12.0-stage5, касса): schemas CashAccount · properties/openShiftId"
+  - pointer: /components/schemas/CashAccount/properties/my
+    kind: add
+    source: "W5.00; analysis/dor/cash.md §2, §3, §5; design/docs/26-cash.md; эталон «Касса.dc.html» (design-2026-10-19)"
+    reason: "добавлено в контракте этапа 5 (0.12.0-stage5, касса): schemas CashAccount · properties/my"
+  - pointer: /components/schemas/CashAccount/required
+    kind: change
+    source: "W5.00; analysis/dor/cash.md §2, §3, §5; design/docs/26-cash.md; эталон «Касса.dc.html» (design-2026-10-19)"
+    reason: "изменено в контракте этапа 5 (0.12.0-stage5, касса): schemas CashAccount · required"
+  - pointer: /components/schemas/CashAccount/description
+    kind: add
+    source: "W5.00; analysis/dor/cash.md §2, §3, §5; design/docs/26-cash.md; эталон «Касса.dc.html» (design-2026-10-19)"
+    reason: "добавлено в контракте этапа 5 (0.12.0-stage5, касса): schemas CashAccount · description"
+  - pointer: /components/schemas/CashAccountCreate/properties/orgUnitId/$ref
+    kind: remove
+    source: "W5.00; analysis/dor/cash.md §2, §3, §5; design/docs/26-cash.md; эталон «Касса.dc.html» (design-2026-10-19)"
+    reason: "изменено в контракте этапа 5 (0.12.0-stage5, касса): schemas CashAccountCreate · properties/orgUnitId/$ref"
+  - pointer: /components/schemas/CashAccountCreate/properties/orgUnitId/type
+    kind: add
+    source: "W5.00; analysis/dor/cash.md §2, §3, §5; design/docs/26-cash.md; эталон «Касса.dc.html» (design-2026-10-19)"
+    reason: "добавлено в контракте этапа 5 (0.12.0-stage5, касса): schemas CashAccountCreate · properties/orgUnitId/type"
+  - pointer: /components/schemas/CashAccountCreate/properties/orgUnitId/format
+    kind: add
+    source: "W5.00; analysis/dor/cash.md §2, §3, §5; design/docs/26-cash.md; эталон «Касса.dc.html» (design-2026-10-19)"
+    reason: "добавлено в контракте этапа 5 (0.12.0-stage5, касса): schemas CashAccountCreate · properties/orgUnitId/format"
+  - pointer: /components/schemas/CashAccountCreate/properties/kind/enum
+    kind: change
+    source: "W5.00; analysis/dor/cash.md §2, §3, §5; design/docs/26-cash.md; эталон «Касса.dc.html» (design-2026-10-19)"
+    reason: "изменено в контракте этапа 5 (0.12.0-stage5, касса): schemas CashAccountCreate · properties/kind/enum"
+  - pointer: /components/schemas/CashAccountCreate/properties/shiftMode
+    kind: add
+    source: "W5.00; analysis/dor/cash.md §2, §3, §5; design/docs/26-cash.md; эталон «Касса.dc.html» (design-2026-10-19)"
+    reason: "добавлено в контракте этапа 5 (0.12.0-stage5, касса): schemas CashAccountCreate · properties/shiftMode"
+  - pointer: /components/schemas/CashAccountCreate/properties/kktMode
+    kind: add
+    source: "W5.00; analysis/dor/cash.md §2, §3, §5; design/docs/26-cash.md; эталон «Касса.dc.html» (design-2026-10-19)"
+    reason: "добавлено в контракте этапа 5 (0.12.0-stage5, касса): schemas CashAccountCreate · properties/kktMode"
+  - pointer: /components/schemas/CashAccountCreate/properties/balanceLimit
+    kind: add
+    source: "W5.00; analysis/dor/cash.md §2, §3, §5; design/docs/26-cash.md; эталон «Касса.dc.html» (design-2026-10-19)"
+    reason: "добавлено в контракте этапа 5 (0.12.0-stage5, касса): schemas CashAccountCreate · properties/balanceLimit"
+  - pointer: /components/schemas/CashAccountCreate/properties/floatAmount
+    kind: add
+    source: "W5.00; analysis/dor/cash.md §2, §3, §5; design/docs/26-cash.md; эталон «Касса.dc.html» (design-2026-10-19)"
+    reason: "добавлено в контракте этапа 5 (0.12.0-stage5, касса): schemas CashAccountCreate · properties/floatAmount"
+  - pointer: /components/schemas/CashAccountCreate/properties/tolerance
+    kind: add
+    source: "W5.00; analysis/dor/cash.md §2, §3, §5; design/docs/26-cash.md; эталон «Касса.dc.html» (design-2026-10-19)"
+    reason: "добавлено в контракте этапа 5 (0.12.0-stage5, касса): schemas CashAccountCreate · properties/tolerance"
+  - pointer: /components/schemas/CashAccountCreate/properties/responsibleMemberId
+    kind: add
+    source: "W5.00; analysis/dor/cash.md §2, §3, §5; design/docs/26-cash.md; эталон «Касса.dc.html» (design-2026-10-19)"
+    reason: "добавлено в контракте этапа 5 (0.12.0-stage5, касса): schemas CashAccountCreate · properties/responsibleMemberId"
+  - pointer: /components/schemas/CashAccountCreate/properties/holderMemberId
+    kind: add
+    source: "W5.00; analysis/dor/cash.md §2, §3, §5; design/docs/26-cash.md; эталон «Касса.dc.html» (design-2026-10-19)"
+    reason: "добавлено в контракте этапа 5 (0.12.0-stage5, касса): schemas CashAccountCreate · properties/holderMemberId"
+  - pointer: /components/schemas/CashAccountCreate/properties/advanceLimit
+    kind: add
+    source: "W5.00; analysis/dor/cash.md §2, §3, §5; design/docs/26-cash.md; эталон «Касса.dc.html» (design-2026-10-19)"
+    reason: "добавлено в контракте этапа 5 (0.12.0-stage5, касса): schemas CashAccountCreate · properties/advanceLimit"
+  - pointer: /components/schemas/CashAccountCreate/properties/drawerAccountId
+    kind: add
+    source: "W5.00; analysis/dor/cash.md §2, §3, §5; design/docs/26-cash.md; эталон «Касса.dc.html» (design-2026-10-19)"
+    reason: "добавлено в контракте этапа 5 (0.12.0-stage5, касса): schemas CashAccountCreate · properties/drawerAccountId"
+  - pointer: /components/schemas/CashAccountCreate/properties/settleDays
+    kind: add
+    source: "W5.00; analysis/dor/cash.md §2, §3, §5; design/docs/26-cash.md; эталон «Касса.dc.html» (design-2026-10-19)"
+    reason: "добавлено в контракте этапа 5 (0.12.0-stage5, касса): schemas CashAccountCreate · properties/settleDays"
+  - pointer: /components/schemas/CashAccountCreate/properties/feeBasisPoints
+    kind: add
+    source: "W5.00; analysis/dor/cash.md §2, §3, §5; design/docs/26-cash.md; эталон «Касса.dc.html» (design-2026-10-19)"
+    reason: "добавлено в контракте этапа 5 (0.12.0-stage5, касса): schemas CashAccountCreate · properties/feeBasisPoints"
+  - pointer: /components/schemas/CashAccountCreate/properties/categoryIds
+    kind: add
+    source: "W5.00; analysis/dor/cash.md §2, §3, §5; design/docs/26-cash.md; эталон «Касса.dc.html» (design-2026-10-19)"
+    reason: "добавлено в контракте этапа 5 (0.12.0-stage5, касса): schemas CashAccountCreate · properties/categoryIds"
+  - pointer: /components/schemas/CashAccountCreate/description
+    kind: change
+    source: "W5.00; analysis/dor/cash.md §2, §3, §5; design/docs/26-cash.md; эталон «Касса.dc.html» (design-2026-10-19)"
+    reason: "изменено в контракте этапа 5 (0.12.0-stage5, касса): schemas CashAccountCreate · description"
+  - pointer: /components/schemas/CashOperationCreate/properties/type
+    kind: add
+    source: "W5.00; analysis/dor/cash.md §2, §3, §5; design/docs/26-cash.md; эталон «Касса.dc.html» (design-2026-10-19)"
+    reason: "добавлено в контракте этапа 5 (0.12.0-stage5, касса): schemas CashOperationCreate · properties/type"
+  - pointer: /components/schemas/CashOperationCreate/properties/method
+    kind: add
+    source: "W5.00; analysis/dor/cash.md §2, §3, §5; design/docs/26-cash.md; эталон «Касса.dc.html» (design-2026-10-19)"
+    reason: "добавлено в контракте этапа 5 (0.12.0-stage5, касса): schemas CashOperationCreate · properties/method"
+  - pointer: /components/schemas/CashOperationCreate/properties/categoryId
+    kind: add
+    source: "W5.00; analysis/dor/cash.md §2, §3, §5; design/docs/26-cash.md; эталон «Касса.dc.html» (design-2026-10-19)"
+    reason: "добавлено в контракте этапа 5 (0.12.0-stage5, касса): schemas CashOperationCreate · properties/categoryId"
+  - pointer: /components/schemas/CashOperationCreate/properties/basis
+    kind: add
+    source: "W5.00; analysis/dor/cash.md §2, §3, §5; design/docs/26-cash.md; эталон «Касса.dc.html» (design-2026-10-19)"
+    reason: "добавлено в контракте этапа 5 (0.12.0-stage5, касса): schemas CashOperationCreate · properties/basis"
+  - pointer: /components/schemas/CashOperationCreate/properties/receipt
+    kind: add
+    source: "W5.00; analysis/dor/cash.md §2, §3, §5; design/docs/26-cash.md; эталон «Касса.dc.html» (design-2026-10-19)"
+    reason: "добавлено в контракте этапа 5 (0.12.0-stage5, касса): schemas CashOperationCreate · properties/receipt"
+  - pointer: /components/schemas/CashOperationCreate/properties/source
+    kind: add
+    source: "W5.00; analysis/dor/cash.md §2, §3, §5; design/docs/26-cash.md; эталон «Касса.dc.html» (design-2026-10-19)"
+    reason: "добавлено в контракте этапа 5 (0.12.0-stage5, касса): schemas CashOperationCreate · properties/source"
+  - pointer: /components/schemas/CashOperationCreate/properties/refundsOperationId
+    kind: add
+    source: "W5.00; analysis/dor/cash.md §2, §3, §5; design/docs/26-cash.md; эталон «Касса.dc.html» (design-2026-10-19)"
+    reason: "добавлено в контракте этапа 5 (0.12.0-stage5, касса): schemas CashOperationCreate · properties/refundsOperationId"
+  - pointer: /components/schemas/CashOperationCreate/description
+    kind: change
+    source: "W5.00; analysis/dor/cash.md §2, §3, §5; design/docs/26-cash.md; эталон «Касса.dc.html» (design-2026-10-19)"
+    reason: "изменено в контракте этапа 5 (0.12.0-stage5, касса): schemas CashOperationCreate · description"
+  - pointer: /components/schemas/CashOperation/properties/type
+    kind: add
+    source: "W5.00; analysis/dor/cash.md §2, §3, §5; design/docs/26-cash.md; эталон «Касса.dc.html» (design-2026-10-19)"
+    reason: "добавлено в контракте этапа 5 (0.12.0-stage5, касса): schemas CashOperation · properties/type"
+  - pointer: /components/schemas/CashOperation/properties/method
+    kind: add
+    source: "W5.00; analysis/dor/cash.md §2, §3, §5; design/docs/26-cash.md; эталон «Касса.dc.html» (design-2026-10-19)"
+    reason: "добавлено в контракте этапа 5 (0.12.0-stage5, касса): schemas CashOperation · properties/method"
+  - pointer: /components/schemas/CashOperation/properties/origin
+    kind: add
+    source: "W5.00; analysis/dor/cash.md §2, §3, §5; design/docs/26-cash.md; эталон «Касса.dc.html» (design-2026-10-19)"
+    reason: "добавлено в контракте этапа 5 (0.12.0-stage5, касса): schemas CashOperation · properties/origin"
+  - pointer: /components/schemas/CashOperation/properties/categoryId
+    kind: add
+    source: "W5.00; analysis/dor/cash.md §2, §3, §5; design/docs/26-cash.md; эталон «Касса.dc.html» (design-2026-10-19)"
+    reason: "добавлено в контракте этапа 5 (0.12.0-stage5, касса): schemas CashOperation · properties/categoryId"
+  - pointer: /components/schemas/CashOperation/properties/basis
+    kind: add
+    source: "W5.00; analysis/dor/cash.md §2, §3, §5; design/docs/26-cash.md; эталон «Касса.dc.html» (design-2026-10-19)"
+    reason: "добавлено в контракте этапа 5 (0.12.0-stage5, касса): schemas CashOperation · properties/basis"
+  - pointer: /components/schemas/CashOperation/properties/receipt
+    kind: add
+    source: "W5.00; analysis/dor/cash.md §2, §3, §5; design/docs/26-cash.md; эталон «Касса.dc.html» (design-2026-10-19)"
+    reason: "добавлено в контракте этапа 5 (0.12.0-stage5, касса): schemas CashOperation · properties/receipt"
+  - pointer: /components/schemas/CashOperation/properties/source
+    kind: add
+    source: "W5.00; analysis/dor/cash.md §2, §3, §5; design/docs/26-cash.md; эталон «Касса.dc.html» (design-2026-10-19)"
+    reason: "добавлено в контракте этапа 5 (0.12.0-stage5, касса): schemas CashOperation · properties/source"
+  - pointer: /components/schemas/CashOperation/properties/shiftId
+    kind: add
+    source: "W5.00; analysis/dor/cash.md §2, §3, §5; design/docs/26-cash.md; эталон «Касса.dc.html» (design-2026-10-19)"
+    reason: "добавлено в контракте этапа 5 (0.12.0-stage5, касса): schemas CashOperation · properties/shiftId"
+  - pointer: /components/schemas/CashOperation/properties/groupId
+    kind: add
+    source: "W5.00; analysis/dor/cash.md §2, §3, §5; design/docs/26-cash.md; эталон «Касса.dc.html» (design-2026-10-19)"
+    reason: "добавлено в контракте этапа 5 (0.12.0-stage5, касса): schemas CashOperation · properties/groupId"
+  - pointer: /components/schemas/CashOperation/properties/transferId
+    kind: add
+    source: "W5.00; analysis/dor/cash.md §2, §3, §5; design/docs/26-cash.md; эталон «Касса.dc.html» (design-2026-10-19)"
+    reason: "добавлено в контракте этапа 5 (0.12.0-stage5, касса): schemas CashOperation · properties/transferId"
+  - pointer: /components/schemas/CashOperation/properties/approvedByMemberId
+    kind: add
+    source: "W5.00; analysis/dor/cash.md §2, §3, §5; design/docs/26-cash.md; эталон «Касса.dc.html» (design-2026-10-19)"
+    reason: "добавлено в контракте этапа 5 (0.12.0-stage5, касса): schemas CashOperation · properties/approvedByMemberId"
+  - pointer: /components/schemas/CashOperation/properties/reversedByOperationId
+    kind: add
+    source: "W5.00; analysis/dor/cash.md §2, §3, §5; design/docs/26-cash.md; эталон «Касса.dc.html» (design-2026-10-19)"
+    reason: "добавлено в контракте этапа 5 (0.12.0-stage5, касса): schemas CashOperation · properties/reversedByOperationId"
+  - pointer: /components/schemas/CashOperation/properties/reconcileStatus
+    kind: add
+    source: "W5.00; analysis/dor/cash.md §2, §3, §5; design/docs/26-cash.md; эталон «Касса.dc.html» (design-2026-10-19)"
+    reason: "добавлено в контракте этапа 5 (0.12.0-stage5, касса): schemas CashOperation · properties/reconcileStatus"
+  - pointer: /components/schemas/CashOperation/properties/own
+    kind: add
+    source: "W5.00; analysis/dor/cash.md §2, §3, §5; design/docs/26-cash.md; эталон «Касса.dc.html» (design-2026-10-19)"
+    reason: "добавлено в контракте этапа 5 (0.12.0-stage5, касса): schemas CashOperation · properties/own"
+  - pointer: /components/schemas/CashOperation/required
+    kind: change
+    source: "W5.00; analysis/dor/cash.md §2, §3, §5; design/docs/26-cash.md; эталон «Касса.dc.html» (design-2026-10-19)"
+    reason: "изменено в контракте этапа 5 (0.12.0-stage5, касса): schemas CashOperation · required"
+  - pointer: /components/schemas/CashOperation/description
+    kind: add
+    source: "W5.00; analysis/dor/cash.md §2, §3, §5; design/docs/26-cash.md; эталон «Касса.dc.html» (design-2026-10-19)"
+    reason: "добавлено в контракте этапа 5 (0.12.0-stage5, касса): schemas CashOperation · description"
+  - pointer: /components/schemas/AdvanceReceipt
+    kind: add
+    source: "W5.00; analysis/dor/cash.md §2, §3, §5; design/docs/26-cash.md; эталон «Касса.dc.html» (design-2026-10-19)"
+    reason: "добавлено в контракте этапа 5 (0.12.0-stage5, касса): schemas AdvanceReceipt"
+  - pointer: /components/schemas/AdvanceReceiptCreate
+    kind: add
+    source: "W5.00; analysis/dor/cash.md §2, §3, §5; design/docs/26-cash.md; эталон «Касса.dc.html» (design-2026-10-19)"
+    reason: "добавлено в контракте этапа 5 (0.12.0-stage5, касса): schemas AdvanceReceiptCreate"
+  - pointer: /components/schemas/AdvanceReceiptDecision
+    kind: add
+    source: "W5.00; analysis/dor/cash.md §2, §3, §5; design/docs/26-cash.md; эталон «Касса.dc.html» (design-2026-10-19)"
+    reason: "добавлено в контракте этапа 5 (0.12.0-stage5, касса): schemas AdvanceReceiptDecision"
+  - pointer: /components/schemas/AdvanceReceiptPage
+    kind: add
+    source: "W5.00; analysis/dor/cash.md §2, §3, §5; design/docs/26-cash.md; эталон «Касса.dc.html» (design-2026-10-19)"
+    reason: "добавлено в контракте этапа 5 (0.12.0-stage5, касса): schemas AdvanceReceiptPage"
+  - pointer: /components/schemas/AppointmentCancel
+    kind: add
+    source: "W5.00; план v2 §4 (W5.20, W5.21); CASH-03; B-6"
+    reason: "добавлено в контракте этапа 5 (0.12.0-stage5, SPA): schemas AppointmentCancel"
+  - pointer: /components/schemas/AppointmentReschedule
+    kind: add
+    source: "W5.00; план v2 §4 (W5.20, W5.21); CASH-03; B-6"
+    reason: "добавлено в контракте этапа 5 (0.12.0-stage5, SPA): schemas AppointmentReschedule"
+  - pointer: /components/schemas/CashAccessPerson
+    kind: add
+    source: "W5.00; analysis/dor/cash.md §2, §3, §5; design/docs/26-cash.md; эталон «Касса.dc.html» (design-2026-10-19)"
+    reason: "добавлено в контракте этапа 5 (0.12.0-stage5, касса): schemas CashAccessPerson"
+  - pointer: /components/schemas/CashAccessPreview
+    kind: add
+    source: "W5.00; analysis/dor/cash.md §2, §3, §5; design/docs/26-cash.md; эталон «Касса.dc.html» (design-2026-10-19)"
+    reason: "добавлено в контракте этапа 5 (0.12.0-stage5, касса): schemas CashAccessPreview"
+  - pointer: /components/schemas/CashAccountMy
+    kind: add
+    source: "W5.00; analysis/dor/cash.md §2, §3, §5; design/docs/26-cash.md; эталон «Касса.dc.html» (design-2026-10-19)"
+    reason: "добавлено в контракте этапа 5 (0.12.0-stage5, касса): schemas CashAccountMy"
+  - pointer: /components/schemas/CashAdvanceIssue
+    kind: add
+    source: "W5.00; analysis/dor/cash.md §2, §3, §5; design/docs/26-cash.md; эталон «Касса.dc.html» (design-2026-10-19)"
+    reason: "добавлено в контракте этапа 5 (0.12.0-stage5, касса): schemas CashAdvanceIssue"
+  - pointer: /components/schemas/CashAdvanceReturn
+    kind: add
+    source: "W5.00; analysis/dor/cash.md §2, §3, §5; design/docs/26-cash.md; эталон «Касса.dc.html» (design-2026-10-19)"
+    reason: "добавлено в контракте этапа 5 (0.12.0-stage5, касса): schemas CashAdvanceReturn"
+  - pointer: /components/schemas/CashApprovalDecision
+    kind: add
+    source: "W5.00; analysis/dor/cash.md §2, §3, §5; design/docs/26-cash.md; эталон «Касса.dc.html» (design-2026-10-19)"
+    reason: "добавлено в контракте этапа 5 (0.12.0-stage5, касса): schemas CashApprovalDecision"
+  - pointer: /components/schemas/CashApprovalRequest
+    kind: add
+    source: "W5.00; analysis/dor/cash.md §2, §3, §5; design/docs/26-cash.md; эталон «Касса.dc.html» (design-2026-10-19)"
+    reason: "добавлено в контракте этапа 5 (0.12.0-stage5, касса): schemas CashApprovalRequest"
+  - pointer: /components/schemas/CashApprovalRequestPage
+    kind: add
+    source: "W5.00; analysis/dor/cash.md §2, §3, §5; design/docs/26-cash.md; эталон «Касса.dc.html» (design-2026-10-19)"
+    reason: "добавлено в контракте этапа 5 (0.12.0-stage5, касса): schemas CashApprovalRequestPage"
+  - pointer: /components/schemas/CashCategory
+    kind: add
+    source: "W5.00; analysis/dor/cash.md §2, §3, §5; design/docs/26-cash.md; эталон «Касса.dc.html» (design-2026-10-19)"
+    reason: "добавлено в контракте этапа 5 (0.12.0-stage5, касса): schemas CashCategory"
+  - pointer: /components/schemas/CashCategoryList
+    kind: add
+    source: "W5.00; analysis/dor/cash.md §2, §3, §5; design/docs/26-cash.md; эталон «Касса.dc.html» (design-2026-10-19)"
+    reason: "добавлено в контракте этапа 5 (0.12.0-stage5, касса): schemas CashCategoryList"
+  - pointer: /components/schemas/CashDuplicateList
+    kind: add
+    source: "W5.00; analysis/dor/cash.md §2, §3, §5; design/docs/26-cash.md; эталон «Касса.dc.html» (design-2026-10-19)"
+    reason: "добавлено в контракте этапа 5 (0.12.0-stage5, касса): schemas CashDuplicateList"
+  - pointer: /components/schemas/CashLimits
+    kind: add
+    source: "W5.00; analysis/dor/cash.md §2, §3, §5; design/docs/26-cash.md; эталон «Касса.dc.html» (design-2026-10-19)"
+    reason: "добавлено в контракте этапа 5 (0.12.0-stage5, касса): schemas CashLimits"
+  - pointer: /components/schemas/CashOperationSourceLink
+    kind: add
+    source: "W5.00; analysis/dor/cash.md §2, §3, §5; design/docs/26-cash.md; эталон «Касса.dc.html» (design-2026-10-19)"
+    reason: "добавлено в контракте этапа 5 (0.12.0-stage5, касса): schemas CashOperationSourceLink"
+  - pointer: /components/schemas/CashProposal
+    kind: add
+    source: "W5.00; analysis/dor/cash.md §2, §3, §5; design/docs/26-cash.md; эталон «Касса.dc.html» (design-2026-10-19)"
+    reason: "добавлено в контракте этапа 5 (0.12.0-stage5, касса): schemas CashProposal"
+  - pointer: /components/schemas/CashProposalDismiss
+    kind: add
+    source: "W5.00; analysis/dor/cash.md §2, §3, §5; design/docs/26-cash.md; эталон «Касса.dc.html» (design-2026-10-19)"
+    reason: "добавлено в контракте этапа 5 (0.12.0-stage5, касса): schemas CashProposalDismiss"
+  - pointer: /components/schemas/CashProposalDismissal
+    kind: add
+    source: "W5.00; analysis/dor/cash.md §2, §3, §5; design/docs/26-cash.md; эталон «Касса.dc.html» (design-2026-10-19)"
+    reason: "добавлено в контракте этапа 5 (0.12.0-stage5, касса): schemas CashProposalDismissal"
+  - pointer: /components/schemas/CashProposalPage
+    kind: add
+    source: "W5.00; analysis/dor/cash.md §2, §3, §5; design/docs/26-cash.md; эталон «Касса.dc.html» (design-2026-10-19)"
+    reason: "добавлено в контракте этапа 5 (0.12.0-stage5, касса): schemas CashProposalPage"
+  - pointer: /components/schemas/CashProposalPart
+    kind: add
+    source: "W5.00; analysis/dor/cash.md §2, §3, §5; design/docs/26-cash.md; эталон «Касса.dc.html» (design-2026-10-19)"
+    reason: "добавлено в контракте этапа 5 (0.12.0-stage5, касса): schemas CashProposalPart"
+  - pointer: /components/schemas/CashProposalPost
+    kind: add
+    source: "W5.00; analysis/dor/cash.md §2, §3, §5; design/docs/26-cash.md; эталон «Касса.dc.html» (design-2026-10-19)"
+    reason: "добавлено в контракте этапа 5 (0.12.0-stage5, касса): schemas CashProposalPost"
+  - pointer: /components/schemas/CashProposalPostPart
+    kind: add
+    source: "W5.00; analysis/dor/cash.md §2, §3, §5; design/docs/26-cash.md; эталон «Касса.dc.html» (design-2026-10-19)"
+    reason: "добавлено в контракте этапа 5 (0.12.0-stage5, касса): schemas CashProposalPostPart"
+  - pointer: /components/schemas/CashProposalPostResult
+    kind: add
+    source: "W5.00; analysis/dor/cash.md §2, §3, §5; design/docs/26-cash.md; эталон «Касса.dc.html» (design-2026-10-19)"
+    reason: "добавлено в контракте этапа 5 (0.12.0-stage5, касса): schemas CashProposalPostResult"
+  - pointer: /components/schemas/CashReceipt
+    kind: add
+    source: "W5.00; analysis/dor/cash.md §2, §3, §5; design/docs/26-cash.md; эталон «Касса.dc.html» (design-2026-10-19)"
+    reason: "добавлено в контракте этапа 5 (0.12.0-stage5, касса): schemas CashReceipt"
+  - pointer: /components/schemas/CashReverseRequest
+    kind: add
+    source: "W5.00; analysis/dor/cash.md §2, §3, §5; design/docs/26-cash.md; эталон «Касса.dc.html» (design-2026-10-19)"
+    reason: "добавлено в контракте этапа 5 (0.12.0-stage5, касса): schemas CashReverseRequest"
+  - pointer: /components/schemas/CashShift
+    kind: add
+    source: "W5.00; analysis/dor/cash.md §2, §3, §5; design/docs/26-cash.md; эталон «Касса.dc.html» (design-2026-10-19)"
+    reason: "добавлено в контракте этапа 5 (0.12.0-stage5, касса): schemas CashShift"
+  - pointer: /components/schemas/CashShiftClose
+    kind: add
+    source: "W5.00; analysis/dor/cash.md §2, §3, §5; design/docs/26-cash.md; эталон «Касса.dc.html» (design-2026-10-19)"
+    reason: "добавлено в контракте этапа 5 (0.12.0-stage5, касса): schemas CashShiftClose"
+  - pointer: /components/schemas/CashShiftCloseAttempt
+    kind: add
+    source: "W5.00; analysis/dor/cash.md §2, §3, §5; design/docs/26-cash.md; эталон «Касса.dc.html» (design-2026-10-19)"
+    reason: "добавлено в контракте этапа 5 (0.12.0-stage5, касса): schemas CashShiftCloseAttempt"
+  - pointer: /components/schemas/CashShiftDecision
+    kind: add
+    source: "W5.00; analysis/dor/cash.md §2, §3, §5; design/docs/26-cash.md; эталон «Касса.dc.html» (design-2026-10-19)"
+    reason: "добавлено в контракте этапа 5 (0.12.0-stage5, касса): schemas CashShiftDecision"
+  - pointer: /components/schemas/CashShiftDiff
+    kind: add
+    source: "W5.00; analysis/dor/cash.md §2, §3, §5; design/docs/26-cash.md; эталон «Касса.dc.html» (design-2026-10-19)"
+    reason: "добавлено в контракте этапа 5 (0.12.0-stage5, касса): schemas CashShiftDiff"
+  - pointer: /components/schemas/CashShiftExpected
+    kind: add
+    source: "W5.00; analysis/dor/cash.md §2, §3, §5; design/docs/26-cash.md; эталон «Касса.dc.html» (design-2026-10-19)"
+    reason: "добавлено в контракте этапа 5 (0.12.0-stage5, касса): schemas CashShiftExpected"
+  - pointer: /components/schemas/CashShiftOpen
+    kind: add
+    source: "W5.00; analysis/dor/cash.md §2, §3, §5; design/docs/26-cash.md; эталон «Касса.dc.html» (design-2026-10-19)"
+    reason: "добавлено в контракте этапа 5 (0.12.0-stage5, касса): schemas CashShiftOpen"
+  - pointer: /components/schemas/CashShiftPage
+    kind: add
+    source: "W5.00; analysis/dor/cash.md §2, §3, §5; design/docs/26-cash.md; эталон «Касса.dc.html» (design-2026-10-19)"
+    reason: "добавлено в контракте этапа 5 (0.12.0-stage5, касса): schemas CashShiftPage"
+  - pointer: /components/schemas/CashShiftReview
+    kind: add
+    source: "W5.00; analysis/dor/cash.md §2, §3, §5; design/docs/26-cash.md; эталон «Касса.dc.html» (design-2026-10-19)"
+    reason: "добавлено в контракте этапа 5 (0.12.0-stage5, касса): schemas CashShiftReview"
+  - pointer: /components/schemas/CashShiftTerminal
+    kind: add
+    source: "W5.00; analysis/dor/cash.md §2, §3, §5; design/docs/26-cash.md; эталон «Касса.dc.html» (design-2026-10-19)"
+    reason: "добавлено в контракте этапа 5 (0.12.0-stage5, касса): schemas CashShiftTerminal"
+  - pointer: /components/schemas/CashShiftZ
+    kind: add
+    source: "W5.00; analysis/dor/cash.md §2, §3, §5; design/docs/26-cash.md; эталон «Касса.dc.html» (design-2026-10-19)"
+    reason: "добавлено в контракте этапа 5 (0.12.0-stage5, касса): schemas CashShiftZ"
+  - pointer: /components/schemas/CashSourceLinkRequest
+    kind: add
+    source: "W5.00; analysis/dor/cash.md §2, §3, §5; design/docs/26-cash.md; эталон «Касса.dc.html» (design-2026-10-19)"
+    reason: "добавлено в контракте этапа 5 (0.12.0-stage5, касса): schemas CashSourceLinkRequest"
+  - pointer: /components/schemas/CashSourceRef
+    kind: add
+    source: "W5.00; analysis/dor/cash.md §2, §3, §5; design/docs/26-cash.md; эталон «Касса.dc.html» (design-2026-10-19)"
+    reason: "добавлено в контракте этапа 5 (0.12.0-stage5, касса): schemas CashSourceRef"
+  - pointer: /components/schemas/CashTransfer
+    kind: add
+    source: "W5.00; analysis/dor/cash.md §2, §3, §5; design/docs/26-cash.md; эталон «Касса.dc.html» (design-2026-10-19)"
+    reason: "добавлено в контракте этапа 5 (0.12.0-stage5, касса): schemas CashTransfer"
+  - pointer: /components/schemas/CashTransferCreate
+    kind: add
+    source: "W5.00; analysis/dor/cash.md §2, §3, §5; design/docs/26-cash.md; эталон «Касса.dc.html» (design-2026-10-19)"
+    reason: "добавлено в контракте этапа 5 (0.12.0-stage5, касса): schemas CashTransferCreate"
+  - pointer: /components/schemas/CashTransferDecision
+    kind: add
+    source: "W5.00; analysis/dor/cash.md §2, §3, §5; design/docs/26-cash.md; эталон «Касса.dc.html» (design-2026-10-19)"
+    reason: "добавлено в контракте этапа 5 (0.12.0-stage5, касса): schemas CashTransferDecision"
+  - pointer: /components/schemas/CashTransferPage
+    kind: add
+    source: "W5.00; analysis/dor/cash.md §2, §3, §5; design/docs/26-cash.md; эталон «Касса.dc.html» (design-2026-10-19)"
+    reason: "добавлено в контракте этапа 5 (0.12.0-stage5, касса): schemas CashTransferPage"
+  - pointer: /components/schemas/InventoryBalance
+    kind: add
+    source: "W5.00; план v2 §4 (W5.10, W5.11), D-20 комплекта; B-6 (склада в прототипе нет)"
+    reason: "добавлено в контракте этапа 5 (0.12.0-stage5, склад): schemas InventoryBalance"
+  - pointer: /components/schemas/InventoryBalancePage
+    kind: add
+    source: "W5.00; план v2 §4 (W5.10, W5.11), D-20 комплекта; B-6 (склада в прототипе нет)"
+    reason: "добавлено в контракте этапа 5 (0.12.0-stage5, склад): schemas InventoryBalancePage"
+  - pointer: /components/schemas/InventoryItemPatch
+    kind: add
+    source: "W5.00; план v2 §4 (W5.10, W5.11), D-20 комплекта; B-6 (склада в прототипе нет)"
+    reason: "добавлено в контракте этапа 5 (0.12.0-stage5, склад): schemas InventoryItemPatch"
+  - pointer: /components/schemas/InventoryLotBalance
+    kind: add
+    source: "W5.00; план v2 §4 (W5.10, W5.11), D-20 комплекта; B-6 (склада в прототипе нет)"
+    reason: "добавлено в контракте этапа 5 (0.12.0-stage5, склад): schemas InventoryLotBalance"
+  - pointer: /components/schemas/InventoryReservation
+    kind: add
+    source: "W5.00; план v2 §4 (W5.10, W5.11), D-20 комплекта; B-6 (склада в прототипе нет)"
+    reason: "добавлено в контракте этапа 5 (0.12.0-stage5, склад): schemas InventoryReservation"
+  - pointer: /components/schemas/InventoryReservationCreate
+    kind: add
+    source: "W5.00; план v2 §4 (W5.10, W5.11), D-20 комплекта; B-6 (склада в прототипе нет)"
+    reason: "добавлено в контракте этапа 5 (0.12.0-stage5, склад): schemas InventoryReservationCreate"
+  - pointer: /components/schemas/InventoryReservationLine
+    kind: add
+    source: "W5.00; план v2 §4 (W5.10, W5.11), D-20 комплекта; B-6 (склада в прототипе нет)"
+    reason: "добавлено в контракте этапа 5 (0.12.0-stage5, склад): schemas InventoryReservationLine"
+  - pointer: /components/schemas/InventoryReservationPage
+    kind: add
+    source: "W5.00; план v2 §4 (W5.10, W5.11), D-20 комплекта; B-6 (склада в прототипе нет)"
+    reason: "добавлено в контракте этапа 5 (0.12.0-stage5, склад): schemas InventoryReservationPage"
+  - pointer: /components/schemas/SpaServicePatch
+    kind: add
+    source: "W5.00; план v2 §4 (W5.20, W5.21); CASH-03; B-6"
+    reason: "добавлено в контракте этапа 5 (0.12.0-stage5, SPA): schemas SpaServicePatch"
+  - pointer: /components/schemas/Warehouse
+    kind: add
+    source: "W5.00; план v2 §4 (W5.10, W5.11), D-20 комплекта; B-6 (склада в прототипе нет)"
+    reason: "добавлено в контракте этапа 5 (0.12.0-stage5, склад): schemas Warehouse"
+  - pointer: /components/schemas/WarehouseCreate
+    kind: add
+    source: "W5.00; план v2 §4 (W5.10, W5.11), D-20 комплекта; B-6 (склада в прототипе нет)"
+    reason: "добавлено в контракте этапа 5 (0.12.0-stage5, склад): schemas WarehouseCreate"
+  - pointer: /components/schemas/WarehousePage
+    kind: add
+    source: "W5.00; план v2 §4 (W5.10, W5.11), D-20 комплекта; B-6 (склада в прототипе нет)"
+    reason: "добавлено в контракте этапа 5 (0.12.0-stage5, склад): schemas WarehousePage"

@@ -202,6 +202,25 @@ codes:
         title: У формы нет ответов, которые участник может прочитать, — выгружать нечего
         ui: Ответов пока нет
         source: W4.05; dc:798 («Выгрузить ответы в CSV» без ответов)
+      insufficient_stock:
+        title: На складе недостаточно материала (остаток или резерв)
+        ui: Не хватает материала на складе
+        source: "W5.00; склад, касса (analysis/dor/cash.md §2.4)"
+      lot_expired:
+        title: Партия с истёкшим сроком годности
+        ui: Срок годности партии истёк
+        source: "W5.00; склад, касса (analysis/dor/cash.md §2.4)"
+      reservation_not_active:
+        title: Резерв уже снят или израсходован
+        source: "W5.00; склад, касса (analysis/dor/cash.md §2.4)"
+      shift_not_open:
+        title: У кассы нет открытой смены
+        ui: Смена не открыта
+        source: "W5.00; склад, касса (analysis/dor/cash.md §2.4)"
+      transfer_decided:
+        title: Перемещение уже принято или отклонено
+        ui: Перемещение уже принято
+        source: "W5.00; склад, касса (analysis/dor/cash.md §2.4)"
   separation_of_duties_conflict:
     status: 409
     title: Финансовое право + функция driver
@@ -395,6 +414,36 @@ codes:
     ui: «Выбор уже закрыт», перечитать смену; данные не меняются
     retryable: false
     source: D-35 комплекта (docs/29); W2.71
+  shift_closed:
+    status: 409
+    title: Смена кассы закрыта
+    ui: Проведите в открытую смену или откройте новую
+    retryable: false
+    source: "W5.00 · analysis/dor/cash.md §2.4"
+  duplicate_source:
+    status: 409
+    title: Источник уже проведён в кассе
+    ui: Этот источник уже проведён — обновите «Входящие»
+    retryable: false
+    source: "W5.00 · analysis/dor/cash.md §2.4"
+  duplicate_receipt:
+    status: 409
+    title: Чек с таким № ФД уже внесён
+    ui: Чек с таким номером ФД уже внесён
+    retryable: false
+    source: "W5.00 · analysis/dor/cash.md §2.4"
+  self_approval:
+    status: 403
+    title: Автор не принимает собственное решение
+    ui: Решение принимает другой сотрудник
+    retryable: false
+    source: "W5.00 · analysis/dor/cash.md §2.4"
+  insufficient_funds:
+    status: 409
+    title: В кассе недостаточно средств
+    ui: В кассе недостаточно средств для операции
+    retryable: false
+    source: "W5.00 · analysis/dor/cash.md §2.4"
 client_states:
   offline:
     title: Нет сети, черновик на устройстве

@@ -14,6 +14,8 @@ export interface OperationInfo {
   stage2: boolean;
   /** Операция тегов Calendar (W4.06), Branding (W4.07) на экране этапа 4: хендлер src/msw/<модуль>/, примеры, кейсы. */
   stage4: boolean;
+  /** Операция тега Cash на экране этапа 5 (W5.00): хендлер src/msw/cash/, примеры, кейсы. */
+  stage5: boolean;
   permissions: string[];
   mode: 'all' | 'any';
   scope: string;

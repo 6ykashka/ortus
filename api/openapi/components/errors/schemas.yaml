@@ -56,3 +56,8 @@ ProblemCode:
     - tier_below_usage
     - not_implemented
     - offer_closed
+    - shift_closed
+    - duplicate_source
+    - duplicate_receipt
+    - self_approval
+    - insufficient_funds

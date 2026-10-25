@@ -1,0 +1,21 @@
+{
+  "id": "da14d1a0-5094-5b16-a839-7ad4d0860694",
+  "fromAccountId": "27e3a4c8-20ac-5663-9eb3-6ea3c9f708b9",
+  "toAccountId": "7dfc0a25-f62d-5637-892b-e28d94e99832",
+  "amount": {
+    "amountMinor": 2000000,
+    "currency": "RUB"
+  },
+  "note": "Сдача в сейф",
+  "purpose": "transfer",
+  "status": "transit",
+  "sentByMemberId": "b8df06ec-317e-5f46-b54c-e76603e41b5b",
+  "sentAt": "2026-10-01T07:30:00Z",
+  "decidedByMemberId": null,
+  "decidedAt": null,
+  "reason": null,
+  "outOperationId": "39354720-c647-533e-9435-f1308bd05aef",
+  "inOperationId": null,
+  "backOperationId": null,
+  "revision": 1
+}

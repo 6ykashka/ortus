@@ -18,6 +18,8 @@ const ADDED = {
   inventory: [
     'inventory.items.read',
     'inventory.items.manage',
+    'inventory.warehouses.manage',
+    'inventory.consumption.override',
     'inventory.movements.read',
     'inventory.movements.post',
     'inventory.consume',
@@ -30,7 +32,26 @@ const ADDED = {
     'spa.appointments.perform',
     'spa.appointments.complete',
   ],
-  cash: ['cash.read', 'cash.post', 'cash.manage'],
+  // W5.00 (0.12.0-stage5): 17 ключей docs/26-cash.md и cash.export; cash.manage → cash.accounts.manage.
+  cash: [
+    'cash.read',
+    'cash.balance.read',
+    'cash.post',
+    'cash.proposals.post',
+    'cash.shift.operate',
+    'cash.refund',
+    'cash.transfer',
+    'cash.advance.issue',
+    'cash.approve',
+    'cash.reconcile',
+    'cash.reverse',
+    'cash.payroll.post',
+    'cash.reports.finance',
+    'cash.accounts.manage',
+    'cash.period.close',
+    'cash.advance.self',
+    'cash.export',
+  ],
 };
 // W4.04 (контракт «Базы знаний», docs/23-knowledge-spaces.md «Новые права», knowledge.md §3.1): к областям ключей
 // core.knowledge добавлены space, page, relation (надмножество 11, порядок 11 — в начале), knowledge.publish — уровень
@@ -108,14 +129,14 @@ describe('каталог прав api/permissions.yaml', () => {
       assert.equal(catalog.modules[mod]?.proposed, true, `модуль ${mod} помечен proposed`);
       assert.deepEqual(Object.keys(catalog.modules[mod].actions), keys, mod);
     }
-    assert.equal(Object.values(ADDED).flat().length, 14);
+    assert.equal(Object.values(ADDED).flat().length, 30);
     const assign = actions.get('forms.responses.assign');
     assert.ok(assign, 'нет forms.responses.assign (x-field-permissions reviewFormResponse)');
     assert.equal(assign.module, 'core.forms');
     assert.deepEqual(assign.scopes, ['tenant', 'unit', 'project']);
     assert.match(assign.note ?? '', /PROPOSED W0\.07/);
     for (const k of W404_KEYS) assert.equal(actions.get(k)?.module, 'core.knowledge', k);
-    assert.equal(actions.size, 123 + ADDED_LATER.length + W404_KEYS.length);
+    assert.equal(actions.size, 123 + 16 + ADDED_LATER.length + W404_KEYS.length);
   });
 
   it('каждый x-permissions бандла есть в каталоге', () => {

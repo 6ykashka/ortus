@@ -19,25 +19,25 @@ import (
 
 // Defines values for AppointmentStatus.
 const (
-	Cancelled               AppointmentStatus = "cancelled"
-	Completed               AppointmentStatus = "completed"
-	Confirmed               AppointmentStatus = "confirmed"
-	NoShow                  AppointmentStatus = "no_show"
-	PerformedPendingPosting AppointmentStatus = "performed_pending_posting"
+	AppointmentStatusCancelled               AppointmentStatus = "cancelled"
+	AppointmentStatusCompleted               AppointmentStatus = "completed"
+	AppointmentStatusConfirmed               AppointmentStatus = "confirmed"
+	AppointmentStatusNoShow                  AppointmentStatus = "no_show"
+	AppointmentStatusPerformedPendingPosting AppointmentStatus = "performed_pending_posting"
 )
 
 // Valid indicates whether the value is a known member of the AppointmentStatus enum.
 func (e AppointmentStatus) Valid() bool {
 	switch e {
-	case Cancelled:
+	case AppointmentStatusCancelled:
 		return true
-	case Completed:
+	case AppointmentStatusCompleted:
 		return true
-	case Confirmed:
+	case AppointmentStatusConfirmed:
 		return true
-	case NoShow:
+	case AppointmentStatusNoShow:
 		return true
-	case PerformedPendingPosting:
+	case AppointmentStatusPerformedPendingPosting:
 		return true
 	default:
 		return false
@@ -81,6 +81,8 @@ const (
 	ProblemCodeDelegationExceedsGrant     ProblemCode = "delegation_exceeds_grant"
 	ProblemCodeDependencyUnavailable      ProblemCode = "dependency_unavailable"
 	ProblemCodeDowngradeBelowUsage        ProblemCode = "downgrade_below_usage"
+	ProblemCodeDuplicateReceipt           ProblemCode = "duplicate_receipt"
+	ProblemCodeDuplicateSource            ProblemCode = "duplicate_source"
 	ProblemCodeEstimateDraftExists        ProblemCode = "estimate_draft_exists"
 	ProblemCodeEstimateVersionLocked      ProblemCode = "estimate_version_locked"
 	ProblemCodeFeatureRequiresPlan        ProblemCode = "feature_requires_plan"
@@ -89,6 +91,7 @@ const (
 	ProblemCodeIdempotencyInProgress      ProblemCode = "idempotency_in_progress"
 	ProblemCodeIdempotencyKeyReused       ProblemCode = "idempotency_key_reused"
 	ProblemCodeInspectionIncomplete       ProblemCode = "inspection_incomplete"
+	ProblemCodeInsufficientFunds          ProblemCode = "insufficient_funds"
 	ProblemCodeInvalidTransition          ProblemCode = "invalid_transition"
 	ProblemCodeLastOwnerRequired          ProblemCode = "last_owner_required"
 	ProblemCodeMalformedRequest           ProblemCode = "malformed_request"
@@ -112,8 +115,10 @@ const (
 	ProblemCodeRevisionMismatch           ProblemCode = "revision_mismatch"
 	ProblemCodeRevisionRequired           ProblemCode = "revision_required"
 	ProblemCodeSeatsExhausted             ProblemCode = "seats_exhausted"
+	ProblemCodeSelfApproval               ProblemCode = "self_approval"
 	ProblemCodeSeparationOfDutiesConflict ProblemCode = "separation_of_duties_conflict"
 	ProblemCodeSessionExpired             ProblemCode = "session_expired"
+	ProblemCodeShiftClosed                ProblemCode = "shift_closed"
 	ProblemCodeTenantReadOnly             ProblemCode = "tenant_read_only"
 	ProblemCodeTenantSuspended            ProblemCode = "tenant_suspended"
 	ProblemCodeTierBelowUsage             ProblemCode = "tier_below_usage"
@@ -153,6 +158,10 @@ func (e ProblemCode) Valid() bool {
 		return true
 	case ProblemCodeDowngradeBelowUsage:
 		return true
+	case ProblemCodeDuplicateReceipt:
+		return true
+	case ProblemCodeDuplicateSource:
+		return true
 	case ProblemCodeEstimateDraftExists:
 		return true
 	case ProblemCodeEstimateVersionLocked:
@@ -168,6 +177,8 @@ func (e ProblemCode) Valid() bool {
 	case ProblemCodeIdempotencyKeyReused:
 		return true
 	case ProblemCodeInspectionIncomplete:
+		return true
+	case ProblemCodeInsufficientFunds:
 		return true
 	case ProblemCodeInvalidTransition:
 		return true
@@ -215,9 +226,13 @@ func (e ProblemCode) Valid() bool {
 		return true
 	case ProblemCodeSeatsExhausted:
 		return true
+	case ProblemCodeSelfApproval:
+		return true
 	case ProblemCodeSeparationOfDutiesConflict:
 		return true
 	case ProblemCodeSessionExpired:
+		return true
+	case ProblemCodeShiftClosed:
 		return true
 	case ProblemCodeTenantReadOnly:
 		return true
@@ -236,6 +251,33 @@ func (e ProblemCode) Valid() bool {
 	}
 }
 
+// Defines values for ListAppointmentsParamsStatus.
+const (
+	ListAppointmentsParamsStatusCancelled               ListAppointmentsParamsStatus = "cancelled"
+	ListAppointmentsParamsStatusCompleted               ListAppointmentsParamsStatus = "completed"
+	ListAppointmentsParamsStatusConfirmed               ListAppointmentsParamsStatus = "confirmed"
+	ListAppointmentsParamsStatusNoShow                  ListAppointmentsParamsStatus = "no_show"
+	ListAppointmentsParamsStatusPerformedPendingPosting ListAppointmentsParamsStatus = "performed_pending_posting"
+)
+
+// Valid indicates whether the value is a known member of the ListAppointmentsParamsStatus enum.
+func (e ListAppointmentsParamsStatus) Valid() bool {
+	switch e {
+	case ListAppointmentsParamsStatusCancelled:
+		return true
+	case ListAppointmentsParamsStatusCompleted:
+		return true
+	case ListAppointmentsParamsStatusConfirmed:
+		return true
+	case ListAppointmentsParamsStatusNoShow:
+		return true
+	case ListAppointmentsParamsStatusPerformedPendingPosting:
+		return true
+	default:
+		return false
+	}
+}
+
 // Appointment No complete cash ledger or other practitioners schedule is included. Sensitive client fields are resolved by their own field-level grants. Status performed_pending_posting records the factual treatment before inventory accounting closes. It does not claim stock posting or client payment.
 type Appointment struct {
 	// BookingId Examples: 10000000-0000-4000-8000-000000000001
@@ -244,6 +286,9 @@ type Appointment struct {
 	// ClientId Examples: 10000000-0000-4000-8000-000000000001
 	ClientId     Id   `json:"clientId"`
 	EquipmentIds []Id `json:"equipmentIds"`
+
+	// FinalPrice W5.00 (0.12.0-stage5) (CASH-03). The price of the visit by the fact after discount; the cash proposal «визит» takes this amount, not the list price.
+	FinalPrice *Money `json:"finalPrice,omitempty"`
 
 	// Id Examples: 10000000-0000-4000-8000-000000000001
 	Id Id `json:"id"`
@@ -275,10 +320,19 @@ type Appointment struct {
 // AppointmentStatus defines model for Appointment.Status.
 type AppointmentStatus string
 
+// AppointmentCancel defines model for AppointmentCancel.
+type AppointmentCancel struct {
+	// NoShow The client did not come: status no_show instead of cancelled.
+	NoShow *bool  `json:"noShow,omitempty"`
+	Reason string `json:"reason"`
+}
+
 // AppointmentComplete Requires performed_pending_posting. Close accounting and recipe-based inventory issue in one tenant database transaction. Overrides require inventory.consumption.override. A stock shortage returns 409 and leaves the already recorded performance and performed_pending_posting status intact; no negative inventory is silently created. After correction retry the same operation; consume once. Completion does not claim payment.
 type AppointmentComplete struct {
-	Note      *string               `json:"note,omitempty"`
-	Overrides []ConsumptionOverride `json:"overrides"`
+	// FinalPrice W5.00 (0.12.0-stage5) (CASH-03). The price of the visit by the fact after discount; the cash proposal «визит» takes this amount, not the list price.
+	FinalPrice *Money                `json:"finalPrice,omitempty"`
+	Note       *string               `json:"note,omitempty"`
+	Overrides  []ConsumptionOverride `json:"overrides"`
 
 	// WarehouseId Examples: 10000000-0000-4000-8000-000000000001
 	WarehouseId Id `json:"warehouseId"`
@@ -334,6 +388,27 @@ type AppointmentPerformance struct {
 	//
 	// Examples: 2026-10-05T06:00:00Z
 	PerformedAt Instant `json:"performedAt"`
+}
+
+// AppointmentReschedule defines model for AppointmentReschedule.
+type AppointmentReschedule struct {
+	EquipmentIds *[]Id `json:"equipmentIds,omitempty"`
+
+	// PractitionerMemberId Examples: 10000000-0000-4000-8000-000000000001
+	PractitionerMemberId *Id `json:"practitionerMemberId,omitempty"`
+
+	// RoomId Examples: 10000000-0000-4000-8000-000000000001
+	RoomId *Id `json:"roomId,omitempty"`
+
+	// StartsAt UTC RFC3339 instant. Write requests must use the Z suffix; retain the IANA timezone separately for local calendars.
+	//
+	// Examples: 2026-10-05T06:00:00Z
+	StartsAt Instant `json:"startsAt"`
+
+	// TimeZone IANA timezone, checked against the deployed tz database.
+	//
+	// Examples: Europe/Moscow
+	TimeZone TimeZone `json:"timeZone"`
 }
 
 // ConsumptionOverride defines model for ConsumptionOverride.
@@ -451,6 +526,17 @@ type SpaServicePage struct {
 	NextCursor *string      `json:"nextCursor"`
 }
 
+// SpaServicePatch W5.00 (0.12.0-stage5). Edit a service and its recipe («техкарта»); the revision grows, booked appointments keep their snapshot.
+type SpaServicePatch struct {
+	BufferAfterMinutes   *int64                   `json:"bufferAfterMinutes,omitempty"`
+	BufferBeforeMinutes  *int64                   `json:"bufferBeforeMinutes,omitempty"`
+	DurationMinutes      *int64                   `json:"durationMinutes,omitempty"`
+	Name                 *string                  `json:"name,omitempty"`
+	Price                *Money                   `json:"price,omitempty"`
+	Recipe               *[]ConsumptionRecipeLine `json:"recipe,omitempty"`
+	RequiredEquipmentIds *[]Id                    `json:"requiredEquipmentIds,omitempty"`
+}
+
 // TimeWindow Half-open interval [startsAt, endsAt); startsAt < endsAt. Client labels never replace UTC values.
 type TimeWindow struct {
 	// EndsAt UTC RFC3339 instant. Write requests must use the Z suffix; retain the IANA timezone separately for local calendars.
@@ -507,6 +593,27 @@ type AutomationId = Id
 // BookingId Examples: 10000000-0000-4000-8000-000000000001
 type BookingId = Id
 
+// CashAccountId Examples: 10000000-0000-4000-8000-000000000001
+type CashAccountId = Id
+
+// CashApprovalRequestId Examples: 10000000-0000-4000-8000-000000000001
+type CashApprovalRequestId = Id
+
+// CashOperationId Examples: 10000000-0000-4000-8000-000000000001
+type CashOperationId = Id
+
+// CashProposalKey defines model for cashProposalKey.
+type CashProposalKey = string
+
+// CashReceiptId Examples: 10000000-0000-4000-8000-000000000001
+type CashReceiptId = Id
+
+// CashShiftId Examples: 10000000-0000-4000-8000-000000000001
+type CashShiftId = Id
+
+// CashTransferId Examples: 10000000-0000-4000-8000-000000000001
+type CashTransferId = Id
+
 // CategoryCode defines model for categoryCode.
 type CategoryCode = string
 
@@ -551,6 +658,12 @@ type ImportId = Id
 
 // InspectionId Examples: 10000000-0000-4000-8000-000000000001
 type InspectionId = Id
+
+// InventoryItemId Examples: 10000000-0000-4000-8000-000000000001
+type InventoryItemId = Id
+
+// InventoryReservationId Examples: 10000000-0000-4000-8000-000000000001
+type InventoryReservationId = Id
 
 // MemberId Examples: 10000000-0000-4000-8000-000000000001
 type MemberId = Id
@@ -599,6 +712,9 @@ type RoleId = Id
 
 // RuleId Examples: 10000000-0000-4000-8000-000000000001
 type RuleId = Id
+
+// SpaServiceId Examples: 10000000-0000-4000-8000-000000000001
+type SpaServiceId = Id
 
 // SpaceId Examples: 10000000-0000-4000-8000-000000000001
 type SpaceId = Id
@@ -663,9 +779,16 @@ type Validation = Problem
 // ListAppointmentsParams defines parameters for ListAppointments.
 type ListAppointmentsParams struct {
 	// Cursor Opaque cursor from the preceding response; no offset pagination.
-	Cursor *Cursor `form:"cursor,omitempty" json:"cursor,omitempty"`
-	Limit  *Limit  `form:"limit,omitempty" json:"limit,omitempty"`
+	Cursor               *Cursor                       `form:"cursor,omitempty" json:"cursor,omitempty"`
+	Limit                *Limit                        `form:"limit,omitempty" json:"limit,omitempty"`
+	Status               *ListAppointmentsParamsStatus `form:"status,omitempty" json:"status,omitempty"`
+	From                 *Instant                      `form:"from,omitempty" json:"from,omitempty"`
+	To                   *Instant                      `form:"to,omitempty" json:"to,omitempty"`
+	PractitionerMemberId *Id                           `form:"practitionerMemberId,omitempty" json:"practitionerMemberId,omitempty"`
 }
+
+// ListAppointmentsParamsStatus defines parameters for ListAppointments.
+type ListAppointmentsParamsStatus string
 
 // CreateAppointmentParams defines parameters for CreateAppointment.
 type CreateAppointmentParams struct {
@@ -677,6 +800,21 @@ type CreateAppointmentParams struct {
 
 	// Origin Required and checked against the deployment allowlist for cookie-authenticated state changes and browser public-form submissions/uploads. Never accept wildcard with credentialed requests.
 	Origin *Origin `json:"Origin,omitempty"`
+}
+
+// CancelAppointmentParams defines parameters for CancelAppointment.
+type CancelAppointmentParams struct {
+	// IdempotencyKey Stable per intended command. Retain record at least 7 days; financial deduplication also retains a durable tenant+actor+operation+key digest receipt. Key is scoped to tenant+actor+operation. Reuse only for an identical request.
+	IdempotencyKey IdempotencyKey `json:"Idempotency-Key"`
+
+	// XCSRFToken Required for cookie-authenticated state changes; not required with bearer-only authentication. Invalid/missing token or Origin yields 403. Conditional requirement cannot be represented by OpenAPI required=true.
+	XCSRFToken *Csrf `json:"X-CSRF-Token,omitempty"`
+
+	// Origin Required and checked against the deployment allowlist for cookie-authenticated state changes and browser public-form submissions/uploads. Never accept wildcard with credentialed requests.
+	Origin *Origin `json:"Origin,omitempty"`
+
+	// IfMatch Strong ETag obtained from latest GET or mutation response. * is not accepted. Missing=428; stale=412. Idempotent replay is checked before current revision precondition.
+	IfMatch IfMatch `json:"If-Match"`
 }
 
 // CompleteAppointmentParams defines parameters for CompleteAppointment.
@@ -709,6 +847,21 @@ type RecordAppointmentPerformanceParams struct {
 	IfMatch IfMatch `json:"If-Match"`
 }
 
+// RescheduleAppointmentParams defines parameters for RescheduleAppointment.
+type RescheduleAppointmentParams struct {
+	// IdempotencyKey Stable per intended command. Retain record at least 7 days; financial deduplication also retains a durable tenant+actor+operation+key digest receipt. Key is scoped to tenant+actor+operation. Reuse only for an identical request.
+	IdempotencyKey IdempotencyKey `json:"Idempotency-Key"`
+
+	// XCSRFToken Required for cookie-authenticated state changes; not required with bearer-only authentication. Invalid/missing token or Origin yields 403. Conditional requirement cannot be represented by OpenAPI required=true.
+	XCSRFToken *Csrf `json:"X-CSRF-Token,omitempty"`
+
+	// Origin Required and checked against the deployment allowlist for cookie-authenticated state changes and browser public-form submissions/uploads. Never accept wildcard with credentialed requests.
+	Origin *Origin `json:"Origin,omitempty"`
+
+	// IfMatch Strong ETag obtained from latest GET or mutation response. * is not accepted. Missing=428; stale=412. Idempotent replay is checked before current revision precondition.
+	IfMatch IfMatch `json:"If-Match"`
+}
+
 // ListSpaServicesParams defines parameters for ListSpaServices.
 type ListSpaServicesParams struct {
 	// Cursor Opaque cursor from the preceding response; no offset pagination.
@@ -728,8 +881,26 @@ type CreateSpaServiceParams struct {
 	Origin *Origin `json:"Origin,omitempty"`
 }
 
+// UpdateSpaServiceParams defines parameters for UpdateSpaService.
+type UpdateSpaServiceParams struct {
+	// IdempotencyKey Stable per intended command. Retain record at least 7 days; financial deduplication also retains a durable tenant+actor+operation+key digest receipt. Key is scoped to tenant+actor+operation. Reuse only for an identical request.
+	IdempotencyKey IdempotencyKey `json:"Idempotency-Key"`
+
+	// XCSRFToken Required for cookie-authenticated state changes; not required with bearer-only authentication. Invalid/missing token or Origin yields 403. Conditional requirement cannot be represented by OpenAPI required=true.
+	XCSRFToken *Csrf `json:"X-CSRF-Token,omitempty"`
+
+	// Origin Required and checked against the deployment allowlist for cookie-authenticated state changes and browser public-form submissions/uploads. Never accept wildcard with credentialed requests.
+	Origin *Origin `json:"Origin,omitempty"`
+
+	// IfMatch Strong ETag obtained from latest GET or mutation response. * is not accepted. Missing=428; stale=412. Idempotent replay is checked before current revision precondition.
+	IfMatch IfMatch `json:"If-Match"`
+}
+
 // CreateAppointmentJSONRequestBody defines body for CreateAppointment for application/json ContentType.
 type CreateAppointmentJSONRequestBody = AppointmentCreate
+
+// CancelAppointmentJSONRequestBody defines body for CancelAppointment for application/json ContentType.
+type CancelAppointmentJSONRequestBody = AppointmentCancel
 
 // CompleteAppointmentJSONRequestBody defines body for CompleteAppointment for application/json ContentType.
 type CompleteAppointmentJSONRequestBody = AppointmentComplete
@@ -737,8 +908,14 @@ type CompleteAppointmentJSONRequestBody = AppointmentComplete
 // RecordAppointmentPerformanceJSONRequestBody defines body for RecordAppointmentPerformance for application/json ContentType.
 type RecordAppointmentPerformanceJSONRequestBody = AppointmentPerformance
 
+// RescheduleAppointmentJSONRequestBody defines body for RescheduleAppointment for application/json ContentType.
+type RescheduleAppointmentJSONRequestBody = AppointmentReschedule
+
 // CreateSpaServiceJSONRequestBody defines body for CreateSpaService for application/json ContentType.
 type CreateSpaServiceJSONRequestBody = SpaServiceCreate
+
+// UpdateSpaServiceJSONRequestBody defines body for UpdateSpaService for application/json ContentType.
+type UpdateSpaServiceJSONRequestBody = SpaServicePatch
 
 // ServerInterface represents all server handlers.
 type ServerInterface interface {
@@ -751,18 +928,30 @@ type ServerInterface interface {
 	// GetAppointment Read allowed appointment and revision
 	// (GET /api/v1/tenants/{tenantId}/spa/appointments/{appointmentId})
 	GetAppointment(w http.ResponseWriter, r *http.Request, tenantId TenantId, appointmentId AppointmentId)
+	// CancelAppointment Cancel a confirmed appointment and release its resources
+	// (POST /api/v1/tenants/{tenantId}/spa/appointments/{appointmentId}/cancel)
+	CancelAppointment(w http.ResponseWriter, r *http.Request, tenantId TenantId, appointmentId AppointmentId, params CancelAppointmentParams)
 	// CompleteAppointment Complete treatment and consume materials once
 	// (POST /api/v1/tenants/{tenantId}/spa/appointments/{appointmentId}/completion)
 	CompleteAppointment(w http.ResponseWriter, r *http.Request, tenantId TenantId, appointmentId AppointmentId, params CompleteAppointmentParams)
 	// RecordAppointmentPerformance Record actual treatment before stock posting
 	// (POST /api/v1/tenants/{tenantId}/spa/appointments/{appointmentId}/performance)
 	RecordAppointmentPerformance(w http.ResponseWriter, r *http.Request, tenantId TenantId, appointmentId AppointmentId, params RecordAppointmentPerformanceParams)
+	// RescheduleAppointment Move a confirmed appointment to another time or resources
+	// (POST /api/v1/tenants/{tenantId}/spa/appointments/{appointmentId}/reschedule)
+	RescheduleAppointment(w http.ResponseWriter, r *http.Request, tenantId TenantId, appointmentId AppointmentId, params RescheduleAppointmentParams)
 	// ListSpaServices List scoped service durations and material recipes
 	// (GET /api/v1/tenants/{tenantId}/spa/services)
 	ListSpaServices(w http.ResponseWriter, r *http.Request, tenantId TenantId, params ListSpaServicesParams)
 	// CreateSpaService Create a treatment with duration, buffers and recipe
 	// (POST /api/v1/tenants/{tenantId}/spa/services)
 	CreateSpaService(w http.ResponseWriter, r *http.Request, tenantId TenantId, params CreateSpaServiceParams)
+	// GetSpaService Read a service with its recipe
+	// (GET /api/v1/tenants/{tenantId}/spa/services/{serviceId})
+	GetSpaService(w http.ResponseWriter, r *http.Request, tenantId TenantId, serviceId SpaServiceId)
+	// UpdateSpaService Edit a service: duration, buffers, price, equipment, recipe
+	// (PATCH /api/v1/tenants/{tenantId}/spa/services/{serviceId})
+	UpdateSpaService(w http.ResponseWriter, r *http.Request, tenantId TenantId, serviceId SpaServiceId, params UpdateSpaServiceParams)
 }
 
 // Unimplemented server implementation that returns http.StatusNotImplemented for each endpoint.
@@ -787,6 +976,12 @@ func (_ Unimplemented) GetAppointment(w http.ResponseWriter, r *http.Request, te
 	w.WriteHeader(http.StatusNotImplemented)
 }
 
+// CancelAppointment Cancel a confirmed appointment and release its resources
+// (POST /api/v1/tenants/{tenantId}/spa/appointments/{appointmentId}/cancel)
+func (_ Unimplemented) CancelAppointment(w http.ResponseWriter, r *http.Request, tenantId TenantId, appointmentId AppointmentId, params CancelAppointmentParams) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
 // CompleteAppointment Complete treatment and consume materials once
 // (POST /api/v1/tenants/{tenantId}/spa/appointments/{appointmentId}/completion)
 func (_ Unimplemented) CompleteAppointment(w http.ResponseWriter, r *http.Request, tenantId TenantId, appointmentId AppointmentId, params CompleteAppointmentParams) {
@@ -799,6 +994,12 @@ func (_ Unimplemented) RecordAppointmentPerformance(w http.ResponseWriter, r *ht
 	w.WriteHeader(http.StatusNotImplemented)
 }
 
+// RescheduleAppointment Move a confirmed appointment to another time or resources
+// (POST /api/v1/tenants/{tenantId}/spa/appointments/{appointmentId}/reschedule)
+func (_ Unimplemented) RescheduleAppointment(w http.ResponseWriter, r *http.Request, tenantId TenantId, appointmentId AppointmentId, params RescheduleAppointmentParams) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
 // ListSpaServices List scoped service durations and material recipes
 // (GET /api/v1/tenants/{tenantId}/spa/services)
 func (_ Unimplemented) ListSpaServices(w http.ResponseWriter, r *http.Request, tenantId TenantId, params ListSpaServicesParams) {
@@ -808,6 +1009,18 @@ func (_ Unimplemented) ListSpaServices(w http.ResponseWriter, r *http.Request, t
 // CreateSpaService Create a treatment with duration, buffers and recipe
 // (POST /api/v1/tenants/{tenantId}/spa/services)
 func (_ Unimplemented) CreateSpaService(w http.ResponseWriter, r *http.Request, tenantId TenantId, params CreateSpaServiceParams) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// GetSpaService Read a service with its recipe
+// (GET /api/v1/tenants/{tenantId}/spa/services/{serviceId})
+func (_ Unimplemented) GetSpaService(w http.ResponseWriter, r *http.Request, tenantId TenantId, serviceId SpaServiceId) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// UpdateSpaService Edit a service: duration, buffers, price, equipment, recipe
+// (PATCH /api/v1/tenants/{tenantId}/spa/services/{serviceId})
+func (_ Unimplemented) UpdateSpaService(w http.ResponseWriter, r *http.Request, tenantId TenantId, serviceId SpaServiceId, params UpdateSpaServiceParams) {
 	w.WriteHeader(http.StatusNotImplemented)
 }
 
@@ -860,6 +1073,58 @@ func (siw *ServerInterfaceWrapper) ListAppointments(w http.ResponseWriter, r *ht
 			siw.ErrorHandlerFunc(w, r, &RequiredParamError{ParamName: "limit"})
 		} else {
 			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "limit", Err: err})
+		}
+		return
+	}
+
+	// ------------- Optional query parameter "status" -------------
+
+	err = runtime.BindQueryParameterWithOptions("form", true, false, "status", r.URL.Query(), &params.Status, runtime.BindQueryParameterOptions{Type: "string", Format: ""})
+	if err != nil {
+		var requiredError *runtime.RequiredParameterError
+		if errors.As(err, &requiredError) {
+			siw.ErrorHandlerFunc(w, r, &RequiredParamError{ParamName: "status"})
+		} else {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "status", Err: err})
+		}
+		return
+	}
+
+	// ------------- Optional query parameter "from" -------------
+
+	err = runtime.BindQueryParameterWithOptions("form", true, false, "from", r.URL.Query(), &params.From, runtime.BindQueryParameterOptions{Type: "string", Format: "date-time"})
+	if err != nil {
+		var requiredError *runtime.RequiredParameterError
+		if errors.As(err, &requiredError) {
+			siw.ErrorHandlerFunc(w, r, &RequiredParamError{ParamName: "from"})
+		} else {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "from", Err: err})
+		}
+		return
+	}
+
+	// ------------- Optional query parameter "to" -------------
+
+	err = runtime.BindQueryParameterWithOptions("form", true, false, "to", r.URL.Query(), &params.To, runtime.BindQueryParameterOptions{Type: "string", Format: "date-time"})
+	if err != nil {
+		var requiredError *runtime.RequiredParameterError
+		if errors.As(err, &requiredError) {
+			siw.ErrorHandlerFunc(w, r, &RequiredParamError{ParamName: "to"})
+		} else {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "to", Err: err})
+		}
+		return
+	}
+
+	// ------------- Optional query parameter "practitionerMemberId" -------------
+
+	err = runtime.BindQueryParameterWithOptions("form", true, false, "practitionerMemberId", r.URL.Query(), &params.PractitionerMemberId, runtime.BindQueryParameterOptions{Type: "string", Format: "uuid"})
+	if err != nil {
+		var requiredError *runtime.RequiredParameterError
+		if errors.As(err, &requiredError) {
+			siw.ErrorHandlerFunc(w, r, &RequiredParamError{ParamName: "practitionerMemberId"})
+		} else {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "practitionerMemberId", Err: err})
 		}
 		return
 	}
@@ -993,6 +1258,130 @@ func (siw *ServerInterfaceWrapper) GetAppointment(w http.ResponseWriter, r *http
 
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		siw.Handler.GetAppointment(w, r, tenantId, appointmentId)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// CancelAppointment operation middleware
+func (siw *ServerInterfaceWrapper) CancelAppointment(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+	_ = err
+
+	// ------------- Path parameter "tenantId" -------------
+	var tenantId TenantId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "tenantId", chi.URLParam(r, "tenantId"), &tenantId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "tenantId", Err: err})
+		return
+	}
+
+	// ------------- Path parameter "appointmentId" -------------
+	var appointmentId AppointmentId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "appointmentId", chi.URLParam(r, "appointmentId"), &appointmentId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "appointmentId", Err: err})
+		return
+	}
+
+	// Parameter object where we will unmarshal all parameters from the context
+	var params CancelAppointmentParams
+
+	headers := r.Header
+
+	// ------------- Required header parameter "Idempotency-Key" -------------
+	if valueList, found := headers[http.CanonicalHeaderKey("Idempotency-Key")]; found {
+		var IdempotencyKey IdempotencyKey
+		n := len(valueList)
+		if n != 1 {
+			siw.ErrorHandlerFunc(w, r, &TooManyValuesForParamError{ParamName: "Idempotency-Key", Count: n})
+			return
+		}
+
+		err = runtime.BindStyledParameterWithOptions("simple", "Idempotency-Key", valueList[0], &IdempotencyKey, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: true, Type: "string", Format: ""})
+		if err != nil {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "Idempotency-Key", Err: err})
+			return
+		}
+
+		params.IdempotencyKey = IdempotencyKey
+
+	} else {
+		err := fmt.Errorf("Header parameter Idempotency-Key is required, but not found")
+		siw.ErrorHandlerFunc(w, r, &RequiredHeaderError{ParamName: "Idempotency-Key", Err: err})
+		return
+	}
+
+	// ------------- Optional header parameter "X-CSRF-Token" -------------
+	if valueList, found := headers[http.CanonicalHeaderKey("X-CSRF-Token")]; found {
+		var XCSRFToken Csrf
+		n := len(valueList)
+		if n != 1 {
+			siw.ErrorHandlerFunc(w, r, &TooManyValuesForParamError{ParamName: "X-CSRF-Token", Count: n})
+			return
+		}
+
+		err = runtime.BindStyledParameterWithOptions("simple", "X-CSRF-Token", valueList[0], &XCSRFToken, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: false, Type: "string", Format: ""})
+		if err != nil {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "X-CSRF-Token", Err: err})
+			return
+		}
+
+		params.XCSRFToken = &XCSRFToken
+
+	}
+
+	// ------------- Optional header parameter "Origin" -------------
+	if valueList, found := headers[http.CanonicalHeaderKey("Origin")]; found {
+		var Origin Origin
+		n := len(valueList)
+		if n != 1 {
+			siw.ErrorHandlerFunc(w, r, &TooManyValuesForParamError{ParamName: "Origin", Count: n})
+			return
+		}
+
+		err = runtime.BindStyledParameterWithOptions("simple", "Origin", valueList[0], &Origin, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: false, Type: "string", Format: "uri"})
+		if err != nil {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "Origin", Err: err})
+			return
+		}
+
+		params.Origin = &Origin
+
+	}
+
+	// ------------- Required header parameter "If-Match" -------------
+	if valueList, found := headers[http.CanonicalHeaderKey("If-Match")]; found {
+		var IfMatch IfMatch
+		n := len(valueList)
+		if n != 1 {
+			siw.ErrorHandlerFunc(w, r, &TooManyValuesForParamError{ParamName: "If-Match", Count: n})
+			return
+		}
+
+		err = runtime.BindStyledParameterWithOptions("simple", "If-Match", valueList[0], &IfMatch, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: true, Type: "string", Format: ""})
+		if err != nil {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "If-Match", Err: err})
+			return
+		}
+
+		params.IfMatch = IfMatch
+
+	} else {
+		err := fmt.Errorf("Header parameter If-Match is required, but not found")
+		siw.ErrorHandlerFunc(w, r, &RequiredHeaderError{ParamName: "If-Match", Err: err})
+		return
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.CancelAppointment(w, r, tenantId, appointmentId, params)
 	}))
 
 	for _, middleware := range siw.HandlerMiddlewares {
@@ -1250,6 +1639,130 @@ func (siw *ServerInterfaceWrapper) RecordAppointmentPerformance(w http.ResponseW
 	handler.ServeHTTP(w, r)
 }
 
+// RescheduleAppointment operation middleware
+func (siw *ServerInterfaceWrapper) RescheduleAppointment(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+	_ = err
+
+	// ------------- Path parameter "tenantId" -------------
+	var tenantId TenantId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "tenantId", chi.URLParam(r, "tenantId"), &tenantId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "tenantId", Err: err})
+		return
+	}
+
+	// ------------- Path parameter "appointmentId" -------------
+	var appointmentId AppointmentId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "appointmentId", chi.URLParam(r, "appointmentId"), &appointmentId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "appointmentId", Err: err})
+		return
+	}
+
+	// Parameter object where we will unmarshal all parameters from the context
+	var params RescheduleAppointmentParams
+
+	headers := r.Header
+
+	// ------------- Required header parameter "Idempotency-Key" -------------
+	if valueList, found := headers[http.CanonicalHeaderKey("Idempotency-Key")]; found {
+		var IdempotencyKey IdempotencyKey
+		n := len(valueList)
+		if n != 1 {
+			siw.ErrorHandlerFunc(w, r, &TooManyValuesForParamError{ParamName: "Idempotency-Key", Count: n})
+			return
+		}
+
+		err = runtime.BindStyledParameterWithOptions("simple", "Idempotency-Key", valueList[0], &IdempotencyKey, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: true, Type: "string", Format: ""})
+		if err != nil {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "Idempotency-Key", Err: err})
+			return
+		}
+
+		params.IdempotencyKey = IdempotencyKey
+
+	} else {
+		err := fmt.Errorf("Header parameter Idempotency-Key is required, but not found")
+		siw.ErrorHandlerFunc(w, r, &RequiredHeaderError{ParamName: "Idempotency-Key", Err: err})
+		return
+	}
+
+	// ------------- Optional header parameter "X-CSRF-Token" -------------
+	if valueList, found := headers[http.CanonicalHeaderKey("X-CSRF-Token")]; found {
+		var XCSRFToken Csrf
+		n := len(valueList)
+		if n != 1 {
+			siw.ErrorHandlerFunc(w, r, &TooManyValuesForParamError{ParamName: "X-CSRF-Token", Count: n})
+			return
+		}
+
+		err = runtime.BindStyledParameterWithOptions("simple", "X-CSRF-Token", valueList[0], &XCSRFToken, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: false, Type: "string", Format: ""})
+		if err != nil {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "X-CSRF-Token", Err: err})
+			return
+		}
+
+		params.XCSRFToken = &XCSRFToken
+
+	}
+
+	// ------------- Optional header parameter "Origin" -------------
+	if valueList, found := headers[http.CanonicalHeaderKey("Origin")]; found {
+		var Origin Origin
+		n := len(valueList)
+		if n != 1 {
+			siw.ErrorHandlerFunc(w, r, &TooManyValuesForParamError{ParamName: "Origin", Count: n})
+			return
+		}
+
+		err = runtime.BindStyledParameterWithOptions("simple", "Origin", valueList[0], &Origin, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: false, Type: "string", Format: "uri"})
+		if err != nil {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "Origin", Err: err})
+			return
+		}
+
+		params.Origin = &Origin
+
+	}
+
+	// ------------- Required header parameter "If-Match" -------------
+	if valueList, found := headers[http.CanonicalHeaderKey("If-Match")]; found {
+		var IfMatch IfMatch
+		n := len(valueList)
+		if n != 1 {
+			siw.ErrorHandlerFunc(w, r, &TooManyValuesForParamError{ParamName: "If-Match", Count: n})
+			return
+		}
+
+		err = runtime.BindStyledParameterWithOptions("simple", "If-Match", valueList[0], &IfMatch, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: true, Type: "string", Format: ""})
+		if err != nil {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "If-Match", Err: err})
+			return
+		}
+
+		params.IfMatch = IfMatch
+
+	} else {
+		err := fmt.Errorf("Header parameter If-Match is required, but not found")
+		siw.ErrorHandlerFunc(w, r, &RequiredHeaderError{ParamName: "If-Match", Err: err})
+		return
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.RescheduleAppointment(w, r, tenantId, appointmentId, params)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
 // ListSpaServices operation middleware
 func (siw *ServerInterfaceWrapper) ListSpaServices(w http.ResponseWriter, r *http.Request) {
 
@@ -1397,6 +1910,165 @@ func (siw *ServerInterfaceWrapper) CreateSpaService(w http.ResponseWriter, r *ht
 	handler.ServeHTTP(w, r)
 }
 
+// GetSpaService operation middleware
+func (siw *ServerInterfaceWrapper) GetSpaService(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+	_ = err
+
+	// ------------- Path parameter "tenantId" -------------
+	var tenantId TenantId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "tenantId", chi.URLParam(r, "tenantId"), &tenantId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "tenantId", Err: err})
+		return
+	}
+
+	// ------------- Path parameter "serviceId" -------------
+	var serviceId SpaServiceId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "serviceId", chi.URLParam(r, "serviceId"), &serviceId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "serviceId", Err: err})
+		return
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.GetSpaService(w, r, tenantId, serviceId)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// UpdateSpaService operation middleware
+func (siw *ServerInterfaceWrapper) UpdateSpaService(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+	_ = err
+
+	// ------------- Path parameter "tenantId" -------------
+	var tenantId TenantId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "tenantId", chi.URLParam(r, "tenantId"), &tenantId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "tenantId", Err: err})
+		return
+	}
+
+	// ------------- Path parameter "serviceId" -------------
+	var serviceId SpaServiceId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "serviceId", chi.URLParam(r, "serviceId"), &serviceId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "serviceId", Err: err})
+		return
+	}
+
+	// Parameter object where we will unmarshal all parameters from the context
+	var params UpdateSpaServiceParams
+
+	headers := r.Header
+
+	// ------------- Required header parameter "Idempotency-Key" -------------
+	if valueList, found := headers[http.CanonicalHeaderKey("Idempotency-Key")]; found {
+		var IdempotencyKey IdempotencyKey
+		n := len(valueList)
+		if n != 1 {
+			siw.ErrorHandlerFunc(w, r, &TooManyValuesForParamError{ParamName: "Idempotency-Key", Count: n})
+			return
+		}
+
+		err = runtime.BindStyledParameterWithOptions("simple", "Idempotency-Key", valueList[0], &IdempotencyKey, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: true, Type: "string", Format: ""})
+		if err != nil {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "Idempotency-Key", Err: err})
+			return
+		}
+
+		params.IdempotencyKey = IdempotencyKey
+
+	} else {
+		err := fmt.Errorf("Header parameter Idempotency-Key is required, but not found")
+		siw.ErrorHandlerFunc(w, r, &RequiredHeaderError{ParamName: "Idempotency-Key", Err: err})
+		return
+	}
+
+	// ------------- Optional header parameter "X-CSRF-Token" -------------
+	if valueList, found := headers[http.CanonicalHeaderKey("X-CSRF-Token")]; found {
+		var XCSRFToken Csrf
+		n := len(valueList)
+		if n != 1 {
+			siw.ErrorHandlerFunc(w, r, &TooManyValuesForParamError{ParamName: "X-CSRF-Token", Count: n})
+			return
+		}
+
+		err = runtime.BindStyledParameterWithOptions("simple", "X-CSRF-Token", valueList[0], &XCSRFToken, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: false, Type: "string", Format: ""})
+		if err != nil {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "X-CSRF-Token", Err: err})
+			return
+		}
+
+		params.XCSRFToken = &XCSRFToken
+
+	}
+
+	// ------------- Optional header parameter "Origin" -------------
+	if valueList, found := headers[http.CanonicalHeaderKey("Origin")]; found {
+		var Origin Origin
+		n := len(valueList)
+		if n != 1 {
+			siw.ErrorHandlerFunc(w, r, &TooManyValuesForParamError{ParamName: "Origin", Count: n})
+			return
+		}
+
+		err = runtime.BindStyledParameterWithOptions("simple", "Origin", valueList[0], &Origin, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: false, Type: "string", Format: "uri"})
+		if err != nil {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "Origin", Err: err})
+			return
+		}
+
+		params.Origin = &Origin
+
+	}
+
+	// ------------- Required header parameter "If-Match" -------------
+	if valueList, found := headers[http.CanonicalHeaderKey("If-Match")]; found {
+		var IfMatch IfMatch
+		n := len(valueList)
+		if n != 1 {
+			siw.ErrorHandlerFunc(w, r, &TooManyValuesForParamError{ParamName: "If-Match", Count: n})
+			return
+		}
+
+		err = runtime.BindStyledParameterWithOptions("simple", "If-Match", valueList[0], &IfMatch, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: true, Type: "string", Format: ""})
+		if err != nil {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "If-Match", Err: err})
+			return
+		}
+
+		params.IfMatch = IfMatch
+
+	} else {
+		err := fmt.Errorf("Header parameter If-Match is required, but not found")
+		siw.ErrorHandlerFunc(w, r, &RequiredHeaderError{ParamName: "If-Match", Err: err})
+		return
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.UpdateSpaService(w, r, tenantId, serviceId, params)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
 type UnescapedCookieParamError struct {
 	ParamName string
 	Err       error
@@ -1530,6 +2202,18 @@ func HandlerWithOptions(si ServerInterface, options ChiServerOptions) http.Handl
 	})
 	r.Group(func(r chi.Router) {
 		r.Post(options.BaseURL+"/api/v1/tenants/{tenantId}/spa/appointments/{appointmentId}/performance", wrapper.RecordAppointmentPerformance)
+	})
+	r.Group(func(r chi.Router) {
+		r.Get(options.BaseURL+"/api/v1/tenants/{tenantId}/spa/services/{serviceId}", wrapper.GetSpaService)
+	})
+	r.Group(func(r chi.Router) {
+		r.Patch(options.BaseURL+"/api/v1/tenants/{tenantId}/spa/services/{serviceId}", wrapper.UpdateSpaService)
+	})
+	r.Group(func(r chi.Router) {
+		r.Post(options.BaseURL+"/api/v1/tenants/{tenantId}/spa/appointments/{appointmentId}/cancel", wrapper.CancelAppointment)
+	})
+	r.Group(func(r chi.Router) {
+		r.Post(options.BaseURL+"/api/v1/tenants/{tenantId}/spa/appointments/{appointmentId}/reschedule", wrapper.RescheduleAppointment)
 	})
 
 	return r
@@ -2162,6 +2846,249 @@ func (response GetAppointment429ApplicationProblemPlusJSONResponse) VisitGetAppo
 	return err
 }
 
+type CancelAppointmentRequestObject struct {
+	TenantId      TenantId      `json:"tenantId"`
+	AppointmentId AppointmentId `json:"appointmentId"`
+	Params        CancelAppointmentParams
+	Body          *CancelAppointmentJSONRequestBody
+}
+
+type CancelAppointmentResponseObject interface {
+	VisitCancelAppointmentResponse(w http.ResponseWriter) error
+}
+
+type CancelAppointment200ResponseHeaders struct {
+	CacheControl        *string
+	ETag                *string
+	IdempotencyReplayed *bool
+	XRequestId          *string
+}
+
+type CancelAppointment200JSONResponse struct {
+	Body    Appointment
+	Headers CancelAppointment200ResponseHeaders
+}
+
+func (response CancelAppointment200JSONResponse) VisitCancelAppointmentResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	if response.Headers.CacheControl != nil {
+		w.Header().Set("Cache-Control", fmt.Sprint(*response.Headers.CacheControl))
+	}
+	if response.Headers.ETag != nil {
+		w.Header().Set("ETag", fmt.Sprint(*response.Headers.ETag))
+	}
+	if response.Headers.IdempotencyReplayed != nil {
+		w.Header().Set("Idempotency-Replayed", fmt.Sprint(*response.Headers.IdempotencyReplayed))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(200)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type CancelAppointment400ApplicationProblemPlusJSONResponse struct {
+	BadRequestApplicationProblemPlusJSONResponse
+}
+
+func (response CancelAppointment400ApplicationProblemPlusJSONResponse) VisitCancelAppointmentResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(400)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type CancelAppointment401ApplicationProblemPlusJSONResponse struct {
+	UnauthenticatedApplicationProblemPlusJSONResponse
+}
+
+func (response CancelAppointment401ApplicationProblemPlusJSONResponse) VisitCancelAppointmentResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(401)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type CancelAppointment402ApplicationProblemPlusJSONResponse struct {
+	PlanRequiredApplicationProblemPlusJSONResponse
+}
+
+func (response CancelAppointment402ApplicationProblemPlusJSONResponse) VisitCancelAppointmentResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(402)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type CancelAppointment403ApplicationProblemPlusJSONResponse struct {
+	ForbiddenApplicationProblemPlusJSONResponse
+}
+
+func (response CancelAppointment403ApplicationProblemPlusJSONResponse) VisitCancelAppointmentResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(403)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type CancelAppointment404ApplicationProblemPlusJSONResponse struct {
+	NotFoundApplicationProblemPlusJSONResponse
+}
+
+func (response CancelAppointment404ApplicationProblemPlusJSONResponse) VisitCancelAppointmentResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(404)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type CancelAppointment409ApplicationProblemPlusJSONResponse struct {
+	ConflictApplicationProblemPlusJSONResponse
+}
+
+func (response CancelAppointment409ApplicationProblemPlusJSONResponse) VisitCancelAppointmentResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.RetryAfter != nil {
+		w.Header().Set("Retry-After", fmt.Sprint(*response.Headers.RetryAfter))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(409)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type CancelAppointment412ApplicationProblemPlusJSONResponse struct {
+	PreconditionFailedApplicationProblemPlusJSONResponse
+}
+
+func (response CancelAppointment412ApplicationProblemPlusJSONResponse) VisitCancelAppointmentResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(412)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type CancelAppointment422ApplicationProblemPlusJSONResponse struct {
+	ValidationApplicationProblemPlusJSONResponse
+}
+
+func (response CancelAppointment422ApplicationProblemPlusJSONResponse) VisitCancelAppointmentResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(422)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type CancelAppointment428ApplicationProblemPlusJSONResponse struct {
+	PreconditionRequiredApplicationProblemPlusJSONResponse
+}
+
+func (response CancelAppointment428ApplicationProblemPlusJSONResponse) VisitCancelAppointmentResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(428)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type CancelAppointment429ApplicationProblemPlusJSONResponse struct {
+	RateLimitedApplicationProblemPlusJSONResponse
+}
+
+func (response CancelAppointment429ApplicationProblemPlusJSONResponse) VisitCancelAppointmentResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.RetryAfter != nil {
+		w.Header().Set("Retry-After", fmt.Sprint(*response.Headers.RetryAfter))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(429)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
 type CompleteAppointmentRequestObject struct {
 	TenantId      TenantId      `json:"tenantId"`
 	AppointmentId AppointmentId `json:"appointmentId"`
@@ -2648,6 +3575,249 @@ func (response RecordAppointmentPerformance429ApplicationProblemPlusJSONResponse
 	return err
 }
 
+type RescheduleAppointmentRequestObject struct {
+	TenantId      TenantId      `json:"tenantId"`
+	AppointmentId AppointmentId `json:"appointmentId"`
+	Params        RescheduleAppointmentParams
+	Body          *RescheduleAppointmentJSONRequestBody
+}
+
+type RescheduleAppointmentResponseObject interface {
+	VisitRescheduleAppointmentResponse(w http.ResponseWriter) error
+}
+
+type RescheduleAppointment200ResponseHeaders struct {
+	CacheControl        *string
+	ETag                *string
+	IdempotencyReplayed *bool
+	XRequestId          *string
+}
+
+type RescheduleAppointment200JSONResponse struct {
+	Body    Appointment
+	Headers RescheduleAppointment200ResponseHeaders
+}
+
+func (response RescheduleAppointment200JSONResponse) VisitRescheduleAppointmentResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	if response.Headers.CacheControl != nil {
+		w.Header().Set("Cache-Control", fmt.Sprint(*response.Headers.CacheControl))
+	}
+	if response.Headers.ETag != nil {
+		w.Header().Set("ETag", fmt.Sprint(*response.Headers.ETag))
+	}
+	if response.Headers.IdempotencyReplayed != nil {
+		w.Header().Set("Idempotency-Replayed", fmt.Sprint(*response.Headers.IdempotencyReplayed))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(200)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type RescheduleAppointment400ApplicationProblemPlusJSONResponse struct {
+	BadRequestApplicationProblemPlusJSONResponse
+}
+
+func (response RescheduleAppointment400ApplicationProblemPlusJSONResponse) VisitRescheduleAppointmentResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(400)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type RescheduleAppointment401ApplicationProblemPlusJSONResponse struct {
+	UnauthenticatedApplicationProblemPlusJSONResponse
+}
+
+func (response RescheduleAppointment401ApplicationProblemPlusJSONResponse) VisitRescheduleAppointmentResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(401)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type RescheduleAppointment402ApplicationProblemPlusJSONResponse struct {
+	PlanRequiredApplicationProblemPlusJSONResponse
+}
+
+func (response RescheduleAppointment402ApplicationProblemPlusJSONResponse) VisitRescheduleAppointmentResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(402)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type RescheduleAppointment403ApplicationProblemPlusJSONResponse struct {
+	ForbiddenApplicationProblemPlusJSONResponse
+}
+
+func (response RescheduleAppointment403ApplicationProblemPlusJSONResponse) VisitRescheduleAppointmentResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(403)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type RescheduleAppointment404ApplicationProblemPlusJSONResponse struct {
+	NotFoundApplicationProblemPlusJSONResponse
+}
+
+func (response RescheduleAppointment404ApplicationProblemPlusJSONResponse) VisitRescheduleAppointmentResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(404)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type RescheduleAppointment409ApplicationProblemPlusJSONResponse struct {
+	ConflictApplicationProblemPlusJSONResponse
+}
+
+func (response RescheduleAppointment409ApplicationProblemPlusJSONResponse) VisitRescheduleAppointmentResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.RetryAfter != nil {
+		w.Header().Set("Retry-After", fmt.Sprint(*response.Headers.RetryAfter))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(409)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type RescheduleAppointment412ApplicationProblemPlusJSONResponse struct {
+	PreconditionFailedApplicationProblemPlusJSONResponse
+}
+
+func (response RescheduleAppointment412ApplicationProblemPlusJSONResponse) VisitRescheduleAppointmentResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(412)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type RescheduleAppointment422ApplicationProblemPlusJSONResponse struct {
+	ValidationApplicationProblemPlusJSONResponse
+}
+
+func (response RescheduleAppointment422ApplicationProblemPlusJSONResponse) VisitRescheduleAppointmentResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(422)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type RescheduleAppointment428ApplicationProblemPlusJSONResponse struct {
+	PreconditionRequiredApplicationProblemPlusJSONResponse
+}
+
+func (response RescheduleAppointment428ApplicationProblemPlusJSONResponse) VisitRescheduleAppointmentResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(428)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type RescheduleAppointment429ApplicationProblemPlusJSONResponse struct {
+	RateLimitedApplicationProblemPlusJSONResponse
+}
+
+func (response RescheduleAppointment429ApplicationProblemPlusJSONResponse) VisitRescheduleAppointmentResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.RetryAfter != nil {
+		w.Header().Set("Retry-After", fmt.Sprint(*response.Headers.RetryAfter))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(429)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
 type ListSpaServicesRequestObject struct {
 	TenantId TenantId `json:"tenantId"`
 	Params   ListSpaServicesParams
@@ -3025,6 +4195,407 @@ func (response CreateSpaService429ApplicationProblemPlusJSONResponse) VisitCreat
 	return err
 }
 
+type GetSpaServiceRequestObject struct {
+	TenantId  TenantId     `json:"tenantId"`
+	ServiceId SpaServiceId `json:"serviceId"`
+}
+
+type GetSpaServiceResponseObject interface {
+	VisitGetSpaServiceResponse(w http.ResponseWriter) error
+}
+
+type GetSpaService200ResponseHeaders struct {
+	CacheControl *string
+	ETag         *string
+	XRequestId   *string
+}
+
+type GetSpaService200JSONResponse struct {
+	Body    SpaService
+	Headers GetSpaService200ResponseHeaders
+}
+
+func (response GetSpaService200JSONResponse) VisitGetSpaServiceResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	if response.Headers.CacheControl != nil {
+		w.Header().Set("Cache-Control", fmt.Sprint(*response.Headers.CacheControl))
+	}
+	if response.Headers.ETag != nil {
+		w.Header().Set("ETag", fmt.Sprint(*response.Headers.ETag))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(200)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type GetSpaService400ApplicationProblemPlusJSONResponse struct {
+	BadRequestApplicationProblemPlusJSONResponse
+}
+
+func (response GetSpaService400ApplicationProblemPlusJSONResponse) VisitGetSpaServiceResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(400)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type GetSpaService401ApplicationProblemPlusJSONResponse struct {
+	UnauthenticatedApplicationProblemPlusJSONResponse
+}
+
+func (response GetSpaService401ApplicationProblemPlusJSONResponse) VisitGetSpaServiceResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(401)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type GetSpaService403ApplicationProblemPlusJSONResponse struct {
+	ForbiddenApplicationProblemPlusJSONResponse
+}
+
+func (response GetSpaService403ApplicationProblemPlusJSONResponse) VisitGetSpaServiceResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(403)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type GetSpaService404ApplicationProblemPlusJSONResponse struct {
+	NotFoundApplicationProblemPlusJSONResponse
+}
+
+func (response GetSpaService404ApplicationProblemPlusJSONResponse) VisitGetSpaServiceResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(404)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type GetSpaService422ApplicationProblemPlusJSONResponse struct {
+	ValidationApplicationProblemPlusJSONResponse
+}
+
+func (response GetSpaService422ApplicationProblemPlusJSONResponse) VisitGetSpaServiceResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(422)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type GetSpaService429ApplicationProblemPlusJSONResponse struct {
+	RateLimitedApplicationProblemPlusJSONResponse
+}
+
+func (response GetSpaService429ApplicationProblemPlusJSONResponse) VisitGetSpaServiceResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.RetryAfter != nil {
+		w.Header().Set("Retry-After", fmt.Sprint(*response.Headers.RetryAfter))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(429)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type UpdateSpaServiceRequestObject struct {
+	TenantId  TenantId     `json:"tenantId"`
+	ServiceId SpaServiceId `json:"serviceId"`
+	Params    UpdateSpaServiceParams
+	Body      *UpdateSpaServiceJSONRequestBody
+}
+
+type UpdateSpaServiceResponseObject interface {
+	VisitUpdateSpaServiceResponse(w http.ResponseWriter) error
+}
+
+type UpdateSpaService200ResponseHeaders struct {
+	CacheControl        *string
+	ETag                *string
+	IdempotencyReplayed *bool
+	XRequestId          *string
+}
+
+type UpdateSpaService200JSONResponse struct {
+	Body    SpaService
+	Headers UpdateSpaService200ResponseHeaders
+}
+
+func (response UpdateSpaService200JSONResponse) VisitUpdateSpaServiceResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	if response.Headers.CacheControl != nil {
+		w.Header().Set("Cache-Control", fmt.Sprint(*response.Headers.CacheControl))
+	}
+	if response.Headers.ETag != nil {
+		w.Header().Set("ETag", fmt.Sprint(*response.Headers.ETag))
+	}
+	if response.Headers.IdempotencyReplayed != nil {
+		w.Header().Set("Idempotency-Replayed", fmt.Sprint(*response.Headers.IdempotencyReplayed))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(200)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type UpdateSpaService400ApplicationProblemPlusJSONResponse struct {
+	BadRequestApplicationProblemPlusJSONResponse
+}
+
+func (response UpdateSpaService400ApplicationProblemPlusJSONResponse) VisitUpdateSpaServiceResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(400)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type UpdateSpaService401ApplicationProblemPlusJSONResponse struct {
+	UnauthenticatedApplicationProblemPlusJSONResponse
+}
+
+func (response UpdateSpaService401ApplicationProblemPlusJSONResponse) VisitUpdateSpaServiceResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(401)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type UpdateSpaService402ApplicationProblemPlusJSONResponse struct {
+	PlanRequiredApplicationProblemPlusJSONResponse
+}
+
+func (response UpdateSpaService402ApplicationProblemPlusJSONResponse) VisitUpdateSpaServiceResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(402)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type UpdateSpaService403ApplicationProblemPlusJSONResponse struct {
+	ForbiddenApplicationProblemPlusJSONResponse
+}
+
+func (response UpdateSpaService403ApplicationProblemPlusJSONResponse) VisitUpdateSpaServiceResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(403)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type UpdateSpaService404ApplicationProblemPlusJSONResponse struct {
+	NotFoundApplicationProblemPlusJSONResponse
+}
+
+func (response UpdateSpaService404ApplicationProblemPlusJSONResponse) VisitUpdateSpaServiceResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(404)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type UpdateSpaService409ApplicationProblemPlusJSONResponse struct {
+	ConflictApplicationProblemPlusJSONResponse
+}
+
+func (response UpdateSpaService409ApplicationProblemPlusJSONResponse) VisitUpdateSpaServiceResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.RetryAfter != nil {
+		w.Header().Set("Retry-After", fmt.Sprint(*response.Headers.RetryAfter))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(409)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type UpdateSpaService412ApplicationProblemPlusJSONResponse struct {
+	PreconditionFailedApplicationProblemPlusJSONResponse
+}
+
+func (response UpdateSpaService412ApplicationProblemPlusJSONResponse) VisitUpdateSpaServiceResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(412)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type UpdateSpaService422ApplicationProblemPlusJSONResponse struct {
+	ValidationApplicationProblemPlusJSONResponse
+}
+
+func (response UpdateSpaService422ApplicationProblemPlusJSONResponse) VisitUpdateSpaServiceResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(422)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type UpdateSpaService428ApplicationProblemPlusJSONResponse struct {
+	PreconditionRequiredApplicationProblemPlusJSONResponse
+}
+
+func (response UpdateSpaService428ApplicationProblemPlusJSONResponse) VisitUpdateSpaServiceResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(428)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type UpdateSpaService429ApplicationProblemPlusJSONResponse struct {
+	RateLimitedApplicationProblemPlusJSONResponse
+}
+
+func (response UpdateSpaService429ApplicationProblemPlusJSONResponse) VisitUpdateSpaServiceResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.RetryAfter != nil {
+		w.Header().Set("Retry-After", fmt.Sprint(*response.Headers.RetryAfter))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(429)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
 // StrictServerInterface represents all server handlers.
 type StrictServerInterface interface {
 	// ListAppointments List allowed appointments or own practitioner schedule
@@ -3036,18 +4607,30 @@ type StrictServerInterface interface {
 	// GetAppointment Read allowed appointment and revision
 	// (GET /api/v1/tenants/{tenantId}/spa/appointments/{appointmentId})
 	GetAppointment(ctx context.Context, request GetAppointmentRequestObject) (GetAppointmentResponseObject, error)
+	// CancelAppointment Cancel a confirmed appointment and release its resources
+	// (POST /api/v1/tenants/{tenantId}/spa/appointments/{appointmentId}/cancel)
+	CancelAppointment(ctx context.Context, request CancelAppointmentRequestObject) (CancelAppointmentResponseObject, error)
 	// CompleteAppointment Complete treatment and consume materials once
 	// (POST /api/v1/tenants/{tenantId}/spa/appointments/{appointmentId}/completion)
 	CompleteAppointment(ctx context.Context, request CompleteAppointmentRequestObject) (CompleteAppointmentResponseObject, error)
 	// RecordAppointmentPerformance Record actual treatment before stock posting
 	// (POST /api/v1/tenants/{tenantId}/spa/appointments/{appointmentId}/performance)
 	RecordAppointmentPerformance(ctx context.Context, request RecordAppointmentPerformanceRequestObject) (RecordAppointmentPerformanceResponseObject, error)
+	// RescheduleAppointment Move a confirmed appointment to another time or resources
+	// (POST /api/v1/tenants/{tenantId}/spa/appointments/{appointmentId}/reschedule)
+	RescheduleAppointment(ctx context.Context, request RescheduleAppointmentRequestObject) (RescheduleAppointmentResponseObject, error)
 	// ListSpaServices List scoped service durations and material recipes
 	// (GET /api/v1/tenants/{tenantId}/spa/services)
 	ListSpaServices(ctx context.Context, request ListSpaServicesRequestObject) (ListSpaServicesResponseObject, error)
 	// CreateSpaService Create a treatment with duration, buffers and recipe
 	// (POST /api/v1/tenants/{tenantId}/spa/services)
 	CreateSpaService(ctx context.Context, request CreateSpaServiceRequestObject) (CreateSpaServiceResponseObject, error)
+	// GetSpaService Read a service with its recipe
+	// (GET /api/v1/tenants/{tenantId}/spa/services/{serviceId})
+	GetSpaService(ctx context.Context, request GetSpaServiceRequestObject) (GetSpaServiceResponseObject, error)
+	// UpdateSpaService Edit a service: duration, buffers, price, equipment, recipe
+	// (PATCH /api/v1/tenants/{tenantId}/spa/services/{serviceId})
+	UpdateSpaService(ctx context.Context, request UpdateSpaServiceRequestObject) (UpdateSpaServiceResponseObject, error)
 }
 
 type StrictHandlerFunc func(ctx context.Context, w http.ResponseWriter, r *http.Request, request any) (any, error)
@@ -3177,6 +4760,41 @@ func (sh *strictHandler) GetAppointment(w http.ResponseWriter, r *http.Request, 
 	}
 }
 
+// CancelAppointment operation middleware
+func (sh *strictHandler) CancelAppointment(w http.ResponseWriter, r *http.Request, tenantId TenantId, appointmentId AppointmentId, params CancelAppointmentParams) {
+	var request CancelAppointmentRequestObject
+
+	request.TenantId = tenantId
+	request.AppointmentId = appointmentId
+	request.Params = params
+
+	var body CancelAppointmentJSONRequestBody
+	if err := json.NewDecoder(r.Body).Decode(&body); err != nil {
+		sh.options.RequestErrorHandlerFunc(w, r, fmt.Errorf("can't decode JSON body: %w", err))
+		return
+	}
+	request.Body = &body
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.CancelAppointment(ctx, request.(CancelAppointmentRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "CancelAppointment")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(CancelAppointmentResponseObject); ok {
+		if err := validResponse.VisitCancelAppointmentResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
 // CompleteAppointment operation middleware
 func (sh *strictHandler) CompleteAppointment(w http.ResponseWriter, r *http.Request, tenantId TenantId, appointmentId AppointmentId, params CompleteAppointmentParams) {
 	var request CompleteAppointmentRequestObject
@@ -3247,6 +4865,41 @@ func (sh *strictHandler) RecordAppointmentPerformance(w http.ResponseWriter, r *
 	}
 }
 
+// RescheduleAppointment operation middleware
+func (sh *strictHandler) RescheduleAppointment(w http.ResponseWriter, r *http.Request, tenantId TenantId, appointmentId AppointmentId, params RescheduleAppointmentParams) {
+	var request RescheduleAppointmentRequestObject
+
+	request.TenantId = tenantId
+	request.AppointmentId = appointmentId
+	request.Params = params
+
+	var body RescheduleAppointmentJSONRequestBody
+	if err := json.NewDecoder(r.Body).Decode(&body); err != nil {
+		sh.options.RequestErrorHandlerFunc(w, r, fmt.Errorf("can't decode JSON body: %w", err))
+		return
+	}
+	request.Body = &body
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.RescheduleAppointment(ctx, request.(RescheduleAppointmentRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "RescheduleAppointment")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(RescheduleAppointmentResponseObject); ok {
+		if err := validResponse.VisitRescheduleAppointmentResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
 // ListSpaServices operation middleware
 func (sh *strictHandler) ListSpaServices(w http.ResponseWriter, r *http.Request, tenantId TenantId, params ListSpaServicesParams) {
 	var request ListSpaServicesRequestObject
@@ -3301,6 +4954,68 @@ func (sh *strictHandler) CreateSpaService(w http.ResponseWriter, r *http.Request
 		sh.options.ResponseErrorHandlerFunc(w, r, err)
 	} else if validResponse, ok := response.(CreateSpaServiceResponseObject); ok {
 		if err := validResponse.VisitCreateSpaServiceResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// GetSpaService operation middleware
+func (sh *strictHandler) GetSpaService(w http.ResponseWriter, r *http.Request, tenantId TenantId, serviceId SpaServiceId) {
+	var request GetSpaServiceRequestObject
+
+	request.TenantId = tenantId
+	request.ServiceId = serviceId
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.GetSpaService(ctx, request.(GetSpaServiceRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "GetSpaService")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(GetSpaServiceResponseObject); ok {
+		if err := validResponse.VisitGetSpaServiceResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// UpdateSpaService operation middleware
+func (sh *strictHandler) UpdateSpaService(w http.ResponseWriter, r *http.Request, tenantId TenantId, serviceId SpaServiceId, params UpdateSpaServiceParams) {
+	var request UpdateSpaServiceRequestObject
+
+	request.TenantId = tenantId
+	request.ServiceId = serviceId
+	request.Params = params
+
+	var body UpdateSpaServiceJSONRequestBody
+	if err := json.NewDecoder(r.Body).Decode(&body); err != nil {
+		sh.options.RequestErrorHandlerFunc(w, r, fmt.Errorf("can't decode JSON body: %w", err))
+		return
+	}
+	request.Body = &body
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.UpdateSpaService(ctx, request.(UpdateSpaServiceRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "UpdateSpaService")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(UpdateSpaServiceResponseObject); ok {
+		if err := validResponse.VisitUpdateSpaServiceResponse(w); err != nil {
 			sh.options.ResponseErrorHandlerFunc(w, r, err)
 		}
 	} else if response != nil {

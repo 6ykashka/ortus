@@ -953,6 +953,222 @@ screens:
     operations: [getPlatformUsage, listPlatformSubscriptionRequests]
     note: Только метаданные control DB (места, объём файлов, модули, даты входа); содержимого организаций оператор не видит.
 
+  # Этап 5 (W5.00, 0.12.0-stage5): касса — экраны и диалоги разбора analysis/dor/cash.md §1, §6 (эталон design-2026-10-19);
+  # склад и SPA — no-reference (B-6).
+  cash-desk:
+    title: "Касса — вкладка «Кассы»"
+    stage: 5
+    ws: W5.32
+    reference: "design-2026-10-19 · Касса.dc.html · вкладка «Кассы», журнал, остатки (cash.md §1.4)"
+    operations:
+      [
+        listCashAccounts,
+        listCashOperations,
+        listCashCategories,
+        findCashDuplicates,
+        postCashOperation,
+        reverseCashOperation,
+        linkCashOperationSource,
+        listCashTransfers,
+        listCashShifts,
+      ]
+
+  cash-inbox:
+    title: "Касса — вкладка «Входящие»"
+    stage: 5
+    ws: W5.32
+    reference: "design-2026-10-19 · Касса.dc.html · вкладка «Входящие»: предложения, согласование, в пути (cash.md §1.4)"
+    operations:
+      [
+        listCashProposals,
+        postCashProposal,
+        dismissCashProposal,
+        listCashApprovalRequests,
+        decideCashApprovalRequest,
+        listCashTransfers,
+        decideCashTransfer,
+        listCashAccounts,
+        listCashCategories,
+      ]
+
+  cash-shifts:
+    title: "Касса — вкладка «Смены»"
+    stage: 5
+    ws: W5.32
+    reference: "design-2026-10-19 · Касса.dc.html · вкладка «Смены» (cash.md §1.4)"
+    operations:
+      [
+        listCashShifts,
+        openCashShift,
+        closeCashShift,
+        reviewCashShift,
+        listCashOperations,
+        listCashAccounts,
+        createCashTransfer,
+      ]
+
+  cash-advances:
+    title: "Касса — вкладка «Подотчёт» выдающего"
+    stage: 5
+    ws: W5.33
+    reference: "design-2026-10-19 · Касса.dc.html · вкладка «Подотчёт» (cash.md §1.4, §6)"
+    operations:
+      [
+        listCashAccounts,
+        issueCashAdvance,
+        listAdvanceReceipts,
+        decideAdvanceReceipt,
+        listCashOperations,
+        listCashTransfers,
+        decideCashTransfer,
+      ]
+
+  cash-self:
+    title: "Мой подотчёт (водитель и прораб)"
+    stage: 5
+    ws: W5.33
+    reference: "design-2026-10-19 · Касса.dc.html · «Мой подотчёт» (cash.md §1.4, §6)"
+    operations:
+      [
+        listCashAccounts,
+        listCashOperations,
+        listAdvanceReceipts,
+        submitAdvanceReceipt,
+        returnCashAdvance,
+        listCashCategories,
+        initiateUpload,
+        completeUpload,
+      ]
+
+  cash-settings:
+    title: "Касса — вкладка «Настройки»"
+    stage: 5
+    ws: W5.32
+    reference: "design-2026-10-19 · Касса.dc.html · вкладка «Настройки», мастер «Новая касса» (cash.md §1.4)"
+    operations:
+      [listCashAccounts, createCashAccount, previewCashAccountAccess, listOrgUnits, listMembers]
+
+  modal-cash-post:
+    title: "Диалог «Новая операция»"
+    stage: 5
+    ws: W5.32
+    reference: "design-2026-10-19 · Касса.dc.html · диалог «Новая операция» (cash.md §1.5)"
+    operations: [postCashOperation, findCashDuplicates, listCashCategories, listCashAccounts]
+
+  modal-cash-shift-open:
+    title: "Диалог «Открыть смену»"
+    stage: 5
+    ws: W5.32
+    reference: "design-2026-10-19 · Касса.dc.html · диалог «Открыть смену» (cash.md §1.5)"
+    operations: [openCashShift]
+
+  modal-cash-shift-close:
+    title: "Диалог «Закрыть смену»"
+    stage: 5
+    ws: W5.32
+    reference: "design-2026-10-19 · Касса.dc.html · диалог «Закрыть смену»: пересчёт, Z-отчёт, терминал (cash.md §1.5)"
+    operations: [closeCashShift]
+
+  modal-cash-transfer:
+    title: "Диалог «Переместить»"
+    stage: 5
+    ws: W5.32
+    reference: "design-2026-10-19 · Касса.dc.html · диалог «Перемещение» (cash.md §1.5)"
+    operations: [createCashTransfer, listCashAccounts]
+
+  modal-cash-account:
+    title: "Диалог «Новая касса»"
+    stage: 5
+    ws: W5.32
+    reference: "design-2026-10-19 · Касса.dc.html · мастер «Новая касса» (cash.md §1.5)"
+    operations: [createCashAccount, previewCashAccountAccess]
+
+  modal-cash-issue:
+    title: "Диалог «Выдать под отчёт»"
+    stage: 5
+    ws: W5.33
+    reference: "design-2026-10-19 · Касса.dc.html · диалог «Выдать под отчёт» (cash.md §1.5)"
+    operations: [issueCashAdvance, listCashAccounts]
+
+  modal-cash-receipt:
+    title: "Диалог «Добавить чек» / «Переснять»"
+    stage: 5
+    ws: W5.33
+    reference: "design-2026-10-19 · Касса.dc.html · диалог «Добавить чек» (cash.md §1.5)"
+    operations: [submitAdvanceReceipt, initiateUpload, completeUpload, listCashCategories]
+
+  modal-cash-reason:
+    title: "Диалог «Причина» (отказ, возврат на пересчёт, не проводить)"
+    stage: 5
+    ws: W5.32
+    reference: "design-2026-10-19 · Касса.dc.html · диалог «Причина», пять действий (cash.md §1.5)"
+    operations:
+      [
+        dismissCashProposal,
+        decideCashApprovalRequest,
+        decideCashTransfer,
+        decideAdvanceReceipt,
+        reviewCashShift,
+      ]
+
+  modal-cash-return:
+    title: "Диалог «Вернуть остаток»"
+    stage: 5
+    ws: W5.33
+    reference: "design-2026-10-19 · Касса.dc.html · диалог «Вернуть остаток» (cash.md §1.5)"
+    operations: [returnCashAdvance]
+
+  inventory-stock:
+    title: "Склад — остатки, партии, резервы"
+    stage: 5
+    ws: W5.11
+    reference: "no-reference (B-6: склада в прототипе нет; D-20 комплекта, план v2 §4 W5.10)"
+    operations:
+      [
+        listWarehouses,
+        createWarehouse,
+        listInventoryItems,
+        createInventoryItem,
+        updateInventoryItem,
+        listInventoryBalances,
+        listInventoryReservations,
+        createInventoryReservation,
+        releaseInventoryReservation,
+      ]
+    note: "Экран делается по документам комплекта и плану; расхождения — Q-W5.00-N."
+
+  inventory-movements:
+    title: "Склад — движения"
+    stage: 5
+    ws: W5.11
+    reference: "no-reference (B-6: склада в прототипе нет; D-20 комплекта)"
+    operations: [listInventoryMovements, postInventoryMovement, listInventoryItems, listWarehouses]
+
+  spa-services:
+    title: "Салон и SPA — услуги и техкарты"
+    stage: 5
+    ws: W5.21
+    reference: "no-reference (B-6: в прототипе есть только запись и завершение визита; техкарта — API 0.1)"
+    operations:
+      [listSpaServices, createSpaService, getSpaService, updateSpaService, listInventoryItems]
+
+  spa-appointments:
+    title: "Салон и SPA — визиты"
+    stage: 5
+    ws: W5.21
+    reference: "no-reference (B-6; запись на несколько ресурсов с буферами, незавершённый учёт)"
+    operations:
+      [
+        listAppointments,
+        getAppointment,
+        createAppointment,
+        rescheduleAppointment,
+        cancelAppointment,
+        recordAppointmentPerformance,
+        completeAppointment,
+        listSpaServices,
+      ]
+
 # Истории без своего экрана (DoR W1.00, W2.00): серверные механизмы и проверки, видимые только тестами и изоляцией.
 storiesWithoutScreen:
   S1-02: Resolver «сессия → членство → состояние → TenantContext» без запасной главной БД — серверная история (W1.02); видна только через ошибки шлюза и строки изоляции.

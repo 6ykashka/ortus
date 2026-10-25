@@ -1,0 +1,26 @@
+{
+  "id": "833a70be-c24c-5c8c-af98-c66b3b300946",
+  "accountId": "b7d1bdca-237d-5518-a179-d45b135bb0a6",
+  "number": 119,
+  "status": "open",
+  "openedAt": "2026-10-01T07:30:00Z",
+  "openedByMemberId": "b8df06ec-317e-5f46-b54c-e76603e41b5b",
+  "openingFloat": {
+    "amountMinor": 500000,
+    "currency": "RUB"
+  },
+  "openingDiff": null,
+  "closedAt": null,
+  "closedByMemberId": null,
+  "counted": null,
+  "counts": {},
+  "coins": null,
+  "z": null,
+  "terminal": null,
+  "expected": null,
+  "diff": null,
+  "decision": null,
+  "attempts": [],
+  "toSafeTransferId": null,
+  "revision": 1
+}

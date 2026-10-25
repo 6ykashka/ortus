@@ -1,4 +1,10 @@
 # Контракт Ортус · общие компоненты (используются несколькими тегами). Пишет только стюард контракта (план v2 §3.5).
+# W2.52 (0.6.1-stage2): история машины (W2.42) и справочник категорий расходов (W2.41).
+# W4.06 (0.7.0-stage4): сохранённый вид набора и задание выгрузки «Данных» (W4.50).
+# W4.07 (stage 4.6): заявки на тариф, тарифная сетка, аккаунты и операторы платформы.
+# W4.04: «База знаний» — пространство, узел дерева, номер версии узла, правило автоматизации.
+# W4.03 (0.10.0-stage4): проект задач, правило автоматизации, пункт чек-листа, переход процесса («Задачи и проекты»).
+# W4.05 (0.11.0-stage4): правило формы, вопрос формы, группа форм («Формы и опросы»).
 tenantId:
   name: tenantId
   in: path
@@ -254,7 +260,6 @@ Origin:
   schema:
     type: string
     format: uri
-# W2.52 (0.6.1-stage2): история машины (W2.42) и справочник категорий расходов (W2.41).
 vehicleId:
   name: vehicleId
   in: path
@@ -271,7 +276,6 @@ categoryCode:
     type: string
     pattern: ^[a-z][a-z0-9_]{1,49}$
     maxLength: 50
-# W4.06 (0.7.0-stage4): сохранённый вид набора и задание выгрузки «Данных» (W4.50).
 viewId:
   name: viewId
   in: path
@@ -286,7 +290,6 @@ exportJobId:
   description: W4.06 (0.7.0-stage4). Opaque UUID of an export job; a job of another member — 404 (the owner of the organization reads the journal, never the file).
   schema:
     $ref: ./schemas.yaml#/Id
-# W4.07 (stage 4.6): заявки на тариф, тарифная сетка, аккаунты и операторы платформы.
 changeRequestId:
   name: changeRequestId
   in: path
@@ -317,7 +320,6 @@ operatorId:
   description: W4.07. Opaque UUID of a platform operator (PlatformOperator.id, platform_operators.id).
   schema:
     $ref: ./schemas.yaml#/Id
-# W4.04: «База знаний» — пространство, узел дерева, номер версии узла, правило автоматизации.
 spaceId:
   name: spaceId
   in: path
@@ -348,7 +350,6 @@ ruleId:
   description: W4.04. Opaque UUID of an automation rule of a knowledge space; visible to the lead of the space only.
   schema:
     $ref: ./schemas.yaml#/Id
-# W4.03 (0.10.0-stage4): проект задач, правило автоматизации, пункт чек-листа, переход процесса («Задачи и проекты»).
 projectId:
   name: projectId
   in: path
@@ -379,7 +380,6 @@ transitionKey:
   schema:
     type: string
     pattern: ^[a-z][a-z0-9_-]{0,31}$
-# W4.05 (0.11.0-stage4): правило формы, вопрос формы, группа форм («Формы и опросы»).
 formRuleId:
   name: ruleId
   in: path
@@ -402,3 +402,75 @@ formGroupId:
   description: W4.05 (0.11.0-stage4). Opaque UUID of a group of forms (FormGroup.id).
   schema:
     $ref: ./schemas.yaml#/Id
+cashAccountId:
+  name: accountId
+  in: path
+  required: true
+  description: W5.00 (0.12.0-stage5). Opaque UUID of a cash account (CashAccount.id).
+  schema:
+    $ref: ../common/schemas.yaml#/Id
+cashOperationId:
+  name: operationId
+  in: path
+  required: true
+  description: W5.00 (0.12.0-stage5). Opaque UUID of a cash ledger operation (CashOperation.id).
+  schema:
+    $ref: ../common/schemas.yaml#/Id
+cashShiftId:
+  name: shiftId
+  in: path
+  required: true
+  description: W5.00 (0.12.0-stage5). Opaque UUID of a cash shift (CashShift.id).
+  schema:
+    $ref: ../common/schemas.yaml#/Id
+cashTransferId:
+  name: transferId
+  in: path
+  required: true
+  description: W5.00 (0.12.0-stage5). Opaque UUID of a cash transfer (CashTransfer.id).
+  schema:
+    $ref: ../common/schemas.yaml#/Id
+cashReceiptId:
+  name: receiptId
+  in: path
+  required: true
+  description: W5.00 (0.12.0-stage5). Opaque UUID of an advance receipt (AdvanceReceipt.id).
+  schema:
+    $ref: ../common/schemas.yaml#/Id
+cashApprovalRequestId:
+  name: approvalRequestId
+  in: path
+  required: true
+  description: W5.00 (0.12.0-stage5). Opaque UUID of an approval request (CashApprovalRequest.id).
+  schema:
+    $ref: ../common/schemas.yaml#/Id
+cashProposalKey:
+  name: proposalKey
+  in: path
+  required: true
+  description: W5.00 (0.12.0-stage5). Key of a cash proposal «kind:source» (CashProposal.key); the source is the idempotency key.
+  schema:
+    type: string
+    pattern: ^[a-z][a-z0-9_]*:[A-Za-z0-9_.-]{1,100}$
+    maxLength: 128
+inventoryItemId:
+  name: itemId
+  in: path
+  required: true
+  description: W5.00 (0.12.0-stage5). Opaque UUID of a stock item (InventoryItem.id).
+  schema:
+    $ref: ../common/schemas.yaml#/Id
+inventoryReservationId:
+  name: reservationId
+  in: path
+  required: true
+  description: W5.00 (0.12.0-stage5). Opaque UUID of a stock reservation (InventoryReservation.id).
+  schema:
+    $ref: ../common/schemas.yaml#/Id
+spaServiceId:
+  name: serviceId
+  in: path
+  required: true
+  description: W5.00 (0.12.0-stage5). Opaque UUID of a SPA service (SpaService.id).
+  schema:
+    $ref: ../common/schemas.yaml#/Id

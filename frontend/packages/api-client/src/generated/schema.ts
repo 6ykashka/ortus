@@ -1543,7 +1543,7 @@ export interface paths {
     };
     /**
      * List allowed appointments or own practitioner schedule
-     * @description List allowed appointments or own practitioner schedule
+     * @description List allowed appointments or own practitioner schedule W5.00 (0.12.0-stage5): filters by status (performed_pending_posting — the unfinished accounting), period and practitioner.
      */
     get: operations['listAppointments'];
     put?: never;
@@ -1628,7 +1628,7 @@ export interface paths {
     put?: never;
     /**
      * Atomically post receipt, issue, transfer or correction
-     * @description Requires kind-specific permission: receipts, issues, transfers, adjustments or reversals. Transfer checks both warehouses. Service completion uses its dedicated endpoint to prevent duplicate recipe issues.
+     * @description Requires kind-specific permission: receipts, issues, transfers, adjustments or reversals. Transfer checks both warehouses. Service completion uses its dedicated endpoint to prevent duplicate recipe issues. W5.00 (0.12.0-stage5) (D-20 комплекта): an issue without lotId takes lots in FEFO order (the earliest expiry first); more than available — 409 invalid_transition, reason insufficient_stock; an expired lot — reason lot_expired.
      */
     post: operations['postInventoryMovement'];
     delete?: never;
@@ -1649,13 +1649,13 @@ export interface paths {
     };
     /**
      * Read internal cash accounts and balances
-     * @description Read internal cash accounts and balances
+     * @description W5.00 (0.12.0-stage5): the accounts of the scope with v2 fields (kind, shift mode, limits, my rights); balance is null without cash.balance.read. The holder of an advance account sees it with cash.advance.self (scope self).
      */
     get: operations['listCashAccounts'];
     put?: never;
     /**
      * Create a zero-balance internal cash account
-     * @description Create a zero-balance internal cash account
+     * @description W5.00 (0.12.0-stage5): Create an internal cash account of one of six kinds with zero balance (cash.manage of 0.1 is renamed cash.accounts.manage). A terminal (acquiring) is bound to its cash desk (drawerAccountId).
      */
     post: operations['createCashAccount'];
     delete?: never;
@@ -1676,13 +1676,13 @@ export interface paths {
     };
     /**
      * List visible append-only ledger postings
-     * @description List visible append-only ledger postings
+     * @description W5.00 (0.12.0-stage5): the visible ledger rows with filters by account, type and shift.
      */
     get: operations['listCashOperations'];
     put?: never;
     /**
      * Record an internal receipt, expense or linked reversal
-     * @description A financial posting is atomic, idempotent and immutable. Refund/adjustment additionally requires cash.refund/cash.adjust. This records internal management cash, not a fiscal receipt or bank transaction.
+     * @description A financial posting is atomic, idempotent and immutable. W5.00 (0.12.0-stage5): refund additionally requires cash.refund, opening (the first row of an account) cash.accounts.manage (Q-W4.00-cash-8); a reversal is reverseCashOperation. Over the role limit the response is 202 with an approval request (Q-W4.00-cash-2). A closed shift — 409 shift_closed; the same source — 409 duplicate_source; the same receipt — 409 duplicate_receipt; not enough funds — 409 insufficient_funds. This records internal management cash, not a fiscal receipt or bank transaction.
      */
     post: operations['postCashOperation'];
     delete?: never;
@@ -5405,6 +5405,725 @@ export interface paths {
     patch?: never;
     trace?: never;
   };
+  '/api/v1/tenants/{tenantId}/cash/accounts/access-preview': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+      };
+      cookie?: never;
+    };
+    /**
+     * Preview who would get access to an account being created
+     * @description W5.00 (0.12.0-stage5) (cash.md §2.2 п. 3, мастер «Кто получит доступ»): a read by the draft in the query — nothing is created. Lists members whose roles (or ownership, or «self» advance) reach the account with their rights, limits and separation-of-duties conflicts.
+     */
+    get: operations['previewCashAccountAccess'];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/v1/tenants/{tenantId}/cash/operations/{operationId}/reverse': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+        /** @description W5.00 (0.12.0-stage5). Opaque UUID of a cash ledger operation (CashOperation.id). */
+        operationId: components['parameters']['cashOperationId'];
+      };
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /**
+     * Reverse a ledger operation by a new storno row
+     * @description W5.00 (0.12.0-stage5) (cash.md §2.2 п. 7): creates a row of type storno linked to the original; the original is never changed (reversedByOperationId is derived). One operation is reversed once (409 invalid_transition). The author may not reverse own operation (403 self_approval), except the business owner (Q-W4.00-cash-3, journal mark own). Needs the balance of the account to stay valid (409 insufficient_funds).
+     */
+    post: operations['reverseCashOperation'];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/v1/tenants/{tenantId}/cash/operations/{operationId}/source-link': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+        /** @description W5.00 (0.12.0-stage5). Opaque UUID of a cash ledger operation (CashOperation.id). */
+        operationId: components['parameters']['cashOperationId'];
+      };
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /**
+     * Link an operation to a source record
+     * @description W5.00 (0.12.0-stage5) (cash.md §2.2 п. 8, «Это она — связать»): the link is a separate record, the operation stays immutable (PD-60). A source already used by another operation — 409 duplicate_source.
+     */
+    post: operations['linkCashOperationSource'];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/v1/tenants/{tenantId}/cash/duplicates': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+      };
+      cookie?: never;
+    };
+    /**
+     * Find possible duplicates of an operation being entered
+     * @description W5.00 (0.12.0-stage5) (cash.md §2.2 п. 9, Q-W4.00-cash-6): operations of the same account (or its terminal), amount, method and type within ±10 minutes of «at». A hint only — the posting is not blocked.
+     */
+    get: operations['findCashDuplicates'];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/v1/tenants/{tenantId}/cash/proposals': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+      };
+      cookie?: never;
+    };
+    /**
+     * List proposals of modules for the cash desks of the scope
+     * @description W5.00 (0.12.0-stage5) (cash.md §2.2 п. 10): «Входящие» — visit done (by the fact after discount, CASH-03), verified trip expense (fleet.expense.verified.v1), payroll (only with cash.payroll.post), refund. Seed proposals pr-2…pr-4 until stages 6–7.
+     */
+    get: operations['listCashProposals'];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/v1/tenants/{tenantId}/cash/proposals/{proposalKey}/post': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+        /** @description W5.00 (0.12.0-stage5). Key of a cash proposal «kind:source» (CashProposal.key); the source is the idempotency key. */
+        proposalKey: components['parameters']['cashProposalKey'];
+      };
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /**
+     * Post a proposal as 1…N operations of one group
+     * @description W5.00 (0.12.0-stage5) (cash.md §2.2 п. 11): atomic and idempotent by source (409 duplicate_source). Over the role limit (expense, refund) — 202 with an approval request. A closed shift of the target — 409 shift_closed.
+     */
+    post: operations['postCashProposal'];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/v1/tenants/{tenantId}/cash/proposals/{proposalKey}/dismiss': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+        /** @description W5.00 (0.12.0-stage5). Key of a cash proposal «kind:source» (CashProposal.key); the source is the idempotency key. */
+        proposalKey: components['parameters']['cashProposalKey'];
+      };
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /**
+     * Dismiss a proposal with a reason
+     * @description W5.00 (0.12.0-stage5) (cash.md §2.2 п. 12): «Не проводить» with a reason; an already posted proposal — 409 invalid_transition.
+     */
+    post: operations['dismissCashProposal'];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/v1/tenants/{tenantId}/cash/shifts': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+      };
+      cookie?: never;
+    };
+    /**
+     * List cash shifts of the visible accounts
+     * @description W5.00 (0.12.0-stage5) (cash.md §2.2 п. 13): sums (expected, diff) only with cash.balance.read, otherwise null.
+     */
+    get: operations['listCashShifts'];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/v1/tenants/{tenantId}/cash/accounts/{accountId}/shifts': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+        /** @description W5.00 (0.12.0-stage5). Opaque UUID of a cash account (CashAccount.id). */
+        accountId: components['parameters']['cashAccountId'];
+      };
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /**
+     * Open a shift with the count of the float
+     * @description W5.00 (0.12.0-stage5) (cash.md §2.2 п. 14): one open shift per account (409 invalid_transition, reason shift_not_open when the account has none to close). A float difference is posted as an adjustment atomically with the shift.
+     */
+    post: operations['openCashShift'];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/v1/tenants/{tenantId}/cash/shifts/{shiftId}/close': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+        /** @description W5.00 (0.12.0-stage5). Opaque UUID of a cash shift (CashShift.id). */
+        shiftId: components['parameters']['cashShiftId'];
+      };
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /**
+     * Close a shift: count, Z report, terminal, hand-over to the safe
+     * @description W5.00 (0.12.0-stage5) (cash.md §2.2 п. 15): a difference within tolerance is posted automatically (closed); above it the shift becomes review and the attempt is kept. Hand-over goes to the nearest safe (Q-W4.00-cash-15). A shift already closed — 409 shift_closed.
+     */
+    post: operations['closeCashShift'];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/v1/tenants/{tenantId}/cash/shifts/{shiftId}/review': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+        /** @description W5.00 (0.12.0-stage5). Opaque UUID of a cash shift (CashShift.id). */
+        shiftId: components['parameters']['cashShiftId'];
+      };
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /**
+     * Accept a shift difference or send the shift to a recount
+     * @description W5.00 (0.12.0-stage5) (cash.md §2.2 п. 16): not the employee who closed the shift (403 self_approval). «Вернуть на пересчёт» keeps the close attempt and reopens the shift (Q-W4.00-cash-4).
+     */
+    post: operations['reviewCashShift'];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/v1/tenants/{tenantId}/cash/transfers': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+      };
+      cookie?: never;
+    };
+    /**
+     * List transfers between cash accounts
+     * @description W5.00 (0.12.0-stage5) (cash.md §2.2 п. 18): «В пути» — status transit.
+     */
+    get: operations['listCashTransfers'];
+    put?: never;
+    /**
+     * Send money to another cash account (in transit)
+     * @description W5.00 (0.12.0-stage5) (cash.md §2.2 п. 17): a move_out row at the sender, the transfer is in transit until accepted. Not more than the balance (409 insufficient_funds).
+     */
+    post: operations['createCashTransfer'];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/v1/tenants/{tenantId}/cash/transfers/{transferId}/decision': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+        /** @description W5.00 (0.12.0-stage5). Opaque UUID of a cash transfer (CashTransfer.id). */
+        transferId: components['parameters']['cashTransferId'];
+      };
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /**
+     * Accept or reject a transfer in transit
+     * @description W5.00 (0.12.0-stage5) (cash.md §2.2 п. 18): accept — move_in at the receiver; reject (with a reason) — the money returns to the sender. A transfer already decided — 409 invalid_transition, reason transfer_decided.
+     */
+    post: operations['decideCashTransfer'];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/v1/tenants/{tenantId}/cash/accounts/{accountId}/advance-issues': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+        /** @description W5.00 (0.12.0-stage5). Opaque UUID of a cash account (CashAccount.id). */
+        accountId: components['parameters']['cashAccountId'];
+      };
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /**
+     * Issue money under report to an advance account
+     * @description W5.00 (0.12.0-stage5) (cash.md §2.2 п. 19): a transfer into the advance account with a report due date; over the role limit (limit advance) — 202 approval request. Not to oneself (403 self_approval).
+     */
+    post: operations['issueCashAdvance'];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/v1/tenants/{tenantId}/cash/accounts/{accountId}/receipts': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+        /** @description W5.00 (0.12.0-stage5). Opaque UUID of a cash account (CashAccount.id). */
+        accountId: components['parameters']['cashAccountId'];
+      };
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /**
+     * Submit a receipt of an advance report
+     * @description W5.00 (0.12.0-stage5) (cash.md §2.2 п. 20): by the holder of the advance account only (scope self); the photo is uploaded through Files first (initiateUpload / completeUpload), fileId required (Q-W4.00-cash-12). Not more than the balance of the advance (409 insufficient_funds). «Переснять» — redoOfReceiptId.
+     */
+    post: operations['submitAdvanceReceipt'];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/v1/tenants/{tenantId}/cash/receipts': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+      };
+      cookie?: never;
+    };
+    /**
+     * List receipts of advance reports
+     * @description W5.00 (0.12.0-stage5) (cash.md §2.2 п. 21): the holder sees own receipts, the issuer sees receipts of the accounts of the scope.
+     */
+    get: operations['listAdvanceReceipts'];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/v1/tenants/{tenantId}/cash/receipts/{receiptId}/decision': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+        /** @description W5.00 (0.12.0-stage5). Opaque UUID of an advance receipt (AdvanceReceipt.id). */
+        receiptId: components['parameters']['cashReceiptId'];
+      };
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /**
+     * Accept or reject a receipt of an advance report
+     * @description W5.00 (0.12.0-stage5) (cash.md §2.2 п. 21): accept posts an out operation of the advance account; not the author (403 self_approval); a receipt already decided — 409 invalid_transition.
+     */
+    post: operations['decideAdvanceReceipt'];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/v1/tenants/{tenantId}/cash/accounts/{accountId}/advance-returns': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+        /** @description W5.00 (0.12.0-stage5). Opaque UUID of a cash account (CashAccount.id). */
+        accountId: components['parameters']['cashAccountId'];
+      };
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /**
+     * Return the unspent rest of an advance
+     * @description W5.00 (0.12.0-stage5) (cash.md §2.2 п. 22): advance account → the issuing desk, in transit until accepted (decideCashTransfer). Not more than the balance (409 insufficient_funds).
+     */
+    post: operations['returnCashAdvance'];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/v1/tenants/{tenantId}/cash/approval-requests': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+      };
+      cookie?: never;
+    };
+    /**
+     * List approval requests over role limits
+     * @description W5.00 (0.12.0-stage5) (cash.md §2.2 п. 23, Q-W4.00-cash-2): approval inside the module; pending requests feed «Требует решения» of the home page (source cash).
+     */
+    get: operations['listCashApprovalRequests'];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/v1/tenants/{tenantId}/cash/approval-requests/{approvalRequestId}/decision': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+        /** @description W5.00 (0.12.0-stage5). Opaque UUID of an approval request (CashApprovalRequest.id). */
+        approvalRequestId: components['parameters']['cashApprovalRequestId'];
+      };
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /**
+     * Approve or reject an approval request
+     * @description W5.00 (0.12.0-stage5) (cash.md §2.2 п. 23): approve posts the operation on behalf of the author with approvedByMemberId (balance and limits are checked again: 409 insufficient_funds); not the author (403 self_approval); a request already decided — 409 invalid_transition.
+     */
+    post: operations['decideCashApprovalRequest'];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/v1/tenants/{tenantId}/cash/categories': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+      };
+      cookie?: never;
+    };
+    /**
+     * List cash categories («статьи»)
+     * @description W5.00 (0.12.0-stage5) (cash.md §2.2 п. 24, Q-W4.00-cash-9): seed list, read only; fleet expense categories (W2.41) map to a category by code.
+     */
+    get: operations['listCashCategories'];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/v1/tenants/{tenantId}/inventory/warehouses': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+      };
+      cookie?: never;
+    };
+    /**
+     * List warehouses
+     * @description W5.00 (0.12.0-stage5) (D-20 комплекта, B-6: no screen in the prototype): warehouses of the org units in the scope of the actor.
+     */
+    get: operations['listWarehouses'];
+    put?: never;
+    /**
+     * Create a warehouse
+     * @description W5.00 (0.12.0-stage5): a warehouse belongs to an org unit; its id is the scope of kind warehouse in role assignments.
+     */
+    post: operations['createWarehouse'];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/v1/tenants/{tenantId}/inventory/items/{itemId}': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+        /** @description W5.00 (0.12.0-stage5). Opaque UUID of a stock item (InventoryItem.id). */
+        itemId: components['parameters']['inventoryItemId'];
+      };
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    /**
+     * Edit a stock item: name, minimum level, archive
+     * @description W5.00 (0.12.0-stage5): sku and baseUnit are immutable once movements exist (409 invalid_transition). If-Match — revision of the item.
+     */
+    patch: operations['updateInventoryItem'];
+    trace?: never;
+  };
+  '/api/v1/tenants/{tenantId}/inventory/balances': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+      };
+      cookie?: never;
+    };
+    /**
+     * List stock balances by warehouse and lot in FEFO order
+     * @description W5.00 (0.12.0-stage5) (D-20 комплекта): onHand, reserved and available per item and warehouse; lots in FEFO order (the earliest expiry first, lots without expiry last).
+     */
+    get: operations['listInventoryBalances'];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/v1/tenants/{tenantId}/inventory/reservations': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+      };
+      cookie?: never;
+    };
+    /**
+     * List stock reservations
+     * @description W5.00 (0.12.0-stage5): reservations hold quantity for a source object (an appointment, a repair purchase) without moving stock.
+     */
+    get: operations['listInventoryReservations'];
+    put?: never;
+    /**
+     * Reserve stock for a source object
+     * @description W5.00 (0.12.0-stage5): more than the available quantity — 409 invalid_transition, reason insufficient_stock.
+     */
+    post: operations['createInventoryReservation'];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/v1/tenants/{tenantId}/inventory/reservations/{reservationId}/release': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+        /** @description W5.00 (0.12.0-stage5). Opaque UUID of a stock reservation (InventoryReservation.id). */
+        reservationId: components['parameters']['inventoryReservationId'];
+      };
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /**
+     * Release a stock reservation
+     * @description W5.00 (0.12.0-stage5): an inactive reservation — 409 invalid_transition, reason reservation_not_active.
+     */
+    post: operations['releaseInventoryReservation'];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/v1/tenants/{tenantId}/spa/services/{serviceId}': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+        /** @description W5.00 (0.12.0-stage5). Opaque UUID of a SPA service (SpaService.id). */
+        serviceId: components['parameters']['spaServiceId'];
+      };
+      cookie?: never;
+    };
+    /**
+     * Read a service with its recipe
+     * @description W5.00 (0.12.0-stage5) (B-6: no screen in the prototype): duration, buffers, equipment, price and the recipe («техкарта») of a service.
+     */
+    get: operations['getSpaService'];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    /**
+     * Edit a service: duration, buffers, price, equipment, recipe
+     * @description W5.00 (0.12.0-stage5): existing appointments keep the snapshot of the service revision they were booked with.
+     */
+    patch: operations['updateSpaService'];
+    trace?: never;
+  };
+  '/api/v1/tenants/{tenantId}/spa/appointments/{appointmentId}/cancel': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        appointmentId: components['parameters']['appointmentId'];
+      };
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /**
+     * Cancel a confirmed appointment and release its resources
+     * @description W5.00 (0.12.0-stage5): only a confirmed appointment (409 invalid_transition otherwise); the booking of practitioner, room and equipment is released.
+     */
+    post: operations['cancelAppointment'];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/v1/tenants/{tenantId}/spa/appointments/{appointmentId}/reschedule': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        appointmentId: components['parameters']['appointmentId'];
+      };
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /**
+     * Move a confirmed appointment to another time or resources
+     * @description W5.00 (0.12.0-stage5): re-reserves practitioner, room and equipment with the service buffers atomically; a conflict — 409 (booking overlap).
+     */
+    post: operations['rescheduleAppointment'];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -5471,6 +6190,52 @@ export interface components {
       accountId?: components['schemas']['Id'];
       displayName: string;
     };
+    /** @description W5.00 (0.12.0-stage5). A receipt of an advance report; the photo is a Files object kept 5 years (Q-W4.00-cash-12). Accepting posts an out operation of the advance account. */
+    AdvanceReceipt: {
+      id: components['schemas']['Id'];
+      accountId: components['schemas']['Id'];
+      amount: components['schemas']['Money'];
+      categoryId: string;
+      link?: components['schemas']['CashSourceRef'] | null;
+      note?: string | null;
+      fileId: components['schemas']['Id'];
+      qr?: string | null;
+      /** @enum {string} */
+      status: 'review' | 'accepted' | 'rejected';
+      reason?: string | null;
+      /** Format: uuid */
+      operationId?: string | null;
+      submittedByMemberId: components['schemas']['Id'];
+      submittedAt: components['schemas']['Instant'];
+      /** Format: uuid */
+      decidedByMemberId?: string | null;
+      /** Format: date-time */
+      decidedAt?: string | null;
+      /** Format: uuid */
+      redoOfReceiptId?: string | null;
+      /** Format: int64 */
+      revision: number;
+    };
+    AdvanceReceiptCreate: {
+      amount: components['schemas']['Money'];
+      categoryId: string;
+      fileId: components['schemas']['Id'];
+      note?: string;
+      link?: components['schemas']['CashSourceRef'];
+      qr?: string;
+      redoOfReceiptId?: components['schemas']['Id'];
+    };
+    /** @description W5.00 (0.12.0-stage5). Not the author of the receipt (403 self_approval); rejecting needs a reason. */
+    AdvanceReceiptDecision: {
+      /** @enum {string} */
+      decision: 'accept' | 'reject';
+      reason?: string;
+    };
+    /** @description Opaque cursor is bound to tenant, principal, effective scopes, filters and sort. Permission changes invalidate the cursor. */
+    AdvanceReceiptPage: {
+      items: components['schemas']['AdvanceReceipt'][];
+      nextCursor: string | null;
+    };
     /** @description No complete cash ledger or other practitioners schedule is included. Sensitive client fields are resolved by their own field-level grants. Status performed_pending_posting records the factual treatment before inventory accounting closes. It does not claim stock posting or client payment. */
     Appointment: {
       id: components['schemas']['Id'];
@@ -5489,12 +6254,21 @@ export interface components {
       /** Format: int64 */
       revision: number;
       performedAt?: components['schemas']['Instant'];
+      /** @description W5.00 (0.12.0-stage5) (CASH-03). The price of the visit by the fact after discount; the cash proposal «визит» takes this amount, not the list price. */
+      finalPrice?: components['schemas']['Money'];
+    };
+    AppointmentCancel: {
+      reason: string;
+      /** @description The client did not come: status no_show instead of cancelled. */
+      noShow?: boolean;
     };
     /** @description Requires performed_pending_posting. Close accounting and recipe-based inventory issue in one tenant database transaction. Overrides require inventory.consumption.override. A stock shortage returns 409 and leaves the already recorded performance and performed_pending_posting status intact; no negative inventory is silently created. After correction retry the same operation; consume once. Completion does not claim payment. */
     AppointmentComplete: {
       warehouseId: components['schemas']['Id'];
       overrides: components['schemas']['ConsumptionOverride'][];
       note?: string;
+      /** @description W5.00 (0.12.0-stage5) (CASH-03). The price of the visit by the fact after discount; the cash proposal «визит» takes this amount, not the list price. */
+      finalPrice?: components['schemas']['Money'];
     };
     AppointmentCompletion: {
       appointment: components['schemas']['Appointment'];
@@ -5520,6 +6294,13 @@ export interface components {
     AppointmentPerformance: {
       performedAt: components['schemas']['Instant'];
       note?: string;
+    };
+    AppointmentReschedule: {
+      startsAt: components['schemas']['Instant'];
+      timeZone: components['schemas']['TimeZone'];
+      practitionerMemberId?: components['schemas']['Id'];
+      roomId?: components['schemas']['Id'];
+      equipmentIds?: components['schemas']['Id'][];
     };
     /** @description Disabled modules retain dormant grants but cannot authorize access. Time-limited driver transfers use constrained temporary assignments; they do not copy every role. */
     Assignment: {
@@ -5846,30 +6627,205 @@ export interface components {
       requiredEquipment: string[];
       stackable: boolean;
     };
+    /** @description W5.00 (0.12.0-stage5). A person who would get access to the account being created («Кто получит доступ»); conflicts — pairs «вносит + согласует», «закрывает + принимает расхождение» (макет 1b). */
+    CashAccessPerson: {
+      memberId: components['schemas']['Id'];
+      name: string;
+      /** @enum {string} */
+      via: 'role' | 'self' | 'owner';
+      rights: string[];
+      limits: components['schemas']['CashLimits'];
+      conflicts: string[];
+    };
+    CashAccessPreview: {
+      items: components['schemas']['CashAccessPerson'][];
+    };
+    /** @description W5.00 (0.12.0-stage5). Account v2 (docs/26-cash.md: six kinds). Mapping of 0.1 kinds: cash → cash_drawer, internal_virtual → virtual. Physical cash accounts cannot go below zero. */
     CashAccount: {
       id: components['schemas']['Id'];
-      orgUnitId: components['schemas']['Id'];
+      /**
+       * Format: uuid
+       * @description null — account of the organization (safe, bank), visible to the tenant scope only.
+       */
+      orgUnitId: string | null;
       name: string;
       currency: string;
       /** @enum {string} */
-      kind: 'cash' | 'internal_virtual';
-      balance: components['schemas']['SignedMoney'];
+      kind: 'cash_drawer' | 'safe' | 'advance' | 'acquiring' | 'bank' | 'virtual';
+      /** @description null — hidden: the actor has no cash.balance.read. */
+      balance: components['schemas']['SignedMoney'] | null;
       /** Format: int64 */
       revision: number;
+      /** @enum {string} */
+      shiftMode: 'none' | 'open' | 'blind';
+      /** @enum {string} */
+      kktMode: 'none' | 'manual';
+      /** @description Balance limit of the drawer: above it the card says «сдайте в сейф» (Q-W4.00-cash-10). */
+      balanceLimit?: components['schemas']['Money'] | null;
+      /** @description Float (размен) left in the drawer at the start of a shift. */
+      floatAmount?: components['schemas']['Money'] | null;
+      /** @description Allowed difference of a shift close (CASH-01: per account). */
+      tolerance?: components['schemas']['Money'] | null;
+      /** Format: uuid */
+      responsibleMemberId?: string | null;
+      /**
+       * Format: uuid
+       * @description Employee of an advance account.
+       */
+      holderMemberId?: string | null;
+      advanceLimit?: components['schemas']['Money'] | null;
+      /**
+       * Format: uuid
+       * @description Acquiring: the cash desk the terminal belongs to («Касса точки», required — PD-60).
+       */
+      drawerAccountId?: string | null;
+      settleDays?: number | null;
+      feeBasisPoints?: number | null;
+      /** @description Allowed expense categories of an advance account. */
+      categoryIds?: string[];
+      /** Format: uuid */
+      openShiftId?: string | null;
+      my: components['schemas']['CashAccountMy'];
     };
-    /** @description Creates zero balance; opening funds are an explicit ledger operation. This internal ledger is not fiscalization, bank acquiring or tax accounting. */
+    /** @description Creates zero balance; opening funds are an explicit ledger operation (type opening, Q-W4.00-cash-8). This internal ledger is not fiscalization, bank acquiring or tax accounting. W5.00 (0.12.0-stage5): v2 fields; a name already taken — 422 validation_failed (field name). */
     CashAccountCreate: {
-      orgUnitId: components['schemas']['Id'];
+      /** Format: uuid */
+      orgUnitId: string | null;
       name: string;
       currency: string;
       /** @enum {string} */
-      kind: 'cash' | 'internal_virtual';
+      kind: 'cash_drawer' | 'safe' | 'advance' | 'acquiring' | 'bank' | 'virtual';
+      /** @enum {string} */
+      shiftMode?: 'none' | 'open' | 'blind';
+      /** @enum {string} */
+      kktMode?: 'none' | 'manual';
+      /** @description Balance limit of the drawer: above it the card says «сдайте в сейф» (Q-W4.00-cash-10). */
+      balanceLimit?: components['schemas']['Money'] | null;
+      /** @description Float (размен) left in the drawer at the start of a shift. */
+      floatAmount?: components['schemas']['Money'] | null;
+      /** @description Allowed difference of a shift close (CASH-01: per account). */
+      tolerance?: components['schemas']['Money'] | null;
+      /** Format: uuid */
+      responsibleMemberId?: string | null;
+      /**
+       * Format: uuid
+       * @description Employee of an advance account.
+       */
+      holderMemberId?: string | null;
+      advanceLimit?: components['schemas']['Money'] | null;
+      /**
+       * Format: uuid
+       * @description Acquiring: the cash desk the terminal belongs to («Касса точки», required — PD-60).
+       */
+      drawerAccountId?: string | null;
+      settleDays?: number | null;
+      feeBasisPoints?: number | null;
+      /** @description Allowed expense categories of an advance account. */
+      categoryIds?: string[];
+    };
+    /** @description W5.00 (0.12.0-stage5). What the actor may do with this account — the buttons of the page «Касса». */
+    CashAccountMy: {
+      /** @enum {string} */
+      via: 'role' | 'self' | 'owner';
+      /** @description Action keys of module cash the actor holds on this account. */
+      rights: string[];
+      limits: components['schemas']['CashLimits'];
+      isHolder?: boolean;
     };
     /** @description Opaque cursor is bound to tenant, principal, effective scopes, filters and sort. Permission changes invalidate the cursor. */
     CashAccountPage: {
       items: components['schemas']['CashAccount'][];
       nextCursor: string | null;
     };
+    /** @description W5.00 (0.12.0-stage5). Issue under report from sourceAccountId to the advance account in the path. Over the role limit — 202 approval request. Not to oneself (403 self_approval). */
+    CashAdvanceIssue: {
+      sourceAccountId: components['schemas']['Id'];
+      amount: components['schemas']['Money'];
+      /**
+       * Format: date
+       * @description Report due date (full ISO date, Q-W4.00-cash-16).
+       */
+      dueDate: string;
+      note?: string;
+    };
+    /** @description W5.00 (0.12.0-stage5). Return of the unspent rest: advance → the issuing desk. */
+    CashAdvanceReturn: {
+      amount: components['schemas']['Money'];
+      targetAccountId?: components['schemas']['Id'];
+      note?: string;
+    };
+    CashApprovalDecision: {
+      /** @enum {string} */
+      decision: 'approve' | 'reject';
+      reason?: string;
+    };
+    /** @description W5.00 (0.12.0-stage5). Approval inside the module (Q-W4.00-cash-2): the operation is posted on behalf of the author with approvedByMemberId; not by the author (403 self_approval). */
+    CashApprovalRequest: {
+      id: components['schemas']['Id'];
+      accountId: components['schemas']['Id'];
+      /** @enum {string} */
+      type: 'out' | 'refund' | 'issue';
+      amount: components['schemas']['Money'];
+      /** @enum {string|null} */
+      method?: 'cash' | 'card' | 'sbp' | 'transfer' | null;
+      categoryId?: string | null;
+      basis?: string | null;
+      source?: components['schemas']['CashSourceRef'] | null;
+      /** @enum {string} */
+      status: 'pending' | 'approved' | 'rejected';
+      /** @description The role limit that was exceeded; null — the role always goes with approval. */
+      limit?: components['schemas']['Money'] | null;
+      requestedByMemberId: components['schemas']['Id'];
+      requestedAt: components['schemas']['Instant'];
+      /** Format: uuid */
+      decidedByMemberId?: string | null;
+      /** Format: date-time */
+      decidedAt?: string | null;
+      reason?: string | null;
+      /** Format: uuid */
+      operationId?: string | null;
+      /** Format: uuid */
+      transferId?: string | null;
+      /** Format: int64 */
+      revision: number;
+    };
+    /** @description Opaque cursor is bound to tenant, principal, effective scopes, filters and sort. Permission changes invalidate the cursor. */
+    CashApprovalRequestPage: {
+      items: components['schemas']['CashApprovalRequest'][];
+      nextCursor: string | null;
+    };
+    /** @description W5.00 (0.12.0-stage5). Seed list, read only in stage 5 (Q-W4.00-cash-9). */
+    CashCategory: {
+      id: string;
+      title: string;
+      /** @enum {string} */
+      group: 'income' | 'expense' | 'transfer' | 'adjustment';
+      /** @enum {string|null} */
+      direction?: 'in' | 'out' | null;
+      moduleKey?: string | null;
+      /** @description Code of a fleet expense category (W2.41) mapped to this category. */
+      expenseCategoryCode?: string | null;
+    };
+    CashCategoryList: {
+      items: components['schemas']['CashCategory'][];
+    };
+    /** @description W5.00 (0.12.0-stage5). Same account or its terminal, amount, method and type within ±10 minutes (Q-W4.00-cash-6). */
+    CashDuplicateList: {
+      items: components['schemas']['CashOperation'][];
+    };
+    /** @description W5.00 (0.12.0-stage5). Role limits «limit: amount» of docs/26-cash.md; with several roles the maximum wins and null wins over a number (cash.js :77–80). */
+    CashLimits: {
+      /**
+       * Format: int64
+       * @description Expense limit, minor units; null — no limit; 0 — always with approval (role.cash.out).
+       */
+      outMinor: number | null;
+      /** Format: int64 */
+      refundMinor: number | null;
+      /** Format: int64 */
+      advanceMinor: number | null;
+    };
+    /** @description W5.00 (0.12.0-stage5). Immutable ledger row v2: type (8), payment method, category, basis, receipt, source, shift, group. Money is integer minor units. */
     CashOperation: {
       id: components['schemas']['Id'];
       accountId: components['schemas']['Id'];
@@ -5883,8 +6839,39 @@ export interface components {
       createdByMemberId: components['schemas']['Id'];
       relatedObject?: components['schemas']['ObjectRef'];
       reversesOperationId?: components['schemas']['Id'];
+      /** @enum {string} */
+      type: 'in' | 'out' | 'refund' | 'move_in' | 'move_out' | 'opening' | 'adjust' | 'storno';
+      /** @enum {string} */
+      method: 'cash' | 'card' | 'sbp' | 'transfer';
+      /** @enum {string} */
+      origin: 'manual' | 'proposal' | 'import' | 'integration';
+      /** @description Category («статья») code from listCashCategories. */
+      categoryId?: string | null;
+      basis?: string;
+      receipt?: components['schemas']['CashReceipt'];
+      source?: components['schemas']['CashSourceRef'];
+      /** Format: uuid */
+      shiftId?: string | null;
+      /**
+       * Format: uuid
+       * @description One payment in parts = several operations with a common group.
+       */
+      groupId?: string | null;
+      /** Format: uuid */
+      transferId?: string | null;
+      /** Format: uuid */
+      approvedByMemberId?: string | null;
+      /**
+       * Format: uuid
+       * @description Derived: the storno that reversed this operation (an operation itself is never changed).
+       */
+      reversedByOperationId?: string | null;
+      /** @enum {string} */
+      reconcileStatus?: 'unmatched' | 'matched' | 'mismatch';
+      /** @description The owner reversed own operation (Q-W4.00-cash-3): a journal mark. */
+      own?: boolean;
     };
-    /** @description Currency must match account and amount > 0. Immutable append-only posting. Refund/correction references original operation; cumulative refunds cannot exceed its amount. No payment success is inferred from an appointment state. Negative internal_virtual balances require explicit account policy; physical cash accounts cannot go below zero. */
+    /** @description Currency must match account and amount > 0. Immutable append-only posting. Refund/correction references original operation; cumulative refunds cannot exceed its amount. No payment success is inferred from an appointment state. Negative internal_virtual balances require explicit account policy; physical cash accounts cannot go below zero. W5.00 (0.12.0-stage5): type, method, categoryId, basis, receipt, source; direction and category stay and must be consistent with type (the server derives and checks them). Over the role limit: 202 CashApprovalRequest instead of a posting. Errors: 409 insufficient_funds, 409 shift_closed, 409 duplicate_source, 409 duplicate_receipt. */
     CashOperationCreate: {
       accountId: components['schemas']['Id'];
       /** @enum {string} */
@@ -5896,10 +6883,260 @@ export interface components {
       relatedObject?: components['schemas']['ObjectRef'];
       reversesOperationId?: components['schemas']['Id'];
       note?: string;
+      /** @enum {string} */
+      type?: 'in' | 'out' | 'refund' | 'opening';
+      /** @enum {string} */
+      method?: 'cash' | 'card' | 'sbp' | 'transfer';
+      /** @description Category («статья») code from listCashCategories. */
+      categoryId?: string | null;
+      basis?: string;
+      receipt?: components['schemas']['CashReceipt'];
+      source?: components['schemas']['CashSourceRef'];
+      refundsOperationId?: components['schemas']['Id'];
     };
     /** @description Opaque cursor is bound to tenant, principal, effective scopes, filters and sort. Permission changes invalidate the cursor. */
     CashOperationPage: {
       items: components['schemas']['CashOperation'][];
+      nextCursor: string | null;
+    };
+    /** @description W5.00 (0.12.0-stage5). A link of an operation to a source is a separate record (PD-60: the operation stays immutable). */
+    CashOperationSourceLink: {
+      operationId: components['schemas']['Id'];
+      source: components['schemas']['CashSourceRef'];
+      linkedAt: components['schemas']['Instant'];
+      linkedByMemberId: components['schemas']['Id'];
+    };
+    /** @description W5.00 (0.12.0-stage5). A proposal of a module: visit done, verified trip expense, payroll (needs cash.payroll.post), refund. The idempotency key is the source. */
+    CashProposal: {
+      key: string;
+      /** @enum {string} */
+      kind: 'visit' | 'expense' | 'payroll' | 'refund' | 'purchase' | 'invoice';
+      title: string;
+      amount: components['schemas']['Money'];
+      /** @enum {string} */
+      direction: 'in' | 'out';
+      /** Format: uuid */
+      defaultAccountId?: string | null;
+      categoryId?: string | null;
+      source: components['schemas']['CashSourceRef'];
+      /** @enum {string} */
+      status: 'open' | 'posted' | 'dismissed';
+      parts?: components['schemas']['CashProposalPart'][];
+      createdAt: components['schemas']['Instant'];
+      operationIds?: components['schemas']['Id'][];
+      dismissal?: components['schemas']['CashProposalDismissal'] | null;
+    };
+    CashProposalDismiss: {
+      reason: string;
+    };
+    CashProposalDismissal: {
+      reason: string;
+      byMemberId: components['schemas']['Id'];
+      at: components['schemas']['Instant'];
+    };
+    /** @description Opaque cursor is bound to tenant, principal, effective scopes, filters and sort. Permission changes invalidate the cursor. */
+    CashProposalPage: {
+      items: components['schemas']['CashProposal'][];
+      nextCursor: string | null;
+    };
+    CashProposalPart: {
+      label: string;
+      amount: components['schemas']['Money'];
+      /** @enum {string} */
+      method?: 'cash' | 'card' | 'sbp' | 'transfer';
+    };
+    /** @description W5.00 (0.12.0-stage5). Posts 1…N operations with a common group atomically; idempotent by source; a repeat — 409 duplicate_source. */
+    CashProposalPost: {
+      accountId: components['schemas']['Id'];
+      parts: components['schemas']['CashProposalPostPart'][];
+      receipt?: components['schemas']['CashReceipt'];
+      basis?: string;
+    };
+    CashProposalPostPart: {
+      /** @enum {string} */
+      method: 'cash' | 'card' | 'sbp' | 'transfer';
+      amount: components['schemas']['Money'];
+    };
+    CashProposalPostResult: {
+      proposal: components['schemas']['CashProposal'];
+      operations: components['schemas']['CashOperation'][];
+    };
+    /** @description W5.00 (0.12.0-stage5). Receipt data of a manual entry: fd + kktShift (+receiptAt), or none + reason, or sellerMemberId. The fd number is unique in the pair «cash desk + ККТ shift» (Q-W4.00-cash-6); a repeat — 409 duplicate_receipt. */
+    CashReceipt: {
+      fdNumber?: string;
+      kktShift?: string;
+      receiptAt?: components['schemas']['Instant'];
+      /** @description A receipt was not issued (needs reason). */
+      none?: boolean;
+      reason?: string;
+      sellerMemberId?: components['schemas']['Id'];
+      fileId?: components['schemas']['Id'];
+    };
+    /** @description W5.00 (0.12.0-stage5). Storno: a new row of type storno; the original is never changed. The author may not reverse own operation (403 self_approval) except the owner (Q-W4.00-cash-3). */
+    CashReverseRequest: {
+      reason: string;
+    };
+    /** @description W5.00 (0.12.0-stage5). A cash shift: open → review (difference above tolerance) | closed. Closing by the cashier who opened it; the difference is accepted by another employee with cash.reconcile (403 self_approval). */
+    CashShift: {
+      id: components['schemas']['Id'];
+      accountId: components['schemas']['Id'];
+      /** Format: int64 */
+      number: number;
+      /** @enum {string} */
+      status: 'open' | 'review' | 'closed';
+      openedAt: components['schemas']['Instant'];
+      openedByMemberId: components['schemas']['Id'];
+      openingFloat: components['schemas']['Money'];
+      openingDiff?: components['schemas']['SignedMoney'] | null;
+      /** Format: date-time */
+      closedAt?: string | null;
+      /** Format: uuid */
+      closedByMemberId?: string | null;
+      counted?: components['schemas']['Money'] | null;
+      /** @description Denomination (RUB) → number of notes or coins. */
+      counts?: {
+        [key: string]: number;
+      };
+      coins?: components['schemas']['Money'] | null;
+      z?: components['schemas']['CashShiftZ'] | null;
+      terminal?: components['schemas']['CashShiftTerminal'] | null;
+      expected?: components['schemas']['CashShiftExpected'] | null;
+      diff?: components['schemas']['CashShiftDiff'] | null;
+      decision?: components['schemas']['CashShiftDecision'] | null;
+      attempts: components['schemas']['CashShiftCloseAttempt'][];
+      /** Format: uuid */
+      toSafeTransferId?: string | null;
+      /** Format: int64 */
+      revision: number;
+    };
+    /** @description W5.00 (0.12.0-stage5). Close with the count; with kktMode manual the Z report is required (422 validation_failed). A difference within tolerance is posted automatically; above — the shift becomes review. */
+    CashShiftClose: {
+      counted: components['schemas']['Money'];
+      /** @description Denomination (RUB) → number of notes or coins. */
+      counts?: {
+        [key: string]: number;
+      };
+      coins?: components['schemas']['Money'];
+      z?: components['schemas']['CashShiftZ'];
+      terminal?: components['schemas']['CashShiftTerminal'];
+      /** @description Hand the revenue over to the nearest safe (Q-W4.00-cash-15). */
+      toSafe?: boolean;
+    };
+    /** @description W5.00 (0.12.0-stage5). Every close attempt is an immutable record; «Вернуть на пересчёт» keeps it and reopens the shift (Q-W4.00-cash-4, PD-60). */
+    CashShiftCloseAttempt: {
+      closedAt: components['schemas']['Instant'];
+      closedByMemberId: components['schemas']['Id'];
+      counted: components['schemas']['Money'];
+      /** @description Denomination (RUB) → number of notes or coins. */
+      counts?: {
+        [key: string]: number;
+      };
+      z?: components['schemas']['CashShiftZ'] | null;
+      terminal?: components['schemas']['CashShiftTerminal'] | null;
+      diff?: components['schemas']['CashShiftDiff'] | null;
+      recountReason?: string | null;
+    };
+    CashShiftDecision: {
+      /** @enum {string} */
+      kind: 'auto' | 'accepted';
+      /** Format: uuid */
+      byMemberId?: string | null;
+      at: components['schemas']['Instant'];
+      reason: string;
+      /** Format: uuid */
+      operationId?: string | null;
+    };
+    CashShiftDiff: {
+      cash: components['schemas']['SignedMoney'];
+      kktCash: components['schemas']['SignedMoney'];
+      kktCard: components['schemas']['SignedMoney'];
+      term: components['schemas']['SignedMoney'];
+    };
+    /** @description W5.00 (0.12.0-stage5). Expected sums — only with cash.balance.read (otherwise the field of the shift is null: blind close). */
+    CashShiftExpected: {
+      cash: components['schemas']['SignedMoney'];
+      revCash: components['schemas']['SignedMoney'];
+      revCard: components['schemas']['SignedMoney'];
+      card: components['schemas']['SignedMoney'];
+      sbp: components['schemas']['SignedMoney'];
+    };
+    /** @description W5.00 (0.12.0-stage5). A float difference at the opening is posted as an adjustment with the event cash.shift.opened_with_diff.v1. */
+    CashShiftOpen: {
+      countedFloat: components['schemas']['Money'];
+      note?: string;
+    };
+    /** @description Opaque cursor is bound to tenant, principal, effective scopes, filters and sort. Permission changes invalidate the cursor. */
+    CashShiftPage: {
+      items: components['schemas']['CashShift'][];
+      nextCursor: string | null;
+    };
+    CashShiftReview: {
+      /** @enum {string} */
+      decision: 'accept' | 'recount';
+      reason: string;
+      comment?: string;
+    };
+    CashShiftTerminal: {
+      card: components['schemas']['Money'];
+      sbp: components['schemas']['Money'];
+    };
+    CashShiftZ: {
+      number: string;
+      cash: components['schemas']['Money'];
+      card: components['schemas']['Money'];
+    };
+    CashSourceLinkRequest: {
+      source: components['schemas']['CashSourceRef'];
+    };
+    /** @description W5.00 (0.12.0-stage5). The record of another module a posting is based on (visit, trip expense, repair act). One source gives one operation or group — a repeat is 409 duplicate_source. */
+    CashSourceRef: {
+      key: string;
+      kind: string;
+      id: components['schemas']['Id'];
+      label?: string;
+    };
+    /** @description W5.00 (0.12.0-stage5). A transfer in two steps: in_transit (transit) → done (move_in at the receiver) | rejected (move back at the sender). */
+    CashTransfer: {
+      id: components['schemas']['Id'];
+      fromAccountId: components['schemas']['Id'];
+      toAccountId: components['schemas']['Id'];
+      amount: components['schemas']['Money'];
+      note?: string | null;
+      /** @enum {string} */
+      purpose: 'transfer' | 'shift_handover' | 'advance_issue' | 'advance_return';
+      /** @enum {string} */
+      status: 'transit' | 'done' | 'rejected';
+      sentByMemberId: components['schemas']['Id'];
+      sentAt: components['schemas']['Instant'];
+      /** Format: uuid */
+      decidedByMemberId?: string | null;
+      /** Format: date-time */
+      decidedAt?: string | null;
+      reason?: string | null;
+      /** Format: uuid */
+      outOperationId?: string | null;
+      /** Format: uuid */
+      inOperationId?: string | null;
+      /** Format: uuid */
+      backOperationId?: string | null;
+      /** Format: int64 */
+      revision: number;
+    };
+    CashTransferCreate: {
+      fromAccountId: components['schemas']['Id'];
+      toAccountId: components['schemas']['Id'];
+      amount: components['schemas']['Money'];
+      note?: string;
+    };
+    /** @description W5.00 (0.12.0-stage5). Rejecting needs a reason. */
+    CashTransferDecision: {
+      /** @enum {string} */
+      decision: 'accept' | 'reject';
+      reason?: string;
+    };
+    /** @description Opaque cursor is bound to tenant, principal, effective scopes, filters and sort. Permission changes invalidate the cursor. */
+    CashTransferPage: {
+      items: components['schemas']['CashTransfer'][];
       nextCursor: string | null;
     };
     ChoiceOption: {
@@ -7500,6 +8737,22 @@ export interface components {
       type: 'instant';
       value: components['schemas']['Instant'];
     };
+    /** @description W5.00 (0.12.0-stage5) (D-20 комплекта). Balance of an item in a warehouse; available = onHand − reserved. FEFO: lots are listed and consumed by expiry date, the earliest first, lots without expiry last. */
+    InventoryBalance: {
+      warehouseId: components['schemas']['Id'];
+      itemId: components['schemas']['Id'];
+      onHand: components['schemas']['Quantity'];
+      reserved: components['schemas']['Quantity'];
+      available: components['schemas']['Quantity'];
+      minLevel?: components['schemas']['Quantity'] | null;
+      belowMinimum: boolean;
+      lots: components['schemas']['InventoryLotBalance'][];
+    };
+    /** @description Opaque cursor is bound to tenant, principal, effective scopes, filters and sort. Permission changes invalidate the cursor. */
+    InventoryBalancePage: {
+      items: components['schemas']['InventoryBalance'][];
+      nextCursor: string | null;
+    };
     InventoryItem: {
       id: components['schemas']['Id'];
       orgUnitId: components['schemas']['Id'];
@@ -7510,6 +8763,8 @@ export interface components {
       trackLots: boolean;
       /** Format: int64 */
       revision: number;
+      /** @description W5.00 (0.12.0-stage5). Minimum stock level in the base unit (D-20 комплекта); belowMinimum in balances compares onHand with it. */
+      minLevel?: components['schemas']['Quantity'];
     };
     InventoryItemCreate: {
       orgUnitId: components['schemas']['Id'];
@@ -7524,6 +8779,19 @@ export interface components {
       items: components['schemas']['InventoryItem'][];
       nextCursor: string | null;
     };
+    /** @description W5.00 (0.12.0-stage5). Edit a stock item; sku and baseUnit are immutable once movements exist. */
+    InventoryItemPatch: {
+      name?: string;
+      minLevel?: components['schemas']['Quantity'];
+      archived?: boolean;
+    };
+    InventoryLotBalance: {
+      /** Format: uuid */
+      lotId: string | null;
+      /** Format: date */
+      expiresOn: string | null;
+      onHand: components['schemas']['Quantity'];
+    };
     InventoryMovement: {
       id: components['schemas']['Id'];
       /** @enum {string} */
@@ -7534,7 +8802,7 @@ export interface components {
       source?: components['schemas']['ObjectRef'];
       postedAt: components['schemas']['Instant'];
     };
-    /** @description Quantity must be positive. Transfers require targetWarehouseId and authorize both warehouses. Adjustment requires adjustmentDirection and a reason; reversal requires reversesMovementId and reason. Server derives the reversal direction from the original and rejects lines/warehouse/currency inconsistent with it. Both require dedicated permission. Immutable ledger: correct by compensating movement; never edit posted balances. Negative stock is disabled in v0.1. */
+    /** @description Quantity must be positive. Transfers require targetWarehouseId and authorize both warehouses. Adjustment requires adjustmentDirection and a reason; reversal requires reversesMovementId and reason. Server derives the reversal direction from the original and rejects lines/warehouse/currency inconsistent with it. Both require dedicated permission. Immutable ledger: correct by compensating movement; never edit posted balances. Negative stock is disabled in v0.1. W5.00 (0.12.0-stage5) (D-20 комплекта): an issue without lotId consumes lots in FEFO order. */
     InventoryMovementCreate: {
       /** @enum {string} */
       kind: 'receipt' | 'issue' | 'transfer' | 'adjustment' | 'reversal';
@@ -7557,6 +8825,35 @@ export interface components {
     /** @description Opaque cursor is bound to tenant, principal, effective scopes, filters and sort. Permission changes invalidate the cursor. */
     InventoryMovementPage: {
       items: components['schemas']['InventoryMovement'][];
+      nextCursor: string | null;
+    };
+    /** @description W5.00 (0.12.0-stage5). A reservation holds quantity for a source object without a movement; it becomes consumed when the movement of the source is posted. */
+    InventoryReservation: {
+      id: components['schemas']['Id'];
+      warehouseId: components['schemas']['Id'];
+      source: components['schemas']['ObjectRef'];
+      lines: components['schemas']['InventoryReservationLine'][];
+      /** @enum {string} */
+      status: 'active' | 'consumed' | 'released';
+      /** Format: date-time */
+      expiresAt?: string | null;
+      createdAt: components['schemas']['Instant'];
+      /** Format: int64 */
+      revision: number;
+    };
+    InventoryReservationCreate: {
+      warehouseId: components['schemas']['Id'];
+      source: components['schemas']['ObjectRef'];
+      lines: components['schemas']['InventoryReservationLine'][];
+      expiresAt?: components['schemas']['Instant'];
+    };
+    InventoryReservationLine: {
+      itemId: components['schemas']['Id'];
+      quantity: components['schemas']['Quantity'];
+    };
+    /** @description Opaque cursor is bound to tenant, principal, effective scopes, filters and sort. Permission changes invalidate the cursor. */
+    InventoryReservationPage: {
+      items: components['schemas']['InventoryReservation'][];
       nextCursor: string | null;
     };
     /** @description Invitation secret is never returned in this administrative list/response; deliver through the verified invitation flow. */
@@ -9183,7 +10480,12 @@ export interface components {
       | 'request_pending'
       | 'tier_below_usage'
       | 'not_implemented'
-      | 'offer_closed';
+      | 'offer_closed'
+      | 'shift_closed'
+      | 'duplicate_source'
+      | 'duplicate_receipt'
+      | 'self_approval'
+      | 'insufficient_funds';
     ProblemViolation: {
       field: string;
       code: string;
@@ -9648,6 +10950,19 @@ export interface components {
     SpaServicePage: {
       items: components['schemas']['SpaService'][];
       nextCursor: string | null;
+    };
+    /** @description W5.00 (0.12.0-stage5). Edit a service and its recipe («техкарта»); the revision grows, booked appointments keep their snapshot. */
+    SpaServicePatch: {
+      name?: string;
+      /** Format: int64 */
+      durationMinutes?: number;
+      /** Format: int64 */
+      bufferBeforeMinutes?: number;
+      /** Format: int64 */
+      bufferAfterMinutes?: number;
+      price?: components['schemas']['Money'];
+      requiredEquipmentIds?: components['schemas']['Id'][];
+      recipe?: components['schemas']['ConsumptionRecipeLine'][];
     };
     SpaSettings: {
       /**
@@ -10869,6 +12184,26 @@ export interface components {
       operator: 'equals' | 'not_equals' | 'contains';
       value: components['schemas']['FieldValue'];
     };
+    /** @description W5.00 (0.12.0-stage5). A warehouse of an org unit; its id is the warehouse scope of role assignments. */
+    Warehouse: {
+      id: components['schemas']['Id'];
+      orgUnitId: components['schemas']['Id'];
+      name: string;
+      code?: string;
+      archived: boolean;
+      /** Format: int64 */
+      revision: number;
+    };
+    WarehouseCreate: {
+      orgUnitId: components['schemas']['Id'];
+      name: string;
+      code?: string;
+    };
+    /** @description Opaque cursor is bound to tenant, principal, effective scopes, filters and sort. Permission changes invalidate the cursor. */
+    WarehousePage: {
+      items: components['schemas']['Warehouse'][];
+      nextCursor: string | null;
+    };
     WorkLog: {
       id: components['schemas']['Id'];
       projectId: components['schemas']['Id'];
@@ -11114,6 +12449,20 @@ export interface components {
     automationId: components['schemas']['Id'];
     /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
     bookingId: components['schemas']['Id'];
+    /** @description W5.00 (0.12.0-stage5). Opaque UUID of a cash account (CashAccount.id). */
+    cashAccountId: components['schemas']['Id'];
+    /** @description W5.00 (0.12.0-stage5). Opaque UUID of an approval request (CashApprovalRequest.id). */
+    cashApprovalRequestId: components['schemas']['Id'];
+    /** @description W5.00 (0.12.0-stage5). Opaque UUID of a cash ledger operation (CashOperation.id). */
+    cashOperationId: components['schemas']['Id'];
+    /** @description W5.00 (0.12.0-stage5). Key of a cash proposal «kind:source» (CashProposal.key); the source is the idempotency key. */
+    cashProposalKey: string;
+    /** @description W5.00 (0.12.0-stage5). Opaque UUID of an advance receipt (AdvanceReceipt.id). */
+    cashReceiptId: components['schemas']['Id'];
+    /** @description W5.00 (0.12.0-stage5). Opaque UUID of a cash shift (CashShift.id). */
+    cashShiftId: components['schemas']['Id'];
+    /** @description W5.00 (0.12.0-stage5). Opaque UUID of a cash transfer (CashTransfer.id). */
+    cashTransferId: components['schemas']['Id'];
     /** @description W2.52 (0.6.1-stage2). ExpenseCategory.code — the stable code of a tenant expense category (fuel, wash, parking, toll, tire_service, other or a code of a category created by the owner); TripExpense.kind carries the same value. */
     categoryCode: string;
     /** @description W4.07. Opaque UUID of a subscription change request (SubscriptionChangeRequest.id). A request of another tenant answers 404, as a missing one. */
@@ -11144,6 +12493,10 @@ export interface components {
     importId: components['schemas']['Id'];
     /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
     inspectionId: components['schemas']['Id'];
+    /** @description W5.00 (0.12.0-stage5). Opaque UUID of a stock item (InventoryItem.id). */
+    inventoryItemId: components['schemas']['Id'];
+    /** @description W5.00 (0.12.0-stage5). Opaque UUID of a stock reservation (InventoryReservation.id). */
+    inventoryReservationId: components['schemas']['Id'];
     /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
     memberId: components['schemas']['Id'];
     /** @description Module key from the trusted registry. */
@@ -11176,6 +12529,8 @@ export interface components {
     roleId: components['schemas']['Id'];
     /** @description W4.04. Opaque UUID of an automation rule of a knowledge space; visible to the lead of the space only. */
     ruleId: components['schemas']['Id'];
+    /** @description W5.00 (0.12.0-stage5). Opaque UUID of a SPA service (SpaService.id). */
+    spaServiceId: components['schemas']['Id'];
     /** @description W4.04. Opaque UUID of a knowledge space; a space the member does not see — 404, as a missing one. */
     spaceId: components['schemas']['Id'];
     /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
@@ -15460,6 +16815,10 @@ export interface operations {
         /** @description Opaque cursor from the preceding response; no offset pagination. */
         cursor?: components['parameters']['Cursor'];
         limit?: components['parameters']['Limit'];
+        status?: 'confirmed' | 'performed_pending_posting' | 'completed' | 'cancelled' | 'no_show';
+        from?: components['schemas']['Instant'];
+        to?: components['schemas']['Instant'];
+        practitionerMemberId?: components['schemas']['Id'];
       };
       header?: never;
       path: {
@@ -15782,6 +17141,8 @@ export interface operations {
         /** @description Opaque cursor from the preceding response; no offset pagination. */
         cursor?: components['parameters']['Cursor'];
         limit?: components['parameters']['Limit'];
+        kind?: 'cash_drawer' | 'safe' | 'advance' | 'acquiring' | 'bank' | 'virtual';
+        orgUnitId?: components['schemas']['Id'];
       };
       header?: never;
       path: {
@@ -15866,6 +17227,9 @@ export interface operations {
         /** @description Opaque cursor from the preceding response; no offset pagination. */
         cursor?: components['parameters']['Cursor'];
         limit?: components['parameters']['Limit'];
+        accountId?: components['schemas']['Id'];
+        type?: 'in' | 'out' | 'refund' | 'move_in' | 'move_out' | 'opening' | 'adjust' | 'storno';
+        shiftId?: components['schemas']['Id'];
       };
       header?: never;
       path: {
@@ -15918,12 +17282,16 @@ export interface operations {
         /**
          * @example {
          *       "accountId": "10000000-0000-4000-8000-000000000001",
+         *       "type": "in",
          *       "direction": "in",
+         *       "method": "cash",
          *       "amount": {
          *         "amountMinor": 500000,
          *         "currency": "RUB"
          *       },
          *       "category": "service_payment",
+         *       "categoryId": "service",
+         *       "basis": "Оплата визита",
          *       "occurredAt": "2026-10-05T09:30:00Z",
          *       "relatedObject": {
          *         "moduleKey": "spa",
@@ -15947,6 +17315,20 @@ export interface operations {
         };
         content: {
           'application/json': components['schemas']['CashOperation'];
+        };
+      };
+      /** @description Accepted: the amount exceeds the role limit; an approval request is created instead of a ledger posting (Q-W4.00-cash-2). */
+      202: {
+        headers: {
+          'X-Request-Id': components['headers']['RequestId'];
+          ETag: components['headers']['ETag'];
+          'Idempotency-Replayed': components['headers']['IdempotencyReplayed'];
+          /** @description Never cache authenticated, confidential or capability-bearing API responses in shared caches. */
+          'Cache-Control'?: 'private, no-store';
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['CashApprovalRequest'];
         };
       };
       400: components['responses']['BadRequest'];
@@ -23531,6 +24913,1526 @@ export interface operations {
       403: components['responses']['Forbidden'];
       404: components['responses']['NotFound'];
       409: components['responses']['Conflict'];
+      422: components['responses']['Validation'];
+      428: components['responses']['PreconditionRequired'];
+      429: components['responses']['RateLimited'];
+    };
+  };
+  previewCashAccountAccess: {
+    parameters: {
+      query?: {
+        kind?: 'cash_drawer' | 'safe' | 'advance' | 'acquiring' | 'bank' | 'virtual';
+        orgUnitId?: components['schemas']['Id'];
+        holderMemberId?: components['schemas']['Id'];
+      };
+      header?: never;
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Successful result. */
+      200: {
+        headers: {
+          'X-Request-Id': components['headers']['RequestId'];
+          /** @description Never cache authenticated, confidential or capability-bearing API responses in shared caches. */
+          'Cache-Control'?: 'private, no-store';
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['CashAccessPreview'];
+        };
+      };
+      400: components['responses']['BadRequest'];
+      401: components['responses']['Unauthenticated'];
+      403: components['responses']['Forbidden'];
+      404: components['responses']['NotFound'];
+      422: components['responses']['Validation'];
+      429: components['responses']['RateLimited'];
+    };
+  };
+  reverseCashOperation: {
+    parameters: {
+      query?: never;
+      header: {
+        /** @description Stable per intended command. Retain record at least 7 days; financial deduplication also retains a durable tenant+actor+operation+key digest receipt. Key is scoped to tenant+actor+operation. Reuse only for an identical request. */
+        'Idempotency-Key': components['parameters']['IdempotencyKey'];
+        /** @description Required for cookie-authenticated state changes; not required with bearer-only authentication. Invalid/missing token or Origin yields 403. Conditional requirement cannot be represented by OpenAPI required=true. */
+        'X-CSRF-Token'?: components['parameters']['Csrf'];
+        /** @description Required and checked against the deployment allowlist for cookie-authenticated state changes and browser public-form submissions/uploads. Never accept wildcard with credentialed requests. */
+        Origin?: components['parameters']['Origin'];
+      };
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+        /** @description W5.00 (0.12.0-stage5). Opaque UUID of a cash ledger operation (CashOperation.id). */
+        operationId: components['parameters']['cashOperationId'];
+      };
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['CashReverseRequest'];
+      };
+    };
+    responses: {
+      /** @description Successful result. */
+      201: {
+        headers: {
+          'X-Request-Id': components['headers']['RequestId'];
+          'Idempotency-Replayed': components['headers']['IdempotencyReplayed'];
+          /** @description Never cache authenticated, confidential or capability-bearing API responses in shared caches. */
+          'Cache-Control'?: 'private, no-store';
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['CashOperation'];
+        };
+      };
+      400: components['responses']['BadRequest'];
+      401: components['responses']['Unauthenticated'];
+      402: components['responses']['PlanRequired'];
+      403: components['responses']['Forbidden'];
+      404: components['responses']['NotFound'];
+      409: components['responses']['Conflict'];
+      422: components['responses']['Validation'];
+      428: components['responses']['PreconditionRequired'];
+      429: components['responses']['RateLimited'];
+    };
+  };
+  linkCashOperationSource: {
+    parameters: {
+      query?: never;
+      header: {
+        /** @description Stable per intended command. Retain record at least 7 days; financial deduplication also retains a durable tenant+actor+operation+key digest receipt. Key is scoped to tenant+actor+operation. Reuse only for an identical request. */
+        'Idempotency-Key': components['parameters']['IdempotencyKey'];
+        /** @description Required for cookie-authenticated state changes; not required with bearer-only authentication. Invalid/missing token or Origin yields 403. Conditional requirement cannot be represented by OpenAPI required=true. */
+        'X-CSRF-Token'?: components['parameters']['Csrf'];
+        /** @description Required and checked against the deployment allowlist for cookie-authenticated state changes and browser public-form submissions/uploads. Never accept wildcard with credentialed requests. */
+        Origin?: components['parameters']['Origin'];
+      };
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+        /** @description W5.00 (0.12.0-stage5). Opaque UUID of a cash ledger operation (CashOperation.id). */
+        operationId: components['parameters']['cashOperationId'];
+      };
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['CashSourceLinkRequest'];
+      };
+    };
+    responses: {
+      /** @description Successful result. */
+      201: {
+        headers: {
+          'X-Request-Id': components['headers']['RequestId'];
+          'Idempotency-Replayed': components['headers']['IdempotencyReplayed'];
+          /** @description Never cache authenticated, confidential or capability-bearing API responses in shared caches. */
+          'Cache-Control'?: 'private, no-store';
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['CashOperationSourceLink'];
+        };
+      };
+      400: components['responses']['BadRequest'];
+      401: components['responses']['Unauthenticated'];
+      402: components['responses']['PlanRequired'];
+      403: components['responses']['Forbidden'];
+      404: components['responses']['NotFound'];
+      409: components['responses']['Conflict'];
+      422: components['responses']['Validation'];
+      428: components['responses']['PreconditionRequired'];
+      429: components['responses']['RateLimited'];
+    };
+  };
+  findCashDuplicates: {
+    parameters: {
+      query?: {
+        accountId?: components['schemas']['Id'];
+        amountMinor?: number;
+        method?: 'cash' | 'card' | 'sbp' | 'transfer';
+        type?: 'in' | 'out' | 'refund';
+        at?: components['schemas']['Instant'];
+      };
+      header?: never;
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Successful result. */
+      200: {
+        headers: {
+          'X-Request-Id': components['headers']['RequestId'];
+          /** @description Never cache authenticated, confidential or capability-bearing API responses in shared caches. */
+          'Cache-Control'?: 'private, no-store';
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['CashDuplicateList'];
+        };
+      };
+      400: components['responses']['BadRequest'];
+      401: components['responses']['Unauthenticated'];
+      403: components['responses']['Forbidden'];
+      404: components['responses']['NotFound'];
+      422: components['responses']['Validation'];
+      429: components['responses']['RateLimited'];
+    };
+  };
+  listCashProposals: {
+    parameters: {
+      query?: {
+        /** @description Opaque cursor from the preceding response; no offset pagination. */
+        cursor?: components['parameters']['Cursor'];
+        limit?: components['parameters']['Limit'];
+        status?: 'open' | 'posted' | 'dismissed';
+      };
+      header?: never;
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Successful result. */
+      200: {
+        headers: {
+          'X-Request-Id': components['headers']['RequestId'];
+          /** @description Never cache authenticated, confidential or capability-bearing API responses in shared caches. */
+          'Cache-Control'?: 'private, no-store';
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['CashProposalPage'];
+        };
+      };
+      400: components['responses']['BadRequest'];
+      401: components['responses']['Unauthenticated'];
+      403: components['responses']['Forbidden'];
+      404: components['responses']['NotFound'];
+      422: components['responses']['Validation'];
+      429: components['responses']['RateLimited'];
+    };
+  };
+  postCashProposal: {
+    parameters: {
+      query?: never;
+      header: {
+        /** @description Stable per intended command. Retain record at least 7 days; financial deduplication also retains a durable tenant+actor+operation+key digest receipt. Key is scoped to tenant+actor+operation. Reuse only for an identical request. */
+        'Idempotency-Key': components['parameters']['IdempotencyKey'];
+        /** @description Required for cookie-authenticated state changes; not required with bearer-only authentication. Invalid/missing token or Origin yields 403. Conditional requirement cannot be represented by OpenAPI required=true. */
+        'X-CSRF-Token'?: components['parameters']['Csrf'];
+        /** @description Required and checked against the deployment allowlist for cookie-authenticated state changes and browser public-form submissions/uploads. Never accept wildcard with credentialed requests. */
+        Origin?: components['parameters']['Origin'];
+      };
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+        /** @description W5.00 (0.12.0-stage5). Key of a cash proposal «kind:source» (CashProposal.key); the source is the idempotency key. */
+        proposalKey: components['parameters']['cashProposalKey'];
+      };
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['CashProposalPost'];
+      };
+    };
+    responses: {
+      /** @description Successful result. */
+      201: {
+        headers: {
+          'X-Request-Id': components['headers']['RequestId'];
+          'Idempotency-Replayed': components['headers']['IdempotencyReplayed'];
+          /** @description Never cache authenticated, confidential or capability-bearing API responses in shared caches. */
+          'Cache-Control'?: 'private, no-store';
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['CashProposalPostResult'];
+        };
+      };
+      /** @description Accepted: the amount exceeds the role limit; an approval request is created instead of a ledger posting (Q-W4.00-cash-2). */
+      202: {
+        headers: {
+          'X-Request-Id': components['headers']['RequestId'];
+          ETag: components['headers']['ETag'];
+          'Idempotency-Replayed': components['headers']['IdempotencyReplayed'];
+          /** @description Never cache authenticated, confidential or capability-bearing API responses in shared caches. */
+          'Cache-Control'?: 'private, no-store';
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['CashApprovalRequest'];
+        };
+      };
+      400: components['responses']['BadRequest'];
+      401: components['responses']['Unauthenticated'];
+      402: components['responses']['PlanRequired'];
+      403: components['responses']['Forbidden'];
+      404: components['responses']['NotFound'];
+      409: components['responses']['Conflict'];
+      422: components['responses']['Validation'];
+      428: components['responses']['PreconditionRequired'];
+      429: components['responses']['RateLimited'];
+    };
+  };
+  dismissCashProposal: {
+    parameters: {
+      query?: never;
+      header: {
+        /** @description Stable per intended command. Retain record at least 7 days; financial deduplication also retains a durable tenant+actor+operation+key digest receipt. Key is scoped to tenant+actor+operation. Reuse only for an identical request. */
+        'Idempotency-Key': components['parameters']['IdempotencyKey'];
+        /** @description Required for cookie-authenticated state changes; not required with bearer-only authentication. Invalid/missing token or Origin yields 403. Conditional requirement cannot be represented by OpenAPI required=true. */
+        'X-CSRF-Token'?: components['parameters']['Csrf'];
+        /** @description Required and checked against the deployment allowlist for cookie-authenticated state changes and browser public-form submissions/uploads. Never accept wildcard with credentialed requests. */
+        Origin?: components['parameters']['Origin'];
+      };
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+        /** @description W5.00 (0.12.0-stage5). Key of a cash proposal «kind:source» (CashProposal.key); the source is the idempotency key. */
+        proposalKey: components['parameters']['cashProposalKey'];
+      };
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['CashProposalDismiss'];
+      };
+    };
+    responses: {
+      /** @description Successful result. */
+      200: {
+        headers: {
+          'X-Request-Id': components['headers']['RequestId'];
+          'Idempotency-Replayed': components['headers']['IdempotencyReplayed'];
+          /** @description Never cache authenticated, confidential or capability-bearing API responses in shared caches. */
+          'Cache-Control'?: 'private, no-store';
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['CashProposal'];
+        };
+      };
+      400: components['responses']['BadRequest'];
+      401: components['responses']['Unauthenticated'];
+      402: components['responses']['PlanRequired'];
+      403: components['responses']['Forbidden'];
+      404: components['responses']['NotFound'];
+      409: components['responses']['Conflict'];
+      422: components['responses']['Validation'];
+      428: components['responses']['PreconditionRequired'];
+      429: components['responses']['RateLimited'];
+    };
+  };
+  listCashShifts: {
+    parameters: {
+      query?: {
+        /** @description Opaque cursor from the preceding response; no offset pagination. */
+        cursor?: components['parameters']['Cursor'];
+        limit?: components['parameters']['Limit'];
+        accountId?: components['schemas']['Id'];
+        status?: 'open' | 'review' | 'closed';
+      };
+      header?: never;
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Successful result. */
+      200: {
+        headers: {
+          'X-Request-Id': components['headers']['RequestId'];
+          /** @description Never cache authenticated, confidential or capability-bearing API responses in shared caches. */
+          'Cache-Control'?: 'private, no-store';
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['CashShiftPage'];
+        };
+      };
+      400: components['responses']['BadRequest'];
+      401: components['responses']['Unauthenticated'];
+      403: components['responses']['Forbidden'];
+      404: components['responses']['NotFound'];
+      422: components['responses']['Validation'];
+      429: components['responses']['RateLimited'];
+    };
+  };
+  openCashShift: {
+    parameters: {
+      query?: never;
+      header: {
+        /** @description Stable per intended command. Retain record at least 7 days; financial deduplication also retains a durable tenant+actor+operation+key digest receipt. Key is scoped to tenant+actor+operation. Reuse only for an identical request. */
+        'Idempotency-Key': components['parameters']['IdempotencyKey'];
+        /** @description Required for cookie-authenticated state changes; not required with bearer-only authentication. Invalid/missing token or Origin yields 403. Conditional requirement cannot be represented by OpenAPI required=true. */
+        'X-CSRF-Token'?: components['parameters']['Csrf'];
+        /** @description Required and checked against the deployment allowlist for cookie-authenticated state changes and browser public-form submissions/uploads. Never accept wildcard with credentialed requests. */
+        Origin?: components['parameters']['Origin'];
+      };
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+        /** @description W5.00 (0.12.0-stage5). Opaque UUID of a cash account (CashAccount.id). */
+        accountId: components['parameters']['cashAccountId'];
+      };
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['CashShiftOpen'];
+      };
+    };
+    responses: {
+      /** @description Successful result. */
+      201: {
+        headers: {
+          'X-Request-Id': components['headers']['RequestId'];
+          'Idempotency-Replayed': components['headers']['IdempotencyReplayed'];
+          /** @description Never cache authenticated, confidential or capability-bearing API responses in shared caches. */
+          'Cache-Control'?: 'private, no-store';
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['CashShift'];
+        };
+      };
+      400: components['responses']['BadRequest'];
+      401: components['responses']['Unauthenticated'];
+      402: components['responses']['PlanRequired'];
+      403: components['responses']['Forbidden'];
+      404: components['responses']['NotFound'];
+      409: components['responses']['Conflict'];
+      422: components['responses']['Validation'];
+      428: components['responses']['PreconditionRequired'];
+      429: components['responses']['RateLimited'];
+    };
+  };
+  closeCashShift: {
+    parameters: {
+      query?: never;
+      header: {
+        /** @description Stable per intended command. Retain record at least 7 days; financial deduplication also retains a durable tenant+actor+operation+key digest receipt. Key is scoped to tenant+actor+operation. Reuse only for an identical request. */
+        'Idempotency-Key': components['parameters']['IdempotencyKey'];
+        /** @description Required for cookie-authenticated state changes; not required with bearer-only authentication. Invalid/missing token or Origin yields 403. Conditional requirement cannot be represented by OpenAPI required=true. */
+        'X-CSRF-Token'?: components['parameters']['Csrf'];
+        /** @description Required and checked against the deployment allowlist for cookie-authenticated state changes and browser public-form submissions/uploads. Never accept wildcard with credentialed requests. */
+        Origin?: components['parameters']['Origin'];
+        /** @description Strong ETag obtained from latest GET or mutation response. * is not accepted. Missing=428; stale=412. Idempotent replay is checked before current revision precondition. */
+        'If-Match': components['parameters']['IfMatch'];
+      };
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+        /** @description W5.00 (0.12.0-stage5). Opaque UUID of a cash shift (CashShift.id). */
+        shiftId: components['parameters']['cashShiftId'];
+      };
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['CashShiftClose'];
+      };
+    };
+    responses: {
+      /** @description Successful result. */
+      200: {
+        headers: {
+          'X-Request-Id': components['headers']['RequestId'];
+          'Idempotency-Replayed': components['headers']['IdempotencyReplayed'];
+          /** @description Never cache authenticated, confidential or capability-bearing API responses in shared caches. */
+          'Cache-Control'?: 'private, no-store';
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['CashShift'];
+        };
+      };
+      400: components['responses']['BadRequest'];
+      401: components['responses']['Unauthenticated'];
+      402: components['responses']['PlanRequired'];
+      403: components['responses']['Forbidden'];
+      404: components['responses']['NotFound'];
+      409: components['responses']['Conflict'];
+      412: components['responses']['PreconditionFailed'];
+      422: components['responses']['Validation'];
+      428: components['responses']['PreconditionRequired'];
+      429: components['responses']['RateLimited'];
+    };
+  };
+  reviewCashShift: {
+    parameters: {
+      query?: never;
+      header: {
+        /** @description Stable per intended command. Retain record at least 7 days; financial deduplication also retains a durable tenant+actor+operation+key digest receipt. Key is scoped to tenant+actor+operation. Reuse only for an identical request. */
+        'Idempotency-Key': components['parameters']['IdempotencyKey'];
+        /** @description Required for cookie-authenticated state changes; not required with bearer-only authentication. Invalid/missing token or Origin yields 403. Conditional requirement cannot be represented by OpenAPI required=true. */
+        'X-CSRF-Token'?: components['parameters']['Csrf'];
+        /** @description Required and checked against the deployment allowlist for cookie-authenticated state changes and browser public-form submissions/uploads. Never accept wildcard with credentialed requests. */
+        Origin?: components['parameters']['Origin'];
+        /** @description Strong ETag obtained from latest GET or mutation response. * is not accepted. Missing=428; stale=412. Idempotent replay is checked before current revision precondition. */
+        'If-Match': components['parameters']['IfMatch'];
+      };
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+        /** @description W5.00 (0.12.0-stage5). Opaque UUID of a cash shift (CashShift.id). */
+        shiftId: components['parameters']['cashShiftId'];
+      };
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['CashShiftReview'];
+      };
+    };
+    responses: {
+      /** @description Successful result. */
+      200: {
+        headers: {
+          'X-Request-Id': components['headers']['RequestId'];
+          'Idempotency-Replayed': components['headers']['IdempotencyReplayed'];
+          /** @description Never cache authenticated, confidential or capability-bearing API responses in shared caches. */
+          'Cache-Control'?: 'private, no-store';
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['CashShift'];
+        };
+      };
+      400: components['responses']['BadRequest'];
+      401: components['responses']['Unauthenticated'];
+      402: components['responses']['PlanRequired'];
+      403: components['responses']['Forbidden'];
+      404: components['responses']['NotFound'];
+      409: components['responses']['Conflict'];
+      412: components['responses']['PreconditionFailed'];
+      422: components['responses']['Validation'];
+      428: components['responses']['PreconditionRequired'];
+      429: components['responses']['RateLimited'];
+    };
+  };
+  listCashTransfers: {
+    parameters: {
+      query?: {
+        /** @description Opaque cursor from the preceding response; no offset pagination. */
+        cursor?: components['parameters']['Cursor'];
+        limit?: components['parameters']['Limit'];
+        status?: 'transit' | 'done' | 'rejected';
+        accountId?: components['schemas']['Id'];
+      };
+      header?: never;
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Successful result. */
+      200: {
+        headers: {
+          'X-Request-Id': components['headers']['RequestId'];
+          /** @description Never cache authenticated, confidential or capability-bearing API responses in shared caches. */
+          'Cache-Control'?: 'private, no-store';
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['CashTransferPage'];
+        };
+      };
+      400: components['responses']['BadRequest'];
+      401: components['responses']['Unauthenticated'];
+      403: components['responses']['Forbidden'];
+      404: components['responses']['NotFound'];
+      422: components['responses']['Validation'];
+      429: components['responses']['RateLimited'];
+    };
+  };
+  createCashTransfer: {
+    parameters: {
+      query?: never;
+      header: {
+        /** @description Stable per intended command. Retain record at least 7 days; financial deduplication also retains a durable tenant+actor+operation+key digest receipt. Key is scoped to tenant+actor+operation. Reuse only for an identical request. */
+        'Idempotency-Key': components['parameters']['IdempotencyKey'];
+        /** @description Required for cookie-authenticated state changes; not required with bearer-only authentication. Invalid/missing token or Origin yields 403. Conditional requirement cannot be represented by OpenAPI required=true. */
+        'X-CSRF-Token'?: components['parameters']['Csrf'];
+        /** @description Required and checked against the deployment allowlist for cookie-authenticated state changes and browser public-form submissions/uploads. Never accept wildcard with credentialed requests. */
+        Origin?: components['parameters']['Origin'];
+      };
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+      };
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['CashTransferCreate'];
+      };
+    };
+    responses: {
+      /** @description Successful result. */
+      201: {
+        headers: {
+          'X-Request-Id': components['headers']['RequestId'];
+          'Idempotency-Replayed': components['headers']['IdempotencyReplayed'];
+          /** @description Never cache authenticated, confidential or capability-bearing API responses in shared caches. */
+          'Cache-Control'?: 'private, no-store';
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['CashTransfer'];
+        };
+      };
+      400: components['responses']['BadRequest'];
+      401: components['responses']['Unauthenticated'];
+      402: components['responses']['PlanRequired'];
+      403: components['responses']['Forbidden'];
+      404: components['responses']['NotFound'];
+      409: components['responses']['Conflict'];
+      422: components['responses']['Validation'];
+      428: components['responses']['PreconditionRequired'];
+      429: components['responses']['RateLimited'];
+    };
+  };
+  decideCashTransfer: {
+    parameters: {
+      query?: never;
+      header: {
+        /** @description Stable per intended command. Retain record at least 7 days; financial deduplication also retains a durable tenant+actor+operation+key digest receipt. Key is scoped to tenant+actor+operation. Reuse only for an identical request. */
+        'Idempotency-Key': components['parameters']['IdempotencyKey'];
+        /** @description Required for cookie-authenticated state changes; not required with bearer-only authentication. Invalid/missing token or Origin yields 403. Conditional requirement cannot be represented by OpenAPI required=true. */
+        'X-CSRF-Token'?: components['parameters']['Csrf'];
+        /** @description Required and checked against the deployment allowlist for cookie-authenticated state changes and browser public-form submissions/uploads. Never accept wildcard with credentialed requests. */
+        Origin?: components['parameters']['Origin'];
+        /** @description Strong ETag obtained from latest GET or mutation response. * is not accepted. Missing=428; stale=412. Idempotent replay is checked before current revision precondition. */
+        'If-Match': components['parameters']['IfMatch'];
+      };
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+        /** @description W5.00 (0.12.0-stage5). Opaque UUID of a cash transfer (CashTransfer.id). */
+        transferId: components['parameters']['cashTransferId'];
+      };
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['CashTransferDecision'];
+      };
+    };
+    responses: {
+      /** @description Successful result. */
+      200: {
+        headers: {
+          'X-Request-Id': components['headers']['RequestId'];
+          'Idempotency-Replayed': components['headers']['IdempotencyReplayed'];
+          /** @description Never cache authenticated, confidential or capability-bearing API responses in shared caches. */
+          'Cache-Control'?: 'private, no-store';
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['CashTransfer'];
+        };
+      };
+      400: components['responses']['BadRequest'];
+      401: components['responses']['Unauthenticated'];
+      402: components['responses']['PlanRequired'];
+      403: components['responses']['Forbidden'];
+      404: components['responses']['NotFound'];
+      409: components['responses']['Conflict'];
+      412: components['responses']['PreconditionFailed'];
+      422: components['responses']['Validation'];
+      428: components['responses']['PreconditionRequired'];
+      429: components['responses']['RateLimited'];
+    };
+  };
+  issueCashAdvance: {
+    parameters: {
+      query?: never;
+      header: {
+        /** @description Stable per intended command. Retain record at least 7 days; financial deduplication also retains a durable tenant+actor+operation+key digest receipt. Key is scoped to tenant+actor+operation. Reuse only for an identical request. */
+        'Idempotency-Key': components['parameters']['IdempotencyKey'];
+        /** @description Required for cookie-authenticated state changes; not required with bearer-only authentication. Invalid/missing token or Origin yields 403. Conditional requirement cannot be represented by OpenAPI required=true. */
+        'X-CSRF-Token'?: components['parameters']['Csrf'];
+        /** @description Required and checked against the deployment allowlist for cookie-authenticated state changes and browser public-form submissions/uploads. Never accept wildcard with credentialed requests. */
+        Origin?: components['parameters']['Origin'];
+      };
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+        /** @description W5.00 (0.12.0-stage5). Opaque UUID of a cash account (CashAccount.id). */
+        accountId: components['parameters']['cashAccountId'];
+      };
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['CashAdvanceIssue'];
+      };
+    };
+    responses: {
+      /** @description Successful result. */
+      201: {
+        headers: {
+          'X-Request-Id': components['headers']['RequestId'];
+          'Idempotency-Replayed': components['headers']['IdempotencyReplayed'];
+          /** @description Never cache authenticated, confidential or capability-bearing API responses in shared caches. */
+          'Cache-Control'?: 'private, no-store';
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['CashTransfer'];
+        };
+      };
+      /** @description Accepted: the amount exceeds the role limit; an approval request is created instead of a ledger posting (Q-W4.00-cash-2). */
+      202: {
+        headers: {
+          'X-Request-Id': components['headers']['RequestId'];
+          ETag: components['headers']['ETag'];
+          'Idempotency-Replayed': components['headers']['IdempotencyReplayed'];
+          /** @description Never cache authenticated, confidential or capability-bearing API responses in shared caches. */
+          'Cache-Control'?: 'private, no-store';
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['CashApprovalRequest'];
+        };
+      };
+      400: components['responses']['BadRequest'];
+      401: components['responses']['Unauthenticated'];
+      402: components['responses']['PlanRequired'];
+      403: components['responses']['Forbidden'];
+      404: components['responses']['NotFound'];
+      409: components['responses']['Conflict'];
+      422: components['responses']['Validation'];
+      428: components['responses']['PreconditionRequired'];
+      429: components['responses']['RateLimited'];
+    };
+  };
+  submitAdvanceReceipt: {
+    parameters: {
+      query?: never;
+      header: {
+        /** @description Stable per intended command. Retain record at least 7 days; financial deduplication also retains a durable tenant+actor+operation+key digest receipt. Key is scoped to tenant+actor+operation. Reuse only for an identical request. */
+        'Idempotency-Key': components['parameters']['IdempotencyKey'];
+        /** @description Required for cookie-authenticated state changes; not required with bearer-only authentication. Invalid/missing token or Origin yields 403. Conditional requirement cannot be represented by OpenAPI required=true. */
+        'X-CSRF-Token'?: components['parameters']['Csrf'];
+        /** @description Required and checked against the deployment allowlist for cookie-authenticated state changes and browser public-form submissions/uploads. Never accept wildcard with credentialed requests. */
+        Origin?: components['parameters']['Origin'];
+      };
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+        /** @description W5.00 (0.12.0-stage5). Opaque UUID of a cash account (CashAccount.id). */
+        accountId: components['parameters']['cashAccountId'];
+      };
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['AdvanceReceiptCreate'];
+      };
+    };
+    responses: {
+      /** @description Successful result. */
+      201: {
+        headers: {
+          'X-Request-Id': components['headers']['RequestId'];
+          'Idempotency-Replayed': components['headers']['IdempotencyReplayed'];
+          /** @description Never cache authenticated, confidential or capability-bearing API responses in shared caches. */
+          'Cache-Control'?: 'private, no-store';
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['AdvanceReceipt'];
+        };
+      };
+      400: components['responses']['BadRequest'];
+      401: components['responses']['Unauthenticated'];
+      402: components['responses']['PlanRequired'];
+      403: components['responses']['Forbidden'];
+      404: components['responses']['NotFound'];
+      409: components['responses']['Conflict'];
+      422: components['responses']['Validation'];
+      428: components['responses']['PreconditionRequired'];
+      429: components['responses']['RateLimited'];
+    };
+  };
+  listAdvanceReceipts: {
+    parameters: {
+      query?: {
+        /** @description Opaque cursor from the preceding response; no offset pagination. */
+        cursor?: components['parameters']['Cursor'];
+        limit?: components['parameters']['Limit'];
+        accountId?: components['schemas']['Id'];
+        status?: 'review' | 'accepted' | 'rejected';
+      };
+      header?: never;
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Successful result. */
+      200: {
+        headers: {
+          'X-Request-Id': components['headers']['RequestId'];
+          /** @description Never cache authenticated, confidential or capability-bearing API responses in shared caches. */
+          'Cache-Control'?: 'private, no-store';
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['AdvanceReceiptPage'];
+        };
+      };
+      400: components['responses']['BadRequest'];
+      401: components['responses']['Unauthenticated'];
+      403: components['responses']['Forbidden'];
+      404: components['responses']['NotFound'];
+      422: components['responses']['Validation'];
+      429: components['responses']['RateLimited'];
+    };
+  };
+  decideAdvanceReceipt: {
+    parameters: {
+      query?: never;
+      header: {
+        /** @description Stable per intended command. Retain record at least 7 days; financial deduplication also retains a durable tenant+actor+operation+key digest receipt. Key is scoped to tenant+actor+operation. Reuse only for an identical request. */
+        'Idempotency-Key': components['parameters']['IdempotencyKey'];
+        /** @description Required for cookie-authenticated state changes; not required with bearer-only authentication. Invalid/missing token or Origin yields 403. Conditional requirement cannot be represented by OpenAPI required=true. */
+        'X-CSRF-Token'?: components['parameters']['Csrf'];
+        /** @description Required and checked against the deployment allowlist for cookie-authenticated state changes and browser public-form submissions/uploads. Never accept wildcard with credentialed requests. */
+        Origin?: components['parameters']['Origin'];
+        /** @description Strong ETag obtained from latest GET or mutation response. * is not accepted. Missing=428; stale=412. Idempotent replay is checked before current revision precondition. */
+        'If-Match': components['parameters']['IfMatch'];
+      };
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+        /** @description W5.00 (0.12.0-stage5). Opaque UUID of an advance receipt (AdvanceReceipt.id). */
+        receiptId: components['parameters']['cashReceiptId'];
+      };
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['AdvanceReceiptDecision'];
+      };
+    };
+    responses: {
+      /** @description Successful result. */
+      200: {
+        headers: {
+          'X-Request-Id': components['headers']['RequestId'];
+          'Idempotency-Replayed': components['headers']['IdempotencyReplayed'];
+          /** @description Never cache authenticated, confidential or capability-bearing API responses in shared caches. */
+          'Cache-Control'?: 'private, no-store';
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['AdvanceReceipt'];
+        };
+      };
+      400: components['responses']['BadRequest'];
+      401: components['responses']['Unauthenticated'];
+      402: components['responses']['PlanRequired'];
+      403: components['responses']['Forbidden'];
+      404: components['responses']['NotFound'];
+      409: components['responses']['Conflict'];
+      412: components['responses']['PreconditionFailed'];
+      422: components['responses']['Validation'];
+      428: components['responses']['PreconditionRequired'];
+      429: components['responses']['RateLimited'];
+    };
+  };
+  returnCashAdvance: {
+    parameters: {
+      query?: never;
+      header: {
+        /** @description Stable per intended command. Retain record at least 7 days; financial deduplication also retains a durable tenant+actor+operation+key digest receipt. Key is scoped to tenant+actor+operation. Reuse only for an identical request. */
+        'Idempotency-Key': components['parameters']['IdempotencyKey'];
+        /** @description Required for cookie-authenticated state changes; not required with bearer-only authentication. Invalid/missing token or Origin yields 403. Conditional requirement cannot be represented by OpenAPI required=true. */
+        'X-CSRF-Token'?: components['parameters']['Csrf'];
+        /** @description Required and checked against the deployment allowlist for cookie-authenticated state changes and browser public-form submissions/uploads. Never accept wildcard with credentialed requests. */
+        Origin?: components['parameters']['Origin'];
+      };
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+        /** @description W5.00 (0.12.0-stage5). Opaque UUID of a cash account (CashAccount.id). */
+        accountId: components['parameters']['cashAccountId'];
+      };
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['CashAdvanceReturn'];
+      };
+    };
+    responses: {
+      /** @description Successful result. */
+      201: {
+        headers: {
+          'X-Request-Id': components['headers']['RequestId'];
+          'Idempotency-Replayed': components['headers']['IdempotencyReplayed'];
+          /** @description Never cache authenticated, confidential or capability-bearing API responses in shared caches. */
+          'Cache-Control'?: 'private, no-store';
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['CashTransfer'];
+        };
+      };
+      400: components['responses']['BadRequest'];
+      401: components['responses']['Unauthenticated'];
+      402: components['responses']['PlanRequired'];
+      403: components['responses']['Forbidden'];
+      404: components['responses']['NotFound'];
+      409: components['responses']['Conflict'];
+      422: components['responses']['Validation'];
+      428: components['responses']['PreconditionRequired'];
+      429: components['responses']['RateLimited'];
+    };
+  };
+  listCashApprovalRequests: {
+    parameters: {
+      query?: {
+        /** @description Opaque cursor from the preceding response; no offset pagination. */
+        cursor?: components['parameters']['Cursor'];
+        limit?: components['parameters']['Limit'];
+        status?: 'pending' | 'approved' | 'rejected';
+      };
+      header?: never;
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Successful result. */
+      200: {
+        headers: {
+          'X-Request-Id': components['headers']['RequestId'];
+          /** @description Never cache authenticated, confidential or capability-bearing API responses in shared caches. */
+          'Cache-Control'?: 'private, no-store';
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['CashApprovalRequestPage'];
+        };
+      };
+      400: components['responses']['BadRequest'];
+      401: components['responses']['Unauthenticated'];
+      403: components['responses']['Forbidden'];
+      404: components['responses']['NotFound'];
+      422: components['responses']['Validation'];
+      429: components['responses']['RateLimited'];
+    };
+  };
+  decideCashApprovalRequest: {
+    parameters: {
+      query?: never;
+      header: {
+        /** @description Stable per intended command. Retain record at least 7 days; financial deduplication also retains a durable tenant+actor+operation+key digest receipt. Key is scoped to tenant+actor+operation. Reuse only for an identical request. */
+        'Idempotency-Key': components['parameters']['IdempotencyKey'];
+        /** @description Required for cookie-authenticated state changes; not required with bearer-only authentication. Invalid/missing token or Origin yields 403. Conditional requirement cannot be represented by OpenAPI required=true. */
+        'X-CSRF-Token'?: components['parameters']['Csrf'];
+        /** @description Required and checked against the deployment allowlist for cookie-authenticated state changes and browser public-form submissions/uploads. Never accept wildcard with credentialed requests. */
+        Origin?: components['parameters']['Origin'];
+        /** @description Strong ETag obtained from latest GET or mutation response. * is not accepted. Missing=428; stale=412. Idempotent replay is checked before current revision precondition. */
+        'If-Match': components['parameters']['IfMatch'];
+      };
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+        /** @description W5.00 (0.12.0-stage5). Opaque UUID of an approval request (CashApprovalRequest.id). */
+        approvalRequestId: components['parameters']['cashApprovalRequestId'];
+      };
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['CashApprovalDecision'];
+      };
+    };
+    responses: {
+      /** @description Successful result. */
+      200: {
+        headers: {
+          'X-Request-Id': components['headers']['RequestId'];
+          'Idempotency-Replayed': components['headers']['IdempotencyReplayed'];
+          /** @description Never cache authenticated, confidential or capability-bearing API responses in shared caches. */
+          'Cache-Control'?: 'private, no-store';
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['CashApprovalRequest'];
+        };
+      };
+      400: components['responses']['BadRequest'];
+      401: components['responses']['Unauthenticated'];
+      402: components['responses']['PlanRequired'];
+      403: components['responses']['Forbidden'];
+      404: components['responses']['NotFound'];
+      409: components['responses']['Conflict'];
+      412: components['responses']['PreconditionFailed'];
+      422: components['responses']['Validation'];
+      428: components['responses']['PreconditionRequired'];
+      429: components['responses']['RateLimited'];
+    };
+  };
+  listCashCategories: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Successful result. */
+      200: {
+        headers: {
+          'X-Request-Id': components['headers']['RequestId'];
+          /** @description Never cache authenticated, confidential or capability-bearing API responses in shared caches. */
+          'Cache-Control'?: 'private, no-store';
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['CashCategoryList'];
+        };
+      };
+      400: components['responses']['BadRequest'];
+      401: components['responses']['Unauthenticated'];
+      403: components['responses']['Forbidden'];
+      404: components['responses']['NotFound'];
+      422: components['responses']['Validation'];
+      429: components['responses']['RateLimited'];
+    };
+  };
+  listWarehouses: {
+    parameters: {
+      query?: {
+        /** @description Opaque cursor from the preceding response; no offset pagination. */
+        cursor?: components['parameters']['Cursor'];
+        limit?: components['parameters']['Limit'];
+      };
+      header?: never;
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Successful result. */
+      200: {
+        headers: {
+          'X-Request-Id': components['headers']['RequestId'];
+          /** @description Never cache authenticated, confidential or capability-bearing API responses in shared caches. */
+          'Cache-Control'?: 'private, no-store';
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['WarehousePage'];
+        };
+      };
+      400: components['responses']['BadRequest'];
+      401: components['responses']['Unauthenticated'];
+      403: components['responses']['Forbidden'];
+      404: components['responses']['NotFound'];
+      422: components['responses']['Validation'];
+      429: components['responses']['RateLimited'];
+    };
+  };
+  createWarehouse: {
+    parameters: {
+      query?: never;
+      header: {
+        /** @description Stable per intended command. Retain record at least 7 days; financial deduplication also retains a durable tenant+actor+operation+key digest receipt. Key is scoped to tenant+actor+operation. Reuse only for an identical request. */
+        'Idempotency-Key': components['parameters']['IdempotencyKey'];
+        /** @description Required for cookie-authenticated state changes; not required with bearer-only authentication. Invalid/missing token or Origin yields 403. Conditional requirement cannot be represented by OpenAPI required=true. */
+        'X-CSRF-Token'?: components['parameters']['Csrf'];
+        /** @description Required and checked against the deployment allowlist for cookie-authenticated state changes and browser public-form submissions/uploads. Never accept wildcard with credentialed requests. */
+        Origin?: components['parameters']['Origin'];
+      };
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+      };
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['WarehouseCreate'];
+      };
+    };
+    responses: {
+      /** @description Successful result. */
+      201: {
+        headers: {
+          'X-Request-Id': components['headers']['RequestId'];
+          'Idempotency-Replayed': components['headers']['IdempotencyReplayed'];
+          /** @description Never cache authenticated, confidential or capability-bearing API responses in shared caches. */
+          'Cache-Control'?: 'private, no-store';
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['Warehouse'];
+        };
+      };
+      400: components['responses']['BadRequest'];
+      401: components['responses']['Unauthenticated'];
+      402: components['responses']['PlanRequired'];
+      403: components['responses']['Forbidden'];
+      404: components['responses']['NotFound'];
+      409: components['responses']['Conflict'];
+      422: components['responses']['Validation'];
+      428: components['responses']['PreconditionRequired'];
+      429: components['responses']['RateLimited'];
+    };
+  };
+  updateInventoryItem: {
+    parameters: {
+      query?: never;
+      header: {
+        /** @description Stable per intended command. Retain record at least 7 days; financial deduplication also retains a durable tenant+actor+operation+key digest receipt. Key is scoped to tenant+actor+operation. Reuse only for an identical request. */
+        'Idempotency-Key': components['parameters']['IdempotencyKey'];
+        /** @description Required for cookie-authenticated state changes; not required with bearer-only authentication. Invalid/missing token or Origin yields 403. Conditional requirement cannot be represented by OpenAPI required=true. */
+        'X-CSRF-Token'?: components['parameters']['Csrf'];
+        /** @description Required and checked against the deployment allowlist for cookie-authenticated state changes and browser public-form submissions/uploads. Never accept wildcard with credentialed requests. */
+        Origin?: components['parameters']['Origin'];
+        /** @description Strong ETag obtained from latest GET or mutation response. * is not accepted. Missing=428; stale=412. Idempotent replay is checked before current revision precondition. */
+        'If-Match': components['parameters']['IfMatch'];
+      };
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+        /** @description W5.00 (0.12.0-stage5). Opaque UUID of a stock item (InventoryItem.id). */
+        itemId: components['parameters']['inventoryItemId'];
+      };
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['InventoryItemPatch'];
+      };
+    };
+    responses: {
+      /** @description Successful result. */
+      200: {
+        headers: {
+          'X-Request-Id': components['headers']['RequestId'];
+          ETag: components['headers']['ETag'];
+          'Idempotency-Replayed': components['headers']['IdempotencyReplayed'];
+          /** @description Never cache authenticated, confidential or capability-bearing API responses in shared caches. */
+          'Cache-Control'?: 'private, no-store';
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['InventoryItem'];
+        };
+      };
+      400: components['responses']['BadRequest'];
+      401: components['responses']['Unauthenticated'];
+      402: components['responses']['PlanRequired'];
+      403: components['responses']['Forbidden'];
+      404: components['responses']['NotFound'];
+      409: components['responses']['Conflict'];
+      412: components['responses']['PreconditionFailed'];
+      422: components['responses']['Validation'];
+      428: components['responses']['PreconditionRequired'];
+      429: components['responses']['RateLimited'];
+    };
+  };
+  listInventoryBalances: {
+    parameters: {
+      query?: {
+        /** @description Opaque cursor from the preceding response; no offset pagination. */
+        cursor?: components['parameters']['Cursor'];
+        limit?: components['parameters']['Limit'];
+        warehouseId?: components['schemas']['Id'];
+        itemId?: components['schemas']['Id'];
+        belowMinimum?: boolean;
+      };
+      header?: never;
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Successful result. */
+      200: {
+        headers: {
+          'X-Request-Id': components['headers']['RequestId'];
+          /** @description Never cache authenticated, confidential or capability-bearing API responses in shared caches. */
+          'Cache-Control'?: 'private, no-store';
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['InventoryBalancePage'];
+        };
+      };
+      400: components['responses']['BadRequest'];
+      401: components['responses']['Unauthenticated'];
+      403: components['responses']['Forbidden'];
+      404: components['responses']['NotFound'];
+      422: components['responses']['Validation'];
+      429: components['responses']['RateLimited'];
+    };
+  };
+  listInventoryReservations: {
+    parameters: {
+      query?: {
+        /** @description Opaque cursor from the preceding response; no offset pagination. */
+        cursor?: components['parameters']['Cursor'];
+        limit?: components['parameters']['Limit'];
+        warehouseId?: components['schemas']['Id'];
+        status?: 'active' | 'consumed' | 'released';
+      };
+      header?: never;
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Successful result. */
+      200: {
+        headers: {
+          'X-Request-Id': components['headers']['RequestId'];
+          /** @description Never cache authenticated, confidential or capability-bearing API responses in shared caches. */
+          'Cache-Control'?: 'private, no-store';
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['InventoryReservationPage'];
+        };
+      };
+      400: components['responses']['BadRequest'];
+      401: components['responses']['Unauthenticated'];
+      403: components['responses']['Forbidden'];
+      404: components['responses']['NotFound'];
+      422: components['responses']['Validation'];
+      429: components['responses']['RateLimited'];
+    };
+  };
+  createInventoryReservation: {
+    parameters: {
+      query?: never;
+      header: {
+        /** @description Stable per intended command. Retain record at least 7 days; financial deduplication also retains a durable tenant+actor+operation+key digest receipt. Key is scoped to tenant+actor+operation. Reuse only for an identical request. */
+        'Idempotency-Key': components['parameters']['IdempotencyKey'];
+        /** @description Required for cookie-authenticated state changes; not required with bearer-only authentication. Invalid/missing token or Origin yields 403. Conditional requirement cannot be represented by OpenAPI required=true. */
+        'X-CSRF-Token'?: components['parameters']['Csrf'];
+        /** @description Required and checked against the deployment allowlist for cookie-authenticated state changes and browser public-form submissions/uploads. Never accept wildcard with credentialed requests. */
+        Origin?: components['parameters']['Origin'];
+      };
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+      };
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['InventoryReservationCreate'];
+      };
+    };
+    responses: {
+      /** @description Successful result. */
+      201: {
+        headers: {
+          'X-Request-Id': components['headers']['RequestId'];
+          'Idempotency-Replayed': components['headers']['IdempotencyReplayed'];
+          /** @description Never cache authenticated, confidential or capability-bearing API responses in shared caches. */
+          'Cache-Control'?: 'private, no-store';
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['InventoryReservation'];
+        };
+      };
+      400: components['responses']['BadRequest'];
+      401: components['responses']['Unauthenticated'];
+      402: components['responses']['PlanRequired'];
+      403: components['responses']['Forbidden'];
+      404: components['responses']['NotFound'];
+      409: components['responses']['Conflict'];
+      422: components['responses']['Validation'];
+      428: components['responses']['PreconditionRequired'];
+      429: components['responses']['RateLimited'];
+    };
+  };
+  releaseInventoryReservation: {
+    parameters: {
+      query?: never;
+      header: {
+        /** @description Stable per intended command. Retain record at least 7 days; financial deduplication also retains a durable tenant+actor+operation+key digest receipt. Key is scoped to tenant+actor+operation. Reuse only for an identical request. */
+        'Idempotency-Key': components['parameters']['IdempotencyKey'];
+        /** @description Required for cookie-authenticated state changes; not required with bearer-only authentication. Invalid/missing token or Origin yields 403. Conditional requirement cannot be represented by OpenAPI required=true. */
+        'X-CSRF-Token'?: components['parameters']['Csrf'];
+        /** @description Required and checked against the deployment allowlist for cookie-authenticated state changes and browser public-form submissions/uploads. Never accept wildcard with credentialed requests. */
+        Origin?: components['parameters']['Origin'];
+      };
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+        /** @description W5.00 (0.12.0-stage5). Opaque UUID of a stock reservation (InventoryReservation.id). */
+        reservationId: components['parameters']['inventoryReservationId'];
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Successful result. */
+      200: {
+        headers: {
+          'X-Request-Id': components['headers']['RequestId'];
+          'Idempotency-Replayed': components['headers']['IdempotencyReplayed'];
+          /** @description Never cache authenticated, confidential or capability-bearing API responses in shared caches. */
+          'Cache-Control'?: 'private, no-store';
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['InventoryReservation'];
+        };
+      };
+      400: components['responses']['BadRequest'];
+      401: components['responses']['Unauthenticated'];
+      402: components['responses']['PlanRequired'];
+      403: components['responses']['Forbidden'];
+      404: components['responses']['NotFound'];
+      409: components['responses']['Conflict'];
+      422: components['responses']['Validation'];
+      428: components['responses']['PreconditionRequired'];
+      429: components['responses']['RateLimited'];
+    };
+  };
+  getSpaService: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+        /** @description W5.00 (0.12.0-stage5). Opaque UUID of a SPA service (SpaService.id). */
+        serviceId: components['parameters']['spaServiceId'];
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Successful result. */
+      200: {
+        headers: {
+          'X-Request-Id': components['headers']['RequestId'];
+          ETag: components['headers']['ETag'];
+          /** @description Never cache authenticated, confidential or capability-bearing API responses in shared caches. */
+          'Cache-Control'?: 'private, no-store';
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['SpaService'];
+        };
+      };
+      400: components['responses']['BadRequest'];
+      401: components['responses']['Unauthenticated'];
+      403: components['responses']['Forbidden'];
+      404: components['responses']['NotFound'];
+      422: components['responses']['Validation'];
+      429: components['responses']['RateLimited'];
+    };
+  };
+  updateSpaService: {
+    parameters: {
+      query?: never;
+      header: {
+        /** @description Stable per intended command. Retain record at least 7 days; financial deduplication also retains a durable tenant+actor+operation+key digest receipt. Key is scoped to tenant+actor+operation. Reuse only for an identical request. */
+        'Idempotency-Key': components['parameters']['IdempotencyKey'];
+        /** @description Required for cookie-authenticated state changes; not required with bearer-only authentication. Invalid/missing token or Origin yields 403. Conditional requirement cannot be represented by OpenAPI required=true. */
+        'X-CSRF-Token'?: components['parameters']['Csrf'];
+        /** @description Required and checked against the deployment allowlist for cookie-authenticated state changes and browser public-form submissions/uploads. Never accept wildcard with credentialed requests. */
+        Origin?: components['parameters']['Origin'];
+        /** @description Strong ETag obtained from latest GET or mutation response. * is not accepted. Missing=428; stale=412. Idempotent replay is checked before current revision precondition. */
+        'If-Match': components['parameters']['IfMatch'];
+      };
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+        /** @description W5.00 (0.12.0-stage5). Opaque UUID of a SPA service (SpaService.id). */
+        serviceId: components['parameters']['spaServiceId'];
+      };
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['SpaServicePatch'];
+      };
+    };
+    responses: {
+      /** @description Successful result. */
+      200: {
+        headers: {
+          'X-Request-Id': components['headers']['RequestId'];
+          ETag: components['headers']['ETag'];
+          'Idempotency-Replayed': components['headers']['IdempotencyReplayed'];
+          /** @description Never cache authenticated, confidential or capability-bearing API responses in shared caches. */
+          'Cache-Control'?: 'private, no-store';
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['SpaService'];
+        };
+      };
+      400: components['responses']['BadRequest'];
+      401: components['responses']['Unauthenticated'];
+      402: components['responses']['PlanRequired'];
+      403: components['responses']['Forbidden'];
+      404: components['responses']['NotFound'];
+      409: components['responses']['Conflict'];
+      412: components['responses']['PreconditionFailed'];
+      422: components['responses']['Validation'];
+      428: components['responses']['PreconditionRequired'];
+      429: components['responses']['RateLimited'];
+    };
+  };
+  cancelAppointment: {
+    parameters: {
+      query?: never;
+      header: {
+        /** @description Stable per intended command. Retain record at least 7 days; financial deduplication also retains a durable tenant+actor+operation+key digest receipt. Key is scoped to tenant+actor+operation. Reuse only for an identical request. */
+        'Idempotency-Key': components['parameters']['IdempotencyKey'];
+        /** @description Required for cookie-authenticated state changes; not required with bearer-only authentication. Invalid/missing token or Origin yields 403. Conditional requirement cannot be represented by OpenAPI required=true. */
+        'X-CSRF-Token'?: components['parameters']['Csrf'];
+        /** @description Required and checked against the deployment allowlist for cookie-authenticated state changes and browser public-form submissions/uploads. Never accept wildcard with credentialed requests. */
+        Origin?: components['parameters']['Origin'];
+        /** @description Strong ETag obtained from latest GET or mutation response. * is not accepted. Missing=428; stale=412. Idempotent replay is checked before current revision precondition. */
+        'If-Match': components['parameters']['IfMatch'];
+      };
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        appointmentId: components['parameters']['appointmentId'];
+      };
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['AppointmentCancel'];
+      };
+    };
+    responses: {
+      /** @description Successful result. */
+      200: {
+        headers: {
+          'X-Request-Id': components['headers']['RequestId'];
+          ETag: components['headers']['ETag'];
+          'Idempotency-Replayed': components['headers']['IdempotencyReplayed'];
+          /** @description Never cache authenticated, confidential or capability-bearing API responses in shared caches. */
+          'Cache-Control'?: 'private, no-store';
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['Appointment'];
+        };
+      };
+      400: components['responses']['BadRequest'];
+      401: components['responses']['Unauthenticated'];
+      402: components['responses']['PlanRequired'];
+      403: components['responses']['Forbidden'];
+      404: components['responses']['NotFound'];
+      409: components['responses']['Conflict'];
+      412: components['responses']['PreconditionFailed'];
+      422: components['responses']['Validation'];
+      428: components['responses']['PreconditionRequired'];
+      429: components['responses']['RateLimited'];
+    };
+  };
+  rescheduleAppointment: {
+    parameters: {
+      query?: never;
+      header: {
+        /** @description Stable per intended command. Retain record at least 7 days; financial deduplication also retains a durable tenant+actor+operation+key digest receipt. Key is scoped to tenant+actor+operation. Reuse only for an identical request. */
+        'Idempotency-Key': components['parameters']['IdempotencyKey'];
+        /** @description Required for cookie-authenticated state changes; not required with bearer-only authentication. Invalid/missing token or Origin yields 403. Conditional requirement cannot be represented by OpenAPI required=true. */
+        'X-CSRF-Token'?: components['parameters']['Csrf'];
+        /** @description Required and checked against the deployment allowlist for cookie-authenticated state changes and browser public-form submissions/uploads. Never accept wildcard with credentialed requests. */
+        Origin?: components['parameters']['Origin'];
+        /** @description Strong ETag obtained from latest GET or mutation response. * is not accepted. Missing=428; stale=412. Idempotent replay is checked before current revision precondition. */
+        'If-Match': components['parameters']['IfMatch'];
+      };
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        appointmentId: components['parameters']['appointmentId'];
+      };
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['AppointmentReschedule'];
+      };
+    };
+    responses: {
+      /** @description Successful result. */
+      200: {
+        headers: {
+          'X-Request-Id': components['headers']['RequestId'];
+          ETag: components['headers']['ETag'];
+          'Idempotency-Replayed': components['headers']['IdempotencyReplayed'];
+          /** @description Never cache authenticated, confidential or capability-bearing API responses in shared caches. */
+          'Cache-Control'?: 'private, no-store';
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['Appointment'];
+        };
+      };
+      400: components['responses']['BadRequest'];
+      401: components['responses']['Unauthenticated'];
+      402: components['responses']['PlanRequired'];
+      403: components['responses']['Forbidden'];
+      404: components['responses']['NotFound'];
+      409: components['responses']['Conflict'];
+      412: components['responses']['PreconditionFailed'];
       422: components['responses']['Validation'];
       428: components['responses']['PreconditionRequired'];
       429: components['responses']['RateLimited'];

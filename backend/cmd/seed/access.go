@@ -67,9 +67,12 @@ var (
 			"forms.responses.read,forms.responses.review,forms.responses.assign,calendar.availability.read," +
 			"calendar.bookings.read,calendar.bookings.create,calendar.bookings.manage,knowledge.read,knowledge.create," +
 			"knowledge.update,knowledge.publish,knowledge.organize,knowledge.access.manage,knowledge.members.manage," +
-			"knowledge.automation.manage,knowledge.spaces.manage,inventory.items.read,inventory.items.manage,inventory.movements.read," +
+			"knowledge.automation.manage,knowledge.spaces.manage,inventory.items.read,inventory.items.manage," +
+			"inventory.warehouses.manage,inventory.consumption.override,inventory.movements.read," +
 			"inventory.movements.post,inventory.consume,spa.services.read,spa.services.manage,spa.appointments.read," +
-			"spa.appointments.create,spa.appointments.perform,spa.appointments.complete,cash.read,cash.post,cash.manage")}
+			"spa.appointments.create,spa.appointments.perform,spa.appointments.complete,cash.read,cash.balance.read,cash.post,cash.proposals.post,cash.shift.operate," +
+			"cash.refund,cash.transfer,cash.advance.issue,cash.approve,cash.reconcile,cash.reverse,cash.payroll.post," +
+			"cash.reports.finance,cash.accounts.manage,cash.period.close,cash.advance.self,cash.export")}
 	roleManager = roleDef{"r-manager", "Менеджер логистики", kindTemplate, "logistics_manager", actions(
 		"members.read,roles.read,org_units.read,files.read,files.upload,data.catalog.read,data.query,data.export," +
 			"tasks.read,tasks.create,tasks.update,tasks.transition,forms.read,forms.responses.read,forms.responses.review," +

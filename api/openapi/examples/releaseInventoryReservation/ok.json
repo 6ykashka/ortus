@@ -1,0 +1,19 @@
+{
+  "id": "5cc1d312-99ea-5be4-ba9f-ec5d76a65ec5",
+  "warehouseId": "4eb6fbdf-2e12-5cb1-867f-1db2bf71e92d",
+  "source": {
+    "moduleKey": "spa",
+    "entityType": "appointment",
+    "entityId": "7a6a997b-c057-5062-8f80-0edf5e6b05fe"
+  },
+  "lines": [
+    {
+      "itemId": "4c3c7bcf-2669-5b70-a9c9-9909e9505abe",
+      "quantity": "50"
+    }
+  ],
+  "status": "released",
+  "expiresAt": null,
+  "createdAt": "2026-10-01T07:30:00Z",
+  "revision": 2
+}

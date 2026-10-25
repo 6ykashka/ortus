@@ -22,11 +22,16 @@
 # запросы, участники, правила автоматизации, таблицы.
 # 0.10.0-stage4 (W4.03, контрактный PR 2 этапа 4): «Задачи и проекты» — проекты, участники, процесс с версиями,
 # задачи, история, автоматизация.
+# 0.11.0-stage4 (W4.05, контрактный PR 4 этапа 4): «Формы и опросы» — черновик, FormDefinition v2, настройки, группы,
+# правила, ответы v2, сводка, CSV.
+# 0.12.0-stage5 (W5.00, контрактный PR этапа 5): касса — 22 операции (смены, перемещения, предложения, подотчёт,
+# заявки, статьи), 17 ключей с limit, 5 кодов; склад — склады, остатки по партиям FEFO, резервы; SPA — правка
+# услуги с техкартой, перенос и отмена визита.
 openapi: 3.1.0
 jsonSchemaDialect: https://json-schema.org/draft/2020-12/schema
 info:
   title: ORTUS CRM Constructor — Design API
-  version: 0.11.1-stage4
+  version: 0.12.0-stage5
   summary: Reviewable starting contract for a tenant-isolated modular CRM on Go; not an implemented or exhaustive API.
   description: |-
     Design snapshot, 2026-10-01. A tenant is one business holding; regions/companies/branches are scoped organization units within it. Platform administration is a separate control plane and never implies business-data access.
@@ -518,6 +523,64 @@ paths:
     $ref: paths/forms.yaml#/~1api~1v1~1tenants~1%7BtenantId%7D~1form-groups
   /api/v1/tenants/{tenantId}/form-groups/{groupId}:
     $ref: paths/forms.yaml#/~1api~1v1~1tenants~1%7BtenantId%7D~1form-groups~1%7BgroupId%7D
+  /api/v1/tenants/{tenantId}/cash/accounts/access-preview:
+    $ref: paths/cash.yaml#/~1api~1v1~1tenants~1%7BtenantId%7D~1cash~1accounts~1access-preview
+  /api/v1/tenants/{tenantId}/cash/operations/{operationId}/reverse:
+    $ref: paths/cash.yaml#/~1api~1v1~1tenants~1%7BtenantId%7D~1cash~1operations~1%7BoperationId%7D~1reverse
+  /api/v1/tenants/{tenantId}/cash/operations/{operationId}/source-link:
+    $ref: paths/cash.yaml#/~1api~1v1~1tenants~1%7BtenantId%7D~1cash~1operations~1%7BoperationId%7D~1source-link
+  /api/v1/tenants/{tenantId}/cash/duplicates:
+    $ref: paths/cash.yaml#/~1api~1v1~1tenants~1%7BtenantId%7D~1cash~1duplicates
+  /api/v1/tenants/{tenantId}/cash/proposals:
+    $ref: paths/cash.yaml#/~1api~1v1~1tenants~1%7BtenantId%7D~1cash~1proposals
+  /api/v1/tenants/{tenantId}/cash/proposals/{proposalKey}/post:
+    $ref: paths/cash.yaml#/~1api~1v1~1tenants~1%7BtenantId%7D~1cash~1proposals~1%7BproposalKey%7D~1post
+  /api/v1/tenants/{tenantId}/cash/proposals/{proposalKey}/dismiss:
+    $ref: paths/cash.yaml#/~1api~1v1~1tenants~1%7BtenantId%7D~1cash~1proposals~1%7BproposalKey%7D~1dismiss
+  /api/v1/tenants/{tenantId}/cash/shifts:
+    $ref: paths/cash.yaml#/~1api~1v1~1tenants~1%7BtenantId%7D~1cash~1shifts
+  /api/v1/tenants/{tenantId}/cash/accounts/{accountId}/shifts:
+    $ref: paths/cash.yaml#/~1api~1v1~1tenants~1%7BtenantId%7D~1cash~1accounts~1%7BaccountId%7D~1shifts
+  /api/v1/tenants/{tenantId}/cash/shifts/{shiftId}/close:
+    $ref: paths/cash.yaml#/~1api~1v1~1tenants~1%7BtenantId%7D~1cash~1shifts~1%7BshiftId%7D~1close
+  /api/v1/tenants/{tenantId}/cash/shifts/{shiftId}/review:
+    $ref: paths/cash.yaml#/~1api~1v1~1tenants~1%7BtenantId%7D~1cash~1shifts~1%7BshiftId%7D~1review
+  /api/v1/tenants/{tenantId}/cash/transfers:
+    $ref: paths/cash.yaml#/~1api~1v1~1tenants~1%7BtenantId%7D~1cash~1transfers
+  /api/v1/tenants/{tenantId}/cash/transfers/{transferId}/decision:
+    $ref: paths/cash.yaml#/~1api~1v1~1tenants~1%7BtenantId%7D~1cash~1transfers~1%7BtransferId%7D~1decision
+  /api/v1/tenants/{tenantId}/cash/accounts/{accountId}/advance-issues:
+    $ref: paths/cash.yaml#/~1api~1v1~1tenants~1%7BtenantId%7D~1cash~1accounts~1%7BaccountId%7D~1advance-issues
+  /api/v1/tenants/{tenantId}/cash/accounts/{accountId}/receipts:
+    $ref: paths/cash.yaml#/~1api~1v1~1tenants~1%7BtenantId%7D~1cash~1accounts~1%7BaccountId%7D~1receipts
+  /api/v1/tenants/{tenantId}/cash/receipts:
+    $ref: paths/cash.yaml#/~1api~1v1~1tenants~1%7BtenantId%7D~1cash~1receipts
+  /api/v1/tenants/{tenantId}/cash/receipts/{receiptId}/decision:
+    $ref: paths/cash.yaml#/~1api~1v1~1tenants~1%7BtenantId%7D~1cash~1receipts~1%7BreceiptId%7D~1decision
+  /api/v1/tenants/{tenantId}/cash/accounts/{accountId}/advance-returns:
+    $ref: paths/cash.yaml#/~1api~1v1~1tenants~1%7BtenantId%7D~1cash~1accounts~1%7BaccountId%7D~1advance-returns
+  /api/v1/tenants/{tenantId}/cash/approval-requests:
+    $ref: paths/cash.yaml#/~1api~1v1~1tenants~1%7BtenantId%7D~1cash~1approval-requests
+  /api/v1/tenants/{tenantId}/cash/approval-requests/{approvalRequestId}/decision:
+    $ref: paths/cash.yaml#/~1api~1v1~1tenants~1%7BtenantId%7D~1cash~1approval-requests~1%7BapprovalRequestId%7D~1decision
+  /api/v1/tenants/{tenantId}/cash/categories:
+    $ref: paths/cash.yaml#/~1api~1v1~1tenants~1%7BtenantId%7D~1cash~1categories
+  /api/v1/tenants/{tenantId}/inventory/warehouses:
+    $ref: paths/inventory.yaml#/~1api~1v1~1tenants~1%7BtenantId%7D~1inventory~1warehouses
+  /api/v1/tenants/{tenantId}/inventory/items/{itemId}:
+    $ref: paths/inventory.yaml#/~1api~1v1~1tenants~1%7BtenantId%7D~1inventory~1items~1%7BitemId%7D
+  /api/v1/tenants/{tenantId}/inventory/balances:
+    $ref: paths/inventory.yaml#/~1api~1v1~1tenants~1%7BtenantId%7D~1inventory~1balances
+  /api/v1/tenants/{tenantId}/inventory/reservations:
+    $ref: paths/inventory.yaml#/~1api~1v1~1tenants~1%7BtenantId%7D~1inventory~1reservations
+  /api/v1/tenants/{tenantId}/inventory/reservations/{reservationId}/release:
+    $ref: paths/inventory.yaml#/~1api~1v1~1tenants~1%7BtenantId%7D~1inventory~1reservations~1%7BreservationId%7D~1release
+  /api/v1/tenants/{tenantId}/spa/services/{serviceId}:
+    $ref: paths/spa.yaml#/~1api~1v1~1tenants~1%7BtenantId%7D~1spa~1services~1%7BserviceId%7D
+  /api/v1/tenants/{tenantId}/spa/appointments/{appointmentId}/cancel:
+    $ref: paths/spa.yaml#/~1api~1v1~1tenants~1%7BtenantId%7D~1spa~1appointments~1%7BappointmentId%7D~1cancel
+  /api/v1/tenants/{tenantId}/spa/appointments/{appointmentId}/reschedule:
+    $ref: paths/spa.yaml#/~1api~1v1~1tenants~1%7BtenantId%7D~1spa~1appointments~1%7BappointmentId%7D~1reschedule
 x-contract-status: design-proposal-not-implemented
 x-authorization-order:
   - authenticate

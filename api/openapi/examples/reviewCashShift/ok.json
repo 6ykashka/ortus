@@ -1,0 +1,148 @@
+{
+  "id": "790fb875-091f-53a3-ae3b-ae062b4ab9ac",
+  "accountId": "b7d1bdca-237d-5518-a179-d45b135bb0a6",
+  "number": 118,
+  "status": "closed",
+  "openedAt": "2026-10-01T06:02:00Z",
+  "openedByMemberId": "25097109-efb6-5471-880f-7a01ee6615a0",
+  "openingFloat": {
+    "amountMinor": 500000,
+    "currency": "RUB"
+  },
+  "openingDiff": null,
+  "closedAt": "2026-10-01T07:30:00Z",
+  "closedByMemberId": "25097109-efb6-5471-880f-7a01ee6615a0",
+  "counted": {
+    "amountMinor": 700000,
+    "currency": "RUB"
+  },
+  "counts": {
+    "1000": 2,
+    "5000": 1
+  },
+  "coins": null,
+  "z": {
+    "number": "118",
+    "cash": {
+      "amountMinor": 300000,
+      "currency": "RUB"
+    },
+    "card": {
+      "amountMinor": 1200000,
+      "currency": "RUB"
+    }
+  },
+  "terminal": {
+    "card": {
+      "amountMinor": 1200000,
+      "currency": "RUB"
+    },
+    "sbp": {
+      "amountMinor": 0,
+      "currency": "RUB"
+    }
+  },
+  "expected": {
+    "cash": {
+      "amountMinor": 735000,
+      "currency": "RUB"
+    },
+    "revCash": {
+      "amountMinor": 300000,
+      "currency": "RUB"
+    },
+    "revCard": {
+      "amountMinor": 1200000,
+      "currency": "RUB"
+    },
+    "card": {
+      "amountMinor": 1200000,
+      "currency": "RUB"
+    },
+    "sbp": {
+      "amountMinor": 0,
+      "currency": "RUB"
+    }
+  },
+  "diff": {
+    "cash": {
+      "amountMinor": -35000,
+      "currency": "RUB"
+    },
+    "kktCash": {
+      "amountMinor": 0,
+      "currency": "RUB"
+    },
+    "kktCard": {
+      "amountMinor": 0,
+      "currency": "RUB"
+    },
+    "term": {
+      "amountMinor": 0,
+      "currency": "RUB"
+    }
+  },
+  "decision": {
+    "kind": "accepted",
+    "byMemberId": "b8df06ec-317e-5f46-b54c-e76603e41b5b",
+    "at": "2026-10-01T07:30:00Z",
+    "reason": "Сдача мелочью",
+    "operationId": "833a70be-c24c-5c8c-af98-c66b3b300946"
+  },
+  "attempts": [
+    {
+      "closedAt": "2026-10-01T07:30:00Z",
+      "closedByMemberId": "25097109-efb6-5471-880f-7a01ee6615a0",
+      "counted": {
+        "amountMinor": 700000,
+        "currency": "RUB"
+      },
+      "counts": {
+        "1000": 2,
+        "5000": 1
+      },
+      "z": {
+        "number": "118",
+        "cash": {
+          "amountMinor": 300000,
+          "currency": "RUB"
+        },
+        "card": {
+          "amountMinor": 1200000,
+          "currency": "RUB"
+        }
+      },
+      "terminal": {
+        "card": {
+          "amountMinor": 1200000,
+          "currency": "RUB"
+        },
+        "sbp": {
+          "amountMinor": 0,
+          "currency": "RUB"
+        }
+      },
+      "diff": {
+        "cash": {
+          "amountMinor": -35000,
+          "currency": "RUB"
+        },
+        "kktCash": {
+          "amountMinor": 0,
+          "currency": "RUB"
+        },
+        "kktCard": {
+          "amountMinor": 0,
+          "currency": "RUB"
+        },
+        "term": {
+          "amountMinor": 0,
+          "currency": "RUB"
+        }
+      },
+      "recountReason": null
+    }
+  ],
+  "toSafeTransferId": null,
+  "revision": 3
+}

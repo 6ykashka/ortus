@@ -143,6 +143,27 @@ func (e InventoryMovementCreateKind) Valid() bool {
 	}
 }
 
+// Defines values for InventoryReservationStatus.
+const (
+	InventoryReservationStatusActive   InventoryReservationStatus = "active"
+	InventoryReservationStatusConsumed InventoryReservationStatus = "consumed"
+	InventoryReservationStatusReleased InventoryReservationStatus = "released"
+)
+
+// Valid indicates whether the value is a known member of the InventoryReservationStatus enum.
+func (e InventoryReservationStatus) Valid() bool {
+	switch e {
+	case InventoryReservationStatusActive:
+		return true
+	case InventoryReservationStatusConsumed:
+		return true
+	case InventoryReservationStatusReleased:
+		return true
+	default:
+		return false
+	}
+}
+
 // Defines values for ProblemCode.
 const (
 	ProblemCodeAgreementPending           ProblemCode = "agreement_pending"
@@ -159,6 +180,8 @@ const (
 	ProblemCodeDelegationExceedsGrant     ProblemCode = "delegation_exceeds_grant"
 	ProblemCodeDependencyUnavailable      ProblemCode = "dependency_unavailable"
 	ProblemCodeDowngradeBelowUsage        ProblemCode = "downgrade_below_usage"
+	ProblemCodeDuplicateReceipt           ProblemCode = "duplicate_receipt"
+	ProblemCodeDuplicateSource            ProblemCode = "duplicate_source"
 	ProblemCodeEstimateDraftExists        ProblemCode = "estimate_draft_exists"
 	ProblemCodeEstimateVersionLocked      ProblemCode = "estimate_version_locked"
 	ProblemCodeFeatureRequiresPlan        ProblemCode = "feature_requires_plan"
@@ -167,6 +190,7 @@ const (
 	ProblemCodeIdempotencyInProgress      ProblemCode = "idempotency_in_progress"
 	ProblemCodeIdempotencyKeyReused       ProblemCode = "idempotency_key_reused"
 	ProblemCodeInspectionIncomplete       ProblemCode = "inspection_incomplete"
+	ProblemCodeInsufficientFunds          ProblemCode = "insufficient_funds"
 	ProblemCodeInvalidTransition          ProblemCode = "invalid_transition"
 	ProblemCodeLastOwnerRequired          ProblemCode = "last_owner_required"
 	ProblemCodeMalformedRequest           ProblemCode = "malformed_request"
@@ -190,8 +214,10 @@ const (
 	ProblemCodeRevisionMismatch           ProblemCode = "revision_mismatch"
 	ProblemCodeRevisionRequired           ProblemCode = "revision_required"
 	ProblemCodeSeatsExhausted             ProblemCode = "seats_exhausted"
+	ProblemCodeSelfApproval               ProblemCode = "self_approval"
 	ProblemCodeSeparationOfDutiesConflict ProblemCode = "separation_of_duties_conflict"
 	ProblemCodeSessionExpired             ProblemCode = "session_expired"
+	ProblemCodeShiftClosed                ProblemCode = "shift_closed"
 	ProblemCodeTenantReadOnly             ProblemCode = "tenant_read_only"
 	ProblemCodeTenantSuspended            ProblemCode = "tenant_suspended"
 	ProblemCodeTierBelowUsage             ProblemCode = "tier_below_usage"
@@ -231,6 +257,10 @@ func (e ProblemCode) Valid() bool {
 		return true
 	case ProblemCodeDowngradeBelowUsage:
 		return true
+	case ProblemCodeDuplicateReceipt:
+		return true
+	case ProblemCodeDuplicateSource:
+		return true
 	case ProblemCodeEstimateDraftExists:
 		return true
 	case ProblemCodeEstimateVersionLocked:
@@ -246,6 +276,8 @@ func (e ProblemCode) Valid() bool {
 	case ProblemCodeIdempotencyKeyReused:
 		return true
 	case ProblemCodeInspectionIncomplete:
+		return true
+	case ProblemCodeInsufficientFunds:
 		return true
 	case ProblemCodeInvalidTransition:
 		return true
@@ -293,9 +325,13 @@ func (e ProblemCode) Valid() bool {
 		return true
 	case ProblemCodeSeatsExhausted:
 		return true
+	case ProblemCodeSelfApproval:
+		return true
 	case ProblemCodeSeparationOfDutiesConflict:
 		return true
 	case ProblemCodeSessionExpired:
+		return true
+	case ProblemCodeShiftClosed:
 		return true
 	case ProblemCodeTenantReadOnly:
 		return true
@@ -314,6 +350,27 @@ func (e ProblemCode) Valid() bool {
 	}
 }
 
+// Defines values for ListInventoryReservationsParamsStatus.
+const (
+	ListInventoryReservationsParamsStatusActive   ListInventoryReservationsParamsStatus = "active"
+	ListInventoryReservationsParamsStatusConsumed ListInventoryReservationsParamsStatus = "consumed"
+	ListInventoryReservationsParamsStatusReleased ListInventoryReservationsParamsStatus = "released"
+)
+
+// Valid indicates whether the value is a known member of the ListInventoryReservationsParamsStatus enum.
+func (e ListInventoryReservationsParamsStatus) Valid() bool {
+	switch e {
+	case ListInventoryReservationsParamsStatusActive:
+		return true
+	case ListInventoryReservationsParamsStatusConsumed:
+		return true
+	case ListInventoryReservationsParamsStatusReleased:
+		return true
+	default:
+		return false
+	}
+}
+
 // Id Examples: 10000000-0000-4000-8000-000000000001
 type Id = openapi_types.UUID
 
@@ -322,13 +379,51 @@ type Id = openapi_types.UUID
 // Examples: 2026-10-05T06:00:00Z
 type Instant = time.Time
 
+// InventoryBalance W5.00 (0.12.0-stage5) (D-20 комплекта). Balance of an item in a warehouse; available = onHand − reserved. FEFO: lots are listed and consumed by expiry date, the earliest first, lots without expiry last.
+type InventoryBalance struct {
+	// Available Nonnegative exact quantity; operations requiring a positive value additionally reject zero.
+	//
+	// Examples: 0.025
+	Available    Quantity `json:"available"`
+	BelowMinimum bool     `json:"belowMinimum"`
+
+	// ItemId Examples: 10000000-0000-4000-8000-000000000001
+	ItemId   Id                    `json:"itemId"`
+	Lots     []InventoryLotBalance `json:"lots"`
+	MinLevel *Quantity             `json:"minLevel,omitempty"`
+
+	// OnHand Nonnegative exact quantity; operations requiring a positive value additionally reject zero.
+	//
+	// Examples: 0.025
+	OnHand Quantity `json:"onHand"`
+
+	// Reserved Nonnegative exact quantity; operations requiring a positive value additionally reject zero.
+	//
+	// Examples: 0.025
+	Reserved Quantity `json:"reserved"`
+
+	// WarehouseId Examples: 10000000-0000-4000-8000-000000000001
+	WarehouseId Id `json:"warehouseId"`
+}
+
+// InventoryBalancePage Opaque cursor is bound to tenant, principal, effective scopes, filters and sort. Permission changes invalidate the cursor.
+type InventoryBalancePage struct {
+	Items      []InventoryBalance `json:"items"`
+	NextCursor *string            `json:"nextCursor"`
+}
+
 // InventoryItem defines model for InventoryItem.
 type InventoryItem struct {
 	BaseUnit InventoryItemBaseUnit `json:"baseUnit"`
 
 	// Id Examples: 10000000-0000-4000-8000-000000000001
-	Id   Id     `json:"id"`
-	Name string `json:"name"`
+	Id Id `json:"id"`
+
+	// MinLevel W5.00 (0.12.0-stage5). Minimum stock level in the base unit (D-20 комплекта); belowMinimum in balances compares onHand with it.
+	//
+	// Examples: 0.025
+	MinLevel *Quantity `json:"minLevel,omitempty"`
+	Name     string    `json:"name"`
 
 	// OrgUnitId Examples: 10000000-0000-4000-8000-000000000001
 	OrgUnitId Id     `json:"orgUnitId"`
@@ -360,6 +455,28 @@ type InventoryItemPage struct {
 	NextCursor *string         `json:"nextCursor"`
 }
 
+// InventoryItemPatch W5.00 (0.12.0-stage5). Edit a stock item; sku and baseUnit are immutable once movements exist.
+type InventoryItemPatch struct {
+	Archived *bool `json:"archived,omitempty"`
+
+	// MinLevel Nonnegative exact quantity; operations requiring a positive value additionally reject zero.
+	//
+	// Examples: 0.025
+	MinLevel *Quantity `json:"minLevel,omitempty"`
+	Name     *string   `json:"name,omitempty"`
+}
+
+// InventoryLotBalance defines model for InventoryLotBalance.
+type InventoryLotBalance struct {
+	ExpiresOn *openapi_types.Date `json:"expiresOn"`
+	LotId     *openapi_types.UUID `json:"lotId"`
+
+	// OnHand Nonnegative exact quantity; operations requiring a positive value additionally reject zero.
+	//
+	// Examples: 0.025
+	OnHand Quantity `json:"onHand"`
+}
+
 // InventoryMovement defines model for InventoryMovement.
 type InventoryMovement struct {
 	// Id Examples: 10000000-0000-4000-8000-000000000001
@@ -385,7 +502,7 @@ type InventoryMovement struct {
 // InventoryMovementKind defines model for InventoryMovement.Kind.
 type InventoryMovementKind string
 
-// InventoryMovementCreate Quantity must be positive. Transfers require targetWarehouseId and authorize both warehouses. Adjustment requires adjustmentDirection and a reason; reversal requires reversesMovementId and reason. Server derives the reversal direction from the original and rejects lines/warehouse/currency inconsistent with it. Both require dedicated permission. Immutable ledger: correct by compensating movement; never edit posted balances. Negative stock is disabled in v0.1.
+// InventoryMovementCreate Quantity must be positive. Transfers require targetWarehouseId and authorize both warehouses. Adjustment requires adjustmentDirection and a reason; reversal requires reversesMovementId and reason. Server derives the reversal direction from the original and rejects lines/warehouse/currency inconsistent with it. Both require dedicated permission. Immutable ledger: correct by compensating movement; never edit posted balances. Negative stock is disabled in v0.1. W5.00 (0.12.0-stage5) (D-20 комплекта): an issue without lotId consumes lots in FEFO order.
 type InventoryMovementCreate struct {
 	AdjustmentDirection *InventoryMovementCreateAdjustmentDirection `json:"adjustmentDirection,omitempty"`
 	Kind                InventoryMovementCreateKind                 `json:"kind"`
@@ -433,6 +550,62 @@ type InventoryMovementPage struct {
 	NextCursor *string             `json:"nextCursor"`
 }
 
+// InventoryReservation W5.00 (0.12.0-stage5). A reservation holds quantity for a source object without a movement; it becomes consumed when the movement of the source is posted.
+type InventoryReservation struct {
+	// CreatedAt UTC RFC3339 instant. Write requests must use the Z suffix; retain the IANA timezone separately for local calendars.
+	//
+	// Examples: 2026-10-05T06:00:00Z
+	CreatedAt Instant    `json:"createdAt"`
+	ExpiresAt *time.Time `json:"expiresAt,omitempty"`
+
+	// Id Examples: 10000000-0000-4000-8000-000000000001
+	Id       Id                         `json:"id"`
+	Lines    []InventoryReservationLine `json:"lines"`
+	Revision int64                      `json:"revision"`
+
+	// Source Server verifies same-tenant ownership and target visibility. A reference never grants access.
+	Source ObjectRef                  `json:"source"`
+	Status InventoryReservationStatus `json:"status"`
+
+	// WarehouseId Examples: 10000000-0000-4000-8000-000000000001
+	WarehouseId Id `json:"warehouseId"`
+}
+
+// InventoryReservationStatus defines model for InventoryReservation.Status.
+type InventoryReservationStatus string
+
+// InventoryReservationCreate defines model for InventoryReservationCreate.
+type InventoryReservationCreate struct {
+	// ExpiresAt UTC RFC3339 instant. Write requests must use the Z suffix; retain the IANA timezone separately for local calendars.
+	//
+	// Examples: 2026-10-05T06:00:00Z
+	ExpiresAt *Instant                   `json:"expiresAt,omitempty"`
+	Lines     []InventoryReservationLine `json:"lines"`
+
+	// Source Server verifies same-tenant ownership and target visibility. A reference never grants access.
+	Source ObjectRef `json:"source"`
+
+	// WarehouseId Examples: 10000000-0000-4000-8000-000000000001
+	WarehouseId Id `json:"warehouseId"`
+}
+
+// InventoryReservationLine defines model for InventoryReservationLine.
+type InventoryReservationLine struct {
+	// ItemId Examples: 10000000-0000-4000-8000-000000000001
+	ItemId Id `json:"itemId"`
+
+	// Quantity Nonnegative exact quantity; operations requiring a positive value additionally reject zero.
+	//
+	// Examples: 0.025
+	Quantity Quantity `json:"quantity"`
+}
+
+// InventoryReservationPage Opaque cursor is bound to tenant, principal, effective scopes, filters and sort. Permission changes invalidate the cursor.
+type InventoryReservationPage struct {
+	Items      []InventoryReservation `json:"items"`
+	NextCursor *string                `json:"nextCursor"`
+}
+
 // ObjectRef Server verifies same-tenant ownership and target visibility. A reference never grants access.
 type ObjectRef struct {
 	// EntityId Examples: 10000000-0000-4000-8000-000000000001
@@ -474,6 +647,35 @@ type ProblemViolation struct {
 // Examples: 0.025
 type Quantity = string
 
+// Warehouse W5.00 (0.12.0-stage5). A warehouse of an org unit; its id is the warehouse scope of role assignments.
+type Warehouse struct {
+	Archived bool    `json:"archived"`
+	Code     *string `json:"code,omitempty"`
+
+	// Id Examples: 10000000-0000-4000-8000-000000000001
+	Id   Id     `json:"id"`
+	Name string `json:"name"`
+
+	// OrgUnitId Examples: 10000000-0000-4000-8000-000000000001
+	OrgUnitId Id    `json:"orgUnitId"`
+	Revision  int64 `json:"revision"`
+}
+
+// WarehouseCreate defines model for WarehouseCreate.
+type WarehouseCreate struct {
+	Code *string `json:"code,omitempty"`
+	Name string  `json:"name"`
+
+	// OrgUnitId Examples: 10000000-0000-4000-8000-000000000001
+	OrgUnitId Id `json:"orgUnitId"`
+}
+
+// WarehousePage Opaque cursor is bound to tenant, principal, effective scopes, filters and sort. Permission changes invalidate the cursor.
+type WarehousePage struct {
+	Items      []Warehouse `json:"items"`
+	NextCursor *string     `json:"nextCursor"`
+}
+
 // Csrf defines model for Csrf.
 type Csrf = string
 
@@ -482,6 +684,9 @@ type Cursor = string
 
 // IdempotencyKey defines model for IdempotencyKey.
 type IdempotencyKey = string
+
+// IfMatch Examples: "rev-7"
+type IfMatch = string
 
 // Limit defines model for Limit.
 type Limit = int
@@ -503,6 +708,27 @@ type AutomationId = Id
 
 // BookingId Examples: 10000000-0000-4000-8000-000000000001
 type BookingId = Id
+
+// CashAccountId Examples: 10000000-0000-4000-8000-000000000001
+type CashAccountId = Id
+
+// CashApprovalRequestId Examples: 10000000-0000-4000-8000-000000000001
+type CashApprovalRequestId = Id
+
+// CashOperationId Examples: 10000000-0000-4000-8000-000000000001
+type CashOperationId = Id
+
+// CashProposalKey defines model for cashProposalKey.
+type CashProposalKey = string
+
+// CashReceiptId Examples: 10000000-0000-4000-8000-000000000001
+type CashReceiptId = Id
+
+// CashShiftId Examples: 10000000-0000-4000-8000-000000000001
+type CashShiftId = Id
+
+// CashTransferId Examples: 10000000-0000-4000-8000-000000000001
+type CashTransferId = Id
 
 // CategoryCode defines model for categoryCode.
 type CategoryCode = string
@@ -548,6 +774,12 @@ type ImportId = Id
 
 // InspectionId Examples: 10000000-0000-4000-8000-000000000001
 type InspectionId = Id
+
+// InventoryItemId Examples: 10000000-0000-4000-8000-000000000001
+type InventoryItemId = Id
+
+// InventoryReservationId Examples: 10000000-0000-4000-8000-000000000001
+type InventoryReservationId = Id
 
 // MemberId Examples: 10000000-0000-4000-8000-000000000001
 type MemberId = Id
@@ -597,6 +829,9 @@ type RoleId = Id
 // RuleId Examples: 10000000-0000-4000-8000-000000000001
 type RuleId = Id
 
+// SpaServiceId Examples: 10000000-0000-4000-8000-000000000001
+type SpaServiceId = Id
+
 // SpaceId Examples: 10000000-0000-4000-8000-000000000001
 type SpaceId = Id
 
@@ -642,6 +877,9 @@ type NotFound = Problem
 // PlanRequired Problem Details. No cross-tenant IDs, SQL, token values or storage keys in errors. Retryable conflict codes: reservation_overlap, resources_unavailable, idempotency_in_progress; quota errors: quota_exceeded, downgrade_below_usage.
 type PlanRequired = Problem
 
+// PreconditionFailed Problem Details. No cross-tenant IDs, SQL, token values or storage keys in errors. Retryable conflict codes: reservation_overlap, resources_unavailable, idempotency_in_progress; quota errors: quota_exceeded, downgrade_below_usage.
+type PreconditionFailed = Problem
+
 // PreconditionRequired Problem Details. No cross-tenant IDs, SQL, token values or storage keys in errors. Retryable conflict codes: reservation_overlap, resources_unavailable, idempotency_in_progress; quota errors: quota_exceeded, downgrade_below_usage.
 type PreconditionRequired = Problem
 
@@ -653,6 +891,16 @@ type Unauthenticated = Problem
 
 // Validation Problem Details. No cross-tenant IDs, SQL, token values or storage keys in errors. Retryable conflict codes: reservation_overlap, resources_unavailable, idempotency_in_progress; quota errors: quota_exceeded, downgrade_below_usage.
 type Validation = Problem
+
+// ListInventoryBalancesParams defines parameters for ListInventoryBalances.
+type ListInventoryBalancesParams struct {
+	// Cursor Opaque cursor from the preceding response; no offset pagination.
+	Cursor       *Cursor `form:"cursor,omitempty" json:"cursor,omitempty"`
+	Limit        *Limit  `form:"limit,omitempty" json:"limit,omitempty"`
+	WarehouseId  *Id     `form:"warehouseId,omitempty" json:"warehouseId,omitempty"`
+	ItemId       *Id     `form:"itemId,omitempty" json:"itemId,omitempty"`
+	BelowMinimum *bool   `form:"belowMinimum,omitempty" json:"belowMinimum,omitempty"`
+}
 
 // ListInventoryItemsParams defines parameters for ListInventoryItems.
 type ListInventoryItemsParams struct {
@@ -671,6 +919,21 @@ type CreateInventoryItemParams struct {
 
 	// Origin Required and checked against the deployment allowlist for cookie-authenticated state changes and browser public-form submissions/uploads. Never accept wildcard with credentialed requests.
 	Origin *Origin `json:"Origin,omitempty"`
+}
+
+// UpdateInventoryItemParams defines parameters for UpdateInventoryItem.
+type UpdateInventoryItemParams struct {
+	// IdempotencyKey Stable per intended command. Retain record at least 7 days; financial deduplication also retains a durable tenant+actor+operation+key digest receipt. Key is scoped to tenant+actor+operation. Reuse only for an identical request.
+	IdempotencyKey IdempotencyKey `json:"Idempotency-Key"`
+
+	// XCSRFToken Required for cookie-authenticated state changes; not required with bearer-only authentication. Invalid/missing token or Origin yields 403. Conditional requirement cannot be represented by OpenAPI required=true.
+	XCSRFToken *Csrf `json:"X-CSRF-Token,omitempty"`
+
+	// Origin Required and checked against the deployment allowlist for cookie-authenticated state changes and browser public-form submissions/uploads. Never accept wildcard with credentialed requests.
+	Origin *Origin `json:"Origin,omitempty"`
+
+	// IfMatch Strong ETag obtained from latest GET or mutation response. * is not accepted. Missing=428; stale=412. Idempotent replay is checked before current revision precondition.
+	IfMatch IfMatch `json:"If-Match"`
 }
 
 // ListInventoryMovementsParams defines parameters for ListInventoryMovements.
@@ -692,31 +955,122 @@ type PostInventoryMovementParams struct {
 	Origin *Origin `json:"Origin,omitempty"`
 }
 
+// ListInventoryReservationsParams defines parameters for ListInventoryReservations.
+type ListInventoryReservationsParams struct {
+	// Cursor Opaque cursor from the preceding response; no offset pagination.
+	Cursor      *Cursor                                `form:"cursor,omitempty" json:"cursor,omitempty"`
+	Limit       *Limit                                 `form:"limit,omitempty" json:"limit,omitempty"`
+	WarehouseId *Id                                    `form:"warehouseId,omitempty" json:"warehouseId,omitempty"`
+	Status      *ListInventoryReservationsParamsStatus `form:"status,omitempty" json:"status,omitempty"`
+}
+
+// ListInventoryReservationsParamsStatus defines parameters for ListInventoryReservations.
+type ListInventoryReservationsParamsStatus string
+
+// CreateInventoryReservationParams defines parameters for CreateInventoryReservation.
+type CreateInventoryReservationParams struct {
+	// IdempotencyKey Stable per intended command. Retain record at least 7 days; financial deduplication also retains a durable tenant+actor+operation+key digest receipt. Key is scoped to tenant+actor+operation. Reuse only for an identical request.
+	IdempotencyKey IdempotencyKey `json:"Idempotency-Key"`
+
+	// XCSRFToken Required for cookie-authenticated state changes; not required with bearer-only authentication. Invalid/missing token or Origin yields 403. Conditional requirement cannot be represented by OpenAPI required=true.
+	XCSRFToken *Csrf `json:"X-CSRF-Token,omitempty"`
+
+	// Origin Required and checked against the deployment allowlist for cookie-authenticated state changes and browser public-form submissions/uploads. Never accept wildcard with credentialed requests.
+	Origin *Origin `json:"Origin,omitempty"`
+}
+
+// ReleaseInventoryReservationParams defines parameters for ReleaseInventoryReservation.
+type ReleaseInventoryReservationParams struct {
+	// IdempotencyKey Stable per intended command. Retain record at least 7 days; financial deduplication also retains a durable tenant+actor+operation+key digest receipt. Key is scoped to tenant+actor+operation. Reuse only for an identical request.
+	IdempotencyKey IdempotencyKey `json:"Idempotency-Key"`
+
+	// XCSRFToken Required for cookie-authenticated state changes; not required with bearer-only authentication. Invalid/missing token or Origin yields 403. Conditional requirement cannot be represented by OpenAPI required=true.
+	XCSRFToken *Csrf `json:"X-CSRF-Token,omitempty"`
+
+	// Origin Required and checked against the deployment allowlist for cookie-authenticated state changes and browser public-form submissions/uploads. Never accept wildcard with credentialed requests.
+	Origin *Origin `json:"Origin,omitempty"`
+}
+
+// ListWarehousesParams defines parameters for ListWarehouses.
+type ListWarehousesParams struct {
+	// Cursor Opaque cursor from the preceding response; no offset pagination.
+	Cursor *Cursor `form:"cursor,omitempty" json:"cursor,omitempty"`
+	Limit  *Limit  `form:"limit,omitempty" json:"limit,omitempty"`
+}
+
+// CreateWarehouseParams defines parameters for CreateWarehouse.
+type CreateWarehouseParams struct {
+	// IdempotencyKey Stable per intended command. Retain record at least 7 days; financial deduplication also retains a durable tenant+actor+operation+key digest receipt. Key is scoped to tenant+actor+operation. Reuse only for an identical request.
+	IdempotencyKey IdempotencyKey `json:"Idempotency-Key"`
+
+	// XCSRFToken Required for cookie-authenticated state changes; not required with bearer-only authentication. Invalid/missing token or Origin yields 403. Conditional requirement cannot be represented by OpenAPI required=true.
+	XCSRFToken *Csrf `json:"X-CSRF-Token,omitempty"`
+
+	// Origin Required and checked against the deployment allowlist for cookie-authenticated state changes and browser public-form submissions/uploads. Never accept wildcard with credentialed requests.
+	Origin *Origin `json:"Origin,omitempty"`
+}
+
 // CreateInventoryItemJSONRequestBody defines body for CreateInventoryItem for application/json ContentType.
 type CreateInventoryItemJSONRequestBody = InventoryItemCreate
+
+// UpdateInventoryItemJSONRequestBody defines body for UpdateInventoryItem for application/json ContentType.
+type UpdateInventoryItemJSONRequestBody = InventoryItemPatch
 
 // PostInventoryMovementJSONRequestBody defines body for PostInventoryMovement for application/json ContentType.
 type PostInventoryMovementJSONRequestBody = InventoryMovementCreate
 
+// CreateInventoryReservationJSONRequestBody defines body for CreateInventoryReservation for application/json ContentType.
+type CreateInventoryReservationJSONRequestBody = InventoryReservationCreate
+
+// CreateWarehouseJSONRequestBody defines body for CreateWarehouse for application/json ContentType.
+type CreateWarehouseJSONRequestBody = WarehouseCreate
+
 // ServerInterface represents all server handlers.
 type ServerInterface interface {
+	// ListInventoryBalances List stock balances by warehouse and lot in FEFO order
+	// (GET /api/v1/tenants/{tenantId}/inventory/balances)
+	ListInventoryBalances(w http.ResponseWriter, r *http.Request, tenantId TenantId, params ListInventoryBalancesParams)
 	// ListInventoryItems List allowed stock item definitions
 	// (GET /api/v1/tenants/{tenantId}/inventory/items)
 	ListInventoryItems(w http.ResponseWriter, r *http.Request, tenantId TenantId, params ListInventoryItemsParams)
 	// CreateInventoryItem Create a stock item with exact base unit
 	// (POST /api/v1/tenants/{tenantId}/inventory/items)
 	CreateInventoryItem(w http.ResponseWriter, r *http.Request, tenantId TenantId, params CreateInventoryItemParams)
+	// UpdateInventoryItem Edit a stock item: name, minimum level, archive
+	// (PATCH /api/v1/tenants/{tenantId}/inventory/items/{itemId})
+	UpdateInventoryItem(w http.ResponseWriter, r *http.Request, tenantId TenantId, itemId InventoryItemId, params UpdateInventoryItemParams)
 	// ListInventoryMovements List immutable visible stock movements
 	// (GET /api/v1/tenants/{tenantId}/inventory/movements)
 	ListInventoryMovements(w http.ResponseWriter, r *http.Request, tenantId TenantId, params ListInventoryMovementsParams)
 	// PostInventoryMovement Atomically post receipt, issue, transfer or correction
 	// (POST /api/v1/tenants/{tenantId}/inventory/movements)
 	PostInventoryMovement(w http.ResponseWriter, r *http.Request, tenantId TenantId, params PostInventoryMovementParams)
+	// ListInventoryReservations List stock reservations
+	// (GET /api/v1/tenants/{tenantId}/inventory/reservations)
+	ListInventoryReservations(w http.ResponseWriter, r *http.Request, tenantId TenantId, params ListInventoryReservationsParams)
+	// CreateInventoryReservation Reserve stock for a source object
+	// (POST /api/v1/tenants/{tenantId}/inventory/reservations)
+	CreateInventoryReservation(w http.ResponseWriter, r *http.Request, tenantId TenantId, params CreateInventoryReservationParams)
+	// ReleaseInventoryReservation Release a stock reservation
+	// (POST /api/v1/tenants/{tenantId}/inventory/reservations/{reservationId}/release)
+	ReleaseInventoryReservation(w http.ResponseWriter, r *http.Request, tenantId TenantId, reservationId InventoryReservationId, params ReleaseInventoryReservationParams)
+	// ListWarehouses List warehouses
+	// (GET /api/v1/tenants/{tenantId}/inventory/warehouses)
+	ListWarehouses(w http.ResponseWriter, r *http.Request, tenantId TenantId, params ListWarehousesParams)
+	// CreateWarehouse Create a warehouse
+	// (POST /api/v1/tenants/{tenantId}/inventory/warehouses)
+	CreateWarehouse(w http.ResponseWriter, r *http.Request, tenantId TenantId, params CreateWarehouseParams)
 }
 
 // Unimplemented server implementation that returns http.StatusNotImplemented for each endpoint.
 
 type Unimplemented struct{}
+
+// ListInventoryBalances List stock balances by warehouse and lot in FEFO order
+// (GET /api/v1/tenants/{tenantId}/inventory/balances)
+func (_ Unimplemented) ListInventoryBalances(w http.ResponseWriter, r *http.Request, tenantId TenantId, params ListInventoryBalancesParams) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
 
 // ListInventoryItems List allowed stock item definitions
 // (GET /api/v1/tenants/{tenantId}/inventory/items)
@@ -727,6 +1081,12 @@ func (_ Unimplemented) ListInventoryItems(w http.ResponseWriter, r *http.Request
 // CreateInventoryItem Create a stock item with exact base unit
 // (POST /api/v1/tenants/{tenantId}/inventory/items)
 func (_ Unimplemented) CreateInventoryItem(w http.ResponseWriter, r *http.Request, tenantId TenantId, params CreateInventoryItemParams) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// UpdateInventoryItem Edit a stock item: name, minimum level, archive
+// (PATCH /api/v1/tenants/{tenantId}/inventory/items/{itemId})
+func (_ Unimplemented) UpdateInventoryItem(w http.ResponseWriter, r *http.Request, tenantId TenantId, itemId InventoryItemId, params UpdateInventoryItemParams) {
 	w.WriteHeader(http.StatusNotImplemented)
 }
 
@@ -742,6 +1102,36 @@ func (_ Unimplemented) PostInventoryMovement(w http.ResponseWriter, r *http.Requ
 	w.WriteHeader(http.StatusNotImplemented)
 }
 
+// ListInventoryReservations List stock reservations
+// (GET /api/v1/tenants/{tenantId}/inventory/reservations)
+func (_ Unimplemented) ListInventoryReservations(w http.ResponseWriter, r *http.Request, tenantId TenantId, params ListInventoryReservationsParams) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// CreateInventoryReservation Reserve stock for a source object
+// (POST /api/v1/tenants/{tenantId}/inventory/reservations)
+func (_ Unimplemented) CreateInventoryReservation(w http.ResponseWriter, r *http.Request, tenantId TenantId, params CreateInventoryReservationParams) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// ReleaseInventoryReservation Release a stock reservation
+// (POST /api/v1/tenants/{tenantId}/inventory/reservations/{reservationId}/release)
+func (_ Unimplemented) ReleaseInventoryReservation(w http.ResponseWriter, r *http.Request, tenantId TenantId, reservationId InventoryReservationId, params ReleaseInventoryReservationParams) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// ListWarehouses List warehouses
+// (GET /api/v1/tenants/{tenantId}/inventory/warehouses)
+func (_ Unimplemented) ListWarehouses(w http.ResponseWriter, r *http.Request, tenantId TenantId, params ListWarehousesParams) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// CreateWarehouse Create a warehouse
+// (POST /api/v1/tenants/{tenantId}/inventory/warehouses)
+func (_ Unimplemented) CreateWarehouse(w http.ResponseWriter, r *http.Request, tenantId TenantId, params CreateWarehouseParams) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
 // ServerInterfaceWrapper converts contexts to parameters.
 type ServerInterfaceWrapper struct {
 	Handler            ServerInterface
@@ -750,6 +1140,100 @@ type ServerInterfaceWrapper struct {
 }
 
 type MiddlewareFunc func(http.Handler) http.Handler
+
+// ListInventoryBalances operation middleware
+func (siw *ServerInterfaceWrapper) ListInventoryBalances(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+	_ = err
+
+	// ------------- Path parameter "tenantId" -------------
+	var tenantId TenantId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "tenantId", chi.URLParam(r, "tenantId"), &tenantId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "tenantId", Err: err})
+		return
+	}
+
+	// Parameter object where we will unmarshal all parameters from the context
+	var params ListInventoryBalancesParams
+
+	// ------------- Optional query parameter "cursor" -------------
+
+	err = runtime.BindQueryParameterWithOptions("form", true, false, "cursor", r.URL.Query(), &params.Cursor, runtime.BindQueryParameterOptions{Type: "string", Format: ""})
+	if err != nil {
+		var requiredError *runtime.RequiredParameterError
+		if errors.As(err, &requiredError) {
+			siw.ErrorHandlerFunc(w, r, &RequiredParamError{ParamName: "cursor"})
+		} else {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "cursor", Err: err})
+		}
+		return
+	}
+
+	// ------------- Optional query parameter "limit" -------------
+
+	err = runtime.BindQueryParameterWithOptions("form", true, false, "limit", r.URL.Query(), &params.Limit, runtime.BindQueryParameterOptions{Type: "integer", Format: ""})
+	if err != nil {
+		var requiredError *runtime.RequiredParameterError
+		if errors.As(err, &requiredError) {
+			siw.ErrorHandlerFunc(w, r, &RequiredParamError{ParamName: "limit"})
+		} else {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "limit", Err: err})
+		}
+		return
+	}
+
+	// ------------- Optional query parameter "warehouseId" -------------
+
+	err = runtime.BindQueryParameterWithOptions("form", true, false, "warehouseId", r.URL.Query(), &params.WarehouseId, runtime.BindQueryParameterOptions{Type: "string", Format: "uuid"})
+	if err != nil {
+		var requiredError *runtime.RequiredParameterError
+		if errors.As(err, &requiredError) {
+			siw.ErrorHandlerFunc(w, r, &RequiredParamError{ParamName: "warehouseId"})
+		} else {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "warehouseId", Err: err})
+		}
+		return
+	}
+
+	// ------------- Optional query parameter "itemId" -------------
+
+	err = runtime.BindQueryParameterWithOptions("form", true, false, "itemId", r.URL.Query(), &params.ItemId, runtime.BindQueryParameterOptions{Type: "string", Format: "uuid"})
+	if err != nil {
+		var requiredError *runtime.RequiredParameterError
+		if errors.As(err, &requiredError) {
+			siw.ErrorHandlerFunc(w, r, &RequiredParamError{ParamName: "itemId"})
+		} else {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "itemId", Err: err})
+		}
+		return
+	}
+
+	// ------------- Optional query parameter "belowMinimum" -------------
+
+	err = runtime.BindQueryParameterWithOptions("form", true, false, "belowMinimum", r.URL.Query(), &params.BelowMinimum, runtime.BindQueryParameterOptions{Type: "boolean", Format: ""})
+	if err != nil {
+		var requiredError *runtime.RequiredParameterError
+		if errors.As(err, &requiredError) {
+			siw.ErrorHandlerFunc(w, r, &RequiredParamError{ParamName: "belowMinimum"})
+		} else {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "belowMinimum", Err: err})
+		}
+		return
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.ListInventoryBalances(w, r, tenantId, params)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
 
 // ListInventoryItems operation middleware
 func (siw *ServerInterfaceWrapper) ListInventoryItems(w http.ResponseWriter, r *http.Request) {
@@ -889,6 +1373,130 @@ func (siw *ServerInterfaceWrapper) CreateInventoryItem(w http.ResponseWriter, r 
 
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		siw.Handler.CreateInventoryItem(w, r, tenantId, params)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// UpdateInventoryItem operation middleware
+func (siw *ServerInterfaceWrapper) UpdateInventoryItem(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+	_ = err
+
+	// ------------- Path parameter "tenantId" -------------
+	var tenantId TenantId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "tenantId", chi.URLParam(r, "tenantId"), &tenantId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "tenantId", Err: err})
+		return
+	}
+
+	// ------------- Path parameter "itemId" -------------
+	var itemId InventoryItemId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "itemId", chi.URLParam(r, "itemId"), &itemId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "itemId", Err: err})
+		return
+	}
+
+	// Parameter object where we will unmarshal all parameters from the context
+	var params UpdateInventoryItemParams
+
+	headers := r.Header
+
+	// ------------- Required header parameter "Idempotency-Key" -------------
+	if valueList, found := headers[http.CanonicalHeaderKey("Idempotency-Key")]; found {
+		var IdempotencyKey IdempotencyKey
+		n := len(valueList)
+		if n != 1 {
+			siw.ErrorHandlerFunc(w, r, &TooManyValuesForParamError{ParamName: "Idempotency-Key", Count: n})
+			return
+		}
+
+		err = runtime.BindStyledParameterWithOptions("simple", "Idempotency-Key", valueList[0], &IdempotencyKey, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: true, Type: "string", Format: ""})
+		if err != nil {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "Idempotency-Key", Err: err})
+			return
+		}
+
+		params.IdempotencyKey = IdempotencyKey
+
+	} else {
+		err := fmt.Errorf("Header parameter Idempotency-Key is required, but not found")
+		siw.ErrorHandlerFunc(w, r, &RequiredHeaderError{ParamName: "Idempotency-Key", Err: err})
+		return
+	}
+
+	// ------------- Optional header parameter "X-CSRF-Token" -------------
+	if valueList, found := headers[http.CanonicalHeaderKey("X-CSRF-Token")]; found {
+		var XCSRFToken Csrf
+		n := len(valueList)
+		if n != 1 {
+			siw.ErrorHandlerFunc(w, r, &TooManyValuesForParamError{ParamName: "X-CSRF-Token", Count: n})
+			return
+		}
+
+		err = runtime.BindStyledParameterWithOptions("simple", "X-CSRF-Token", valueList[0], &XCSRFToken, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: false, Type: "string", Format: ""})
+		if err != nil {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "X-CSRF-Token", Err: err})
+			return
+		}
+
+		params.XCSRFToken = &XCSRFToken
+
+	}
+
+	// ------------- Optional header parameter "Origin" -------------
+	if valueList, found := headers[http.CanonicalHeaderKey("Origin")]; found {
+		var Origin Origin
+		n := len(valueList)
+		if n != 1 {
+			siw.ErrorHandlerFunc(w, r, &TooManyValuesForParamError{ParamName: "Origin", Count: n})
+			return
+		}
+
+		err = runtime.BindStyledParameterWithOptions("simple", "Origin", valueList[0], &Origin, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: false, Type: "string", Format: "uri"})
+		if err != nil {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "Origin", Err: err})
+			return
+		}
+
+		params.Origin = &Origin
+
+	}
+
+	// ------------- Required header parameter "If-Match" -------------
+	if valueList, found := headers[http.CanonicalHeaderKey("If-Match")]; found {
+		var IfMatch IfMatch
+		n := len(valueList)
+		if n != 1 {
+			siw.ErrorHandlerFunc(w, r, &TooManyValuesForParamError{ParamName: "If-Match", Count: n})
+			return
+		}
+
+		err = runtime.BindStyledParameterWithOptions("simple", "If-Match", valueList[0], &IfMatch, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: true, Type: "string", Format: ""})
+		if err != nil {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "If-Match", Err: err})
+			return
+		}
+
+		params.IfMatch = IfMatch
+
+	} else {
+		err := fmt.Errorf("Header parameter If-Match is required, but not found")
+		siw.ErrorHandlerFunc(w, r, &RequiredHeaderError{ParamName: "If-Match", Err: err})
+		return
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.UpdateInventoryItem(w, r, tenantId, itemId, params)
 	}))
 
 	for _, middleware := range siw.HandlerMiddlewares {
@@ -1045,6 +1653,427 @@ func (siw *ServerInterfaceWrapper) PostInventoryMovement(w http.ResponseWriter, 
 	handler.ServeHTTP(w, r)
 }
 
+// ListInventoryReservations operation middleware
+func (siw *ServerInterfaceWrapper) ListInventoryReservations(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+	_ = err
+
+	// ------------- Path parameter "tenantId" -------------
+	var tenantId TenantId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "tenantId", chi.URLParam(r, "tenantId"), &tenantId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "tenantId", Err: err})
+		return
+	}
+
+	// Parameter object where we will unmarshal all parameters from the context
+	var params ListInventoryReservationsParams
+
+	// ------------- Optional query parameter "cursor" -------------
+
+	err = runtime.BindQueryParameterWithOptions("form", true, false, "cursor", r.URL.Query(), &params.Cursor, runtime.BindQueryParameterOptions{Type: "string", Format: ""})
+	if err != nil {
+		var requiredError *runtime.RequiredParameterError
+		if errors.As(err, &requiredError) {
+			siw.ErrorHandlerFunc(w, r, &RequiredParamError{ParamName: "cursor"})
+		} else {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "cursor", Err: err})
+		}
+		return
+	}
+
+	// ------------- Optional query parameter "limit" -------------
+
+	err = runtime.BindQueryParameterWithOptions("form", true, false, "limit", r.URL.Query(), &params.Limit, runtime.BindQueryParameterOptions{Type: "integer", Format: ""})
+	if err != nil {
+		var requiredError *runtime.RequiredParameterError
+		if errors.As(err, &requiredError) {
+			siw.ErrorHandlerFunc(w, r, &RequiredParamError{ParamName: "limit"})
+		} else {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "limit", Err: err})
+		}
+		return
+	}
+
+	// ------------- Optional query parameter "warehouseId" -------------
+
+	err = runtime.BindQueryParameterWithOptions("form", true, false, "warehouseId", r.URL.Query(), &params.WarehouseId, runtime.BindQueryParameterOptions{Type: "string", Format: "uuid"})
+	if err != nil {
+		var requiredError *runtime.RequiredParameterError
+		if errors.As(err, &requiredError) {
+			siw.ErrorHandlerFunc(w, r, &RequiredParamError{ParamName: "warehouseId"})
+		} else {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "warehouseId", Err: err})
+		}
+		return
+	}
+
+	// ------------- Optional query parameter "status" -------------
+
+	err = runtime.BindQueryParameterWithOptions("form", true, false, "status", r.URL.Query(), &params.Status, runtime.BindQueryParameterOptions{Type: "string", Format: ""})
+	if err != nil {
+		var requiredError *runtime.RequiredParameterError
+		if errors.As(err, &requiredError) {
+			siw.ErrorHandlerFunc(w, r, &RequiredParamError{ParamName: "status"})
+		} else {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "status", Err: err})
+		}
+		return
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.ListInventoryReservations(w, r, tenantId, params)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// CreateInventoryReservation operation middleware
+func (siw *ServerInterfaceWrapper) CreateInventoryReservation(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+	_ = err
+
+	// ------------- Path parameter "tenantId" -------------
+	var tenantId TenantId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "tenantId", chi.URLParam(r, "tenantId"), &tenantId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "tenantId", Err: err})
+		return
+	}
+
+	// Parameter object where we will unmarshal all parameters from the context
+	var params CreateInventoryReservationParams
+
+	headers := r.Header
+
+	// ------------- Required header parameter "Idempotency-Key" -------------
+	if valueList, found := headers[http.CanonicalHeaderKey("Idempotency-Key")]; found {
+		var IdempotencyKey IdempotencyKey
+		n := len(valueList)
+		if n != 1 {
+			siw.ErrorHandlerFunc(w, r, &TooManyValuesForParamError{ParamName: "Idempotency-Key", Count: n})
+			return
+		}
+
+		err = runtime.BindStyledParameterWithOptions("simple", "Idempotency-Key", valueList[0], &IdempotencyKey, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: true, Type: "string", Format: ""})
+		if err != nil {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "Idempotency-Key", Err: err})
+			return
+		}
+
+		params.IdempotencyKey = IdempotencyKey
+
+	} else {
+		err := fmt.Errorf("Header parameter Idempotency-Key is required, but not found")
+		siw.ErrorHandlerFunc(w, r, &RequiredHeaderError{ParamName: "Idempotency-Key", Err: err})
+		return
+	}
+
+	// ------------- Optional header parameter "X-CSRF-Token" -------------
+	if valueList, found := headers[http.CanonicalHeaderKey("X-CSRF-Token")]; found {
+		var XCSRFToken Csrf
+		n := len(valueList)
+		if n != 1 {
+			siw.ErrorHandlerFunc(w, r, &TooManyValuesForParamError{ParamName: "X-CSRF-Token", Count: n})
+			return
+		}
+
+		err = runtime.BindStyledParameterWithOptions("simple", "X-CSRF-Token", valueList[0], &XCSRFToken, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: false, Type: "string", Format: ""})
+		if err != nil {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "X-CSRF-Token", Err: err})
+			return
+		}
+
+		params.XCSRFToken = &XCSRFToken
+
+	}
+
+	// ------------- Optional header parameter "Origin" -------------
+	if valueList, found := headers[http.CanonicalHeaderKey("Origin")]; found {
+		var Origin Origin
+		n := len(valueList)
+		if n != 1 {
+			siw.ErrorHandlerFunc(w, r, &TooManyValuesForParamError{ParamName: "Origin", Count: n})
+			return
+		}
+
+		err = runtime.BindStyledParameterWithOptions("simple", "Origin", valueList[0], &Origin, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: false, Type: "string", Format: "uri"})
+		if err != nil {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "Origin", Err: err})
+			return
+		}
+
+		params.Origin = &Origin
+
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.CreateInventoryReservation(w, r, tenantId, params)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// ReleaseInventoryReservation operation middleware
+func (siw *ServerInterfaceWrapper) ReleaseInventoryReservation(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+	_ = err
+
+	// ------------- Path parameter "tenantId" -------------
+	var tenantId TenantId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "tenantId", chi.URLParam(r, "tenantId"), &tenantId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "tenantId", Err: err})
+		return
+	}
+
+	// ------------- Path parameter "reservationId" -------------
+	var reservationId InventoryReservationId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "reservationId", chi.URLParam(r, "reservationId"), &reservationId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "reservationId", Err: err})
+		return
+	}
+
+	// Parameter object where we will unmarshal all parameters from the context
+	var params ReleaseInventoryReservationParams
+
+	headers := r.Header
+
+	// ------------- Required header parameter "Idempotency-Key" -------------
+	if valueList, found := headers[http.CanonicalHeaderKey("Idempotency-Key")]; found {
+		var IdempotencyKey IdempotencyKey
+		n := len(valueList)
+		if n != 1 {
+			siw.ErrorHandlerFunc(w, r, &TooManyValuesForParamError{ParamName: "Idempotency-Key", Count: n})
+			return
+		}
+
+		err = runtime.BindStyledParameterWithOptions("simple", "Idempotency-Key", valueList[0], &IdempotencyKey, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: true, Type: "string", Format: ""})
+		if err != nil {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "Idempotency-Key", Err: err})
+			return
+		}
+
+		params.IdempotencyKey = IdempotencyKey
+
+	} else {
+		err := fmt.Errorf("Header parameter Idempotency-Key is required, but not found")
+		siw.ErrorHandlerFunc(w, r, &RequiredHeaderError{ParamName: "Idempotency-Key", Err: err})
+		return
+	}
+
+	// ------------- Optional header parameter "X-CSRF-Token" -------------
+	if valueList, found := headers[http.CanonicalHeaderKey("X-CSRF-Token")]; found {
+		var XCSRFToken Csrf
+		n := len(valueList)
+		if n != 1 {
+			siw.ErrorHandlerFunc(w, r, &TooManyValuesForParamError{ParamName: "X-CSRF-Token", Count: n})
+			return
+		}
+
+		err = runtime.BindStyledParameterWithOptions("simple", "X-CSRF-Token", valueList[0], &XCSRFToken, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: false, Type: "string", Format: ""})
+		if err != nil {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "X-CSRF-Token", Err: err})
+			return
+		}
+
+		params.XCSRFToken = &XCSRFToken
+
+	}
+
+	// ------------- Optional header parameter "Origin" -------------
+	if valueList, found := headers[http.CanonicalHeaderKey("Origin")]; found {
+		var Origin Origin
+		n := len(valueList)
+		if n != 1 {
+			siw.ErrorHandlerFunc(w, r, &TooManyValuesForParamError{ParamName: "Origin", Count: n})
+			return
+		}
+
+		err = runtime.BindStyledParameterWithOptions("simple", "Origin", valueList[0], &Origin, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: false, Type: "string", Format: "uri"})
+		if err != nil {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "Origin", Err: err})
+			return
+		}
+
+		params.Origin = &Origin
+
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.ReleaseInventoryReservation(w, r, tenantId, reservationId, params)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// ListWarehouses operation middleware
+func (siw *ServerInterfaceWrapper) ListWarehouses(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+	_ = err
+
+	// ------------- Path parameter "tenantId" -------------
+	var tenantId TenantId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "tenantId", chi.URLParam(r, "tenantId"), &tenantId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "tenantId", Err: err})
+		return
+	}
+
+	// Parameter object where we will unmarshal all parameters from the context
+	var params ListWarehousesParams
+
+	// ------------- Optional query parameter "cursor" -------------
+
+	err = runtime.BindQueryParameterWithOptions("form", true, false, "cursor", r.URL.Query(), &params.Cursor, runtime.BindQueryParameterOptions{Type: "string", Format: ""})
+	if err != nil {
+		var requiredError *runtime.RequiredParameterError
+		if errors.As(err, &requiredError) {
+			siw.ErrorHandlerFunc(w, r, &RequiredParamError{ParamName: "cursor"})
+		} else {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "cursor", Err: err})
+		}
+		return
+	}
+
+	// ------------- Optional query parameter "limit" -------------
+
+	err = runtime.BindQueryParameterWithOptions("form", true, false, "limit", r.URL.Query(), &params.Limit, runtime.BindQueryParameterOptions{Type: "integer", Format: ""})
+	if err != nil {
+		var requiredError *runtime.RequiredParameterError
+		if errors.As(err, &requiredError) {
+			siw.ErrorHandlerFunc(w, r, &RequiredParamError{ParamName: "limit"})
+		} else {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "limit", Err: err})
+		}
+		return
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.ListWarehouses(w, r, tenantId, params)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// CreateWarehouse operation middleware
+func (siw *ServerInterfaceWrapper) CreateWarehouse(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+	_ = err
+
+	// ------------- Path parameter "tenantId" -------------
+	var tenantId TenantId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "tenantId", chi.URLParam(r, "tenantId"), &tenantId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "tenantId", Err: err})
+		return
+	}
+
+	// Parameter object where we will unmarshal all parameters from the context
+	var params CreateWarehouseParams
+
+	headers := r.Header
+
+	// ------------- Required header parameter "Idempotency-Key" -------------
+	if valueList, found := headers[http.CanonicalHeaderKey("Idempotency-Key")]; found {
+		var IdempotencyKey IdempotencyKey
+		n := len(valueList)
+		if n != 1 {
+			siw.ErrorHandlerFunc(w, r, &TooManyValuesForParamError{ParamName: "Idempotency-Key", Count: n})
+			return
+		}
+
+		err = runtime.BindStyledParameterWithOptions("simple", "Idempotency-Key", valueList[0], &IdempotencyKey, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: true, Type: "string", Format: ""})
+		if err != nil {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "Idempotency-Key", Err: err})
+			return
+		}
+
+		params.IdempotencyKey = IdempotencyKey
+
+	} else {
+		err := fmt.Errorf("Header parameter Idempotency-Key is required, but not found")
+		siw.ErrorHandlerFunc(w, r, &RequiredHeaderError{ParamName: "Idempotency-Key", Err: err})
+		return
+	}
+
+	// ------------- Optional header parameter "X-CSRF-Token" -------------
+	if valueList, found := headers[http.CanonicalHeaderKey("X-CSRF-Token")]; found {
+		var XCSRFToken Csrf
+		n := len(valueList)
+		if n != 1 {
+			siw.ErrorHandlerFunc(w, r, &TooManyValuesForParamError{ParamName: "X-CSRF-Token", Count: n})
+			return
+		}
+
+		err = runtime.BindStyledParameterWithOptions("simple", "X-CSRF-Token", valueList[0], &XCSRFToken, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: false, Type: "string", Format: ""})
+		if err != nil {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "X-CSRF-Token", Err: err})
+			return
+		}
+
+		params.XCSRFToken = &XCSRFToken
+
+	}
+
+	// ------------- Optional header parameter "Origin" -------------
+	if valueList, found := headers[http.CanonicalHeaderKey("Origin")]; found {
+		var Origin Origin
+		n := len(valueList)
+		if n != 1 {
+			siw.ErrorHandlerFunc(w, r, &TooManyValuesForParamError{ParamName: "Origin", Count: n})
+			return
+		}
+
+		err = runtime.BindStyledParameterWithOptions("simple", "Origin", valueList[0], &Origin, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: false, Type: "string", Format: "uri"})
+		if err != nil {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "Origin", Err: err})
+			return
+		}
+
+		params.Origin = &Origin
+
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.CreateWarehouse(w, r, tenantId, params)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
 type UnescapedCookieParamError struct {
 	ParamName string
 	Err       error
@@ -1170,6 +2199,27 @@ func HandlerWithOptions(si ServerInterface, options ChiServerOptions) http.Handl
 	r.Group(func(r chi.Router) {
 		r.Post(options.BaseURL+"/api/v1/tenants/{tenantId}/inventory/movements", wrapper.PostInventoryMovement)
 	})
+	r.Group(func(r chi.Router) {
+		r.Get(options.BaseURL+"/api/v1/tenants/{tenantId}/inventory/warehouses", wrapper.ListWarehouses)
+	})
+	r.Group(func(r chi.Router) {
+		r.Post(options.BaseURL+"/api/v1/tenants/{tenantId}/inventory/warehouses", wrapper.CreateWarehouse)
+	})
+	r.Group(func(r chi.Router) {
+		r.Patch(options.BaseURL+"/api/v1/tenants/{tenantId}/inventory/items/{itemId}", wrapper.UpdateInventoryItem)
+	})
+	r.Group(func(r chi.Router) {
+		r.Get(options.BaseURL+"/api/v1/tenants/{tenantId}/inventory/balances", wrapper.ListInventoryBalances)
+	})
+	r.Group(func(r chi.Router) {
+		r.Get(options.BaseURL+"/api/v1/tenants/{tenantId}/inventory/reservations", wrapper.ListInventoryReservations)
+	})
+	r.Group(func(r chi.Router) {
+		r.Post(options.BaseURL+"/api/v1/tenants/{tenantId}/inventory/reservations", wrapper.CreateInventoryReservation)
+	})
+	r.Group(func(r chi.Router) {
+		r.Post(options.BaseURL+"/api/v1/tenants/{tenantId}/inventory/reservations/{reservationId}/release", wrapper.ReleaseInventoryReservation)
+	})
 
 	return r
 }
@@ -1220,6 +2270,15 @@ type PlanRequiredApplicationProblemPlusJSONResponse struct {
 	Headers PlanRequiredResponseHeaders
 }
 
+type PreconditionFailedResponseHeaders struct {
+	XRequestId *string
+}
+type PreconditionFailedApplicationProblemPlusJSONResponse struct {
+	Body Problem
+
+	Headers PreconditionFailedResponseHeaders
+}
+
 type PreconditionRequiredResponseHeaders struct {
 	XRequestId *string
 }
@@ -1255,6 +2314,160 @@ type ValidationApplicationProblemPlusJSONResponse struct {
 	Body Problem
 
 	Headers ValidationResponseHeaders
+}
+
+type ListInventoryBalancesRequestObject struct {
+	TenantId TenantId `json:"tenantId"`
+	Params   ListInventoryBalancesParams
+}
+
+type ListInventoryBalancesResponseObject interface {
+	VisitListInventoryBalancesResponse(w http.ResponseWriter) error
+}
+
+type ListInventoryBalances200ResponseHeaders struct {
+	CacheControl *string
+	XRequestId   *string
+}
+
+type ListInventoryBalances200JSONResponse struct {
+	Body    InventoryBalancePage
+	Headers ListInventoryBalances200ResponseHeaders
+}
+
+func (response ListInventoryBalances200JSONResponse) VisitListInventoryBalancesResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	if response.Headers.CacheControl != nil {
+		w.Header().Set("Cache-Control", fmt.Sprint(*response.Headers.CacheControl))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(200)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type ListInventoryBalances400ApplicationProblemPlusJSONResponse struct {
+	BadRequestApplicationProblemPlusJSONResponse
+}
+
+func (response ListInventoryBalances400ApplicationProblemPlusJSONResponse) VisitListInventoryBalancesResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(400)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type ListInventoryBalances401ApplicationProblemPlusJSONResponse struct {
+	UnauthenticatedApplicationProblemPlusJSONResponse
+}
+
+func (response ListInventoryBalances401ApplicationProblemPlusJSONResponse) VisitListInventoryBalancesResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(401)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type ListInventoryBalances403ApplicationProblemPlusJSONResponse struct {
+	ForbiddenApplicationProblemPlusJSONResponse
+}
+
+func (response ListInventoryBalances403ApplicationProblemPlusJSONResponse) VisitListInventoryBalancesResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(403)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type ListInventoryBalances404ApplicationProblemPlusJSONResponse struct {
+	NotFoundApplicationProblemPlusJSONResponse
+}
+
+func (response ListInventoryBalances404ApplicationProblemPlusJSONResponse) VisitListInventoryBalancesResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(404)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type ListInventoryBalances422ApplicationProblemPlusJSONResponse struct {
+	ValidationApplicationProblemPlusJSONResponse
+}
+
+func (response ListInventoryBalances422ApplicationProblemPlusJSONResponse) VisitListInventoryBalancesResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(422)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type ListInventoryBalances429ApplicationProblemPlusJSONResponse struct {
+	RateLimitedApplicationProblemPlusJSONResponse
+}
+
+func (response ListInventoryBalances429ApplicationProblemPlusJSONResponse) VisitListInventoryBalancesResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.RetryAfter != nil {
+		w.Header().Set("Retry-After", fmt.Sprint(*response.Headers.RetryAfter))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(429)
+	_, err := buf.WriteTo(w)
+	return err
 }
 
 type ListInventoryItemsRequestObject struct {
@@ -1617,6 +2830,249 @@ type CreateInventoryItem429ApplicationProblemPlusJSONResponse struct {
 }
 
 func (response CreateInventoryItem429ApplicationProblemPlusJSONResponse) VisitCreateInventoryItemResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.RetryAfter != nil {
+		w.Header().Set("Retry-After", fmt.Sprint(*response.Headers.RetryAfter))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(429)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type UpdateInventoryItemRequestObject struct {
+	TenantId TenantId        `json:"tenantId"`
+	ItemId   InventoryItemId `json:"itemId"`
+	Params   UpdateInventoryItemParams
+	Body     *UpdateInventoryItemJSONRequestBody
+}
+
+type UpdateInventoryItemResponseObject interface {
+	VisitUpdateInventoryItemResponse(w http.ResponseWriter) error
+}
+
+type UpdateInventoryItem200ResponseHeaders struct {
+	CacheControl        *string
+	ETag                *string
+	IdempotencyReplayed *bool
+	XRequestId          *string
+}
+
+type UpdateInventoryItem200JSONResponse struct {
+	Body    InventoryItem
+	Headers UpdateInventoryItem200ResponseHeaders
+}
+
+func (response UpdateInventoryItem200JSONResponse) VisitUpdateInventoryItemResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	if response.Headers.CacheControl != nil {
+		w.Header().Set("Cache-Control", fmt.Sprint(*response.Headers.CacheControl))
+	}
+	if response.Headers.ETag != nil {
+		w.Header().Set("ETag", fmt.Sprint(*response.Headers.ETag))
+	}
+	if response.Headers.IdempotencyReplayed != nil {
+		w.Header().Set("Idempotency-Replayed", fmt.Sprint(*response.Headers.IdempotencyReplayed))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(200)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type UpdateInventoryItem400ApplicationProblemPlusJSONResponse struct {
+	BadRequestApplicationProblemPlusJSONResponse
+}
+
+func (response UpdateInventoryItem400ApplicationProblemPlusJSONResponse) VisitUpdateInventoryItemResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(400)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type UpdateInventoryItem401ApplicationProblemPlusJSONResponse struct {
+	UnauthenticatedApplicationProblemPlusJSONResponse
+}
+
+func (response UpdateInventoryItem401ApplicationProblemPlusJSONResponse) VisitUpdateInventoryItemResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(401)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type UpdateInventoryItem402ApplicationProblemPlusJSONResponse struct {
+	PlanRequiredApplicationProblemPlusJSONResponse
+}
+
+func (response UpdateInventoryItem402ApplicationProblemPlusJSONResponse) VisitUpdateInventoryItemResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(402)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type UpdateInventoryItem403ApplicationProblemPlusJSONResponse struct {
+	ForbiddenApplicationProblemPlusJSONResponse
+}
+
+func (response UpdateInventoryItem403ApplicationProblemPlusJSONResponse) VisitUpdateInventoryItemResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(403)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type UpdateInventoryItem404ApplicationProblemPlusJSONResponse struct {
+	NotFoundApplicationProblemPlusJSONResponse
+}
+
+func (response UpdateInventoryItem404ApplicationProblemPlusJSONResponse) VisitUpdateInventoryItemResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(404)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type UpdateInventoryItem409ApplicationProblemPlusJSONResponse struct {
+	ConflictApplicationProblemPlusJSONResponse
+}
+
+func (response UpdateInventoryItem409ApplicationProblemPlusJSONResponse) VisitUpdateInventoryItemResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.RetryAfter != nil {
+		w.Header().Set("Retry-After", fmt.Sprint(*response.Headers.RetryAfter))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(409)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type UpdateInventoryItem412ApplicationProblemPlusJSONResponse struct {
+	PreconditionFailedApplicationProblemPlusJSONResponse
+}
+
+func (response UpdateInventoryItem412ApplicationProblemPlusJSONResponse) VisitUpdateInventoryItemResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(412)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type UpdateInventoryItem422ApplicationProblemPlusJSONResponse struct {
+	ValidationApplicationProblemPlusJSONResponse
+}
+
+func (response UpdateInventoryItem422ApplicationProblemPlusJSONResponse) VisitUpdateInventoryItemResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(422)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type UpdateInventoryItem428ApplicationProblemPlusJSONResponse struct {
+	PreconditionRequiredApplicationProblemPlusJSONResponse
+}
+
+func (response UpdateInventoryItem428ApplicationProblemPlusJSONResponse) VisitUpdateInventoryItemResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(428)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type UpdateInventoryItem429ApplicationProblemPlusJSONResponse struct {
+	RateLimitedApplicationProblemPlusJSONResponse
+}
+
+func (response UpdateInventoryItem429ApplicationProblemPlusJSONResponse) VisitUpdateInventoryItemResponse(w http.ResponseWriter) error {
 
 	var buf bytes.Buffer
 	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
@@ -2007,20 +3463,1006 @@ func (response PostInventoryMovement429ApplicationProblemPlusJSONResponse) Visit
 	return err
 }
 
+type ListInventoryReservationsRequestObject struct {
+	TenantId TenantId `json:"tenantId"`
+	Params   ListInventoryReservationsParams
+}
+
+type ListInventoryReservationsResponseObject interface {
+	VisitListInventoryReservationsResponse(w http.ResponseWriter) error
+}
+
+type ListInventoryReservations200ResponseHeaders struct {
+	CacheControl *string
+	XRequestId   *string
+}
+
+type ListInventoryReservations200JSONResponse struct {
+	Body    InventoryReservationPage
+	Headers ListInventoryReservations200ResponseHeaders
+}
+
+func (response ListInventoryReservations200JSONResponse) VisitListInventoryReservationsResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	if response.Headers.CacheControl != nil {
+		w.Header().Set("Cache-Control", fmt.Sprint(*response.Headers.CacheControl))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(200)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type ListInventoryReservations400ApplicationProblemPlusJSONResponse struct {
+	BadRequestApplicationProblemPlusJSONResponse
+}
+
+func (response ListInventoryReservations400ApplicationProblemPlusJSONResponse) VisitListInventoryReservationsResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(400)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type ListInventoryReservations401ApplicationProblemPlusJSONResponse struct {
+	UnauthenticatedApplicationProblemPlusJSONResponse
+}
+
+func (response ListInventoryReservations401ApplicationProblemPlusJSONResponse) VisitListInventoryReservationsResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(401)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type ListInventoryReservations403ApplicationProblemPlusJSONResponse struct {
+	ForbiddenApplicationProblemPlusJSONResponse
+}
+
+func (response ListInventoryReservations403ApplicationProblemPlusJSONResponse) VisitListInventoryReservationsResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(403)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type ListInventoryReservations404ApplicationProblemPlusJSONResponse struct {
+	NotFoundApplicationProblemPlusJSONResponse
+}
+
+func (response ListInventoryReservations404ApplicationProblemPlusJSONResponse) VisitListInventoryReservationsResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(404)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type ListInventoryReservations422ApplicationProblemPlusJSONResponse struct {
+	ValidationApplicationProblemPlusJSONResponse
+}
+
+func (response ListInventoryReservations422ApplicationProblemPlusJSONResponse) VisitListInventoryReservationsResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(422)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type ListInventoryReservations429ApplicationProblemPlusJSONResponse struct {
+	RateLimitedApplicationProblemPlusJSONResponse
+}
+
+func (response ListInventoryReservations429ApplicationProblemPlusJSONResponse) VisitListInventoryReservationsResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.RetryAfter != nil {
+		w.Header().Set("Retry-After", fmt.Sprint(*response.Headers.RetryAfter))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(429)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type CreateInventoryReservationRequestObject struct {
+	TenantId TenantId `json:"tenantId"`
+	Params   CreateInventoryReservationParams
+	Body     *CreateInventoryReservationJSONRequestBody
+}
+
+type CreateInventoryReservationResponseObject interface {
+	VisitCreateInventoryReservationResponse(w http.ResponseWriter) error
+}
+
+type CreateInventoryReservation201ResponseHeaders struct {
+	CacheControl        *string
+	IdempotencyReplayed *bool
+	XRequestId          *string
+}
+
+type CreateInventoryReservation201JSONResponse struct {
+	Body    InventoryReservation
+	Headers CreateInventoryReservation201ResponseHeaders
+}
+
+func (response CreateInventoryReservation201JSONResponse) VisitCreateInventoryReservationResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	if response.Headers.CacheControl != nil {
+		w.Header().Set("Cache-Control", fmt.Sprint(*response.Headers.CacheControl))
+	}
+	if response.Headers.IdempotencyReplayed != nil {
+		w.Header().Set("Idempotency-Replayed", fmt.Sprint(*response.Headers.IdempotencyReplayed))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(201)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type CreateInventoryReservation400ApplicationProblemPlusJSONResponse struct {
+	BadRequestApplicationProblemPlusJSONResponse
+}
+
+func (response CreateInventoryReservation400ApplicationProblemPlusJSONResponse) VisitCreateInventoryReservationResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(400)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type CreateInventoryReservation401ApplicationProblemPlusJSONResponse struct {
+	UnauthenticatedApplicationProblemPlusJSONResponse
+}
+
+func (response CreateInventoryReservation401ApplicationProblemPlusJSONResponse) VisitCreateInventoryReservationResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(401)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type CreateInventoryReservation402ApplicationProblemPlusJSONResponse struct {
+	PlanRequiredApplicationProblemPlusJSONResponse
+}
+
+func (response CreateInventoryReservation402ApplicationProblemPlusJSONResponse) VisitCreateInventoryReservationResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(402)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type CreateInventoryReservation403ApplicationProblemPlusJSONResponse struct {
+	ForbiddenApplicationProblemPlusJSONResponse
+}
+
+func (response CreateInventoryReservation403ApplicationProblemPlusJSONResponse) VisitCreateInventoryReservationResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(403)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type CreateInventoryReservation404ApplicationProblemPlusJSONResponse struct {
+	NotFoundApplicationProblemPlusJSONResponse
+}
+
+func (response CreateInventoryReservation404ApplicationProblemPlusJSONResponse) VisitCreateInventoryReservationResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(404)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type CreateInventoryReservation409ApplicationProblemPlusJSONResponse struct {
+	ConflictApplicationProblemPlusJSONResponse
+}
+
+func (response CreateInventoryReservation409ApplicationProblemPlusJSONResponse) VisitCreateInventoryReservationResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.RetryAfter != nil {
+		w.Header().Set("Retry-After", fmt.Sprint(*response.Headers.RetryAfter))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(409)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type CreateInventoryReservation422ApplicationProblemPlusJSONResponse struct {
+	ValidationApplicationProblemPlusJSONResponse
+}
+
+func (response CreateInventoryReservation422ApplicationProblemPlusJSONResponse) VisitCreateInventoryReservationResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(422)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type CreateInventoryReservation428ApplicationProblemPlusJSONResponse struct {
+	PreconditionRequiredApplicationProblemPlusJSONResponse
+}
+
+func (response CreateInventoryReservation428ApplicationProblemPlusJSONResponse) VisitCreateInventoryReservationResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(428)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type CreateInventoryReservation429ApplicationProblemPlusJSONResponse struct {
+	RateLimitedApplicationProblemPlusJSONResponse
+}
+
+func (response CreateInventoryReservation429ApplicationProblemPlusJSONResponse) VisitCreateInventoryReservationResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.RetryAfter != nil {
+		w.Header().Set("Retry-After", fmt.Sprint(*response.Headers.RetryAfter))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(429)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type ReleaseInventoryReservationRequestObject struct {
+	TenantId      TenantId               `json:"tenantId"`
+	ReservationId InventoryReservationId `json:"reservationId"`
+	Params        ReleaseInventoryReservationParams
+}
+
+type ReleaseInventoryReservationResponseObject interface {
+	VisitReleaseInventoryReservationResponse(w http.ResponseWriter) error
+}
+
+type ReleaseInventoryReservation200ResponseHeaders struct {
+	CacheControl        *string
+	IdempotencyReplayed *bool
+	XRequestId          *string
+}
+
+type ReleaseInventoryReservation200JSONResponse struct {
+	Body    InventoryReservation
+	Headers ReleaseInventoryReservation200ResponseHeaders
+}
+
+func (response ReleaseInventoryReservation200JSONResponse) VisitReleaseInventoryReservationResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	if response.Headers.CacheControl != nil {
+		w.Header().Set("Cache-Control", fmt.Sprint(*response.Headers.CacheControl))
+	}
+	if response.Headers.IdempotencyReplayed != nil {
+		w.Header().Set("Idempotency-Replayed", fmt.Sprint(*response.Headers.IdempotencyReplayed))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(200)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type ReleaseInventoryReservation400ApplicationProblemPlusJSONResponse struct {
+	BadRequestApplicationProblemPlusJSONResponse
+}
+
+func (response ReleaseInventoryReservation400ApplicationProblemPlusJSONResponse) VisitReleaseInventoryReservationResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(400)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type ReleaseInventoryReservation401ApplicationProblemPlusJSONResponse struct {
+	UnauthenticatedApplicationProblemPlusJSONResponse
+}
+
+func (response ReleaseInventoryReservation401ApplicationProblemPlusJSONResponse) VisitReleaseInventoryReservationResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(401)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type ReleaseInventoryReservation402ApplicationProblemPlusJSONResponse struct {
+	PlanRequiredApplicationProblemPlusJSONResponse
+}
+
+func (response ReleaseInventoryReservation402ApplicationProblemPlusJSONResponse) VisitReleaseInventoryReservationResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(402)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type ReleaseInventoryReservation403ApplicationProblemPlusJSONResponse struct {
+	ForbiddenApplicationProblemPlusJSONResponse
+}
+
+func (response ReleaseInventoryReservation403ApplicationProblemPlusJSONResponse) VisitReleaseInventoryReservationResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(403)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type ReleaseInventoryReservation404ApplicationProblemPlusJSONResponse struct {
+	NotFoundApplicationProblemPlusJSONResponse
+}
+
+func (response ReleaseInventoryReservation404ApplicationProblemPlusJSONResponse) VisitReleaseInventoryReservationResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(404)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type ReleaseInventoryReservation409ApplicationProblemPlusJSONResponse struct {
+	ConflictApplicationProblemPlusJSONResponse
+}
+
+func (response ReleaseInventoryReservation409ApplicationProblemPlusJSONResponse) VisitReleaseInventoryReservationResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.RetryAfter != nil {
+		w.Header().Set("Retry-After", fmt.Sprint(*response.Headers.RetryAfter))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(409)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type ReleaseInventoryReservation422ApplicationProblemPlusJSONResponse struct {
+	ValidationApplicationProblemPlusJSONResponse
+}
+
+func (response ReleaseInventoryReservation422ApplicationProblemPlusJSONResponse) VisitReleaseInventoryReservationResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(422)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type ReleaseInventoryReservation428ApplicationProblemPlusJSONResponse struct {
+	PreconditionRequiredApplicationProblemPlusJSONResponse
+}
+
+func (response ReleaseInventoryReservation428ApplicationProblemPlusJSONResponse) VisitReleaseInventoryReservationResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(428)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type ReleaseInventoryReservation429ApplicationProblemPlusJSONResponse struct {
+	RateLimitedApplicationProblemPlusJSONResponse
+}
+
+func (response ReleaseInventoryReservation429ApplicationProblemPlusJSONResponse) VisitReleaseInventoryReservationResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.RetryAfter != nil {
+		w.Header().Set("Retry-After", fmt.Sprint(*response.Headers.RetryAfter))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(429)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type ListWarehousesRequestObject struct {
+	TenantId TenantId `json:"tenantId"`
+	Params   ListWarehousesParams
+}
+
+type ListWarehousesResponseObject interface {
+	VisitListWarehousesResponse(w http.ResponseWriter) error
+}
+
+type ListWarehouses200ResponseHeaders struct {
+	CacheControl *string
+	XRequestId   *string
+}
+
+type ListWarehouses200JSONResponse struct {
+	Body    WarehousePage
+	Headers ListWarehouses200ResponseHeaders
+}
+
+func (response ListWarehouses200JSONResponse) VisitListWarehousesResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	if response.Headers.CacheControl != nil {
+		w.Header().Set("Cache-Control", fmt.Sprint(*response.Headers.CacheControl))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(200)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type ListWarehouses400ApplicationProblemPlusJSONResponse struct {
+	BadRequestApplicationProblemPlusJSONResponse
+}
+
+func (response ListWarehouses400ApplicationProblemPlusJSONResponse) VisitListWarehousesResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(400)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type ListWarehouses401ApplicationProblemPlusJSONResponse struct {
+	UnauthenticatedApplicationProblemPlusJSONResponse
+}
+
+func (response ListWarehouses401ApplicationProblemPlusJSONResponse) VisitListWarehousesResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(401)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type ListWarehouses403ApplicationProblemPlusJSONResponse struct {
+	ForbiddenApplicationProblemPlusJSONResponse
+}
+
+func (response ListWarehouses403ApplicationProblemPlusJSONResponse) VisitListWarehousesResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(403)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type ListWarehouses404ApplicationProblemPlusJSONResponse struct {
+	NotFoundApplicationProblemPlusJSONResponse
+}
+
+func (response ListWarehouses404ApplicationProblemPlusJSONResponse) VisitListWarehousesResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(404)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type ListWarehouses422ApplicationProblemPlusJSONResponse struct {
+	ValidationApplicationProblemPlusJSONResponse
+}
+
+func (response ListWarehouses422ApplicationProblemPlusJSONResponse) VisitListWarehousesResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(422)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type ListWarehouses429ApplicationProblemPlusJSONResponse struct {
+	RateLimitedApplicationProblemPlusJSONResponse
+}
+
+func (response ListWarehouses429ApplicationProblemPlusJSONResponse) VisitListWarehousesResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.RetryAfter != nil {
+		w.Header().Set("Retry-After", fmt.Sprint(*response.Headers.RetryAfter))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(429)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type CreateWarehouseRequestObject struct {
+	TenantId TenantId `json:"tenantId"`
+	Params   CreateWarehouseParams
+	Body     *CreateWarehouseJSONRequestBody
+}
+
+type CreateWarehouseResponseObject interface {
+	VisitCreateWarehouseResponse(w http.ResponseWriter) error
+}
+
+type CreateWarehouse201ResponseHeaders struct {
+	CacheControl        *string
+	IdempotencyReplayed *bool
+	XRequestId          *string
+}
+
+type CreateWarehouse201JSONResponse struct {
+	Body    Warehouse
+	Headers CreateWarehouse201ResponseHeaders
+}
+
+func (response CreateWarehouse201JSONResponse) VisitCreateWarehouseResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	if response.Headers.CacheControl != nil {
+		w.Header().Set("Cache-Control", fmt.Sprint(*response.Headers.CacheControl))
+	}
+	if response.Headers.IdempotencyReplayed != nil {
+		w.Header().Set("Idempotency-Replayed", fmt.Sprint(*response.Headers.IdempotencyReplayed))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(201)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type CreateWarehouse400ApplicationProblemPlusJSONResponse struct {
+	BadRequestApplicationProblemPlusJSONResponse
+}
+
+func (response CreateWarehouse400ApplicationProblemPlusJSONResponse) VisitCreateWarehouseResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(400)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type CreateWarehouse401ApplicationProblemPlusJSONResponse struct {
+	UnauthenticatedApplicationProblemPlusJSONResponse
+}
+
+func (response CreateWarehouse401ApplicationProblemPlusJSONResponse) VisitCreateWarehouseResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(401)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type CreateWarehouse402ApplicationProblemPlusJSONResponse struct {
+	PlanRequiredApplicationProblemPlusJSONResponse
+}
+
+func (response CreateWarehouse402ApplicationProblemPlusJSONResponse) VisitCreateWarehouseResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(402)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type CreateWarehouse403ApplicationProblemPlusJSONResponse struct {
+	ForbiddenApplicationProblemPlusJSONResponse
+}
+
+func (response CreateWarehouse403ApplicationProblemPlusJSONResponse) VisitCreateWarehouseResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(403)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type CreateWarehouse404ApplicationProblemPlusJSONResponse struct {
+	NotFoundApplicationProblemPlusJSONResponse
+}
+
+func (response CreateWarehouse404ApplicationProblemPlusJSONResponse) VisitCreateWarehouseResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(404)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type CreateWarehouse409ApplicationProblemPlusJSONResponse struct {
+	ConflictApplicationProblemPlusJSONResponse
+}
+
+func (response CreateWarehouse409ApplicationProblemPlusJSONResponse) VisitCreateWarehouseResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.RetryAfter != nil {
+		w.Header().Set("Retry-After", fmt.Sprint(*response.Headers.RetryAfter))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(409)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type CreateWarehouse422ApplicationProblemPlusJSONResponse struct {
+	ValidationApplicationProblemPlusJSONResponse
+}
+
+func (response CreateWarehouse422ApplicationProblemPlusJSONResponse) VisitCreateWarehouseResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(422)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type CreateWarehouse428ApplicationProblemPlusJSONResponse struct {
+	PreconditionRequiredApplicationProblemPlusJSONResponse
+}
+
+func (response CreateWarehouse428ApplicationProblemPlusJSONResponse) VisitCreateWarehouseResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(428)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type CreateWarehouse429ApplicationProblemPlusJSONResponse struct {
+	RateLimitedApplicationProblemPlusJSONResponse
+}
+
+func (response CreateWarehouse429ApplicationProblemPlusJSONResponse) VisitCreateWarehouseResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.RetryAfter != nil {
+		w.Header().Set("Retry-After", fmt.Sprint(*response.Headers.RetryAfter))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(429)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
 // StrictServerInterface represents all server handlers.
 type StrictServerInterface interface {
+	// ListInventoryBalances List stock balances by warehouse and lot in FEFO order
+	// (GET /api/v1/tenants/{tenantId}/inventory/balances)
+	ListInventoryBalances(ctx context.Context, request ListInventoryBalancesRequestObject) (ListInventoryBalancesResponseObject, error)
 	// ListInventoryItems List allowed stock item definitions
 	// (GET /api/v1/tenants/{tenantId}/inventory/items)
 	ListInventoryItems(ctx context.Context, request ListInventoryItemsRequestObject) (ListInventoryItemsResponseObject, error)
 	// CreateInventoryItem Create a stock item with exact base unit
 	// (POST /api/v1/tenants/{tenantId}/inventory/items)
 	CreateInventoryItem(ctx context.Context, request CreateInventoryItemRequestObject) (CreateInventoryItemResponseObject, error)
+	// UpdateInventoryItem Edit a stock item: name, minimum level, archive
+	// (PATCH /api/v1/tenants/{tenantId}/inventory/items/{itemId})
+	UpdateInventoryItem(ctx context.Context, request UpdateInventoryItemRequestObject) (UpdateInventoryItemResponseObject, error)
 	// ListInventoryMovements List immutable visible stock movements
 	// (GET /api/v1/tenants/{tenantId}/inventory/movements)
 	ListInventoryMovements(ctx context.Context, request ListInventoryMovementsRequestObject) (ListInventoryMovementsResponseObject, error)
 	// PostInventoryMovement Atomically post receipt, issue, transfer or correction
 	// (POST /api/v1/tenants/{tenantId}/inventory/movements)
 	PostInventoryMovement(ctx context.Context, request PostInventoryMovementRequestObject) (PostInventoryMovementResponseObject, error)
+	// ListInventoryReservations List stock reservations
+	// (GET /api/v1/tenants/{tenantId}/inventory/reservations)
+	ListInventoryReservations(ctx context.Context, request ListInventoryReservationsRequestObject) (ListInventoryReservationsResponseObject, error)
+	// CreateInventoryReservation Reserve stock for a source object
+	// (POST /api/v1/tenants/{tenantId}/inventory/reservations)
+	CreateInventoryReservation(ctx context.Context, request CreateInventoryReservationRequestObject) (CreateInventoryReservationResponseObject, error)
+	// ReleaseInventoryReservation Release a stock reservation
+	// (POST /api/v1/tenants/{tenantId}/inventory/reservations/{reservationId}/release)
+	ReleaseInventoryReservation(ctx context.Context, request ReleaseInventoryReservationRequestObject) (ReleaseInventoryReservationResponseObject, error)
+	// ListWarehouses List warehouses
+	// (GET /api/v1/tenants/{tenantId}/inventory/warehouses)
+	ListWarehouses(ctx context.Context, request ListWarehousesRequestObject) (ListWarehousesResponseObject, error)
+	// CreateWarehouse Create a warehouse
+	// (POST /api/v1/tenants/{tenantId}/inventory/warehouses)
+	CreateWarehouse(ctx context.Context, request CreateWarehouseRequestObject) (CreateWarehouseResponseObject, error)
 }
 
 type StrictHandlerFunc func(ctx context.Context, w http.ResponseWriter, r *http.Request, request any) (any, error)
@@ -2060,6 +4502,33 @@ type strictHandler struct {
 	ssi         StrictServerInterface
 	middlewares []StrictMiddlewareFunc
 	options     StrictHTTPServerOptions
+}
+
+// ListInventoryBalances operation middleware
+func (sh *strictHandler) ListInventoryBalances(w http.ResponseWriter, r *http.Request, tenantId TenantId, params ListInventoryBalancesParams) {
+	var request ListInventoryBalancesRequestObject
+
+	request.TenantId = tenantId
+	request.Params = params
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.ListInventoryBalances(ctx, request.(ListInventoryBalancesRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "ListInventoryBalances")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(ListInventoryBalancesResponseObject); ok {
+		if err := validResponse.VisitListInventoryBalancesResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
 }
 
 // ListInventoryItems operation middleware
@@ -2123,6 +4592,41 @@ func (sh *strictHandler) CreateInventoryItem(w http.ResponseWriter, r *http.Requ
 	}
 }
 
+// UpdateInventoryItem operation middleware
+func (sh *strictHandler) UpdateInventoryItem(w http.ResponseWriter, r *http.Request, tenantId TenantId, itemId InventoryItemId, params UpdateInventoryItemParams) {
+	var request UpdateInventoryItemRequestObject
+
+	request.TenantId = tenantId
+	request.ItemId = itemId
+	request.Params = params
+
+	var body UpdateInventoryItemJSONRequestBody
+	if err := json.NewDecoder(r.Body).Decode(&body); err != nil {
+		sh.options.RequestErrorHandlerFunc(w, r, fmt.Errorf("can't decode JSON body: %w", err))
+		return
+	}
+	request.Body = &body
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.UpdateInventoryItem(ctx, request.(UpdateInventoryItemRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "UpdateInventoryItem")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(UpdateInventoryItemResponseObject); ok {
+		if err := validResponse.VisitUpdateInventoryItemResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
 // ListInventoryMovements operation middleware
 func (sh *strictHandler) ListInventoryMovements(w http.ResponseWriter, r *http.Request, tenantId TenantId, params ListInventoryMovementsParams) {
 	var request ListInventoryMovementsRequestObject
@@ -2177,6 +4681,156 @@ func (sh *strictHandler) PostInventoryMovement(w http.ResponseWriter, r *http.Re
 		sh.options.ResponseErrorHandlerFunc(w, r, err)
 	} else if validResponse, ok := response.(PostInventoryMovementResponseObject); ok {
 		if err := validResponse.VisitPostInventoryMovementResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// ListInventoryReservations operation middleware
+func (sh *strictHandler) ListInventoryReservations(w http.ResponseWriter, r *http.Request, tenantId TenantId, params ListInventoryReservationsParams) {
+	var request ListInventoryReservationsRequestObject
+
+	request.TenantId = tenantId
+	request.Params = params
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.ListInventoryReservations(ctx, request.(ListInventoryReservationsRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "ListInventoryReservations")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(ListInventoryReservationsResponseObject); ok {
+		if err := validResponse.VisitListInventoryReservationsResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// CreateInventoryReservation operation middleware
+func (sh *strictHandler) CreateInventoryReservation(w http.ResponseWriter, r *http.Request, tenantId TenantId, params CreateInventoryReservationParams) {
+	var request CreateInventoryReservationRequestObject
+
+	request.TenantId = tenantId
+	request.Params = params
+
+	var body CreateInventoryReservationJSONRequestBody
+	if err := json.NewDecoder(r.Body).Decode(&body); err != nil {
+		sh.options.RequestErrorHandlerFunc(w, r, fmt.Errorf("can't decode JSON body: %w", err))
+		return
+	}
+	request.Body = &body
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.CreateInventoryReservation(ctx, request.(CreateInventoryReservationRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "CreateInventoryReservation")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(CreateInventoryReservationResponseObject); ok {
+		if err := validResponse.VisitCreateInventoryReservationResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// ReleaseInventoryReservation operation middleware
+func (sh *strictHandler) ReleaseInventoryReservation(w http.ResponseWriter, r *http.Request, tenantId TenantId, reservationId InventoryReservationId, params ReleaseInventoryReservationParams) {
+	var request ReleaseInventoryReservationRequestObject
+
+	request.TenantId = tenantId
+	request.ReservationId = reservationId
+	request.Params = params
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.ReleaseInventoryReservation(ctx, request.(ReleaseInventoryReservationRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "ReleaseInventoryReservation")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(ReleaseInventoryReservationResponseObject); ok {
+		if err := validResponse.VisitReleaseInventoryReservationResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// ListWarehouses operation middleware
+func (sh *strictHandler) ListWarehouses(w http.ResponseWriter, r *http.Request, tenantId TenantId, params ListWarehousesParams) {
+	var request ListWarehousesRequestObject
+
+	request.TenantId = tenantId
+	request.Params = params
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.ListWarehouses(ctx, request.(ListWarehousesRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "ListWarehouses")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(ListWarehousesResponseObject); ok {
+		if err := validResponse.VisitListWarehousesResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// CreateWarehouse operation middleware
+func (sh *strictHandler) CreateWarehouse(w http.ResponseWriter, r *http.Request, tenantId TenantId, params CreateWarehouseParams) {
+	var request CreateWarehouseRequestObject
+
+	request.TenantId = tenantId
+	request.Params = params
+
+	var body CreateWarehouseJSONRequestBody
+	if err := json.NewDecoder(r.Body).Decode(&body); err != nil {
+		sh.options.RequestErrorHandlerFunc(w, r, fmt.Errorf("can't decode JSON body: %w", err))
+		return
+	}
+	request.Body = &body
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.CreateWarehouse(ctx, request.(CreateWarehouseRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "CreateWarehouse")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(CreateWarehouseResponseObject); ok {
+		if err := validResponse.VisitCreateWarehouseResponse(w); err != nil {
 			sh.options.ResponseErrorHandlerFunc(w, r, err)
 		}
 	} else if response != nil {

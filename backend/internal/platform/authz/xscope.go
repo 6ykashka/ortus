@@ -36,6 +36,7 @@ var xScopes = map[string]admission{
 	"tenant-org-unit-resource-pool":            {kinds: []string{KindTenant, KindUnit, KindResource}},
 	"tenant-org-unit-warehouse":                {kinds: []string{KindTenant, KindUnit, KindWarehouse}},
 	"tenant-org-unit-account":                  {kinds: []string{KindTenant, KindUnit, KindAccount}},
+	"tenant-org-unit-account-self":             {kinds: []string{KindTenant, KindUnit, KindAccount, KindSelf}}, // W5.00: подотчёт — «своё»
 	// W4.04: «База знаний» — узел и пространство: роли области (и «своё» — открытые пространства всей организации,
 	// Q-W4.00-knowledge-15), роли пространства и страницы, связь; управление пространством — роли области и
 	// пространства.

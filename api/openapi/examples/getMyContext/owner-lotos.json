@@ -503,6 +503,22 @@
           }
         },
         {
+          "permission": "inventory.warehouses.manage",
+          "scope": {
+            "kind": "tenant",
+            "resourceIds": [],
+            "includeDescendants": true
+          }
+        },
+        {
+          "permission": "inventory.consumption.override",
+          "scope": {
+            "kind": "tenant",
+            "resourceIds": [],
+            "includeDescendants": true
+          }
+        },
+        {
           "permission": "inventory.movements.read",
           "scope": {
             "kind": "tenant",
@@ -583,6 +599,14 @@
           }
         },
         {
+          "permission": "cash.balance.read",
+          "scope": {
+            "kind": "tenant",
+            "resourceIds": [],
+            "includeDescendants": true
+          }
+        },
+        {
           "permission": "cash.post",
           "scope": {
             "kind": "tenant",
@@ -591,7 +615,111 @@
           }
         },
         {
-          "permission": "cash.manage",
+          "permission": "cash.proposals.post",
+          "scope": {
+            "kind": "tenant",
+            "resourceIds": [],
+            "includeDescendants": true
+          }
+        },
+        {
+          "permission": "cash.shift.operate",
+          "scope": {
+            "kind": "tenant",
+            "resourceIds": [],
+            "includeDescendants": true
+          }
+        },
+        {
+          "permission": "cash.refund",
+          "scope": {
+            "kind": "tenant",
+            "resourceIds": [],
+            "includeDescendants": true
+          }
+        },
+        {
+          "permission": "cash.transfer",
+          "scope": {
+            "kind": "tenant",
+            "resourceIds": [],
+            "includeDescendants": true
+          }
+        },
+        {
+          "permission": "cash.advance.issue",
+          "scope": {
+            "kind": "tenant",
+            "resourceIds": [],
+            "includeDescendants": true
+          }
+        },
+        {
+          "permission": "cash.approve",
+          "scope": {
+            "kind": "tenant",
+            "resourceIds": [],
+            "includeDescendants": true
+          }
+        },
+        {
+          "permission": "cash.reconcile",
+          "scope": {
+            "kind": "tenant",
+            "resourceIds": [],
+            "includeDescendants": true
+          }
+        },
+        {
+          "permission": "cash.reverse",
+          "scope": {
+            "kind": "tenant",
+            "resourceIds": [],
+            "includeDescendants": true
+          }
+        },
+        {
+          "permission": "cash.payroll.post",
+          "scope": {
+            "kind": "tenant",
+            "resourceIds": [],
+            "includeDescendants": true
+          }
+        },
+        {
+          "permission": "cash.reports.finance",
+          "scope": {
+            "kind": "tenant",
+            "resourceIds": [],
+            "includeDescendants": true
+          }
+        },
+        {
+          "permission": "cash.accounts.manage",
+          "scope": {
+            "kind": "tenant",
+            "resourceIds": [],
+            "includeDescendants": true
+          }
+        },
+        {
+          "permission": "cash.period.close",
+          "scope": {
+            "kind": "tenant",
+            "resourceIds": [],
+            "includeDescendants": true
+          }
+        },
+        {
+          "permission": "cash.advance.self",
+          "scope": {
+            "kind": "tenant",
+            "resourceIds": [],
+            "includeDescendants": true
+          }
+        },
+        {
+          "permission": "cash.export",
           "scope": {
             "kind": "tenant",
             "resourceIds": [],

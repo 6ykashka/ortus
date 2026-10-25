@@ -202,9 +202,9 @@ func TestTenantUpDownUp(t *testing.T) {
 		// + sched.bookings (W4.06, tenant 0021) и схема data с data.saved_views, data.export_jobs (W4.06, tenant 0022);
 		// 61 и 14 схем — + схема kb «Базы знаний», 13 таблиц (W4.04, tenant 0024); 71 и 15 — + схема tasks с 10
 		// таблицами «Задач и проектов» (W4.03, tenant 0025); 79 и 16 — + схема forms с 8 таблицами «Форм и опросов» (W4.05,
-		// tenant 0026).
-		if schemas != 16 || tables != 79 {
-			t.Errorf("schemas=%d tables=%d; want 16, 79", schemas, tables)
+		// tenant 0026); 105 и 19 — + схемы cash (13 таблиц), inventory (8) и spa (5) этапа 5 (W5.00, tenant 0040–0044).
+		if schemas != 19 || tables != 105 {
+			t.Errorf("schemas=%d tables=%d; want 19, 105", schemas, tables)
 		}
 		s1 := migratetest.Snapshot(t, db)
 
@@ -282,7 +282,14 @@ func TestAppendOnlyForRuntimeRoles(t *testing.T) {
 				{"audit.events", runtime, appendOnly},
 				{"access.role_versions", runtime, appendOnly},
 				{"fleet.checklist_versions", runtime, appendOnly},
-				{"forms.versions", runtime, appendOnly}, // W4.05: опубликованная версия формы неизменяема
+				{"forms.versions", runtime, appendOnly},  // W4.05: опубликованная версия формы неизменяема
+				{"cash.operations", runtime, appendOnly}, // W5.00: журнал кассы неизменяем, исправление — сторно
+				{"cash.operation_links", runtime, appendOnly},
+				{"cash.shift_close_attempts", runtime, appendOnly}, // попытка закрытия не стирается (Q-W4.00-cash-4)
+				{"cash.shift_reviews", runtime, appendOnly},
+				{"inventory.movements", runtime, appendOnly},
+				{"inventory.movement_lines", runtime, appendOnly},
+				{"spa.service_revisions", runtime, appendOnly},
 				{"files.quota_ledger", runtime, appendOnly},
 				{"outbox.events", []string{migrations.RoleAPI}, appendOnly},
 				{"outbox.events", []string{migrations.RoleWorker}, writable},

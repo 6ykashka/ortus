@@ -15,6 +15,7 @@ import { flattenActions, loadCatalog } from './lib/permissions.mjs';
 import { escapeToken, parsePointer } from './lib/refs.mjs';
 import { checkAgainstSource, loadDeltas } from './lib/source-diff.mjs';
 import { readYaml } from './lib/yaml-io.mjs';
+import { W5_CODES } from './lib/stage5.mjs';
 
 const T = '/api/v1/tenants/{tenantId}';
 const F = `${T}/forms/{formId}`;
@@ -270,7 +271,7 @@ describe('контракт 0.11.0-stage4 (W4.05): операции и права
       reg.invalid_transition.reasons.form_rule_disabled.ui,
       'Действие выключено — включите его, чтобы перенести ответы',
     );
-    assert.equal(Object.keys(reg).length, 53);
+    assert.equal(Object.keys(reg).length - W5_CODES.length, 53);
   });
 });
 

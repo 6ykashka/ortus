@@ -1,0 +1,37 @@
+{
+  "items": [
+    {
+      "memberId": "b8df06ec-317e-5f46-b54c-e76603e41b5b",
+      "name": "Дарья Зимина",
+      "via": "owner",
+      "rights": [
+        "cash.read",
+        "cash.balance.read",
+        "cash.post",
+        "cash.proposals.post",
+        "cash.shift.operate",
+        "cash.refund",
+        "cash.transfer",
+        "cash.advance.issue",
+        "cash.approve",
+        "cash.reconcile",
+        "cash.reverse",
+        "cash.payroll.post",
+        "cash.reports.finance",
+        "cash.accounts.manage",
+        "cash.period.close",
+        "cash.advance.self",
+        "cash.export"
+      ],
+      "limits": {
+        "outMinor": null,
+        "refundMinor": null,
+        "advanceMinor": null
+      },
+      "conflicts": [
+        "Вносит и согласует расходы: назначьте разных людей",
+        "Закрывает смену и принимает расхождение: назначьте разных людей"
+      ]
+    }
+  ]
+}

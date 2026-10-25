@@ -1,0 +1,71 @@
+{
+  "proposal": {
+    "key": "visit:pr-1",
+    "kind": "visit",
+    "title": "Наталья С. · Массаж лица",
+    "amount": {
+      "amountMinor": 280000,
+      "currency": "RUB"
+    },
+    "direction": "in",
+    "defaultAccountId": "b7d1bdca-237d-5518-a179-d45b135bb0a6",
+    "categoryId": "revenue-spa",
+    "source": {
+      "key": "visit:pr-1",
+      "kind": "visit",
+      "id": "72f8d6b7-6c32-5e84-bc62-94001dff698c",
+      "label": "Визит 30.09 18:00"
+    },
+    "status": "posted",
+    "parts": [
+      {
+        "label": "Наталья С. · Массаж лица",
+        "amount": {
+          "amountMinor": 280000,
+          "currency": "RUB"
+        }
+      }
+    ],
+    "createdAt": "2026-10-01T05:00:00Z",
+    "operationIds": ["39354720-c647-533e-9435-f1308bd05aef"],
+    "dismissal": null
+  },
+  "operations": [
+    {
+      "id": "39354720-c647-533e-9435-f1308bd05aef",
+      "accountId": "b7d1bdca-237d-5518-a179-d45b135bb0a6",
+      "direction": "in",
+      "amount": {
+        "amountMinor": 280000,
+        "currency": "RUB"
+      },
+      "category": "service_payment",
+      "occurredAt": "2026-10-01T07:30:00Z",
+      "postedAt": "2026-10-01T07:30:00Z",
+      "createdByMemberId": "b8df06ec-317e-5f46-b54c-e76603e41b5b",
+      "type": "in",
+      "method": "cash",
+      "origin": "proposal",
+      "categoryId": "revenue-spa",
+      "basis": "Наталья С. · Массаж лица",
+      "receipt": {
+        "fdNumber": "4521",
+        "kktShift": "118",
+        "receiptAt": "2026-10-01T07:41:00Z"
+      },
+      "source": {
+        "key": "visit:pr-1",
+        "kind": "visit",
+        "id": "72f8d6b7-6c32-5e84-bc62-94001dff698c",
+        "label": "Визит 30.09 18:00"
+      },
+      "shiftId": "790fb875-091f-53a3-ae3b-ae062b4ab9ac",
+      "groupId": "da14d1a0-5094-5b16-a839-7ad4d0860694",
+      "transferId": null,
+      "approvedByMemberId": null,
+      "reconcileStatus": "unmatched",
+      "own": false,
+      "reversedByOperationId": null
+    }
+  ]
+}

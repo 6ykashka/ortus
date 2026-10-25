@@ -1,0 +1,8 @@
+{
+  "type": "https://docs.ortus.example/errors/insufficient_funds",
+  "title": "В кассе недостаточно средств",
+  "status": 409,
+  "code": "insufficient_funds",
+  "detail": "Сумма чека больше остатка подотчёта.",
+  "requestId": "01J9Z4QK8M6T2V5X7Y9A1B3C5D"
+}

@@ -125,6 +125,8 @@ module repairs | Ремонт и стройка | core.files core.tasks
 module inventory | Склад и материалы |
   inventory.items.read | Видеть номенклатуру и остатки | view | tenant unit warehouse | normal
   inventory.items.manage | Вести номенклатуру | settings | tenant unit | normal
+  inventory.warehouses.manage | Вести склады | settings | tenant unit | normal
+  inventory.consumption.override | Менять фактический расход материалов | edit | tenant unit warehouse | sensitive
   inventory.movements.read | Видеть движения | view | tenant unit warehouse | normal
   inventory.movements.post | Проводить движения | create | tenant unit warehouse | normal
   inventory.consume | Списывать материалы по услуге | create | tenant unit warehouse | normal
@@ -136,7 +138,21 @@ module spa | Салон и SPA | core.calendar core.forms inventory cash
   spa.appointments.perform | Отмечать выполнение | edit | tenant unit self | normal
   spa.appointments.complete | Завершать с учётом материалов | review | tenant unit | normal
 module cash | Касса |
-  cash.read | Видеть кассу | view | tenant unit | sensitive
-  cash.post | Проводить операции | create | tenant unit | sensitive
-  cash.manage | Вести кассы | settings | tenant unit | sensitive
+  cash.read | Видеть кассы и операции | view | tenant unit account | normal
+  cash.balance.read | Видеть остаток и ожидаемую сумму | view | tenant unit account | sensitive
+  cash.post | Вносить приход и расход | create | tenant unit account | normal
+  cash.proposals.post | Проводить предложения модулей | create | tenant unit account | normal
+  cash.shift.operate | Открывать и закрывать смену | create | unit account | normal
+  cash.refund | Возвраты клиентам | edit | tenant unit account | sensitive
+  cash.transfer | Перемещать и сдавать выручку | edit | tenant unit account | sensitive
+  cash.advance.issue | Выдавать под отчёт | edit | tenant unit | sensitive
+  cash.approve | Согласовывать расходы | review | tenant unit | normal
+  cash.reconcile | Сверять и принимать расхождения | review | tenant unit account | normal
+  cash.reverse | Сторнировать | review | tenant unit account | sensitive
+  cash.payroll.post | Выплаты зарплаты и начислений | edit | tenant unit | restricted
+  cash.reports.finance | ДДС и прибыль по направлениям | view | tenant unit | restricted
+  cash.accounts.manage | Кассы, статьи и лимиты | settings | tenant unit | sensitive
+  cash.period.close | Закрывать период | settings | tenant | sensitive
+  cash.advance.self | Свой подотчёт — остаток и отчёт чеками | create | self | normal
+  cash.export | Выгружать операции кассы | export | tenant unit account | sensitive
 `

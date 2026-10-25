@@ -38,6 +38,13 @@ export const STAGE4_TAGS = ['Calendar', 'Branding', 'Knowledge', 'Tasks', 'Forms
  */
 export const STAGE4_OFFSCREEN = ['updateKnowledgeSpace', 'createKnowledgeTable'];
 
+/**
+ * Теги экранов этапа 5: у операций этих тегов, которые вызывают экраны этапа 5 (screens.yaml, stage: 5), есть хендлер
+ * src/msw/<модуль>/, примеры и кейсы conformance — «Касса» (W5.00, cash/). Склад и SPA (no-reference, B-6) — хендлеры
+ * появятся с W5.10 и W5.20.
+ */
+export const STAGE5_TAGS = ['Cash'];
+
 const METHODS = ['get', 'put', 'post', 'delete', 'patch'];
 const SAFE = new Set(['GET', 'HEAD', 'OPTIONS', 'TRACE']);
 
@@ -104,7 +111,7 @@ function stageScreens(screens, stage = 2) {
   );
 }
 
-function operations(doc, onScreens = new Set(), onStage4 = new Set()) {
+function operations(doc, onScreens = new Set(), onStage4 = new Set(), onStage5 = new Set()) {
   const out = [];
   for (const [path, item] of Object.entries(doc.paths)) {
     for (const m of METHODS) {
@@ -129,6 +136,7 @@ function operations(doc, onScreens = new Set(), onStage4 = new Set()) {
         stage4:
           STAGE4_TAGS.includes(op.tags?.[0]) &&
           (onStage4.has(op.operationId) || STAGE4_OFFSCREEN.includes(op.operationId)),
+        stage5: STAGE5_TAGS.includes(op.tags?.[0]) && onStage5.has(op.operationId),
         permissions: op['x-permissions'] ?? [],
         mode: op['x-permissions-mode'] ?? 'all',
         scope: op['x-scope'] ?? '',
@@ -207,7 +215,7 @@ function permissions(catalog) {
 
 function examples(dir, ops) {
   const out = {};
-  for (const o of ops.filter((x) => x.stage1 || x.stage2 || x.stage4)) {
+  for (const o of ops.filter((x) => x.stage1 || x.stage2 || x.stage4 || x.stage5)) {
     const d = join(dir, o.id);
     if (!existsSync(d)) continue;
     out[o.id] = Object.fromEntries(
@@ -225,7 +233,12 @@ export function buildContract(root = ROOT) {
   const doc = readYaml(join(root, 'api', 'dist', 'ortus.bundle.yaml'));
   const exDir = join(root, 'api', 'openapi', 'examples');
   const screens = readYaml(join(root, 'api', 'openapi', 'screens.yaml'));
-  const ops = operations(doc, stageScreens(screens, 2), stageScreens(screens, 4));
+  const ops = operations(
+    doc,
+    stageScreens(screens, 2),
+    stageScreens(screens, 4),
+    stageScreens(screens, 5),
+  );
   return {
     version: doc.info.version,
     operations: ops,

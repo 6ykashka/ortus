@@ -111,7 +111,7 @@
     x-permissions:
       - spa.appointments.read
     x-scope: tenant-org-unit-self
-    description: List allowed appointments or own practitioner schedule
+    description: "List allowed appointments or own practitioner schedule W5.00 (0.12.0-stage5): filters by status (performed_pending_posting — the unfinished accounting), period and practitioner."
     responses:
       "200":
         description: Successful result.
@@ -142,6 +142,32 @@
     parameters:
       - $ref: ../components/common/parameters.yaml#/Cursor
       - $ref: ../components/common/parameters.yaml#/Limit
+      - name: status
+        in: query
+        required: false
+        schema:
+          type: string
+          enum:
+            - confirmed
+            - performed_pending_posting
+            - completed
+            - cancelled
+            - no_show
+      - name: from
+        in: query
+        required: false
+        schema:
+          $ref: ../components/common/schemas.yaml#/Instant
+      - name: to
+        in: query
+        required: false
+        schema:
+          $ref: ../components/common/schemas.yaml#/Instant
+      - name: practitionerMemberId
+        in: query
+        required: false
+        schema:
+          $ref: ../components/common/schemas.yaml#/Id
     x-permissions-mode: all
   post:
     operationId: createAppointment
@@ -207,7 +233,7 @@
             practitionerMemberId: 30000000-0000-4000-8000-000000000003
             roomId: 50000000-0000-4000-8000-000000000005
             equipmentIds: []
-            startsAt: 2026-10-05T08:00:00Z
+            startsAt: "2026-10-05T08:00:00Z"
             timeZone: Europe/Moscow
     x-permissions-mode: all
 /api/v1/tenants/{tenantId}/spa/appointments/{appointmentId}/completion:
@@ -387,5 +413,239 @@
           schema:
             $ref: ../components/spa/schemas.yaml#/AppointmentPerformance
           example:
-            performedAt: 2026-10-05T09:00:00Z
+            performedAt: "2026-10-05T09:00:00Z"
+    x-permissions-mode: all
+/api/v1/tenants/{tenantId}/spa/services/{serviceId}:
+  parameters:
+    - $ref: ../components/common/parameters.yaml#/tenantId
+    - $ref: ../components/common/parameters.yaml#/spaServiceId
+  get:
+    operationId: getSpaService
+    tags:
+      - Spa
+    summary: Read a service with its recipe
+    x-permissions:
+      - spa.services.read
+    x-scope: tenant-org-unit
+    description: "W5.00 (0.12.0-stage5) (B-6: no screen in the prototype): duration, buffers, equipment, price and the recipe («техкарта») of a service."
+    responses:
+      "200":
+        description: Successful result.
+        headers:
+          X-Request-Id:
+            $ref: ../components/common/headers.yaml#/RequestId
+          ETag:
+            $ref: ../components/common/headers.yaml#/ETag
+          Cache-Control:
+            description: Never cache authenticated, confidential or capability-bearing API responses in shared caches.
+            schema:
+              type: string
+              const: private, no-store
+        content:
+          application/json:
+            schema:
+              $ref: ../components/spa/schemas.yaml#/SpaService
+      "400":
+        $ref: ../components/common/responses.yaml#/BadRequest
+      "401":
+        $ref: ../components/common/responses.yaml#/Unauthenticated
+      "403":
+        $ref: ../components/common/responses.yaml#/Forbidden
+      "404":
+        $ref: ../components/common/responses.yaml#/NotFound
+      "422":
+        $ref: ../components/common/responses.yaml#/Validation
+      "429":
+        $ref: ../components/common/responses.yaml#/RateLimited
+    x-permissions-mode: all
+  patch:
+    operationId: updateSpaService
+    tags:
+      - Spa
+    summary: "Edit a service: duration, buffers, price, equipment, recipe"
+    x-permissions:
+      - spa.services.manage
+    x-scope: tenant-org-unit
+    description: "W5.00 (0.12.0-stage5): existing appointments keep the snapshot of the service revision they were booked with."
+    responses:
+      "200":
+        description: Successful result.
+        headers:
+          X-Request-Id:
+            $ref: ../components/common/headers.yaml#/RequestId
+          ETag:
+            $ref: ../components/common/headers.yaml#/ETag
+          Idempotency-Replayed:
+            $ref: ../components/common/headers.yaml#/IdempotencyReplayed
+          Cache-Control:
+            description: Never cache authenticated, confidential or capability-bearing API responses in shared caches.
+            schema:
+              type: string
+              const: private, no-store
+        content:
+          application/json:
+            schema:
+              $ref: ../components/spa/schemas.yaml#/SpaService
+      "400":
+        $ref: ../components/common/responses.yaml#/BadRequest
+      "401":
+        $ref: ../components/common/responses.yaml#/Unauthenticated
+      "402":
+        $ref: ../components/common/responses.yaml#/PlanRequired
+      "403":
+        $ref: ../components/common/responses.yaml#/Forbidden
+      "404":
+        $ref: ../components/common/responses.yaml#/NotFound
+      "409":
+        $ref: ../components/common/responses.yaml#/Conflict
+      "412":
+        $ref: ../components/common/responses.yaml#/PreconditionFailed
+      "422":
+        $ref: ../components/common/responses.yaml#/Validation
+      "428":
+        $ref: ../components/common/responses.yaml#/PreconditionRequired
+      "429":
+        $ref: ../components/common/responses.yaml#/RateLimited
+    x-csrf-required-for-cookie: true
+    parameters:
+      - $ref: ../components/common/parameters.yaml#/IdempotencyKey
+      - $ref: ../components/common/parameters.yaml#/Csrf
+      - $ref: ../components/common/parameters.yaml#/Origin
+      - $ref: ../components/common/parameters.yaml#/IfMatch
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: ../components/spa/schemas.yaml#/SpaServicePatch
+    x-permissions-mode: all
+/api/v1/tenants/{tenantId}/spa/appointments/{appointmentId}/cancel:
+  parameters:
+    - $ref: ../components/common/parameters.yaml#/tenantId
+    - $ref: ../components/common/parameters.yaml#/appointmentId
+  post:
+    operationId: cancelAppointment
+    tags:
+      - Spa
+    summary: Cancel a confirmed appointment and release its resources
+    x-permissions:
+      - spa.appointments.create
+    x-scope: tenant-org-unit-self
+    description: "W5.00 (0.12.0-stage5): only a confirmed appointment (409 invalid_transition otherwise); the booking of practitioner, room and equipment is released."
+    responses:
+      "200":
+        description: Successful result.
+        headers:
+          X-Request-Id:
+            $ref: ../components/common/headers.yaml#/RequestId
+          ETag:
+            $ref: ../components/common/headers.yaml#/ETag
+          Idempotency-Replayed:
+            $ref: ../components/common/headers.yaml#/IdempotencyReplayed
+          Cache-Control:
+            description: Never cache authenticated, confidential or capability-bearing API responses in shared caches.
+            schema:
+              type: string
+              const: private, no-store
+        content:
+          application/json:
+            schema:
+              $ref: ../components/spa/schemas.yaml#/Appointment
+      "400":
+        $ref: ../components/common/responses.yaml#/BadRequest
+      "401":
+        $ref: ../components/common/responses.yaml#/Unauthenticated
+      "402":
+        $ref: ../components/common/responses.yaml#/PlanRequired
+      "403":
+        $ref: ../components/common/responses.yaml#/Forbidden
+      "404":
+        $ref: ../components/common/responses.yaml#/NotFound
+      "409":
+        $ref: ../components/common/responses.yaml#/Conflict
+      "412":
+        $ref: ../components/common/responses.yaml#/PreconditionFailed
+      "422":
+        $ref: ../components/common/responses.yaml#/Validation
+      "428":
+        $ref: ../components/common/responses.yaml#/PreconditionRequired
+      "429":
+        $ref: ../components/common/responses.yaml#/RateLimited
+    x-csrf-required-for-cookie: true
+    parameters:
+      - $ref: ../components/common/parameters.yaml#/IdempotencyKey
+      - $ref: ../components/common/parameters.yaml#/Csrf
+      - $ref: ../components/common/parameters.yaml#/Origin
+      - $ref: ../components/common/parameters.yaml#/IfMatch
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: ../components/spa/schemas.yaml#/AppointmentCancel
+    x-permissions-mode: all
+/api/v1/tenants/{tenantId}/spa/appointments/{appointmentId}/reschedule:
+  parameters:
+    - $ref: ../components/common/parameters.yaml#/tenantId
+    - $ref: ../components/common/parameters.yaml#/appointmentId
+  post:
+    operationId: rescheduleAppointment
+    tags:
+      - Spa
+    summary: Move a confirmed appointment to another time or resources
+    x-permissions:
+      - spa.appointments.create
+    x-scope: tenant-org-unit-self
+    description: "W5.00 (0.12.0-stage5): re-reserves practitioner, room and equipment with the service buffers atomically; a conflict — 409 (booking overlap)."
+    responses:
+      "200":
+        description: Successful result.
+        headers:
+          X-Request-Id:
+            $ref: ../components/common/headers.yaml#/RequestId
+          ETag:
+            $ref: ../components/common/headers.yaml#/ETag
+          Idempotency-Replayed:
+            $ref: ../components/common/headers.yaml#/IdempotencyReplayed
+          Cache-Control:
+            description: Never cache authenticated, confidential or capability-bearing API responses in shared caches.
+            schema:
+              type: string
+              const: private, no-store
+        content:
+          application/json:
+            schema:
+              $ref: ../components/spa/schemas.yaml#/Appointment
+      "400":
+        $ref: ../components/common/responses.yaml#/BadRequest
+      "401":
+        $ref: ../components/common/responses.yaml#/Unauthenticated
+      "402":
+        $ref: ../components/common/responses.yaml#/PlanRequired
+      "403":
+        $ref: ../components/common/responses.yaml#/Forbidden
+      "404":
+        $ref: ../components/common/responses.yaml#/NotFound
+      "409":
+        $ref: ../components/common/responses.yaml#/Conflict
+      "412":
+        $ref: ../components/common/responses.yaml#/PreconditionFailed
+      "422":
+        $ref: ../components/common/responses.yaml#/Validation
+      "428":
+        $ref: ../components/common/responses.yaml#/PreconditionRequired
+      "429":
+        $ref: ../components/common/responses.yaml#/RateLimited
+    x-csrf-required-for-cookie: true
+    parameters:
+      - $ref: ../components/common/parameters.yaml#/IdempotencyKey
+      - $ref: ../components/common/parameters.yaml#/Csrf
+      - $ref: ../components/common/parameters.yaml#/Origin
+      - $ref: ../components/common/parameters.yaml#/IfMatch
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: ../components/spa/schemas.yaml#/AppointmentReschedule
     x-permissions-mode: all

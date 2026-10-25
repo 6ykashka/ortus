@@ -1,0 +1,450 @@
+{
+  "items": [
+    {
+      "id": "b7d1bdca-237d-5518-a179-d45b135bb0a6",
+      "orgUnitId": "6de355d2-b019-5bb6-b66a-ddae6a13fb65",
+      "name": "Касса салона · ресепшен",
+      "currency": "RUB",
+      "kind": "cash_drawer",
+      "balance": {
+        "amountMinor": 735000,
+        "currency": "RUB"
+      },
+      "revision": 4,
+      "shiftMode": "blind",
+      "kktMode": "manual",
+      "balanceLimit": {
+        "amountMinor": 3000000,
+        "currency": "RUB"
+      },
+      "floatAmount": {
+        "amountMinor": 500000,
+        "currency": "RUB"
+      },
+      "tolerance": {
+        "amountMinor": 10000,
+        "currency": "RUB"
+      },
+      "responsibleMemberId": "25097109-efb6-5471-880f-7a01ee6615a0",
+      "holderMemberId": null,
+      "advanceLimit": null,
+      "drawerAccountId": null,
+      "settleDays": null,
+      "feeBasisPoints": null,
+      "categoryIds": [],
+      "openShiftId": "790fb875-091f-53a3-ae3b-ae062b4ab9ac",
+      "my": {
+        "via": "owner",
+        "rights": [
+          "cash.read",
+          "cash.balance.read",
+          "cash.post",
+          "cash.proposals.post",
+          "cash.shift.operate",
+          "cash.refund",
+          "cash.transfer",
+          "cash.advance.issue",
+          "cash.approve",
+          "cash.reconcile",
+          "cash.reverse",
+          "cash.payroll.post",
+          "cash.reports.finance",
+          "cash.accounts.manage",
+          "cash.period.close",
+          "cash.advance.self",
+          "cash.export"
+        ],
+        "limits": {
+          "outMinor": null,
+          "refundMinor": null,
+          "advanceMinor": null
+        },
+        "isHolder": false
+      }
+    },
+    {
+      "id": "2f1fd42c-4bb1-59c3-8117-8209b268c869",
+      "orgUnitId": "6de355d2-b019-5bb6-b66a-ddae6a13fb65",
+      "name": "Терминал и СБП · салон",
+      "currency": "RUB",
+      "kind": "acquiring",
+      "balance": {
+        "amountMinor": 2160000,
+        "currency": "RUB"
+      },
+      "revision": 2,
+      "shiftMode": "none",
+      "kktMode": "none",
+      "balanceLimit": null,
+      "floatAmount": null,
+      "tolerance": null,
+      "responsibleMemberId": null,
+      "holderMemberId": null,
+      "advanceLimit": null,
+      "drawerAccountId": "b7d1bdca-237d-5518-a179-d45b135bb0a6",
+      "settleDays": 1,
+      "feeBasisPoints": 180,
+      "categoryIds": [],
+      "openShiftId": null,
+      "my": {
+        "via": "owner",
+        "rights": [
+          "cash.read",
+          "cash.balance.read",
+          "cash.post",
+          "cash.proposals.post",
+          "cash.shift.operate",
+          "cash.refund",
+          "cash.transfer",
+          "cash.advance.issue",
+          "cash.approve",
+          "cash.reconcile",
+          "cash.reverse",
+          "cash.payroll.post",
+          "cash.reports.finance",
+          "cash.accounts.manage",
+          "cash.period.close",
+          "cash.advance.self",
+          "cash.export"
+        ],
+        "limits": {
+          "outMinor": null,
+          "refundMinor": null,
+          "advanceMinor": null
+        },
+        "isHolder": false
+      }
+    },
+    {
+      "id": "27e3a4c8-20ac-5663-9eb3-6ea3c9f708b9",
+      "orgUnitId": "6de355d2-b019-5bb6-b66a-ddae6a13fb65",
+      "name": "Касса офиса",
+      "currency": "RUB",
+      "kind": "cash_drawer",
+      "balance": {
+        "amountMinor": 3076000,
+        "currency": "RUB"
+      },
+      "revision": 9,
+      "shiftMode": "none",
+      "kktMode": "none",
+      "balanceLimit": {
+        "amountMinor": 6000000,
+        "currency": "RUB"
+      },
+      "floatAmount": null,
+      "tolerance": null,
+      "responsibleMemberId": "ac41932c-dbd9-53b1-a84b-42cbc1d6629a",
+      "holderMemberId": null,
+      "advanceLimit": null,
+      "drawerAccountId": null,
+      "settleDays": null,
+      "feeBasisPoints": null,
+      "categoryIds": [],
+      "openShiftId": null,
+      "my": {
+        "via": "owner",
+        "rights": [
+          "cash.read",
+          "cash.balance.read",
+          "cash.post",
+          "cash.proposals.post",
+          "cash.shift.operate",
+          "cash.refund",
+          "cash.transfer",
+          "cash.advance.issue",
+          "cash.approve",
+          "cash.reconcile",
+          "cash.reverse",
+          "cash.payroll.post",
+          "cash.reports.finance",
+          "cash.accounts.manage",
+          "cash.period.close",
+          "cash.advance.self",
+          "cash.export"
+        ],
+        "limits": {
+          "outMinor": null,
+          "refundMinor": null,
+          "advanceMinor": null
+        },
+        "isHolder": false
+      }
+    },
+    {
+      "id": "0eab4a4f-fb0c-53f2-b423-4c82fe4f760e",
+      "orgUnitId": "6de355d2-b019-5bb6-b66a-ddae6a13fb65",
+      "name": "Подотчёт · Илья Васильев",
+      "currency": "RUB",
+      "kind": "advance",
+      "balance": {
+        "amountMinor": 445000,
+        "currency": "RUB"
+      },
+      "revision": 6,
+      "shiftMode": "none",
+      "kktMode": "none",
+      "balanceLimit": null,
+      "floatAmount": null,
+      "tolerance": null,
+      "responsibleMemberId": null,
+      "holderMemberId": "a560b4fe-78b7-585e-b960-f0ab3622570c",
+      "advanceLimit": {
+        "amountMinor": 1500000,
+        "currency": "RUB"
+      },
+      "drawerAccountId": null,
+      "settleDays": null,
+      "feeBasisPoints": null,
+      "categoryIds": ["fuel", "wash", "parking", "repair-small"],
+      "openShiftId": null,
+      "my": {
+        "via": "owner",
+        "rights": [
+          "cash.read",
+          "cash.balance.read",
+          "cash.post",
+          "cash.proposals.post",
+          "cash.shift.operate",
+          "cash.refund",
+          "cash.transfer",
+          "cash.advance.issue",
+          "cash.approve",
+          "cash.reconcile",
+          "cash.reverse",
+          "cash.payroll.post",
+          "cash.reports.finance",
+          "cash.accounts.manage",
+          "cash.period.close",
+          "cash.advance.self",
+          "cash.export"
+        ],
+        "limits": {
+          "outMinor": null,
+          "refundMinor": null,
+          "advanceMinor": null
+        },
+        "isHolder": false
+      }
+    },
+    {
+      "id": "457bc389-8a47-525d-a700-dff0adab92b2",
+      "orgUnitId": "6de355d2-b019-5bb6-b66a-ddae6a13fb65",
+      "name": "Подотчёт · Тимур Ахмедов",
+      "currency": "RUB",
+      "kind": "advance",
+      "balance": {
+        "amountMinor": 500000,
+        "currency": "RUB"
+      },
+      "revision": 3,
+      "shiftMode": "none",
+      "kktMode": "none",
+      "balanceLimit": null,
+      "floatAmount": null,
+      "tolerance": null,
+      "responsibleMemberId": null,
+      "holderMemberId": "1a544c8a-52b8-557b-9720-10b9d94fdd10",
+      "advanceLimit": {
+        "amountMinor": 1500000,
+        "currency": "RUB"
+      },
+      "drawerAccountId": null,
+      "settleDays": null,
+      "feeBasisPoints": null,
+      "categoryIds": ["fuel", "wash", "parking", "repair-small"],
+      "openShiftId": null,
+      "my": {
+        "via": "owner",
+        "rights": [
+          "cash.read",
+          "cash.balance.read",
+          "cash.post",
+          "cash.proposals.post",
+          "cash.shift.operate",
+          "cash.refund",
+          "cash.transfer",
+          "cash.advance.issue",
+          "cash.approve",
+          "cash.reconcile",
+          "cash.reverse",
+          "cash.payroll.post",
+          "cash.reports.finance",
+          "cash.accounts.manage",
+          "cash.period.close",
+          "cash.advance.self",
+          "cash.export"
+        ],
+        "limits": {
+          "outMinor": null,
+          "refundMinor": null,
+          "advanceMinor": null
+        },
+        "isHolder": false
+      }
+    },
+    {
+      "id": "a1ea005d-20fd-5381-b6f2-db2a9b8bea71",
+      "orgUnitId": null,
+      "name": "Подотчёт · Алексей Соколов",
+      "currency": "RUB",
+      "kind": "advance",
+      "balance": {
+        "amountMinor": 1127000,
+        "currency": "RUB"
+      },
+      "revision": 3,
+      "shiftMode": "none",
+      "kktMode": "none",
+      "balanceLimit": null,
+      "floatAmount": null,
+      "tolerance": null,
+      "responsibleMemberId": null,
+      "holderMemberId": "ebdf9767-327e-55cc-8c65-cb5fd313bdf4",
+      "advanceLimit": {
+        "amountMinor": 3000000,
+        "currency": "RUB"
+      },
+      "drawerAccountId": null,
+      "settleDays": null,
+      "feeBasisPoints": null,
+      "categoryIds": ["materials", "household"],
+      "openShiftId": null,
+      "my": {
+        "via": "owner",
+        "rights": [
+          "cash.read",
+          "cash.balance.read",
+          "cash.post",
+          "cash.proposals.post",
+          "cash.shift.operate",
+          "cash.refund",
+          "cash.transfer",
+          "cash.advance.issue",
+          "cash.approve",
+          "cash.reconcile",
+          "cash.reverse",
+          "cash.payroll.post",
+          "cash.reports.finance",
+          "cash.accounts.manage",
+          "cash.period.close",
+          "cash.advance.self",
+          "cash.export"
+        ],
+        "limits": {
+          "outMinor": null,
+          "refundMinor": null,
+          "advanceMinor": null
+        },
+        "isHolder": false
+      }
+    },
+    {
+      "id": "7dfc0a25-f62d-5637-892b-e28d94e99832",
+      "orgUnitId": null,
+      "name": "Сейф офиса",
+      "currency": "RUB",
+      "kind": "safe",
+      "balance": {
+        "amountMinor": 11684000,
+        "currency": "RUB"
+      },
+      "revision": 5,
+      "shiftMode": "none",
+      "kktMode": "none",
+      "balanceLimit": null,
+      "floatAmount": null,
+      "tolerance": null,
+      "responsibleMemberId": "b8df06ec-317e-5f46-b54c-e76603e41b5b",
+      "holderMemberId": null,
+      "advanceLimit": null,
+      "drawerAccountId": null,
+      "settleDays": null,
+      "feeBasisPoints": null,
+      "categoryIds": [],
+      "openShiftId": null,
+      "my": {
+        "via": "owner",
+        "rights": [
+          "cash.read",
+          "cash.balance.read",
+          "cash.post",
+          "cash.proposals.post",
+          "cash.shift.operate",
+          "cash.refund",
+          "cash.transfer",
+          "cash.advance.issue",
+          "cash.approve",
+          "cash.reconcile",
+          "cash.reverse",
+          "cash.payroll.post",
+          "cash.reports.finance",
+          "cash.accounts.manage",
+          "cash.period.close",
+          "cash.advance.self",
+          "cash.export"
+        ],
+        "limits": {
+          "outMinor": null,
+          "refundMinor": null,
+          "advanceMinor": null
+        },
+        "isHolder": false
+      }
+    },
+    {
+      "id": "c301c001-cfa2-5265-b78b-e5c6b899ab13",
+      "orgUnitId": null,
+      "name": "Расчётный счёт ··4417",
+      "currency": "RUB",
+      "kind": "bank",
+      "balance": {
+        "amountMinor": 128400000,
+        "currency": "RUB"
+      },
+      "revision": 2,
+      "shiftMode": "none",
+      "kktMode": "none",
+      "balanceLimit": null,
+      "floatAmount": null,
+      "tolerance": null,
+      "responsibleMemberId": "b8df06ec-317e-5f46-b54c-e76603e41b5b",
+      "holderMemberId": null,
+      "advanceLimit": null,
+      "drawerAccountId": null,
+      "settleDays": null,
+      "feeBasisPoints": null,
+      "categoryIds": [],
+      "openShiftId": null,
+      "my": {
+        "via": "owner",
+        "rights": [
+          "cash.read",
+          "cash.balance.read",
+          "cash.post",
+          "cash.proposals.post",
+          "cash.shift.operate",
+          "cash.refund",
+          "cash.transfer",
+          "cash.advance.issue",
+          "cash.approve",
+          "cash.reconcile",
+          "cash.reverse",
+          "cash.payroll.post",
+          "cash.reports.finance",
+          "cash.accounts.manage",
+          "cash.period.close",
+          "cash.advance.self",
+          "cash.export"
+        ],
+        "limits": {
+          "outMinor": null,
+          "refundMinor": null,
+          "advanceMinor": null
+        },
+        "isHolder": false
+      }
+    }
+  ],
+  "nextCursor": null
+}

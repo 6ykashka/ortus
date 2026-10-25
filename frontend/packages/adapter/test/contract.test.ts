@@ -53,7 +53,8 @@ describe('contract.gen.json', () => {
   });
 
   it('реестр ошибок — 53 кода со статусом и заголовком (52 W0.07 и offer_closed W2.71)', () => {
-    expect(Object.keys(contract.errors)).toHaveLength(53);
+    // W5.00 (0.12.0-stage5): + 5 кодов кассы.
+    expect(Object.keys(contract.errors)).toHaveLength(53 + 5);
     expect(contract.errors.forbidden_action).toEqual({
       status: 403,
       title: 'Нет действия ни в одной роли',
@@ -93,10 +94,18 @@ describe('contract.gen.json', () => {
     const stage2 = contract.operations.filter((o) => o.stage2).map((o) => o.id);
     // W4.07: операции нового тега этапа 4 Branding тоже несут примеры.
     const stage4 = contract.operations.filter((o) => o.stage4).map((o) => o.id);
+    // W5.00: операции тега Cash на экранах кассы этапа 5 тоже несут примеры.
+    const stage5 = contract.operations.filter((o) => o.stage5).map((o) => o.id);
     const keys = Object.keys(contract.examples);
     expect(stage1.filter((id) => !keys.includes(id))).toEqual([]);
     expect(
-      keys.filter((id) => !stage1.includes(id) && !stage2.includes(id) && !stage4.includes(id)),
+      keys.filter(
+        (id) =>
+          !stage1.includes(id) &&
+          !stage2.includes(id) &&
+          !stage4.includes(id) &&
+          !stage5.includes(id),
+      ),
     ).toEqual([]);
     expect(keys).toContain('listCalendarBookings');
     expect(keys).toContain('getTripPlan');

@@ -5,6 +5,7 @@ import { describe, it } from 'node:test';
 import { bundle } from './lib/bundle.mjs';
 import { abs, ERRORS_PATH } from './lib/paths.mjs';
 import { readJson, readYaml } from './lib/yaml-io.mjs';
+import { W5_CODES } from './lib/stage5.mjs';
 
 const registry = readYaml(ERRORS_PATH);
 const codes = registry.codes;
@@ -12,7 +13,7 @@ const rows = readJson(abs('tools/gen/fixtures/12-errors-rows-14.10.json')).rows;
 const prototype = readJson(abs('tools/gen/fixtures/prototype-error-codes-14.10.json')).codes;
 const PD34 = ['seats_exhausted', 'request_pending', 'tier_below_usage', 'not_implemented'];
 /** Коды контрактных дельт этапов (стюард, только добавление в конец): W2.71 — выбор машины закрыт (D-35 комплекта). */
-const LATER = ['offer_closed'];
+const LATER = ['offer_closed', ...W5_CODES]; // W5.00 — 5 кодов кассы (cash.md §2.4)
 const RETRYABLE = [
   'reservation_overlap',
   'resources_unavailable',
@@ -26,7 +27,10 @@ describe('реестр api/errors.yaml', () => {
     assert.equal(rows.flatMap((r) => r.codes).length, 48);
     assert.equal(Object.keys(codes).length, 52 + LATER.length);
     for (const c of PD34) assert.equal(codes[c]?.source, 'PD-34', c);
-    for (const c of LATER) assert.match(codes[c]?.source ?? '', /D-35 комплекта/, c);
+    for (const c of LATER.filter((x) => !W5_CODES.includes(x))) {
+      assert.match(codes[c]?.source ?? '', /D-35 комплекта/, c);
+    }
+    for (const c of W5_CODES) assert.match(codes[c]?.source ?? '', /W5\.00/, c);
   });
 
   it('каждая строка реестра 12 представлена дословно с тем же статусом', () => {

@@ -1,0 +1,106 @@
+# Матрица изоляции: склад контракта 0.12.0-stage5 (W5.00, контрактный PR этапа 5); хендлеры — W5.10.
+# Строки пишутся до хендлера (pending): без сессии 401, чужая организация 404 (AC-02). Положительные строки и строки
+# «нет такого объекта» владельцу (404, список только своих, absent: tenant:b) требуют фикстур модуля (кассы, склады,
+# услуги) — их добавляет W5.10 вместе с хендлерами и снимает pending. Отказы шлюза (403 forbidden_action,
+# module_not_installed) — отдельный файл без pending. Склады вне области — 404.
+# Формат — README.md.
+# После правки: go -C backend generate ./test/isolation
+module: inventory_w500
+endpoints:
+  - op: listWarehouses
+    method: GET
+    path: /api/v1/tenants/{tenantId}/inventory/warehouses
+    pending: W5.10
+    rows:
+      - actor: anonymous
+        params: { tenantId: tenant:a }
+        status: 401
+      - actor: b.owner
+        params: { tenantId: tenant:a }
+        status: 404
+        absent: [tenant:a]
+        note: чужая организация — как несуществующая (AC-02)
+  - op: createWarehouse
+    method: POST
+    path: /api/v1/tenants/{tenantId}/inventory/warehouses
+    pending: W5.10
+    rows:
+      - actor: anonymous
+        params: { tenantId: tenant:a }
+        status: 401
+        body: "{}"
+      - actor: b.owner
+        params: { tenantId: tenant:a }
+        status: 404
+        absent: [tenant:a]
+        body: "{}"
+        note: чужая организация — как несуществующая (AC-02)
+  - op: updateInventoryItem
+    method: PATCH
+    path: /api/v1/tenants/{tenantId}/inventory/items/{itemId}
+    pending: W5.10
+    rows:
+      - actor: anonymous
+        params: { tenantId: tenant:a, itemId: tenant:missing }
+        status: 401
+        body: "{}"
+      - actor: b.owner
+        params: { tenantId: tenant:a, itemId: tenant:missing }
+        status: 404
+        absent: [tenant:a]
+        body: "{}"
+        note: чужая организация — как несуществующая (AC-02)
+  - op: listInventoryBalances
+    method: GET
+    path: /api/v1/tenants/{tenantId}/inventory/balances
+    pending: W5.10
+    rows:
+      - actor: anonymous
+        params: { tenantId: tenant:a }
+        status: 401
+      - actor: b.owner
+        params: { tenantId: tenant:a }
+        status: 404
+        absent: [tenant:a]
+        note: чужая организация — как несуществующая (AC-02)
+  - op: listInventoryReservations
+    method: GET
+    path: /api/v1/tenants/{tenantId}/inventory/reservations
+    pending: W5.10
+    rows:
+      - actor: anonymous
+        params: { tenantId: tenant:a }
+        status: 401
+      - actor: b.owner
+        params: { tenantId: tenant:a }
+        status: 404
+        absent: [tenant:a]
+        note: чужая организация — как несуществующая (AC-02)
+  - op: createInventoryReservation
+    method: POST
+    path: /api/v1/tenants/{tenantId}/inventory/reservations
+    pending: W5.10
+    rows:
+      - actor: anonymous
+        params: { tenantId: tenant:a }
+        status: 401
+        body: "{}"
+      - actor: b.owner
+        params: { tenantId: tenant:a }
+        status: 404
+        absent: [tenant:a]
+        body: "{}"
+        note: чужая организация — как несуществующая (AC-02)
+  - op: releaseInventoryReservation
+    method: POST
+    path: /api/v1/tenants/{tenantId}/inventory/reservations/{reservationId}/release
+    pending: W5.10
+    rows:
+      - actor: anonymous
+        params: { tenantId: tenant:a, reservationId: tenant:missing }
+        status: 401
+      - actor: b.owner
+        params: { tenantId: tenant:a, reservationId: tenant:missing }
+        status: 404
+        absent: [tenant:a]
+        note: чужая организация — как несуществующая (AC-02)

@@ -52,6 +52,18 @@ ids:
     account:op-7: 495958c4-cca8-595c-9028-e8eb0c168d80
     op-7: a246f07b-5c1b-50c3-b7a6-95cd28c04445
   t-alta:
+    K-303: 60741402-ad64-5955-8583-3ceb8897dc35
+    K-304: 24c2439d-7b54-58e4-bec5-73a66b516b34
+    K-307: 906f1a04-f88b-57fa-a689-2ae2af8cd6ed
+    K-308: 83675993-5db5-5154-8a54-429a6396fc03
+    K-311: 6f464827-8dfb-5da3-bfd1-965456b0735f
+    K-312: 1a0a7ed7-f938-5b99-96f9-7612b8c9befb
+    K-321: 171d4792-1d1a-5c4a-b42c-b37eb98d64c1
+    K-322: 6790143d-e1d2-582c-9f73-c3121ab8c13e
+    K-323: 57d6dd0d-68b1-5035-9674-e743326a5b58
+    K-324: 26b189ab-9d65-565f-a079-cd46ae355584
+    K-325: a610ddaf-a010-5083-885c-05e081bdde71
+    K-326: 16447cc4-ecf1-53f6-885b-f0cb74d3197a
     R-0988: d530b3dc-6b28-5f5c-be4c-a14813678265
     R-1012: 9c64b00c-9706-549f-b788-8456dd9c35ea
     R-1013: a6f36b82-b4ca-5c77-a87a-16a35f713b45
@@ -67,6 +79,7 @@ ids:
     ap-1: 9124fd56-e332-55f6-abaa-ce181db7af32
     ap-2: 8a4e2313-a050-51a2-831d-ad5b890fc166
     ap-3: 77ba7cd8-711c-50ba-8860-9ee44796f72b
+    ap-pr1: 7a6a997b-c057-5062-8f80-0edf5e6b05fe
     ap1: e1c12a68-3ab8-5ca7-8092-87eabd1c1dc5
     ap2: d31ba0ca-8c47-5ab1-98e5-ea3ee6d3c8b4
     ap3: 054607dc-5595-55f4-ab8e-35e88e0beeb2
@@ -80,6 +93,7 @@ ids:
     b-a2: db6412f9-f1f9-5fba-a945-5fdbcb856d9c
     b-a3: ec30fb9f-f6e0-5788-95f6-f8d650e48357
     b-br: 0a269c1f-4dc4-5ded-a908-3d8385793a76
+    bk-ap-pr1: 8e34170b-eea1-58f5-987b-0b3edd8431ff
     c-at: f9d1765e-6b10-54b8-985d-67eb224066c9
     c-def: d8332e3e-53b9-5fb8-9dc8-73afcc14afc5
     c-fuel: d20c56ad-76ab-5787-ab7d-3165ca58d572
@@ -89,9 +103,19 @@ ids:
     c-w1: 404e0d21-f2ee-565c-bef3-3967ac725559
     c-w2: 2a1e8a00-3cbd-54ae-85ae-b99a3cfeda6f
     c-who: 78f11670-a011-52de-ab61-8232f4bba051
+    ca-adv-akh: 457bc389-8a47-525d-a700-dff0adab92b2
+    ca-adv-sok: a1ea005d-20fd-5381-b6f2-db2a9b8bea71
+    ca-adv-vas: 0eab4a4f-fb0c-53f2-b423-4c82fe4f760e
+    ca-bank: c301c001-cfa2-5265-b78b-e5c6b899ab13
+    ca-safe: 7dfc0a25-f62d-5637-892b-e28d94e99832
+    ca-sever: 27e3a4c8-20ac-5663-9eb3-6ea3c9f708b9
+    ca-spa: b7d1bdca-237d-5518-a179-d45b135bb0a6
+    ca-term: 2f1fd42c-4bb1-59c3-8117-8209b268c869
     checklist:departure:1: 5d6fb3d3-4082-5302-b552-ef2d23223335
+    cl-natalia: 8f07e87e-6159-5494-960a-3c00e131a4d5
     d-104: 6f0d2321-532c-5f7a-8e75-ec1196316a7d
     d-117: ac90c429-0be6-58ff-9486-cb47b14ce96d
+    eq-table: a6676803-e743-5440-ad23-6bce59252139
     f-msk-centr: 3b3fc40f-47fe-523b-9be5-113793cd294f
     f-msk-sever: 6de355d2-b019-5bb6-b66a-ddae6a13fb65
     f-msk-vostok: e7477ede-3f0d-5129-a0d8-dfb77202ca1f
@@ -106,6 +130,9 @@ ids:
     f-spb-pulk: f986762f-6733-5bc1-91d0-197e4cae6bb4
     fg-w1: a7526fe3-22d6-5a1b-902e-c683da298443
     file-insp-208-front: 0a5af2d5-52c6-5a8a-84aa-8eda2fa9c7d2
+    file-rc-3: 31a19146-0d07-5269-ba99-f74aa72da653
+    file-rc-4: 3215f066-0e56-57d8-b944-8f08f95b10f1
+    file-w500: b881fb02-aaf8-5399-9790-7aa96e5423cf
     file:T-65:f-1: ae02584f-2926-5056-8c20-acb9c5568122
     fleet: 1380e888-13ac-5357-9a6f-a592a20e8220
     fm-foreman: 7849cddb-8d14-505d-aedb-4d59b6be855b
@@ -120,6 +147,7 @@ ids:
     g-disp: ffdc7501-0a74-5af4-950b-894aeb64d658
     g-drv: ce9dd6e5-dcb8-5d08-ad94-53c3155b3d14
     hist:T-65:1: e51b9809-0336-5ca9-bef9-e712135ecf40
+    item-oil: 4c3c7bcf-2669-5b70-a9c9-9909e9505abe
     kb-1: 917ba039-1d29-5dd1-b922-b0976cc8a7c2
     kb-1a: 641c9079-5db8-513f-9ce5-59525d87c375
     kb-1b: 2f8e26cb-d191-5b2b-b88e-0e6eade36db5
@@ -154,6 +182,8 @@ ids:
     kt-insp: a1ef80ec-8553-5feb-868e-0c3618900951
     kt-w3: 9ed76e4c-0040-582a-948a-16d0e8466008
     leads: 22011b60-f6d0-56d6-9e42-98202e5e319a
+    lot-oil-1: 412d32a8-3a0d-51c1-9251-3ab5a1743da2
+    lot-oil-2: 919a56cc-bb95-5481-b0d5-20230275b507
     m-akhmedov: 1a544c8a-52b8-557b-9720-10b9d94fdd10
     m-gromov: e3e06740-e478-5398-a737-dd89c477cbd7
     m-ilyin: 0079e3dc-bef7-5e8b-986a-085809065166
@@ -181,20 +211,39 @@ ids:
     r-spb: 33e769c7-3894-57a3-bd96-368d20e9162d
     r-therapist: 82ab2491-f90d-5be3-8ae0-5cd0196d94d8
     r-viewer: e4018e2d-5d1e-50b6-a6c8-27cde18b1d28
+    rc-3: 6392343f-1685-5528-b8f6-38077b45544a
+    rc-4: 68693527-de83-53f2-8740-a6ecff29bb4d
+    repair_act-pr-3: 873740a7-1849-5b1e-8ee0-61708af8cf3e
+    repair_act-pr-4: c9e83098-7f70-5aa1-9afe-b3c2b4bc27ba
     res-am: 319d9423-5f66-5e9b-873c-4a923bed0fcb
     res-iv: ee72a7d1-be15-55f8-a87d-cab4d1ab484a
     res-room2: 253914e3-34db-54e1-996e-6eb38b9dd29b
     res-room3: 16627cc9-a5b5-5e15-8d93-5a07e8257b62
     res-table: 960765fa-e4bb-5e74-83a7-b441941a0a35
+    room-1: ec0b63cc-ff45-51b6-a8a2-b232e895149d
+    rq-1: f9b75fff-d4bc-58a6-a6bc-2f3c6bb97de2
+    rsv-1: 5cc1d312-99ea-5be4-ba9f-ec5d76a65ec5
     run:fleet:1: c703424a-2c71-537d-92b0-4e7b386ddcf5
     run:fleet:2: 44e3ebe1-d6b6-580a-91de-8214efb6e80d
+    service_request-pr-2: a7a69465-55a2-5126-a442-01fc1839b90a
+    sh-117: f31cc030-decb-584d-8c4c-f9305194b504
+    sh-118: 790fb875-091f-53a3-ae3b-ae062b4ab9ac
     sp-gen: 681f3641-54bc-54c9-9e0d-98f91c079698
     sp-log: a3b6bc34-7307-58e7-990a-5513cd630786
     sp-own: 7a758d2b-4550-562b-ba46-38a513cfe88d
     sp-w1: ae167306-f901-567a-a2fa-842559f2929f
+    spa: c6d8949a-3c14-5cd1-9728-fe2e135332c3
+    svc-massage: 882ac761-c607-598f-a1d3-26187ceaa725
+    tr-1: c26f9abd-3783-5a20-bfd5-7151de61f46b
+    tr-2: 4e08a7e4-31c2-595f-aa74-725f1bfedd2a
+    tr-3: b85630fe-8410-5785-95cd-3529677d1933
+    tr-4: 0a246b1e-ad85-5c7e-acf3-70d675547b1f
+    trip-r203: 0143061a-26c8-52da-bafa-5f456249a448
     v1: 94f7eb3d-41d3-5dee-a58d-2053dcb63646
     v5: ca7940cc-9cbe-5487-8b11-8087457d50b9
     v6: b9ef5783-2b1a-5682-8d25-66e89de49b8e
+    visit-pr-1: 72f8d6b7-6c32-5e84-bc62-94001dff698c
+    wh-spa: 4eb6fbdf-2e12-5cb1-867f-1db2bf71e92d
     work:m-vasiliev:driver: b2f83c8c-fc7a-54ef-a5d1-1b30a3842213
     Р-171: b0233fb6-9316-54d7-91c6-62df0753ddd8
     Р-196: 25c43989-32f2-5c05-b707-7dc1cbcaa6b4
@@ -248,6 +297,12 @@ ids:
     vehicle-import-new: 534505cf-a8ef-535e-88b6-390007d64394
     view-trips-r208: 994354ee-b184-5172-9863-85d28f8f93d1
     work-kotelnikova-manager: 3b2cbb6c-fe30-57c9-b5c0-4aae38b320f8
+  t-alta:new:
+    "1": da14d1a0-5094-5b16-a839-7ad4d0860694
+    "2": 39354720-c647-533e-9435-f1308bd05aef
+    "3": 833a70be-c24c-5c8c-af98-c66b3b300946
+    "4": 2be06bc1-29a6-59ee-ab14-9955e0435b46
+    "5": d5412224-9efc-5737-b835-34632f40422e
   t-lotos:
     m-owner: 12d3a0fa-563f-5206-8f97-b955588350fa
     salon: 01c07918-d730-540a-860c-3754c552dfab

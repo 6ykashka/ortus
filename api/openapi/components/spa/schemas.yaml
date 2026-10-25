@@ -197,6 +197,9 @@ Appointment:
       format: int64
     performedAt:
       $ref: ../common/schemas.yaml#/Instant
+    finalPrice:
+      $ref: ../common/schemas.yaml#/Money
+      description: W5.00 (0.12.0-stage5) (CASH-03). The price of the visit by the fact after discount; the cash proposal «визит» takes this amount, not the list price.
   required:
     - id
     - orgUnitId
@@ -257,6 +260,9 @@ AppointmentComplete:
     note:
       type: string
       maxLength: 2000
+    finalPrice:
+      $ref: ../common/schemas.yaml#/Money
+      description: W5.00 (0.12.0-stage5) (CASH-03). The price of the visit by the fact after discount; the cash proposal «визит» takes this amount, not the list price.
   required:
     - warehouseId
     - overrides
@@ -286,3 +292,67 @@ AppointmentPerformance:
   required:
     - performedAt
   description: Record that the assigned treatment happened. Server validates the time and confirmed appointment, stores an immutable factual event and moves to performed_pending_posting. No materials or money are posted.
+SpaServicePatch:
+  type: object
+  additionalProperties: false
+  minProperties: 1
+  properties:
+    name:
+      type: string
+      minLength: 1
+      maxLength: 150
+    durationMinutes:
+      type: integer
+      minimum: 1
+      format: int64
+    bufferBeforeMinutes:
+      type: integer
+      minimum: 0
+      format: int64
+    bufferAfterMinutes:
+      type: integer
+      minimum: 0
+      format: int64
+    price:
+      $ref: ../common/schemas.yaml#/Money
+    requiredEquipmentIds:
+      type: array
+      items:
+        $ref: ../common/schemas.yaml#/Id
+    recipe:
+      type: array
+      items:
+        $ref: ./schemas.yaml#/ConsumptionRecipeLine
+  description: W5.00 (0.12.0-stage5). Edit a service and its recipe («техкарта»); the revision grows, booked appointments keep their snapshot.
+AppointmentCancel:
+  type: object
+  additionalProperties: false
+  properties:
+    reason:
+      type: string
+      minLength: 1
+      maxLength: 500
+    noShow:
+      type: boolean
+      description: "The client did not come: status no_show instead of cancelled."
+  required:
+    - reason
+AppointmentReschedule:
+  type: object
+  additionalProperties: false
+  properties:
+    startsAt:
+      $ref: ../common/schemas.yaml#/Instant
+    timeZone:
+      $ref: ../common/schemas.yaml#/TimeZone
+    practitionerMemberId:
+      $ref: ../common/schemas.yaml#/Id
+    roomId:
+      $ref: ../common/schemas.yaml#/Id
+    equipmentIds:
+      type: array
+      items:
+        $ref: ../common/schemas.yaml#/Id
+  required:
+    - startsAt
+    - timeZone

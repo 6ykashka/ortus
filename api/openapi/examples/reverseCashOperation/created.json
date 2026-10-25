@@ -1,0 +1,26 @@
+{
+  "id": "da14d1a0-5094-5b16-a839-7ad4d0860694",
+  "accountId": "b7d1bdca-237d-5518-a179-d45b135bb0a6",
+  "direction": "out",
+  "amount": {
+    "amountMinor": 300000,
+    "currency": "RUB"
+  },
+  "category": "adjustment",
+  "occurredAt": "2026-10-01T07:30:00Z",
+  "postedAt": "2026-10-01T07:30:00Z",
+  "createdByMemberId": "b8df06ec-317e-5f46-b54c-e76603e41b5b",
+  "type": "storno",
+  "method": "cash",
+  "origin": "manual",
+  "categoryId": "revenue-subscriptions",
+  "basis": "Сторно K-325: Ошибочная оплата",
+  "shiftId": "790fb875-091f-53a3-ae3b-ae062b4ab9ac",
+  "groupId": null,
+  "transferId": null,
+  "approvedByMemberId": null,
+  "reconcileStatus": "unmatched",
+  "own": false,
+  "reversesOperationId": "a610ddaf-a010-5083-885c-05e081bdde71",
+  "reversedByOperationId": null
+}

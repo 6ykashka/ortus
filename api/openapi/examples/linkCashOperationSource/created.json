@@ -1,0 +1,11 @@
+{
+  "operationId": "16447cc4-ecf1-53f6-885b-f0cb74d3197a",
+  "source": {
+    "key": "visit:ap-pr1",
+    "kind": "visit",
+    "id": "7a6a997b-c057-5062-8f80-0edf5e6b05fe",
+    "label": "Визит 30.09 18:00"
+  },
+  "linkedAt": "2026-10-01T07:30:00Z",
+  "linkedByMemberId": "b8df06ec-317e-5f46-b54c-e76603e41b5b"
+}

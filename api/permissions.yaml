@@ -434,7 +434,7 @@ modules:
 
   # W0.07: модули inventory, spa, cash — 14 ключей x-permissions OpenAPI 0.1, которых не было в 11
   # (docs/plan/v2/analysis/C-docs-and-stages.md, факт 3). Подписи — PROPOSED по образцу VERBS прототипа.
-  # Модули уточняются контрактными PR этапа 5 (W5.00: склад, SPA; касса — docs/26-cash.md, 16 ключей с limit).
+  # Модули уточняются контрактными PR этапа 5 (W5.00, 0.12.0-stage5: склад, SPA, касса — docs/26-cash.md, 17 ключей).
   inventory:
     label: Склад и материалы
     proposed: true
@@ -442,6 +442,15 @@ modules:
       inventory.items.read:
         { level: view, label: Видеть номенклатуру и остатки, scopes: [tenant, unit, warehouse] }
       inventory.items.manage: { level: settings, label: Вести номенклатуру, scopes: [tenant, unit] }
+      inventory.warehouses.manage: { level: settings, label: Вести склады, scopes: [tenant, unit] }
+      inventory.consumption.override:
+        {
+          level: edit,
+          label: Менять фактический расход материалов,
+          scopes: [tenant, unit, warehouse],
+          sensitivity: sensitive,
+          note: "по услуге SPA с причиной (AC-07, W5.00)",
+        }
       inventory.movements.read:
         { level: view, label: Видеть движения, scopes: [tenant, unit, warehouse] }
       inventory.movements.post:
@@ -479,14 +488,102 @@ modules:
   cash:
     label: Касса
     proposed: true
-    note: "Имена 0.1. docs/26-cash.md: cash.manage → cash.accounts.manage и ещё 13 ключей с limit — W5.00."
+    note: "W5.00 (0.12.0-stage5): 17 ключей — 16 из docs/26-cash.md и cash.export (Q-W4.00-cash-1). cash.manage 0.1 → cash.accounts.manage (prototype_renames). Атрибуты: limit: amount — лимит суммы в роли (сверх лимита — заявка на согласование, Q-W4.00-cash-2); blocked_by_function — действие закрыто функциям; note «не автор» — правило разделения обязанностей."
     actions:
-      cash.read:
-        { level: view, label: Видеть кассу, scopes: [tenant, unit], sensitivity: sensitive }
+      cash.read: { level: view, label: Видеть кассы и операции, scopes: [tenant, unit, account] }
+      cash.balance.read:
+        {
+          level: view,
+          label: Видеть остаток и ожидаемую сумму,
+          scopes: [tenant, unit, account],
+          sensitivity: sensitive,
+        }
       cash.post:
-        { level: create, label: Проводить операции, scopes: [tenant, unit], sensitivity: sensitive }
-      cash.manage:
-        { level: settings, label: Вести кассы, scopes: [tenant, unit], sensitivity: sensitive }
+        {
+          level: create,
+          label: Вносить приход и расход,
+          scopes: [tenant, unit, account],
+          limit: amount,
+          note: "лимит — на расход; приход без лимита",
+        }
+      cash.proposals.post:
+        { level: create, label: Проводить предложения модулей, scopes: [tenant, unit, account] }
+      cash.shift.operate:
+        { level: create, label: Открывать и закрывать смену, scopes: [unit, account] }
+      cash.refund:
+        {
+          level: edit,
+          label: Возвраты клиентам,
+          scopes: [tenant, unit, account],
+          sensitivity: sensitive,
+          limit: amount,
+        }
+      cash.transfer:
+        {
+          level: edit,
+          label: Перемещать и сдавать выручку,
+          scopes: [tenant, unit, account],
+          sensitivity: sensitive,
+        }
+      cash.advance.issue:
+        {
+          level: edit,
+          label: Выдавать под отчёт,
+          scopes: [tenant, unit],
+          sensitivity: sensitive,
+          limit: amount,
+        }
+      cash.approve:
+        { level: review, label: Согласовывать расходы, scopes: [tenant, unit], note: "не автор" }
+      cash.reconcile:
+        {
+          level: review,
+          label: Сверять и принимать расхождения,
+          scopes: [tenant, unit, account],
+          note: "не тот, кто закрывал смену",
+        }
+      cash.reverse:
+        {
+          level: review,
+          label: Сторнировать,
+          scopes: [tenant, unit, account],
+          sensitivity: sensitive,
+          note: "свою операцию — вторым сотрудником; владелец — свою тоже (Q-W4.00-cash-3)",
+        }
+      cash.payroll.post:
+        {
+          level: edit,
+          label: Выплаты зарплаты и начислений,
+          scopes: [tenant, unit],
+          sensitivity: restricted,
+          blocked_by_function: [driver, foreman],
+        }
+      cash.reports.finance:
+        {
+          level: view,
+          label: ДДС и прибыль по направлениям,
+          scopes: [tenant, unit],
+          sensitivity: restricted,
+          blocked_by_function: [driver, foreman],
+        }
+      cash.accounts.manage:
+        {
+          level: settings,
+          label: "Кассы, статьи и лимиты",
+          scopes: [tenant, unit],
+          sensitivity: sensitive,
+        }
+      cash.period.close:
+        { level: settings, label: Закрывать период, scopes: [tenant], sensitivity: sensitive }
+      cash.advance.self:
+        { level: create, label: Свой подотчёт — остаток и отчёт чеками, scopes: [self] }
+      cash.export:
+        {
+          level: export,
+          label: Выгружать операции кассы,
+          scopes: [tenant, unit, account],
+          sensitivity: sensitive,
+        }
 
   platform:
     label: Платформа (отдельный контур операторов, не назначается в tenant)
@@ -842,6 +939,7 @@ prototype_renames:
   tasks.manage: [tasks.update, tasks.transition]
   forms.responses.create: null # ответ формы создаёт сервер; права на отправку нет
   inventory.read: [inventory.items.read, inventory.movements.read]
+  cash.manage: cash.accounts.manage # W5.00: 0.1 → docs/26-cash.md
   spa.completion.review: spa.appointments.complete
   spa.export: data.export
   spa.settings: modules.settings.manage
@@ -851,19 +949,6 @@ prototype_renames:
 # W0.07: ключи прототипа 14.10, которых ещё нет в каталоге: вносит контрактный PR указанного шага.
 # До него сервер таких прав не знает; прототип показывает их в редакторе ролей (allowlist out-of-stage).
 prototype_pending:
-  cash.accounts.manage: "W5.00 · docs/26-cash.md"
-  cash.advance.issue: "W5.00 · docs/26-cash.md"
-  cash.advance.self: "W5.00 · docs/26-cash.md"
-  cash.approve: "W5.00 · docs/26-cash.md"
-  cash.balance.read: "W5.00 · docs/26-cash.md"
-  cash.export: "W5.00 · docs/26-cash.md"
-  cash.period.close: "W5.00 · docs/26-cash.md"
-  cash.proposals.post: "W5.00 · docs/26-cash.md"
-  cash.reconcile: "W5.00 · docs/26-cash.md"
-  cash.refund: "W5.00 · docs/26-cash.md"
-  cash.reverse: "W5.00 · docs/26-cash.md"
-  cash.shift.operate: "W5.00 · docs/26-cash.md"
-  cash.transfer: "W5.00 · docs/26-cash.md"
   docs.comment: "W7.00 · docs/24-documents.md"
   docs.convert: "W7.00 · docs/24-documents.md"
   docs.create: "W7.00 · docs/24-documents.md"

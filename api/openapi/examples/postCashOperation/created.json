@@ -1,0 +1,30 @@
+{
+  "id": "da14d1a0-5094-5b16-a839-7ad4d0860694",
+  "accountId": "b7d1bdca-237d-5518-a179-d45b135bb0a6",
+  "direction": "in",
+  "amount": {
+    "amountMinor": 280000,
+    "currency": "RUB"
+  },
+  "category": "service_payment",
+  "occurredAt": "2026-10-01T07:40:00Z",
+  "postedAt": "2026-10-01T07:40:00Z",
+  "createdByMemberId": "b8df06ec-317e-5f46-b54c-e76603e41b5b",
+  "type": "in",
+  "method": "cash",
+  "origin": "manual",
+  "categoryId": "revenue-spa",
+  "basis": "Массаж лица · Наталья С.",
+  "receipt": {
+    "fdNumber": "4521",
+    "kktShift": "118",
+    "receiptAt": "2026-10-01T07:41:00Z"
+  },
+  "shiftId": "790fb875-091f-53a3-ae3b-ae062b4ab9ac",
+  "groupId": null,
+  "transferId": null,
+  "approvedByMemberId": null,
+  "reconcileStatus": "unmatched",
+  "own": false,
+  "reversedByOperationId": null
+}
