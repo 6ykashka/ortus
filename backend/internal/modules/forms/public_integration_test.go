@@ -52,6 +52,7 @@ func TestPublicLink(t *testing.T) {
 	}
 	assert.Nil(t, g.Definition.Fields[1].DefaultValue, "the default of a hidden question stays on the server")
 	assert.Equal(t, "Холдинг", *g.Presentation.OrganizationName)
+	assert.Equal(t, "Опрос PL", g.Presentation.Title, "the name of the form heads the guest page (Q-W4.70-2)")
 	_, err := s.PublicForm(ctx, "x"+token)
 	wantCode(t, err, codeNotFound, "")
 

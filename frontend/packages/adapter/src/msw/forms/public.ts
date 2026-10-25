@@ -268,6 +268,7 @@ export const publicFormsHandlers: Registry = {
       versionId: cur.id,
       definition: guestDefinition(cur.definition),
       presentation: {
+        title: g.f.name,
         organizationName: s.showLogo
           ? (ctx.s.tenants.find((t) => t.id === g.org.tenantId)?.name ?? null)
           : null,

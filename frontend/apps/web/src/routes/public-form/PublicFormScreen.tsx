@@ -201,7 +201,7 @@ function GuestRun(p: {
   return (
     <FormRender
       def={def}
-      title={def.pages[0]?.title ?? ''}
+      title={f.presentation?.title ?? def.pages[0]?.title ?? ''}
       settings={settingsOf(f.presentation)}
       tenantName={f.presentation?.organizationName ?? ''}
       kbLink={null}

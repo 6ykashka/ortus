@@ -106,6 +106,13 @@ describe('подразделения и подписи областей', () => 
     expect(scopeLabel(scope('org_unit', ['x']), u)).toBe('Область не выбрана');
   });
 
+  it('проект с известным именем — «Проект «{имя}»» (W4.85); неизвестный (нет права на проекты) — «Проект»', () => {
+    const named = unitsOf(UNITS, [], new Map([['p1', 'Логистика · Север']]));
+    expect(scopeLabel(scope('project', ['p1']), named)).toBe('Проект «Логистика · Север»');
+    expect(scopeLabel(scope('project', ['p2']), named)).toBe('Проект');
+    expect(scopeLabel(scope('project', ['p1']), u)).toBe('Проект');
+  });
+
   it('вид области этапов 4–7 или незнакомый — «Особая область» (ADR-0014 п. 7, контракт 0.7.0-stage4)', () => {
     const later = (kind: string) => ({ ...scope('self'), kind }) as unknown as S['Scope'];
     expect(scopeLabel(later('space'), u)).toBe('Особая область');

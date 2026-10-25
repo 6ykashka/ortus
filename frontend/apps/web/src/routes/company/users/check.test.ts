@@ -3,7 +3,7 @@
 import type { components } from '@ortus/api-client';
 import { describe, expect, it } from 'vitest';
 
-import { CHECK_ACTIONS, reasonOf, resultOf, workplaceOf } from './check.ts';
+import { CHECK_ACTIONS, checkObjects, reasonOf, resultOf, workplaceOf } from './check.ts';
 import { unitsOf } from './model.ts';
 
 type S = components['schemas'];
@@ -155,5 +155,33 @@ describe('рабочее место сотрудника', () => {
     expect(
       workplaceOf({ fleet: false, spa: false, repairs: false, review: false, earnings: false }),
     ).toEqual([]);
+  });
+});
+
+// W4.85 · Q-W1.23-8: «Объект» проверки — машины и рейсы логистики (OBJECTS эталона :2344); подразделение объекта —
+// у самой машины и рейса, запрос explainAccess идёт с его orgUnitId.
+describe('объекты «Проверки доступа»: машины и рейсы', () => {
+  const vehicle = (id: string, displayName: string, orgUnitId: string) =>
+    ({ id, displayName, orgUnitId }) as S['Vehicle'];
+  const trip = (id: string, number: string, orgUnitId: string) =>
+    ({ id, number, orgUnitId }) as S['TripPlan'];
+
+  it('машина и рейс — «{название} · {регион / фирма}» с подразделением объекта', () => {
+    const objects = checkObjects(
+      [vehicle('v1', 'ГАЗель Next', 'f-sever'), vehicle('v5', 'Isuzu Elf', 'f-yug')],
+      [trip('t1', 'Р-208', 'f-sever')],
+      units,
+    );
+    expect(objects.map((o) => [o.label, o.orgUnitId])).toEqual([
+      ['ГАЗель Next · Москва / Север Логистик', 'f-sever'],
+      ['Isuzu Elf · Москва / Юг Транс', 'f-yug'],
+      ['Рейс Р-208 · Москва / Север Логистик', 'f-sever'],
+    ]);
+    expect(new Set(objects.map((o) => o.value)).size).toBe(3);
+  });
+
+  it('подразделение вне области вошедшего — подпись без него; без машин и рейсов список пуст', () => {
+    expect(checkObjects([vehicle('v9', 'КамАЗ', 'f-gone')], [], units)[0]?.label).toBe('КамАЗ');
+    expect(checkObjects([], [], units)).toEqual([]);
   });
 });

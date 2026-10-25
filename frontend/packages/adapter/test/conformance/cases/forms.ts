@@ -1381,6 +1381,7 @@ export const formsCases = cases('forms')([
         uploadAllowed: false,
         uploadMaxBytes: 0,
         presentation: {
+          title: 'Тест для гостей',
           organizationName: 'Альта Групп',
           progressBar: true,
           backButton: true,

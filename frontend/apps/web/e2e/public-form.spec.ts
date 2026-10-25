@@ -141,20 +141,22 @@ test.describe('public-form — «Публичная форма» @mock', () => {
     await page.context().route(STORAGE, (r) => r.fulfill({ status: 200 }));
   });
 
-  test('гость по ссылке без входа и оболочки: «Альта Групп», «Отзыв», ответ → «Спасибо»; владелец — «На проверке», «Гость»', async ({
+  test('гость по ссылке без входа и оболочки: «Альта Групп», название формы, ответ → «Спасибо»; владелец — «На проверке», «Гость»', async ({
     app,
     page,
     session,
     harness,
   }) => {
     await asOwner(app, page);
-    const m = await makePublic(page, {
-      name: uniq('Отзыв о доставке'),
-      templateId: 'tpl-feedback',
-    });
+    const name = uniq('Отзыв о доставке');
+    const m = await makePublic(page, { name, templateId: 'tpl-feedback' });
     const g = await guest({ mode: harness.mode, app, page, session }, `/f/${m.token}`);
     await expect(card(g).locator('.ox-fm-pv-logo')).toHaveText(/Альта Групп/);
-    await expect(card(g).getByRole('heading', { level: 2, name: 'Отзыв' })).toBeVisible();
+    // Заголовок — название формы (presentation.title, Q-W4.70-2), не название первой страницы «Отзыв».
+    await expect(card(g).getByRole('heading', { level: 2, name })).toBeVisible();
+    await expect(
+      card(g).getByRole('heading', { level: 2, name: 'Отзыв', exact: true }),
+    ).toHaveCount(0);
     await expect(g.getByRole('navigation')).toHaveCount(0);
     await stars(g, 'Оцените работу', 5).click();
     await card(g).getByRole('radio', { name: 'Да', exact: true }).click();

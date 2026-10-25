@@ -26,7 +26,7 @@ openapi: 3.1.0
 jsonSchemaDialect: https://json-schema.org/draft/2020-12/schema
 info:
   title: ORTUS CRM Constructor — Design API
-  version: 0.11.0-stage4
+  version: 0.11.1-stage4
   summary: Reviewable starting contract for a tenant-isolated modular CRM on Go; not an implemented or exhaustive API.
   description: |-
     Design snapshot, 2026-10-01. A tenant is one business holding; regions/companies/branches are scoped organization units within it. Platform administration is a separate control plane and never implies business-data access.

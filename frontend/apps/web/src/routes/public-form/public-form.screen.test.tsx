@@ -59,11 +59,14 @@ const responses = async (a: MockApp, m: Made) =>
   }[];
 
 describe('public-form: страница гостя', () => {
-  it('без оболочки и без /me/context: «Альта Групп», «Отзыв»; ответ — «Спасибо», «На проверке» у владельца', async () => {
-    const { a, m } = await open(feedback);
+  it('без оболочки и без /me/context: «Альта Групп», название формы; ответ — «Спасибо», «На проверке» у владельца', async () => {
+    const name = uniq('Отзыв о доставке для гостя');
+    const { a, m } = await open((x) => makeForm(x, ALTA, { name, templateId: 'tpl-feedback' }));
     await ready();
     expect(card().querySelector('.ox-fm-pv-logo')?.textContent).toContain('Альта Групп');
-    expect(inCard().getByRole('heading', { level: 2, name: 'Отзыв' })).toBeTruthy();
+    // Заголовок — название формы (presentation.title, Q-W4.70-2), а не название первой страницы «Отзыв».
+    expect(inCard().getByRole('heading', { level: 2, name })).toBeTruthy();
+    expect(inCard().queryByRole('heading', { level: 2, name: 'Отзыв' })).toBeNull();
     expect(document.querySelector('nav')).toBeNull();
     fireEvent.click(star(5));
     fireEvent.click(inCard().getByRole('radio', { name: 'Да' }));

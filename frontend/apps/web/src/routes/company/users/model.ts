@@ -21,6 +21,8 @@ export interface Units {
   /** Регионы верхнего уровня в порядке API. */
   regions: OrgUnit[];
   byId: ReadonlyMap<string, OrgUnit>;
+  /** Имена проектов задач по id (listTaskProjects, W4.10): область «проект» назначения. Пусто — нет права на проекты. */
+  projects: ReadonlyMap<string, string>;
   /** Фирмы региона в порядке API (models.js firmsOf). */
   firmsOf: (regionId: string) => OrgUnit[];
   /**
@@ -31,7 +33,11 @@ export interface Units {
   firstFirm: () => OrgUnit | undefined;
 }
 
-export function unitsOf(units: readonly OrgUnit[], home: readonly string[] = []): Units {
+export function unitsOf(
+  units: readonly OrgUnit[],
+  home: readonly string[] = [],
+  projects: ReadonlyMap<string, string> = new Map(),
+): Units {
   const live = units.filter((u) => u.status === 'active');
   const byId = new Map(live.map((u) => [u.id, u]));
   const regions = live.filter((u) => u.kind === 'region');
@@ -41,6 +47,7 @@ export function unitsOf(units: readonly OrgUnit[], home: readonly string[] = [])
   return {
     regions,
     byId,
+    projects,
     firmsOf,
     firstFirm: () =>
       homeFirm ?? regions.flatMap((r) => firmsOf(r.id))[0] ?? live.find((u) => u.kind !== 'region'),
@@ -54,14 +61,17 @@ export function unitLabel(u: OrgUnit, units: Units): string {
   return parent ? `${parent.name} / ${u.name}` : u.name;
 }
 
-/** Подпись области назначения (models.js scopeLabel); проекта в этапе 1 нет — «Проект» (Q-W0.12-5). */
+/** Подпись области назначения (models.js scopeLabel); проект — с именем, если проект виден вошедшему (W4.85). */
 export function scopeLabel(scope: Scope, units: Units): string {
   switch (scope.kind) {
     case 'tenant':
       return company.dialogs.assign.types.tenant;
     case 'self':
       return PEOPLE_TEXT.scope.self;
-    case 'project':
+    case 'project': {
+      const name = units.projects.get(scope.resourceIds[0] ?? '');
+      return name ? format(PEOPLE_TEXT.scope.projectNamed, { name }) : PEOPLE_TEXT.scope.project;
+    }
     case 'resource_pool':
       return PEOPLE_TEXT.scope.project;
     case 'org_unit': {

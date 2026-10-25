@@ -1023,6 +1023,9 @@ type PublicFormPresentation struct {
 	OrganizationName *string `json:"organizationName"`
 	ProgressBar      bool    `json:"progressBar"`
 	ShowScore        bool    `json:"showScore"`
+
+	// Title W4.85 (0.11.1-stage4, Q-W4.70-2). The name of the form (Form.name) — the heading of the guest page. Shown in the browser tab and above the questions; the organization name stays in the logo line.
+	Title string `json:"title"`
 }
 
 // PublicResponseCreate Nonce is bound to public token+version+browser session; short-lived. Server can require antiAbuseToken at risk thresholds. Uploaded file IDs must belong to the same nonce/form field and be ready. A changed live version yields 409 form_version_changed rather than reinterpreting answers. Nonce is single-use for a committed response. Idempotency replay is checked after capability authorization but before the consumed-nonce rejection. Anonymous idempotency namespace is tenant+publicToken digest+nonce+operation; never one global anonymous actor. W4.05 (0.11.0-stage4, return 3; Q-W4.00-forms-20): the response of the channel public records the keys of hidden questions filled from linkParams in FormResponse.linkParamKeys (forms.responses.link_param_keys) — the value came from the link, not from the guest; a hidden question without a parameter takes its defaultValue on the server.

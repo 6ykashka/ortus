@@ -4,7 +4,7 @@ openapi: 3.1.0
 jsonSchemaDialect: https://json-schema.org/draft/2020-12/schema
 info:
   title: ORTUS CRM Constructor — Design API
-  version: 0.11.0-stage4
+  version: 0.11.1-stage4
   summary: Reviewable starting contract for a tenant-isolated modular CRM on Go; not an implemented or exhaustive API.
   description: |-
     Design snapshot, 2026-10-01. A tenant is one business holding; regions/companies/branches are scoped organization units within it. Platform administration is a separate control plane and never implies business-data access.
@@ -25370,6 +25370,11 @@ components:
       additionalProperties: false
       description: "W4.05 (0.11.0-stage4, Q-W4.00-forms-19). How the public form is drawn — the render of «Предпросмотр» without its panel: the logo and the name of the organization («Логотип и название организации»), the progress by pages, the button «Назад», the text after submission and whether the score is shown (FormSettings of the form). The colours of buttons come from «Оформление» of the organization."
       properties:
+        title:
+          type: string
+          minLength: 1
+          maxLength: 200
+          description: W4.85 (0.11.1-stage4, Q-W4.70-2). The name of the form (Form.name) — the heading of the guest page. Shown in the browser tab and above the questions; the organization name stays in the logo line.
         organizationName:
           type:
             - string
@@ -25386,6 +25391,7 @@ components:
         showScore:
           type: boolean
       required:
+        - title
         - organizationName
         - progressBar
         - backButton

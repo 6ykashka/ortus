@@ -9257,6 +9257,8 @@ export interface components {
     };
     /** @description W4.05 (0.11.0-stage4, Q-W4.00-forms-19). How the public form is drawn — the render of «Предпросмотр» without its panel: the logo and the name of the organization («Логотип и название организации»), the progress by pages, the button «Назад», the text after submission and whether the score is shown (FormSettings of the form). The colours of buttons come from «Оформление» of the organization. */
     PublicFormPresentation: {
+      /** @description W4.85 (0.11.1-stage4, Q-W4.70-2). The name of the form (Form.name) — the heading of the guest page. Shown in the browser tab and above the questions; the organization name stays in the logo line. */
+      title: string;
       /** @description null — the form hides the logo and the name (showLogo false). */
       organizationName: string | null;
       progressBar: boolean;

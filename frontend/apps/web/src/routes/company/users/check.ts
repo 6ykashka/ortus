@@ -5,7 +5,7 @@ import type { components } from '@ortus/api-client';
 import { INDUSTRY, REASON } from '@ortus/domain';
 import { company, format, shell } from '@ortus/texts';
 
-import { scopeLabel, type Units } from './model.ts';
+import { scopeLabel, type Units, unitLabel } from './model.ts';
 import { PEOPLE_TEXT } from './texts.ts';
 
 type S = components['schemas'];
@@ -53,6 +53,42 @@ export const CHECK_ACTIONS: readonly CheckAction[] = [
     moduleKey: 'repairs',
   },
 ];
+
+/** Объект проверки (OBJECTS эталона :2344): машина или рейс логистики; подразделение — у самого объекта. */
+export interface CheckObject {
+  value: string;
+  label: string;
+  /** Подразделение объекта: с ним уходит explainAccess (гранты ядра выдаются на подразделение). */
+  orgUnitId: string;
+}
+
+/**
+ * Объекты «Проверки доступа» (Q-W1.23-8): «{машина} · {регион / фирма}» и «Рейс {номер} · {регион / фирма}».
+ * Подразделение вне области вошедшего — подпись без него. Нет машин и рейсов (нет права на логистику или модуль не
+ * подключён) — пусто: вкладка предлагает фирмы организации.
+ */
+export function checkObjects(
+  vehicles: readonly S['Vehicle'][],
+  trips: readonly S['TripPlan'][],
+  units: Units,
+): CheckObject[] {
+  const place = (orgUnitId: string): string => {
+    const u = units.byId.get(orgUnitId);
+    return u ? ' · ' + unitLabel(u, units) : '';
+  };
+  return [
+    ...vehicles.map((v) => ({
+      value: 'vehicle:' + v.id,
+      label: v.displayName + place(v.orgUnitId),
+      orgUnitId: v.orgUnitId,
+    })),
+    ...trips.map((t) => ({
+      value: 'trip:' + t.id,
+      label: format(PEOPLE_TEXT.checkTrip, { number: t.number }) + place(t.orgUnitId),
+      orgUnitId: t.orgUnitId,
+    })),
+  ];
+}
 
 export type Reason = keyof typeof REASON;
 

@@ -74,6 +74,22 @@ export function useAccessData(tenantId: string) {
         unwrap(await api.GET('/api/v1/tenants/{tenantId}/org-units', { params: { path, query } })),
       ),
   });
+  // Имена проектов для области «проект» назначений (W4.85): не основной запрос страницы — нет права на проекты
+  // задач (403) или сбой дают подпись «Проект» без имени, а не ошибку страницы.
+  const projects = useQuery({
+    queryKey: [...key, 'projects'],
+    queryFn: async () => {
+      try {
+        return await fetchAll(async (query) =>
+          unwrap(await api.GET('/api/v1/tenants/{tenantId}/projects', { params: { path, query } })),
+        );
+      } catch (e) {
+        if (isForbidden(e)) return [];
+        throw e;
+      }
+    },
+    retry: false,
+  });
   const owners = useQuery({
     queryKey: [...key, 'owners'],
     queryFn: async () =>
@@ -85,7 +101,7 @@ export function useAccessData(tenantId: string) {
     queryFn: async () =>
       unwrap(await api.GET('/api/v1/tenants/{tenantId}/subscription', { params: { path } })),
   });
-  return { members, roles, assignments, groups, units, owners, subscription };
+  return { members, roles, assignments, groups, units, projects, owners, subscription };
 }
 
 export type AccessData = ReturnType<typeof useAccessData>;

@@ -123,7 +123,7 @@ describe('«Группы»', () => {
     const drv = (await screen.findByText('Водители Север')).closest('article') as HTMLElement;
     expect(drv.textContent).toContain('2 участника: Илья Васильев, Кирилл Громов');
     expect(drv.textContent).toContain(
-      'Роли через группу: Исполнитель · Проект; Водитель · Москва / Север Логистик',
+      'Роли через группу: Исполнитель · Проект «Логистика · Север»; Водитель · Москва / Север Логистик',
     );
     const disp = (await screen.findByText('Диспетчеры Север')).closest('article') as HTMLElement;
     expect(disp.textContent).toContain('Роли через группу не назначены');
@@ -291,6 +291,32 @@ describe('«Проверка доступа»', () => {
     await waitFor(() => expect(result.textContent).toContain('Нет доступных разделов модулей'));
   });
 
+  // W4.85 · Q-W1.23-8: «Объект» — машины и рейсы логистики (эталон OBJECTS :2344), а не фирмы организации.
+  it('«Объект»: машины и рейсы с подразделением; по умолчанию — первая машина домашней фирмы', async () => {
+    await open('?tab=check', { preset: 'logistics-ready' });
+    const select = (await screen.findByLabelText(/^Объект/)) as HTMLSelectElement;
+    await waitFor(() =>
+      expect([...select.options].map((o) => o.text)).toContain(
+        'ГАЗель Next · Москва / Север Логистик',
+      ),
+    );
+    const labels = [...select.options].map((o) => o.text);
+    expect(labels.some((l) => /^Рейс Р-\d+ · Москва \/ /.test(l))).toBe(true);
+    expect(labels.at(-1)).toBe('Без конкретного объекта');
+    expect(labels).not.toContain('Москва / Север Логистик');
+    expect(select.selectedOptions[0]?.text).toMatch(/ · Москва \/ Север Логистик$/);
+  });
+
+  it('«Объект» без права на машины и рейсы — фирмы организации, как прежде', async () => {
+    await open('?tab=check');
+    const select = (await screen.findByLabelText(/^Объект/)) as HTMLSelectElement;
+    await waitFor(() =>
+      expect([...select.options].map((o) => o.text)).toContain('Москва / Север Логистик'),
+    );
+    expect([...select.options].map((o) => o.text)).not.toContain(
+      'ГАЗель Next · Москва / Север Логистик',
+    );
+  });
   // Возврат 16.10 №1: состояния главного запроса вкладки (verification-protocol §1.3).
   it('ошибка explainAccess — текст ошибки и «Повторить»', async () => {
     const a = await open('?tab=check', {
@@ -385,20 +411,26 @@ describe(
       await asManager();
       const vas = await row('Илья Васильев');
       await waitFor(() =>
-        expect(vas.textContent).toContain(`${HIDDEN}· Проект· через группу «Водители Север»`),
+        expect(vas.textContent).toContain(
+          `${HIDDEN}· Проект «Логистика · Север»· через группу «Водители Север»`,
+        ),
       );
       const lines = [...vas.querySelectorAll('.ox-grant')].map((g) => g.textContent ?? '');
       expect(lines.length).toBeGreaterThan(0);
       expect(lines.filter((l) => l.startsWith('·'))).toEqual([]);
       fireEvent.click(within(vas).getByRole('button', { name: 'Илья Васильев' }));
       const card = await screen.findByRole('dialog', { name: 'Илья Васильев' });
-      expect(card.textContent).toContain(`${HIDDEN} · Проект · через группу «Водители Север»`);
+      expect(card.textContent).toContain(
+        `${HIDDEN} · Проект «Логистика · Север» · через группу «Водители Север»`,
+      );
     });
 
     it('«Группы»: «Роли через группу: Роль не видна…»; участники вне области названы', async () => {
       await asManager('?tab=groups');
       const drv = (await screen.findByText('Водители Север')).closest('article') as HTMLElement;
-      expect(drv.textContent).toContain(`Роли через группу: ${HIDDEN} · Проект; ${HIDDEN} · `);
+      expect(drv.textContent).toContain(
+        `Роли через группу: ${HIDDEN} · Проект «Логистика · Север»; ${HIDDEN} · `,
+      );
       const disp = (await screen.findByText('Диспетчеры Север')).closest('article') as HTMLElement;
       expect(disp.textContent).not.toContain('0 участников: ');
       expect(disp.textContent).toContain('вне вашей области');

@@ -93,8 +93,8 @@ const SCREENS = [
   ['forms-versions', 'W4.23', FORMS],
   ['modal-form-share', 'W4.23', FORMS],
   ['forms-actions', 'W4.23', FORMS],
-  ['form-fill', 'W4.23', 'no-reference'],
-  ['public-form', 'W4.23', 'no-reference'],
+  ['form-fill', 'W4.70', 'no-reference'],
+  ['public-form', 'W4.70', 'no-reference'],
 ];
 
 describe('контракт 0.7.0-stage4 (W4.02): виды областей', () => {

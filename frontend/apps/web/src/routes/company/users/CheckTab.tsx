@@ -1,5 +1,6 @@
 // W1.23 · Вкладка «Проверка доступа» (S1-14; эталон design-stage-1 :400–425, accessVM :3218–3247): сотрудник,
-// действие, объект (подразделение: машин и рейсов в этапе 1 нет), примеры; результат — explainAccess:
+// действие, объект (машина или рейс логистики, Q-W1.23-8; без права на логистику — фирма организации), примеры;
+// результат — explainAccess:
 // «Разрешено» с основанием или причина эталона, «Рабочее место сотрудника · вычислено»; «Почему доступно» —
 // диалог с проверками и назначениями (no-reference).
 import { type ApiClient, type components, unwrap } from '@ortus/api-client';
@@ -13,12 +14,13 @@ import { ExplainDialog } from '../../../modals/people/index.ts';
 import {
   CHECK_ACTIONS,
   type CheckAction,
+  checkObjects,
   resultOf,
   WORKPLACE_PERMISSIONS,
   workplaceOf,
 } from './check.ts';
 import { problemText } from '../../../shell/run.tsx';
-import { accessKey, type AccessData, isForbidden } from './data.ts';
+import { accessKey, type AccessData, fetchAll, isForbidden } from './data.ts';
 import { memberSubtitle, unitLabel, type Units } from './model.ts';
 import { Hidden } from './parts.tsx';
 import { PEOPLE_TEXT } from './texts.ts';
@@ -37,13 +39,76 @@ const CIRCLE: Readonly<Record<'ok' | 'warn' | 'danger' | 'neutral', { bg: string
 interface Query {
   member: string;
   action: string;
-  object: string;
+  /** Выбранный объект; не выбран — первый объект домашней фирмы (эталон: «ГАЗель Next · Север Логистик»). */
+  object: string | undefined;
+}
+
+interface ObjectOption {
+  value: string;
+  label: string;
+  /** Подразделение объекта; у «Без конкретного объекта» нет. */
+  orgUnitId?: string;
 }
 
 export interface CheckTabProps {
   tenantId: string;
   data: AccessData;
   units: Units;
+}
+
+/** Машины и рейсы логистики (не завершённые): нет права или модуль не подключён — пусто, вкладка предлагает фирмы. */
+function fleetOptions(api: ApiClient, tenantId: string) {
+  const path = { tenantId };
+  const quiet = async <T,>(load: () => Promise<T[]>): Promise<T[]> => {
+    try {
+      return await load();
+    } catch {
+      return [];
+    }
+  };
+  return [
+    {
+      queryKey: [...accessKey(tenantId), 'check-vehicles'],
+      retry: false,
+      queryFn: () =>
+        quiet(() =>
+          fetchAll(async (query) =>
+            unwrap(
+              await api.GET('/api/v1/tenants/{tenantId}/fleet/vehicles', {
+                params: { path, query },
+              }),
+            ),
+          ),
+        ),
+    },
+    {
+      queryKey: [...accessKey(tenantId), 'check-trips'],
+      retry: false,
+      queryFn: () =>
+        quiet(() =>
+          fetchAll(async (query) =>
+            unwrap(
+              await api.GET('/api/v1/tenants/{tenantId}/fleet/trip-plans', {
+                params: {
+                  path,
+                  query: {
+                    ...query,
+                    state: [
+                      'planned',
+                      'assigned',
+                      'inspection',
+                      'defect_review',
+                      'on_route',
+                      'returning',
+                    ],
+                  },
+                },
+              }),
+            ),
+          ),
+        ),
+    },
+  ] as const;
 }
 
 function explainOptions(
@@ -74,23 +139,46 @@ export function CheckTab({ tenantId, data, units }: CheckTabProps): ReactElement
   const byName = (name: string) => members.find((m) => m.displayName === name)?.id;
   const firstRegion = units.regions[0];
   const firms = firstRegion ? units.firmsOf(firstRegion.id) : [];
+  const allFirms = units.regions.flatMap((r) => units.firmsOf(r.id));
   const [q, setQ] = useState<Query>(() => ({
     member: byName('Марина Котова') ?? members[0]?.id ?? '',
     action: CHECK_ACTIONS[0]?.value ?? '',
-    object: units.firstFirm()?.id ?? NO_OBJECT,
+    object: undefined,
   }));
   const [why, setWhy] = useState(false);
   const action = CHECK_ACTIONS.find((a) => a.value === q.action) as CheckAction;
   const member = members.find((m) => m.id === q.member);
   const api = useApi();
-  const explain = useQuery(explainOptions(api, tenantId, q.member, action.permission, q.object));
+  const [vehicles, trips] = useQueries({ queries: fleetOptions(api, tenantId) });
+  const fleetObjects = checkObjects(
+    (vehicles.data ?? []) as S['Vehicle'][],
+    (trips.data ?? []) as S['TripPlan'][],
+    units,
+  );
+  // Нет машин и рейсов (нет права, модуль не подключён) — фирмы организации, как до логистики.
+  const options: ObjectOption[] = [
+    ...(fleetObjects.length
+      ? fleetObjects
+      : allFirms.map((f) => ({ value: f.id, label: unitLabel(f, units), orgUnitId: f.id }))),
+    { value: NO_OBJECT, label: C.noObject },
+  ];
+  const defaultUnit = units.firstFirm()?.id;
+  const object =
+    options.find((o) => o.value === q.object) ??
+    options.find((o) => o.orgUnitId !== undefined && o.orgUnitId === defaultUnit) ??
+    options[0];
+  const objectUnitId = object?.orgUnitId ?? NO_OBJECT;
+  const objectIn = (unitId: string | undefined) =>
+    options.find((o) => o.orgUnitId !== undefined && o.orgUnitId === unitId)?.value;
+  const explain = useQuery(
+    explainOptions(api, tenantId, q.member, action.permission, objectUnitId),
+  );
   const workplace = useQueries({
     queries: Object.values(WORKPLACE_PERMISSIONS).map((p) =>
       explainOptions(api, tenantId, q.member, p, NO_OBJECT),
     ),
   });
   const groups = new Map((data.groups.data ?? []).map((g) => [g.id, g.name]));
-  const objectUnit = q.object ? units.byId.get(q.object) : undefined;
 
   const presets: [string, Partial<Query>][] = [
     [
@@ -99,15 +187,15 @@ export function CheckTab({ tenantId, data, units }: CheckTabProps): ReactElement
     ],
     [
       C.presets.noPermission,
-      { member: byName('Илья Васильев'), action: 'fleet.review', object: firms[0]?.id },
+      { member: byName('Илья Васильев'), action: 'fleet.review', object: objectIn(firms[0]?.id) },
     ],
     [
       C.presets.noScope,
-      { member: byName('Илья Васильев'), action: 'fleet.view', object: firms[1]?.id },
+      { member: byName('Илья Васильев'), action: 'fleet.view', object: objectIn(firms[1]?.id) },
     ],
     [
       C.presets.earnings,
-      { member: byName('Илья Васильев'), action: 'fleet.earnings', object: firms[0]?.id },
+      { member: byName('Илья Васильев'), action: 'fleet.earnings', object: objectIn(firms[0]?.id) },
     ],
   ];
   const apply = (p: Partial<Query>) =>
@@ -126,7 +214,7 @@ export function CheckTab({ tenantId, data, units }: CheckTabProps): ReactElement
       ? resultOf(x, {
           memberName: member.displayName,
           action,
-          ...(objectUnit ? { objectLabel: unitLabel(objectUnit, units) } : {}),
+          ...(object?.orgUnitId ? { objectLabel: object.label } : {}),
           units,
           groups,
         })
@@ -165,13 +253,6 @@ export function CheckTab({ tenantId, data, units }: CheckTabProps): ReactElement
     </label>
   );
 
-  const objects = [
-    ...units.regions.flatMap((r) =>
-      units.firmsOf(r.id).map((f) => ({ value: f.id, label: unitLabel(f, units) })),
-    ),
-    { value: NO_OBJECT, label: C.noObject },
-  ];
-
   return (
     <div className="ox-users-panel">
       <div className="ox-check">
@@ -192,7 +273,7 @@ export function CheckTab({ tenantId, data, units }: CheckTabProps): ReactElement
             'action',
             CHECK_ACTIONS.map((a) => ({ value: a.value, label: a.label })),
           )}
-          {select(C.objectField, q.object, 'object', objects)}
+          {select(C.objectField, object?.value ?? NO_OBJECT, 'object', options)}
           <div className="ox-check-presets">
             <span>{C.examples}</span>
             {presets.map(([label, p]) => (

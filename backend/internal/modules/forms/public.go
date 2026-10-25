@@ -167,7 +167,7 @@ func (s *Service) PublicForm(ctx context.Context, token string) (pfapi.PublicFor
 		}
 		out = pfapi.PublicForm{FormId: f.id, VersionId: v.id, Definition: cut, AcceptingResponses: !closed,
 			UploadAllowed: s.Uploads != nil && hasPhoto(v.def), UploadMaxBytes: publicUploadMax, SubmissionNonce: nonce,
-			NonceExpiresAt: exp, Presentation: &pfapi.PublicFormPresentation{ProgressBar: f.set.extra.ProgressBar,
+			NonceExpiresAt: exp, Presentation: &pfapi.PublicFormPresentation{Title: f.name, ProgressBar: f.set.extra.ProgressBar,
 				BackButton: f.set.extra.BackButton, ConfirmationText: f.set.extra.ConfirmationText, ShowScore: f.set.extra.ShowScore}}
 		if !out.UploadAllowed {
 			out.UploadMaxBytes = 0

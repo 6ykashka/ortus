@@ -112,7 +112,7 @@ test.describe('company-users — «Люди», «Группы», «Провер�
     const drv = page.getByRole('article').filter({ hasText: 'Водители Север' });
     await expect(drv).toContainText('2 участника: Илья Васильев, Кирилл Громов');
     await expect(drv).toContainText(
-      'Роли через группу: Исполнитель · Проект; Водитель · Москва / Север Логистик',
+      'Роли через группу: Исполнитель · Проект «Логистика · Север»; Водитель · Москва / Север Логистик',
     );
     await expect(page.getByRole('button', { name: 'Создать группу' })).toBeEnabled();
   });
@@ -310,12 +310,14 @@ test.describe('company-users — «Люди», «Группы», «Провер�
     const alta = await tenantId(page);
     await app(`/t/${alta}/users`, { persona: 'manager' });
     await expect(personRow(page, 'Илья Васильев')).toContainText(
-      `${HIDDEN}· Проект· через группу «Водители Север»`,
+      `${HIDDEN}· Проект «Логистика · Север»· через группу «Водители Север»`,
     );
     await expect(page.getByRole('button', { name: 'Пригласить' })).toHaveCount(0);
     await tab(page, 'Группы').click();
     const drv = page.getByRole('article').filter({ hasText: 'Водители Север' });
-    await expect(drv).toContainText(`Роли через группу: ${HIDDEN} · Проект; ${HIDDEN} · `);
+    await expect(drv).toContainText(
+      `Роли через группу: ${HIDDEN} · Проект «Логистика · Север»; ${HIDDEN} · `,
+    );
     const disp = page.getByRole('article').filter({ hasText: 'Диспетчеры Север' });
     await expect(disp).toContainText('вне вашей области');
     await expect(page.getByRole('button', { name: 'Создать группу' })).toHaveCount(0);
@@ -461,6 +463,8 @@ test.describe('company-users — стенд @stand', () => {
     await expect(personRow(page, 'Илья Васильев')).toContainText(
       'Водитель· Москва / Север Логистик· через группу «Водители Север»',
     );
+    // W4.85: область «проект» — с именем проекта задач (listTaskProjects, сид «Логистика · Север»).
+    await expect(personRow(page, 'Илья Васильев')).toContainText('Проект «Логистика · Север»');
     await expect(personRow(page, 'Кирилл Громов')).toContainText('Заблокирован');
     await tab(page, 'Группы').click();
     await expect(page.getByRole('article').filter({ hasText: 'Водители Север' })).toContainText(

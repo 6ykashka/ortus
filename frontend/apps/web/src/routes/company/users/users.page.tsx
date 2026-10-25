@@ -84,7 +84,14 @@ export default function UsersPage(): ReactElement {
 
   const me = (data.members.data ?? []).find((m) => m.userId === shell.me.userId);
   const home = me?.orgUnitIds;
-  const units = useMemo(() => unitsOf(data.units.data ?? [], home), [data.units.data, home]);
+  const projectNames = useMemo(
+    () => new Map((data.projects.data ?? []).map((p) => [p.id, p.name])),
+    [data.projects.data],
+  );
+  const units = useMemo(
+    () => unitsOf(data.units.data ?? [], home, projectNames),
+    [data.units.data, home, projectNames],
+  );
   const modules = shell.tenant?.modules;
   const installed = useCallback(
     (key: string) =>

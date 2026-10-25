@@ -701,7 +701,7 @@ screens:
         explainKnowledgeAccess,
         listKnowledgeAccessRequests,
       ]
-    note: DoR предлагает отдельный WS W4.34 (кандидат). Роли пространства вне пространства прав не дают (PD-53); в listRoles их нет (Q-W4.00-knowledge-21).
+    note: Роли пространства вне пространства прав не дают (PD-53); в listRoles их нет (Q-W4.00-knowledge-21).
 
   knowledge-automation:
     title: Автоматизация
@@ -716,7 +716,6 @@ screens:
         runKnowledgeSection,
         listKnowledgeRuns,
       ]
-    note: DoR предлагает отдельный WS W4.35 (кандидат).
 
   knowledge-archive:
     title: Архив
@@ -760,7 +759,7 @@ screens:
         decideKnowledgeAccessRequest,
         setKnowledgeSpaceMember,
       ]
-    note: DoR предлагает отдельный WS W4.34 (кандидат); ACL на узлах — W4.01.
+    note: ACL на узлах — W4.01.
 
   # Этап 4 (W4.02): «Формы и опросы» — forms.md §6 (шаг 4.2). Черновик, FormDefinition v2, настройки, группы,
   # правила, сводка и CSV — контрактный PR forms (п. 4).
@@ -873,7 +872,7 @@ screens:
   form-fill:
     title: Заполнение формы
     stage: 4
-    ws: W4.23
+    ws: W4.70
     reference: no-reference (forms.md §6 — заполнение сотрудником нет в эталоне); рендер — вкладка «Предпросмотр» design-2026-10-19
     operations:
       [
@@ -885,12 +884,12 @@ screens:
         getUploadSession,
         completeUpload,
       ]
-    note: DoR предлагает отдельный WS W4.28 (кандидат); отправка сотрудником — submitFormResponse (W4.05), действующая версия — listFormVersions.
+    note: Отправка сотрудником — submitFormResponse (W4.05), действующая версия — listFormVersions.
 
   public-form:
     title: Публичная форма
     stage: 4
-    ws: W4.23
+    ws: W4.70
     reference: no-reference (forms.md §6 — публичной формы нет в эталоне); рендер — вкладка «Предпросмотр» design-2026-10-19
     operations:
       [
@@ -900,7 +899,7 @@ screens:
         completePublicUpload,
         getPublicUploadStatus,
       ]
-    note: DoR предлагает отдельный WS W4.28 (кандидат); гость — W4.25 (кандидат), AC-08.
+    note: Гость без входа; AC-08.
   # W4.07 (контрактный PR 6 этапа 4, шаг 4.6): подписка, оформление и экраны оператора по снимку 19.10 (design-2026-10-19).
   company-billing:
     title: Подписка и места
