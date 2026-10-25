@@ -57,7 +57,7 @@ describe('ci.yml: job и порядок', () => {
 
   it('Go из backend/go.mod там, где нужен Go', () => {
     const { wf } = load();
-    for (const id of ['lint', 'unit', 'integration', 'isolation', 'build', 'e2e-stand']) {
+    for (const id of ['lint', 'unit', 'integration', 'isolation', 'build', 'e2e-stand-shard']) {
       const goStep = wf.jobs[id].steps.find((s) => s.uses?.startsWith('actions/setup-go@'));
       assert.equal(goStep?.with?.['go-version-file'], 'backend/go.mod', id);
     }
@@ -109,11 +109,13 @@ describe('ci.yml: триггеры, права, надёжность', () => {
   });
 });
 
-describe('ci.yml: e2e-stand (W0.17, П-1)', () => {
-  it('job e2e-stand после build; стенд останавливается шагом if: always()', () => {
+describe('ci.yml: e2e-stand (W0.17, П-1; W4.86 — матрица шардов)', () => {
+  const standJob = (wf) => wf.jobs['e2e-stand-shard'];
+
+  it('job e2e-stand-shard после build; стенд останавливается шагом if: always()', () => {
     const { wf } = load();
-    const job = wf.jobs['e2e-stand'];
-    assert.ok(job, 'нет job e2e-stand');
+    const job = standJob(wf);
+    assert.ok(job, 'нет job e2e-stand-shard');
     assert.deepEqual([job.needs].flat(), ['build']);
     const runIdx = job.steps.findIndex(
       (s) => (s.run ?? '').trim() === 'node tools/ci/pipeline.mjs --job e2e-stand',
@@ -122,7 +124,38 @@ describe('ci.yml: e2e-stand (W0.17, П-1)', () => {
       (s) => s.if === 'always()' && (s.run ?? '').trim() === 'node tools/ci/e2e-stand.mjs --down',
     );
     assert.ok(runIdx >= 0 && down > runIdx, 'остановка стенда — после прогона и всегда');
-    assert.ok(job['timeout-minutes'] <= 60);
+    // 372 строки @stand одним воркером идут ≈ 94 мин: шарды по E2E_STAND_SHARDS, каждому — свой compose.
+    assert.ok(job['timeout-minutes'] <= 40, `timeout-minutes ${job['timeout-minutes']}`);
+  });
+
+  it('матрица shard = 1…E2E_STAND_SHARDS, E2E_SHARD на шаге прогона, имя и артефакт по шарду', () => {
+    const { wf } = load();
+    const job = standJob(wf);
+    const n = pipeline.E2E_STAND_SHARDS;
+    assert.ok(n >= 4, `E2E_STAND_SHARDS ${n}`);
+    assert.deepEqual(
+      job.strategy?.matrix?.shard,
+      Array.from({ length: n }, (_, i) => i + 1),
+    );
+    assert.equal(job.strategy['fail-fast'], false);
+    assert.match(job.name, /\$\{\{ matrix\.shard \}\}\/\d+/);
+    const run = job.steps.find(
+      (s) => (s.run ?? '').trim() === 'node tools/ci/pipeline.mjs --job e2e-stand',
+    );
+    assert.equal(run.env?.E2E_SHARD, `\${{ matrix.shard }}/${n}`);
+    const up = job.steps.find((s) => s.uses?.startsWith('actions/upload-artifact@'));
+    assert.match(up.with.name, /\$\{\{ matrix\.shard \}\}/);
+  });
+
+  it('итоговая e2e-stand: прежнее имя, needs e2e-stand-shard, падает, если шарды не success', () => {
+    const { wf } = load();
+    const job = wf.jobs['e2e-stand'];
+    assert.deepEqual([job.needs].flat(), ['e2e-stand-shard']);
+    assert.match(String(job.if), /!cancelled\(\)/);
+    const text = job.steps.map((s) => `${JSON.stringify(s.env ?? {})}\n${s.run ?? ''}`).join('\n');
+    assert.match(text, /needs\.e2e-stand-shard\.result/);
+    assert.doesNotMatch(text, /pipeline\.mjs/);
+    assert.ok(!job.name.includes('matrix'));
   });
 });
 
@@ -152,10 +185,12 @@ describe('ci.yml: шарды e2e (W1.53, П-16)', () => {
     assert.equal(run.env?.E2E_SHARD, `\${{ matrix.shard }}/${pipeline.E2E_SHARDS}`);
   });
 
-  it('e2e-shard: шард не дольше 20 мин; имя с номером шарда и не совпадает с итоговой', () => {
+  it('e2e-shard: шард не дольше 25 мин; имя с номером шарда и не совпадает с итоговой', () => {
     const { wf } = load();
     const job = shardJob(wf);
-    assert.ok(job['timeout-minutes'] <= 20, `timeout-minutes ${job['timeout-minutes']}`);
+    // W4.86: 3835 строк mock, ≈ 13,6 строки/мин на воркер — шардов столько, чтобы шард шёл ≈ 15 мин.
+    assert.ok(pipeline.E2E_SHARDS >= 18, `E2E_SHARDS ${pipeline.E2E_SHARDS}`);
+    assert.ok(job['timeout-minutes'] <= 25, `timeout-minutes ${job['timeout-minutes']}`);
     assert.match(job.name, /\$\{\{ matrix\.shard \}\}/);
     assert.notEqual(job.name, E2E_NAME);
     assert.match(job.name, /Playwright, режим mock/);

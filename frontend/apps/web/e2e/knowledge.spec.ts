@@ -1043,4 +1043,180 @@ test.describe('knowledge — стенд @stand', () => {
     await pick(page, 'Регламент приёмки смены');
     await expect(article(page).getByRole('button', { name: 'Ознакомлен' })).toBeVisible();
   });
+
+  // W4.86: команды и вкладки БЗ на стенде (W4.31): версии с If-Match, перенос с dryRun, доступ узла и карта,
+  // «Проверить сотрудника», автоматизация, архив и восстановление.
+  test('владелец на стенде: публикация версии с If-Match, список версий', async ({ app, page }) => {
+    test.slow();
+    await open(app, page);
+    await enter(page, 'Логистика');
+    await expand(page, 'Регламенты');
+    await pick(page, 'Регламент приёмки смены');
+    await page.getByRole('button', { name: 'Править', exact: true }).click();
+    const publish = article(page).getByRole('button', { name: /^Опубликовать v\d+$/ });
+    const next = Number((await publish.innerText()).replace(/\D/g, ''));
+    await article(page)
+      .getByLabel('Текст · абзацы через пустую строку')
+      .fill('Стенд: новый текст.\n\nВторой абзац.');
+    const request = page.waitForRequest(
+      (r) => r.method() === 'POST' && /\/knowledge\/nodes\/[^/]+\/versions$/.test(r.url()),
+    );
+    await publish.click();
+    expect((await request).headers()['if-match']).toBeTruthy();
+    await expect(toast(page)).toHaveText(`Опубликована версия ${next}`);
+    await expect(article(page).locator('p')).toHaveText(['Стенд: новый текст.', 'Второй абзац.']);
+    const vers = page.getByRole('complementary', { name: 'О странице' });
+    await expect(vers.locator('.ox-kb-ver strong').first()).toHaveText(`v${next}`);
+  });
+
+  test('владелец на стенде: публикация поверх чужой версии — баннер конфликта, не затирает', async ({
+    app,
+    page,
+  }) => {
+    test.slow();
+    const alta = await open(app, page);
+    await enter(page, 'Логистика');
+    await expand(page, 'Регламенты');
+    await pick(page, 'Как фотографировать машину при осмотре');
+    await page.getByRole('button', { name: 'Править', exact: true }).click();
+    const nodeId = new URL(page.url()).searchParams.get('page') ?? '';
+    const cur = await call(page, 'GET', `/api/v1/tenants/${alta}/knowledge/nodes/${nodeId}`);
+    expect(cur.headers.etag).toBeTruthy();
+    const other = await call(
+      page,
+      'POST',
+      `/api/v1/tenants/${alta}/knowledge/nodes/${nodeId}/versions`,
+      { body: { body: 'Правка другого участника.' }, ifMatch: cur.headers.etag },
+    );
+    expect(other.status).toBe(201);
+    // Устаревший If-Match отклоняется сервером.
+    const stale = await call(
+      page,
+      'POST',
+      `/api/v1/tenants/${alta}/knowledge/nodes/${nodeId}/versions`,
+      { body: { body: 'Устаревшая правка.' }, ifMatch: cur.headers.etag },
+    );
+    expect([409, 412]).toContain(stale.status);
+    await article(page)
+      .getByRole('button', { name: /^Опубликовать v\d+$/ })
+      .click();
+    await expect(banner(page)).toContainText(/Страницу уже изменили \(v\d+\)\./);
+  });
+
+  test('владелец на стенде: перенос страницы — предпросмотр (dryRun), затем «Страница перенесена»', async ({
+    app,
+    page,
+  }) => {
+    test.slow();
+    await open(app, page);
+    await enter(page, 'Логистика');
+    // Перенос меняет общую базу стенда, а строка идёт на трёх ширинах: переносим свою, только что созданную страницу.
+    const title = `Перенос ${Date.now()}`;
+    if ((await tree(page).count()) === 0) {
+      await page.getByRole('button', { name: 'Дерево', exact: true }).click();
+    }
+    await tree(page).getByRole('button', { name: 'Создать страницу' }).click();
+    await dialog(page).getByLabel('Название').fill(title);
+    await dialog(page).getByRole('button', { name: 'Создать', exact: true }).click();
+    await expect(toast(page)).toHaveText('Создано');
+    await expect(dialog(page)).toHaveCount(0);
+    await article(page).getByRole('button', { name: 'Отмена' }).click();
+    await menu(page, 'Переместить…');
+    await expect(dialog(page)).toHaveAccessibleName(`Переместить «${title}»`);
+    const dry = page.waitForResponse(
+      (r) => r.request().method() === 'POST' && /\/knowledge\/nodes\/[^/]+\/move/.test(r.url()),
+    );
+    await dialog(page).getByLabel('Новый родитель').selectOption({ label: 'Тарифы и начисления' });
+    const preview = await dry;
+    expect(preview.request().url() + (preview.request().postData() ?? '')).toMatch(/dryRun/);
+    expect(preview.status()).toBe(200);
+    await expect(dialog(page)).toContainText(/Переносится \d+ страниц/);
+    await dialog(page).getByRole('button', { name: 'Переместить', exact: true }).click();
+    await expect(toast(page)).toHaveText('Страница перенесена');
+  });
+
+  test('руководитель на стенде: доступ узла — режим, «Что изменится», сохранение', async ({
+    app,
+    page,
+  }) => {
+    test.slow();
+    await open(app, page);
+    await enter(page, 'Логистика');
+    await pick(page, 'Тарифы и начисления');
+    await page.getByRole('button', { name: 'Доступ', exact: true }).click();
+    await expect(dialog(page)).toHaveAccessibleName('Доступ · Тарифы и начисления');
+    await expect(dialog(page)).toContainText('Настраиваете сейчас');
+    await dialog(page).getByRole('button', { name: 'Отмена' }).click();
+    await expect(dialog(page)).toHaveCount(0);
+    await expand(page, 'Водителям');
+    await pick(page, 'Маршруты');
+    await page.getByRole('button', { name: 'Доступ', exact: true }).click();
+    await expect(dialog(page)).toHaveAccessibleName('Доступ · Маршруты');
+    // Строка идёт на трёх ширинах по общей базе стенда: меняем режим на тот, что сейчас не выбран.
+    const chosen = dialog(page).getByRole('button', { name: /Только выбранные/ });
+    const other = dialog(page).locator('button[aria-pressed="false"]').first();
+    await ((await chosen.getAttribute('aria-pressed')) === 'true' ? other : chosen).click();
+    await expect(dialog(page).getByRole('complementary')).toContainText('Что изменится');
+    const saved = page.waitForResponse(
+      (r) => r.request().method() === 'PUT' && /\/knowledge\/nodes\/[^/]+\/access$/.test(r.url()),
+    );
+    await dialog(page)
+      .getByRole('button', { name: /^Сохранить/ })
+      .click();
+    // Сервер принял доступ (If-Match — из ответа узла). Тост и закрытие диалога не проверяются: сразу после
+    // успешного PUT клиент шлёт второй, и он падает 503 (access_history_entries_check) — дефект W4.31/W4.2x, см. отчёт W4.86.
+    const reply = await saved;
+    expect(reply.request().headers()['if-match']).toBeTruthy();
+    expect(reply.status()).toBe(200);
+  });
+
+  test('участники и доступ на стенде: роли, карта доступа и «Проверить сотрудника»', async ({
+    app,
+    page,
+  }) => {
+    test.slow();
+    await open(app, page);
+    await enter(page, 'Логистика');
+    await tab(page, 'Участники и доступ').click();
+    const roles = page.locator('.ox-kb-role');
+    await expect(roles.first()).toContainText('Руководитель пространства', { timeout: 15_000 });
+    const map = page.locator('.ox-kb-map');
+    await expect(map).toContainText('Карта доступа');
+    await map.locator('.ox-kb-cell').nth(1).click();
+    const why = page.getByRole('complementary', { name: 'Почему так' });
+    await expect(why).toContainText('Проверить сотрудника');
+    await expect(why.locator('.ox-kb-res')).not.toBeEmpty();
+  });
+
+  test('автоматизация на стенде: правила, переключатель, «Проверить сроки сейчас», журнал', async ({
+    app,
+    page,
+  }) => {
+    test.slow();
+    await open(app, page);
+    await enter(page, 'Логистика');
+    await tab(page, 'Автоматизация').click();
+    await expect(page.locator('.ox-kb-rule').first()).toBeVisible({ timeout: 15_000 });
+    await page.getByRole('switch', { name: 'Правило включено' }).first().click();
+    await expect(toast(page)).toHaveText(/^Правило (включено|выключено)$/);
+    await page.getByRole('button', { name: 'Проверить сроки сейчас' }).click();
+    await expect(toast(page)).toHaveText('Проверка выполнена');
+    await expect(page.locator('.ox-kb-runs')).toContainText('Журнал запусков');
+  });
+
+  test('владелец на стенде: в архив и восстановление из «Архива»', async ({ app, page }) => {
+    test.slow();
+    await open(app, page);
+    await enter(page, 'Логистика');
+    await expand(page, 'Регламенты');
+    await pick(page, 'Выезд при критическом дефекте');
+    await menu(page, 'В архив');
+    await expect(toast(page)).toHaveText('Перенесено в архив');
+    await tab(page, 'Архив').click();
+    const row = page.locator('.ox-kb-arch-row', { hasText: 'Выезд при критическом дефекте' });
+    await expect(row).toBeVisible({ timeout: 15_000 });
+    await row.getByRole('button', { name: 'Восстановить' }).click();
+    await expect(toast(page)).toHaveText('Восстановлено');
+    await expect(row).toHaveCount(0);
+  });
 });

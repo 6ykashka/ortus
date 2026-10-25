@@ -740,13 +740,15 @@ export function startFakeApi({
   });
   return new Promise((resolve, reject) => {
     server.once('error', reject);
-    server.listen(port, host, () =>
+    server.listen(port, host, () => {
+      const actual = server.address().port; // при port = 0 порт назначает ОС
       resolve({
-        url: `http://127.0.0.1:${port}`,
+        url: `http://127.0.0.1:${actual}`,
+        port: actual,
         state,
         close: () => new Promise((done) => server.close(() => done())),
-      }),
-    );
+      });
+    });
   });
 }
 

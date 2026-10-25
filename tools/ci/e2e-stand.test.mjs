@@ -162,6 +162,54 @@ describe('окружение процессов', () => {
   });
 });
 
+describe('W4.86: аргументы после -- и шард (Q-W4.71-3)', () => {
+  it('extraArgs: всё после «--»; без «--» — всё, кроме --slot N, --keep, --down', () => {
+    const { extraArgs } = need();
+    assert.deepEqual(extraArgs(['--slot', '3', '--', '--grep', 'knowledge']), [
+      '--grep',
+      'knowledge',
+    ]);
+    assert.deepEqual(extraArgs(['--slot', '3', '--keep', '--grep', 'a b', 'x.spec.ts']), [
+      '--grep',
+      'a b',
+      'x.spec.ts',
+    ]);
+    // pnpm передаёт «--» первым аргументом, свои флаги — после него.
+    assert.deepEqual(extraArgs(['--', '--slot', '3', '--grep', 'knowledge']), [
+      '--grep',
+      'knowledge',
+    ]);
+    assert.deepEqual(extraArgs(['--slot', '3']), []);
+    assert.deepEqual(extraArgs(['--down', '--slot', '3']), []);
+  });
+
+  it('playwrightArgs: без своего --grep остаётся @stand|@mailpit, список spec дописывается', () => {
+    const args = need().playwrightArgs(['knowledge.spec.ts']);
+    assert.ok(args.includes('@stand|@mailpit'));
+    assert.equal(args.at(-1), 'knowledge.spec.ts');
+  });
+
+  it('playwrightArgs: свой --grep (и -g, и --grep=) заменяет умолчание, не дублируется', () => {
+    const { playwrightArgs } = need();
+    for (const extra of [['--grep', 'knowledge'], ['-g', 'knowledge'], ['--grep=knowledge']]) {
+      const args = playwrightArgs(extra);
+      assert.ok(!args.includes('@stand|@mailpit'), extra.join(' '));
+      assert.equal(
+        args.filter((a) => a === '--grep' || a === '-g' || a.startsWith('--grep=')).length,
+        1,
+      );
+      assert.ok(args.includes('knowledge') || args.includes('--grep=knowledge'));
+    }
+  });
+
+  it('playwrightArgs: E2E_SHARD=<i>/<N> из окружения добавляет --shard', () => {
+    const { playwrightArgs } = need();
+    assert.ok(playwrightArgs([], { E2E_SHARD: '2/8' }).includes('--shard=2/8'));
+    assert.ok(!playwrightArgs([], {}).some((a) => a.startsWith('--shard')));
+    assert.throws(() => playwrightArgs([], { E2E_SHARD: '9/4' }), /E2E_SHARD/);
+  });
+});
+
 describe('план шагов', () => {
   it('init → up postgres mailpit minio → bucket → migrate → seed → build api, worker → start api → readyz → start worker → playwright; остановка и down -v всегда', () => {
     const p = need().stepsFor(18, '/tmp/s.env');

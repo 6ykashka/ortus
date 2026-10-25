@@ -14,6 +14,7 @@
 // CLI:
 //   node tools/ci/e2e-stand.mjs [--slot N] [--keep]   прогон; --keep оставляет env-файл стенда
 //   node tools/ci/e2e-stand.mjs --down [--slot N]      только остановка (шаг `if: always()` в CI)
+//   ... [--slot N] -- <аргументы Playwright>           (W4.86) --grep заменяет @stand|@mailpit, список spec; E2E_SHARD=<i>/<N> — шард
 // Слот: --slot, иначе ORTUS_SLOT, иначе в CI 0; локально без слота — код 2: слот 0 — общий стенд
 // интегратора, а скрипт удаляет тома своего проекта. Порты — план v2 §3.6 и deploy/compose/stand.mjs.
 // Итог: ≥ 1 пройденный тест, 0 пропущенных, 0 упавших (JSON-отчёт Playwright), иначе код 1.
@@ -25,6 +26,7 @@ import { dirname, isAbsolute, join, resolve } from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 
 import { MAX_SLOT, parseEnv, portsForSlot, probePort } from '../../deploy/compose/stand.mjs';
+import { parseShard } from './pipeline.mjs';
 
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), '..', '..');
 const STAND = join(ROOT, 'deploy', 'compose', 'stand.mjs');
@@ -164,16 +166,44 @@ export function startLogged(cmd, args, { logFile, cwd, env }) {
   return { child, exit };
 }
 
-export const playwrightArgs = () => [
-  '--filter',
-  '@ortus/web',
-  'exec',
-  'playwright',
-  'test',
-  '--grep',
-  '@stand|@mailpit',
-  '--reporter=list,json,html',
-];
+/**
+ * W4.86 (Q-W4.71-3): аргументы Playwright из командной строки — всё после `--`; если `--` нет (pnpm мог его съесть),
+ * то всё, кроме собственных флагов `--slot N`, `--keep`, `--down`.
+ */
+export function extraArgs(argv) {
+  // `pnpm run e2e:stand -- --slot 3 --grep x` передаёт «--» первым аргументом: свои флаги идут после него.
+  const args = argv[0] === '--' ? argv.slice(1) : argv;
+  const dd = args.indexOf('--');
+  if (dd >= 0) return args.slice(dd + 1);
+  const out = [];
+  for (let i = 0; i < args.length; i++) {
+    if (args[i] === '--slot') i++;
+    else if (args[i] !== '--keep' && args[i] !== '--down') out.push(args[i]);
+  }
+  return out;
+}
+
+const hasGrep = (args) => args.some((a) => a === '--grep' || a === '-g' || a.startsWith('--grep='));
+
+/**
+ * Аргументы Playwright: по умолчанию `--grep @stand|@mailpit`; свой `--grep`/`-g` из `extra` его заменяет (узкий прогон),
+ * список spec дописывается. Шард — из env `E2E_SHARD=<i>/<N>` (матрица e2e-stand-shard, W4.86).
+ */
+export function playwrightArgs(extra = [], env = {}) {
+  const shard = parseShard(env.E2E_SHARD);
+  if (shard.fail) throw new RangeError(shard.fail);
+  return [
+    '--filter',
+    '@ortus/web',
+    'exec',
+    'playwright',
+    'test',
+    ...(hasGrep(extra) ? [] : ['--grep', '@stand|@mailpit']),
+    '--reporter=list,json,html',
+    ...shard.args,
+    ...extra,
+  ];
+}
 
 /** Итог JSON-отчёта: пройден хотя бы один тест, нет пропусков и падений. */
 export function verdict(report) {
@@ -193,7 +223,7 @@ export function verdict(report) {
 const stand = (...args) => [process.execPath, STAND, ...args];
 
 /** Шаги прогона: main — по очереди до первой ошибки, always — всегда (остановка). */
-export function stepsFor(slot, envFile) {
+export function stepsFor(slot, envFile, extra = []) {
   const binDir = tmpdir();
   const exe = process.platform === 'win32' ? '.exe' : '';
   const apiBin = join(binDir, `ortus-e2e-api-s${slot}${exe}`);
@@ -217,7 +247,7 @@ export function stepsFor(slot, envFile) {
       { id: 'start-api', fn: (st) => startApi(st, slot, envFile, apiBin) },
       { id: 'readyz', fn: (st) => waitReady(st, slot) },
       { id: 'start-worker', fn: (st) => startWorker(st, slot, envFile, workerBin) },
-      { id: 'playwright', fn: () => runPlaywright(slot, envFile) },
+      { id: 'playwright', fn: () => runPlaywright(slot, envFile, extra) },
     ],
     always: [
       { id: 'stop-worker', fn: (st) => stopWorker(st) },
@@ -343,13 +373,13 @@ function dumpApiLog(st) {
   dumpLog('cmd/worker', st.workerLog);
 }
 
-function runPlaywright(slot, envFile) {
+function runPlaywright(slot, envFile, extra = []) {
   const jsonFile = join(tmpdir(), `ortus-e2e-stand-s${slot}.json`);
   rmSync(jsonFile, { force: true });
   const standEnv = parseEnv(readFileSync(envFile, 'utf8'));
   const env = playwrightEnv(process.env, slot, jsonFile, standEnv);
   log(`Playwright: E2E_MAILPIT_URL ${env.E2E_MAILPIT_URL}`);
-  const code = exec([...pnpmArgv(), ...playwrightArgs()], env);
+  const code = exec([...pnpmArgv(), ...playwrightArgs(extra, process.env)], env);
   let report;
   try {
     report = JSON.parse(readFileSync(jsonFile, 'utf8'));
@@ -382,9 +412,9 @@ async function runStep(s, st) {
 }
 
 /** Прогон: main до первой ошибки, затем always в любом случае. */
-export async function runStand(slot, { keep = false } = {}) {
+export async function runStand(slot, { keep = false, extra = [] } = {}) {
   const envFile = standEnvFile(slot);
-  const { main, always } = stepsFor(slot, envFile);
+  const { main, always } = stepsFor(slot, envFile, extra);
   const st = {};
   let code = 0;
   try {
@@ -436,7 +466,7 @@ export async function main(argv = process.argv.slice(2), env = process.env) {
     return 2;
   }
   if (argv.includes('--down')) return downStand(slot);
-  return runStand(slot, { keep: argv.includes('--keep') });
+  return runStand(slot, { keep: argv.includes('--keep'), extra: extraArgs(argv) });
 }
 
 if (process.argv[1] && import.meta.url === pathToFileURL(resolve(process.argv[1])).href) {

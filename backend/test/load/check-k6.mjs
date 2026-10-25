@@ -20,11 +20,12 @@ import {
   requestsPerShift,
   tripsPerDriver,
 } from './lib/model.js';
+import { fakeApiPort } from './lib/port.mjs';
 import { startFakeApi } from './test/fake-api.mjs';
 
 export { K6_IMAGE };
-const SLOT = 8; // план §8: двойник W0.16 — слот 8, API исполнителя 8100 + слот
-const PORT = Number(process.env.FAKE_API_PORT ?? 8100 + SLOT);
+// W4.86: порт двойника — свободный, назначает ОС (FAKE_API_PORT — явный): 8100 + N занят API слота.
+const REQUESTED_PORT = fakeApiPort(process.env);
 
 const here = dirname(fileURLToPath(import.meta.url));
 const profile = JSON.parse(readFileSync(join(here, 'profile.json'), 'utf8'));
@@ -125,7 +126,7 @@ async function smoke() {
   const personas = personasFor(profile, 'smoke');
   // По смене на приёмке на каждую итерацию менеджера; водители — участники для планирования в setup().
   const api = await startFakeApi({
-    port: PORT,
+    port: REQUESTED_PORT,
     pendingTrips: iterations,
     drivers: personas.drivers,
   });
@@ -143,7 +144,7 @@ async function smoke() {
         '-e',
         'LOAD_STAGE=smoke',
         '-e',
-        `BASE_URL=http://host.docker.internal:${PORT}`,
+        `BASE_URL=http://host.docker.internal:${api.port}`,
         '--quiet',
         '--summary-export',
         '/results/smoke-summary.json',

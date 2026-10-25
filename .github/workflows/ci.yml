@@ -180,14 +180,14 @@ jobs:
   # W1.53 (критика этапа 1, П-16): одним воркером набор mock больше 40 мин — Playwright --shard в матрице.
   # Число шардов — E2E_SHARDS в tools/ci/pipeline.mjs (workflow.test.mjs сверяет матрицу с ним).
   e2e-shard:
-    name: e2e шард ${{ matrix.shard }}/6 (Playwright, режим mock)
+    name: e2e шард ${{ matrix.shard }}/20 (Playwright, режим mock)
     needs: build
     runs-on: ubuntu-24.04
-    timeout-minutes: 20
+    timeout-minutes: 25
     strategy:
       fail-fast: false
       matrix:
-        shard: [1, 2, 3, 4, 5, 6]
+        shard: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20]
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
@@ -202,7 +202,7 @@ jobs:
       - run: pnpm install --frozen-lockfile
       - run: node tools/ci/pipeline.mjs --job e2e
         env:
-          E2E_SHARD: ${{ matrix.shard }}/6
+          E2E_SHARD: ${{ matrix.shard }}/20
           # W2.70 (Q-W2.70-15): страницы этапов 1–2 сверяются со снимком 14.10 из тега, а не с design/ 19.10b
           # («Обучение» в меню — вне этапа). Тег design-stage-2 стоит на снимке 03.10 — не использовать.
           REFERENCE_REF: design-stage-1
@@ -235,12 +235,17 @@ jobs:
 
   # W0.17 (критика этапа 0, П-1): браузерный путь /me/context сквозь стек. CI=true → слот 0:
   # compose postgres, mailpit, minio → bucket → migrate → seed → cmd/api :8100 → Vite :5200 и эталон :4100
-  # → Playwright @stand.
-  e2e-stand:
-    name: e2e-stand (compose, migrate, seed, cmd/api, Playwright @stand)
+  # → Playwright @stand. W4.86: 372 строки одним воркером — ≈ 94 мин, больше любого лимита job; Playwright --shard в матрице,
+  # у каждого шарда свой compose на раннере. Число шардов — E2E_STAND_SHARDS в tools/ci/pipeline.mjs.
+  e2e-stand-shard:
+    name: e2e-stand шард ${{ matrix.shard }}/8 (compose, migrate, seed, cmd/api, Playwright @stand)
     needs: build
     runs-on: ubuntu-24.04
-    timeout-minutes: 40
+    timeout-minutes: 30
+    strategy:
+      fail-fast: false
+      matrix:
+        shard: [1, 2, 3, 4, 5, 6, 7, 8]
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
@@ -261,6 +266,7 @@ jobs:
         env:
           # W2.70 (Q-W2.70-15): эталон этапов 1–2 — снимок 14.10 из тега, как в e2e-shard.
           REFERENCE_REF: design-stage-1
+          E2E_SHARD: ${{ matrix.shard }}/8
       - name: остановка стенда (всегда)
         if: always()
         run: node tools/ci/e2e-stand.mjs --down
@@ -268,7 +274,7 @@ jobs:
         if: failure()
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
-          name: playwright-report-stand
+          name: playwright-report-stand-${{ matrix.shard }}
           path: |
             frontend/apps/web/playwright-report/
             frontend/apps/web/test-results/
@@ -276,3 +282,18 @@ jobs:
             /tmp/ortus-e2e-worker-s0.log
           if-no-files-found: ignore
           retention-days: 14
+
+  # W4.86: итог шардов e2e-stand под прежним id и именем — имя обязательной проверки не меняется.
+  e2e-stand:
+    name: e2e-stand (compose, migrate, seed, cmd/api, Playwright @stand)
+    needs: e2e-stand-shard
+    if: ${{ !cancelled() }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - name: итог шардов e2e-stand
+        env:
+          SHARDS_RESULT: ${{ needs.e2e-stand-shard.result }}
+        run: |
+          echo "e2e-stand-shard: ${SHARDS_RESULT}"
+          test "${SHARDS_RESULT}" = success

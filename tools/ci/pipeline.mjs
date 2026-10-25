@@ -125,7 +125,22 @@ export const E2E_SHARD_ENV = 'E2E_SHARD';
  * W1.53: число шардов матрицы `e2e-shard` в ci.yml (workflow.test.mjs сверяет). Один воркер в CI (e2e-kit) —
  * ≈ 2,4–2,9 с на строку; 1122 строки этапа 1 / 6 ≈ 10–11,5 мин шарда с накладными, после этапа 2 — до 13,5.
  */
-export const E2E_SHARDS = 6;
+export const E2E_SHARDS = 20;
+
+/**
+ * W4.86: после этапа 4 набор mock — 3835 строк в 121 spec; один воркер в CI даёт ≈ 13,6 строки/мин (run 40181927311:
+ * 272 строки за 20 мин). 20 шардов ≈ 192 строки ≈ 14 мин + установка ≈ 17 мин при лимите job 25 мин.
+ */
+
+/**
+ * W4.86: число шардов матрицы `e2e-stand-shard` (каждый — свой compose, cmd/api и cmd/worker на раннере). Набор @stand —
+ * 372 строки: в CI один воркер прошёл 185 за 40 мин (≈ 4,6 строки/мин), локально весь набор идёт 94 мин. 8 шардов ≈ 47
+ * строк ≈ 10 мин + подъём стенда ≈ 6 мин при лимите job 30 мин.
+ */
+export const E2E_STAND_SHARDS = 8;
+
+/** Текущий этап плана для сроков `expires: stage-N` в allowlist-lint (env ORTUS_STAGE важнее). */
+export const CURRENT_STAGE = 4;
 
 /** `E2E_SHARD`: пусто → весь набор; `<i>/<N>` (1 ≤ i ≤ N, без ведущих нулей) → `--shard`; иначе { fail }. */
 export function parseShard(raw) {
@@ -142,14 +157,21 @@ export function parseShard(raw) {
  * с прежним id и именем `e2e` (gate) только сводит результат матрицы: имя обязательной проверки не меняется.
  */
 export function workflowJobs(jobs = JOBS) {
-  return jobs.flatMap((j) =>
-    j.id === 'e2e'
-      ? [
-          { id: 'e2e-shard', needs: j.needs, pipelineJob: j.id, shards: E2E_SHARDS },
-          { id: 'e2e', needs: ['e2e-shard'], gate: 'e2e-shard' },
-        ]
-      : [{ id: j.id, needs: j.needs, pipelineJob: j.id }],
-  );
+  return jobs.flatMap((j) => {
+    if (j.id === 'e2e') {
+      return [
+        { id: 'e2e-shard', needs: j.needs, pipelineJob: j.id, shards: E2E_SHARDS },
+        { id: 'e2e', needs: ['e2e-shard'], gate: 'e2e-shard' },
+      ];
+    }
+    if (j.id === 'e2e-stand') {
+      return [
+        { id: 'e2e-stand-shard', needs: j.needs, pipelineJob: j.id, shards: E2E_STAND_SHARDS },
+        { id: 'e2e-stand', needs: ['e2e-stand-shard'], gate: 'e2e-stand-shard' },
+      ];
+    }
+    return [{ id: j.id, needs: j.needs, pipelineJob: j.id }];
+  });
 }
 
 /** Обязательные образы (W1.01): Dockerfile → имя образа. Контекст сборки — корень репозитория. */
@@ -326,7 +348,11 @@ export const JOBS = [
         owner: 'W0.05',
         plan: (ctx) =>
           ctx.scripts['allowlist-lint']
-            ? { cmds: [ctx.pnpm('run', 'allowlist-lint')] }
+            ? {
+                cmds: [ctx.pnpm('run', 'allowlist-lint')],
+                // W4.86: без этапа allowlist-lint считал этап 0 и не проверял сроки expires.
+                env: { ORTUS_STAGE: ctx.env?.ORTUS_STAGE || String(CURRENT_STAGE) },
+              }
             : { skip: 'нет скрипта allowlist-lint' },
       },
       {
@@ -489,6 +515,9 @@ export const JOBS = [
                 'слот 0 — общий стенд интегратора',
             };
           }
+          // W4.86: шард — env E2E_SHARD=<i>/<N>; e2e-stand.mjs читает его сам и передаёт --shard Playwright.
+          const shard = parseShard(ctx.env?.[E2E_SHARD_ENV]);
+          if (shard.fail) return { fail: shard.fail };
           const install = ctx.scripts['e2e:install'] ? [ctx.pnpm('run', 'e2e:install')] : [];
           return { cmds: [...install, ctx.pnpm('run', 'e2e:stand')] };
         },

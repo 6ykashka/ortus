@@ -339,6 +339,42 @@ describe('W0.17: плановые гейты (П-4) и e2e-stand (П-1)', () => 
     assert.deepEqual(step('unit', 'mcp-check').plan(ctx).cmds, [['pnpm', 'run', 'mcp:check']]);
   });
 
+  it('W4.86: allowlist-lint получает ORTUS_STAGE — текущий этап (4), заданный env важнее', () => {
+    const ctx = fakeCtx({ scripts });
+    const p = step('unit', 'allowlist-lint').plan(ctx);
+    assert.equal(need().CURRENT_STAGE, 4);
+    assert.deepEqual(p.env, { ORTUS_STAGE: '4' });
+    const own = step('unit', 'allowlist-lint').plan(
+      fakeCtx({ scripts, env: { ORTUS_STAGE: '5' } }),
+    );
+    assert.deepEqual(own.env, { ORTUS_STAGE: '5' });
+  });
+
+  it('W4.86: e2e-stand — шард из E2E_SHARD не ломает команды, неверный шард — ошибка', () => {
+    const base = { scripts, ci: true, exists: has('frontend/apps/web/playwright.config.ts') };
+    const bad = step('e2e-stand', 'e2e-stand').plan(
+      fakeCtx({ ...base, env: { E2E_SHARD: '9/4' } }),
+    );
+    assert.match(bad.fail ?? '', /E2E_SHARD/);
+    const ok = step('e2e-stand', 'e2e-stand').plan(fakeCtx({ ...base, env: { E2E_SHARD: '2/8' } }));
+    assert.deepEqual(ok.cmds.at(-1), ['pnpm', 'run', 'e2e:stand']);
+  });
+
+  it('W4.86: workflowJobs раскладывает e2e и e2e-stand на шарды и итог', () => {
+    const jobs = need().workflowJobs();
+    const shard = jobs.find((j) => j.id === 'e2e-stand-shard');
+    assert.equal(shard.pipelineJob, 'e2e-stand');
+    assert.equal(shard.shards, need().E2E_STAND_SHARDS);
+    assert.deepEqual(
+      jobs.find((j) => j.id === 'e2e-stand'),
+      {
+        id: 'e2e-stand',
+        needs: ['e2e-stand-shard'],
+        gate: 'e2e-stand-shard',
+      },
+    );
+  });
+
   it('storybook: storybook:build @ortus/ui; check-k6: Docker — локально пропуск, в CI ошибка', () => {
     const ctx = fakeCtx({ scripts, exists: has('backend/test/load/check-k6.mjs') });
     assert.deepEqual(step('build', 'storybook').plan(ctx).cmds, [
@@ -905,11 +941,12 @@ describe('W1.53: шардирование job e2e (П-16)', () => {
         'build',
         'e2e-shard',
         'e2e',
+        'e2e-stand-shard',
         'e2e-stand',
       ],
     );
     const by = Object.fromEntries(wj.map((j) => [j.id, j]));
-    for (const j of JOBS.filter((x) => x.id !== 'e2e')) {
+    for (const j of JOBS.filter((x) => x.id !== 'e2e' && x.id !== 'e2e-stand')) {
       assert.deepEqual(by[j.id], { id: j.id, needs: j.needs, pipelineJob: j.id }, j.id);
     }
     assert.deepEqual(by['e2e-shard'], {
