@@ -5,9 +5,22 @@
 import type { Locator, Page } from '@playwright/test';
 
 import { expect, test } from './fixtures/index.ts';
-import { billingSection, textOf, toastText } from './billing.helpers.ts';
+import {
+  billingSection,
+  cancelOwnPendingRequests,
+  mskLastDayText,
+  ownerChangeRequests,
+  readInbox,
+  realClock,
+  releaseStandLocks,
+  STAND_LOCK,
+  standLock,
+  standMark,
+  textOf,
+  toastText,
+} from './billing.helpers.ts';
 import { hitHeight, noHorizontalScroll, openPage } from './modules.helpers.ts';
-import { call, devScenario, LOTOS } from './shell.helpers.ts';
+import { call, devScenario, LOTOS, tenantId } from './shell.helpers.ts';
 
 const H1 = { level: 1, name: 'Подписка и места' } as const;
 const INTRO =
@@ -415,12 +428,152 @@ test.describe('company-billing — «Подписка и места» @mock', ()
   });
 });
 
+// W4.71 (Q-W4.61-20): ожидания — Go-сид шага 4.6 (backend/cmd/seed/billing.go, subscriptions.go): «Альта» — пробный
+// «Старт» v2, сетка v2 — пять тарифов и сроки 1/4/8/12 мес. Даты подписки сид сдвигает к дню прогона, а места и
+// срок пробного меняют другие строки полного прогона, поэтому они сверяются с ответом getTenantSubscription. Заявка —
+// своя на прогон: хвост прошлой попытки строк W4.71 (метка STAND_MARK) отменяется, чужие открытые заявки не трогаются,
+// своя отменяется из баннера, уведомления владельца читаются.
+
+/** Приглашение без участия control DB в ответе listMembers (строка возврата 2). */
+const INVITE_ONLY = 'Приглашение без участия W4.71';
+
+/**
+ * Плитка «Места» и список «Занимают место» стенда — по ответам, которые читает страница: плитка — seats подписки
+ * (участия control DB), список — listMembers (billingVM: активные с входом, затем приглашённые, и приглашения без
+ * участия W1.52). Числа расходятся, когда на стенде есть приглашение без участия (Q-W4.71-4).
+ */
+async function expectSeats(page: Page, root: Locator, id: string): Promise<void> {
+  const sub = (await call(page, 'GET', `/api/v1/tenants/${id}/subscription`)).body as {
+    seats: { used: number; limit: number };
+  };
+  const members = (await call(page, 'GET', `/api/v1/tenants/${id}/members?limit=200`)).body as {
+    items: { displayName: string; status: string; userId?: string }[];
+  };
+  const paid = [
+    ...members.items.filter((m) => m.status === 'active' && m.userId !== undefined),
+    ...members.items.filter((m) => m.status === 'invited'),
+  ].map((m) => m.displayName);
+  await expect(root.locator('.ox-bl-seats-value')).toHaveText(
+    `${sub.seats.used} из ${sub.seats.limit}`,
+  );
+  await expect(paidList(root).getByRole('heading', { level: 2 })).toHaveText(
+    `Занимают место · ${paid.length}`,
+  );
+  const people = paidList(root).locator('.ox-bl-person');
+  await expect(people).toHaveCount(paid.length);
+  for (const [i, name] of paid.entries()) await expect(people.nth(i)).toContainText(name);
+  await expect(paidList(root)).toContainText('Дарья Зимина');
+}
+
 test.describe('company-billing — стенд @stand', () => {
   test.skip(({ harness }) => harness.mode !== 'stand', 'режим stand');
+  test.describe.configure({ timeout: 90_000 });
+  test.afterEach(releaseStandLocks);
 
-  test.fixme('владелец стенда: подписка, места и заявка оператору', async ({ app, page }) => {
-    // W4.60 (backend шага 4.6: места подписки, getTenantPriceBook, заявки на тариф) не в main — до него 501.
+  test('владелец стенда: подписка, места и заявка оператору', async ({ app, page }) => {
+    // Одна открытая заявка на организацию: строки с заявками «Альты» идут по очереди и в параллельном прогоне.
+    await standLock(STAND_LOCK.altaRequests);
+    await realClock(page);
+    await app('/', { persona: 'owner' });
+    const id = await tenantId(page);
+    await cancelOwnPendingRequests(page, id);
     const { root } = await openBilling(app, page);
+    const sub = (await call(page, 'GET', `/api/v1/tenants/${id}/subscription`)).body as {
+      trialEndsAt: string;
+    };
+    await expect(root).toHaveAttribute('data-screen-label', 'Владелец · подписка и места');
+    await expect(root).toContainText('Альта Групп / Компания');
+    await expect(
+      root.getByRole('heading', { level: 2, name: 'Пробный период · «Старт»' }),
+    ).toBeVisible();
+    await expect(root.locator('.ox-bl-plan .ox-chip-label')).toHaveText(
+      new RegExp(
+        `^до ${mskLastDayText(sub.trialEndsAt).replaceAll('.', '\\.')} · осталось \\d+ дн\\.$`,
+      ),
+    );
+    await expectSeats(page, root, id);
+
+    // Сетка v2 сида: сроки со скидками и пять тарифов, расчёт «Команды» на 12 мес.
+    await expect(terms(root).getByRole('radio')).toHaveText([
+      'Месяц',
+      '4 мес−5%',
+      '8 мес−10%',
+      '12 мес−20%',
+    ]);
     await expect(tiers(root).getByRole('radio')).toHaveCount(5);
+    expect(await textOf(tier(root, 'Старт'))).toBe(
+      'Старт до 10 мест 3 120 ₽ в месяц 37 440 ₽ за 12 мес Тот же лимит, что в пробном периоде',
+    );
+    expect(await textOf(tier(root, 'Сеть'))).toBe(
+      'Сеть до 100 мест 22 320 ₽ в месяц 267 840 ₽ за 12 мес',
+    );
+    expect(await textOf(tier(root, 'Безлимит'))).toBe(
+      'Безлимит больше 100 мест Индивидуально расчёт с оператором',
+    );
+    await expect(send(root)).toBeDisabled();
+    await tier(root, 'Команда').click();
+    expect(await textOf(root.locator('.ox-bl-calc'))).toBe(
+      '7 120 ₽ в месяц · 85 440 ₽ за 12 месЭкономия 21 360 ₽ по сравнению с помесячной оплатой. Новый лимит: 25 мест.',
+    );
+
+    // Заявка оператору: баннер с номером сервера, тарифы закрыты; отмена из баннера возвращает данные.
+    const comment = standMark(test.info().project.name);
+    await root.getByLabel('Комментарий для оператора').fill(comment);
+    await send(root).click();
+    await expect(toastText(page)).toHaveText('Заявка отправлена оператору');
+    const mine = (await ownerChangeRequests(page, id)).find((x) => x.comment === comment);
+    expect(mine?.status).toBe('pending');
+    const banner = root.getByRole('status').filter({ hasText: 'отправлена' });
+    await expect(banner).toContainText(
+      new RegExp(
+        `^pendingЗаявка ${mine?.number} на «Команда» · 12 мес отправлена \\d\\d\\.\\d\\d \\d\\d:\\d\\d\\. Новый лимит начнёт действовать после подтверждения оператором\\.Отменить заявку$`,
+      ),
+    );
+    for (const r of await tiers(root).getByRole('radio').all()) {
+      await expect(r).toHaveAttribute('aria-disabled', 'true');
+    }
+    await expect(
+      root.getByText('Сначала дождитесь решения по текущей заявке или отмените её'),
+    ).toBeVisible();
+    await banner.getByRole('button', { name: 'Отменить заявку' }).click();
+    await expect(toastText(page)).toHaveText('Заявка отменена');
+    await expect(root.getByRole('status').filter({ hasText: 'отправлена' })).toHaveCount(0);
+    await expect(tier(root, 'Команда')).toHaveAttribute('aria-disabled', 'false');
+    expect((await ownerChangeRequests(page, id)).find((x) => x.id === mine?.id)?.status).toBe(
+      'cancelled',
+    );
+    await readInbox(page, id);
+  });
+
+  test('владелец стенда: приглашение без участия — в «Занимают место», плитка мест — по подписке', async ({
+    app,
+    page,
+  }) => {
+    // Возврат 2 (полный e2e-stand): путь владельца этапа 1 (journeys/stage1/owner-onboarding @stand) идёт раньше и
+    // оставляет приглашение «Новый Сотрудник» без участия control DB (W1.52). listMembers отдаёт его «Приглашён», и
+    // страница ставит его в «Занимают место» (billingVM), а места подписки (tenant_seat_usage) считают только участия.
+    // Состояние стенда после той строки — ответ listMembers с таким приглашением, без правки данных.
+    await app('/', { persona: 'owner' });
+    const id = await tenantId(page);
+    await page.route(
+      (url) => url.pathname === `/api/v1/tenants/${id}/members`,
+      async (route) => {
+        const r = await route.fetch();
+        const body = (await r.json()) as { items: Record<string, unknown>[] };
+        body.items.push({
+          id: crypto.randomUUID(),
+          displayName: INVITE_ONLY,
+          email: 'invite-only.w471@alta.example',
+          orgUnitIds: [],
+          revision: 1,
+          status: 'invited',
+          workProfiles: [],
+        });
+        await route.fulfill({ response: r, json: body });
+      },
+    );
+    const { root } = await openBilling(app, page);
+    await expectSeats(page, root, id);
+    await expect(paidList(root)).toContainText(INVITE_ONLY);
   });
 });

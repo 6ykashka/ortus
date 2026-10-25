@@ -1,8 +1,19 @@
 // W4.61 · e2e страницы `platform-usage` — «Использование» оператора (эталон design-2026-10-19, «Ортус CRM.dc.html»
 // pg.usage :869–943, usageVM :3751–3805; чек-лист docs/plan/analysis/04-platform.md §8 п. 15–20, обязательные пункты
 // verification-protocol.md §1.3). Данные — getPlatformUsage сценарного сервера (только метаданные control DB).
+import type { Locator, Page } from '@playwright/test';
+
 import { expect, test } from './fixtures/index.ts';
-import { openPlatform, platformUsage, section, textOf } from './billing.helpers.ts';
+import {
+  gbText,
+  mskLastDayText,
+  openPlatform,
+  platformUsage,
+  platformUsageFull,
+  type PlatformUsageDto,
+  section,
+  textOf,
+} from './billing.helpers.ts';
 import { hitHeight, noHorizontalScroll } from './modules.helpers.ts';
 import { devScenario } from './shell.helpers.ts';
 
@@ -293,16 +304,187 @@ test.describe('platform-usage — «Использование» @mock', () => {
   });
 });
 
+const DASH = '—';
+
+/** Подписи статусов организаций (TENANT_STATE эталона; grace и read_only — «Ограничен», Q-W1.25-4). */
+const STATUS_LABEL: Readonly<Record<string, string>> = {
+  trial: 'Пробный период',
+  active: 'Действует',
+  grace: 'Ограничен',
+  read_only: 'Ограничен',
+  suspended: 'Приостановлен',
+  provisioning: 'Создаётся',
+  closing: 'Закрывается',
+  closed: 'Закрыта',
+};
+
+/** Отраслевые модули каталога в порядке INDUSTRY эталона (models.js) и их подписи. */
+const CATALOG = ['fleet', 'spa', 'repairs'] as const;
+const MODULE_NAME: Readonly<Record<string, string>> = {
+  fleet: 'Логистика',
+  spa: 'Салон и SPA',
+  repairs: 'Ремонт и стройка',
+};
+/** Модуль вне словаря страница показывает ключом — так и в сверке, без «undefined». */
+const moduleName = (key: string): string => MODULE_NAME[key] ?? key;
+
+const escapeRegExp = (s: string): string => s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+
+/**
+ * Страница «Использование» стенда совпадает с ответом getPlatformUsage, который она читает: плитки, сигналы
+ * «Требуют внимания», отраслевые модули и строки «По организациям».
+ */
+async function expectUsageMatches(page: Page, root: Locator, u: PlatformUsageDto): Promise<void> {
+  const s = u.summary;
+  const tiles = root.locator('.ox-us-tile');
+  await expect(tiles).toHaveCount(4);
+  // Статусы организаций — из tenantsByStatus ответа в его порядке; grace и read_only — одна подпись «Ограничен».
+  const byLabel = new Map<string, number>();
+  for (const x of s.tenantsByStatus) {
+    const label = STATUS_LABEL[x.status] ?? x.status;
+    byLabel.set(label, (byLabel.get(label) ?? 0) + x.count);
+  }
+  const statuses = [...byLabel].map(([label, n]) => `${label}: ${n}`).join(' · ');
+  expect(await textOf(tiles.nth(0))).toBe(`Организации ${s.tenantCount} ${statuses}`);
+  expect(await textOf(tiles.nth(1))).toBe(
+    `Места с входом ${s.seatsUsed} из ${s.seatsSold} занято ${Math.round((s.seatsUsed / s.seatsSold) * 100)}% проданных мест`,
+  );
+  expect(await textOf(tiles.nth(2))).toBe(
+    `Хранилище ${gbText(s.storageUsedBytes)} из ${gbText(s.storageQuotaBytes)} ГБ занято ${Math.round((s.storageUsedBytes / s.storageQuotaBytes) * 100)}% выделенного места`,
+  );
+  expect(await textOf(tiles.nth(3))).toBe(
+    `Входили за 7 дней ${s.activeMembers7d} из ${s.activeMembers} активных участников организаций`,
+  );
+
+  // «Требуют внимания»: сигналы ответа (у приостановленной «никто не входил» не показывается, Q-W4.61-5).
+  const card = root.locator('.ox-us-signals');
+  const suspended = new Set(u.signals.filter((x) => x.kind === 'suspended').map((x) => x.tenantId));
+  const shown = u.signals.filter((x) => !(x.kind === 'inactive' && suspended.has(x.tenantId)));
+  await expect(card.locator('.ox-us-count')).toHaveText(String(shown.length));
+  const signals = card.locator('.ox-us-signal');
+  await expect(signals).toHaveCount(shown.length);
+  const signal = (org: string, text: string | RegExp) =>
+    signals
+      .filter({ has: page.locator('.ox-us-signal-org', { hasText: org }) })
+      .filter({ has: page.locator('.ox-us-signal-text', { hasText: text }) });
+  await expect(signal('Карго Сити', 'Приостановлен. Последний вход неизвестен')).toHaveCount(1);
+  const storage = u.signals.find((x) => x.kind === 'storage_high');
+  expect(storage?.tenantName).toBe('Ремстрой Плюс');
+  await expect(
+    signal(
+      'Ремстрой Плюс',
+      `Хранилище заполнено на ${storage?.storagePercent}%: ${gbText(storage?.storageUsedBytes ?? 0)} из ${gbText(storage?.storageQuotaBytes ?? 0)} ГБ`,
+    ),
+  ).toHaveCount(1);
+  // Дата конца пробного «Ремстроя» на стенде не приходит (Q-W4.71-1) — проверяется начало подписи.
+  await expect(signal('Ремстрой Плюс', 'Ограничен: пробный период закончился')).toHaveCount(1);
+  // Конец пробного: сигнал есть, только пока до конца срока не больше 14 дней (backend usage.go trialEndingDays).
+  // В полном e2e-stand platform-org-card @stand раньше продлевает пробный «Альты» за этот порог — сигнала нет.
+  const endings = u.signals.filter((x) => x.kind === 'trial_ending');
+  for (const e of endings) {
+    await expect(
+      signal(
+        e.tenantName,
+        `Пробный период заканчивается ${mskLastDayText(e.trialEndsAt ?? '')}, через ${e.daysLeft} дн.`,
+      ),
+    ).toHaveCount(1);
+  }
+  if (!endings.some((x) => x.tenantName === 'Альта Групп')) {
+    await expect(signal('Альта Групп', 'Пробный период заканчивается')).toHaveCount(0);
+  }
+
+  // «Отраслевые модули»: три модуля каталога в порядке эталона, числа и организации — из ответа.
+  const mods = root.locator('.ox-us-modules .ox-us-module');
+  await expect(mods).toHaveCount(CATALOG.length);
+  for (const [i, key] of CATALOG.entries()) {
+    const m = u.modules.find((x) => x.moduleKey === key);
+    const mod = mods.nth(i);
+    expect(await textOf(mod)).toContain(
+      `${moduleName(key)}${m?.tenantCount ?? 0} из ${s.tenantCount} мест: ${m?.seatsUsed ?? 0} · файлов: ${gbText(m?.storageUsedBytes ?? 0)} ГБ`,
+    );
+    await expect(mod.getByRole('button')).toHaveText((m?.tenants ?? []).map((t) => t.name));
+  }
+
+  // «По организациям»: строки ответа, сортировка «По местам», ячейки — по ответу (пусто — «—», как на странице).
+  await expect(
+    root.getByRole('group', { name: 'Сортировка' }).getByRole('button', { name: 'По местам' }),
+  ).toHaveAttribute('aria-pressed', 'true');
+  const rows = root.getByRole('table').locator('tbody tr');
+  await expect(rows).toHaveCount(u.tenants.length);
+  for (const t of u.tenants) {
+    const row = rows.filter({
+      has: page.getByRole('button', { name: new RegExp(`^${escapeRegExp(t.name)}`) }),
+    });
+    const cells = row.locator('td');
+    await expect(cells.nth(1)).toHaveText(t.tierName ?? DASH);
+    await expect(cells.nth(2)).toHaveText(
+      t.seats.limit === null ? String(t.seats.used) : `${t.seats.used} из ${t.seats.limit}`,
+    );
+    await expect(cells.nth(3)).toHaveText(
+      `${gbText(t.storageUsedBytes)} из ${gbText(t.storageQuotaBytes)} ГБ`,
+    );
+    await expect(cells.nth(4)).toHaveText(t.moduleKeys.map(moduleName).join(', ') || DASH);
+  }
+  const top = [...u.tenants].sort((a, b) => b.seats.used - a.seats.used)[0];
+  await expect(rows.first()).toContainText(top?.name ?? '');
+}
+
 test.describe('platform-usage — стенд @stand', () => {
   test.skip(({ harness }) => harness.mode !== 'stand', 'режим stand');
+  test.describe.configure({ timeout: 90_000 });
 
-  test.fixme('оператор стенда: «Использование» — плитки, сигналы, модули и таблица по метаданным control DB', async ({
+  test('оператор стенда: «Использование» — плитки, сигналы, модули и таблица по метаданным control DB', async ({
     app,
     page,
   }) => {
-    // W4.60 (backend шага 4.6: getPlatformUsage) не в main — до него операция отвечает 501.
+    // W4.71 (Q-W4.61-20): четыре организации Go-сида со статусами пробный/действует/ограничен/приостановлен и снимки
+    // tenant_usage_daily (backend/cmd/seed/billing.go). Места, квоты, модули, дни входа и срок пробного «Альты»
+    // меняют другие строки полного прогона и часы стенда, поэтому числа сверяются с ответом getPlatformUsage,
+    // который читает страница. Данные строка не меняет: «Карточка» сигнала — только переход.
     const root = await openPlatform(app, page, 'usage');
-    await expect(root.locator('.ox-us-tile')).toHaveCount(4);
-    await expect(root.getByRole('table').locator('tbody tr')).toHaveCount(4);
+    const u = await platformUsageFull(page);
+    await expectUsageMatches(page, root, u);
+
+    // «Карточка» сигнала ведёт в «Организации» с выбранной организацией.
+    const cargo = u.tenants.find((t) => t.name === 'Карго Сити')?.tenantId ?? '';
+    await root
+      .locator('.ox-us-signal')
+      .filter({ has: page.locator('.ox-us-signal-org', { hasText: 'Карго Сити' }) })
+      .filter({ has: page.locator('.ox-us-signal-text', { hasText: 'Приостановлен' }) })
+      .getByRole('button', { name: 'Карточка' })
+      .click();
+    await expect(page).toHaveURL(new RegExp(`/platform/tenants\\?org=${cargo}$`));
+    await expect(page.getByRole('complementary', { name: 'Карго Сити' })).toBeVisible({
+      timeout: 15_000,
+    });
+  });
+
+  test('оператор стенда: пробный «Альты» дальше 14 дней — сигнала «Пробный период заканчивается» нет', async ({
+    app,
+    page,
+  }) => {
+    // Возврат 2 (ревью, major): в полном e2e-stand platform-org-card @stand идёт раньше (порядок файлов) и продлевает
+    // пробный «Альты» на 14 дней дважды за проект — срок дальше порога 14 дней (backend usage.go trialEndingDays),
+    // сигнала trial_ending в ответе нет. Состояние стенда после тех строк — ответ стенда без trial_ending, без
+    // правки данных; страница и сверка читают один и тот же ответ.
+    await page.route(
+      (url) => url.pathname === '/api/v1/platform/usage',
+      async (route) => {
+        const r = await route.fetch();
+        const body = (await r.json()) as PlatformUsageDto;
+        body.signals = body.signals.filter((x) => x.kind !== 'trial_ending');
+        await route.fulfill({ response: r, json: body });
+      },
+    );
+    const root = await openPlatform(app, page, 'usage');
+    const u = await platformUsageFull(page);
+    expect(u.signals.filter((x) => x.kind === 'trial_ending')).toEqual([]);
+    await expectUsageMatches(page, root, u);
+    await expect(
+      root
+        .locator('.ox-us-signal')
+        .filter({ has: page.locator('.ox-us-signal-org', { hasText: 'Альта Групп' }) })
+        .filter({ hasText: 'Пробный период заканчивается' }),
+    ).toHaveCount(0);
   });
 });

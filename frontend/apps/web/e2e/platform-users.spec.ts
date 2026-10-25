@@ -8,7 +8,9 @@ import { expect, test } from './fixtures/index.ts';
 import {
   confirmDialog,
   openPlatform,
+  platformUsageFull,
   platformUser,
+  platformUserCounts,
   section,
   textOf,
   toastText,
@@ -654,13 +656,119 @@ test.describe('platform-users — «Пользователи платформы�
 
 test.describe('platform-users — стенд @stand', () => {
   test.skip(({ harness }) => harness.mode !== 'stand', 'режим stand');
+  test.describe.configure({ timeout: 90_000 });
 
-  test.fixme('оператор стенда: каталог аккаунтов, карточка и операторы платформы', async ({
+  test('оператор стенда: каталог аккаунтов, карточка и операторы платформы', async ({
     app,
     page,
   }) => {
-    // W4.60 (backend шага 4.6: listPlatformUsers c фильтрами, getPlatformUser, операторы) не в main.
+    // W4.71 (Q-W4.61-20): аккаунты и операторы Go-сида (backend/cmd/seed: 13 аккаунтов клиентов, 6 операторов, op-6
+    // отключён с заметкой). Новые аккаунты добавляют другие строки полного прогона (вход нового человека), поэтому
+    // итог и счётчики фильтров сверяются с listPlatformUsers.counts. Данные строка не меняет.
     const root = await openPlatform(app, page, 'accounts');
-    await expect(accountRows(root).first()).toBeVisible();
+    const n = await platformUserCounts(page);
+    const usage = await platformUsageFull(page);
+    await expect(realm(root, 'Все аккаунты')).toHaveAttribute('aria-current', 'page');
+    await expect(root.locator('.ox-acc-total')).toHaveText(`Аккаунтов на платформе: ${n.all}`);
+    await expect(filters(root).getByRole('button')).toHaveText([
+      `Все · ${n.all}`,
+      `В нескольких организациях · ${n.multiTenant}`,
+      `Без второго фактора · ${n.noMfa}`,
+      `Заблокированы · ${n.locked}`,
+      `Не входили · ${n.neverSignedIn}`,
+    ]);
+    const lotos = usage.tenants.find((t) => t.name === 'SPA «Лотос»');
+    const alta = usage.tenants.find((t) => t.name === 'Альта Групп');
+    expect(await textOf(realm(root, 'Альта Групп'))).toBe(
+      `А Альта ГруппПробный период · мест ${alta?.seats.used}/${alta?.seats.limit} ${alta?.memberCount}`,
+    );
+    expect(await textOf(realm(root, 'SPA «Лотос»'))).toBe(
+      `Л SPA «Лотос»Действует · мест ${lotos?.seats.used}/${lotos?.seats.limit} ${lotos?.memberCount}`,
+    );
+
+    // Анна Морозова — в двух организациях сида: карточка и popover участий, переход в «Лотос».
+    const search = root.getByLabel('Поиск по имени, почте или организации');
+    await search.fill('Морозова');
+    await expect(accountRows(root)).toHaveCount(1);
+    await expect(root.locator('.ox-acc-total')).toHaveText(
+      `Аккаунтов на платформе: ${n.all} · показано 1`,
+    );
+    await accountRow(root, 'Анна Морозова').click();
+    const c = card(page);
+    await expect(c.getByRole('heading', { level: 2, name: 'Анна Морозова' })).toBeVisible();
+    await expect(c).toContainText('a.morozova@alta.example');
+    await expect(c.locator('.ox-chip-label').first()).toHaveText('Активен');
+    expect(await textOf(c.locator('dl'))).toMatch(
+      /^Последний вход\d\d\.\d\d \d\d:\d\d Второй факторНе настроен$/,
+    );
+    const ms = c.locator('.ox-acc-membership');
+    await expect(ms).toHaveCount(2);
+    // Порядок участий — порядок ответа getPlatformUser (стенд отдаёт «Лотос» первым, MSW — «Альту»).
+    expect((await ms.allTextContents()).map((x) => x.replace(/\s+/g, ' ').trim()).sort()).toEqual(
+      ['domainАльта Группcheckучастник', 'domainSPA «Лотос»checkучастник'].sort(),
+    );
+    await expect(
+      c.getByText(
+        'Один аккаунт в 2 организациях: данные организаций не пересекаются, у каждой свои роли и места.',
+      ),
+    ).toBeVisible();
+    await expect(c.getByRole('button', { name: 'Заблокировать вход' })).toBeVisible();
+    await accountRow(root, 'Анна Морозова').hover();
+    const pop = root.getByRole('group', { name: 'Организации аккаунта' });
+    await expect(pop).toContainText('Организации аккаунта · 2 действующ.');
+    await expect(pop.getByRole('button')).toHaveCount(2);
+    await pop.getByRole('button').filter({ hasText: 'SPA «Лотос»' }).click();
+    await expect(realm(root, 'SPA «Лотос»')).toHaveAttribute('aria-current', 'page');
+    const head = root.locator('.ox-acc-orghead');
+    await expect(head.locator('strong')).toHaveText('SPA «Лотос»');
+    await expect(head.locator('.ox-chip-label')).toHaveText('Действует');
+    await expect(head).toContainText(
+      `Владелец: Ирина Белова · тариф «Команда» · мест ${lotos?.seats.used} из ${lotos?.seats.limit}`,
+    );
+    await expect(root.locator('.ox-acc-total')).toHaveText(
+      `Участников в организации: ${lotos?.memberCount} · показано 1`,
+    );
+    await search.fill('');
+    await expect(root.locator('.ox-acc-total')).toHaveText(
+      `Участников в организации: ${lotos?.memberCount}`,
+    );
+    await expect(accountRows(root)).toHaveCount(lotos?.memberCount ?? 0);
+
+    // Денис Шишкин — вход заблокирован в сиде, причина блокировки в карточке.
+    await realm(root, 'Все аккаунты').click();
+    await search.fill('Шишкин');
+    await expect(accountRows(root)).toHaveCount(1);
+    await expect(accountRow(root, 'Денис Шишкин').locator('.ox-chip-label')).toContainText([
+      'Вход заблокирован',
+    ]);
+    await accountRow(root, 'Денис Шишкин').click();
+    await expect(
+      c.getByText('Причина блокировки: Подозрительные входы из разных стран, 18.09'),
+    ).toBeVisible();
+    await expect(c.getByRole('button', { name: 'Разблокировать вход' })).toBeVisible();
+
+    // «Ортус · Платформа»: роли и операторы сида; Лаптева — «вы», Рябов отключён с заметкой сида.
+    await realm(root, 'Ортус · Платформа').click();
+    await expect(root.locator('.ox-pf-head')).toContainText(
+      'Операторов: 5 · активных владельцев: 2',
+    );
+    const roles = root.locator('.ox-pf-role');
+    await expect(roles).toHaveCount(4);
+    await expect(roles.nth(0)).toContainText('Владелец платформы2');
+    await expect(roles.nth(1)).toContainText('Администратор0');
+    await expect(roles.nth(2)).toContainText('Биллинг1');
+    await expect(roles.nth(3)).toContainText('Поддержка2');
+    await expect(root.locator('.ox-op-row')).toHaveCount(6);
+    const me = operatorRow(root, 'Евгения Лаптева');
+    await expect(me).toContainText('вы');
+    await expect(me.getByLabel('Роль: Евгения Лаптева')).toBeDisabled();
+    await expect(me).toContainText('Свою роль менять нельзя');
+    const dina = operatorRow(root, 'Дина Валиева');
+    await expect(dina.locator('.ox-chip-label')).toHaveText('Приглашён');
+    await expect(dina.getByRole('button', { name: 'Отозвать приглашение' })).toBeVisible();
+    const st = operatorRow(root, 'Станислав Рябов');
+    await expect(st.locator('.ox-chip-label')).toHaveText('Отключён');
+    await expect(st).toContainText('Отключён 15.08: перевод в другой отдел');
+    await expect(st.getByRole('button', { name: 'Включить' })).toBeVisible();
   });
 });

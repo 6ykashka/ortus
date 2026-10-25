@@ -4,9 +4,21 @@
 import { collectLabels } from '@ortus/e2e-kit';
 
 import { expect, test } from './fixtures/index.ts';
-import { confirmDialog, openPlatform, section, textOf, toastText } from './billing.helpers.ts';
+import {
+  cancelOwnPendingRequests,
+  confirmDialog,
+  openPlatform,
+  readInbox,
+  releaseStandLocks,
+  section,
+  STAND_LOCK,
+  standLock,
+  standMark,
+  textOf,
+  toastText,
+} from './billing.helpers.ts';
 import { hitHeight, noHorizontalScroll } from './modules.helpers.ts';
-import { devScenario } from './shell.helpers.ts';
+import { call, devScenario, tenantId } from './shell.helpers.ts';
 
 const H1 = { level: 1, name: 'Заявки на изменение тарифа' } as const;
 const INTRO =
@@ -14,6 +26,21 @@ const INTRO =
 
 const card = (root: import('@playwright/test').Locator, number: string) =>
   root.locator('article').filter({ hasText: number });
+
+/**
+ * Бейдж пункта «Заявки на тариф» в меню оператора своей ширины: от 640 — боковая панель «Основная навигация»
+ * (`.ox-nav-badge`), на 390 — нижняя навигация «Навигация» (`.ox-bottom-badge`, пункт среди первых трёх).
+ */
+const menuBadge = (page: import('@playwright/test').Page) => {
+  const phone = (page.viewportSize()?.width ?? 0) < 640;
+  return page
+    .getByRole(
+      'navigation',
+      phone ? { name: 'Навигация', exact: true } : { name: 'Основная навигация' },
+    )
+    .getByRole('button', { name: /^Заявки на тариф/ })
+    .locator(phone ? '.ox-bottom-badge' : '.ox-nav-badge');
+};
 
 test.describe('platform-requests — «Заявки на тариф» @mock', () => {
   test.skip(({ harness }) => harness.mode !== 'mock', 'данные сида MSW и сценарии — режим mock');
@@ -292,9 +319,102 @@ test.describe('platform-requests — «Заявки на тариф» @mock', ()
 test.describe('platform-requests — стенд @stand', () => {
   test.skip(({ harness }) => harness.mode !== 'stand', 'режим stand');
 
-  test.fixme('оператор стенда: очередь заявок сида и решение', async ({ app, page }) => {
-    // W4.60 (backend шага 4.6: listPlatformSubscriptionRequests, decidePlatformSubscriptionRequest) не в main.
+  // W4.71 (Q-W4.61-20): очередь Go-сида (backend/cmd/seed/billing.go) — SR-12 «Лотоса» на рассмотрении, его не
+  // решаем. Решение — по своей заявке прогона: владелец «Альты» подаёт её через API (хвост прошлой попытки строк W4.71
+  // с меткой STAND_MARK отменяется, чужие заявки не трогаются), оператор отклоняет с причиной, владелец видит отказ;
+  // уведомления владельца читаются (inbox @stand).
+  test.describe.configure({ timeout: 90_000 });
+  test.afterEach(releaseStandLocks);
+
+  test('оператор стенда: очередь заявок сида и решение', async ({ app, page }) => {
+    // Одна открытая заявка на организацию, счётчики очереди: строки с заявками «Альты» идут по очереди.
+    await standLock(STAND_LOCK.altaRequests);
+    await app('/', { persona: 'owner' });
+    const alta = await tenantId(page);
+    await cancelOwnPendingRequests(page, alta);
+    const comment = standMark(test.info().project.name);
+    const created = await call(
+      page,
+      'POST',
+      `/api/v1/tenants/${alta}/subscription/change-requests`,
+      {
+        body: { tierCode: 'biz', termMonths: 4, comment },
+      },
+    );
+    expect(created.status, JSON.stringify(created.body)).toBe(201);
+    const mine = created.body as { id: string; number: string; seatsUsed: number };
+
     const root = await openPlatform(app, page, 'requests');
-    await expect(root.getByRole('group', { name: 'Фильтр заявок' })).toBeVisible();
+    const queue = (await call(page, 'GET', '/api/v1/platform/subscription-requests?limit=200'))
+      .body as { items: { status: string }[] };
+    const pending = queue.items.filter((x) => x.status === 'pending').length;
+    const filter = root.getByRole('group', { name: 'Фильтр заявок' });
+    await expect(filter.getByRole('button')).toHaveText([
+      `На рассмотрении · ${pending}`,
+      `Все заявки · ${queue.items.length}`,
+    ]);
+    // Бейдж пункта меню — на каждой ширине: боковая панель (768 и шире), нижняя навигация «Навигация» (390).
+    const badge = menuBadge(page);
+    await expect(badge).toHaveText(String(pending));
+    await expect(root.locator('article')).toHaveCount(pending);
+
+    const sr12 = card(root, 'SR-12');
+    await expect(sr12.getByRole('heading', { level: 2, name: 'SPA «Лотос»' })).toBeVisible();
+    await expect(sr12.locator('.ox-chip-label')).toHaveText('На рассмотрении');
+    await expect(sr12.locator('.ox-rq-meta')).toHaveText('29.09 16:40 · Ирина Белова');
+    expect(await textOf(sr12.locator('dl'))).toBe(
+      'Сейчас «Команда» · до 25 мест Запрошено «Бизнес» · до 50 мест Занято мест 23 из 50 после перехода Срок оплаты 12 месяцев',
+    );
+    expect(await textOf(sr12.locator('.ox-rq-price'))).toBe(
+      'payments11 920 ₽ в месяц · 143 040 ₽ за период · скидка 20%',
+    );
+    await expect(
+      sr12.getByText('Комментарий владельца: «Открываем второй салон, нужно ещё 10–12 мест»'),
+    ).toBeVisible();
+
+    // Своя заявка: «Старт» → «Бизнес» на 4 мес по сетке v2 (15 900 ₽ − 5%).
+    const own = card(root, mine.number);
+    await expect(own.getByRole('heading', { level: 2, name: 'Альта Групп' })).toBeVisible();
+    await expect(own.locator('.ox-chip-label')).toHaveText('На рассмотрении');
+    await expect(own.locator('.ox-rq-meta')).toHaveText(/^\d\d\.\d\d \d\d:\d\d · Дарья Зимина$/);
+    expect(await textOf(own.locator('dl'))).toBe(
+      `Сейчас «Старт» · до 10 мест Запрошено «Бизнес» · до 50 мест Занято мест ${mine.seatsUsed} из 50 после перехода Срок оплаты 4 месяцев`,
+    );
+    expect(await textOf(own.locator('.ox-rq-price'))).toBe(
+      'payments15 105 ₽ в месяц · 60 420 ₽ за период · скидка 5%',
+    );
+    await expect(own.getByText(`Комментарий владельца: «${comment}»`)).toBeVisible();
+
+    const note = 'Нет оплаты по счёту (проверка стенда)';
+    await own.getByLabel('Комментарий для владельца').fill(note);
+    await own.getByRole('button', { name: 'Отклонить' }).click();
+    const d = confirmDialog(page, `Отклонить заявку ${mine.number}?`);
+    await expect(d).toContainText(`Владелец увидит причину: «${note}».`);
+    await d.getByRole('button', { name: 'Отклонить' }).click();
+    await expect(toastText(page)).toHaveText('Готово · запись добавлена в журнал');
+    await expect(page.getByRole('dialog')).toHaveCount(0);
+    await expect(card(root, mine.number)).toHaveCount(0);
+    await expect(filter.getByRole('button').first()).toHaveText(`На рассмотрении · ${pending - 1}`);
+    await expect(badge).toHaveText(String(pending - 1));
+    await filter.getByRole('button', { name: `Все заявки · ${queue.items.length}` }).click();
+    await expect(page).toHaveURL(/\/platform\/requests\?status=all$/);
+    await expect(card(root, mine.number).locator('.ox-chip-label')).toHaveText('Отклонена');
+    await expect(
+      card(root, mine.number).getByText(
+        new RegExp(
+          `^Отклонена · Е\\. Лаптева · \\d\\d\\.\\d\\d \\d\\d:\\d\\d — ${note.replace(/[()]/g, '\\$&')}$`,
+        ),
+      ),
+    ).toBeVisible();
+    await expect(card(root, mine.number).locator('textarea')).toHaveCount(0);
+
+    // Владелец видит отказ с причиной на «Подписке и местах».
+    await app(`/t/${alta}/billing`, { persona: 'owner' });
+    await expect(
+      section(page, 'h-bill')
+        .getByRole('status')
+        .filter({ hasText: `Заявка ${mine.number} отклонена оператором: ${note}` }),
+    ).toBeVisible({ timeout: 15_000 });
+    await readInbox(page, alta);
   });
 });

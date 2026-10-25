@@ -107,7 +107,6 @@ var authzMatrix = matrix.File{
 			Method:  "PATCH",
 			Path:    "/api/v1/tenants/{tenantId}/subscription",
 			Channel: "http",
-			Pending: "W4.60",
 			Rows: []matrix.Row{
 				{
 					Actor:  "anonymous",

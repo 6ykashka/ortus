@@ -4,9 +4,21 @@
 import type { Locator } from '@playwright/test';
 
 import { expect, test } from './fixtures/index.ts';
-import { confirmDialog, openPlatform, section, textOf, toastText } from './billing.helpers.ts';
+import {
+  confirmDialog,
+  isStandMarked,
+  openPlatform,
+  realClock,
+  releaseStandLocks,
+  section,
+  STAND_LOCK,
+  STAND_MARK,
+  standLock,
+  textOf,
+  toastText,
+} from './billing.helpers.ts';
 import { hitHeight, noHorizontalScroll } from './modules.helpers.ts';
-import { devScenario } from './shell.helpers.ts';
+import { call, devScenario } from './shell.helpers.ts';
 
 const H1 = { level: 1, name: 'Тарифная сетка' } as const;
 const INTRO =
@@ -437,12 +449,124 @@ test.describe('platform-pricing — «Тарифная сетка» @mock', () =
 test.describe('platform-pricing — стенд @stand', () => {
   test.skip(({ harness }) => harness.mode !== 'stand', 'режим stand');
 
-  test.fixme('оператор стенда: версии сетки сида, черновик и публикация с отменой', async ({
+  // W4.71 (Q-W4.61-20): сетка Go-сида (backend/cmd/seed/billing.go) — v2 действует с 01.10.2026, v1 в архиве.
+  // Публикация — своя версия прогона с номером после всех (и отменённых, Q-W4.07-12) и датой начала через месяц по
+  // настоящим часам (сервер принимает дату не раньше завтрашнего дня); в конце строка её отменяет — v2 снова без
+  // даты окончания. Запланированный хвост прошлой попытки строки (метка STAND_MARK в «Что изменилось») отменяется до
+  // начала; чужая запланированная версия не отменяется — строка падает с её номером (запланирована не больше одной).
+  test.describe.configure({ timeout: 90_000 });
+  test.afterEach(releaseStandLocks);
+
+  test('оператор стенда: версии сетки сида, черновик и публикация с отменой', async ({
     app,
     page,
   }) => {
-    // W4.60 (backend шага 4.6: listPriceBookVersions, publish/cancel) не в main — до него 501.
+    // Запланирована не больше одной версии, номер следующей — общий: проекты идут по очереди.
+    await standLock(STAND_LOCK.priceBook);
+    await realClock(page);
+    await app('/platform/plans', { persona: 'operator' });
+    const listed = async () =>
+      (
+        (await call(page, 'GET', '/api/v1/platform/price-book/versions?includeCancelled=true'))
+          .body as { items: { version: number; state: string; note: string }[] }
+      ).items;
+    const scheduled = (await listed()).filter((x) => x.state === 'scheduled');
+    for (const v of scheduled.filter((x) => isStandMarked(x.note))) {
+      const r = await call(
+        page,
+        'POST',
+        `/api/v1/platform/price-book/versions/${v.version}/cancel`,
+      );
+      expect(r.status, `cancelPriceBookVersion v${v.version}`).toBe(200);
+    }
+    expect(
+      scheduled.filter((x) => !isStandMarked(x.note)).map((x) => x.version),
+      'запланированная версия сетки не из строки W4.71 (запланирована не больше одной)',
+    ).toEqual([]);
+    const next = Math.max(...(await listed()).map((v) => v.version)) + 1;
     const root = await openPlatform(app, page, 'plans');
+
+    await expect(root.locator('.ox-pb-ver')).toHaveText('Версия v2 · действует с 01.10.2026');
+    await expect(
+      root.getByText('Добавлена ступень «Сеть» до 100 мест, пересчитаны цены', { exact: true }),
+    ).toBeVisible();
+    await expect(root.getByRole('columnheader')).toHaveText([
+      'Тариф',
+      'Цена за месяц',
+      'Месяцбазовая цена',
+      '4 месскидка 5%',
+      '8 месскидка 10%',
+      '12 месскидка 20%',
+    ]);
     await expect(rows(root)).toHaveCount(5);
+    const cells = async (i: number) => {
+      const tds = rows(root).nth(i).locator('td');
+      const out: string[] = [];
+      for (let k = 0; k < (await tds.count()); k++) out.push(await textOf(tds.nth(k)));
+      return out;
+    };
+    expect(await cells(0)).toEqual([
+      'Стартдо 10 мест',
+      '3 900 ₽',
+      '3 900 ₽в месяц',
+      '3 705 ₽в месяц · 14 820 ₽ за срок',
+      '3 510 ₽в месяц · 28 080 ₽ за срок',
+      '3 120 ₽в месяц · 37 440 ₽ за срок',
+    ]);
+    expect(await cells(3)).toEqual([
+      'Сетьдо 100 мест',
+      '27 900 ₽',
+      '27 900 ₽в месяц',
+      '26 505 ₽в месяц · 106 020 ₽ за срок',
+      '25 110 ₽в месяц · 200 880 ₽ за срок',
+      '22 320 ₽в месяц · 267 840 ₽ за срок',
+    ]);
+    expect((await cells(4)).slice(0, 2)).toEqual(['Безлимитбольше 100 мест', 'индивидуально']);
+    const items = root.locator('.ox-pb-version');
+    await expect(items).toHaveCount(2);
+    expect(await textOf(items.nth(0))).toMatch(
+      /^v2 check_circleДействует 01\.10\.2026 — сейчас Добавлена ступень «Сеть» до 100 мест, пересчитаны цены · Е\. Лаптева · \d+ подпис/,
+    );
+    expect(await textOf(items.nth(1))).toMatch(
+      /^v1 historyАрхив 01\.06\.2026 — 30\.09\.2026 Стартовая сетка пилота · Е\. Лаптева · \d+ подпис/,
+    );
+
+    // Черновик следующей версии и публикация со второй даты списка (первое число через месяц).
+    await root.getByRole('button', { name: `Подготовить версию v${next}` }).click();
+    await expect(root.getByText(`Черновик v${next} · не опубликован`)).toBeVisible();
+    await expect(root.getByLabel('Цена за месяц, тариф Старт')).toHaveValue('3900');
+    await root.getByLabel('Начнёт действовать').selectOption({ index: 1 });
+    const from = await root.getByLabel('Начнёт действовать').inputValue();
+    expect(from).toMatch(/^01\.\d\d\.\d{4}$/);
+    const note = `${STAND_MARK} ${test.info().project.name}`;
+    await root.getByLabel('Что изменилось').fill(note);
+    await root.getByRole('button', { name: `Опубликовать v${next}` }).click();
+    const d = confirmDialog(page, `Опубликовать тарифную сетку v${next}?`);
+    await expect(d).toContainText(`Начнёт действовать ${from}.`);
+    await d.getByRole('button', { name: 'Опубликовать' }).click();
+    await expect(toastText(page)).toHaveText('Готово · запись добавлена в журнал');
+    const banner = root.getByRole('status').filter({ hasText: `Запланирована версия v${next}` });
+    await expect(banner).toContainText(
+      `Запланирована версия v${next} с ${from}: ${note}. До этой даты действуют цены v2.`,
+    );
+    await expect(root.getByRole('button', { name: /^Подготовить версию/ })).toHaveCount(0);
+    expect(await textOf(items.nth(0))).toBe(
+      `v${next} eventЗапланирована с ${from} с ${from} · ещё не действует ${note} · Е. Лаптева · 0 подписок на этих ценах`,
+    );
+    await expect(items.nth(1)).toContainText(`01.10.2026 — до ${from}`);
+    expect((await listed()).find((v) => v.version === next)?.state).toBe('scheduled');
+
+    // Отмена своей версии: v2 снова без даты окончания, следующий номер — после отменённой.
+    await banner.getByRole('button', { name: 'Отменить версию' }).click();
+    const c = confirmDialog(page, `Отменить версию v${next}?`);
+    await expect(c).toContainText('Она ещё не начала действовать.');
+    await c.getByRole('button', { name: 'Отменить версию' }).click();
+    await expect(root.getByRole('status').filter({ hasText: 'Запланирована' })).toHaveCount(0);
+    await expect(items).toHaveCount(2);
+    await expect(items.first()).toContainText('01.10.2026 — сейчас');
+    await expect(
+      root.getByRole('button', { name: `Подготовить версию v${next + 1}` }),
+    ).toBeVisible();
+    expect((await listed()).find((v) => v.version === next)?.state).toBe('cancelled');
   });
 });
