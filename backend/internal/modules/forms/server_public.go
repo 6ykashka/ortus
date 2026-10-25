@@ -9,7 +9,11 @@ import (
 )
 
 // PublicServer implements pfapi.StrictServerInterface (the guest of a public form, security: []) over the service.
-type PublicServer struct{ S *Service }
+// The commands that declare Origin (submit and the uploads) admit the browser origins of Origins only (W4.83).
+type PublicServer struct {
+	S       *Service
+	Origins Origins
+}
 
 var _ pfapi.StrictServerInterface = PublicServer{}
 
@@ -80,6 +84,9 @@ func (s PublicServer) GetPublicForm(ctx context.Context, req pfapi.GetPublicForm
 
 // SubmitPublicForm implements pfapi.StrictServerInterface.
 func (s PublicServer) SubmitPublicForm(ctx context.Context, req pfapi.SubmitPublicFormRequestObject) (pfapi.SubmitPublicFormResponseObject, error) {
+	if err := s.Origins.Admit(req.Params.Origin); err != nil {
+		return nil, err
+	}
 	b, err := publicIn(req.Body)
 	if err != nil {
 		return nil, err
@@ -93,6 +100,9 @@ func (s PublicServer) SubmitPublicForm(ctx context.Context, req pfapi.SubmitPubl
 
 // InitiatePublicUpload implements pfapi.StrictServerInterface.
 func (s PublicServer) InitiatePublicUpload(ctx context.Context, req pfapi.InitiatePublicUploadRequestObject) (pfapi.InitiatePublicUploadResponseObject, error) {
+	if err := s.Origins.Admit(req.Params.Origin); err != nil {
+		return nil, err
+	}
 	b, err := publicIn(req.Body)
 	if err != nil {
 		return nil, err
@@ -106,6 +116,9 @@ func (s PublicServer) InitiatePublicUpload(ctx context.Context, req pfapi.Initia
 
 // CompletePublicUpload implements pfapi.StrictServerInterface.
 func (s PublicServer) CompletePublicUpload(ctx context.Context, req pfapi.CompletePublicUploadRequestObject) (pfapi.CompletePublicUploadResponseObject, error) {
+	if err := s.Origins.Admit(req.Params.Origin); err != nil {
+		return nil, err
+	}
 	b, err := publicIn(req.Body)
 	if err != nil {
 		return nil, err
@@ -119,6 +132,9 @@ func (s PublicServer) CompletePublicUpload(ctx context.Context, req pfapi.Comple
 
 // GetPublicUploadStatus implements pfapi.StrictServerInterface.
 func (s PublicServer) GetPublicUploadStatus(ctx context.Context, req pfapi.GetPublicUploadStatusRequestObject) (pfapi.GetPublicUploadStatusResponseObject, error) {
+	if err := s.Origins.Admit(req.Params.Origin); err != nil {
+		return nil, err
+	}
 	b, err := publicIn(req.Body)
 	if err != nil {
 		return nil, err

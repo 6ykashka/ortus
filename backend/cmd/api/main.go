@@ -218,7 +218,7 @@ func build(ctx context.Context, cfg config, log *slog.Logger, getenv func(string
 		control.Close()
 		return deps{}, nil, err
 	}
-	formsSrv, publicFormsSrv, err := newForms(pools, ev, control, getenv, cfg.AppEnv, log, cfg.clock()) // W4.21 (forms.go)
+	formsSrv, publicFormsSrv, err := newForms(pools, ev, control, getenv, cfg.AppEnv, cfg.AllowedOrigins, log, cfg.clock()) // W4.21 (forms.go)
 	if err != nil {
 		pools.Close()
 		_ = controlSQL.Close()

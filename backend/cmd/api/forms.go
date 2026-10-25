@@ -7,6 +7,7 @@ import (
 	"errors"
 	"fmt"
 	"log/slog"
+	"net/url"
 	"slices"
 	"strconv"
 	"strings"
@@ -34,9 +35,14 @@ import (
 // pools, the memberships of the control DB, the ports of tasks (W4.11) and of the knowledge base (W4.31) in the
 // transaction of the response, the CRM objects of the answers (fleet, tasks), the index of the public links of the
 // control DB (control 0009), the uploads of a guest through the module of files, the inbox and the clock of the
-// application. The keys of the links come from FORMS_PUBLIC_LINK_KEY (publicLinkKeys).
-func newForms(pools forms.Pools, ev *authz.Evaluator, control *pgxpool.Pool, getenv func(string) string, appEnv string, log *slog.Logger, now func() time.Time) (formsapi.StrictServerInterface, publicformsapi.StrictServerInterface, error) {
+// application. The keys of the links come from FORMS_PUBLIC_LINK_KEY (publicLinkKeys); the guest sends his commands
+// from the origins of publicFormOrigins over allowed (ALLOWED_ORIGINS, W4.83).
+func newForms(pools forms.Pools, ev *authz.Evaluator, control *pgxpool.Pool, getenv func(string) string, appEnv string, allowed []string, log *slog.Logger, now func() time.Time) (formsapi.StrictServerInterface, publicformsapi.StrictServerInterface, error) {
 	keys, err := publicLinkKeys(getenv, appEnv, log)
+	if err != nil {
+		return nil, nil, err
+	}
+	origins, err := publicFormOrigins(allowed, getenv, appEnv)
 	if err != nil {
 		return nil, nil, err
 	}
@@ -55,7 +61,77 @@ func newForms(pools forms.Pools, ev *authz.Evaluator, control *pgxpool.Pool, get
 		Objects: formObjects{pools: pools, ev: ev, hidden: tasks.HiddenTasks{Pools: pools, Authz: ev}, trips: newPoolTrips(pools, now)},
 		Links:   forms.PGLinks{DB: db}, Uploads: uploads, Keys: keys, Audience: inbox.AuthzAudience{E: ev}, Now: now,
 	}
-	return forms.Server{S: s}, forms.PublicServer{S: s}, nil
+	return forms.Server{S: s}, forms.PublicServer{S: s, Origins: origins}, nil
+}
+
+// Environment of the Origin of the guests of public forms (W4.83, deploy/compose/.env.example).
+const (
+	envPublicOrigin      = "PUBLIC_ORIGIN"
+	envPublicFormOrigins = "FORMS_PUBLIC_ORIGINS"
+)
+
+// publicFormOrigins is the allowlist of the Origin of the browser commands of a guest of a public form (W4.83,
+// Q-W4.90-1; contract PublicForms «Origin … checked against the deployment allowlist»): the SPA of allowed
+// (ALLOWED_ORIGINS — the public link {origin}/f/{token} and its iframe «?embed=1» are documents of the SPA), PUBLIC_ORIGIN
+// and FORMS_PUBLIC_ORIGINS — comma separated, the sites that send the form of a guest from their own origin. Exact
+// origins without duplicates; a wildcard, a path, a scheme other than http(s) or http in prod stop the start.
+func publicFormOrigins(allowed []string, getenv func(string) string, appEnv string) (forms.Origins, error) {
+	out := forms.Origins{}
+	add := func(o string) {
+		if !slices.Contains(out, o) {
+			out = append(out, o)
+		}
+	}
+	for _, o := range allowed {
+		add(o)
+	}
+	var errs []error
+	if raw := strings.TrimSpace(getenv(envPublicOrigin)); raw != "" {
+		o, err := exactOrigin(envPublicOrigin, raw, appEnv == envProd)
+		errs = append(errs, err)
+		add(o)
+	}
+	for raw := range strings.SplitSeq(getenv(envPublicFormOrigins), ",") {
+		if raw = strings.TrimSpace(raw); raw != "" {
+			o, err := exactOrigin(envPublicFormOrigins, raw, appEnv == envProd)
+			errs = append(errs, err)
+			add(o)
+		}
+	}
+	if err := errors.Join(errs...); err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+// exactOrigin is the serialized origin «scheme://host[:port]» of raw (the variable env) as a browser sends it: an
+// absolute http(s) URL without a path (a single «/» is dropped), a query, a fragment or credentials; https in prod.
+func exactOrigin(env, raw string, prod bool) (string, error) {
+	if strings.Contains(raw, "*") {
+		return "", fmt.Errorf("%s=%q: a wildcard is never allowed, list exact origins", env, raw)
+	}
+	u, err := url.Parse(raw)
+	switch {
+	case err != nil || !absoluteHTTP(u):
+		return "", fmt.Errorf("%s=%q: want an absolute http(s) origin such as https://app.ortus.example", env, raw)
+	case !bareOrigin(u):
+		return "", fmt.Errorf("%s=%q: want an origin without a path", env, raw)
+	case prod && u.Scheme != schemeHTTPS:
+		return "", fmt.Errorf("%s=%q: prod requires https", env, raw)
+	}
+	return strings.ToLower(u.Scheme + "://" + u.Host), nil
+}
+
+const schemeHTTPS = "https"
+
+// absoluteHTTP: an http(s) URL with a host and without credentials.
+func absoluteHTTP(u *url.URL) bool {
+	return u.Host != "" && u.User == nil && (u.Scheme == "http" || u.Scheme == schemeHTTPS)
+}
+
+// bareOrigin: no path (but a single «/»), query or fragment.
+func bareOrigin(u *url.URL) bool {
+	return (u.Path == "" || u.Path == "/") && u.RawQuery == "" && !u.ForceQuery && u.Fragment == ""
 }
 
 // Environment of the keys of the public links (deploy/compose/.env.example).
