@@ -17,6 +17,7 @@ import { logisticsCases } from './logistics.ts';
 import { modulesCases } from './modules.ts';
 import { platformCases } from './platform.ts';
 import { poolCases } from './pool.ts';
+import { repairsCases } from './repairs.ts';
 import { stage1bCases } from './stage1b.ts';
 import { stage2bCases } from './stage2b.ts';
 import { tasksCases } from './tasks.ts';
@@ -56,4 +57,6 @@ export const ALL_CASES: readonly ConformanceCase[] = [
   ...formsCases,
   // W5.00 (0.12.0-stage5): «Касса».
   ...cashCases,
+  // W6.00 (0.12.0-stage6): «Ремонт и стройка».
+  ...repairsCases,
 ];

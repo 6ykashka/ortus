@@ -1,0 +1,236 @@
+{
+  "projectId": "4d132a07-45c5-55a7-9738-9117f7f86838",
+  "stages": [
+    {
+      "id": "54aeb065-7079-5cc3-8ccf-b4605e92db3e",
+      "phase": "Черновые работы",
+      "name": "Демонтаж",
+      "startOn": "2026-10-05",
+      "endOn": "2026-10-05",
+      "durationWd": 1,
+      "offsetWd": 0,
+      "slackWd": 1,
+      "critical": false,
+      "status": "planned"
+    },
+    {
+      "id": "84f64702-2bfd-5456-bf2c-86db192fd65d",
+      "phase": "Черновые работы",
+      "name": "Электрика · черновая",
+      "startOn": "2026-10-06",
+      "endOn": "2026-10-06",
+      "durationWd": 1,
+      "offsetWd": 0,
+      "slackWd": 1,
+      "critical": false,
+      "status": "planned"
+    },
+    {
+      "id": "beb7613e-aa26-5e28-9ffb-5abfcf01bf97",
+      "phase": "Черновые работы",
+      "name": "Штукатурка стен",
+      "startOn": "2026-10-05",
+      "endOn": "2026-10-05",
+      "durationWd": 1,
+      "offsetWd": 0,
+      "slackWd": 0,
+      "critical": true,
+      "status": "planned"
+    },
+    {
+      "id": "f6cc7e3b-8cd4-5fed-be2c-0ad1037afad5",
+      "phase": "Чистовые работы",
+      "name": "Стяжка пола",
+      "startOn": "2026-10-06",
+      "endOn": "2026-10-06",
+      "durationWd": 1,
+      "offsetWd": 0,
+      "slackWd": 0,
+      "critical": true,
+      "status": "planned"
+    },
+    {
+      "id": "550b0902-4bac-5bbf-b10b-643b6d53945a",
+      "phase": "Чистовые работы",
+      "name": "Шпаклёвка и покраска",
+      "startOn": "2026-10-12",
+      "endOn": "2026-10-12",
+      "durationWd": 1,
+      "offsetWd": 0,
+      "slackWd": 0,
+      "critical": true,
+      "status": "planned"
+    },
+    {
+      "id": "1a500f80-8499-58dd-986b-d7f33a62b15e",
+      "phase": "Чистовые работы",
+      "name": "Плитка в санузле",
+      "startOn": "2026-10-16",
+      "endOn": "2026-10-16",
+      "durationWd": 1,
+      "offsetWd": 0,
+      "slackWd": 0,
+      "critical": true,
+      "status": "planned"
+    },
+    {
+      "id": "e52ed968-6191-50e7-89a2-9b7a8c9019da",
+      "phase": "Чистовые работы",
+      "name": "Укладка ламината",
+      "startOn": "2026-10-27",
+      "endOn": "2026-10-27",
+      "durationWd": 1,
+      "offsetWd": 0,
+      "slackWd": 0,
+      "critical": true,
+      "status": "planned"
+    },
+    {
+      "id": "3da073e5-f657-5cf3-b5d3-c584c80bbf3b",
+      "phase": "Чистовые работы",
+      "name": "Электрика · чистовая",
+      "startOn": "2026-10-28",
+      "endOn": "2026-10-28",
+      "durationWd": 1,
+      "offsetWd": 0,
+      "slackWd": 0,
+      "critical": true,
+      "status": "planned"
+    },
+    {
+      "id": "fb720a11-2faa-5a1d-ab9d-0c74095e9dc7",
+      "phase": "Чистовые работы",
+      "name": "Уборка и сдача объекта",
+      "startOn": "2026-10-29",
+      "endOn": "2026-10-29",
+      "durationWd": 1,
+      "offsetWd": 0,
+      "slackWd": 0,
+      "critical": true,
+      "status": "planned"
+    },
+    {
+      "id": "1465d817-c3e4-5830-a2cb-47f12e8175ec",
+      "phase": "Сдача",
+      "name": "Сдача объекта",
+      "startOn": "2026-10-30",
+      "endOn": "2026-10-30",
+      "durationWd": 1,
+      "offsetWd": 0,
+      "slackWd": 0,
+      "critical": true,
+      "status": "planned"
+    }
+  ],
+  "links": [
+    {
+      "fromStageId": "54aeb065-7079-5cc3-8ccf-b4605e92db3e",
+      "toStageId": "84f64702-2bfd-5456-bf2c-86db192fd65d",
+      "lagDays": 0
+    },
+    {
+      "fromStageId": "84f64702-2bfd-5456-bf2c-86db192fd65d",
+      "toStageId": "beb7613e-aa26-5e28-9ffb-5abfcf01bf97",
+      "lagDays": -3,
+      "note": "раньше на 3 дня: начинают с комнат, где проводка готова"
+    },
+    {
+      "fromStageId": "beb7613e-aa26-5e28-9ffb-5abfcf01bf97",
+      "toStageId": "f6cc7e3b-8cd4-5fed-be2c-0ad1037afad5",
+      "lagDays": 0
+    },
+    {
+      "fromStageId": "f6cc7e3b-8cd4-5fed-be2c-0ad1037afad5",
+      "toStageId": "550b0902-4bac-5bbf-b10b-643b6d53945a",
+      "lagDays": 5,
+      "note": "после штукатурки пауза 5 дней: сушка"
+    },
+    {
+      "fromStageId": "550b0902-4bac-5bbf-b10b-643b6d53945a",
+      "toStageId": "1a500f80-8499-58dd-986b-d7f33a62b15e",
+      "lagDays": 3,
+      "note": "после стяжки пауза 3 дня"
+    },
+    {
+      "fromStageId": "1a500f80-8499-58dd-986b-d7f33a62b15e",
+      "toStageId": "e52ed968-6191-50e7-89a2-9b7a8c9019da",
+      "lagDays": 10,
+      "note": "после стяжки пауза 10 дней: сушка"
+    },
+    {
+      "fromStageId": "e52ed968-6191-50e7-89a2-9b7a8c9019da",
+      "toStageId": "3da073e5-f657-5cf3-b5d3-c584c80bbf3b",
+      "lagDays": 0
+    },
+    {
+      "fromStageId": "3da073e5-f657-5cf3-b5d3-c584c80bbf3b",
+      "toStageId": "fb720a11-2faa-5a1d-ab9d-0c74095e9dc7",
+      "lagDays": 0
+    },
+    {
+      "fromStageId": "fb720a11-2faa-5a1d-ab9d-0c74095e9dc7",
+      "toStageId": "1465d817-c3e4-5830-a2cb-47f12e8175ec",
+      "lagDays": 0
+    }
+  ],
+  "baseline": null,
+  "forecastDueOn": "2026-10-30",
+  "delayWd": 0,
+  "holidays": ["2026-11-04"],
+  "issues": [
+    {
+      "kind": "no_executor",
+      "stageId": "54aeb065-7079-5cc3-8ccf-b4605e92db3e",
+      "text": "Нет исполнителя"
+    },
+    {
+      "kind": "no_executor",
+      "stageId": "84f64702-2bfd-5456-bf2c-86db192fd65d",
+      "text": "Нет исполнителя"
+    },
+    {
+      "kind": "no_executor",
+      "stageId": "beb7613e-aa26-5e28-9ffb-5abfcf01bf97",
+      "text": "Нет исполнителя"
+    },
+    {
+      "kind": "no_executor",
+      "stageId": "f6cc7e3b-8cd4-5fed-be2c-0ad1037afad5",
+      "text": "Нет исполнителя"
+    },
+    {
+      "kind": "no_executor",
+      "stageId": "550b0902-4bac-5bbf-b10b-643b6d53945a",
+      "text": "Нет исполнителя"
+    },
+    {
+      "kind": "no_executor",
+      "stageId": "1a500f80-8499-58dd-986b-d7f33a62b15e",
+      "text": "Нет исполнителя"
+    },
+    {
+      "kind": "no_executor",
+      "stageId": "e52ed968-6191-50e7-89a2-9b7a8c9019da",
+      "text": "Нет исполнителя"
+    },
+    {
+      "kind": "no_executor",
+      "stageId": "3da073e5-f657-5cf3-b5d3-c584c80bbf3b",
+      "text": "Нет исполнителя"
+    },
+    {
+      "kind": "no_executor",
+      "stageId": "fb720a11-2faa-5a1d-ab9d-0c74095e9dc7",
+      "text": "Нет исполнителя"
+    }
+  ],
+  "changes": [
+    {
+      "id": "1d2d587b-0bc0-5fd7-933d-2fefc1f8ebd6",
+      "at": "2026-10-20T07:30:00Z",
+      "authorName": "Дарья Зимина",
+      "text": "График собран по версии 1 сметы и технологии шаблона"
+    }
+  ],
+  "revision": 2
+}

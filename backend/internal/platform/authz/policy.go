@@ -53,6 +53,7 @@ func DefaultPolicy() Policy {
 		BlockedBy: map[string][]string{
 			"chat.pdn.read": driverOnly, "fleet.earnings.read": driverOnly, "fleet.earnings.manage": driverOnly,
 			"cash.payroll.post": driverAndForeman, "cash.reports.finance": driverAndForeman,
+			"repairs.crew.accrue": driverOnly, "repairs.crew.pay": driverOnly,
 		},
 	}
 }

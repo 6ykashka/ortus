@@ -46,17 +46,19 @@ RepairProject:
       type: string
     address:
       type: string
-    foremanMemberId:
-      $ref: ../common/schemas.yaml#/Id
-    budget:
-      $ref: ../common/schemas.yaml#/Money
     status:
       type: string
       enum:
+        - draft
         - planned
         - active
         - completed
         - archived
+        - handed_over
+    foremanMemberId:
+      oneOf:
+        - $ref: ../common/schemas.yaml#/Id
+        - type: "null"
     workers:
       type: array
       items:
@@ -65,16 +67,74 @@ RepairProject:
       type: integer
       minimum: 1
       format: int64
+    kind:
+      type: string
+      maxLength: 100
+    stage:
+      type: string
+      maxLength: 100
+    areaM2:
+      $ref: ../common/schemas.yaml#/Quantity
+    rooms:
+      type: integer
+      minimum: 0
+    contractNo:
+      type: string
+      maxLength: 40
+    startOn:
+      type: string
+      format: date
+    dueOn:
+      type: string
+      format: date
+    forecastDueOn:
+      type: string
+      format: date
+    clientName:
+      type: string
+      maxLength: 150
+    clientPhone:
+      type: string
+      maxLength: 40
+    access:
+      type: array
+      items:
+        $ref: ./schemas.yaml#/RepairAccessItem
+    measured:
+      type: boolean
+    handedOverOn:
+      type: string
+      format: date
+    warrantyUntil:
+      type: string
+      format: date
+    templateId:
+      $ref: ../common/schemas.yaml#/Id
+    leadTaskId:
+      $ref: ../common/schemas.yaml#/Id
+    readiness:
+      $ref: ./schemas.yaml#/RepairReadiness
+    todoCount:
+      type: integer
+      minimum: 0
+    todoTop:
+      $ref: ./schemas.yaml#/RepairDecision
+    budget:
+      $ref: ../common/schemas.yaml#/Money
   required:
     - id
     - orgUnitId
     - name
     - address
-    - foremanMemberId
-    - budget
     - status
+    - foremanMemberId
     - workers
     - revision
+    - access
+    - measured
+    - readiness
+    - todoCount
+  description: "Repair object (RS-08: RepairProject, UI «Объект»). foremanMemberId is null until the owner assigns a foreman; a draft object (status draft) is created at the lead stage «Замер» and has only measurement and estimate. budget (contract amount) and clientPhone are omitted without repairs.finance.read — the server never returns them to the foreman, the crew or a subcontractor."
 RepairProjectCreate:
   type: object
   additionalProperties: false
@@ -88,23 +148,46 @@ RepairProjectCreate:
     address:
       type: string
       maxLength: 1000
-    foremanMemberId:
-      $ref: ../common/schemas.yaml#/Id
-    budget:
-      $ref: ../common/schemas.yaml#/Money
     workers:
       type: array
       items:
         $ref: ./schemas.yaml#/WorkerCreate
       maxItems: 100
+    kind:
+      type: string
+      maxLength: 100
+    areaM2:
+      $ref: ../common/schemas.yaml#/Quantity
+    rooms:
+      type: integer
+      minimum: 0
+    clientName:
+      type: string
+      maxLength: 150
+    clientPhone:
+      type: string
+      maxLength: 40
+    leadTaskId:
+      $ref: ../common/schemas.yaml#/Id
+    access:
+      type: array
+      items:
+        $ref: ./schemas.yaml#/RepairAccessItem
+      maxItems: 30
+    templateId:
+      $ref: ../common/schemas.yaml#/Id
+    foremanMemberId:
+      oneOf:
+        - $ref: ../common/schemas.yaml#/Id
+        - type: "null"
+    budget:
+      $ref: ../common/schemas.yaml#/Money
   required:
     - orgUnitId
     - name
     - address
-    - foremanMemberId
-    - budget
     - workers
-  description: Creates local non-login workers. Later shared contractor/worker directory and estimate/stage CRUD are extensions, not hidden generic mutation fields.
+  description: Creates a draft object (from a lead at the stage «Замер», Q-W4.00-repair-16) or an active one. Local non-login workers are created in the same transaction. An empty measurement (version 1) is created with the object.
 RepairProjectPage:
   type: object
   additionalProperties: false
@@ -121,18 +204,11 @@ RepairProjectPage:
   required:
     - items
     - nextCursor
-  description: Opaque cursor is bound to tenant, principal, effective scopes, filters and sort. Permission changes invalidate the cursor.
+  description: Opaque cursor is bound to tenant, principal, effective scopes, filters and sort.
 WorkLogLine:
   type: object
   additionalProperties: false
   properties:
-    workerId:
-      $ref: ../common/schemas.yaml#/Id
-    workCode:
-      type: string
-    description:
-      type: string
-      maxLength: 2000
     quantity:
       $ref: ../common/schemas.yaml#/Quantity
     unit:
@@ -143,16 +219,27 @@ WorkLogLine:
         - m3
         - m
         - piece
+        - set
+        - trip
+        - mesh
+        - liter
+    workId:
+      $ref: ../common/schemas.yaml#/Id
+    workerId:
+      $ref: ../common/schemas.yaml#/Id
+    workCode:
+      type: string
+    description:
+      type: string
+      maxLength: 2000
     presenceMinutes:
       type: integer
       minimum: 0
       format: int64
   required:
-    - workerId
-    - workCode
     - quantity
     - unit
-  description: Presence, accepted work quantity and payment are separate facts. A work log does not create wages or cash posting.
+  description: "W6.00: one line = one work of the object with a volume (the prototype mark). workerId and workCode of 0.1 stay optional; presence is not implemented in stage 6 (Q-W4.00-repair-14)."
 WorkLogCreate:
   type: object
   additionalProperties: false
@@ -174,17 +261,28 @@ WorkLogCreate:
       type: array
       items:
         $ref: ../common/schemas.yaml#/Id
+      minItems: 1
       maxItems: 20
     note:
       type: string
       maxLength: 5000
+    crewWorkerIds:
+      type: array
+      items:
+        $ref: ../common/schemas.yaml#/Id
+      maxItems: 100
+    materials:
+      type: array
+      items:
+        $ref: ./schemas.yaml#/WorkLogMaterial
+      maxItems: 100
   required:
     - projectId
     - workDate
     - timeZone
     - lines
     - evidenceFileIds
-  description: Foreman can submit only for assigned visible projects and project-linked workers. Corrections are revisions/compensations; historical worker attribution is preserved.
+  description: Only the foreman of the object (repairs.work_logs.submit in its scope). «Отметьте работников» and «Добавьте хотя бы одно фото» of the prototype are validation_failed fields crewWorkerIds and evidenceFileIds; volume above plan + 10 % — reason work_volume_exceeds_plan.
 WorkLog:
   type: object
   additionalProperties: false
@@ -220,6 +318,24 @@ WorkLog:
       type: integer
       minimum: 1
       format: int64
+    number:
+      type: string
+      maxLength: 20
+    crewWorkerIds:
+      type: array
+      items:
+        $ref: ../common/schemas.yaml#/Id
+    materials:
+      type: array
+      items:
+        $ref: ./schemas.yaml#/WorkLogMaterial
+    acceptedAt:
+      $ref: ../common/schemas.yaml#/Instant
+    acceptedByMemberId:
+      $ref: ../common/schemas.yaml#/Id
+    returnReason:
+      type: string
+      maxLength: 500
   required:
     - id
     - projectId
@@ -231,6 +347,7 @@ WorkLog:
     - status
     - createdAt
     - revision
+  description: Accepted volumes only count in the fact (submitted = «На проверке»). The return reason is visible to the foreman, not to the crew (Q-W4.00-repair-3).
 WorkLogPage:
   type: object
   additionalProperties: false
@@ -247,4 +364,2153 @@ WorkLogPage:
   required:
     - items
     - nextCursor
-  description: Opaque cursor is bound to tenant, principal, effective scopes, filters and sort. Permission changes invalidate the cursor.
+  description: Opaque cursor is bound to tenant, principal, effective scopes, filters and sort.
+RepairUnit:
+  type: string
+  enum:
+    - hour
+    - m2
+    - m3
+    - m
+    - piece
+    - set
+    - trip
+    - mesh
+    - liter
+  description: Unit of volume. 0.1 units hour, m2, m3, m, piece plus set (комплект), trip (рейс), mesh (мешок), liter (литр) of the prototype.
+RepairAccessItem:
+  type: object
+  additionalProperties: false
+  properties:
+    icon:
+      type: string
+      maxLength: 40
+    text:
+      type: string
+      maxLength: 200
+  required:
+    - icon
+    - text
+RepairReadiness:
+  type: object
+  additionalProperties: false
+  properties:
+    acceptedPct:
+      type: integer
+      minimum: 0
+      maximum: 100
+    pendingPct:
+      type: integer
+      minimum: 0
+      maximum: 100
+    clientPct:
+      type: integer
+      minimum: 0
+      maximum: 100
+  required:
+    - acceptedPct
+    - pendingPct
+    - clientPct
+  description: Team readiness = accepted volumes to plan (+ pending); client readiness — by signed acts only (Q-W4.00-repair-4). Pending volume is never part of the fact.
+RepairDecision:
+  type: object
+  additionalProperties: false
+  properties:
+    kind:
+      type: string
+      enum:
+        - no_foreman
+        - work_log_pending
+        - work_log_missing
+        - schedule_slip
+        - stage_no_executor
+        - document_wait_signature
+        - document_ready
+        - supply_pending
+        - estimate_with_client
+        - change_order_new
+        - change_order_priced
+        - change_order_sent
+        - estimate_missing
+        - estimate_draft
+        - estimate_sent
+        - estimate_approved
+    text:
+      type: string
+      maxLength: 300
+    actionLabel:
+      type: string
+      maxLength: 60
+    tab:
+      type: string
+      enum:
+        - overview
+        - works
+        - measure
+        - estimate
+        - schedule
+        - docs
+        - supply
+        - finance
+        - pay
+        - subs
+        - client
+    refId:
+      $ref: ../common/schemas.yaml#/Id
+  required:
+    - kind
+    - text
+    - tab
+  description: One item of «Требует решения» (the same function feeds the list, the card and «Главная»). Items with sums are returned only with repairs.finance.read.
+RepairProjectPatch:
+  type: object
+  additionalProperties: false
+  properties:
+    name:
+      type: string
+      minLength: 1
+      maxLength: 150
+    address:
+      type: string
+      maxLength: 1000
+    kind:
+      type: string
+      maxLength: 100
+    areaM2:
+      $ref: ../common/schemas.yaml#/Quantity
+    rooms:
+      type: integer
+      minimum: 0
+    contractNo:
+      type: string
+      maxLength: 40
+    dueOn:
+      type: string
+      format: date
+    clientName:
+      type: string
+      maxLength: 150
+    clientPhone:
+      type: string
+      maxLength: 40
+    access:
+      type: array
+      items:
+        $ref: ./schemas.yaml#/RepairAccessItem
+      maxItems: 30
+  minProperties: 1
+RepairForemanAssign:
+  type: object
+  additionalProperties: false
+  properties:
+    foremanMemberId:
+      $ref: ../common/schemas.yaml#/Id
+  required:
+    - foremanMemberId
+RepairHandOver:
+  type: object
+  additionalProperties: false
+  properties:
+    actDocumentId:
+      $ref: ../common/schemas.yaml#/Id
+    warrantyMonths:
+      type: integer
+      minimum: 1
+      maximum: 120
+  required:
+    - actDocumentId
+  description: The signed «Акт сдачи объекта» (Q-W4.00-repair-21); warranty defaults to the warranty passport of the template (24 or 12 months).
+RepairWork:
+  type: object
+  additionalProperties: false
+  properties:
+    id:
+      $ref: ../common/schemas.yaml#/Id
+    projectId:
+      $ref: ../common/schemas.yaml#/Id
+    name:
+      type: string
+    unit:
+      $ref: ./schemas.yaml#/RepairUnit
+    plan:
+      $ref: ../common/schemas.yaml#/Quantity
+    fact:
+      $ref: ../common/schemas.yaml#/Quantity
+    pending:
+      $ref: ../common/schemas.yaml#/Quantity
+    estimateLineId:
+      $ref: ../common/schemas.yaml#/Id
+  required:
+    - id
+    - projectId
+    - name
+    - unit
+    - plan
+    - fact
+    - pending
+RepairWorkList:
+  type: object
+  additionalProperties: false
+  properties:
+    items:
+      type: array
+      items:
+        $ref: ./schemas.yaml#/RepairWork
+  required:
+    - items
+RepairPhoto:
+  type: object
+  additionalProperties: false
+  properties:
+    fileId:
+      $ref: ../common/schemas.yaml#/Id
+    workLogId:
+      $ref: ../common/schemas.yaml#/Id
+    takenAt:
+      $ref: ../common/schemas.yaml#/Instant
+    status:
+      type: string
+      enum:
+        - accepted
+        - pending
+  required:
+    - fileId
+    - workLogId
+    - takenAt
+    - status
+RepairPeople:
+  type: object
+  additionalProperties: false
+  properties:
+    clientName:
+      type:
+        - string
+        - "null"
+    clientLinkActive:
+      type: boolean
+    foreman:
+      type:
+        - object
+        - "null"
+      additionalProperties: false
+      properties:
+        memberId:
+          $ref: ../common/schemas.yaml#/Id
+        displayName:
+          type: string
+      required:
+        - memberId
+        - displayName
+    crew:
+      type: array
+      items:
+        $ref: ./schemas.yaml#/Worker
+    subcontractor:
+      type: object
+      additionalProperties: false
+      properties:
+        name:
+          type: string
+        accessUntil:
+          type:
+            - string
+            - "null"
+          format: date
+      required:
+        - name
+        - accessUntil
+  required:
+    - clientName
+    - clientLinkActive
+    - foreman
+    - crew
+RepairMoneyCard:
+  type: object
+  additionalProperties: false
+  properties:
+    contract:
+      $ref: ../common/schemas.yaml#/Money
+    received:
+      $ref: ../common/schemas.yaml#/Money
+    expenses:
+      $ref: ../common/schemas.yaml#/Money
+    marginPlan:
+      $ref: ./schemas.yaml#/RepairMoneyDelta
+  required:
+    - contract
+    - received
+    - expenses
+    - marginPlan
+RepairMoneyDelta:
+  type: object
+  additionalProperties: false
+  properties:
+    amountMinor:
+      type: integer
+      format: int64
+    currency:
+      type: string
+      pattern: ^[A-Z]{3}$
+  required:
+    - amountMinor
+    - currency
+  description: Signed minor units (difference, margin).
+RepairFeedItem:
+  type: object
+  additionalProperties: false
+  properties:
+    at:
+      $ref: ../common/schemas.yaml#/Instant
+    text:
+      type: string
+      maxLength: 300
+    actorName:
+      type: string
+  required:
+    - at
+    - text
+RepairProjectOverview:
+  type: object
+  additionalProperties: false
+  properties:
+    project:
+      $ref: ./schemas.yaml#/RepairProject
+    decisions:
+      type: array
+      items:
+        $ref: ./schemas.yaml#/RepairDecision
+    works:
+      type: array
+      items:
+        $ref: ./schemas.yaml#/RepairWork
+    photos:
+      type: array
+      items:
+        $ref: ./schemas.yaml#/RepairPhoto
+    people:
+      $ref: ./schemas.yaml#/RepairPeople
+    money:
+      $ref: ./schemas.yaml#/RepairMoneyCard
+    feed:
+      type: array
+      items:
+        $ref: ./schemas.yaml#/RepairFeedItem
+  required:
+    - project
+    - decisions
+    - works
+    - photos
+    - people
+    - feed
+  description: Overview tab (variant 1a). money is present only with repairs.finance.read.
+WorkLogMaterial:
+  type: object
+  additionalProperties: false
+  properties:
+    priceItemId:
+      $ref: ../common/schemas.yaml#/Id
+    quantity:
+      $ref: ../common/schemas.yaml#/Quantity
+  required:
+    - priceItemId
+    - quantity
+WorkLogReturn:
+  type: object
+  additionalProperties: false
+  properties:
+    reason:
+      type: string
+      minLength: 2
+      maxLength: 500
+  required:
+    - reason
+ChangeOrder:
+  type: object
+  additionalProperties: false
+  properties:
+    id:
+      $ref: ../common/schemas.yaml#/Id
+    projectId:
+      $ref: ../common/schemas.yaml#/Id
+    number:
+      type: string
+      maxLength: 20
+    title:
+      type: string
+      maxLength: 300
+    quantity:
+      $ref: ../common/schemas.yaml#/Quantity
+    unit:
+      $ref: ./schemas.yaml#/RepairUnit
+    note:
+      type: string
+      maxLength: 2000
+    photoFileIds:
+      type: array
+      items:
+        $ref: ../common/schemas.yaml#/Id
+    status:
+      type: string
+      enum:
+        - proposed
+        - priced
+        - sent
+        - signed
+        - rejected
+    createdAt:
+      $ref: ../common/schemas.yaml#/Instant
+    revision:
+      type: integer
+      minimum: 1
+      format: int64
+    rejectReason:
+      $ref: ./schemas.yaml#/RepairRejectReason
+    agreementNo:
+      type: integer
+      minimum: 1
+    estimateVersion:
+      type: integer
+      minimum: 1
+  required:
+    - id
+    - projectId
+    - number
+    - title
+    - quantity
+    - unit
+    - note
+    - photoFileIds
+    - status
+    - createdAt
+    - revision
+ChangeOrderCreate:
+  type: object
+  additionalProperties: false
+  properties:
+    title:
+      type: string
+      minLength: 1
+      maxLength: 300
+    quantity:
+      $ref: ../common/schemas.yaml#/Quantity
+    unit:
+      $ref: ./schemas.yaml#/RepairUnit
+    photoFileIds:
+      type: array
+      items:
+        $ref: ../common/schemas.yaml#/Id
+      minItems: 1
+      maxItems: 20
+    note:
+      type: string
+      maxLength: 2000
+  required:
+    - title
+    - quantity
+    - unit
+    - photoFileIds
+  description: The foreman describes the work without prices. «Опишите, что нужно сделать», «Укажите объём больше нуля», «Приложите хотя бы одно фото»; no change orders before the contract (draft object) and on a handed-over object — change_order_closed.
+ChangeOrderReject:
+  type: object
+  additionalProperties: false
+  properties:
+    reason:
+      $ref: ./schemas.yaml#/RepairRejectReason
+  required:
+    - reason
+ChangeOrderList:
+  type: object
+  additionalProperties: false
+  properties:
+    items:
+      type: array
+      items:
+        $ref: ./schemas.yaml#/ChangeOrder
+  required:
+    - items
+MeasurementRoom:
+  type: object
+  additionalProperties: false
+  properties:
+    id:
+      $ref: ../common/schemas.yaml#/Id
+    name:
+      type: string
+      maxLength: 100
+    lengthM:
+      $ref: ../common/schemas.yaml#/Quantity
+    widthM:
+      $ref: ../common/schemas.yaml#/Quantity
+    heightM:
+      $ref: ../common/schemas.yaml#/Quantity
+    openingsM2:
+      $ref: ../common/schemas.yaml#/Quantity
+    wet:
+      type: boolean
+  required:
+    - id
+    - name
+    - lengthM
+    - widthM
+    - heightM
+    - openingsM2
+MeasurementRoomInput:
+  type: object
+  additionalProperties: false
+  properties:
+    name:
+      type: string
+      minLength: 1
+      maxLength: 100
+    lengthM:
+      $ref: ../common/schemas.yaml#/Quantity
+    widthM:
+      $ref: ../common/schemas.yaml#/Quantity
+    heightM:
+      $ref: ../common/schemas.yaml#/Quantity
+    openingsM2:
+      $ref: ../common/schemas.yaml#/Quantity
+    wet:
+      type: boolean
+  required:
+    - name
+    - lengthM
+    - widthM
+    - heightM
+    - openingsM2
+MeasurementTotals:
+  type: object
+  additionalProperties: false
+  properties:
+    floorM2:
+      $ref: ../common/schemas.yaml#/Quantity
+    wallsM2:
+      $ref: ../common/schemas.yaml#/Quantity
+    perimeterM:
+      $ref: ../common/schemas.yaml#/Quantity
+    wetFloorM2:
+      $ref: ../common/schemas.yaml#/Quantity
+    wetWallsM2:
+      $ref: ../common/schemas.yaml#/Quantity
+  required:
+    - floorM2
+    - wallsM2
+    - perimeterM
+    - wetFloorM2
+    - wetWallsM2
+Measurement:
+  type: object
+  additionalProperties: false
+  properties:
+    projectId:
+      $ref: ../common/schemas.yaml#/Id
+    version:
+      type: integer
+      minimum: 1
+    rooms:
+      type: array
+      items:
+        $ref: ./schemas.yaml#/MeasurementRoom
+    totals:
+      $ref: ./schemas.yaml#/MeasurementTotals
+    revision:
+      type: integer
+      minimum: 1
+      format: int64
+    measuredAt:
+      $ref: ../common/schemas.yaml#/Instant
+    measuredByMemberId:
+      $ref: ../common/schemas.yaml#/Id
+  required:
+    - projectId
+    - version
+    - rooms
+    - totals
+    - revision
+MeasurementPut:
+  type: object
+  additionalProperties: false
+  properties:
+    rooms:
+      type: array
+      items:
+        $ref: ./schemas.yaml#/MeasurementRoomInput
+      maxItems: 100
+  required:
+    - rooms
+  description: A new measurement version; a draft estimate is recalculated (lines «из замера»), sent and approved versions are never changed (Q-W4.00-repair-17).
+EstimateSection:
+  type: object
+  additionalProperties: false
+  properties:
+    id:
+      $ref: ../common/schemas.yaml#/Id
+    name:
+      type: string
+      maxLength: 150
+  required:
+    - id
+    - name
+EstimateLine:
+  type: object
+  additionalProperties: false
+  properties:
+    id:
+      $ref: ../common/schemas.yaml#/Id
+    sectionId:
+      $ref: ../common/schemas.yaml#/Id
+    name:
+      type: string
+      maxLength: 300
+    unit:
+      $ref: ./schemas.yaml#/RepairUnit
+    kind:
+      type: string
+      enum:
+        - work
+        - material
+    price:
+      $ref: ../common/schemas.yaml#/Money
+    quantity:
+      $ref: ../common/schemas.yaml#/Quantity
+    sum:
+      $ref: ../common/schemas.yaml#/Money
+    manual:
+      type: boolean
+    isNew:
+      type: boolean
+    priceItemId:
+      $ref: ../common/schemas.yaml#/Id
+    formula:
+      type: string
+      maxLength: 100
+    coef:
+      $ref: ../common/schemas.yaml#/Quantity
+  required:
+    - id
+    - sectionId
+    - name
+    - unit
+    - kind
+    - price
+    - quantity
+    - sum
+    - manual
+    - isNew
+  description: "id is the stable key of the line between versions of the estimate (repairs.estimate_lines.line_key): a new version copies the lines with the same id and diffEstimates matches them by it; replacing a price list item is «убрано» plus «добавлено»."
+Estimate:
+  type: object
+  additionalProperties: false
+  properties:
+    projectId:
+      $ref: ../common/schemas.yaml#/Id
+    version:
+      type: integer
+      minimum: 1
+    kind:
+      type: string
+      enum:
+        - first
+        - revision
+        - change
+    state:
+      type: string
+      enum:
+        - draft
+        - sent
+        - approved
+        - replaced
+    sections:
+      type: array
+      items:
+        $ref: ./schemas.yaml#/EstimateSection
+    lines:
+      type: array
+      items:
+        $ref: ./schemas.yaml#/EstimateLine
+    discountPct:
+      type: integer
+      minimum: 0
+      maximum: 100
+    total:
+      $ref: ../common/schemas.yaml#/Money
+    changeOrderIds:
+      type: array
+      items:
+        $ref: ../common/schemas.yaml#/Id
+    revision:
+      type: integer
+      minimum: 1
+      format: int64
+    baseVersion:
+      type: integer
+      minimum: 1
+    templateId:
+      $ref: ../common/schemas.yaml#/Id
+    agreementNo:
+      type: integer
+      minimum: 1
+    sentAt:
+      $ref: ../common/schemas.yaml#/Instant
+    approvedAt:
+      $ref: ../common/schemas.yaml#/Instant
+  required:
+    - projectId
+    - version
+    - kind
+    - state
+    - sections
+    - lines
+    - discountPct
+    - total
+    - changeOrderIds
+    - revision
+  description: Version of the estimate (repairs.finance.read). Sent and approved versions are locked (estimate_version_locked); an approved one is replaced only by a new version (before the contract) or an additional agreement (after it).
+EstimateList:
+  type: object
+  additionalProperties: false
+  properties:
+    items:
+      type: array
+      items:
+        $ref: ./schemas.yaml#/Estimate
+  required:
+    - items
+EstimateFromTemplate:
+  type: object
+  additionalProperties: false
+  properties:
+    templateId:
+      $ref: ../common/schemas.yaml#/Id
+  required:
+    - templateId
+EstimateRevisionCreate:
+  type: object
+  additionalProperties: false
+  properties:
+    kind:
+      type: string
+      enum:
+        - revision
+        - change
+    changeOrderIds:
+      type: array
+      items:
+        $ref: ../common/schemas.yaml#/Id
+      maxItems: 50
+  required:
+    - kind
+EstimateLinePatch:
+  type: object
+  additionalProperties: false
+  properties:
+    id:
+      $ref: ../common/schemas.yaml#/Id
+    quantity:
+      $ref: ../common/schemas.yaml#/Quantity
+    price:
+      $ref: ../common/schemas.yaml#/Money
+  required:
+    - id
+EstimateLineAdd:
+  type: object
+  additionalProperties: false
+  properties:
+    sectionId:
+      $ref: ../common/schemas.yaml#/Id
+    priceItemId:
+      $ref: ../common/schemas.yaml#/Id
+    quantity:
+      $ref: ../common/schemas.yaml#/Quantity
+  required:
+    - sectionId
+    - priceItemId
+EstimateDraftPatch:
+  type: object
+  additionalProperties: false
+  properties:
+    addSections:
+      type: array
+      items:
+        type: string
+        minLength: 1
+        maxLength: 150
+      maxItems: 20
+    addLines:
+      type: array
+      items:
+        $ref: ./schemas.yaml#/EstimateLineAdd
+      maxItems: 100
+    lines:
+      type: array
+      items:
+        $ref: ./schemas.yaml#/EstimateLinePatch
+      maxItems: 500
+    removeLineIds:
+      type: array
+      items:
+        $ref: ../common/schemas.yaml#/Id
+      maxItems: 500
+    resetLineIds:
+      type: array
+      items:
+        $ref: ../common/schemas.yaml#/Id
+      maxItems: 500
+    discountPct:
+      type: integer
+      minimum: 0
+      maximum: 100
+  minProperties: 1
+EstimateDiffRow:
+  type: object
+  additionalProperties: false
+  properties:
+    change:
+      type: string
+      enum:
+        - added
+        - removed
+        - changed
+        - same
+    name:
+      type: string
+    lineId:
+      $ref: ../common/schemas.yaml#/Id
+    quantityA:
+      $ref: ../common/schemas.yaml#/Quantity
+    quantityB:
+      $ref: ../common/schemas.yaml#/Quantity
+    priceA:
+      $ref: ../common/schemas.yaml#/Money
+    priceB:
+      $ref: ../common/schemas.yaml#/Money
+    delta:
+      $ref: ./schemas.yaml#/RepairMoneyDelta
+  required:
+    - change
+    - name
+    - delta
+EstimateDiff:
+  type: object
+  additionalProperties: false
+  properties:
+    projectId:
+      $ref: ../common/schemas.yaml#/Id
+    from:
+      type: integer
+      minimum: 1
+    to:
+      type: integer
+      minimum: 1
+    rows:
+      type: array
+      items:
+        $ref: ./schemas.yaml#/EstimateDiffRow
+    totalFrom:
+      $ref: ../common/schemas.yaml#/Money
+    totalTo:
+      $ref: ../common/schemas.yaml#/Money
+    delta:
+      $ref: ./schemas.yaml#/RepairMoneyDelta
+  required:
+    - projectId
+    - from
+    - to
+    - rows
+    - totalFrom
+    - totalTo
+    - delta
+PriceItem:
+  type: object
+  additionalProperties: false
+  properties:
+    id:
+      $ref: ../common/schemas.yaml#/Id
+    section:
+      type: string
+      maxLength: 100
+    name:
+      type: string
+      maxLength: 200
+    unit:
+      $ref: ./schemas.yaml#/RepairUnit
+    kind:
+      type: string
+      enum:
+        - work
+        - material
+    price:
+      $ref: ../common/schemas.yaml#/Money
+    usedInTemplates:
+      type: integer
+      minimum: 0
+    archived:
+      type: boolean
+    revision:
+      type: integer
+      minimum: 1
+      format: int64
+  required:
+    - id
+    - section
+    - name
+    - unit
+    - kind
+    - price
+    - usedInTemplates
+    - archived
+    - revision
+PriceItemCreate:
+  type: object
+  additionalProperties: false
+  properties:
+    section:
+      type: string
+      minLength: 1
+      maxLength: 100
+    name:
+      type: string
+      minLength: 1
+      maxLength: 200
+    unit:
+      $ref: ./schemas.yaml#/RepairUnit
+    kind:
+      type: string
+      enum:
+        - work
+        - material
+    price:
+      $ref: ../common/schemas.yaml#/Money
+  required:
+    - section
+    - name
+    - unit
+    - kind
+    - price
+PriceItemPatch:
+  type: object
+  additionalProperties: false
+  properties:
+    section:
+      type: string
+      minLength: 1
+      maxLength: 100
+    name:
+      type: string
+      minLength: 1
+      maxLength: 200
+    unit:
+      $ref: ./schemas.yaml#/RepairUnit
+    price:
+      $ref: ../common/schemas.yaml#/Money
+    archived:
+      type: boolean
+  minProperties: 1
+PriceItemPage:
+  type: object
+  additionalProperties: false
+  properties:
+    items:
+      type: array
+      items:
+        $ref: ./schemas.yaml#/PriceItem
+    nextCursor:
+      type:
+        - string
+        - "null"
+      maxLength: 2048
+  required:
+    - items
+    - nextCursor
+  description: Opaque cursor is bound to tenant, principal, effective scopes, filters and sort.
+TemplateLine:
+  type: object
+  additionalProperties: false
+  properties:
+    priceItemId:
+      $ref: ../common/schemas.yaml#/Id
+    section:
+      type: string
+      maxLength: 100
+    quantity:
+      $ref: ../common/schemas.yaml#/Quantity
+    formula:
+      type: string
+      enum:
+        - floor
+        - floor_dry
+        - walls
+        - walls_dry
+        - wet
+        - perimeter
+        - perimeter_dry
+    coef:
+      $ref: ../common/schemas.yaml#/Quantity
+  required:
+    - priceItemId
+    - section
+TemplateStage:
+  type: object
+  additionalProperties: false
+  properties:
+    name:
+      type: string
+    ratePerDay:
+      $ref: ../common/schemas.yaml#/Quantity
+    pauseDays:
+      type: integer
+    sections:
+      type: array
+      items:
+        type: string
+  required:
+    - name
+Template:
+  type: object
+  additionalProperties: false
+  properties:
+    id:
+      $ref: ../common/schemas.yaml#/Id
+    name:
+      type: string
+      maxLength: 200
+    kind:
+      type: string
+      maxLength: 100
+    source:
+      type: string
+      enum:
+        - ortus
+        - own
+    usedByObjects:
+      type: integer
+      minimum: 0
+    updatedAt:
+      $ref: ../common/schemas.yaml#/Instant
+    lines:
+      type: array
+      items:
+        $ref: ./schemas.yaml#/TemplateLine
+    stages:
+      type: array
+      items:
+        $ref: ./schemas.yaml#/TemplateStage
+    documents:
+      type: array
+      items:
+        $ref: ./schemas.yaml#/RepairDocumentKind
+    checklist:
+      type: array
+      items:
+        type: string
+        maxLength: 300
+    materials:
+      type: array
+      items:
+        $ref: ./schemas.yaml#/TemplateLine
+    warrantyMonths:
+      type: integer
+      minimum: 1
+      maximum: 120
+    revision:
+      type: integer
+      minimum: 1
+      format: int64
+    copiedFromId:
+      $ref: ../common/schemas.yaml#/Id
+    sourceProjectId:
+      $ref: ../common/schemas.yaml#/Id
+  required:
+    - id
+    - name
+    - kind
+    - source
+    - usedByObjects
+    - updatedAt
+    - lines
+    - stages
+    - documents
+    - checklist
+    - materials
+    - warrantyMonths
+    - revision
+TemplatePatch:
+  type: object
+  additionalProperties: false
+  properties:
+    name:
+      type: string
+      minLength: 1
+      maxLength: 200
+    lines:
+      type: array
+      items:
+        $ref: ./schemas.yaml#/TemplateLine
+      maxItems: 500
+    stages:
+      type: array
+      items:
+        $ref: ./schemas.yaml#/TemplateStage
+      maxItems: 100
+    documents:
+      type: array
+      items:
+        $ref: ./schemas.yaml#/RepairDocumentKind
+    checklist:
+      type: array
+      items:
+        type: string
+        maxLength: 300
+      maxItems: 100
+    materials:
+      type: array
+      items:
+        $ref: ./schemas.yaml#/TemplateLine
+      maxItems: 500
+    warrantyMonths:
+      type: integer
+      minimum: 1
+      maximum: 120
+  minProperties: 1
+TemplateCopy:
+  type: object
+  additionalProperties: false
+  properties:
+    name:
+      type: string
+      minLength: 1
+      maxLength: 200
+TemplateList:
+  type: object
+  additionalProperties: false
+  properties:
+    items:
+      type: array
+      items:
+        $ref: ./schemas.yaml#/Template
+  required:
+    - items
+ScheduleStage:
+  type: object
+  additionalProperties: false
+  properties:
+    id:
+      $ref: ../common/schemas.yaml#/Id
+    phase:
+      type: string
+      maxLength: 100
+    name:
+      type: string
+      maxLength: 200
+    startOn:
+      type: string
+      format: date
+    endOn:
+      type: string
+      format: date
+    durationWd:
+      type: integer
+      minimum: 1
+    offsetWd:
+      type: integer
+      minimum: 0
+    slackWd:
+      type: integer
+      minimum: 0
+    critical:
+      type: boolean
+    status:
+      type: string
+      enum:
+        - planned
+        - started
+        - done
+    executorName:
+      type: string
+      maxLength: 150
+    executorMemberId:
+      $ref: ../common/schemas.yaml#/Id
+    estimateSectionId:
+      $ref: ../common/schemas.yaml#/Id
+  required:
+    - id
+    - phase
+    - name
+    - startOn
+    - endOn
+    - durationWd
+    - offsetWd
+    - slackWd
+    - critical
+    - status
+ScheduleLink:
+  type: object
+  additionalProperties: false
+  properties:
+    fromStageId:
+      $ref: ../common/schemas.yaml#/Id
+    toStageId:
+      $ref: ../common/schemas.yaml#/Id
+    lagDays:
+      type: integer
+      minimum: -60
+      maximum: 60
+    note:
+      type: string
+      maxLength: 200
+  required:
+    - fromStageId
+    - toStageId
+    - lagDays
+ScheduleBaseline:
+  type: object
+  additionalProperties: false
+  properties:
+    version:
+      type: integer
+      minimum: 1
+    dueOn:
+      type: string
+      format: date
+    approvedAt:
+      $ref: ../common/schemas.yaml#/Instant
+    agreementNo:
+      type: integer
+      minimum: 1
+  required:
+    - version
+    - dueOn
+    - approvedAt
+ScheduleIssue:
+  type: object
+  additionalProperties: false
+  properties:
+    kind:
+      type: string
+      enum:
+        - no_executor
+        - executor_busy
+        - no_material
+    stageId:
+      $ref: ../common/schemas.yaml#/Id
+    text:
+      type: string
+      maxLength: 300
+  required:
+    - kind
+    - stageId
+    - text
+ScheduleChangeEntry:
+  type: object
+  additionalProperties: false
+  properties:
+    id:
+      $ref: ../common/schemas.yaml#/Id
+    at:
+      $ref: ../common/schemas.yaml#/Instant
+    authorName:
+      type: string
+    text:
+      type: string
+      maxLength: 500
+    reason:
+      $ref: ./schemas.yaml#/RepairScheduleReason
+  required:
+    - id
+    - at
+    - authorName
+    - text
+Schedule:
+  type: object
+  additionalProperties: false
+  properties:
+    projectId:
+      $ref: ../common/schemas.yaml#/Id
+    stages:
+      type: array
+      items:
+        $ref: ./schemas.yaml#/ScheduleStage
+    links:
+      type: array
+      items:
+        $ref: ./schemas.yaml#/ScheduleLink
+    baseline:
+      oneOf:
+        - $ref: ./schemas.yaml#/ScheduleBaseline
+        - type: "null"
+    forecastDueOn:
+      type:
+        - string
+        - "null"
+      format: date
+    delayWd:
+      type: integer
+      minimum: 0
+    holidays:
+      type: array
+      items:
+        type: string
+        format: date
+    issues:
+      type: array
+      items:
+        $ref: ./schemas.yaml#/ScheduleIssue
+    changes:
+      type: array
+      items:
+        $ref: ./schemas.yaml#/ScheduleChangeEntry
+    revision:
+      type: integer
+      minimum: 1
+      format: int64
+  required:
+    - projectId
+    - stages
+    - links
+    - baseline
+    - forecastDueOn
+    - delayWd
+    - holidays
+    - issues
+    - changes
+    - revision
+  description: Schedule without sums. Forecast, slack and critical path are computed by the server; the client only shows the preview (design/docs/19 «График»).
+ScheduleFromEstimate:
+  type: object
+  additionalProperties: false
+  properties:
+    estimateVersion:
+      type: integer
+      minimum: 1
+  required:
+    - estimateVersion
+ScheduleStageChange:
+  type: object
+  additionalProperties: false
+  properties:
+    stageId:
+      $ref: ../common/schemas.yaml#/Id
+    offsetWd:
+      type: integer
+      minimum: 0
+    durationWd:
+      type: integer
+      minimum: 1
+    lagDays:
+      type: integer
+      minimum: -60
+      maximum: 60
+  required:
+    - stageId
+SchedulePreviewRequest:
+  type: object
+  additionalProperties: false
+  properties:
+    changes:
+      type: array
+      items:
+        $ref: ./schemas.yaml#/ScheduleStageChange
+      minItems: 1
+      maxItems: 100
+  required:
+    - changes
+SchedulePreview:
+  type: object
+  additionalProperties: false
+  properties:
+    moved:
+      type: array
+      items:
+        type: object
+        additionalProperties: false
+        properties:
+          stageId:
+            $ref: ../common/schemas.yaml#/Id
+          fromStartOn:
+            type: string
+            format: date
+          toStartOn:
+            type: string
+            format: date
+        required:
+          - stageId
+          - fromStartOn
+          - toStartOn
+    forecastDueOn:
+      type:
+        - string
+        - "null"
+      format: date
+    delayWd:
+      type: integer
+      minimum: 0
+    notifyWho:
+      type: array
+      items:
+        type: string
+  required:
+    - moved
+    - forecastDueOn
+    - delayWd
+    - notifyWho
+ScheduleChangeApply:
+  type: object
+  additionalProperties: false
+  properties:
+    changes:
+      type: array
+      items:
+        $ref: ./schemas.yaml#/ScheduleStageChange
+      minItems: 1
+      maxItems: 100
+    reason:
+      $ref: ./schemas.yaml#/RepairScheduleReason
+  required:
+    - changes
+    - reason
+  description: Without a reason a move is not saved (reason is required, schedule_reason_required in violations). A started stage is not moved (schedule_stage_locked). Notifications go through the outbox to the executors of affected stages and to the client when the due date changes.
+StageExecutorSet:
+  type: object
+  additionalProperties: false
+  properties:
+    executorMemberId:
+      oneOf:
+        - $ref: ../common/schemas.yaml#/Id
+        - type: "null"
+    executorName:
+      type: string
+      maxLength: 150
+  description: The executor is changed at once, without a reason, and journaled (Q-W4.00-repair-20).
+ScheduleBaselineCreate:
+  type: object
+  additionalProperties: false
+  properties:
+    agreementNo:
+      type: integer
+      minimum: 1
+  required:
+    - agreementNo
+RepairDocument:
+  type: object
+  additionalProperties: false
+  properties:
+    id:
+      $ref: ../common/schemas.yaml#/Id
+    projectId:
+      $ref: ../common/schemas.yaml#/Id
+    kind:
+      $ref: ./schemas.yaml#/RepairDocumentKind
+    title:
+      type: string
+      maxLength: 300
+    state:
+      type: string
+      enum:
+        - draft
+        - wait
+        - sms
+        - signed
+        - paid
+    estimateVersion:
+      type: integer
+      minimum: 1
+    actNo:
+      type: integer
+      minimum: 1
+    amount:
+      $ref: ../common/schemas.yaml#/Money
+    signedAt:
+      $ref: ../common/schemas.yaml#/Instant
+    sentAt:
+      $ref: ../common/schemas.yaml#/Instant
+  required:
+    - id
+    - projectId
+    - kind
+    - title
+    - state
+RepairDocumentList:
+  type: object
+  additionalProperties: false
+  properties:
+    items:
+      type: array
+      items:
+        $ref: ./schemas.yaml#/RepairDocument
+  required:
+    - items
+RepairSignRequestResult:
+  type: object
+  additionalProperties: false
+  properties:
+    document:
+      $ref: ./schemas.yaml#/RepairDocument
+    codeExpiresAt:
+      $ref: ../common/schemas.yaml#/Instant
+    deliveredTo:
+      type: string
+      maxLength: 40
+  required:
+    - document
+    - codeExpiresAt
+    - deliveredTo
+  description: "The SMS code goes to the client through the code delivery port (SMS provider decision pending: stub; on a stand the code is written to the developer inbox). The code is never returned."
+SupplyRequest:
+  type: object
+  additionalProperties: false
+  properties:
+    id:
+      $ref: ../common/schemas.yaml#/Id
+    number:
+      type: string
+      maxLength: 20
+    projectId:
+      $ref: ../common/schemas.yaml#/Id
+    projectName:
+      type: string
+    priceItemId:
+      $ref: ../common/schemas.yaml#/Id
+    name:
+      type: string
+    unit:
+      $ref: ./schemas.yaml#/RepairUnit
+    quantity:
+      $ref: ../common/schemas.yaml#/Quantity
+    needBy:
+      type: string
+      format: date
+    state:
+      type: string
+      enum:
+        - request
+        - reserved
+        - issued
+        - ordered
+        - bought
+        - used
+    createdAt:
+      $ref: ../common/schemas.yaml#/Instant
+    revision:
+      type: integer
+      minimum: 1
+      format: int64
+    warehouseId:
+      $ref: ../common/schemas.yaml#/Id
+    purchaseId:
+      $ref: ../common/schemas.yaml#/Id
+    cost:
+      $ref: ../common/schemas.yaml#/Money
+    available:
+      type: array
+      items:
+        type: object
+        additionalProperties: false
+        properties:
+          warehouseId:
+            $ref: ../common/schemas.yaml#/Id
+          warehouseName:
+            type: string
+          free:
+            $ref: ../common/schemas.yaml#/Quantity
+        required:
+          - warehouseId
+          - warehouseName
+          - free
+  required:
+    - id
+    - number
+    - projectId
+    - projectName
+    - priceItemId
+    - name
+    - unit
+    - quantity
+    - needBy
+    - state
+    - createdAt
+    - revision
+SupplyRequestCreate:
+  type: object
+  additionalProperties: false
+  properties:
+    priceItemId:
+      $ref: ../common/schemas.yaml#/Id
+    quantity:
+      $ref: ../common/schemas.yaml#/Quantity
+    needBy:
+      type: string
+      format: date
+  required:
+    - priceItemId
+    - quantity
+    - needBy
+SupplyRequestPage:
+  type: object
+  additionalProperties: false
+  properties:
+    items:
+      type: array
+      items:
+        $ref: ./schemas.yaml#/SupplyRequest
+    nextCursor:
+      type:
+        - string
+        - "null"
+      maxLength: 2048
+  required:
+    - items
+    - nextCursor
+  description: Opaque cursor is bound to tenant, principal, effective scopes, filters and sort.
+SupplyReserve:
+  type: object
+  additionalProperties: false
+  properties:
+    warehouseId:
+      $ref: ../common/schemas.yaml#/Id
+  required:
+    - warehouseId
+PurchaseLine:
+  type: object
+  additionalProperties: false
+  properties:
+    supplyRequestId:
+      $ref: ../common/schemas.yaml#/Id
+    projectId:
+      $ref: ../common/schemas.yaml#/Id
+    priceItemId:
+      $ref: ../common/schemas.yaml#/Id
+    quantity:
+      $ref: ../common/schemas.yaml#/Quantity
+    price:
+      $ref: ../common/schemas.yaml#/Money
+  required:
+    - supplyRequestId
+    - projectId
+    - priceItemId
+    - quantity
+    - price
+PurchaseLineInput:
+  type: object
+  additionalProperties: false
+  properties:
+    supplyRequestId:
+      $ref: ../common/schemas.yaml#/Id
+    price:
+      $ref: ../common/schemas.yaml#/Money
+  required:
+    - supplyRequestId
+Purchase:
+  type: object
+  additionalProperties: false
+  properties:
+    id:
+      $ref: ../common/schemas.yaml#/Id
+    number:
+      type: string
+      maxLength: 20
+    supplier:
+      type: string
+      maxLength: 150
+    state:
+      type: string
+      enum:
+        - ordered
+        - received
+    lines:
+      type: array
+      items:
+        $ref: ./schemas.yaml#/PurchaseLine
+    total:
+      $ref: ../common/schemas.yaml#/Money
+    createdAt:
+      $ref: ../common/schemas.yaml#/Instant
+    revision:
+      type: integer
+      minimum: 1
+      format: int64
+    receiptQr:
+      type: string
+      maxLength: 500
+    receivedAt:
+      $ref: ../common/schemas.yaml#/Instant
+  required:
+    - id
+    - number
+    - supplier
+    - state
+    - lines
+    - total
+    - createdAt
+    - revision
+PurchaseCreate:
+  type: object
+  additionalProperties: false
+  properties:
+    supplier:
+      type: string
+      minLength: 1
+      maxLength: 150
+    lines:
+      type: array
+      items:
+        $ref: ./schemas.yaml#/PurchaseLineInput
+      minItems: 1
+      maxItems: 200
+  required:
+    - supplier
+    - lines
+  description: One purchase for several objects. The default price is the average price of the warehouse, then the last purchase, then the catalog price (Q-W4.00-repair-23).
+PurchaseReceive:
+  type: object
+  additionalProperties: false
+  properties:
+    receiptQr:
+      type: string
+      minLength: 1
+      maxLength: 500
+  required:
+    - receiptQr
+PurchasePage:
+  type: object
+  additionalProperties: false
+  properties:
+    items:
+      type: array
+      items:
+        $ref: ./schemas.yaml#/Purchase
+    nextCursor:
+      type:
+        - string
+        - "null"
+      maxLength: 2048
+  required:
+    - items
+    - nextCursor
+  description: Opaque cursor is bound to tenant, principal, effective scopes, filters and sort.
+ProjectStockItem:
+  type: object
+  additionalProperties: false
+  properties:
+    projectId:
+      $ref: ../common/schemas.yaml#/Id
+    projectName:
+      type: string
+    priceItemId:
+      $ref: ../common/schemas.yaml#/Id
+    name:
+      type: string
+    unit:
+      $ref: ./schemas.yaml#/RepairUnit
+    quantity:
+      $ref: ../common/schemas.yaml#/Quantity
+    cost:
+      $ref: ../common/schemas.yaml#/Money
+  required:
+    - projectId
+    - projectName
+    - priceItemId
+    - name
+    - unit
+    - quantity
+    - cost
+ProjectStockList:
+  type: object
+  additionalProperties: false
+  properties:
+    items:
+      type: array
+      items:
+        $ref: ./schemas.yaml#/ProjectStockItem
+  required:
+    - items
+StockItemInput:
+  type: object
+  additionalProperties: false
+  properties:
+    priceItemId:
+      $ref: ../common/schemas.yaml#/Id
+    quantity:
+      $ref: ../common/schemas.yaml#/Quantity
+  required:
+    - priceItemId
+    - quantity
+StockReturn:
+  type: object
+  additionalProperties: false
+  properties:
+    warehouseId:
+      $ref: ../common/schemas.yaml#/Id
+    items:
+      type: array
+      items:
+        $ref: ./schemas.yaml#/StockItemInput
+      minItems: 1
+      maxItems: 100
+  required:
+    - warehouseId
+    - items
+StockTransfer:
+  type: object
+  additionalProperties: false
+  properties:
+    toProjectId:
+      $ref: ../common/schemas.yaml#/Id
+    items:
+      type: array
+      items:
+        $ref: ./schemas.yaml#/StockItemInput
+      minItems: 1
+      maxItems: 100
+  required:
+    - toProjectId
+    - items
+StockMoveResult:
+  type: object
+  additionalProperties: false
+  properties:
+    movementIds:
+      type: array
+      items:
+        $ref: ../common/schemas.yaml#/Id
+    items:
+      type: array
+      items:
+        $ref: ./schemas.yaml#/ProjectStockItem
+  required:
+    - movementIds
+    - items
+ProjectFinance:
+  type: object
+  additionalProperties: false
+  properties:
+    projectId:
+      $ref: ../common/schemas.yaml#/Id
+    contract:
+      $ref: ../common/schemas.yaml#/Money
+    received:
+      $ref: ../common/schemas.yaml#/Money
+    expenses:
+      $ref: ../common/schemas.yaml#/Money
+    marginPlan:
+      $ref: ./schemas.yaml#/RepairMoneyDelta
+    movements:
+      type: array
+      items:
+        type: object
+        additionalProperties: false
+        properties:
+          at:
+            $ref: ../common/schemas.yaml#/Instant
+          kind:
+            type: string
+            enum:
+              - payment
+              - expense
+              - accrual
+          text:
+            type: string
+          amount:
+            $ref: ./schemas.yaml#/RepairMoneyDelta
+        required:
+          - at
+          - kind
+          - text
+          - amount
+    estimateVersion:
+      type: integer
+      minimum: 1
+  required:
+    - projectId
+    - contract
+    - received
+    - expenses
+    - marginPlan
+    - movements
+CrewAccrual:
+  type: object
+  additionalProperties: false
+  properties:
+    id:
+      $ref: ../common/schemas.yaml#/Id
+    projectId:
+      $ref: ../common/schemas.yaml#/Id
+    workerId:
+      $ref: ../common/schemas.yaml#/Id
+    workerName:
+      type: string
+    role:
+      type: string
+    amount:
+      $ref: ../common/schemas.yaml#/Money
+    state:
+      type: string
+      enum:
+        - pending_act
+        - accrued
+        - proposed
+        - paid
+    selfEmployed:
+      type: boolean
+    actId:
+      $ref: ../common/schemas.yaml#/Id
+    work:
+      type: string
+  required:
+    - id
+    - projectId
+    - workerId
+    - workerName
+    - role
+    - amount
+    - state
+    - selfEmployed
+CrewAccrualList:
+  type: object
+  additionalProperties: false
+  properties:
+    items:
+      type: array
+      items:
+        $ref: ./schemas.yaml#/CrewAccrual
+  required:
+    - items
+PayoutRequest:
+  type: object
+  additionalProperties: false
+  properties:
+    accrualIds:
+      type: array
+      items:
+        $ref: ../common/schemas.yaml#/Id
+      minItems: 1
+      maxItems: 200
+  required:
+    - accrualIds
+PayoutResult:
+  type: object
+  additionalProperties: false
+  properties:
+    proposalId:
+      $ref: ../common/schemas.yaml#/Id
+    accruals:
+      type: array
+      items:
+        $ref: ./schemas.yaml#/CrewAccrual
+  required:
+    - proposalId
+    - accruals
+  description: The payout creates a proposal of a cash operation (W5.31, Q-W4.00-repair-12); the payment itself is posted by the cashier. No integration with «Мой налог» — accounting only.
+Subcontractor:
+  type: object
+  additionalProperties: false
+  properties:
+    id:
+      $ref: ../common/schemas.yaml#/Id
+    name:
+      type: string
+    scope:
+      type: string
+    active:
+      type: boolean
+    memberId:
+      $ref: ../common/schemas.yaml#/Id
+    accessUntil:
+      type: string
+      format: date
+    contract:
+      $ref: ../common/schemas.yaml#/Money
+    paid:
+      $ref: ../common/schemas.yaml#/Money
+  required:
+    - id
+    - name
+    - scope
+    - active
+SubcontractorList:
+  type: object
+  additionalProperties: false
+  properties:
+    items:
+      type: array
+      items:
+        $ref: ./schemas.yaml#/Subcontractor
+  required:
+    - items
+SubcontractorAccessSet:
+  type: object
+  additionalProperties: false
+  properties:
+    active:
+      type: boolean
+    until:
+      type: string
+      format: date
+  required:
+    - active
+ClientLink:
+  type: object
+  additionalProperties: false
+  properties:
+    active:
+      type: boolean
+    sentAt:
+      $ref: ../common/schemas.yaml#/Instant
+    expiresAt:
+      $ref: ../common/schemas.yaml#/Instant
+    revokedAt:
+      $ref: ../common/schemas.yaml#/Instant
+    sentTo:
+      type: string
+      maxLength: 40
+  required:
+    - active
+ClientLinkIssued:
+  type: object
+  additionalProperties: false
+  properties:
+    link:
+      $ref: ./schemas.yaml#/ClientLink
+    url:
+      type: string
+      maxLength: 500
+  required:
+    - link
+    - url
+  description: The URL with the token is returned once; the database keeps only the token hash. The link lives until the object is handed over (Q-W4.00-repair-10).
+ClientCabinet:
+  type: object
+  additionalProperties: false
+  properties:
+    projectName:
+      type: string
+    address:
+      type: string
+    clientName:
+      type: string
+    readinessPct:
+      type: integer
+      minimum: 0
+      maximum: 100
+    stages:
+      type: array
+      items:
+        type: object
+        additionalProperties: false
+        properties:
+          name:
+            type: string
+          state:
+            type: string
+            enum:
+              - done
+              - started
+              - planned
+        required:
+          - name
+          - state
+    photos:
+      type: array
+      items:
+        type: object
+        additionalProperties: false
+        properties:
+          fileId:
+            $ref: ../common/schemas.yaml#/Id
+          date:
+            type: string
+            format: date
+        required:
+          - fileId
+          - date
+    documents:
+      type: array
+      items:
+        $ref: ./schemas.yaml#/RepairDocument
+    paid:
+      $ref: ../common/schemas.yaml#/Money
+    contract:
+      $ref: ../common/schemas.yaml#/Money
+    estimate:
+      type: object
+      additionalProperties: false
+      properties:
+        version:
+          type: integer
+          minimum: 1
+        state:
+          type: string
+          enum:
+            - draft
+            - sent
+            - approved
+            - replaced
+        total:
+          $ref: ../common/schemas.yaml#/Money
+      required:
+        - version
+        - state
+        - total
+  required:
+    - projectName
+    - address
+    - clientName
+    - readinessPct
+    - stages
+    - photos
+    - documents
+    - paid
+    - contract
+ClientEstimateApproval:
+  type: object
+  additionalProperties: false
+  properties:
+    version:
+      type: integer
+      minimum: 1
+    state:
+      type: string
+      enum:
+        - draft
+        - sent
+        - approved
+        - replaced
+  required:
+    - version
+    - state
+ClientSign:
+  type: object
+  additionalProperties: false
+  properties:
+    smsCode:
+      type: string
+      pattern: ^[0-9]{4,8}$
+  required:
+    - smsCode
+RepairRejectReason:
+  type: string
+  enum:
+    - already_in_estimate
+    - client_refused
+    - warranty
+    - not_agreed_with_client
+  description: "Reason of rejecting a change order (design/docs/19 «Допработы после договора»): already in the estimate, client refused, warranty, not agreed with the client. The foreman sees it."
+RepairScheduleReason:
+  type: string
+  enum:
+    - client_request
+    - material_delay
+    - executor_busy
+    - rework
+    - weather_or_drying
+    - scope_change
+    - other
+  description: "Reason of a schedule move (prototype GREASONS): client request, material delay, executor busy, rework, weather or drying, scope change, other."
+RepairDocumentKind:
+  type: string
+  enum:
+    - contract
+    - agreement
+    - act
+    - invoice
+    - handover_act
+    - warranty

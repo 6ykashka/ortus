@@ -1,0 +1,1233 @@
+# Матрица изоляции: «Ремонт и стройка» контракта 0.12.0-stage6 (W6.00, контракт этапа 6; хендлеры — W6.11–W6.16).
+# Объект ремонта — repair_project (RS-08): роли области repairs.*; чужая организация — 404 (AC-02), без сессии — 401;
+# объекта нет в организации — 404 и владельцу. Фикстур объектов ремонта у набора пока нет (строку объекта и назначения
+# прораба добавит W6.11 вместе с хендлером): позитивные строки и строки «прораб чужого объекта», «прораб без цен»,
+# «подрядчик после срока» пишет W6.11–W6.16 из этого файла (снять pending). Команды с If-Match строки не передают
+# If-Match (README, «Цель набора»): без него строгий сервер отвечает 428 раньше хендлера, поэтому у них только отказы
+# шлюза — без сессии 401, чужая организация 404. Публичные операции кабинета заказчика: неизвестная ссылка — 404.
+# Отказы шлюза (403 module_not_installed — модуль у фикстур не подключён) — repairs_w600_gate.yaml. Формат — README.md.
+# После правки: go -C backend generate ./test/isolation
+module: repairs_w600
+endpoints:
+  - op: listRepairProjects
+    method: GET
+    path: /api/v1/tenants/{tenantId}/repairs/projects
+    pending: W6.11
+    rows:
+      - actor: anonymous
+        params:
+          tenantId: tenant:a
+        status: 401
+      - actor: b.owner
+        params:
+          tenantId: tenant:a
+        status: 404
+        absent:
+          - tenant:a
+        note: чужая организация — как несуществующая (AC-02)
+  - op: createRepairProject
+    method: POST
+    path: /api/v1/tenants/{tenantId}/repairs/projects
+    pending: W6.11
+    rows:
+      - actor: anonymous
+        params:
+          tenantId: tenant:a
+        status: 401
+        body: '{"orgUnitId":"00000000-0000-4000-8000-000000000000","name":"x","address":"x","workers":[null]}'
+      - actor: b.owner
+        params:
+          tenantId: tenant:a
+        status: 404
+        absent:
+          - tenant:a
+        body: '{"orgUnitId":"00000000-0000-4000-8000-000000000000","name":"x","address":"x","workers":[null]}'
+        note: чужая организация — как несуществующая (AC-02)
+  - op: getRepairProject
+    method: GET
+    path: /api/v1/tenants/{tenantId}/repairs/projects/{projectId}
+    pending: W6.11
+    rows:
+      - actor: anonymous
+        params:
+          tenantId: tenant:a
+          projectId: repair_project:a.flat
+        status: 401
+      - actor: b.owner
+        params:
+          tenantId: tenant:a
+          projectId: repair_project:a.flat
+        status: 404
+        absent:
+          - tenant:a
+        note: чужая организация — как несуществующая (AC-02)
+  - op: updateRepairProject
+    method: PATCH
+    path: /api/v1/tenants/{tenantId}/repairs/projects/{projectId}
+    pending: W6.11
+    rows:
+      - actor: anonymous
+        params:
+          tenantId: tenant:a
+          projectId: repair_project:a.flat
+        status: 401
+        body: '{"name":"x"}'
+      - actor: b.owner
+        params:
+          tenantId: tenant:a
+          projectId: repair_project:a.flat
+        status: 404
+        absent:
+          - tenant:a
+        body: '{"name":"x"}'
+        note: чужая организация — как несуществующая (AC-02)
+  - op: getRepairProjectOverview
+    method: GET
+    path: /api/v1/tenants/{tenantId}/repairs/projects/{projectId}/overview
+    pending: W6.11
+    rows:
+      - actor: anonymous
+        params:
+          tenantId: tenant:a
+          projectId: repair_project:a.flat
+        status: 401
+      - actor: b.owner
+        params:
+          tenantId: tenant:a
+          projectId: repair_project:a.flat
+        status: 404
+        absent:
+          - tenant:a
+        note: чужая организация — как несуществующая (AC-02)
+  - op: assignRepairForeman
+    method: POST
+    path: /api/v1/tenants/{tenantId}/repairs/projects/{projectId}/foreman
+    pending: W6.11
+    rows:
+      - actor: anonymous
+        params:
+          tenantId: tenant:a
+          projectId: repair_project:a.flat
+        status: 401
+        body: '{"foremanMemberId":"00000000-0000-4000-8000-000000000000"}'
+      - actor: b.owner
+        params:
+          tenantId: tenant:a
+          projectId: repair_project:a.flat
+        status: 404
+        absent:
+          - tenant:a
+        body: '{"foremanMemberId":"00000000-0000-4000-8000-000000000000"}'
+        note: чужая организация — как несуществующая (AC-02)
+  - op: activateRepairProject
+    method: POST
+    path: /api/v1/tenants/{tenantId}/repairs/projects/{projectId}/activate
+    pending: W6.11
+    rows:
+      - actor: anonymous
+        params:
+          tenantId: tenant:a
+          projectId: repair_project:a.flat
+        status: 401
+      - actor: b.owner
+        params:
+          tenantId: tenant:a
+          projectId: repair_project:a.flat
+        status: 404
+        absent:
+          - tenant:a
+        note: чужая организация — как несуществующая (AC-02)
+  - op: listRepairWorks
+    method: GET
+    path: /api/v1/tenants/{tenantId}/repairs/projects/{projectId}/works
+    pending: W6.11
+    rows:
+      - actor: anonymous
+        params:
+          tenantId: tenant:a
+          projectId: repair_project:a.flat
+        status: 401
+      - actor: b.owner
+        params:
+          tenantId: tenant:a
+          projectId: repair_project:a.flat
+        status: 404
+        absent:
+          - tenant:a
+        note: чужая организация — как несуществующая (AC-02)
+  - op: listWorkLogs
+    method: GET
+    path: /api/v1/tenants/{tenantId}/repairs/work-logs
+    pending: W6.11
+    rows:
+      - actor: anonymous
+        params:
+          tenantId: tenant:a
+        status: 401
+      - actor: b.owner
+        params:
+          tenantId: tenant:a
+        status: 404
+        absent:
+          - tenant:a
+        note: чужая организация — как несуществующая (AC-02)
+  - op: submitWorkLog
+    method: POST
+    path: /api/v1/tenants/{tenantId}/repairs/work-logs
+    pending: W6.11
+    rows:
+      - actor: anonymous
+        params:
+          tenantId: tenant:a
+        status: 401
+        body: '{"projectId":"00000000-0000-4000-8000-000000000000","workDate":"2026-10-20","timeZone":"Europe/Moscow","lines":[{"quantity":"1","unit":"hour"}],"evidenceFileIds":["00000000-0000-4000-8000-000000000000"]}'
+      - actor: b.owner
+        params:
+          tenantId: tenant:a
+        status: 404
+        absent:
+          - tenant:a
+        body: '{"projectId":"00000000-0000-4000-8000-000000000000","workDate":"2026-10-20","timeZone":"Europe/Moscow","lines":[{"quantity":"1","unit":"hour"}],"evidenceFileIds":["00000000-0000-4000-8000-000000000000"]}'
+        note: чужая организация — как несуществующая (AC-02)
+  - op: acceptWorkLog
+    method: POST
+    path: /api/v1/tenants/{tenantId}/repairs/work-logs/{workLogId}/accept
+    pending: W6.11
+    rows:
+      - actor: anonymous
+        params:
+          tenantId: tenant:a
+          workLogId: tenant:missing
+        status: 401
+      - actor: b.owner
+        params:
+          tenantId: tenant:a
+          workLogId: tenant:missing
+        status: 404
+        absent:
+          - tenant:a
+        note: чужая организация — как несуществующая (AC-02)
+  - op: returnWorkLog
+    method: POST
+    path: /api/v1/tenants/{tenantId}/repairs/work-logs/{workLogId}/return
+    pending: W6.11
+    rows:
+      - actor: anonymous
+        params:
+          tenantId: tenant:a
+          workLogId: tenant:missing
+        status: 401
+        body: '{"reason":"xx"}'
+      - actor: b.owner
+        params:
+          tenantId: tenant:a
+          workLogId: tenant:missing
+        status: 404
+        absent:
+          - tenant:a
+        body: '{"reason":"xx"}'
+        note: чужая организация — как несуществующая (AC-02)
+  - op: listChangeOrders
+    method: GET
+    path: /api/v1/tenants/{tenantId}/repairs/projects/{projectId}/change-orders
+    pending: W6.11
+    rows:
+      - actor: anonymous
+        params:
+          tenantId: tenant:a
+          projectId: repair_project:a.flat
+        status: 401
+      - actor: b.owner
+        params:
+          tenantId: tenant:a
+          projectId: repair_project:a.flat
+        status: 404
+        absent:
+          - tenant:a
+        note: чужая организация — как несуществующая (AC-02)
+  - op: proposeChangeOrder
+    method: POST
+    path: /api/v1/tenants/{tenantId}/repairs/projects/{projectId}/change-orders
+    pending: W6.11
+    rows:
+      - actor: anonymous
+        params:
+          tenantId: tenant:a
+          projectId: repair_project:a.flat
+        status: 401
+        body: '{"title":"x","quantity":"1","unit":"hour","photoFileIds":["00000000-0000-4000-8000-000000000000"]}'
+      - actor: b.owner
+        params:
+          tenantId: tenant:a
+          projectId: repair_project:a.flat
+        status: 404
+        absent:
+          - tenant:a
+        body: '{"title":"x","quantity":"1","unit":"hour","photoFileIds":["00000000-0000-4000-8000-000000000000"]}'
+        note: чужая организация — как несуществующая (AC-02)
+  - op: rejectChangeOrder
+    method: POST
+    path: /api/v1/tenants/{tenantId}/repairs/change-orders/{changeOrderId}/reject
+    pending: W6.11
+    rows:
+      - actor: anonymous
+        params:
+          tenantId: tenant:a
+          changeOrderId: tenant:missing
+        status: 401
+        body: '{"reason":"already_in_estimate"}'
+      - actor: b.owner
+        params:
+          tenantId: tenant:a
+          changeOrderId: tenant:missing
+        status: 404
+        absent:
+          - tenant:a
+        body: '{"reason":"already_in_estimate"}'
+        note: чужая организация — как несуществующая (AC-02)
+  - op: getMeasurement
+    method: GET
+    path: /api/v1/tenants/{tenantId}/repairs/projects/{projectId}/measurement
+    pending: W6.11
+    rows:
+      - actor: anonymous
+        params:
+          tenantId: tenant:a
+          projectId: repair_project:a.flat
+        status: 401
+      - actor: b.owner
+        params:
+          tenantId: tenant:a
+          projectId: repair_project:a.flat
+        status: 404
+        absent:
+          - tenant:a
+        note: чужая организация — как несуществующая (AC-02)
+  - op: putMeasurement
+    method: PUT
+    path: /api/v1/tenants/{tenantId}/repairs/projects/{projectId}/measurement
+    pending: W6.11
+    rows:
+      - actor: anonymous
+        params:
+          tenantId: tenant:a
+          projectId: repair_project:a.flat
+        status: 401
+        body: '{"rooms":[{"name":"x","lengthM":"1","widthM":"1","heightM":"1","openingsM2":"1"}]}'
+      - actor: b.owner
+        params:
+          tenantId: tenant:a
+          projectId: repair_project:a.flat
+        status: 404
+        absent:
+          - tenant:a
+        body: '{"rooms":[{"name":"x","lengthM":"1","widthM":"1","heightM":"1","openingsM2":"1"}]}'
+        note: чужая организация — как несуществующая (AC-02)
+  - op: listEstimates
+    method: GET
+    path: /api/v1/tenants/{tenantId}/repairs/projects/{projectId}/estimates
+    pending: W6.11
+    rows:
+      - actor: anonymous
+        params:
+          tenantId: tenant:a
+          projectId: repair_project:a.flat
+        status: 401
+      - actor: b.owner
+        params:
+          tenantId: tenant:a
+          projectId: repair_project:a.flat
+        status: 404
+        absent:
+          - tenant:a
+        note: чужая организация — как несуществующая (AC-02)
+  - op: getEstimate
+    method: GET
+    path: /api/v1/tenants/{tenantId}/repairs/projects/{projectId}/estimates/{version}
+    pending: W6.11
+    rows:
+      - actor: anonymous
+        params:
+          tenantId: tenant:a
+          projectId: repair_project:a.flat
+          version: tenant:missing
+        status: 401
+      - actor: b.owner
+        params:
+          tenantId: tenant:a
+          projectId: repair_project:a.flat
+          version: tenant:missing
+        status: 404
+        absent:
+          - tenant:a
+        note: чужая организация — как несуществующая (AC-02)
+  - op: createEstimateFromTemplate
+    method: POST
+    path: /api/v1/tenants/{tenantId}/repairs/projects/{projectId}/estimate-drafts
+    pending: W6.11
+    rows:
+      - actor: anonymous
+        params:
+          tenantId: tenant:a
+          projectId: repair_project:a.flat
+        status: 401
+        body: '{"templateId":"00000000-0000-4000-8000-000000000000"}'
+      - actor: b.owner
+        params:
+          tenantId: tenant:a
+          projectId: repair_project:a.flat
+        status: 404
+        absent:
+          - tenant:a
+        body: '{"templateId":"00000000-0000-4000-8000-000000000000"}'
+        note: чужая организация — как несуществующая (AC-02)
+  - op: createEstimateRevision
+    method: POST
+    path: /api/v1/tenants/{tenantId}/repairs/projects/{projectId}/estimates
+    pending: W6.11
+    rows:
+      - actor: anonymous
+        params:
+          tenantId: tenant:a
+          projectId: repair_project:a.flat
+        status: 401
+        body: '{"kind":"revision"}'
+      - actor: b.owner
+        params:
+          tenantId: tenant:a
+          projectId: repair_project:a.flat
+        status: 404
+        absent:
+          - tenant:a
+        body: '{"kind":"revision"}'
+        note: чужая организация — как несуществующая (AC-02)
+  - op: updateEstimateDraft
+    method: PATCH
+    path: /api/v1/tenants/{tenantId}/repairs/projects/{projectId}/estimates/{version}
+    pending: W6.11
+    rows:
+      - actor: anonymous
+        params:
+          tenantId: tenant:a
+          projectId: repair_project:a.flat
+          version: tenant:missing
+        status: 401
+        body: '{"addSections":["x"]}'
+      - actor: b.owner
+        params:
+          tenantId: tenant:a
+          projectId: repair_project:a.flat
+          version: tenant:missing
+        status: 404
+        absent:
+          - tenant:a
+        body: '{"addSections":["x"]}'
+        note: чужая организация — как несуществующая (AC-02)
+  - op: sendEstimate
+    method: POST
+    path: /api/v1/tenants/{tenantId}/repairs/projects/{projectId}/estimates/{version}/send
+    pending: W6.11
+    rows:
+      - actor: anonymous
+        params:
+          tenantId: tenant:a
+          projectId: repair_project:a.flat
+          version: tenant:missing
+        status: 401
+      - actor: b.owner
+        params:
+          tenantId: tenant:a
+          projectId: repair_project:a.flat
+          version: tenant:missing
+        status: 404
+        absent:
+          - tenant:a
+        note: чужая организация — как несуществующая (AC-02)
+  - op: recallEstimate
+    method: POST
+    path: /api/v1/tenants/{tenantId}/repairs/projects/{projectId}/estimates/{version}/recall
+    pending: W6.11
+    rows:
+      - actor: anonymous
+        params:
+          tenantId: tenant:a
+          projectId: repair_project:a.flat
+          version: tenant:missing
+        status: 401
+      - actor: b.owner
+        params:
+          tenantId: tenant:a
+          projectId: repair_project:a.flat
+          version: tenant:missing
+        status: 404
+        absent:
+          - tenant:a
+        note: чужая организация — как несуществующая (AC-02)
+  - op: deleteEstimateDraft
+    method: DELETE
+    path: /api/v1/tenants/{tenantId}/repairs/projects/{projectId}/estimates/{version}
+    pending: W6.11
+    rows:
+      - actor: anonymous
+        params:
+          tenantId: tenant:a
+          projectId: repair_project:a.flat
+          version: tenant:missing
+        status: 401
+      - actor: b.owner
+        params:
+          tenantId: tenant:a
+          projectId: repair_project:a.flat
+          version: tenant:missing
+        status: 404
+        absent:
+          - tenant:a
+        note: чужая организация — как несуществующая (AC-02)
+  - op: diffEstimates
+    method: GET
+    path: /api/v1/tenants/{tenantId}/repairs/projects/{projectId}/estimates/{version}/diff
+    pending: W6.11
+    rows:
+      - actor: anonymous
+        params:
+          tenantId: tenant:a
+          projectId: repair_project:a.flat
+          version: tenant:missing
+        status: 401
+      - actor: b.owner
+        params:
+          tenantId: tenant:a
+          projectId: repair_project:a.flat
+          version: tenant:missing
+        status: 404
+        absent:
+          - tenant:a
+        note: чужая организация — как несуществующая (AC-02)
+  - op: saveProjectAsTemplate
+    method: POST
+    path: /api/v1/tenants/{tenantId}/repairs/projects/{projectId}/save-as-template
+    pending: W6.11
+    rows:
+      - actor: anonymous
+        params:
+          tenantId: tenant:a
+          projectId: repair_project:a.flat
+        status: 401
+        body: "{}"
+      - actor: b.owner
+        params:
+          tenantId: tenant:a
+          projectId: repair_project:a.flat
+        status: 404
+        absent:
+          - tenant:a
+        body: "{}"
+        note: чужая организация — как несуществующая (AC-02)
+  - op: listPriceItems
+    method: GET
+    path: /api/v1/tenants/{tenantId}/repairs/price-items
+    pending: W6.11
+    rows:
+      - actor: anonymous
+        params:
+          tenantId: tenant:a
+        status: 401
+      - actor: b.owner
+        params:
+          tenantId: tenant:a
+        status: 404
+        absent:
+          - tenant:a
+        note: чужая организация — как несуществующая (AC-02)
+  - op: createPriceItem
+    method: POST
+    path: /api/v1/tenants/{tenantId}/repairs/price-items
+    pending: W6.11
+    rows:
+      - actor: anonymous
+        params:
+          tenantId: tenant:a
+        status: 401
+        body: '{"section":"x","name":"x","unit":"hour","kind":"work","price":{"amountMinor":1,"currency":"RUB"}}'
+      - actor: b.owner
+        params:
+          tenantId: tenant:a
+        status: 404
+        absent:
+          - tenant:a
+        body: '{"section":"x","name":"x","unit":"hour","kind":"work","price":{"amountMinor":1,"currency":"RUB"}}'
+        note: чужая организация — как несуществующая (AC-02)
+  - op: updatePriceItem
+    method: PATCH
+    path: /api/v1/tenants/{tenantId}/repairs/price-items/{priceItemId}
+    pending: W6.11
+    rows:
+      - actor: anonymous
+        params:
+          tenantId: tenant:a
+          priceItemId: tenant:missing
+        status: 401
+        body: '{"section":"x"}'
+      - actor: b.owner
+        params:
+          tenantId: tenant:a
+          priceItemId: tenant:missing
+        status: 404
+        absent:
+          - tenant:a
+        body: '{"section":"x"}'
+        note: чужая организация — как несуществующая (AC-02)
+  - op: listTemplates
+    method: GET
+    path: /api/v1/tenants/{tenantId}/repairs/templates
+    pending: W6.11
+    rows:
+      - actor: anonymous
+        params:
+          tenantId: tenant:a
+        status: 401
+      - actor: b.owner
+        params:
+          tenantId: tenant:a
+        status: 404
+        absent:
+          - tenant:a
+        note: чужая организация — как несуществующая (AC-02)
+  - op: getTemplate
+    method: GET
+    path: /api/v1/tenants/{tenantId}/repairs/templates/{templateId}
+    pending: W6.11
+    rows:
+      - actor: anonymous
+        params:
+          tenantId: tenant:a
+          templateId: tenant:missing
+        status: 401
+      - actor: b.owner
+        params:
+          tenantId: tenant:a
+          templateId: tenant:missing
+        status: 404
+        absent:
+          - tenant:a
+        note: чужая организация — как несуществующая (AC-02)
+  - op: updateTemplate
+    method: PATCH
+    path: /api/v1/tenants/{tenantId}/repairs/templates/{templateId}
+    pending: W6.11
+    rows:
+      - actor: anonymous
+        params:
+          tenantId: tenant:a
+          templateId: tenant:missing
+        status: 401
+        body: '{"name":"x"}'
+      - actor: b.owner
+        params:
+          tenantId: tenant:a
+          templateId: tenant:missing
+        status: 404
+        absent:
+          - tenant:a
+        body: '{"name":"x"}'
+        note: чужая организация — как несуществующая (AC-02)
+  - op: copyTemplate
+    method: POST
+    path: /api/v1/tenants/{tenantId}/repairs/templates/{templateId}/copy
+    pending: W6.11
+    rows:
+      - actor: anonymous
+        params:
+          tenantId: tenant:a
+          templateId: tenant:missing
+        status: 401
+        body: "{}"
+      - actor: b.owner
+        params:
+          tenantId: tenant:a
+          templateId: tenant:missing
+        status: 404
+        absent:
+          - tenant:a
+        body: "{}"
+        note: чужая организация — как несуществующая (AC-02)
+  - op: getSchedule
+    method: GET
+    path: /api/v1/tenants/{tenantId}/repairs/projects/{projectId}/schedule
+    pending: W6.11
+    rows:
+      - actor: anonymous
+        params:
+          tenantId: tenant:a
+          projectId: repair_project:a.flat
+        status: 401
+      - actor: b.owner
+        params:
+          tenantId: tenant:a
+          projectId: repair_project:a.flat
+        status: 404
+        absent:
+          - tenant:a
+        note: чужая организация — как несуществующая (AC-02)
+  - op: createScheduleFromEstimate
+    method: POST
+    path: /api/v1/tenants/{tenantId}/repairs/projects/{projectId}/schedule/from-estimate
+    pending: W6.11
+    rows:
+      - actor: anonymous
+        params:
+          tenantId: tenant:a
+          projectId: repair_project:a.flat
+        status: 401
+        body: '{"estimateVersion":1}'
+      - actor: b.owner
+        params:
+          tenantId: tenant:a
+          projectId: repair_project:a.flat
+        status: 404
+        absent:
+          - tenant:a
+        body: '{"estimateVersion":1}'
+        note: чужая организация — как несуществующая (AC-02)
+  - op: previewScheduleChange
+    method: POST
+    path: /api/v1/tenants/{tenantId}/repairs/projects/{projectId}/schedule/preview
+    pending: W6.11
+    rows:
+      - actor: anonymous
+        params:
+          tenantId: tenant:a
+          projectId: repair_project:a.flat
+        status: 401
+        body: '{"changes":[{"stageId":"00000000-0000-4000-8000-000000000000"}]}'
+      - actor: b.owner
+        params:
+          tenantId: tenant:a
+          projectId: repair_project:a.flat
+        status: 404
+        absent:
+          - tenant:a
+        body: '{"changes":[{"stageId":"00000000-0000-4000-8000-000000000000"}]}'
+        note: чужая организация — как несуществующая (AC-02)
+  - op: applyScheduleChange
+    method: POST
+    path: /api/v1/tenants/{tenantId}/repairs/projects/{projectId}/schedule/changes
+    pending: W6.11
+    rows:
+      - actor: anonymous
+        params:
+          tenantId: tenant:a
+          projectId: repair_project:a.flat
+        status: 401
+        body: '{"changes":[{"stageId":"00000000-0000-4000-8000-000000000000"}],"reason":"client_request"}'
+      - actor: b.owner
+        params:
+          tenantId: tenant:a
+          projectId: repair_project:a.flat
+        status: 404
+        absent:
+          - tenant:a
+        body: '{"changes":[{"stageId":"00000000-0000-4000-8000-000000000000"}],"reason":"client_request"}'
+        note: чужая организация — как несуществующая (AC-02)
+  - op: setScheduleStageExecutor
+    method: PATCH
+    path: /api/v1/tenants/{tenantId}/repairs/projects/{projectId}/schedule/stages/{stageId}
+    pending: W6.11
+    rows:
+      - actor: anonymous
+        params:
+          tenantId: tenant:a
+          projectId: repair_project:a.flat
+          stageId: tenant:missing
+        status: 401
+        body: "{}"
+      - actor: b.owner
+        params:
+          tenantId: tenant:a
+          projectId: repair_project:a.flat
+          stageId: tenant:missing
+        status: 404
+        absent:
+          - tenant:a
+        body: "{}"
+        note: чужая организация — как несуществующая (AC-02)
+  - op: createScheduleBaseline
+    method: POST
+    path: /api/v1/tenants/{tenantId}/repairs/projects/{projectId}/schedule/baselines
+    pending: W6.11
+    rows:
+      - actor: anonymous
+        params:
+          tenantId: tenant:a
+          projectId: repair_project:a.flat
+        status: 401
+        body: '{"agreementNo":1}'
+      - actor: b.owner
+        params:
+          tenantId: tenant:a
+          projectId: repair_project:a.flat
+        status: 404
+        absent:
+          - tenant:a
+        body: '{"agreementNo":1}'
+        note: чужая организация — как несуществующая (AC-02)
+  - op: handOverRepairProject
+    method: POST
+    path: /api/v1/tenants/{tenantId}/repairs/projects/{projectId}/hand-over
+    pending: W6.11
+    rows:
+      - actor: anonymous
+        params:
+          tenantId: tenant:a
+          projectId: repair_project:a.flat
+        status: 401
+        body: '{"actDocumentId":"00000000-0000-4000-8000-000000000000"}'
+      - actor: b.owner
+        params:
+          tenantId: tenant:a
+          projectId: repair_project:a.flat
+        status: 404
+        absent:
+          - tenant:a
+        body: '{"actDocumentId":"00000000-0000-4000-8000-000000000000"}'
+        note: чужая организация — как несуществующая (AC-02)
+  - op: listRepairDocuments
+    method: GET
+    path: /api/v1/tenants/{tenantId}/repairs/projects/{projectId}/documents
+    pending: W6.11
+    rows:
+      - actor: anonymous
+        params:
+          tenantId: tenant:a
+          projectId: repair_project:a.flat
+        status: 401
+      - actor: b.owner
+        params:
+          tenantId: tenant:a
+          projectId: repair_project:a.flat
+        status: 404
+        absent:
+          - tenant:a
+        note: чужая организация — как несуществующая (AC-02)
+  - op: requestDocumentSignature
+    method: POST
+    path: /api/v1/tenants/{tenantId}/repairs/documents/{documentId}/sign-requests
+    pending: W6.11
+    rows:
+      - actor: anonymous
+        params:
+          tenantId: tenant:a
+          documentId: tenant:missing
+        status: 401
+      - actor: b.owner
+        params:
+          tenantId: tenant:a
+          documentId: tenant:missing
+        status: 404
+        absent:
+          - tenant:a
+        note: чужая организация — как несуществующая (AC-02)
+  - op: listSupplyRequests
+    method: GET
+    path: /api/v1/tenants/{tenantId}/repairs/supply-requests
+    pending: W6.11
+    rows:
+      - actor: anonymous
+        params:
+          tenantId: tenant:a
+        status: 401
+      - actor: b.owner
+        params:
+          tenantId: tenant:a
+        status: 404
+        absent:
+          - tenant:a
+        note: чужая организация — как несуществующая (AC-02)
+  - op: createSupplyRequest
+    method: POST
+    path: /api/v1/tenants/{tenantId}/repairs/projects/{projectId}/supply-requests
+    pending: W6.11
+    rows:
+      - actor: anonymous
+        params:
+          tenantId: tenant:a
+          projectId: repair_project:a.flat
+        status: 401
+        body: '{"priceItemId":"00000000-0000-4000-8000-000000000000","quantity":"1","needBy":"2026-10-20"}'
+      - actor: b.owner
+        params:
+          tenantId: tenant:a
+          projectId: repair_project:a.flat
+        status: 404
+        absent:
+          - tenant:a
+        body: '{"priceItemId":"00000000-0000-4000-8000-000000000000","quantity":"1","needBy":"2026-10-20"}'
+        note: чужая организация — как несуществующая (AC-02)
+  - op: reserveSupplyRequest
+    method: POST
+    path: /api/v1/tenants/{tenantId}/repairs/supply-requests/{supplyRequestId}/reserve
+    pending: W6.11
+    rows:
+      - actor: anonymous
+        params:
+          tenantId: tenant:a
+          supplyRequestId: tenant:missing
+        status: 401
+        body: '{"warehouseId":"00000000-0000-4000-8000-000000000000"}'
+      - actor: b.owner
+        params:
+          tenantId: tenant:a
+          supplyRequestId: tenant:missing
+        status: 404
+        absent:
+          - tenant:a
+        body: '{"warehouseId":"00000000-0000-4000-8000-000000000000"}'
+        note: чужая организация — как несуществующая (AC-02)
+  - op: issueSupplyRequest
+    method: POST
+    path: /api/v1/tenants/{tenantId}/repairs/supply-requests/{supplyRequestId}/issue
+    pending: W6.11
+    rows:
+      - actor: anonymous
+        params:
+          tenantId: tenant:a
+          supplyRequestId: tenant:missing
+        status: 401
+      - actor: b.owner
+        params:
+          tenantId: tenant:a
+          supplyRequestId: tenant:missing
+        status: 404
+        absent:
+          - tenant:a
+        note: чужая организация — как несуществующая (AC-02)
+  - op: consumeSupplyRequest
+    method: POST
+    path: /api/v1/tenants/{tenantId}/repairs/supply-requests/{supplyRequestId}/consume
+    pending: W6.11
+    rows:
+      - actor: anonymous
+        params:
+          tenantId: tenant:a
+          supplyRequestId: tenant:missing
+        status: 401
+      - actor: b.owner
+        params:
+          tenantId: tenant:a
+          supplyRequestId: tenant:missing
+        status: 404
+        absent:
+          - tenant:a
+        note: чужая организация — как несуществующая (AC-02)
+  - op: createPurchase
+    method: POST
+    path: /api/v1/tenants/{tenantId}/repairs/purchases
+    pending: W6.11
+    rows:
+      - actor: anonymous
+        params:
+          tenantId: tenant:a
+        status: 401
+        body: '{"supplier":"x","lines":[{"supplyRequestId":"00000000-0000-4000-8000-000000000000"}]}'
+      - actor: b.owner
+        params:
+          tenantId: tenant:a
+        status: 404
+        absent:
+          - tenant:a
+        body: '{"supplier":"x","lines":[{"supplyRequestId":"00000000-0000-4000-8000-000000000000"}]}'
+        note: чужая организация — как несуществующая (AC-02)
+  - op: listPurchases
+    method: GET
+    path: /api/v1/tenants/{tenantId}/repairs/purchases
+    pending: W6.11
+    rows:
+      - actor: anonymous
+        params:
+          tenantId: tenant:a
+        status: 401
+      - actor: b.owner
+        params:
+          tenantId: tenant:a
+        status: 404
+        absent:
+          - tenant:a
+        note: чужая организация — как несуществующая (AC-02)
+  - op: receivePurchase
+    method: POST
+    path: /api/v1/tenants/{tenantId}/repairs/purchases/{purchaseId}/receive
+    pending: W6.11
+    rows:
+      - actor: anonymous
+        params:
+          tenantId: tenant:a
+          purchaseId: tenant:missing
+        status: 401
+        body: '{"receiptQr":"x"}'
+      - actor: b.owner
+        params:
+          tenantId: tenant:a
+          purchaseId: tenant:missing
+        status: 404
+        absent:
+          - tenant:a
+        body: '{"receiptQr":"x"}'
+        note: чужая организация — как несуществующая (AC-02)
+  - op: listProjectStock
+    method: GET
+    path: /api/v1/tenants/{tenantId}/repairs/project-stock
+    pending: W6.11
+    rows:
+      - actor: anonymous
+        params:
+          tenantId: tenant:a
+        status: 401
+      - actor: b.owner
+        params:
+          tenantId: tenant:a
+        status: 404
+        absent:
+          - tenant:a
+        note: чужая организация — как несуществующая (AC-02)
+  - op: returnProjectStock
+    method: POST
+    path: /api/v1/tenants/{tenantId}/repairs/projects/{projectId}/stock/return
+    pending: W6.11
+    rows:
+      - actor: anonymous
+        params:
+          tenantId: tenant:a
+          projectId: repair_project:a.flat
+        status: 401
+        body: '{"warehouseId":"00000000-0000-4000-8000-000000000000","items":[{"priceItemId":"00000000-0000-4000-8000-000000000000","quantity":"1"}]}'
+      - actor: b.owner
+        params:
+          tenantId: tenant:a
+          projectId: repair_project:a.flat
+        status: 404
+        absent:
+          - tenant:a
+        body: '{"warehouseId":"00000000-0000-4000-8000-000000000000","items":[{"priceItemId":"00000000-0000-4000-8000-000000000000","quantity":"1"}]}'
+        note: чужая организация — как несуществующая (AC-02)
+  - op: transferProjectStock
+    method: POST
+    path: /api/v1/tenants/{tenantId}/repairs/projects/{projectId}/stock/transfer
+    pending: W6.11
+    rows:
+      - actor: anonymous
+        params:
+          tenantId: tenant:a
+          projectId: repair_project:a.flat
+        status: 401
+        body: '{"toProjectId":"00000000-0000-4000-8000-000000000000","items":[{"priceItemId":"00000000-0000-4000-8000-000000000000","quantity":"1"}]}'
+      - actor: b.owner
+        params:
+          tenantId: tenant:a
+          projectId: repair_project:a.flat
+        status: 404
+        absent:
+          - tenant:a
+        body: '{"toProjectId":"00000000-0000-4000-8000-000000000000","items":[{"priceItemId":"00000000-0000-4000-8000-000000000000","quantity":"1"}]}'
+        note: чужая организация — как несуществующая (AC-02)
+  - op: getProjectFinance
+    method: GET
+    path: /api/v1/tenants/{tenantId}/repairs/projects/{projectId}/finance
+    pending: W6.11
+    rows:
+      - actor: anonymous
+        params:
+          tenantId: tenant:a
+          projectId: repair_project:a.flat
+        status: 401
+      - actor: b.owner
+        params:
+          tenantId: tenant:a
+          projectId: repair_project:a.flat
+        status: 404
+        absent:
+          - tenant:a
+        note: чужая организация — как несуществующая (AC-02)
+  - op: listCrewAccruals
+    method: GET
+    path: /api/v1/tenants/{tenantId}/repairs/projects/{projectId}/accruals
+    pending: W6.11
+    rows:
+      - actor: anonymous
+        params:
+          tenantId: tenant:a
+          projectId: repair_project:a.flat
+        status: 401
+      - actor: b.owner
+        params:
+          tenantId: tenant:a
+          projectId: repair_project:a.flat
+        status: 404
+        absent:
+          - tenant:a
+        note: чужая организация — как несуществующая (AC-02)
+  - op: accrueByAct
+    method: POST
+    path: /api/v1/tenants/{tenantId}/repairs/acts/{documentId}/accruals
+    pending: W6.11
+    rows:
+      - actor: anonymous
+        params:
+          tenantId: tenant:a
+          documentId: tenant:missing
+        status: 401
+      - actor: b.owner
+        params:
+          tenantId: tenant:a
+          documentId: tenant:missing
+        status: 404
+        absent:
+          - tenant:a
+        note: чужая организация — как несуществующая (AC-02)
+  - op: payoutAccruals
+    method: POST
+    path: /api/v1/tenants/{tenantId}/repairs/accruals/payout
+    pending: W6.11
+    rows:
+      - actor: anonymous
+        params:
+          tenantId: tenant:a
+        status: 401
+        body: '{"accrualIds":["00000000-0000-4000-8000-000000000000"]}'
+      - actor: b.owner
+        params:
+          tenantId: tenant:a
+        status: 404
+        absent:
+          - tenant:a
+        body: '{"accrualIds":["00000000-0000-4000-8000-000000000000"]}'
+        note: чужая организация — как несуществующая (AC-02)
+  - op: listSubcontractors
+    method: GET
+    path: /api/v1/tenants/{tenantId}/repairs/projects/{projectId}/subcontractors
+    pending: W6.11
+    rows:
+      - actor: anonymous
+        params:
+          tenantId: tenant:a
+          projectId: repair_project:a.flat
+        status: 401
+      - actor: b.owner
+        params:
+          tenantId: tenant:a
+          projectId: repair_project:a.flat
+        status: 404
+        absent:
+          - tenant:a
+        note: чужая организация — как несуществующая (AC-02)
+  - op: setSubcontractorAccess
+    method: PUT
+    path: /api/v1/tenants/{tenantId}/repairs/projects/{projectId}/subcontractors/{subcontractorId}
+    pending: W6.11
+    rows:
+      - actor: anonymous
+        params:
+          tenantId: tenant:a
+          projectId: repair_project:a.flat
+          subcontractorId: tenant:missing
+        status: 401
+        body: '{"active":false}'
+      - actor: b.owner
+        params:
+          tenantId: tenant:a
+          projectId: repair_project:a.flat
+          subcontractorId: tenant:missing
+        status: 404
+        absent:
+          - tenant:a
+        body: '{"active":false}'
+        note: чужая организация — как несуществующая (AC-02)
+  - op: getClientLink
+    method: GET
+    path: /api/v1/tenants/{tenantId}/repairs/projects/{projectId}/client-link
+    pending: W6.11
+    rows:
+      - actor: anonymous
+        params:
+          tenantId: tenant:a
+          projectId: repair_project:a.flat
+        status: 401
+      - actor: b.owner
+        params:
+          tenantId: tenant:a
+          projectId: repair_project:a.flat
+        status: 404
+        absent:
+          - tenant:a
+        note: чужая организация — как несуществующая (AC-02)
+  - op: issueClientLink
+    method: POST
+    path: /api/v1/tenants/{tenantId}/repairs/projects/{projectId}/client-link
+    pending: W6.11
+    rows:
+      - actor: anonymous
+        params:
+          tenantId: tenant:a
+          projectId: repair_project:a.flat
+        status: 401
+      - actor: b.owner
+        params:
+          tenantId: tenant:a
+          projectId: repair_project:a.flat
+        status: 404
+        absent:
+          - tenant:a
+        note: чужая организация — как несуществующая (AC-02)
+  - op: revokeClientLink
+    method: DELETE
+    path: /api/v1/tenants/{tenantId}/repairs/projects/{projectId}/client-link
+    pending: W6.11
+    rows:
+      - actor: anonymous
+        params:
+          tenantId: tenant:a
+          projectId: repair_project:a.flat
+        status: 401
+      - actor: b.owner
+        params:
+          tenantId: tenant:a
+          projectId: repair_project:a.flat
+        status: 404
+        absent:
+          - tenant:a
+        note: чужая организация — как несуществующая (AC-02)
+  - op: getClientCabinet
+    method: GET
+    path: /api/v1/public/client/{clientToken}
+    pending: W6.11
+    rows:
+      - actor: anonymous
+        params:
+          clientToken: tenant:missing
+        status: 404
+        code: not_found
+        note: неизвестная ссылка кабинета — 404 (отозванная или просроченная — 410 public_token_expired, нужен объект из W6.15)
+  - op: approveEstimateByClient
+    method: POST
+    path: /api/v1/public/client/{clientToken}/estimates/{version}/approve
+    pending: W6.11
+    rows:
+      - actor: anonymous
+        params:
+          clientToken: tenant:missing
+          version: tenant:missing
+        status: 404
+        code: not_found
+        note: неизвестная ссылка кабинета — 404 (отозванная или просроченная — 410 public_token_expired, нужен объект из W6.15)
+  - op: signDocumentByClient
+    method: POST
+    path: /api/v1/public/client/{clientToken}/documents/{documentId}/sign
+    pending: W6.11
+    rows:
+      - actor: anonymous
+        params:
+          clientToken: tenant:missing
+          documentId: tenant:missing
+        status: 404
+        code: not_found
+        body: '{"smsCode":"123456"}'
+        note: неизвестная ссылка кабинета — 404 (отозванная или просроченная — 410 public_token_expired, нужен объект из W6.15)

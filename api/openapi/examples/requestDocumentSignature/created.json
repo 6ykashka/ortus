@@ -1,0 +1,18 @@
+{
+  "document": {
+    "id": "92255ba2-187f-52f8-b157-b57151abe4e1",
+    "projectId": "73e23d56-2d9c-5a86-91d2-8969d90d1f5b",
+    "kind": "act",
+    "title": "Акт № 1 · демонтаж",
+    "state": "sms",
+    "estimateVersion": 2,
+    "actNo": 1,
+    "amount": {
+      "amountMinor": 2142400,
+      "currency": "RUB"
+    },
+    "sentAt": "2026-10-20T07:30:00Z"
+  },
+  "codeExpiresAt": "2026-10-20T07:40:00Z",
+  "deliveredTo": "+7 *** *** 12-42"
+}

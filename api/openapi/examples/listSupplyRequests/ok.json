@@ -1,0 +1,211 @@
+{
+  "items": [
+    {
+      "id": "d4a1e25a-4d0f-524f-ae86-b18c6dd7627c",
+      "number": "З-23",
+      "projectId": "2c1cc0f1-d23e-50bd-ba0a-fc1328e73af2",
+      "projectName": "Профсоюзная, 64 · квартира 210",
+      "priceItemId": "c180ec0d-3f13-59cb-8e13-61797b0113a6",
+      "name": "Ламинат 32 класс",
+      "unit": "m2",
+      "quantity": "22",
+      "needBy": "2026-10-21",
+      "state": "request",
+      "createdAt": "2026-10-05T08:00:00Z",
+      "revision": 1,
+      "cost": {
+        "amountMinor": 2156000,
+        "currency": "RUB"
+      },
+      "available": [
+        {
+          "warehouseId": "a986981f-42fd-5da8-92c0-62876c134d86",
+          "warehouseName": "Мытищи",
+          "free": "40"
+        }
+      ]
+    },
+    {
+      "id": "3ff3a5cc-c537-568d-be27-a19c6b37244c",
+      "number": "З-21",
+      "projectId": "4d132a07-45c5-55a7-9738-9117f7f86838",
+      "projectName": "ЖК Северный парк · квартира 117",
+      "priceItemId": "6123d5f7-3d8a-5ca9-915a-385ee7ceaaec",
+      "name": "Плинтус МДФ",
+      "unit": "m",
+      "quantity": "42",
+      "needBy": "2026-10-22",
+      "state": "request",
+      "createdAt": "2026-10-05T08:00:00Z",
+      "revision": 1,
+      "cost": {
+        "amountMinor": 1302000,
+        "currency": "RUB"
+      },
+      "available": [
+        {
+          "warehouseId": "d2034b58-ffd7-5bbe-8081-733d8c5fb89b",
+          "warehouseName": "Москва · Отрадное",
+          "free": "60"
+        }
+      ]
+    },
+    {
+      "id": "d18edcfd-25f1-580d-8d4b-8a1c71844b78",
+      "number": "З-15",
+      "projectId": "73e23d56-2d9c-5a86-91d2-8969d90d1f5b",
+      "projectName": "ЖК Речной · квартира 42",
+      "priceItemId": "70c1b2a7-ed5f-5300-be6b-3382ae7e4510",
+      "name": "Керамогранит 60×60",
+      "unit": "m2",
+      "quantity": "18",
+      "needBy": "2026-10-23",
+      "state": "request",
+      "createdAt": "2026-10-05T08:00:00Z",
+      "revision": 1,
+      "cost": {
+        "amountMinor": 3240000,
+        "currency": "RUB"
+      },
+      "available": [
+        {
+          "warehouseId": "a986981f-42fd-5da8-92c0-62876c134d86",
+          "warehouseName": "Мытищи",
+          "free": "6"
+        }
+      ]
+    },
+    {
+      "id": "67324d34-bfdf-5d9c-9c07-506e251d4074",
+      "number": "З-22",
+      "projectId": "4d132a07-45c5-55a7-9738-9117f7f86838",
+      "projectName": "ЖК Северный парк · квартира 117",
+      "priceItemId": "ff2862ae-e9b5-5fc6-b2af-4f8855cecf07",
+      "name": "Краска интерьерная",
+      "unit": "liter",
+      "quantity": "18",
+      "needBy": "2026-10-24",
+      "state": "request",
+      "createdAt": "2026-10-05T08:00:00Z",
+      "revision": 1,
+      "cost": {
+        "amountMinor": 972000,
+        "currency": "RUB"
+      },
+      "available": [
+        {
+          "warehouseId": "d2034b58-ffd7-5bbe-8081-733d8c5fb89b",
+          "warehouseName": "Москва · Отрадное",
+          "free": "10"
+        }
+      ]
+    },
+    {
+      "id": "fa5c069b-46e7-5d32-a7b3-0cbe83665ecc",
+      "number": "З-14",
+      "projectId": "73e23d56-2d9c-5a86-91d2-8969d90d1f5b",
+      "projectName": "ЖК Речной · квартира 42",
+      "priceItemId": "28c4ac2f-7f41-5565-a807-0650562712f9",
+      "name": "Ламинат 33 класс",
+      "unit": "m2",
+      "quantity": "52",
+      "needBy": "2026-10-27",
+      "state": "request",
+      "createdAt": "2026-10-05T08:00:00Z",
+      "revision": 1,
+      "cost": {
+        "amountMinor": 7020000,
+        "currency": "RUB"
+      },
+      "available": []
+    },
+    {
+      "id": "46c689fd-11d8-50e4-988b-cc6df010829e",
+      "number": "З-24",
+      "projectId": "3a3a819e-f3f5-55f9-9ba6-6f9bf2a9bb52",
+      "projectName": "Кофейня на Покровке",
+      "priceItemId": "70c1b2a7-ed5f-5300-be6b-3382ae7e4510",
+      "name": "Керамогранит 60×60",
+      "unit": "m2",
+      "quantity": "70",
+      "needBy": "2026-11-03",
+      "state": "request",
+      "createdAt": "2026-10-05T08:00:00Z",
+      "revision": 1,
+      "cost": {
+        "amountMinor": 12600000,
+        "currency": "RUB"
+      },
+      "available": [
+        {
+          "warehouseId": "a986981f-42fd-5da8-92c0-62876c134d86",
+          "warehouseName": "Мытищи",
+          "free": "6"
+        }
+      ]
+    },
+    {
+      "id": "aa535752-f36f-50d4-8408-5bca17289d79",
+      "number": "З-25",
+      "projectId": "3a3a819e-f3f5-55f9-9ba6-6f9bf2a9bb52",
+      "projectName": "Кофейня на Покровке",
+      "priceItemId": "ff2862ae-e9b5-5fc6-b2af-4f8855cecf07",
+      "name": "Краска интерьерная",
+      "unit": "liter",
+      "quantity": "40",
+      "needBy": "2026-11-05",
+      "state": "request",
+      "createdAt": "2026-10-05T08:00:00Z",
+      "revision": 1,
+      "cost": {
+        "amountMinor": 2160000,
+        "currency": "RUB"
+      },
+      "available": [
+        {
+          "warehouseId": "d2034b58-ffd7-5bbe-8081-733d8c5fb89b",
+          "warehouseName": "Москва · Отрадное",
+          "free": "10"
+        }
+      ]
+    },
+    {
+      "id": "eb9f187c-60c8-5a5e-b6e2-5b1ae60775e4",
+      "number": "З-12",
+      "projectId": "73e23d56-2d9c-5a86-91d2-8969d90d1f5b",
+      "projectName": "ЖК Речной · квартира 42",
+      "priceItemId": "ba92d36a-7bd5-55b8-9754-4ef1d532d793",
+      "name": "Штукатурка гипсовая 30 кг",
+      "unit": "mesh",
+      "quantity": "46",
+      "needBy": "2026-10-08",
+      "state": "used",
+      "createdAt": "2026-10-05T08:00:00Z",
+      "revision": 1,
+      "cost": {
+        "amountMinor": 1840000,
+        "currency": "RUB"
+      }
+    },
+    {
+      "id": "d0f95bee-a6da-53c4-8bf0-3e0c0a6dc2eb",
+      "number": "З-13",
+      "projectId": "73e23d56-2d9c-5a86-91d2-8969d90d1f5b",
+      "projectName": "ЖК Речной · квартира 42",
+      "priceItemId": "397ebbea-3961-5c4a-96a8-8a276ed48997",
+      "name": "Кабель и фурнитура",
+      "unit": "set",
+      "quantity": "1",
+      "needBy": "2026-10-14",
+      "state": "bought",
+      "createdAt": "2026-10-05T08:00:00Z",
+      "revision": 1,
+      "purchaseId": "27dea568-06bf-5707-85f1-1243550dd676",
+      "cost": {
+        "amountMinor": 1320000,
+        "currency": "RUB"
+      }
+    }
+  ],
+  "nextCursor": null
+}

@@ -1,0 +1,8 @@
+{
+  "type": "https://docs.ortus.example/errors/estimate_draft_exists",
+  "title": "У объекта уже есть черновик или отправленная версия",
+  "status": 409,
+  "code": "estimate_draft_exists",
+  "detail": "У объекта уже есть черновик или отправленная версия сметы.",
+  "requestId": "01J9Z4QK8M6T2V5X7Y9A1B3C5D"
+}

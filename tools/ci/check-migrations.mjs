@@ -22,6 +22,12 @@ export const TENANT_BLOCKS = [
   { stage: 7, from: 60, to: 69 },
 ];
 
+/**
+ * Этапы, которые ещё не влиты, хотя блок после них уже занят: пустой блок такого этапа не ошибка. Номер, выданный в нём
+ * позже, раннер goose без out-of-order на БД выше не накатит (api/README.md). Сейчас таких нет: этап 5 влит (W5.00).
+ */
+export const PENDING_STAGES = new Set([]);
+
 /** Блоки control: база v0.2 — 0001–0003; дальше «0004+ по тому же принципу» без границ (§3.5). */
 export const CONTROL_BLOCKS = [
   { stage: 0, from: 1, to: 3 },
@@ -67,6 +73,7 @@ export function checkDb(db, names, blocks = BLOCKS[db]) {
   blocks.forEach((b, i) => {
     if (i > last) return;
     if (used[i].length === 0) {
+      if (PENDING_STAGES.has(b.stage)) return;
       const l = blocks[last];
       errors.push(
         `${db}: блок этапа ${b.stage} (${span(b)}) пуст, а занят блок этапа ${l.stage} (${span(l)})`,

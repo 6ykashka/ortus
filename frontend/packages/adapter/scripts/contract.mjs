@@ -36,6 +36,12 @@ export const STAGE4_TAGS = ['Calendar', 'Branding', 'Knowledge', 'Tasks', 'Forms
  * Операции этапа 4 без экрана в screens.yaml, у которых тоже есть хендлер, примеры и кейсы (W4.04): правка
  * пространства (Q-W4.00-knowledge-17) и таблица на странице «Базы знаний» (ядро «Форм»).
  */
+/**
+ * Теги экранов этапа 6 (W6.00): у операций этих тегов, которые вызывают экраны этапа 6 (screens.yaml, stage: 6), есть
+ * хендлер src/msw/<модуль>/, примеры и кейсы conformance — «Ремонт и стройка» (repairs/).
+ */
+export const STAGE6_TAGS = ['Repairs'];
+
 export const STAGE4_OFFSCREEN = ['updateKnowledgeSpace', 'createKnowledgeTable'];
 
 /**
@@ -111,7 +117,13 @@ function stageScreens(screens, stage = 2) {
   );
 }
 
-function operations(doc, onScreens = new Set(), onStage4 = new Set(), onStage5 = new Set()) {
+function operations(
+  doc,
+  onScreens = new Set(),
+  onStage4 = new Set(),
+  onStage5 = new Set(),
+  onStage6 = new Set(),
+) {
   const out = [];
   for (const [path, item] of Object.entries(doc.paths)) {
     for (const m of METHODS) {
@@ -137,6 +149,7 @@ function operations(doc, onScreens = new Set(), onStage4 = new Set(), onStage5 =
           STAGE4_TAGS.includes(op.tags?.[0]) &&
           (onStage4.has(op.operationId) || STAGE4_OFFSCREEN.includes(op.operationId)),
         stage5: STAGE5_TAGS.includes(op.tags?.[0]) && onStage5.has(op.operationId),
+        stage6: STAGE6_TAGS.includes(op.tags?.[0]) && onStage6.has(op.operationId),
         permissions: op['x-permissions'] ?? [],
         mode: op['x-permissions-mode'] ?? 'all',
         scope: op['x-scope'] ?? '',
@@ -215,7 +228,7 @@ function permissions(catalog) {
 
 function examples(dir, ops) {
   const out = {};
-  for (const o of ops.filter((x) => x.stage1 || x.stage2 || x.stage4 || x.stage5)) {
+  for (const o of ops.filter((x) => x.stage1 || x.stage2 || x.stage4 || x.stage5 || x.stage6)) {
     const d = join(dir, o.id);
     if (!existsSync(d)) continue;
     out[o.id] = Object.fromEntries(
@@ -238,6 +251,7 @@ export function buildContract(root = ROOT) {
     stageScreens(screens, 2),
     stageScreens(screens, 4),
     stageScreens(screens, 5),
+    stageScreens(screens, 6),
   );
   return {
     version: doc.info.version,

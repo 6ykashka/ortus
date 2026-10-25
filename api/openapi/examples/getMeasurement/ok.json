@@ -1,0 +1,51 @@
+{
+  "projectId": "73e23d56-2d9c-5a86-91d2-8969d90d1f5b",
+  "version": 1,
+  "rooms": [
+    {
+      "id": "81271f99-d015-5f76-8a0a-f91aadb3a385",
+      "name": "Гостиная",
+      "lengthM": "5.2",
+      "widthM": "3.8",
+      "heightM": "2.7",
+      "openingsM2": "3.6",
+      "wet": false
+    },
+    {
+      "id": "0e13a45d-b6e7-571a-91e3-bb9147a93677",
+      "name": "Спальня",
+      "lengthM": "4.1",
+      "widthM": "3.2",
+      "heightM": "2.7",
+      "openingsM2": "2.4",
+      "wet": false
+    },
+    {
+      "id": "0165a3d8-b216-5934-ac09-f4567689aa23",
+      "name": "Кухня",
+      "lengthM": "3.4",
+      "widthM": "3",
+      "heightM": "2.7",
+      "openingsM2": "2",
+      "wet": false
+    },
+    {
+      "id": "41cee78a-7723-5539-af69-705dccda7471",
+      "name": "Санузел",
+      "lengthM": "2.2",
+      "widthM": "1.7",
+      "heightM": "2.7",
+      "openingsM2": "1.4",
+      "wet": true
+    }
+  ],
+  "totals": {
+    "floorM2": "46.82",
+    "wallsM2": "134.24",
+    "perimeterM": "53.2",
+    "wetFloorM2": "3.74",
+    "wetWallsM2": "19.66"
+  },
+  "revision": 1,
+  "measuredAt": "2026-09-24T12:00:00Z"
+}

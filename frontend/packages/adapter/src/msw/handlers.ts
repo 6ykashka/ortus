@@ -27,6 +27,7 @@ import { platformHandlers } from './platform/index.ts';
 import { operatorHandlers } from './platform/operator.ts';
 import { pricingHandlers } from './platform/pricing.ts';
 import { usageHandlers } from './platform/usage.ts';
+import { repairsHandlers } from './repairs/index.ts';
 import { tasksHandlers } from './tasks/index.ts';
 
 export const defaultRegistry: Registry = {
@@ -66,4 +67,6 @@ export const defaultRegistry: Registry = {
   ...formsHandlers,
   // 0.12.0-stage5 (W5.00): «Касса».
   ...cashHandlers,
+  // 0.12.0-stage6 (W6.00): «Ремонт и стройка».
+  ...repairsHandlers,
 };

@@ -5,8 +5,8 @@
 deltas:
   - pointer: /info/version
     kind: change
-    source: план v2 PD-56, W0.07, W0.08, W1.00, W2.00, W2.40, W2.51, W2.52, W2.57, W4.02, W4.06, W2.71, W4.07, W4.04, W4.03, W4.05, W5.00
-    reason: 0.1.0-design → 0.2.0-stage0 (W0.07, шаг 0.2, разложен по тегам) → 0.3.0-stage1 (W0.08, шаг 0.3, контракт этапа 1) → 0.4.0-stage1 (W1.00, второй контрактный PR этапа 1) → 0.5.0-stage2 (W2.00, контракт этапа 2) → 0.5.1-stage2 (W2.40, аддитивный PR стюарда этапа 2 для показа 18.10) → 0.6.0-stage2 (W2.51, стюард этапа 2 — пул водителей, наборы «Данных») → 0.6.1-stage2 (W2.52, стюард этапа 2, часть 2 — ответы владельца 17.10 — справочник расходов, история машины, антифрод фото, чек-лист-форма, задача дефекта, заменители интеграций D-11 комплекта) → 0.6.2-stage2 (W2.57, контрактная дельта решения Q-W2.07-1 — временный водитель «только рейс», продление) → 0.7.0-stage4 (W4.02, контрактный PR 1 этапа 4 — виды областей этапов 4–7, объяснение доступа с объектом, вложения задач, Problem.reason, экраны этапа 4; W4.06, контрактный PR 5 этапа 4 — календарь ресурсов, сохранённые виды и выгрузка заданием «Данных») → 0.7.1-stage4 (W2.71, контрактная дельта S2-20 — машина для временного водителя, решение владельца 19.10 по Q-W2.32-1; в ветке 0.6.3-stage2, перенумерована интегратором при вливании после W4.02 и W4.06) → 0.8.0-stage4 (W4.07, контрактный PR 6 этапа 4 — места и тарифная сетка, заявки на тариф, «Использование», каталог аккаунтов и операторы платформы, оформление организации; номер версии согласован интегратором при вливании после W2.71) → 0.9.0-stage4 (W4.04, контрактный PR 3 этапа 4 — «База знаний» — пространства, дерево, версии, доступ узла, запросы, участники, автоматизация; влит интегратором после W4.07) → 0.10.0-stage4 (W4.03, контрактный PR 2 этапа 4 — «Задачи и проекты» — проекты, участники, процесс с версиями, задачи, история, автоматизация; в ветке 0.9.0-stage4, перенумерована интегратором при вливании после W4.04) → 0.11.0-stage4 (W4.05, контрактный PR 4 этапа 4 — «Формы и опросы» — черновик, FormDefinition v2, настройки, группы, правила, ответы v2, сводка, CSV).
+    source: план v2 PD-56, W0.07, W0.08, W1.00, W2.00, W2.40, W2.51, W2.52, W2.57, W4.02, W4.06, W2.71, W4.07, W4.04, W4.03, W4.05, W5.00, W6.00
+    reason: 0.1.0-design → 0.2.0-stage0 (W0.07, шаг 0.2, разложен по тегам) → 0.3.0-stage1 (W0.08, шаг 0.3, контракт этапа 1) → 0.4.0-stage1 (W1.00, второй контрактный PR этапа 1) → 0.5.0-stage2 (W2.00, контракт этапа 2) → 0.5.1-stage2 (W2.40, аддитивный PR стюарда этапа 2 для показа 18.10) → 0.6.0-stage2 (W2.51, стюард этапа 2 — пул водителей, наборы «Данных») → 0.6.1-stage2 (W2.52, стюард этапа 2, часть 2 — ответы владельца 17.10 — справочник расходов, история машины, антифрод фото, чек-лист-форма, задача дефекта, заменители интеграций D-11 комплекта) → 0.6.2-stage2 (W2.57, контрактная дельта решения Q-W2.07-1 — временный водитель «только рейс», продление) → 0.7.0-stage4 (W4.02, контрактный PR 1 этапа 4 — виды областей этапов 4–7, объяснение доступа с объектом, вложения задач, Problem.reason, экраны этапа 4; W4.06, контрактный PR 5 этапа 4 — календарь ресурсов, сохранённые виды и выгрузка заданием «Данных») → 0.7.1-stage4 (W2.71, контрактная дельта S2-20 — машина для временного водителя, решение владельца 19.10 по Q-W2.32-1; в ветке 0.6.3-stage2, перенумерована интегратором при вливании после W4.02 и W4.06) → 0.8.0-stage4 (W4.07, контрактный PR 6 этапа 4 — места и тарифная сетка, заявки на тариф, «Использование», каталог аккаунтов и операторы платформы, оформление организации; номер версии согласован интегратором при вливании после W2.71) → 0.9.0-stage4 (W4.04, контрактный PR 3 этапа 4 — «База знаний» — пространства, дерево, версии, доступ узла, запросы, участники, автоматизация; влит интегратором после W4.07) → 0.10.0-stage4 (W4.03, контрактный PR 2 этапа 4 — «Задачи и проекты» — проекты, участники, процесс с версиями, задачи, история, автоматизация; в ветке 0.9.0-stage4, перенумерована интегратором при вливании после W4.04) → 0.11.0-stage4 (W4.05, контрактный PR 4 этапа 4 — «Формы и опросы» — черновик, FormDefinition v2, настройки, группы, правила, ответы v2, сводка, CSV). → 0.12.0-stage5 (W5.00, контракт этапа 5 — касса, склад, SPA) → 0.12.0-stage6 (W6.00, контракт этапа 6 «Ремонт и стройка» — объекты, отметки, допработы, замер, сметы, справочник и шаблоны, график, документы, снабжение, финансы, подрядчики, ссылка и публичный кабинет заказчика).
   - pointer: /components/schemas/Tenant/properties/status/enum
     kind: change
     source: 01-technical-spec PLAT-02; 10-data-model «Тенант»; control_0001_init.sql tenant_state; PD-35
@@ -3725,3 +3725,710 @@ deltas:
     kind: add
     source: "W5.00; план v2 §4 (W5.10, W5.11), D-20 комплекта; B-6 (склада в прототипе нет)"
     reason: "добавлено в контракте этапа 5 (0.12.0-stage5, склад): schemas WarehousePage"
+
+  # W6.00 (0.12.0-stage6) — контракт этапа 6 «Ремонт и стройка»: объекты, отметки, допработы, замер, сметы,
+  # справочник и шаблоны, график, документы, снабжение, финансы, подрядчики, ссылка и публичный кабинет заказчика.
+  - pointer: "/paths/~1api~1v1~1tenants~1{tenantId}~1repairs~1projects/get"
+    kind: change
+    source: "W6.00; repair.md §2.1–§2.4, §3; design/docs/19-construction.md; эталон «Ремонт и стройка.dc.html», «Ортус CRM.dc.html» (design-2026-10-19); Q-W4.00-repair-1…24"
+    reason: "операции тега Repairs этапа 6 (repair.md §2.2); у операций 0.1 — права, область, параметры и схемы переделаны."
+  - pointer: "/paths/~1api~1v1~1tenants~1{tenantId}~1repairs~1projects/post"
+    kind: change
+    source: "W6.00; repair.md §2.1–§2.4, §3; design/docs/19-construction.md; эталон «Ремонт и стройка.dc.html», «Ортус CRM.dc.html» (design-2026-10-19); Q-W4.00-repair-1…24"
+    reason: "операции тега Repairs этапа 6 (repair.md §2.2); у операций 0.1 — права, область, параметры и схемы переделаны."
+  - pointer: "/paths/~1api~1v1~1tenants~1{tenantId}~1repairs~1work-logs/get"
+    kind: change
+    source: "W6.00; repair.md §2.1–§2.4, §3; design/docs/19-construction.md; эталон «Ремонт и стройка.dc.html», «Ортус CRM.dc.html» (design-2026-10-19); Q-W4.00-repair-1…24"
+    reason: "операции тега Repairs этапа 6 (repair.md §2.2); у операций 0.1 — права, область, параметры и схемы переделаны."
+  - pointer: "/paths/~1api~1v1~1tenants~1{tenantId}~1repairs~1work-logs/post"
+    kind: change
+    source: "W6.00; repair.md §2.1–§2.4, §3; design/docs/19-construction.md; эталон «Ремонт и стройка.dc.html», «Ортус CRM.dc.html» (design-2026-10-19); Q-W4.00-repair-1…24"
+    reason: "операции тега Repairs этапа 6 (repair.md §2.2); у операций 0.1 — права, область, параметры и схемы переделаны."
+  - pointer: "/paths/~1api~1v1~1tenants~1{tenantId}~1repairs~1projects~1{projectId}"
+    kind: add
+    source: "W6.00; repair.md §2.1–§2.4, §3; design/docs/19-construction.md; эталон «Ремонт и стройка.dc.html», «Ортус CRM.dc.html» (design-2026-10-19); Q-W4.00-repair-1…24"
+    reason: "операции тега Repairs этапа 6 (repair.md §2.2); у операций 0.1 — права, область, параметры и схемы переделаны."
+  - pointer: "/paths/~1api~1v1~1tenants~1{tenantId}~1repairs~1projects~1{projectId}~1overview"
+    kind: add
+    source: "W6.00; repair.md §2.1–§2.4, §3; design/docs/19-construction.md; эталон «Ремонт и стройка.dc.html», «Ортус CRM.dc.html» (design-2026-10-19); Q-W4.00-repair-1…24"
+    reason: "операции тега Repairs этапа 6 (repair.md §2.2); у операций 0.1 — права, область, параметры и схемы переделаны."
+  - pointer: "/paths/~1api~1v1~1tenants~1{tenantId}~1repairs~1projects~1{projectId}~1foreman"
+    kind: add
+    source: "W6.00; repair.md §2.1–§2.4, §3; design/docs/19-construction.md; эталон «Ремонт и стройка.dc.html», «Ортус CRM.dc.html» (design-2026-10-19); Q-W4.00-repair-1…24"
+    reason: "операции тега Repairs этапа 6 (repair.md §2.2); у операций 0.1 — права, область, параметры и схемы переделаны."
+  - pointer: "/paths/~1api~1v1~1tenants~1{tenantId}~1repairs~1projects~1{projectId}~1activate"
+    kind: add
+    source: "W6.00; repair.md §2.1–§2.4, §3; design/docs/19-construction.md; эталон «Ремонт и стройка.dc.html», «Ортус CRM.dc.html» (design-2026-10-19); Q-W4.00-repair-1…24"
+    reason: "операции тега Repairs этапа 6 (repair.md §2.2); у операций 0.1 — права, область, параметры и схемы переделаны."
+  - pointer: "/paths/~1api~1v1~1tenants~1{tenantId}~1repairs~1projects~1{projectId}~1works"
+    kind: add
+    source: "W6.00; repair.md §2.1–§2.4, §3; design/docs/19-construction.md; эталон «Ремонт и стройка.dc.html», «Ортус CRM.dc.html» (design-2026-10-19); Q-W4.00-repair-1…24"
+    reason: "операции тега Repairs этапа 6 (repair.md §2.2); у операций 0.1 — права, область, параметры и схемы переделаны."
+  - pointer: "/paths/~1api~1v1~1tenants~1{tenantId}~1repairs~1work-logs~1{workLogId}~1accept"
+    kind: add
+    source: "W6.00; repair.md §2.1–§2.4, §3; design/docs/19-construction.md; эталон «Ремонт и стройка.dc.html», «Ортус CRM.dc.html» (design-2026-10-19); Q-W4.00-repair-1…24"
+    reason: "операции тега Repairs этапа 6 (repair.md §2.2); у операций 0.1 — права, область, параметры и схемы переделаны."
+  - pointer: "/paths/~1api~1v1~1tenants~1{tenantId}~1repairs~1work-logs~1{workLogId}~1return"
+    kind: add
+    source: "W6.00; repair.md §2.1–§2.4, §3; design/docs/19-construction.md; эталон «Ремонт и стройка.dc.html», «Ортус CRM.dc.html» (design-2026-10-19); Q-W4.00-repair-1…24"
+    reason: "операции тега Repairs этапа 6 (repair.md §2.2); у операций 0.1 — права, область, параметры и схемы переделаны."
+  - pointer: "/paths/~1api~1v1~1tenants~1{tenantId}~1repairs~1projects~1{projectId}~1change-orders"
+    kind: add
+    source: "W6.00; repair.md §2.1–§2.4, §3; design/docs/19-construction.md; эталон «Ремонт и стройка.dc.html», «Ортус CRM.dc.html» (design-2026-10-19); Q-W4.00-repair-1…24"
+    reason: "операции тега Repairs этапа 6 (repair.md §2.2); у операций 0.1 — права, область, параметры и схемы переделаны."
+  - pointer: "/paths/~1api~1v1~1tenants~1{tenantId}~1repairs~1change-orders~1{changeOrderId}~1reject"
+    kind: add
+    source: "W6.00; repair.md §2.1–§2.4, §3; design/docs/19-construction.md; эталон «Ремонт и стройка.dc.html», «Ортус CRM.dc.html» (design-2026-10-19); Q-W4.00-repair-1…24"
+    reason: "операции тега Repairs этапа 6 (repair.md §2.2); у операций 0.1 — права, область, параметры и схемы переделаны."
+  - pointer: "/paths/~1api~1v1~1tenants~1{tenantId}~1repairs~1projects~1{projectId}~1measurement"
+    kind: add
+    source: "W6.00; repair.md §2.1–§2.4, §3; design/docs/19-construction.md; эталон «Ремонт и стройка.dc.html», «Ортус CRM.dc.html» (design-2026-10-19); Q-W4.00-repair-1…24"
+    reason: "операции тега Repairs этапа 6 (repair.md §2.2); у операций 0.1 — права, область, параметры и схемы переделаны."
+  - pointer: "/paths/~1api~1v1~1tenants~1{tenantId}~1repairs~1projects~1{projectId}~1estimates"
+    kind: add
+    source: "W6.00; repair.md §2.1–§2.4, §3; design/docs/19-construction.md; эталон «Ремонт и стройка.dc.html», «Ортус CRM.dc.html» (design-2026-10-19); Q-W4.00-repair-1…24"
+    reason: "операции тега Repairs этапа 6 (repair.md §2.2); у операций 0.1 — права, область, параметры и схемы переделаны."
+  - pointer: "/paths/~1api~1v1~1tenants~1{tenantId}~1repairs~1projects~1{projectId}~1estimates~1{version}"
+    kind: add
+    source: "W6.00; repair.md §2.1–§2.4, §3; design/docs/19-construction.md; эталон «Ремонт и стройка.dc.html», «Ортус CRM.dc.html» (design-2026-10-19); Q-W4.00-repair-1…24"
+    reason: "операции тега Repairs этапа 6 (repair.md §2.2); у операций 0.1 — права, область, параметры и схемы переделаны."
+  - pointer: "/paths/~1api~1v1~1tenants~1{tenantId}~1repairs~1projects~1{projectId}~1estimate-drafts"
+    kind: add
+    source: "W6.00; repair.md §2.1–§2.4, §3; design/docs/19-construction.md; эталон «Ремонт и стройка.dc.html», «Ортус CRM.dc.html» (design-2026-10-19); Q-W4.00-repair-1…24"
+    reason: "операции тега Repairs этапа 6 (repair.md §2.2); у операций 0.1 — права, область, параметры и схемы переделаны."
+  - pointer: "/paths/~1api~1v1~1tenants~1{tenantId}~1repairs~1projects~1{projectId}~1estimates~1{version}~1send"
+    kind: add
+    source: "W6.00; repair.md §2.1–§2.4, §3; design/docs/19-construction.md; эталон «Ремонт и стройка.dc.html», «Ортус CRM.dc.html» (design-2026-10-19); Q-W4.00-repair-1…24"
+    reason: "операции тега Repairs этапа 6 (repair.md §2.2); у операций 0.1 — права, область, параметры и схемы переделаны."
+  - pointer: "/paths/~1api~1v1~1tenants~1{tenantId}~1repairs~1projects~1{projectId}~1estimates~1{version}~1recall"
+    kind: add
+    source: "W6.00; repair.md §2.1–§2.4, §3; design/docs/19-construction.md; эталон «Ремонт и стройка.dc.html», «Ортус CRM.dc.html» (design-2026-10-19); Q-W4.00-repair-1…24"
+    reason: "операции тега Repairs этапа 6 (repair.md §2.2); у операций 0.1 — права, область, параметры и схемы переделаны."
+  - pointer: "/paths/~1api~1v1~1tenants~1{tenantId}~1repairs~1projects~1{projectId}~1estimates~1{version}~1diff"
+    kind: add
+    source: "W6.00; repair.md §2.1–§2.4, §3; design/docs/19-construction.md; эталон «Ремонт и стройка.dc.html», «Ортус CRM.dc.html» (design-2026-10-19); Q-W4.00-repair-1…24"
+    reason: "операции тега Repairs этапа 6 (repair.md §2.2); у операций 0.1 — права, область, параметры и схемы переделаны."
+  - pointer: "/paths/~1api~1v1~1tenants~1{tenantId}~1repairs~1projects~1{projectId}~1save-as-template"
+    kind: add
+    source: "W6.00; repair.md §2.1–§2.4, §3; design/docs/19-construction.md; эталон «Ремонт и стройка.dc.html», «Ортус CRM.dc.html» (design-2026-10-19); Q-W4.00-repair-1…24"
+    reason: "операции тега Repairs этапа 6 (repair.md §2.2); у операций 0.1 — права, область, параметры и схемы переделаны."
+  - pointer: "/paths/~1api~1v1~1tenants~1{tenantId}~1repairs~1price-items"
+    kind: add
+    source: "W6.00; repair.md §2.1–§2.4, §3; design/docs/19-construction.md; эталон «Ремонт и стройка.dc.html», «Ортус CRM.dc.html» (design-2026-10-19); Q-W4.00-repair-1…24"
+    reason: "операции тега Repairs этапа 6 (repair.md §2.2); у операций 0.1 — права, область, параметры и схемы переделаны."
+  - pointer: "/paths/~1api~1v1~1tenants~1{tenantId}~1repairs~1price-items~1{priceItemId}"
+    kind: add
+    source: "W6.00; repair.md §2.1–§2.4, §3; design/docs/19-construction.md; эталон «Ремонт и стройка.dc.html», «Ортус CRM.dc.html» (design-2026-10-19); Q-W4.00-repair-1…24"
+    reason: "операции тега Repairs этапа 6 (repair.md §2.2); у операций 0.1 — права, область, параметры и схемы переделаны."
+  - pointer: "/paths/~1api~1v1~1tenants~1{tenantId}~1repairs~1templates"
+    kind: add
+    source: "W6.00; repair.md §2.1–§2.4, §3; design/docs/19-construction.md; эталон «Ремонт и стройка.dc.html», «Ортус CRM.dc.html» (design-2026-10-19); Q-W4.00-repair-1…24"
+    reason: "операции тега Repairs этапа 6 (repair.md §2.2); у операций 0.1 — права, область, параметры и схемы переделаны."
+  - pointer: "/paths/~1api~1v1~1tenants~1{tenantId}~1repairs~1templates~1{templateId}"
+    kind: add
+    source: "W6.00; repair.md §2.1–§2.4, §3; design/docs/19-construction.md; эталон «Ремонт и стройка.dc.html», «Ортус CRM.dc.html» (design-2026-10-19); Q-W4.00-repair-1…24"
+    reason: "операции тега Repairs этапа 6 (repair.md §2.2); у операций 0.1 — права, область, параметры и схемы переделаны."
+  - pointer: "/paths/~1api~1v1~1tenants~1{tenantId}~1repairs~1templates~1{templateId}~1copy"
+    kind: add
+    source: "W6.00; repair.md §2.1–§2.4, §3; design/docs/19-construction.md; эталон «Ремонт и стройка.dc.html», «Ортус CRM.dc.html» (design-2026-10-19); Q-W4.00-repair-1…24"
+    reason: "операции тега Repairs этапа 6 (repair.md §2.2); у операций 0.1 — права, область, параметры и схемы переделаны."
+  - pointer: "/paths/~1api~1v1~1tenants~1{tenantId}~1repairs~1projects~1{projectId}~1schedule"
+    kind: add
+    source: "W6.00; repair.md §2.1–§2.4, §3; design/docs/19-construction.md; эталон «Ремонт и стройка.dc.html», «Ортус CRM.dc.html» (design-2026-10-19); Q-W4.00-repair-1…24"
+    reason: "операции тега Repairs этапа 6 (repair.md §2.2); у операций 0.1 — права, область, параметры и схемы переделаны."
+  - pointer: "/paths/~1api~1v1~1tenants~1{tenantId}~1repairs~1projects~1{projectId}~1schedule~1from-estimate"
+    kind: add
+    source: "W6.00; repair.md §2.1–§2.4, §3; design/docs/19-construction.md; эталон «Ремонт и стройка.dc.html», «Ортус CRM.dc.html» (design-2026-10-19); Q-W4.00-repair-1…24"
+    reason: "операции тега Repairs этапа 6 (repair.md §2.2); у операций 0.1 — права, область, параметры и схемы переделаны."
+  - pointer: "/paths/~1api~1v1~1tenants~1{tenantId}~1repairs~1projects~1{projectId}~1schedule~1preview"
+    kind: add
+    source: "W6.00; repair.md §2.1–§2.4, §3; design/docs/19-construction.md; эталон «Ремонт и стройка.dc.html», «Ортус CRM.dc.html» (design-2026-10-19); Q-W4.00-repair-1…24"
+    reason: "операции тега Repairs этапа 6 (repair.md §2.2); у операций 0.1 — права, область, параметры и схемы переделаны."
+  - pointer: "/paths/~1api~1v1~1tenants~1{tenantId}~1repairs~1projects~1{projectId}~1schedule~1changes"
+    kind: add
+    source: "W6.00; repair.md §2.1–§2.4, §3; design/docs/19-construction.md; эталон «Ремонт и стройка.dc.html», «Ортус CRM.dc.html» (design-2026-10-19); Q-W4.00-repair-1…24"
+    reason: "операции тега Repairs этапа 6 (repair.md §2.2); у операций 0.1 — права, область, параметры и схемы переделаны."
+  - pointer: "/paths/~1api~1v1~1tenants~1{tenantId}~1repairs~1projects~1{projectId}~1schedule~1stages~1{stageId}"
+    kind: add
+    source: "W6.00; repair.md §2.1–§2.4, §3; design/docs/19-construction.md; эталон «Ремонт и стройка.dc.html», «Ортус CRM.dc.html» (design-2026-10-19); Q-W4.00-repair-1…24"
+    reason: "операции тега Repairs этапа 6 (repair.md §2.2); у операций 0.1 — права, область, параметры и схемы переделаны."
+  - pointer: "/paths/~1api~1v1~1tenants~1{tenantId}~1repairs~1projects~1{projectId}~1schedule~1baselines"
+    kind: add
+    source: "W6.00; repair.md §2.1–§2.4, §3; design/docs/19-construction.md; эталон «Ремонт и стройка.dc.html», «Ортус CRM.dc.html» (design-2026-10-19); Q-W4.00-repair-1…24"
+    reason: "операции тега Repairs этапа 6 (repair.md §2.2); у операций 0.1 — права, область, параметры и схемы переделаны."
+  - pointer: "/paths/~1api~1v1~1tenants~1{tenantId}~1repairs~1projects~1{projectId}~1hand-over"
+    kind: add
+    source: "W6.00; repair.md §2.1–§2.4, §3; design/docs/19-construction.md; эталон «Ремонт и стройка.dc.html», «Ортус CRM.dc.html» (design-2026-10-19); Q-W4.00-repair-1…24"
+    reason: "операции тега Repairs этапа 6 (repair.md §2.2); у операций 0.1 — права, область, параметры и схемы переделаны."
+  - pointer: "/paths/~1api~1v1~1tenants~1{tenantId}~1repairs~1projects~1{projectId}~1documents"
+    kind: add
+    source: "W6.00; repair.md §2.1–§2.4, §3; design/docs/19-construction.md; эталон «Ремонт и стройка.dc.html», «Ортус CRM.dc.html» (design-2026-10-19); Q-W4.00-repair-1…24"
+    reason: "операции тега Repairs этапа 6 (repair.md §2.2); у операций 0.1 — права, область, параметры и схемы переделаны."
+  - pointer: "/paths/~1api~1v1~1tenants~1{tenantId}~1repairs~1documents~1{documentId}~1sign-requests"
+    kind: add
+    source: "W6.00; repair.md §2.1–§2.4, §3; design/docs/19-construction.md; эталон «Ремонт и стройка.dc.html», «Ортус CRM.dc.html» (design-2026-10-19); Q-W4.00-repair-1…24"
+    reason: "операции тега Repairs этапа 6 (repair.md §2.2); у операций 0.1 — права, область, параметры и схемы переделаны."
+  - pointer: "/paths/~1api~1v1~1tenants~1{tenantId}~1repairs~1supply-requests"
+    kind: add
+    source: "W6.00; repair.md §2.1–§2.4, §3; design/docs/19-construction.md; эталон «Ремонт и стройка.dc.html», «Ортус CRM.dc.html» (design-2026-10-19); Q-W4.00-repair-1…24"
+    reason: "операции тега Repairs этапа 6 (repair.md §2.2); у операций 0.1 — права, область, параметры и схемы переделаны."
+  - pointer: "/paths/~1api~1v1~1tenants~1{tenantId}~1repairs~1projects~1{projectId}~1supply-requests"
+    kind: add
+    source: "W6.00; repair.md §2.1–§2.4, §3; design/docs/19-construction.md; эталон «Ремонт и стройка.dc.html», «Ортус CRM.dc.html» (design-2026-10-19); Q-W4.00-repair-1…24"
+    reason: "операции тега Repairs этапа 6 (repair.md §2.2); у операций 0.1 — права, область, параметры и схемы переделаны."
+  - pointer: "/paths/~1api~1v1~1tenants~1{tenantId}~1repairs~1supply-requests~1{supplyRequestId}~1reserve"
+    kind: add
+    source: "W6.00; repair.md §2.1–§2.4, §3; design/docs/19-construction.md; эталон «Ремонт и стройка.dc.html», «Ортус CRM.dc.html» (design-2026-10-19); Q-W4.00-repair-1…24"
+    reason: "операции тега Repairs этапа 6 (repair.md §2.2); у операций 0.1 — права, область, параметры и схемы переделаны."
+  - pointer: "/paths/~1api~1v1~1tenants~1{tenantId}~1repairs~1supply-requests~1{supplyRequestId}~1issue"
+    kind: add
+    source: "W6.00; repair.md §2.1–§2.4, §3; design/docs/19-construction.md; эталон «Ремонт и стройка.dc.html», «Ортус CRM.dc.html» (design-2026-10-19); Q-W4.00-repair-1…24"
+    reason: "операции тега Repairs этапа 6 (repair.md §2.2); у операций 0.1 — права, область, параметры и схемы переделаны."
+  - pointer: "/paths/~1api~1v1~1tenants~1{tenantId}~1repairs~1supply-requests~1{supplyRequestId}~1consume"
+    kind: add
+    source: "W6.00; repair.md §2.1–§2.4, §3; design/docs/19-construction.md; эталон «Ремонт и стройка.dc.html», «Ортус CRM.dc.html» (design-2026-10-19); Q-W4.00-repair-1…24"
+    reason: "операции тега Repairs этапа 6 (repair.md §2.2); у операций 0.1 — права, область, параметры и схемы переделаны."
+  - pointer: "/paths/~1api~1v1~1tenants~1{tenantId}~1repairs~1purchases"
+    kind: add
+    source: "W6.00; repair.md §2.1–§2.4, §3; design/docs/19-construction.md; эталон «Ремонт и стройка.dc.html», «Ортус CRM.dc.html» (design-2026-10-19); Q-W4.00-repair-1…24"
+    reason: "операции тега Repairs этапа 6 (repair.md §2.2); у операций 0.1 — права, область, параметры и схемы переделаны."
+  - pointer: "/paths/~1api~1v1~1tenants~1{tenantId}~1repairs~1purchases~1{purchaseId}~1receive"
+    kind: add
+    source: "W6.00; repair.md §2.1–§2.4, §3; design/docs/19-construction.md; эталон «Ремонт и стройка.dc.html», «Ортус CRM.dc.html» (design-2026-10-19); Q-W4.00-repair-1…24"
+    reason: "операции тега Repairs этапа 6 (repair.md §2.2); у операций 0.1 — права, область, параметры и схемы переделаны."
+  - pointer: "/paths/~1api~1v1~1tenants~1{tenantId}~1repairs~1project-stock"
+    kind: add
+    source: "W6.00; repair.md §2.1–§2.4, §3; design/docs/19-construction.md; эталон «Ремонт и стройка.dc.html», «Ортус CRM.dc.html» (design-2026-10-19); Q-W4.00-repair-1…24"
+    reason: "операции тега Repairs этапа 6 (repair.md §2.2); у операций 0.1 — права, область, параметры и схемы переделаны."
+  - pointer: "/paths/~1api~1v1~1tenants~1{tenantId}~1repairs~1projects~1{projectId}~1stock~1return"
+    kind: add
+    source: "W6.00; repair.md §2.1–§2.4, §3; design/docs/19-construction.md; эталон «Ремонт и стройка.dc.html», «Ортус CRM.dc.html» (design-2026-10-19); Q-W4.00-repair-1…24"
+    reason: "операции тега Repairs этапа 6 (repair.md §2.2); у операций 0.1 — права, область, параметры и схемы переделаны."
+  - pointer: "/paths/~1api~1v1~1tenants~1{tenantId}~1repairs~1projects~1{projectId}~1stock~1transfer"
+    kind: add
+    source: "W6.00; repair.md §2.1–§2.4, §3; design/docs/19-construction.md; эталон «Ремонт и стройка.dc.html», «Ортус CRM.dc.html» (design-2026-10-19); Q-W4.00-repair-1…24"
+    reason: "операции тега Repairs этапа 6 (repair.md §2.2); у операций 0.1 — права, область, параметры и схемы переделаны."
+  - pointer: "/paths/~1api~1v1~1tenants~1{tenantId}~1repairs~1projects~1{projectId}~1finance"
+    kind: add
+    source: "W6.00; repair.md §2.1–§2.4, §3; design/docs/19-construction.md; эталон «Ремонт и стройка.dc.html», «Ортус CRM.dc.html» (design-2026-10-19); Q-W4.00-repair-1…24"
+    reason: "операции тега Repairs этапа 6 (repair.md §2.2); у операций 0.1 — права, область, параметры и схемы переделаны."
+  - pointer: "/paths/~1api~1v1~1tenants~1{tenantId}~1repairs~1projects~1{projectId}~1accruals"
+    kind: add
+    source: "W6.00; repair.md §2.1–§2.4, §3; design/docs/19-construction.md; эталон «Ремонт и стройка.dc.html», «Ортус CRM.dc.html» (design-2026-10-19); Q-W4.00-repair-1…24"
+    reason: "операции тега Repairs этапа 6 (repair.md §2.2); у операций 0.1 — права, область, параметры и схемы переделаны."
+  - pointer: "/paths/~1api~1v1~1tenants~1{tenantId}~1repairs~1acts~1{documentId}~1accruals"
+    kind: add
+    source: "W6.00; repair.md §2.1–§2.4, §3; design/docs/19-construction.md; эталон «Ремонт и стройка.dc.html», «Ортус CRM.dc.html» (design-2026-10-19); Q-W4.00-repair-1…24"
+    reason: "операции тега Repairs этапа 6 (repair.md §2.2); у операций 0.1 — права, область, параметры и схемы переделаны."
+  - pointer: "/paths/~1api~1v1~1tenants~1{tenantId}~1repairs~1accruals~1payout"
+    kind: add
+    source: "W6.00; repair.md §2.1–§2.4, §3; design/docs/19-construction.md; эталон «Ремонт и стройка.dc.html», «Ортус CRM.dc.html» (design-2026-10-19); Q-W4.00-repair-1…24"
+    reason: "операции тега Repairs этапа 6 (repair.md §2.2); у операций 0.1 — права, область, параметры и схемы переделаны."
+  - pointer: "/paths/~1api~1v1~1tenants~1{tenantId}~1repairs~1projects~1{projectId}~1subcontractors"
+    kind: add
+    source: "W6.00; repair.md §2.1–§2.4, §3; design/docs/19-construction.md; эталон «Ремонт и стройка.dc.html», «Ортус CRM.dc.html» (design-2026-10-19); Q-W4.00-repair-1…24"
+    reason: "операции тега Repairs этапа 6 (repair.md §2.2); у операций 0.1 — права, область, параметры и схемы переделаны."
+  - pointer: "/paths/~1api~1v1~1tenants~1{tenantId}~1repairs~1projects~1{projectId}~1subcontractors~1{subcontractorId}"
+    kind: add
+    source: "W6.00; repair.md §2.1–§2.4, §3; design/docs/19-construction.md; эталон «Ремонт и стройка.dc.html», «Ортус CRM.dc.html» (design-2026-10-19); Q-W4.00-repair-1…24"
+    reason: "операции тега Repairs этапа 6 (repair.md §2.2); у операций 0.1 — права, область, параметры и схемы переделаны."
+  - pointer: "/paths/~1api~1v1~1tenants~1{tenantId}~1repairs~1projects~1{projectId}~1client-link"
+    kind: add
+    source: "W6.00; repair.md §2.1–§2.4, §3; design/docs/19-construction.md; эталон «Ремонт и стройка.dc.html», «Ортус CRM.dc.html» (design-2026-10-19); Q-W4.00-repair-1…24"
+    reason: "операции тега Repairs этапа 6 (repair.md §2.2); у операций 0.1 — права, область, параметры и схемы переделаны."
+  - pointer: "/paths/~1api~1v1~1public~1client~1{clientToken}"
+    kind: add
+    source: "W6.00; repair.md §2.1–§2.4, §3; design/docs/19-construction.md; эталон «Ремонт и стройка.dc.html», «Ортус CRM.dc.html» (design-2026-10-19); Q-W4.00-repair-1…24"
+    reason: "операции тега Repairs этапа 6 (repair.md §2.2); у операций 0.1 — права, область, параметры и схемы переделаны."
+  - pointer: "/paths/~1api~1v1~1public~1client~1{clientToken}~1estimates~1{version}~1approve"
+    kind: add
+    source: "W6.00; repair.md §2.1–§2.4, §3; design/docs/19-construction.md; эталон «Ремонт и стройка.dc.html», «Ортус CRM.dc.html» (design-2026-10-19); Q-W4.00-repair-1…24"
+    reason: "операции тега Repairs этапа 6 (repair.md §2.2); у операций 0.1 — права, область, параметры и схемы переделаны."
+  - pointer: "/paths/~1api~1v1~1public~1client~1{clientToken}~1documents~1{documentId}~1sign"
+    kind: add
+    source: "W6.00; repair.md §2.1–§2.4, §3; design/docs/19-construction.md; эталон «Ремонт и стройка.dc.html», «Ортус CRM.dc.html» (design-2026-10-19); Q-W4.00-repair-1…24"
+    reason: "операции тега Repairs этапа 6 (repair.md §2.2); у операций 0.1 — права, область, параметры и схемы переделаны."
+  - pointer: "/components/parameters/EstimateDiffTo"
+    kind: add
+    source: "W6.00; repair.md §2.1–§2.4, §3; design/docs/19-construction.md; эталон «Ремонт и стройка.dc.html», «Ортус CRM.dc.html» (design-2026-10-19); Q-W4.00-repair-1…24"
+    reason: "параметры «Ремонта и стройки» (объект, отметка, допработа, версия сметы, справочник, шаблон, этап, документ, заявка, закупка, подрядчик, ссылка кабинета; фильтры)."
+  - pointer: "/components/parameters/PriceKindFilter"
+    kind: add
+    source: "W6.00; repair.md §2.1–§2.4, §3; design/docs/19-construction.md; эталон «Ремонт и стройка.dc.html», «Ортус CRM.dc.html» (design-2026-10-19); Q-W4.00-repair-1…24"
+    reason: "параметры «Ремонта и стройки» (объект, отметка, допработа, версия сметы, справочник, шаблон, этап, документ, заявка, закупка, подрядчик, ссылка кабинета; фильтры)."
+  - pointer: "/components/parameters/RepairFilter"
+    kind: add
+    source: "W6.00; repair.md §2.1–§2.4, §3; design/docs/19-construction.md; эталон «Ремонт и стройка.dc.html», «Ортус CRM.dc.html» (design-2026-10-19); Q-W4.00-repair-1…24"
+    reason: "параметры «Ремонта и стройки» (объект, отметка, допработа, версия сметы, справочник, шаблон, этап, документ, заявка, закупка, подрядчик, ссылка кабинета; фильтры)."
+  - pointer: "/components/parameters/RepairProjectFilter"
+    kind: add
+    source: "W6.00; repair.md §2.1–§2.4, §3; design/docs/19-construction.md; эталон «Ремонт и стройка.dc.html», «Ортус CRM.dc.html» (design-2026-10-19); Q-W4.00-repair-1…24"
+    reason: "параметры «Ремонта и стройки» (объект, отметка, допработа, версия сметы, справочник, шаблон, этап, документ, заявка, закупка, подрядчик, ссылка кабинета; фильтры)."
+  - pointer: "/components/parameters/RepairQuery"
+    kind: add
+    source: "W6.00; repair.md §2.1–§2.4, §3; design/docs/19-construction.md; эталон «Ремонт и стройка.dc.html», «Ортус CRM.dc.html» (design-2026-10-19); Q-W4.00-repair-1…24"
+    reason: "параметры «Ремонта и стройки» (объект, отметка, допработа, версия сметы, справочник, шаблон, этап, документ, заявка, закупка, подрядчик, ссылка кабинета; фильтры)."
+  - pointer: "/components/parameters/SupplyStateFilter"
+    kind: add
+    source: "W6.00; repair.md §2.1–§2.4, §3; design/docs/19-construction.md; эталон «Ремонт и стройка.dc.html», «Ортус CRM.dc.html» (design-2026-10-19); Q-W4.00-repair-1…24"
+    reason: "параметры «Ремонта и стройки» (объект, отметка, допработа, версия сметы, справочник, шаблон, этап, документ, заявка, закупка, подрядчик, ссылка кабинета; фильтры)."
+  - pointer: "/components/parameters/WorkLogStatusFilter"
+    kind: add
+    source: "W6.00; repair.md §2.1–§2.4, §3; design/docs/19-construction.md; эталон «Ремонт и стройка.dc.html», «Ортус CRM.dc.html» (design-2026-10-19); Q-W4.00-repair-1…24"
+    reason: "параметры «Ремонта и стройки» (объект, отметка, допработа, версия сметы, справочник, шаблон, этап, документ, заявка, закупка, подрядчик, ссылка кабинета; фильтры)."
+  - pointer: "/components/parameters/changeOrderId"
+    kind: add
+    source: "W6.00; repair.md §2.1–§2.4, §3; design/docs/19-construction.md; эталон «Ремонт и стройка.dc.html», «Ортус CRM.dc.html» (design-2026-10-19); Q-W4.00-repair-1…24"
+    reason: "параметры «Ремонта и стройки» (объект, отметка, допработа, версия сметы, справочник, шаблон, этап, документ, заявка, закупка, подрядчик, ссылка кабинета; фильтры)."
+  - pointer: "/components/parameters/clientToken"
+    kind: add
+    source: "W6.00; repair.md §2.1–§2.4, §3; design/docs/19-construction.md; эталон «Ремонт и стройка.dc.html», «Ортус CRM.dc.html» (design-2026-10-19); Q-W4.00-repair-1…24"
+    reason: "параметры «Ремонта и стройки» (объект, отметка, допработа, версия сметы, справочник, шаблон, этап, документ, заявка, закупка, подрядчик, ссылка кабинета; фильтры)."
+  - pointer: "/components/parameters/documentId"
+    kind: add
+    source: "W6.00; repair.md §2.1–§2.4, §3; design/docs/19-construction.md; эталон «Ремонт и стройка.dc.html», «Ортус CRM.dc.html» (design-2026-10-19); Q-W4.00-repair-1…24"
+    reason: "параметры «Ремонта и стройки» (объект, отметка, допработа, версия сметы, справочник, шаблон, этап, документ, заявка, закупка, подрядчик, ссылка кабинета; фильтры)."
+  - pointer: "/components/parameters/estimateVersion"
+    kind: add
+    source: "W6.00; repair.md §2.1–§2.4, §3; design/docs/19-construction.md; эталон «Ремонт и стройка.dc.html», «Ортус CRM.dc.html» (design-2026-10-19); Q-W4.00-repair-1…24"
+    reason: "параметры «Ремонта и стройки» (объект, отметка, допработа, версия сметы, справочник, шаблон, этап, документ, заявка, закупка, подрядчик, ссылка кабинета; фильтры)."
+  - pointer: "/components/parameters/priceItemId"
+    kind: add
+    source: "W6.00; repair.md §2.1–§2.4, §3; design/docs/19-construction.md; эталон «Ремонт и стройка.dc.html», «Ортус CRM.dc.html» (design-2026-10-19); Q-W4.00-repair-1…24"
+    reason: "параметры «Ремонта и стройки» (объект, отметка, допработа, версия сметы, справочник, шаблон, этап, документ, заявка, закупка, подрядчик, ссылка кабинета; фильтры)."
+  - pointer: "/components/parameters/purchaseId"
+    kind: add
+    source: "W6.00; repair.md §2.1–§2.4, §3; design/docs/19-construction.md; эталон «Ремонт и стройка.dc.html», «Ортус CRM.dc.html» (design-2026-10-19); Q-W4.00-repair-1…24"
+    reason: "параметры «Ремонта и стройки» (объект, отметка, допработа, версия сметы, справочник, шаблон, этап, документ, заявка, закупка, подрядчик, ссылка кабинета; фильтры)."
+  - pointer: "/components/parameters/repairProjectId"
+    kind: add
+    source: "W6.00; repair.md §2.1–§2.4, §3; design/docs/19-construction.md; эталон «Ремонт и стройка.dc.html», «Ортус CRM.dc.html» (design-2026-10-19); Q-W4.00-repair-1…24"
+    reason: "параметры «Ремонта и стройки» (объект, отметка, допработа, версия сметы, справочник, шаблон, этап, документ, заявка, закупка, подрядчик, ссылка кабинета; фильтры)."
+  - pointer: "/components/parameters/stageId"
+    kind: add
+    source: "W6.00; repair.md §2.1–§2.4, §3; design/docs/19-construction.md; эталон «Ремонт и стройка.dc.html», «Ортус CRM.dc.html» (design-2026-10-19); Q-W4.00-repair-1…24"
+    reason: "параметры «Ремонта и стройки» (объект, отметка, допработа, версия сметы, справочник, шаблон, этап, документ, заявка, закупка, подрядчик, ссылка кабинета; фильтры)."
+  - pointer: "/components/parameters/subcontractorId"
+    kind: add
+    source: "W6.00; repair.md §2.1–§2.4, §3; design/docs/19-construction.md; эталон «Ремонт и стройка.dc.html», «Ортус CRM.dc.html» (design-2026-10-19); Q-W4.00-repair-1…24"
+    reason: "параметры «Ремонта и стройки» (объект, отметка, допработа, версия сметы, справочник, шаблон, этап, документ, заявка, закупка, подрядчик, ссылка кабинета; фильтры)."
+  - pointer: "/components/parameters/supplyRequestId"
+    kind: add
+    source: "W6.00; repair.md §2.1–§2.4, §3; design/docs/19-construction.md; эталон «Ремонт и стройка.dc.html», «Ортус CRM.dc.html» (design-2026-10-19); Q-W4.00-repair-1…24"
+    reason: "параметры «Ремонта и стройки» (объект, отметка, допработа, версия сметы, справочник, шаблон, этап, документ, заявка, закупка, подрядчик, ссылка кабинета; фильтры)."
+  - pointer: "/components/parameters/templateId"
+    kind: add
+    source: "W6.00; repair.md §2.1–§2.4, §3; design/docs/19-construction.md; эталон «Ремонт и стройка.dc.html», «Ортус CRM.dc.html» (design-2026-10-19); Q-W4.00-repair-1…24"
+    reason: "параметры «Ремонта и стройки» (объект, отметка, допработа, версия сметы, справочник, шаблон, этап, документ, заявка, закупка, подрядчик, ссылка кабинета; фильтры)."
+  - pointer: "/components/parameters/workLogId"
+    kind: add
+    source: "W6.00; repair.md §2.1–§2.4, §3; design/docs/19-construction.md; эталон «Ремонт и стройка.dc.html», «Ортус CRM.dc.html» (design-2026-10-19); Q-W4.00-repair-1…24"
+    reason: "параметры «Ремонта и стройки» (объект, отметка, допработа, версия сметы, справочник, шаблон, этап, документ, заявка, закупка, подрядчик, ссылка кабинета; фильтры)."
+  - pointer: "/components/schemas/RepairProject"
+    kind: change
+    source: "W6.00; repair.md §2.1–§2.4, §3; design/docs/19-construction.md; эталон «Ремонт и стройка.dc.html», «Ортус CRM.dc.html» (design-2026-10-19); Q-W4.00-repair-1…24"
+    reason: "схема «Ремонта и стройки» (repair.md §2.1); у схем 0.1 — необязательные прораб и сумма, отметка по работе и объёму, единицы прототипа."
+  - pointer: "/components/schemas/RepairProjectCreate"
+    kind: change
+    source: "W6.00; repair.md §2.1–§2.4, §3; design/docs/19-construction.md; эталон «Ремонт и стройка.dc.html», «Ортус CRM.dc.html» (design-2026-10-19); Q-W4.00-repair-1…24"
+    reason: "схема «Ремонта и стройки» (repair.md §2.1); у схем 0.1 — необязательные прораб и сумма, отметка по работе и объёму, единицы прототипа."
+  - pointer: "/components/schemas/RepairProjectPage"
+    kind: change
+    source: "W6.00; repair.md §2.1–§2.4, §3; design/docs/19-construction.md; эталон «Ремонт и стройка.dc.html», «Ортус CRM.dc.html» (design-2026-10-19); Q-W4.00-repair-1…24"
+    reason: "схема «Ремонта и стройки» (repair.md §2.1); у схем 0.1 — необязательные прораб и сумма, отметка по работе и объёму, единицы прототипа."
+  - pointer: "/components/schemas/WorkLogLine"
+    kind: change
+    source: "W6.00; repair.md §2.1–§2.4, §3; design/docs/19-construction.md; эталон «Ремонт и стройка.dc.html», «Ортус CRM.dc.html» (design-2026-10-19); Q-W4.00-repair-1…24"
+    reason: "схема «Ремонта и стройки» (repair.md §2.1); у схем 0.1 — необязательные прораб и сумма, отметка по работе и объёму, единицы прототипа."
+  - pointer: "/components/schemas/WorkLogCreate"
+    kind: change
+    source: "W6.00; repair.md §2.1–§2.4, §3; design/docs/19-construction.md; эталон «Ремонт и стройка.dc.html», «Ортус CRM.dc.html» (design-2026-10-19); Q-W4.00-repair-1…24"
+    reason: "схема «Ремонта и стройки» (repair.md §2.1); у схем 0.1 — необязательные прораб и сумма, отметка по работе и объёму, единицы прототипа."
+  - pointer: "/components/schemas/WorkLog"
+    kind: change
+    source: "W6.00; repair.md §2.1–§2.4, §3; design/docs/19-construction.md; эталон «Ремонт и стройка.dc.html», «Ортус CRM.dc.html» (design-2026-10-19); Q-W4.00-repair-1…24"
+    reason: "схема «Ремонта и стройки» (repair.md §2.1); у схем 0.1 — необязательные прораб и сумма, отметка по работе и объёму, единицы прототипа."
+  - pointer: "/components/schemas/WorkLogPage"
+    kind: change
+    source: "W6.00; repair.md §2.1–§2.4, §3; design/docs/19-construction.md; эталон «Ремонт и стройка.dc.html», «Ортус CRM.dc.html» (design-2026-10-19); Q-W4.00-repair-1…24"
+    reason: "схема «Ремонта и стройки» (repair.md §2.1); у схем 0.1 — необязательные прораб и сумма, отметка по работе и объёму, единицы прототипа."
+  - pointer: "/components/schemas/ChangeOrder"
+    kind: add
+    source: "W6.00; repair.md §2.1–§2.4, §3; design/docs/19-construction.md; эталон «Ремонт и стройка.dc.html», «Ортус CRM.dc.html» (design-2026-10-19); Q-W4.00-repair-1…24"
+    reason: "схема «Ремонта и стройки» (repair.md §2.1); у схем 0.1 — необязательные прораб и сумма, отметка по работе и объёму, единицы прототипа."
+  - pointer: "/components/schemas/ChangeOrderCreate"
+    kind: add
+    source: "W6.00; repair.md §2.1–§2.4, §3; design/docs/19-construction.md; эталон «Ремонт и стройка.dc.html», «Ортус CRM.dc.html» (design-2026-10-19); Q-W4.00-repair-1…24"
+    reason: "схема «Ремонта и стройки» (repair.md §2.1); у схем 0.1 — необязательные прораб и сумма, отметка по работе и объёму, единицы прототипа."
+  - pointer: "/components/schemas/ChangeOrderList"
+    kind: add
+    source: "W6.00; repair.md §2.1–§2.4, §3; design/docs/19-construction.md; эталон «Ремонт и стройка.dc.html», «Ортус CRM.dc.html» (design-2026-10-19); Q-W4.00-repair-1…24"
+    reason: "схема «Ремонта и стройки» (repair.md §2.1); у схем 0.1 — необязательные прораб и сумма, отметка по работе и объёму, единицы прототипа."
+  - pointer: "/components/schemas/ChangeOrderReject"
+    kind: add
+    source: "W6.00; repair.md §2.1–§2.4, §3; design/docs/19-construction.md; эталон «Ремонт и стройка.dc.html», «Ортус CRM.dc.html» (design-2026-10-19); Q-W4.00-repair-1…24"
+    reason: "схема «Ремонта и стройки» (repair.md §2.1); у схем 0.1 — необязательные прораб и сумма, отметка по работе и объёму, единицы прототипа."
+  - pointer: "/components/schemas/ClientCabinet"
+    kind: add
+    source: "W6.00; repair.md §2.1–§2.4, §3; design/docs/19-construction.md; эталон «Ремонт и стройка.dc.html», «Ортус CRM.dc.html» (design-2026-10-19); Q-W4.00-repair-1…24"
+    reason: "схема «Ремонта и стройки» (repair.md §2.1); у схем 0.1 — необязательные прораб и сумма, отметка по работе и объёму, единицы прототипа."
+  - pointer: "/components/schemas/ClientEstimateApproval"
+    kind: add
+    source: "W6.00; repair.md §2.1–§2.4, §3; design/docs/19-construction.md; эталон «Ремонт и стройка.dc.html», «Ортус CRM.dc.html» (design-2026-10-19); Q-W4.00-repair-1…24"
+    reason: "схема «Ремонта и стройки» (repair.md §2.1); у схем 0.1 — необязательные прораб и сумма, отметка по работе и объёму, единицы прототипа."
+  - pointer: "/components/schemas/ClientLink"
+    kind: add
+    source: "W6.00; repair.md §2.1–§2.4, §3; design/docs/19-construction.md; эталон «Ремонт и стройка.dc.html», «Ортус CRM.dc.html» (design-2026-10-19); Q-W4.00-repair-1…24"
+    reason: "схема «Ремонта и стройки» (repair.md §2.1); у схем 0.1 — необязательные прораб и сумма, отметка по работе и объёму, единицы прототипа."
+  - pointer: "/components/schemas/ClientLinkIssued"
+    kind: add
+    source: "W6.00; repair.md §2.1–§2.4, §3; design/docs/19-construction.md; эталон «Ремонт и стройка.dc.html», «Ортус CRM.dc.html» (design-2026-10-19); Q-W4.00-repair-1…24"
+    reason: "схема «Ремонта и стройки» (repair.md §2.1); у схем 0.1 — необязательные прораб и сумма, отметка по работе и объёму, единицы прототипа."
+  - pointer: "/components/schemas/ClientSign"
+    kind: add
+    source: "W6.00; repair.md §2.1–§2.4, §3; design/docs/19-construction.md; эталон «Ремонт и стройка.dc.html», «Ортус CRM.dc.html» (design-2026-10-19); Q-W4.00-repair-1…24"
+    reason: "схема «Ремонта и стройки» (repair.md §2.1); у схем 0.1 — необязательные прораб и сумма, отметка по работе и объёму, единицы прототипа."
+  - pointer: "/components/schemas/CrewAccrual"
+    kind: add
+    source: "W6.00; repair.md §2.1–§2.4, §3; design/docs/19-construction.md; эталон «Ремонт и стройка.dc.html», «Ортус CRM.dc.html» (design-2026-10-19); Q-W4.00-repair-1…24"
+    reason: "схема «Ремонта и стройки» (repair.md §2.1); у схем 0.1 — необязательные прораб и сумма, отметка по работе и объёму, единицы прототипа."
+  - pointer: "/components/schemas/CrewAccrualList"
+    kind: add
+    source: "W6.00; repair.md §2.1–§2.4, §3; design/docs/19-construction.md; эталон «Ремонт и стройка.dc.html», «Ортус CRM.dc.html» (design-2026-10-19); Q-W4.00-repair-1…24"
+    reason: "схема «Ремонта и стройки» (repair.md §2.1); у схем 0.1 — необязательные прораб и сумма, отметка по работе и объёму, единицы прототипа."
+  - pointer: "/components/schemas/Estimate"
+    kind: add
+    source: "W6.00; repair.md §2.1–§2.4, §3; design/docs/19-construction.md; эталон «Ремонт и стройка.dc.html», «Ортус CRM.dc.html» (design-2026-10-19); Q-W4.00-repair-1…24"
+    reason: "схема «Ремонта и стройки» (repair.md §2.1); у схем 0.1 — необязательные прораб и сумма, отметка по работе и объёму, единицы прототипа."
+  - pointer: "/components/schemas/EstimateDiff"
+    kind: add
+    source: "W6.00; repair.md §2.1–§2.4, §3; design/docs/19-construction.md; эталон «Ремонт и стройка.dc.html», «Ортус CRM.dc.html» (design-2026-10-19); Q-W4.00-repair-1…24"
+    reason: "схема «Ремонта и стройки» (repair.md §2.1); у схем 0.1 — необязательные прораб и сумма, отметка по работе и объёму, единицы прототипа."
+  - pointer: "/components/schemas/EstimateDiffRow"
+    kind: add
+    source: "W6.00; repair.md §2.1–§2.4, §3; design/docs/19-construction.md; эталон «Ремонт и стройка.dc.html», «Ортус CRM.dc.html» (design-2026-10-19); Q-W4.00-repair-1…24"
+    reason: "схема «Ремонта и стройки» (repair.md §2.1); у схем 0.1 — необязательные прораб и сумма, отметка по работе и объёму, единицы прототипа."
+  - pointer: "/components/schemas/EstimateDraftPatch"
+    kind: add
+    source: "W6.00; repair.md §2.1–§2.4, §3; design/docs/19-construction.md; эталон «Ремонт и стройка.dc.html», «Ортус CRM.dc.html» (design-2026-10-19); Q-W4.00-repair-1…24"
+    reason: "схема «Ремонта и стройки» (repair.md §2.1); у схем 0.1 — необязательные прораб и сумма, отметка по работе и объёму, единицы прототипа."
+  - pointer: "/components/schemas/EstimateFromTemplate"
+    kind: add
+    source: "W6.00; repair.md §2.1–§2.4, §3; design/docs/19-construction.md; эталон «Ремонт и стройка.dc.html», «Ортус CRM.dc.html» (design-2026-10-19); Q-W4.00-repair-1…24"
+    reason: "схема «Ремонта и стройки» (repair.md §2.1); у схем 0.1 — необязательные прораб и сумма, отметка по работе и объёму, единицы прототипа."
+  - pointer: "/components/schemas/EstimateLine"
+    kind: add
+    source: "W6.00; repair.md §2.1–§2.4, §3; design/docs/19-construction.md; эталон «Ремонт и стройка.dc.html», «Ортус CRM.dc.html» (design-2026-10-19); Q-W4.00-repair-1…24"
+    reason: "схема «Ремонта и стройки» (repair.md §2.1); у схем 0.1 — необязательные прораб и сумма, отметка по работе и объёму, единицы прототипа."
+  - pointer: "/components/schemas/EstimateLineAdd"
+    kind: add
+    source: "W6.00; repair.md §2.1–§2.4, §3; design/docs/19-construction.md; эталон «Ремонт и стройка.dc.html», «Ортус CRM.dc.html» (design-2026-10-19); Q-W4.00-repair-1…24"
+    reason: "схема «Ремонта и стройки» (repair.md §2.1); у схем 0.1 — необязательные прораб и сумма, отметка по работе и объёму, единицы прототипа."
+  - pointer: "/components/schemas/EstimateLinePatch"
+    kind: add
+    source: "W6.00; repair.md §2.1–§2.4, §3; design/docs/19-construction.md; эталон «Ремонт и стройка.dc.html», «Ортус CRM.dc.html» (design-2026-10-19); Q-W4.00-repair-1…24"
+    reason: "схема «Ремонта и стройки» (repair.md §2.1); у схем 0.1 — необязательные прораб и сумма, отметка по работе и объёму, единицы прототипа."
+  - pointer: "/components/schemas/EstimateList"
+    kind: add
+    source: "W6.00; repair.md §2.1–§2.4, §3; design/docs/19-construction.md; эталон «Ремонт и стройка.dc.html», «Ортус CRM.dc.html» (design-2026-10-19); Q-W4.00-repair-1…24"
+    reason: "схема «Ремонта и стройки» (repair.md §2.1); у схем 0.1 — необязательные прораб и сумма, отметка по работе и объёму, единицы прототипа."
+  - pointer: "/components/schemas/EstimateRevisionCreate"
+    kind: add
+    source: "W6.00; repair.md §2.1–§2.4, §3; design/docs/19-construction.md; эталон «Ремонт и стройка.dc.html», «Ортус CRM.dc.html» (design-2026-10-19); Q-W4.00-repair-1…24"
+    reason: "схема «Ремонта и стройки» (repair.md §2.1); у схем 0.1 — необязательные прораб и сумма, отметка по работе и объёму, единицы прототипа."
+  - pointer: "/components/schemas/EstimateSection"
+    kind: add
+    source: "W6.00; repair.md §2.1–§2.4, §3; design/docs/19-construction.md; эталон «Ремонт и стройка.dc.html», «Ортус CRM.dc.html» (design-2026-10-19); Q-W4.00-repair-1…24"
+    reason: "схема «Ремонта и стройки» (repair.md §2.1); у схем 0.1 — необязательные прораб и сумма, отметка по работе и объёму, единицы прототипа."
+  - pointer: "/components/schemas/Measurement"
+    kind: add
+    source: "W6.00; repair.md §2.1–§2.4, §3; design/docs/19-construction.md; эталон «Ремонт и стройка.dc.html», «Ортус CRM.dc.html» (design-2026-10-19); Q-W4.00-repair-1…24"
+    reason: "схема «Ремонта и стройки» (repair.md §2.1); у схем 0.1 — необязательные прораб и сумма, отметка по работе и объёму, единицы прототипа."
+  - pointer: "/components/schemas/MeasurementPut"
+    kind: add
+    source: "W6.00; repair.md §2.1–§2.4, §3; design/docs/19-construction.md; эталон «Ремонт и стройка.dc.html», «Ортус CRM.dc.html» (design-2026-10-19); Q-W4.00-repair-1…24"
+    reason: "схема «Ремонта и стройки» (repair.md §2.1); у схем 0.1 — необязательные прораб и сумма, отметка по работе и объёму, единицы прототипа."
+  - pointer: "/components/schemas/MeasurementRoom"
+    kind: add
+    source: "W6.00; repair.md §2.1–§2.4, §3; design/docs/19-construction.md; эталон «Ремонт и стройка.dc.html», «Ортус CRM.dc.html» (design-2026-10-19); Q-W4.00-repair-1…24"
+    reason: "схема «Ремонта и стройки» (repair.md §2.1); у схем 0.1 — необязательные прораб и сумма, отметка по работе и объёму, единицы прототипа."
+  - pointer: "/components/schemas/MeasurementRoomInput"
+    kind: add
+    source: "W6.00; repair.md §2.1–§2.4, §3; design/docs/19-construction.md; эталон «Ремонт и стройка.dc.html», «Ортус CRM.dc.html» (design-2026-10-19); Q-W4.00-repair-1…24"
+    reason: "схема «Ремонта и стройки» (repair.md §2.1); у схем 0.1 — необязательные прораб и сумма, отметка по работе и объёму, единицы прототипа."
+  - pointer: "/components/schemas/MeasurementTotals"
+    kind: add
+    source: "W6.00; repair.md §2.1–§2.4, §3; design/docs/19-construction.md; эталон «Ремонт и стройка.dc.html», «Ортус CRM.dc.html» (design-2026-10-19); Q-W4.00-repair-1…24"
+    reason: "схема «Ремонта и стройки» (repair.md §2.1); у схем 0.1 — необязательные прораб и сумма, отметка по работе и объёму, единицы прототипа."
+  - pointer: "/components/schemas/PayoutRequest"
+    kind: add
+    source: "W6.00; repair.md §2.1–§2.4, §3; design/docs/19-construction.md; эталон «Ремонт и стройка.dc.html», «Ортус CRM.dc.html» (design-2026-10-19); Q-W4.00-repair-1…24"
+    reason: "схема «Ремонта и стройки» (repair.md §2.1); у схем 0.1 — необязательные прораб и сумма, отметка по работе и объёму, единицы прототипа."
+  - pointer: "/components/schemas/PayoutResult"
+    kind: add
+    source: "W6.00; repair.md §2.1–§2.4, §3; design/docs/19-construction.md; эталон «Ремонт и стройка.dc.html», «Ортус CRM.dc.html» (design-2026-10-19); Q-W4.00-repair-1…24"
+    reason: "схема «Ремонта и стройки» (repair.md §2.1); у схем 0.1 — необязательные прораб и сумма, отметка по работе и объёму, единицы прототипа."
+  - pointer: "/components/schemas/PriceItem"
+    kind: add
+    source: "W6.00; repair.md §2.1–§2.4, §3; design/docs/19-construction.md; эталон «Ремонт и стройка.dc.html», «Ортус CRM.dc.html» (design-2026-10-19); Q-W4.00-repair-1…24"
+    reason: "схема «Ремонта и стройки» (repair.md §2.1); у схем 0.1 — необязательные прораб и сумма, отметка по работе и объёму, единицы прототипа."
+  - pointer: "/components/schemas/PriceItemCreate"
+    kind: add
+    source: "W6.00; repair.md §2.1–§2.4, §3; design/docs/19-construction.md; эталон «Ремонт и стройка.dc.html», «Ортус CRM.dc.html» (design-2026-10-19); Q-W4.00-repair-1…24"
+    reason: "схема «Ремонта и стройки» (repair.md §2.1); у схем 0.1 — необязательные прораб и сумма, отметка по работе и объёму, единицы прототипа."
+  - pointer: "/components/schemas/PriceItemPage"
+    kind: add
+    source: "W6.00; repair.md §2.1–§2.4, §3; design/docs/19-construction.md; эталон «Ремонт и стройка.dc.html», «Ортус CRM.dc.html» (design-2026-10-19); Q-W4.00-repair-1…24"
+    reason: "схема «Ремонта и стройки» (repair.md §2.1); у схем 0.1 — необязательные прораб и сумма, отметка по работе и объёму, единицы прототипа."
+  - pointer: "/components/schemas/PriceItemPatch"
+    kind: add
+    source: "W6.00; repair.md §2.1–§2.4, §3; design/docs/19-construction.md; эталон «Ремонт и стройка.dc.html», «Ортус CRM.dc.html» (design-2026-10-19); Q-W4.00-repair-1…24"
+    reason: "схема «Ремонта и стройки» (repair.md §2.1); у схем 0.1 — необязательные прораб и сумма, отметка по работе и объёму, единицы прототипа."
+  - pointer: "/components/schemas/ProjectFinance"
+    kind: add
+    source: "W6.00; repair.md §2.1–§2.4, §3; design/docs/19-construction.md; эталон «Ремонт и стройка.dc.html», «Ортус CRM.dc.html» (design-2026-10-19); Q-W4.00-repair-1…24"
+    reason: "схема «Ремонта и стройки» (repair.md §2.1); у схем 0.1 — необязательные прораб и сумма, отметка по работе и объёму, единицы прототипа."
+  - pointer: "/components/schemas/ProjectStockItem"
+    kind: add
+    source: "W6.00; repair.md §2.1–§2.4, §3; design/docs/19-construction.md; эталон «Ремонт и стройка.dc.html», «Ортус CRM.dc.html» (design-2026-10-19); Q-W4.00-repair-1…24"
+    reason: "схема «Ремонта и стройки» (repair.md §2.1); у схем 0.1 — необязательные прораб и сумма, отметка по работе и объёму, единицы прототипа."
+  - pointer: "/components/schemas/ProjectStockList"
+    kind: add
+    source: "W6.00; repair.md §2.1–§2.4, §3; design/docs/19-construction.md; эталон «Ремонт и стройка.dc.html», «Ортус CRM.dc.html» (design-2026-10-19); Q-W4.00-repair-1…24"
+    reason: "схема «Ремонта и стройки» (repair.md §2.1); у схем 0.1 — необязательные прораб и сумма, отметка по работе и объёму, единицы прототипа."
+  - pointer: "/components/schemas/Purchase"
+    kind: add
+    source: "W6.00; repair.md §2.1–§2.4, §3; design/docs/19-construction.md; эталон «Ремонт и стройка.dc.html», «Ортус CRM.dc.html» (design-2026-10-19); Q-W4.00-repair-1…24"
+    reason: "схема «Ремонта и стройки» (repair.md §2.1); у схем 0.1 — необязательные прораб и сумма, отметка по работе и объёму, единицы прототипа."
+  - pointer: "/components/schemas/PurchaseCreate"
+    kind: add
+    source: "W6.00; repair.md §2.1–§2.4, §3; design/docs/19-construction.md; эталон «Ремонт и стройка.dc.html», «Ортус CRM.dc.html» (design-2026-10-19); Q-W4.00-repair-1…24"
+    reason: "схема «Ремонта и стройки» (repair.md §2.1); у схем 0.1 — необязательные прораб и сумма, отметка по работе и объёму, единицы прототипа."
+  - pointer: "/components/schemas/PurchaseLine"
+    kind: add
+    source: "W6.00; repair.md §2.1–§2.4, §3; design/docs/19-construction.md; эталон «Ремонт и стройка.dc.html», «Ортус CRM.dc.html» (design-2026-10-19); Q-W4.00-repair-1…24"
+    reason: "схема «Ремонта и стройки» (repair.md §2.1); у схем 0.1 — необязательные прораб и сумма, отметка по работе и объёму, единицы прототипа."
+  - pointer: "/components/schemas/PurchaseLineInput"
+    kind: add
+    source: "W6.00; repair.md §2.1–§2.4, §3; design/docs/19-construction.md; эталон «Ремонт и стройка.dc.html», «Ортус CRM.dc.html» (design-2026-10-19); Q-W4.00-repair-1…24"
+    reason: "схема «Ремонта и стройки» (repair.md §2.1); у схем 0.1 — необязательные прораб и сумма, отметка по работе и объёму, единицы прототипа."
+  - pointer: "/components/schemas/PurchasePage"
+    kind: add
+    source: "W6.00; repair.md §2.1–§2.4, §3; design/docs/19-construction.md; эталон «Ремонт и стройка.dc.html», «Ортус CRM.dc.html» (design-2026-10-19); Q-W4.00-repair-1…24"
+    reason: "схема «Ремонта и стройки» (repair.md §2.1); у схем 0.1 — необязательные прораб и сумма, отметка по работе и объёму, единицы прототипа."
+  - pointer: "/components/schemas/PurchaseReceive"
+    kind: add
+    source: "W6.00; repair.md §2.1–§2.4, §3; design/docs/19-construction.md; эталон «Ремонт и стройка.dc.html», «Ортус CRM.dc.html» (design-2026-10-19); Q-W4.00-repair-1…24"
+    reason: "схема «Ремонта и стройки» (repair.md §2.1); у схем 0.1 — необязательные прораб и сумма, отметка по работе и объёму, единицы прототипа."
+  - pointer: "/components/schemas/RepairAccessItem"
+    kind: add
+    source: "W6.00; repair.md §2.1–§2.4, §3; design/docs/19-construction.md; эталон «Ремонт и стройка.dc.html», «Ортус CRM.dc.html» (design-2026-10-19); Q-W4.00-repair-1…24"
+    reason: "схема «Ремонта и стройки» (repair.md §2.1); у схем 0.1 — необязательные прораб и сумма, отметка по работе и объёму, единицы прототипа."
+  - pointer: "/components/schemas/RepairDecision"
+    kind: add
+    source: "W6.00; repair.md §2.1–§2.4, §3; design/docs/19-construction.md; эталон «Ремонт и стройка.dc.html», «Ортус CRM.dc.html» (design-2026-10-19); Q-W4.00-repair-1…24"
+    reason: "схема «Ремонта и стройки» (repair.md §2.1); у схем 0.1 — необязательные прораб и сумма, отметка по работе и объёму, единицы прототипа."
+  - pointer: "/components/schemas/RepairDocument"
+    kind: add
+    source: "W6.00; repair.md §2.1–§2.4, §3; design/docs/19-construction.md; эталон «Ремонт и стройка.dc.html», «Ортус CRM.dc.html» (design-2026-10-19); Q-W4.00-repair-1…24"
+    reason: "схема «Ремонта и стройки» (repair.md §2.1); у схем 0.1 — необязательные прораб и сумма, отметка по работе и объёму, единицы прототипа."
+  - pointer: "/components/schemas/RepairDocumentList"
+    kind: add
+    source: "W6.00; repair.md §2.1–§2.4, §3; design/docs/19-construction.md; эталон «Ремонт и стройка.dc.html», «Ортус CRM.dc.html» (design-2026-10-19); Q-W4.00-repair-1…24"
+    reason: "схема «Ремонта и стройки» (repair.md §2.1); у схем 0.1 — необязательные прораб и сумма, отметка по работе и объёму, единицы прототипа."
+  - pointer: "/components/schemas/RepairFeedItem"
+    kind: add
+    source: "W6.00; repair.md §2.1–§2.4, §3; design/docs/19-construction.md; эталон «Ремонт и стройка.dc.html», «Ортус CRM.dc.html» (design-2026-10-19); Q-W4.00-repair-1…24"
+    reason: "схема «Ремонта и стройки» (repair.md §2.1); у схем 0.1 — необязательные прораб и сумма, отметка по работе и объёму, единицы прототипа."
+  - pointer: "/components/schemas/RepairForemanAssign"
+    kind: add
+    source: "W6.00; repair.md §2.1–§2.4, §3; design/docs/19-construction.md; эталон «Ремонт и стройка.dc.html», «Ортус CRM.dc.html» (design-2026-10-19); Q-W4.00-repair-1…24"
+    reason: "схема «Ремонта и стройки» (repair.md §2.1); у схем 0.1 — необязательные прораб и сумма, отметка по работе и объёму, единицы прототипа."
+  - pointer: "/components/schemas/RepairHandOver"
+    kind: add
+    source: "W6.00; repair.md §2.1–§2.4, §3; design/docs/19-construction.md; эталон «Ремонт и стройка.dc.html», «Ортус CRM.dc.html» (design-2026-10-19); Q-W4.00-repair-1…24"
+    reason: "схема «Ремонта и стройки» (repair.md §2.1); у схем 0.1 — необязательные прораб и сумма, отметка по работе и объёму, единицы прототипа."
+  - pointer: "/components/schemas/RepairMoneyCard"
+    kind: add
+    source: "W6.00; repair.md §2.1–§2.4, §3; design/docs/19-construction.md; эталон «Ремонт и стройка.dc.html», «Ортус CRM.dc.html» (design-2026-10-19); Q-W4.00-repair-1…24"
+    reason: "схема «Ремонта и стройки» (repair.md §2.1); у схем 0.1 — необязательные прораб и сумма, отметка по работе и объёму, единицы прототипа."
+  - pointer: "/components/schemas/RepairMoneyDelta"
+    kind: add
+    source: "W6.00; repair.md §2.1–§2.4, §3; design/docs/19-construction.md; эталон «Ремонт и стройка.dc.html», «Ортус CRM.dc.html» (design-2026-10-19); Q-W4.00-repair-1…24"
+    reason: "схема «Ремонта и стройки» (repair.md §2.1); у схем 0.1 — необязательные прораб и сумма, отметка по работе и объёму, единицы прототипа."
+  - pointer: "/components/schemas/RepairPeople"
+    kind: add
+    source: "W6.00; repair.md §2.1–§2.4, §3; design/docs/19-construction.md; эталон «Ремонт и стройка.dc.html», «Ортус CRM.dc.html» (design-2026-10-19); Q-W4.00-repair-1…24"
+    reason: "схема «Ремонта и стройки» (repair.md §2.1); у схем 0.1 — необязательные прораб и сумма, отметка по работе и объёму, единицы прототипа."
+  - pointer: "/components/schemas/RepairPhoto"
+    kind: add
+    source: "W6.00; repair.md §2.1–§2.4, §3; design/docs/19-construction.md; эталон «Ремонт и стройка.dc.html», «Ортус CRM.dc.html» (design-2026-10-19); Q-W4.00-repair-1…24"
+    reason: "схема «Ремонта и стройки» (repair.md §2.1); у схем 0.1 — необязательные прораб и сумма, отметка по работе и объёму, единицы прототипа."
+  - pointer: "/components/schemas/RepairProjectOverview"
+    kind: add
+    source: "W6.00; repair.md §2.1–§2.4, §3; design/docs/19-construction.md; эталон «Ремонт и стройка.dc.html», «Ортус CRM.dc.html» (design-2026-10-19); Q-W4.00-repair-1…24"
+    reason: "схема «Ремонта и стройки» (repair.md §2.1); у схем 0.1 — необязательные прораб и сумма, отметка по работе и объёму, единицы прототипа."
+  - pointer: "/components/schemas/RepairProjectPatch"
+    kind: add
+    source: "W6.00; repair.md §2.1–§2.4, §3; design/docs/19-construction.md; эталон «Ремонт и стройка.dc.html», «Ортус CRM.dc.html» (design-2026-10-19); Q-W4.00-repair-1…24"
+    reason: "схема «Ремонта и стройки» (repair.md §2.1); у схем 0.1 — необязательные прораб и сумма, отметка по работе и объёму, единицы прототипа."
+  - pointer: "/components/schemas/RepairReadiness"
+    kind: add
+    source: "W6.00; repair.md §2.1–§2.4, §3; design/docs/19-construction.md; эталон «Ремонт и стройка.dc.html», «Ортус CRM.dc.html» (design-2026-10-19); Q-W4.00-repair-1…24"
+    reason: "схема «Ремонта и стройки» (repair.md §2.1); у схем 0.1 — необязательные прораб и сумма, отметка по работе и объёму, единицы прототипа."
+  - pointer: "/components/schemas/RepairSignRequestResult"
+    kind: add
+    source: "W6.00; repair.md §2.1–§2.4, §3; design/docs/19-construction.md; эталон «Ремонт и стройка.dc.html», «Ортус CRM.dc.html» (design-2026-10-19); Q-W4.00-repair-1…24"
+    reason: "схема «Ремонта и стройки» (repair.md §2.1); у схем 0.1 — необязательные прораб и сумма, отметка по работе и объёму, единицы прототипа."
+  - pointer: "/components/schemas/RepairUnit"
+    kind: add
+    source: "W6.00; repair.md §2.1–§2.4, §3; design/docs/19-construction.md; эталон «Ремонт и стройка.dc.html», «Ортус CRM.dc.html» (design-2026-10-19); Q-W4.00-repair-1…24"
+    reason: "схема «Ремонта и стройки» (repair.md §2.1); у схем 0.1 — необязательные прораб и сумма, отметка по работе и объёму, единицы прототипа."
+  - pointer: "/components/schemas/RepairWork"
+    kind: add
+    source: "W6.00; repair.md §2.1–§2.4, §3; design/docs/19-construction.md; эталон «Ремонт и стройка.dc.html», «Ортус CRM.dc.html» (design-2026-10-19); Q-W4.00-repair-1…24"
+    reason: "схема «Ремонта и стройки» (repair.md §2.1); у схем 0.1 — необязательные прораб и сумма, отметка по работе и объёму, единицы прототипа."
+  - pointer: "/components/schemas/RepairWorkList"
+    kind: add
+    source: "W6.00; repair.md §2.1–§2.4, §3; design/docs/19-construction.md; эталон «Ремонт и стройка.dc.html», «Ортус CRM.dc.html» (design-2026-10-19); Q-W4.00-repair-1…24"
+    reason: "схема «Ремонта и стройки» (repair.md §2.1); у схем 0.1 — необязательные прораб и сумма, отметка по работе и объёму, единицы прототипа."
+  - pointer: "/components/schemas/Schedule"
+    kind: add
+    source: "W6.00; repair.md §2.1–§2.4, §3; design/docs/19-construction.md; эталон «Ремонт и стройка.dc.html», «Ортус CRM.dc.html» (design-2026-10-19); Q-W4.00-repair-1…24"
+    reason: "схема «Ремонта и стройки» (repair.md §2.1); у схем 0.1 — необязательные прораб и сумма, отметка по работе и объёму, единицы прототипа."
+  - pointer: "/components/schemas/ScheduleBaseline"
+    kind: add
+    source: "W6.00; repair.md §2.1–§2.4, §3; design/docs/19-construction.md; эталон «Ремонт и стройка.dc.html», «Ортус CRM.dc.html» (design-2026-10-19); Q-W4.00-repair-1…24"
+    reason: "схема «Ремонта и стройки» (repair.md §2.1); у схем 0.1 — необязательные прораб и сумма, отметка по работе и объёму, единицы прототипа."
+  - pointer: "/components/schemas/ScheduleBaselineCreate"
+    kind: add
+    source: "W6.00; repair.md §2.1–§2.4, §3; design/docs/19-construction.md; эталон «Ремонт и стройка.dc.html», «Ортус CRM.dc.html» (design-2026-10-19); Q-W4.00-repair-1…24"
+    reason: "схема «Ремонта и стройки» (repair.md §2.1); у схем 0.1 — необязательные прораб и сумма, отметка по работе и объёму, единицы прототипа."
+  - pointer: "/components/schemas/ScheduleChangeApply"
+    kind: add
+    source: "W6.00; repair.md §2.1–§2.4, §3; design/docs/19-construction.md; эталон «Ремонт и стройка.dc.html», «Ортус CRM.dc.html» (design-2026-10-19); Q-W4.00-repair-1…24"
+    reason: "схема «Ремонта и стройки» (repair.md §2.1); у схем 0.1 — необязательные прораб и сумма, отметка по работе и объёму, единицы прототипа."
+  - pointer: "/components/schemas/ScheduleChangeEntry"
+    kind: add
+    source: "W6.00; repair.md §2.1–§2.4, §3; design/docs/19-construction.md; эталон «Ремонт и стройка.dc.html», «Ортус CRM.dc.html» (design-2026-10-19); Q-W4.00-repair-1…24"
+    reason: "схема «Ремонта и стройки» (repair.md §2.1); у схем 0.1 — необязательные прораб и сумма, отметка по работе и объёму, единицы прототипа."
+  - pointer: "/components/schemas/ScheduleFromEstimate"
+    kind: add
+    source: "W6.00; repair.md §2.1–§2.4, §3; design/docs/19-construction.md; эталон «Ремонт и стройка.dc.html», «Ортус CRM.dc.html» (design-2026-10-19); Q-W4.00-repair-1…24"
+    reason: "схема «Ремонта и стройки» (repair.md §2.1); у схем 0.1 — необязательные прораб и сумма, отметка по работе и объёму, единицы прототипа."
+  - pointer: "/components/schemas/ScheduleIssue"
+    kind: add
+    source: "W6.00; repair.md §2.1–§2.4, §3; design/docs/19-construction.md; эталон «Ремонт и стройка.dc.html», «Ортус CRM.dc.html» (design-2026-10-19); Q-W4.00-repair-1…24"
+    reason: "схема «Ремонта и стройки» (repair.md §2.1); у схем 0.1 — необязательные прораб и сумма, отметка по работе и объёму, единицы прототипа."
+  - pointer: "/components/schemas/ScheduleLink"
+    kind: add
+    source: "W6.00; repair.md §2.1–§2.4, §3; design/docs/19-construction.md; эталон «Ремонт и стройка.dc.html», «Ортус CRM.dc.html» (design-2026-10-19); Q-W4.00-repair-1…24"
+    reason: "схема «Ремонта и стройки» (repair.md §2.1); у схем 0.1 — необязательные прораб и сумма, отметка по работе и объёму, единицы прототипа."
+  - pointer: "/components/schemas/SchedulePreview"
+    kind: add
+    source: "W6.00; repair.md §2.1–§2.4, §3; design/docs/19-construction.md; эталон «Ремонт и стройка.dc.html», «Ортус CRM.dc.html» (design-2026-10-19); Q-W4.00-repair-1…24"
+    reason: "схема «Ремонта и стройки» (repair.md §2.1); у схем 0.1 — необязательные прораб и сумма, отметка по работе и объёму, единицы прототипа."
+  - pointer: "/components/schemas/SchedulePreviewRequest"
+    kind: add
+    source: "W6.00; repair.md §2.1–§2.4, §3; design/docs/19-construction.md; эталон «Ремонт и стройка.dc.html», «Ортус CRM.dc.html» (design-2026-10-19); Q-W4.00-repair-1…24"
+    reason: "схема «Ремонта и стройки» (repair.md §2.1); у схем 0.1 — необязательные прораб и сумма, отметка по работе и объёму, единицы прототипа."
+  - pointer: "/components/schemas/ScheduleStage"
+    kind: add
+    source: "W6.00; repair.md §2.1–§2.4, §3; design/docs/19-construction.md; эталон «Ремонт и стройка.dc.html», «Ортус CRM.dc.html» (design-2026-10-19); Q-W4.00-repair-1…24"
+    reason: "схема «Ремонта и стройки» (repair.md §2.1); у схем 0.1 — необязательные прораб и сумма, отметка по работе и объёму, единицы прототипа."
+  - pointer: "/components/schemas/ScheduleStageChange"
+    kind: add
+    source: "W6.00; repair.md §2.1–§2.4, §3; design/docs/19-construction.md; эталон «Ремонт и стройка.dc.html», «Ортус CRM.dc.html» (design-2026-10-19); Q-W4.00-repair-1…24"
+    reason: "схема «Ремонта и стройки» (repair.md §2.1); у схем 0.1 — необязательные прораб и сумма, отметка по работе и объёму, единицы прототипа."
+  - pointer: "/components/schemas/StageExecutorSet"
+    kind: add
+    source: "W6.00; repair.md §2.1–§2.4, §3; design/docs/19-construction.md; эталон «Ремонт и стройка.dc.html», «Ортус CRM.dc.html» (design-2026-10-19); Q-W4.00-repair-1…24"
+    reason: "схема «Ремонта и стройки» (repair.md §2.1); у схем 0.1 — необязательные прораб и сумма, отметка по работе и объёму, единицы прототипа."
+  - pointer: "/components/schemas/StockItemInput"
+    kind: add
+    source: "W6.00; repair.md §2.1–§2.4, §3; design/docs/19-construction.md; эталон «Ремонт и стройка.dc.html», «Ортус CRM.dc.html» (design-2026-10-19); Q-W4.00-repair-1…24"
+    reason: "схема «Ремонта и стройки» (repair.md §2.1); у схем 0.1 — необязательные прораб и сумма, отметка по работе и объёму, единицы прототипа."
+  - pointer: "/components/schemas/StockMoveResult"
+    kind: add
+    source: "W6.00; repair.md §2.1–§2.4, §3; design/docs/19-construction.md; эталон «Ремонт и стройка.dc.html», «Ортус CRM.dc.html» (design-2026-10-19); Q-W4.00-repair-1…24"
+    reason: "схема «Ремонта и стройки» (repair.md §2.1); у схем 0.1 — необязательные прораб и сумма, отметка по работе и объёму, единицы прототипа."
+  - pointer: "/components/schemas/StockReturn"
+    kind: add
+    source: "W6.00; repair.md §2.1–§2.4, §3; design/docs/19-construction.md; эталон «Ремонт и стройка.dc.html», «Ортус CRM.dc.html» (design-2026-10-19); Q-W4.00-repair-1…24"
+    reason: "схема «Ремонта и стройки» (repair.md §2.1); у схем 0.1 — необязательные прораб и сумма, отметка по работе и объёму, единицы прототипа."
+  - pointer: "/components/schemas/StockTransfer"
+    kind: add
+    source: "W6.00; repair.md §2.1–§2.4, §3; design/docs/19-construction.md; эталон «Ремонт и стройка.dc.html», «Ортус CRM.dc.html» (design-2026-10-19); Q-W4.00-repair-1…24"
+    reason: "схема «Ремонта и стройки» (repair.md §2.1); у схем 0.1 — необязательные прораб и сумма, отметка по работе и объёму, единицы прототипа."
+  - pointer: "/components/schemas/Subcontractor"
+    kind: add
+    source: "W6.00; repair.md §2.1–§2.4, §3; design/docs/19-construction.md; эталон «Ремонт и стройка.dc.html», «Ортус CRM.dc.html» (design-2026-10-19); Q-W4.00-repair-1…24"
+    reason: "схема «Ремонта и стройки» (repair.md §2.1); у схем 0.1 — необязательные прораб и сумма, отметка по работе и объёму, единицы прототипа."
+  - pointer: "/components/schemas/SubcontractorAccessSet"
+    kind: add
+    source: "W6.00; repair.md §2.1–§2.4, §3; design/docs/19-construction.md; эталон «Ремонт и стройка.dc.html», «Ортус CRM.dc.html» (design-2026-10-19); Q-W4.00-repair-1…24"
+    reason: "схема «Ремонта и стройки» (repair.md §2.1); у схем 0.1 — необязательные прораб и сумма, отметка по работе и объёму, единицы прототипа."
+  - pointer: "/components/schemas/SubcontractorList"
+    kind: add
+    source: "W6.00; repair.md §2.1–§2.4, §3; design/docs/19-construction.md; эталон «Ремонт и стройка.dc.html», «Ортус CRM.dc.html» (design-2026-10-19); Q-W4.00-repair-1…24"
+    reason: "схема «Ремонта и стройки» (repair.md §2.1); у схем 0.1 — необязательные прораб и сумма, отметка по работе и объёму, единицы прототипа."
+  - pointer: "/components/schemas/SupplyRequest"
+    kind: add
+    source: "W6.00; repair.md §2.1–§2.4, §3; design/docs/19-construction.md; эталон «Ремонт и стройка.dc.html», «Ортус CRM.dc.html» (design-2026-10-19); Q-W4.00-repair-1…24"
+    reason: "схема «Ремонта и стройки» (repair.md §2.1); у схем 0.1 — необязательные прораб и сумма, отметка по работе и объёму, единицы прототипа."
+  - pointer: "/components/schemas/SupplyRequestCreate"
+    kind: add
+    source: "W6.00; repair.md §2.1–§2.4, §3; design/docs/19-construction.md; эталон «Ремонт и стройка.dc.html», «Ортус CRM.dc.html» (design-2026-10-19); Q-W4.00-repair-1…24"
+    reason: "схема «Ремонта и стройки» (repair.md §2.1); у схем 0.1 — необязательные прораб и сумма, отметка по работе и объёму, единицы прототипа."
+  - pointer: "/components/schemas/SupplyRequestPage"
+    kind: add
+    source: "W6.00; repair.md §2.1–§2.4, §3; design/docs/19-construction.md; эталон «Ремонт и стройка.dc.html», «Ортус CRM.dc.html» (design-2026-10-19); Q-W4.00-repair-1…24"
+    reason: "схема «Ремонта и стройки» (repair.md §2.1); у схем 0.1 — необязательные прораб и сумма, отметка по работе и объёму, единицы прототипа."
+  - pointer: "/components/schemas/SupplyReserve"
+    kind: add
+    source: "W6.00; repair.md §2.1–§2.4, §3; design/docs/19-construction.md; эталон «Ремонт и стройка.dc.html», «Ортус CRM.dc.html» (design-2026-10-19); Q-W4.00-repair-1…24"
+    reason: "схема «Ремонта и стройки» (repair.md §2.1); у схем 0.1 — необязательные прораб и сумма, отметка по работе и объёму, единицы прототипа."
+  - pointer: "/components/schemas/Template"
+    kind: add
+    source: "W6.00; repair.md §2.1–§2.4, §3; design/docs/19-construction.md; эталон «Ремонт и стройка.dc.html», «Ортус CRM.dc.html» (design-2026-10-19); Q-W4.00-repair-1…24"
+    reason: "схема «Ремонта и стройки» (repair.md §2.1); у схем 0.1 — необязательные прораб и сумма, отметка по работе и объёму, единицы прототипа."
+  - pointer: "/components/schemas/TemplateCopy"
+    kind: add
+    source: "W6.00; repair.md §2.1–§2.4, §3; design/docs/19-construction.md; эталон «Ремонт и стройка.dc.html», «Ортус CRM.dc.html» (design-2026-10-19); Q-W4.00-repair-1…24"
+    reason: "схема «Ремонта и стройки» (repair.md §2.1); у схем 0.1 — необязательные прораб и сумма, отметка по работе и объёму, единицы прототипа."
+  - pointer: "/components/schemas/TemplateLine"
+    kind: add
+    source: "W6.00; repair.md §2.1–§2.4, §3; design/docs/19-construction.md; эталон «Ремонт и стройка.dc.html», «Ортус CRM.dc.html» (design-2026-10-19); Q-W4.00-repair-1…24"
+    reason: "схема «Ремонта и стройки» (repair.md §2.1); у схем 0.1 — необязательные прораб и сумма, отметка по работе и объёму, единицы прототипа."
+  - pointer: "/components/schemas/TemplateList"
+    kind: add
+    source: "W6.00; repair.md §2.1–§2.4, §3; design/docs/19-construction.md; эталон «Ремонт и стройка.dc.html», «Ортус CRM.dc.html» (design-2026-10-19); Q-W4.00-repair-1…24"
+    reason: "схема «Ремонта и стройки» (repair.md §2.1); у схем 0.1 — необязательные прораб и сумма, отметка по работе и объёму, единицы прототипа."
+  - pointer: "/components/schemas/TemplatePatch"
+    kind: add
+    source: "W6.00; repair.md §2.1–§2.4, §3; design/docs/19-construction.md; эталон «Ремонт и стройка.dc.html», «Ортус CRM.dc.html» (design-2026-10-19); Q-W4.00-repair-1…24"
+    reason: "схема «Ремонта и стройки» (repair.md §2.1); у схем 0.1 — необязательные прораб и сумма, отметка по работе и объёму, единицы прототипа."
+  - pointer: "/components/schemas/TemplateStage"
+    kind: add
+    source: "W6.00; repair.md §2.1–§2.4, §3; design/docs/19-construction.md; эталон «Ремонт и стройка.dc.html», «Ортус CRM.dc.html» (design-2026-10-19); Q-W4.00-repair-1…24"
+    reason: "схема «Ремонта и стройки» (repair.md §2.1); у схем 0.1 — необязательные прораб и сумма, отметка по работе и объёму, единицы прототипа."
+  - pointer: "/components/schemas/WorkLogMaterial"
+    kind: add
+    source: "W6.00; repair.md §2.1–§2.4, §3; design/docs/19-construction.md; эталон «Ремонт и стройка.dc.html», «Ортус CRM.dc.html» (design-2026-10-19); Q-W4.00-repair-1…24"
+    reason: "схема «Ремонта и стройки» (repair.md §2.1); у схем 0.1 — необязательные прораб и сумма, отметка по работе и объёму, единицы прототипа."
+  - pointer: "/components/schemas/WorkLogReturn"
+    kind: add
+    source: "W6.00; repair.md §2.1–§2.4, §3; design/docs/19-construction.md; эталон «Ремонт и стройка.dc.html», «Ортус CRM.dc.html» (design-2026-10-19); Q-W4.00-repair-1…24"
+    reason: "схема «Ремонта и стройки» (repair.md §2.1); у схем 0.1 — необязательные прораб и сумма, отметка по работе и объёму, единицы прототипа."
+  - pointer: "/components/schemas/RepairDocumentKind"
+    kind: add
+    source: "W6.00; repair.md §2.1–§2.4, §3; design/docs/19-construction.md; эталон «Ремонт и стройка.dc.html», «Ортус CRM.dc.html» (design-2026-10-19); Q-W4.00-repair-1…24"
+    reason: "схема «Ремонта и стройки» (repair.md §2.1); у схем 0.1 — необязательные прораб и сумма, отметка по работе и объёму, единицы прототипа."
+  - pointer: "/components/schemas/RepairRejectReason"
+    kind: add
+    source: "W6.00; repair.md §2.1–§2.4, §3; design/docs/19-construction.md; эталон «Ремонт и стройка.dc.html», «Ортус CRM.dc.html» (design-2026-10-19); Q-W4.00-repair-1…24"
+    reason: "схема «Ремонта и стройки» (repair.md §2.1); у схем 0.1 — необязательные прораб и сумма, отметка по работе и объёму, единицы прототипа."
+  - pointer: "/components/schemas/RepairScheduleReason"
+    kind: add
+    source: "W6.00; repair.md §2.1–§2.4, §3; design/docs/19-construction.md; эталон «Ремонт и стройка.dc.html», «Ортус CRM.dc.html» (design-2026-10-19); Q-W4.00-repair-1…24"
+    reason: "схема «Ремонта и стройки» (repair.md §2.1); у схем 0.1 — необязательные прораб и сумма, отметка по работе и объёму, единицы прототипа."

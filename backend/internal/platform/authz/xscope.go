@@ -37,6 +37,9 @@ var xScopes = map[string]admission{
 	"tenant-org-unit-warehouse":                {kinds: []string{KindTenant, KindUnit, KindWarehouse}},
 	"tenant-org-unit-account":                  {kinds: []string{KindTenant, KindUnit, KindAccount}},
 	"tenant-org-unit-account-self":             {kinds: []string{KindTenant, KindUnit, KindAccount, KindSelf}}, // W5.00: подотчёт — «своё»
+	// W6.00: «Ремонт и стройка» — объект ремонта (repair_project, RS-08; project остаётся за «Задачами») и связь с
+	// записью: прораб объекта, менеджер заявки, замерщик (Q-W4.00-repair-2, PD-53).
+	"tenant-org-unit-repair-project": {kinds: []string{KindTenant, KindUnit, KindRepairProject, KindRelation}},
 	// W4.04: «База знаний» — узел и пространство: роли области (и «своё» — открытые пространства всей организации,
 	// Q-W4.00-knowledge-15), роли пространства и страницы, связь; управление пространством — роли области и
 	// пространства.

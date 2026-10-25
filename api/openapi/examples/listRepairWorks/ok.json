@@ -1,0 +1,31 @@
+{
+  "items": [
+    {
+      "id": "f7e367e3-6688-5fda-ad31-298abe98955a",
+      "projectId": "73e23d56-2d9c-5a86-91d2-8969d90d1f5b",
+      "name": "Подготовка стен",
+      "unit": "m2",
+      "plan": "96",
+      "fact": "58",
+      "pending": "0"
+    },
+    {
+      "id": "ef7e2d37-e2d7-5097-9c1c-9424bd531961",
+      "projectId": "73e23d56-2d9c-5a86-91d2-8969d90d1f5b",
+      "name": "Грунтование",
+      "unit": "m2",
+      "plan": "96",
+      "fact": "24",
+      "pending": "0"
+    },
+    {
+      "id": "35ea2d47-1fe0-5540-a541-ef86bd153460",
+      "projectId": "73e23d56-2d9c-5a86-91d2-8969d90d1f5b",
+      "name": "Монтаж перегородок",
+      "unit": "m2",
+      "plan": "18",
+      "fact": "18",
+      "pending": "0"
+    }
+  ]
+}

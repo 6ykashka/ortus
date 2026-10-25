@@ -1,0 +1,45 @@
+{
+  "id": "be6b31a2-006f-5aba-8a7d-f062e20646e2",
+  "orgUnitId": "6de355d2-b019-5bb6-b66a-ddae6a13fb65",
+  "name": "Дом 120 м², Истра",
+  "address": "Истра, ул. Садовая, 8",
+  "status": "active",
+  "foremanMemberId": null,
+  "workers": [],
+  "revision": 4,
+  "access": [
+    {
+      "icon": "key",
+      "text": "Ключи у заказчика, выезд по звонку"
+    },
+    {
+      "icon": "local_parking",
+      "text": "Парковка у ворот, въезд для грузовой машины"
+    }
+  ],
+  "measured": true,
+  "readiness": {
+    "acceptedPct": 0,
+    "pendingPct": 0,
+    "clientPct": 0
+  },
+  "todoCount": 1,
+  "kind": "ремонт под ключ",
+  "stage": "Подготовка",
+  "areaM2": "120",
+  "rooms": 8,
+  "clientName": "Сергей Павлов",
+  "clientPhone": "+7 *** *** 12-42",
+  "templateId": "b0fea3d5-ba5d-5fb5-abb3-d21452897daa",
+  "leadTaskId": "55f673e7-7b98-5bd1-a017-31d3b3b97587",
+  "todoTop": {
+    "kind": "no_foreman",
+    "text": "Не назначен прораб",
+    "actionLabel": "Назначить прораба",
+    "tab": "overview"
+  },
+  "budget": {
+    "amountMinor": 107853300,
+    "currency": "RUB"
+  }
+}

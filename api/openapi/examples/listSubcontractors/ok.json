@@ -1,0 +1,19 @@
+{
+  "items": [
+    {
+      "id": "de464da2-a982-5ae6-af04-5284f1fbc15d",
+      "name": "ООО «ЭлектроПрофи»",
+      "scope": "Электромонтаж: 38 точек, щиток",
+      "active": true,
+      "accessUntil": "2026-10-31",
+      "contract": {
+        "amountMinor": 4560000,
+        "currency": "RUB"
+      },
+      "paid": {
+        "amountMinor": 2000000,
+        "currency": "RUB"
+      }
+    }
+  ]
+}

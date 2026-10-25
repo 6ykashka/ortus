@@ -1,0 +1,14 @@
+{
+  "id": "54aeb065-7079-5cc3-8ccf-b4605e92db3e",
+  "number": "З-26",
+  "projectId": "73e23d56-2d9c-5a86-91d2-8969d90d1f5b",
+  "projectName": "ЖК Речной · квартира 42",
+  "priceItemId": "9951ac09-3dd0-5cd5-a5f2-694093d8c625",
+  "name": "Грунтовка глубокого проникновения",
+  "unit": "liter",
+  "quantity": "20",
+  "needBy": "2026-10-28",
+  "state": "request",
+  "createdAt": "2026-10-20T07:30:00Z",
+  "revision": 1
+}

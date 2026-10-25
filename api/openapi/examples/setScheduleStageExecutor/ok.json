@@ -1,0 +1,13 @@
+{
+  "id": "6ddf4ea8-e52f-543a-9d96-8eb1af0347da",
+  "phase": "Чистовые работы",
+  "name": "Плитка в санузле",
+  "startOn": "2026-11-10",
+  "endOn": "2026-11-16",
+  "durationWd": 5,
+  "offsetWd": 0,
+  "slackWd": 9,
+  "critical": false,
+  "status": "planned",
+  "executorName": "Рустам Каримов"
+}

@@ -1,0 +1,116 @@
+{
+  "projectName": "ЖК Речной · квартира 42",
+  "address": "Москва, ул. Речная, 5, кв. 42",
+  "clientName": "Ольга Смирнова",
+  "readinessPct": 0,
+  "stages": [
+    {
+      "name": "Демонтаж",
+      "state": "done"
+    },
+    {
+      "name": "Электрика · черновая",
+      "state": "started"
+    },
+    {
+      "name": "Штукатурка стен",
+      "state": "planned"
+    },
+    {
+      "name": "Стяжка пола",
+      "state": "planned"
+    },
+    {
+      "name": "Шпаклёвка и покраска стен",
+      "state": "planned"
+    },
+    {
+      "name": "Плитка в санузле",
+      "state": "planned"
+    },
+    {
+      "name": "Укладка ламината",
+      "state": "planned"
+    },
+    {
+      "name": "Электрика · чистовая",
+      "state": "planned"
+    },
+    {
+      "name": "Уборка и подготовка к сдаче",
+      "state": "planned"
+    }
+  ],
+  "photos": [
+    {
+      "fileId": "143762b0-3cd0-5618-89f3-4085bc030c66",
+      "date": "2026-09-30"
+    },
+    {
+      "fileId": "8b827427-56d3-5d54-9ca0-c75c2ee4bf41",
+      "date": "2026-09-30"
+    },
+    {
+      "fileId": "e3a7b15a-36de-5896-b53f-45e9388b2bca",
+      "date": "2026-09-30"
+    }
+  ],
+  "documents": [
+    {
+      "id": "7ab61e49-5147-5db1-b541-bb5a7563e415",
+      "projectId": "73e23d56-2d9c-5a86-91d2-8969d90d1f5b",
+      "kind": "contract",
+      "title": "Договор подряда № 42",
+      "state": "signed",
+      "estimateVersion": 2,
+      "amount": {
+        "amountMinor": 43817500,
+        "currency": "RUB"
+      },
+      "signedAt": "2026-10-01T09:00:00Z",
+      "sentAt": "2026-09-30T08:00:00Z"
+    },
+    {
+      "id": "67868961-17d7-50c1-8d17-4e002426d6e9",
+      "projectId": "73e23d56-2d9c-5a86-91d2-8969d90d1f5b",
+      "kind": "invoice",
+      "title": "Счёт № 1 · аванс 30%",
+      "state": "paid",
+      "estimateVersion": 2,
+      "amount": {
+        "amountMinor": 13145300,
+        "currency": "RUB"
+      },
+      "signedAt": "2026-10-02T10:00:00Z"
+    },
+    {
+      "id": "76a272b9-8c7a-5afc-91b9-b13fa720896f",
+      "projectId": "73e23d56-2d9c-5a86-91d2-8969d90d1f5b",
+      "kind": "act",
+      "title": "Акт № 2 · электрика",
+      "state": "wait",
+      "estimateVersion": 2,
+      "actNo": 2,
+      "amount": {
+        "amountMinor": 5510000,
+        "currency": "RUB"
+      }
+    }
+  ],
+  "paid": {
+    "amountMinor": 13145300,
+    "currency": "RUB"
+  },
+  "contract": {
+    "amountMinor": 43817500,
+    "currency": "RUB"
+  },
+  "estimate": {
+    "version": 2,
+    "state": "approved",
+    "total": {
+      "amountMinor": 43817500,
+      "currency": "RUB"
+    }
+  }
+}

@@ -1,0 +1,235 @@
+{
+  "project": {
+    "id": "73e23d56-2d9c-5a86-91d2-8969d90d1f5b",
+    "orgUnitId": "6de355d2-b019-5bb6-b66a-ddae6a13fb65",
+    "name": "ЖК Речной · квартира 42",
+    "address": "Москва, ул. Речная, 5, кв. 42",
+    "status": "active",
+    "foremanMemberId": "ebdf9767-327e-55cc-8c65-cb5fd313bdf4",
+    "workers": [
+      {
+        "id": "5526dde5-a67d-59c9-a706-d0ef365e53ae",
+        "displayName": "Иван Петров",
+        "trade": "отделочник",
+        "status": "active"
+      },
+      {
+        "id": "b2a6cb8b-a587-58a0-aa4f-802d62bf47ac",
+        "displayName": "Олег Смирнов",
+        "trade": "отделочник",
+        "status": "active"
+      },
+      {
+        "id": "679a554c-ed4d-5e9d-8266-b3f796f0b59b",
+        "displayName": "Роман Сергеев",
+        "trade": "маляр",
+        "status": "active"
+      },
+      {
+        "id": "ea383b9e-2801-5ca0-b887-4f0867aafce6",
+        "displayName": "Денис Волков",
+        "trade": "разнорабочий",
+        "status": "active"
+      }
+    ],
+    "revision": 1,
+    "access": [
+      {
+        "icon": "door_front",
+        "text": "Подъезд 2, этаж 9, домофон 42К"
+      },
+      {
+        "icon": "elevator",
+        "text": "Грузовой лифт до 20:00, материалы заносить со двора"
+      },
+      {
+        "icon": "key",
+        "text": "Ключи у прораба, запасной комплект в офисе"
+      },
+      {
+        "icon": "volume_up",
+        "text": "Шумные работы: будни 9:00–19:00, перерыв 13:00–15:00"
+      }
+    ],
+    "measured": true,
+    "readiness": {
+      "acceptedPct": 48,
+      "pendingPct": 0,
+      "clientPct": 0
+    },
+    "todoCount": 6,
+    "kind": "капитальный ремонт",
+    "stage": "Черновая отделка",
+    "areaM2": "51",
+    "rooms": 2,
+    "contractNo": "договор № 42",
+    "dueOn": "2026-11-27",
+    "forecastDueOn": "2026-12-01",
+    "clientName": "Ольга Смирнова",
+    "clientPhone": "+7 *** *** 12-42",
+    "templateId": "e48bdd15-c170-58da-bab2-72389ca237f9",
+    "todoTop": {
+      "kind": "schedule_slip",
+      "text": "Сдача сдвигается на 01.12",
+      "actionLabel": "Открыть график",
+      "tab": "schedule"
+    },
+    "budget": {
+      "amountMinor": 43817500,
+      "currency": "RUB"
+    }
+  },
+  "decisions": [
+    {
+      "kind": "schedule_slip",
+      "text": "Сдача сдвигается на 01.12",
+      "actionLabel": "Открыть график",
+      "tab": "schedule"
+    },
+    {
+      "kind": "stage_no_executor",
+      "text": "Не назначен исполнитель: Плитка в санузле",
+      "actionLabel": "Открыть график",
+      "tab": "schedule"
+    },
+    {
+      "kind": "document_ready",
+      "text": "Акт № 1 · демонтаж: готов к отправке",
+      "actionLabel": "Открыть документы",
+      "tab": "docs",
+      "refId": "92255ba2-187f-52f8-b157-b57151abe4e1"
+    },
+    {
+      "kind": "document_wait_signature",
+      "text": "Акт № 2 · электрика: ждёт подписи заказчика",
+      "actionLabel": "Открыть документы",
+      "tab": "docs",
+      "refId": "76a272b9-8c7a-5afc-91b9-b13fa720896f"
+    },
+    {
+      "kind": "supply_pending",
+      "text": "Заявки на материалы ждут решения снабжения: 2",
+      "actionLabel": "Решить в снабжении",
+      "tab": "supply"
+    },
+    {
+      "kind": "change_order_new",
+      "text": "Допработа ДР-1 ждёт оценки: Перенос розеток на кухне",
+      "actionLabel": "Оценить в смете",
+      "tab": "estimate",
+      "refId": "76775cb6-a480-5a5b-aae4-c7519c05bdd0"
+    }
+  ],
+  "works": [
+    {
+      "id": "f7e367e3-6688-5fda-ad31-298abe98955a",
+      "projectId": "73e23d56-2d9c-5a86-91d2-8969d90d1f5b",
+      "name": "Подготовка стен",
+      "unit": "m2",
+      "plan": "96",
+      "fact": "58",
+      "pending": "0"
+    },
+    {
+      "id": "ef7e2d37-e2d7-5097-9c1c-9424bd531961",
+      "projectId": "73e23d56-2d9c-5a86-91d2-8969d90d1f5b",
+      "name": "Грунтование",
+      "unit": "m2",
+      "plan": "96",
+      "fact": "24",
+      "pending": "0"
+    },
+    {
+      "id": "35ea2d47-1fe0-5540-a541-ef86bd153460",
+      "projectId": "73e23d56-2d9c-5a86-91d2-8969d90d1f5b",
+      "name": "Монтаж перегородок",
+      "unit": "m2",
+      "plan": "18",
+      "fact": "18",
+      "pending": "0"
+    }
+  ],
+  "photos": [
+    {
+      "fileId": "143762b0-3cd0-5618-89f3-4085bc030c66",
+      "workLogId": "d16fc1b8-d9d8-5e40-bb11-3c1acd43e276",
+      "takenAt": "2026-09-30T15:00:00Z",
+      "status": "accepted"
+    },
+    {
+      "fileId": "8b827427-56d3-5d54-9ca0-c75c2ee4bf41",
+      "workLogId": "d16fc1b8-d9d8-5e40-bb11-3c1acd43e276",
+      "takenAt": "2026-09-30T15:00:00Z",
+      "status": "accepted"
+    },
+    {
+      "fileId": "e3a7b15a-36de-5896-b53f-45e9388b2bca",
+      "workLogId": "d16fc1b8-d9d8-5e40-bb11-3c1acd43e276",
+      "takenAt": "2026-09-30T15:00:00Z",
+      "status": "accepted"
+    }
+  ],
+  "people": {
+    "clientName": "Ольга Смирнова",
+    "clientLinkActive": true,
+    "foreman": {
+      "memberId": "ebdf9767-327e-55cc-8c65-cb5fd313bdf4",
+      "displayName": "Алексей Соколов"
+    },
+    "crew": [
+      {
+        "id": "5526dde5-a67d-59c9-a706-d0ef365e53ae",
+        "displayName": "Иван Петров",
+        "trade": "отделочник",
+        "status": "active"
+      },
+      {
+        "id": "b2a6cb8b-a587-58a0-aa4f-802d62bf47ac",
+        "displayName": "Олег Смирнов",
+        "trade": "отделочник",
+        "status": "active"
+      },
+      {
+        "id": "679a554c-ed4d-5e9d-8266-b3f796f0b59b",
+        "displayName": "Роман Сергеев",
+        "trade": "маляр",
+        "status": "active"
+      },
+      {
+        "id": "ea383b9e-2801-5ca0-b887-4f0867aafce6",
+        "displayName": "Денис Волков",
+        "trade": "разнорабочий",
+        "status": "active"
+      }
+    ],
+    "subcontractor": {
+      "name": "ООО «ЭлектроПрофи»",
+      "accessUntil": "2026-10-31"
+    }
+  },
+  "feed": [
+    {
+      "at": "2026-09-30T17:00:00Z",
+      "text": "приняла объём по отметке WL-11: подготовка стен, 22 м²",
+      "actorName": "Дарья Зимина"
+    }
+  ],
+  "money": {
+    "contract": {
+      "amountMinor": 43817500,
+      "currency": "RUB"
+    },
+    "received": {
+      "amountMinor": 13145300,
+      "currency": "RUB"
+    },
+    "expenses": {
+      "amountMinor": 3160000,
+      "currency": "RUB"
+    },
+    "marginPlan": {
+      "amountMinor": 11830725,
+      "currency": "RUB"
+    }
+  }
+}

@@ -1,0 +1,14 @@
+{
+  "id": "54aeb065-7079-5cc3-8ccf-b4605e92db3e",
+  "section": "Полы",
+  "name": "Монтаж дверного блока",
+  "unit": "piece",
+  "kind": "work",
+  "price": {
+    "amountMinor": 420000,
+    "currency": "RUB"
+  },
+  "usedInTemplates": 0,
+  "archived": false,
+  "revision": 1
+}

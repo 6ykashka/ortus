@@ -1,0 +1,14 @@
+{
+  "id": "500f594a-ff1e-5ed3-a2da-e2d98b7f0463",
+  "section": "Стены",
+  "name": "Штукатурка по маякам",
+  "unit": "m2",
+  "kind": "work",
+  "price": {
+    "amountMinor": 70000,
+    "currency": "RUB"
+  },
+  "usedInTemplates": 2,
+  "archived": false,
+  "revision": 2
+}

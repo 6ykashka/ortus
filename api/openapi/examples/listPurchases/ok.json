@@ -1,0 +1,31 @@
+{
+  "items": [
+    {
+      "id": "27dea568-06bf-5707-85f1-1243550dd676",
+      "number": "ЗК-6",
+      "supplier": "СтройБаза Север",
+      "state": "received",
+      "lines": [
+        {
+          "supplyRequestId": "d0f95bee-a6da-53c4-8bf0-3e0c0a6dc2eb",
+          "projectId": "73e23d56-2d9c-5a86-91d2-8969d90d1f5b",
+          "priceItemId": "397ebbea-3961-5c4a-96a8-8a276ed48997",
+          "quantity": "1",
+          "price": {
+            "amountMinor": 1320000,
+            "currency": "RUB"
+          }
+        }
+      ],
+      "total": {
+        "amountMinor": 1320000,
+        "currency": "RUB"
+      },
+      "createdAt": "2026-10-14T08:00:00Z",
+      "revision": 2,
+      "receiptQr": "t=20261014T1010&s=13200.00&fn=9960440300000000&i=1&fp=1&n=1",
+      "receivedAt": "2026-10-14T12:00:00Z"
+    }
+  ],
+  "nextCursor": null
+}

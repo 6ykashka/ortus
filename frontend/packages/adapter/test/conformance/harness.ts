@@ -1,6 +1,6 @@
 // Цель conformance режима mock (W0.13): сценарный сервер за msw/node — запросы идут обычным `fetch`, как
 // у приложения. Каждый ответ проверяется по OpenAPI (schema.ts); кейс получает CaseContext.
-import { appendFileSync, writeFileSync } from 'node:fs';
+import { appendFileSync, mkdirSync, writeFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 
 import { seedUuid } from '@ortus/domain/seed';
@@ -25,6 +25,7 @@ const EXAMPLES = new URL('../../../../../api/openapi/examples/', import.meta.url
 
 function writeExample(op: string, name: string, body: unknown): void {
   const file = new URL(`${op}/${name}.json`, EXAMPLES);
+  mkdirSync(fileURLToPath(new URL(op, EXAMPLES)), { recursive: true });
   writeFileSync(file, `${JSON.stringify(body, null, 2)}\n`, 'utf8');
   const log = process.env.ORTUS_EXAMPLES_LOG;
   if (log) appendFileSync(log, `${fileURLToPath(file)}\n`, 'utf8');
@@ -81,6 +82,19 @@ export function createHarness(): Harness {
     },
     expectExample: (reply, name, status) => {
       const [op = '', n = ''] = name.split('/');
+      // W6.00: пример, которого ещё нет, при пересъёмке записывается снимком ответа (первая съёмка тега).
+      if (WRITE && example(op, n) === undefined) {
+        const problemName = n in contract.errors;
+        const wanted =
+          status ??
+          (problemName
+            ? contract.errors[n]?.status
+            : contract.operations.find((o) => o.id === op)?.success);
+        expect(reply.status, `${name}: ${JSON.stringify(reply.body)}`).toBe(wanted);
+        writeExample(op, n, reply.body);
+        checkedExamples.push(name);
+        return;
+      }
       const body = ctx.example(name) as { status?: number };
       const problem = n in contract.errors;
       const want =

@@ -1,0 +1,366 @@
+{
+  "items": [
+    {
+      "id": "2c1cc0f1-d23e-50bd-ba0a-fc1328e73af2",
+      "orgUnitId": "6de355d2-b019-5bb6-b66a-ddae6a13fb65",
+      "name": "Профсоюзная, 64 · квартира 210",
+      "address": "Москва, Профсоюзная ул., 64к1, кв. 210",
+      "status": "active",
+      "foremanMemberId": "ebdf9767-327e-55cc-8c65-cb5fd313bdf4",
+      "workers": [
+        {
+          "id": "e97fdad6-6469-535b-85c3-7b3103761a10",
+          "displayName": "Олег Смирнов",
+          "trade": "отделочник",
+          "status": "active"
+        },
+        {
+          "id": "98271003-a8ee-5152-90eb-fc7baca92da0",
+          "displayName": "Денис Волков",
+          "trade": "разнорабочий",
+          "status": "active"
+        }
+      ],
+      "revision": 1,
+      "access": [
+        {
+          "icon": "door_front",
+          "text": "Подъезд 3, этаж 5, код домофона 210"
+        },
+        {
+          "icon": "key",
+          "text": "Ключи у заказчика, встреча по звонку"
+        }
+      ],
+      "measured": false,
+      "readiness": {
+        "acceptedPct": 87,
+        "pendingPct": 0,
+        "clientPct": 0
+      },
+      "todoCount": 1,
+      "kind": "косметический ремонт",
+      "stage": "Чистовая отделка",
+      "areaM2": "38",
+      "rooms": 1,
+      "contractNo": "договор № 31",
+      "dueOn": "2026-10-09",
+      "forecastDueOn": "2026-10-09",
+      "clientName": "Наталья Осипова",
+      "clientPhone": "+7 *** *** 12-42",
+      "templateId": "abd98dae-5eef-5303-a2f5-fb181e23a9ef",
+      "todoTop": {
+        "kind": "supply_pending",
+        "text": "Заявки на материалы ждут решения снабжения: 1",
+        "actionLabel": "Решить в снабжении",
+        "tab": "supply"
+      },
+      "budget": {
+        "amountMinor": 48600000,
+        "currency": "RUB"
+      }
+    },
+    {
+      "id": "4d132a07-45c5-55a7-9738-9117f7f86838",
+      "orgUnitId": "6de355d2-b019-5bb6-b66a-ddae6a13fb65",
+      "name": "ЖК Северный парк · квартира 117",
+      "address": "Москва, Дмитровское ш., 107к2, кв. 117",
+      "status": "active",
+      "foremanMemberId": "ebdf9767-327e-55cc-8c65-cb5fd313bdf4",
+      "workers": [
+        {
+          "id": "64a353c5-e617-58d0-8a7d-a89b33b53c44",
+          "displayName": "Иван Петров",
+          "trade": "отделочник",
+          "status": "active"
+        },
+        {
+          "id": "0d04ccbb-b8c0-503f-b072-3f5bb769cab1",
+          "displayName": "Роман Сергеев",
+          "trade": "маляр",
+          "status": "active"
+        },
+        {
+          "id": "7ac4f33f-8751-50a7-be7c-e99c35b45a33",
+          "displayName": "Денис Волков",
+          "trade": "разнорабочий",
+          "status": "active"
+        }
+      ],
+      "revision": 1,
+      "access": [
+        {
+          "icon": "door_front",
+          "text": "Подъезд 1, этаж 14, домофон 117В"
+        },
+        {
+          "icon": "elevator",
+          "text": "Грузовой лифт по записи у консьержа"
+        },
+        {
+          "icon": "key",
+          "text": "Ключи у консьержа под подпись"
+        },
+        {
+          "icon": "volume_up",
+          "text": "Шумные работы: будни 10:00–19:00"
+        }
+      ],
+      "measured": false,
+      "readiness": {
+        "acceptedPct": 82,
+        "pendingPct": 4,
+        "clientPct": 0
+      },
+      "todoCount": 2,
+      "kind": "капитальный ремонт",
+      "stage": "Чистовая отделка",
+      "areaM2": "74",
+      "rooms": 3,
+      "contractNo": "договор № 38",
+      "dueOn": "2026-10-17",
+      "forecastDueOn": "2026-10-17",
+      "clientName": "Игорь Лебедев",
+      "clientPhone": "+7 *** *** 12-42",
+      "templateId": "e48bdd15-c170-58da-bab2-72389ca237f9",
+      "todoTop": {
+        "kind": "work_log_pending",
+        "text": "Укладка ламината: 18 м²",
+        "actionLabel": "Принять объём",
+        "tab": "works",
+        "refId": "50b17f65-4db4-569e-b321-cbd6599c1623"
+      },
+      "budget": {
+        "amountMinor": 154000000,
+        "currency": "RUB"
+      }
+    },
+    {
+      "id": "73e23d56-2d9c-5a86-91d2-8969d90d1f5b",
+      "orgUnitId": "6de355d2-b019-5bb6-b66a-ddae6a13fb65",
+      "name": "ЖК Речной · квартира 42",
+      "address": "Москва, ул. Речная, 5, кв. 42",
+      "status": "active",
+      "foremanMemberId": "ebdf9767-327e-55cc-8c65-cb5fd313bdf4",
+      "workers": [
+        {
+          "id": "5526dde5-a67d-59c9-a706-d0ef365e53ae",
+          "displayName": "Иван Петров",
+          "trade": "отделочник",
+          "status": "active"
+        },
+        {
+          "id": "b2a6cb8b-a587-58a0-aa4f-802d62bf47ac",
+          "displayName": "Олег Смирнов",
+          "trade": "отделочник",
+          "status": "active"
+        },
+        {
+          "id": "679a554c-ed4d-5e9d-8266-b3f796f0b59b",
+          "displayName": "Роман Сергеев",
+          "trade": "маляр",
+          "status": "active"
+        },
+        {
+          "id": "ea383b9e-2801-5ca0-b887-4f0867aafce6",
+          "displayName": "Денис Волков",
+          "trade": "разнорабочий",
+          "status": "active"
+        }
+      ],
+      "revision": 1,
+      "access": [
+        {
+          "icon": "door_front",
+          "text": "Подъезд 2, этаж 9, домофон 42К"
+        },
+        {
+          "icon": "elevator",
+          "text": "Грузовой лифт до 20:00, материалы заносить со двора"
+        },
+        {
+          "icon": "key",
+          "text": "Ключи у прораба, запасной комплект в офисе"
+        },
+        {
+          "icon": "volume_up",
+          "text": "Шумные работы: будни 9:00–19:00, перерыв 13:00–15:00"
+        }
+      ],
+      "measured": true,
+      "readiness": {
+        "acceptedPct": 48,
+        "pendingPct": 0,
+        "clientPct": 0
+      },
+      "todoCount": 6,
+      "kind": "капитальный ремонт",
+      "stage": "Черновая отделка",
+      "areaM2": "51",
+      "rooms": 2,
+      "contractNo": "договор № 42",
+      "dueOn": "2026-11-27",
+      "forecastDueOn": "2026-12-01",
+      "clientName": "Ольга Смирнова",
+      "clientPhone": "+7 *** *** 12-42",
+      "templateId": "e48bdd15-c170-58da-bab2-72389ca237f9",
+      "todoTop": {
+        "kind": "schedule_slip",
+        "text": "Сдача сдвигается на 01.12",
+        "actionLabel": "Открыть график",
+        "tab": "schedule"
+      },
+      "budget": {
+        "amountMinor": 43817500,
+        "currency": "RUB"
+      }
+    },
+    {
+      "id": "3a3a819e-f3f5-55f9-9ba6-6f9bf2a9bb52",
+      "orgUnitId": "6de355d2-b019-5bb6-b66a-ddae6a13fb65",
+      "name": "Кофейня на Покровке",
+      "address": "Москва, ул. Покровка, 17, стр. 1",
+      "status": "active",
+      "foremanMemberId": null,
+      "workers": [],
+      "revision": 1,
+      "access": [
+        {
+          "icon": "door_front",
+          "text": "Вход со двора, ворота открывает управляющий"
+        },
+        {
+          "icon": "volume_up",
+          "text": "Шумные работы: будни 9:00–19:00, по согласованию с управляющей компанией"
+        }
+      ],
+      "measured": false,
+      "readiness": {
+        "acceptedPct": 0,
+        "pendingPct": 0,
+        "clientPct": 0
+      },
+      "todoCount": 2,
+      "kind": "коммерческий ремонт",
+      "stage": "Подготовка",
+      "areaM2": "64",
+      "rooms": 2,
+      "contractNo": "договор № 45",
+      "startOn": "2026-10-06",
+      "dueOn": "2026-12-20",
+      "forecastDueOn": "2026-12-20",
+      "clientName": "ООО «Зерно»",
+      "clientPhone": "+7 *** *** 12-42",
+      "templateId": "ae49fb5f-2799-554a-a293-22bab99460f8",
+      "todoTop": {
+        "kind": "no_foreman",
+        "text": "Не назначен прораб",
+        "actionLabel": "Назначить прораба",
+        "tab": "overview"
+      },
+      "budget": {
+        "amountMinor": 231000000,
+        "currency": "RUB"
+      }
+    },
+    {
+      "id": "be6b31a2-006f-5aba-8a7d-f062e20646e2",
+      "orgUnitId": "6de355d2-b019-5bb6-b66a-ddae6a13fb65",
+      "name": "Дом 120 м², Истра",
+      "address": "Истра, ул. Садовая, 8",
+      "status": "draft",
+      "foremanMemberId": null,
+      "workers": [],
+      "revision": 1,
+      "access": [
+        {
+          "icon": "key",
+          "text": "Ключи у заказчика, выезд по звонку"
+        },
+        {
+          "icon": "local_parking",
+          "text": "Парковка у ворот, въезд для грузовой машины"
+        }
+      ],
+      "measured": true,
+      "readiness": {
+        "acceptedPct": 0,
+        "pendingPct": 0,
+        "clientPct": 0
+      },
+      "todoCount": 1,
+      "kind": "ремонт под ключ",
+      "stage": "Замер",
+      "areaM2": "120",
+      "rooms": 8,
+      "clientName": "Сергей Павлов",
+      "clientPhone": "+7 *** *** 12-42",
+      "leadTaskId": "55f673e7-7b98-5bd1-a017-31d3b3b97587",
+      "todoTop": {
+        "kind": "estimate_missing",
+        "text": "Смета не собрана",
+        "actionLabel": "Собрать смету",
+        "tab": "estimate"
+      }
+    },
+    {
+      "id": "79ad020d-bd3a-527d-8a9b-c07b72891b4b",
+      "orgUnitId": "6de355d2-b019-5bb6-b66a-ddae6a13fb65",
+      "name": "Дом на Лесной · Мытищи",
+      "address": "Мытищи, ул. Лесная, 14",
+      "status": "handed_over",
+      "foremanMemberId": "ebdf9767-327e-55cc-8c65-cb5fd313bdf4",
+      "workers": [
+        {
+          "id": "68d1309e-fcb4-5a09-8a6e-a3f3122d17af",
+          "displayName": "Иван Петров",
+          "trade": "отделочник",
+          "status": "active"
+        },
+        {
+          "id": "bc3e719a-3bc1-585b-9e74-a571520c153d",
+          "displayName": "Олег Смирнов",
+          "trade": "отделочник",
+          "status": "active"
+        },
+        {
+          "id": "4816061d-aed1-58c8-bbe6-01b1b2815afe",
+          "displayName": "Роман Сергеев",
+          "trade": "маляр",
+          "status": "active"
+        }
+      ],
+      "revision": 1,
+      "access": [
+        {
+          "icon": "key",
+          "text": "Ключи переданы заказчику 12.09"
+        }
+      ],
+      "measured": false,
+      "readiness": {
+        "acceptedPct": 100,
+        "pendingPct": 0,
+        "clientPct": 100
+      },
+      "todoCount": 0,
+      "kind": "ремонт под ключ",
+      "stage": "Сдан",
+      "areaM2": "142",
+      "rooms": 5,
+      "contractNo": "договор № 27",
+      "dueOn": "2026-09-15",
+      "forecastDueOn": "2026-09-15",
+      "clientName": "Андрей Кузнецов",
+      "clientPhone": "+7 *** *** 12-42",
+      "handedOverOn": "2026-09-12",
+      "warrantyUntil": "2028-09-12",
+      "templateId": "b0fea3d5-ba5d-5fb5-abb3-d21452897daa",
+      "budget": {
+        "amountMinor": 192000000,
+        "currency": "RUB"
+      }
+    }
+  ],
+  "nextCursor": null
+}

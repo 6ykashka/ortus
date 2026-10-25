@@ -31,7 +31,7 @@ openapi: 3.1.0
 jsonSchemaDialect: https://json-schema.org/draft/2020-12/schema
 info:
   title: ORTUS CRM Constructor — Design API
-  version: 0.12.0-stage5
+  version: 0.12.0-stage6
   summary: Reviewable starting contract for a tenant-isolated modular CRM on Go; not an implemented or exhaustive API.
   description: |-
     Design snapshot, 2026-10-01. A tenant is one business holding; regions/companies/branches are scoped organization units within it. Platform administration is a separate control plane and never implies business-data access.
@@ -581,6 +581,108 @@ paths:
     $ref: paths/spa.yaml#/~1api~1v1~1tenants~1%7BtenantId%7D~1spa~1appointments~1%7BappointmentId%7D~1cancel
   /api/v1/tenants/{tenantId}/spa/appointments/{appointmentId}/reschedule:
     $ref: paths/spa.yaml#/~1api~1v1~1tenants~1%7BtenantId%7D~1spa~1appointments~1%7BappointmentId%7D~1reschedule
+  /api/v1/tenants/{tenantId}/repairs/projects/{projectId}:
+    $ref: paths/repairs.yaml#/~1api~1v1~1tenants~1%7BtenantId%7D~1repairs~1projects~1%7BprojectId%7D
+  /api/v1/tenants/{tenantId}/repairs/projects/{projectId}/overview:
+    $ref: paths/repairs.yaml#/~1api~1v1~1tenants~1%7BtenantId%7D~1repairs~1projects~1%7BprojectId%7D~1overview
+  /api/v1/tenants/{tenantId}/repairs/projects/{projectId}/foreman:
+    $ref: paths/repairs.yaml#/~1api~1v1~1tenants~1%7BtenantId%7D~1repairs~1projects~1%7BprojectId%7D~1foreman
+  /api/v1/tenants/{tenantId}/repairs/projects/{projectId}/activate:
+    $ref: paths/repairs.yaml#/~1api~1v1~1tenants~1%7BtenantId%7D~1repairs~1projects~1%7BprojectId%7D~1activate
+  /api/v1/tenants/{tenantId}/repairs/projects/{projectId}/works:
+    $ref: paths/repairs.yaml#/~1api~1v1~1tenants~1%7BtenantId%7D~1repairs~1projects~1%7BprojectId%7D~1works
+  /api/v1/tenants/{tenantId}/repairs/work-logs/{workLogId}/accept:
+    $ref: paths/repairs.yaml#/~1api~1v1~1tenants~1%7BtenantId%7D~1repairs~1work-logs~1%7BworkLogId%7D~1accept
+  /api/v1/tenants/{tenantId}/repairs/work-logs/{workLogId}/return:
+    $ref: paths/repairs.yaml#/~1api~1v1~1tenants~1%7BtenantId%7D~1repairs~1work-logs~1%7BworkLogId%7D~1return
+  /api/v1/tenants/{tenantId}/repairs/projects/{projectId}/change-orders:
+    $ref: paths/repairs.yaml#/~1api~1v1~1tenants~1%7BtenantId%7D~1repairs~1projects~1%7BprojectId%7D~1change-orders
+  /api/v1/tenants/{tenantId}/repairs/change-orders/{changeOrderId}/reject:
+    $ref: paths/repairs.yaml#/~1api~1v1~1tenants~1%7BtenantId%7D~1repairs~1change-orders~1%7BchangeOrderId%7D~1reject
+  /api/v1/tenants/{tenantId}/repairs/projects/{projectId}/measurement:
+    $ref: paths/repairs.yaml#/~1api~1v1~1tenants~1%7BtenantId%7D~1repairs~1projects~1%7BprojectId%7D~1measurement
+  /api/v1/tenants/{tenantId}/repairs/projects/{projectId}/estimates:
+    $ref: paths/repairs.yaml#/~1api~1v1~1tenants~1%7BtenantId%7D~1repairs~1projects~1%7BprojectId%7D~1estimates
+  /api/v1/tenants/{tenantId}/repairs/projects/{projectId}/estimates/{version}:
+    $ref: paths/repairs.yaml#/~1api~1v1~1tenants~1%7BtenantId%7D~1repairs~1projects~1%7BprojectId%7D~1estimates~1%7Bversion%7D
+  /api/v1/tenants/{tenantId}/repairs/projects/{projectId}/estimate-drafts:
+    $ref: paths/repairs.yaml#/~1api~1v1~1tenants~1%7BtenantId%7D~1repairs~1projects~1%7BprojectId%7D~1estimate-drafts
+  /api/v1/tenants/{tenantId}/repairs/projects/{projectId}/estimates/{version}/send:
+    $ref: paths/repairs.yaml#/~1api~1v1~1tenants~1%7BtenantId%7D~1repairs~1projects~1%7BprojectId%7D~1estimates~1%7Bversion%7D~1send
+  /api/v1/tenants/{tenantId}/repairs/projects/{projectId}/estimates/{version}/recall:
+    $ref: paths/repairs.yaml#/~1api~1v1~1tenants~1%7BtenantId%7D~1repairs~1projects~1%7BprojectId%7D~1estimates~1%7Bversion%7D~1recall
+  /api/v1/tenants/{tenantId}/repairs/projects/{projectId}/estimates/{version}/diff:
+    $ref: paths/repairs.yaml#/~1api~1v1~1tenants~1%7BtenantId%7D~1repairs~1projects~1%7BprojectId%7D~1estimates~1%7Bversion%7D~1diff
+  /api/v1/tenants/{tenantId}/repairs/projects/{projectId}/save-as-template:
+    $ref: paths/repairs.yaml#/~1api~1v1~1tenants~1%7BtenantId%7D~1repairs~1projects~1%7BprojectId%7D~1save-as-template
+  /api/v1/tenants/{tenantId}/repairs/price-items:
+    $ref: paths/repairs.yaml#/~1api~1v1~1tenants~1%7BtenantId%7D~1repairs~1price-items
+  /api/v1/tenants/{tenantId}/repairs/price-items/{priceItemId}:
+    $ref: paths/repairs.yaml#/~1api~1v1~1tenants~1%7BtenantId%7D~1repairs~1price-items~1%7BpriceItemId%7D
+  /api/v1/tenants/{tenantId}/repairs/templates:
+    $ref: paths/repairs.yaml#/~1api~1v1~1tenants~1%7BtenantId%7D~1repairs~1templates
+  /api/v1/tenants/{tenantId}/repairs/templates/{templateId}:
+    $ref: paths/repairs.yaml#/~1api~1v1~1tenants~1%7BtenantId%7D~1repairs~1templates~1%7BtemplateId%7D
+  /api/v1/tenants/{tenantId}/repairs/templates/{templateId}/copy:
+    $ref: paths/repairs.yaml#/~1api~1v1~1tenants~1%7BtenantId%7D~1repairs~1templates~1%7BtemplateId%7D~1copy
+  /api/v1/tenants/{tenantId}/repairs/projects/{projectId}/schedule:
+    $ref: paths/repairs.yaml#/~1api~1v1~1tenants~1%7BtenantId%7D~1repairs~1projects~1%7BprojectId%7D~1schedule
+  /api/v1/tenants/{tenantId}/repairs/projects/{projectId}/schedule/from-estimate:
+    $ref: paths/repairs.yaml#/~1api~1v1~1tenants~1%7BtenantId%7D~1repairs~1projects~1%7BprojectId%7D~1schedule~1from-estimate
+  /api/v1/tenants/{tenantId}/repairs/projects/{projectId}/schedule/preview:
+    $ref: paths/repairs.yaml#/~1api~1v1~1tenants~1%7BtenantId%7D~1repairs~1projects~1%7BprojectId%7D~1schedule~1preview
+  /api/v1/tenants/{tenantId}/repairs/projects/{projectId}/schedule/changes:
+    $ref: paths/repairs.yaml#/~1api~1v1~1tenants~1%7BtenantId%7D~1repairs~1projects~1%7BprojectId%7D~1schedule~1changes
+  /api/v1/tenants/{tenantId}/repairs/projects/{projectId}/schedule/stages/{stageId}:
+    $ref: paths/repairs.yaml#/~1api~1v1~1tenants~1%7BtenantId%7D~1repairs~1projects~1%7BprojectId%7D~1schedule~1stages~1%7BstageId%7D
+  /api/v1/tenants/{tenantId}/repairs/projects/{projectId}/schedule/baselines:
+    $ref: paths/repairs.yaml#/~1api~1v1~1tenants~1%7BtenantId%7D~1repairs~1projects~1%7BprojectId%7D~1schedule~1baselines
+  /api/v1/tenants/{tenantId}/repairs/projects/{projectId}/hand-over:
+    $ref: paths/repairs.yaml#/~1api~1v1~1tenants~1%7BtenantId%7D~1repairs~1projects~1%7BprojectId%7D~1hand-over
+  /api/v1/tenants/{tenantId}/repairs/projects/{projectId}/documents:
+    $ref: paths/repairs.yaml#/~1api~1v1~1tenants~1%7BtenantId%7D~1repairs~1projects~1%7BprojectId%7D~1documents
+  /api/v1/tenants/{tenantId}/repairs/documents/{documentId}/sign-requests:
+    $ref: paths/repairs.yaml#/~1api~1v1~1tenants~1%7BtenantId%7D~1repairs~1documents~1%7BdocumentId%7D~1sign-requests
+  /api/v1/tenants/{tenantId}/repairs/supply-requests:
+    $ref: paths/repairs.yaml#/~1api~1v1~1tenants~1%7BtenantId%7D~1repairs~1supply-requests
+  /api/v1/tenants/{tenantId}/repairs/projects/{projectId}/supply-requests:
+    $ref: paths/repairs.yaml#/~1api~1v1~1tenants~1%7BtenantId%7D~1repairs~1projects~1%7BprojectId%7D~1supply-requests
+  /api/v1/tenants/{tenantId}/repairs/supply-requests/{supplyRequestId}/reserve:
+    $ref: paths/repairs.yaml#/~1api~1v1~1tenants~1%7BtenantId%7D~1repairs~1supply-requests~1%7BsupplyRequestId%7D~1reserve
+  /api/v1/tenants/{tenantId}/repairs/supply-requests/{supplyRequestId}/issue:
+    $ref: paths/repairs.yaml#/~1api~1v1~1tenants~1%7BtenantId%7D~1repairs~1supply-requests~1%7BsupplyRequestId%7D~1issue
+  /api/v1/tenants/{tenantId}/repairs/supply-requests/{supplyRequestId}/consume:
+    $ref: paths/repairs.yaml#/~1api~1v1~1tenants~1%7BtenantId%7D~1repairs~1supply-requests~1%7BsupplyRequestId%7D~1consume
+  /api/v1/tenants/{tenantId}/repairs/purchases:
+    $ref: paths/repairs.yaml#/~1api~1v1~1tenants~1%7BtenantId%7D~1repairs~1purchases
+  /api/v1/tenants/{tenantId}/repairs/purchases/{purchaseId}/receive:
+    $ref: paths/repairs.yaml#/~1api~1v1~1tenants~1%7BtenantId%7D~1repairs~1purchases~1%7BpurchaseId%7D~1receive
+  /api/v1/tenants/{tenantId}/repairs/project-stock:
+    $ref: paths/repairs.yaml#/~1api~1v1~1tenants~1%7BtenantId%7D~1repairs~1project-stock
+  /api/v1/tenants/{tenantId}/repairs/projects/{projectId}/stock/return:
+    $ref: paths/repairs.yaml#/~1api~1v1~1tenants~1%7BtenantId%7D~1repairs~1projects~1%7BprojectId%7D~1stock~1return
+  /api/v1/tenants/{tenantId}/repairs/projects/{projectId}/stock/transfer:
+    $ref: paths/repairs.yaml#/~1api~1v1~1tenants~1%7BtenantId%7D~1repairs~1projects~1%7BprojectId%7D~1stock~1transfer
+  /api/v1/tenants/{tenantId}/repairs/projects/{projectId}/finance:
+    $ref: paths/repairs.yaml#/~1api~1v1~1tenants~1%7BtenantId%7D~1repairs~1projects~1%7BprojectId%7D~1finance
+  /api/v1/tenants/{tenantId}/repairs/projects/{projectId}/accruals:
+    $ref: paths/repairs.yaml#/~1api~1v1~1tenants~1%7BtenantId%7D~1repairs~1projects~1%7BprojectId%7D~1accruals
+  /api/v1/tenants/{tenantId}/repairs/acts/{documentId}/accruals:
+    $ref: paths/repairs.yaml#/~1api~1v1~1tenants~1%7BtenantId%7D~1repairs~1acts~1%7BdocumentId%7D~1accruals
+  /api/v1/tenants/{tenantId}/repairs/accruals/payout:
+    $ref: paths/repairs.yaml#/~1api~1v1~1tenants~1%7BtenantId%7D~1repairs~1accruals~1payout
+  /api/v1/tenants/{tenantId}/repairs/projects/{projectId}/subcontractors:
+    $ref: paths/repairs.yaml#/~1api~1v1~1tenants~1%7BtenantId%7D~1repairs~1projects~1%7BprojectId%7D~1subcontractors
+  /api/v1/tenants/{tenantId}/repairs/projects/{projectId}/subcontractors/{subcontractorId}:
+    $ref: paths/repairs.yaml#/~1api~1v1~1tenants~1%7BtenantId%7D~1repairs~1projects~1%7BprojectId%7D~1subcontractors~1%7BsubcontractorId%7D
+  /api/v1/tenants/{tenantId}/repairs/projects/{projectId}/client-link:
+    $ref: paths/repairs.yaml#/~1api~1v1~1tenants~1%7BtenantId%7D~1repairs~1projects~1%7BprojectId%7D~1client-link
+  /api/v1/public/client/{clientToken}:
+    $ref: paths/repairs.yaml#/~1api~1v1~1public~1client~1%7BclientToken%7D
+  /api/v1/public/client/{clientToken}/estimates/{version}/approve:
+    $ref: paths/repairs.yaml#/~1api~1v1~1public~1client~1%7BclientToken%7D~1estimates~1%7Bversion%7D~1approve
+  /api/v1/public/client/{clientToken}/documents/{documentId}/sign:
+    $ref: paths/repairs.yaml#/~1api~1v1~1public~1client~1%7BclientToken%7D~1documents~1%7BdocumentId%7D~1sign
 x-contract-status: design-proposal-not-implemented
 x-authorization-order:
   - authenticate

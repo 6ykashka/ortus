@@ -2,13 +2,18 @@
 // объекты примеров: область `<организация>:example`, `t-example-new`), совпадают с любыми новыми UUID ответа —
 // по порядку появления, в том числе внутри строк (ссылки загрузки). UUID сида сравниваются точно.
 // Отклонения deviations.ts: ignore, subset, ids.
-import { createScenarioState } from '../../src/msw/core/state.ts';
+import { createScenarioState, SEED_NOW } from '../../src/msw/core/state.ts';
+import { seedRepairs } from '../../src/msw/repairs/seed.ts';
 import type { Deviation } from './deviations.ts';
 
 const UUID_G = /[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}/g;
 
 /** UUID свежего состояния сервера (сид W0.12 и снимки примеров). */
-const KNOWN = new Set(JSON.stringify(createScenarioState()).match(UUID_G) ?? []);
+// W6.00: UUID сида «Ремонта и стройки» (состояние создаётся при первом обращении) — тоже сид, сравниваются точно.
+const KNOWN = new Set([
+  ...(JSON.stringify(createScenarioState()).match(UUID_G) ?? []),
+  ...(JSON.stringify(seedRepairs(undefined as never, SEED_NOW)).match(UUID_G) ?? []),
+]);
 
 function mask(node: unknown, isNew: (u: string) => boolean, seen: Map<string, string>): unknown {
   if (typeof node === 'string') {

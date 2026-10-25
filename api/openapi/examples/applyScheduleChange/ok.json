@@ -1,0 +1,244 @@
+{
+  "projectId": "73e23d56-2d9c-5a86-91d2-8969d90d1f5b",
+  "stages": [
+    {
+      "id": "26d6fbdb-cee9-5967-9c52-f11befa6f909",
+      "phase": "Черновые работы",
+      "name": "Демонтаж",
+      "startOn": "2026-10-05",
+      "endOn": "2026-10-09",
+      "durationWd": 5,
+      "offsetWd": 0,
+      "slackWd": 0,
+      "critical": true,
+      "status": "done",
+      "executorName": "Бригада О. Дронова"
+    },
+    {
+      "id": "f59f7727-3f0a-50ea-b261-587eb5b675b9",
+      "phase": "Черновые работы",
+      "name": "Электрика · черновая",
+      "startOn": "2026-10-12",
+      "endOn": "2026-10-23",
+      "durationWd": 10,
+      "offsetWd": 0,
+      "slackWd": 0,
+      "critical": true,
+      "status": "started",
+      "executorName": "ООО «ЭлектроПрофи»"
+    },
+    {
+      "id": "a0ceaeb1-a808-5ff1-9dea-addd18900ea0",
+      "phase": "Черновые работы",
+      "name": "Штукатурка стен",
+      "startOn": "2026-10-21",
+      "endOn": "2026-11-03",
+      "durationWd": 10,
+      "offsetWd": 0,
+      "slackWd": 0,
+      "critical": true,
+      "status": "planned",
+      "executorName": "Бригада О. Дронова"
+    },
+    {
+      "id": "8b53b80b-347c-5034-9954-dc316ebe7035",
+      "phase": "Черновые работы",
+      "name": "Стяжка пола",
+      "startOn": "2026-11-09",
+      "endOn": "2026-11-10",
+      "durationWd": 2,
+      "offsetWd": 2,
+      "slackWd": 3,
+      "critical": false,
+      "status": "planned",
+      "executorName": "Бригада О. Дронова"
+    },
+    {
+      "id": "3f028983-beed-5fe4-8678-071fe12f9c11",
+      "phase": "Чистовые работы",
+      "name": "Шпаклёвка и покраска стен",
+      "startOn": "2026-11-09",
+      "endOn": "2026-11-24",
+      "durationWd": 12,
+      "offsetWd": 0,
+      "slackWd": 0,
+      "critical": true,
+      "status": "planned",
+      "executorName": "Бригада О. Дронова"
+    },
+    {
+      "id": "6ddf4ea8-e52f-543a-9d96-8eb1af0347da",
+      "phase": "Чистовые работы",
+      "name": "Плитка в санузле",
+      "startOn": "2026-11-16",
+      "endOn": "2026-11-20",
+      "durationWd": 5,
+      "offsetWd": 0,
+      "slackWd": 5,
+      "critical": false,
+      "status": "planned"
+    },
+    {
+      "id": "22891af6-6aa1-5d0e-a5b1-3b41b7a626e5",
+      "phase": "Чистовые работы",
+      "name": "Укладка ламината",
+      "startOn": "2026-11-25",
+      "endOn": "2026-11-27",
+      "durationWd": 3,
+      "offsetWd": 0,
+      "slackWd": 0,
+      "critical": true,
+      "status": "planned",
+      "executorName": "Бригада О. Дронова"
+    },
+    {
+      "id": "4b6f0ec9-23bd-56c4-aaab-98a6a32d3c92",
+      "phase": "Чистовые работы",
+      "name": "Электрика · чистовая",
+      "startOn": "2026-11-25",
+      "endOn": "2026-11-26",
+      "durationWd": 2,
+      "offsetWd": 0,
+      "slackWd": 1,
+      "critical": false,
+      "status": "planned",
+      "executorName": "ООО «ЭлектроПрофи»"
+    },
+    {
+      "id": "3cbbe8ee-08eb-5b91-bf01-8917233459be",
+      "phase": "Сдача",
+      "name": "Уборка и подготовка к сдаче",
+      "startOn": "2026-11-30",
+      "endOn": "2026-11-30",
+      "durationWd": 1,
+      "offsetWd": 0,
+      "slackWd": 0,
+      "critical": true,
+      "status": "planned",
+      "executorName": "Бригада О. Дронова"
+    },
+    {
+      "id": "31cafa80-a18d-5cda-b57c-13c38a2adfc6",
+      "phase": "Сдача",
+      "name": "Сдача объекта",
+      "startOn": "2026-12-01",
+      "endOn": "2026-12-01",
+      "durationWd": 1,
+      "offsetWd": 0,
+      "slackWd": 0,
+      "critical": true,
+      "status": "planned",
+      "executorName": "Алексей Соколов",
+      "executorMemberId": "ebdf9767-327e-55cc-8c65-cb5fd313bdf4"
+    }
+  ],
+  "links": [
+    {
+      "fromStageId": "26d6fbdb-cee9-5967-9c52-f11befa6f909",
+      "toStageId": "f59f7727-3f0a-50ea-b261-587eb5b675b9",
+      "lagDays": 0
+    },
+    {
+      "fromStageId": "f59f7727-3f0a-50ea-b261-587eb5b675b9",
+      "toStageId": "a0ceaeb1-a808-5ff1-9dea-addd18900ea0",
+      "lagDays": -3,
+      "note": "начинаем с комнат, где проводка готова"
+    },
+    {
+      "fromStageId": "a0ceaeb1-a808-5ff1-9dea-addd18900ea0",
+      "toStageId": "8b53b80b-347c-5034-9954-dc316ebe7035",
+      "lagDays": 0
+    },
+    {
+      "fromStageId": "a0ceaeb1-a808-5ff1-9dea-addd18900ea0",
+      "toStageId": "3f028983-beed-5fe4-8678-071fe12f9c11",
+      "lagDays": 5,
+      "note": "сушка штукатурки"
+    },
+    {
+      "fromStageId": "8b53b80b-347c-5034-9954-dc316ebe7035",
+      "toStageId": "6ddf4ea8-e52f-543a-9d96-8eb1af0347da",
+      "lagDays": 3,
+      "note": "стяжка набирает прочность"
+    },
+    {
+      "fromStageId": "8b53b80b-347c-5034-9954-dc316ebe7035",
+      "toStageId": "22891af6-6aa1-5d0e-a5b1-3b41b7a626e5",
+      "lagDays": 10,
+      "note": "сушка стяжки под ламинат"
+    },
+    {
+      "fromStageId": "3f028983-beed-5fe4-8678-071fe12f9c11",
+      "toStageId": "22891af6-6aa1-5d0e-a5b1-3b41b7a626e5",
+      "lagDays": 0
+    },
+    {
+      "fromStageId": "3f028983-beed-5fe4-8678-071fe12f9c11",
+      "toStageId": "4b6f0ec9-23bd-56c4-aaab-98a6a32d3c92",
+      "lagDays": 0
+    },
+    {
+      "fromStageId": "6ddf4ea8-e52f-543a-9d96-8eb1af0347da",
+      "toStageId": "3cbbe8ee-08eb-5b91-bf01-8917233459be",
+      "lagDays": 0
+    },
+    {
+      "fromStageId": "22891af6-6aa1-5d0e-a5b1-3b41b7a626e5",
+      "toStageId": "3cbbe8ee-08eb-5b91-bf01-8917233459be",
+      "lagDays": 0
+    },
+    {
+      "fromStageId": "4b6f0ec9-23bd-56c4-aaab-98a6a32d3c92",
+      "toStageId": "3cbbe8ee-08eb-5b91-bf01-8917233459be",
+      "lagDays": 0
+    },
+    {
+      "fromStageId": "3cbbe8ee-08eb-5b91-bf01-8917233459be",
+      "toStageId": "31cafa80-a18d-5cda-b57c-13c38a2adfc6",
+      "lagDays": 0
+    }
+  ],
+  "baseline": {
+    "version": 1,
+    "dueOn": "2026-11-27",
+    "approvedAt": "2026-10-01T09:00:00Z"
+  },
+  "forecastDueOn": "2026-12-01",
+  "delayWd": 2,
+  "holidays": ["2026-11-04"],
+  "issues": [
+    {
+      "kind": "no_executor",
+      "stageId": "6ddf4ea8-e52f-543a-9d96-8eb1af0347da",
+      "text": "Нет исполнителя"
+    },
+    {
+      "kind": "executor_busy",
+      "stageId": "8b53b80b-347c-5034-9954-dc316ebe7035",
+      "text": "Исполнитель занят: «Шпаклёвка и покраска стен» идёт параллельно"
+    }
+  ],
+  "changes": [
+    {
+      "id": "54aeb065-7079-5cc3-8ccf-b4605e92db3e",
+      "at": "2026-10-20T07:30:00Z",
+      "authorName": "Дарья Зимина",
+      "text": "«Стяжка пола»: начало с запасом 2 раб. дн.",
+      "reason": "material_delay"
+    },
+    {
+      "id": "45b5ad98-0fd0-584f-88a3-b8d5cd33e6ca",
+      "at": "2026-10-16T10:00:00Z",
+      "authorName": "Алексей Соколов",
+      "text": "«Электрика · черновая»: длительность 8 → 10 раб. дней, окончание 21.10 → 23.10",
+      "reason": "executor_busy"
+    },
+    {
+      "id": "a12d130c-68ec-520d-a36e-645d58c19d80",
+      "at": "2026-10-01T09:00:00Z",
+      "authorName": "Дарья Зимина",
+      "text": "Базовый план утверждён вместе с договором № 42, сдача объекта 27.11"
+    }
+  ],
+  "revision": 2
+}

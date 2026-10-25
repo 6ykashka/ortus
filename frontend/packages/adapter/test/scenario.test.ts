@@ -138,7 +138,13 @@ describe('постоянный сценарий и dev-маршрут', () => {
   it('GET /api/v1/dev/scenario: токены приглашений сида для страниц входа по приглашению', async () => {
     const r = await api.anon().get('/api/v1/dev/scenario');
     const body = r.body as { presets: string[]; invitations: { email: string; token: string }[] };
-    expect(body.presets).toEqual(['logistics-ready', 'seats-full', 'trial-ended', 'storage-full']);
+    expect(body.presets).toEqual([
+      'logistics-ready',
+      'seats-full',
+      'trial-ended',
+      'storage-full',
+      'repairs-ready',
+    ]);
     expect(body.invitations.map((i) => i.email)).toEqual([
       'o.petrova@alta.example',
       's.ilyin@alta.example',

@@ -1,0 +1,40 @@
+{
+  "items": [
+    {
+      "projectId": "79ad020d-bd3a-527d-8a9b-c07b72891b4b",
+      "projectName": "Дом на Лесной · Мытищи",
+      "priceItemId": "70c1b2a7-ed5f-5300-be6b-3382ae7e4510",
+      "name": "Керамогранит 60×60",
+      "unit": "m2",
+      "quantity": "4",
+      "cost": {
+        "amountMinor": 616000,
+        "currency": "RUB"
+      }
+    },
+    {
+      "projectId": "79ad020d-bd3a-527d-8a9b-c07b72891b4b",
+      "projectName": "Дом на Лесной · Мытищи",
+      "priceItemId": "9951ac09-3dd0-5cd5-a5f2-694093d8c625",
+      "name": "Грунтовка глубокого проникновения",
+      "unit": "liter",
+      "quantity": "12",
+      "cost": {
+        "amountMinor": 93600,
+        "currency": "RUB"
+      }
+    },
+    {
+      "projectId": "2c1cc0f1-d23e-50bd-ba0a-fc1328e73af2",
+      "projectName": "Профсоюзная, 64 · квартира 210",
+      "priceItemId": "6123d5f7-3d8a-5ca9-915a-385ee7ceaaec",
+      "name": "Плинтус МДФ",
+      "unit": "m",
+      "quantity": "8",
+      "cost": {
+        "amountMinor": 212000,
+        "currency": "RUB"
+      }
+    }
+  ]
+}

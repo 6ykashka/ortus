@@ -64,7 +64,7 @@ func TestManifests(t *testing.T) {
 	}
 	checkManifest(t, "fleet", "Логистика", []string{"calendar", "files", "forms"}, 23) // W2.71: + fleet.reservations.choose
 	checkManifest(t, "spa", "Салон и SPA", []string{"calendar", "forms", "inventory", "cash"}, 6)
-	checkManifest(t, "repairs", "Ремонт и стройка", []string{"files", "tasks"}, 14)
+	checkManifest(t, "repairs", "Ремонт и стройка", []string{"files", "tasks"}, 21) // W6.00: + 7 ключей этапа 6
 	for _, key := range []string{"tasks", "logistics", "", "chat"} {
 		if _, ok := Manifest(key, StateActive, 1); ok {
 			t.Errorf("Manifest(%q): only installable modules have manifests", key)

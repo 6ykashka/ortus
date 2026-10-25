@@ -1,0 +1,34 @@
+{
+  "id": "54aeb065-7079-5cc3-8ccf-b4605e92db3e",
+  "number": "ЗК-7",
+  "supplier": "КерамТорг",
+  "state": "ordered",
+  "lines": [
+    {
+      "supplyRequestId": "46c689fd-11d8-50e4-988b-cc6df010829e",
+      "projectId": "3a3a819e-f3f5-55f9-9ba6-6f9bf2a9bb52",
+      "priceItemId": "70c1b2a7-ed5f-5300-be6b-3382ae7e4510",
+      "quantity": "70",
+      "price": {
+        "amountMinor": 154000,
+        "currency": "RUB"
+      }
+    },
+    {
+      "supplyRequestId": "d18edcfd-25f1-580d-8d4b-8a1c71844b78",
+      "projectId": "73e23d56-2d9c-5a86-91d2-8969d90d1f5b",
+      "priceItemId": "70c1b2a7-ed5f-5300-be6b-3382ae7e4510",
+      "quantity": "18",
+      "price": {
+        "amountMinor": 175000,
+        "currency": "RUB"
+      }
+    }
+  ],
+  "total": {
+    "amountMinor": 13930000,
+    "currency": "RUB"
+  },
+  "createdAt": "2026-10-20T07:30:00Z",
+  "revision": 1
+}

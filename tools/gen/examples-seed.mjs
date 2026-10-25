@@ -25,6 +25,7 @@ import { stage4w405Examples } from './examples-w405.mjs';
 import { stage5w500Examples } from './examples-w500.mjs';
 import { stage4w406Examples } from './examples-w406.mjs';
 import { stage4w407Examples } from './examples-w407.mjs';
+import { stage6w600Examples } from './examples-w600.mjs';
 import { seedUuid } from './lib/examples.mjs';
 import { EXAMPLES_DIR, SEED_IDS_PATH } from './lib/paths.mjs';
 import { flattenActions, loadCatalog } from './lib/permissions.mjs';
@@ -998,6 +999,11 @@ function build() {
 
   // Контрактный PR этапа 5 (W5.00): касса, склад, SPA — сид «Альты» (cash.js seedAlta).
   for (const [op, bodies] of Object.entries(stage5w500Examples({ id, problem, page, NOW }))) {
+    for (const [name, body] of Object.entries(bodies)) add(op, name, body);
+  }
+
+  // Контрактный PR этапа 6 (W6.00): «Ремонт и стройка» — снимки сценарного сервера на сиде эталона «Альты».
+  for (const [op, bodies] of Object.entries(stage6w600Examples({ id }))) {
     for (const [name, body] of Object.entries(bodies)) add(op, name, body);
   }
   return ex;

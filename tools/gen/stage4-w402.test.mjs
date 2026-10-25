@@ -18,6 +18,7 @@ import { checkScreens } from './lib/screens.mjs';
 import { checkAgainstSource, loadDeltas } from './lib/source-diff.mjs';
 import { readYaml } from './lib/yaml-io.mjs';
 import { W5_ADDED_KEYS, W5_CODES } from './lib/stage5.mjs';
+import { NEW_PERMISSIONS } from './stage6-w600-spec.mjs'; // W6.00: семь ключей repairs этапа 6 не считаются
 
 const doc = bundle();
 const source = readYaml(SOURCE_0_1);
@@ -161,6 +162,7 @@ describe('контракт 0.7.0-stage4 (W4.02): виды областей', () 
         k !== 'fleet.reservations.choose' &&
         k !== 'branding.manage' &&
         !W5_ADDED_KEYS.includes(k) &&
+        !NEW_PERMISSIONS.includes(k) &&
         a.module !== 'core.knowledge',
     );
     // W5.00 (0.12.0-stage5): ключи и коды этапа 5 не считаются; cash.manage → cash.accounts.manage — на один ключ меньше.

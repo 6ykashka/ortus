@@ -328,6 +328,55 @@
           "description": "Вести снабжение",
           "allowedScopeKinds": ["tenant", "org_unit"],
           "sensitivity": "standard"
+        },
+        {
+          "key": "repairs.measurements.edit",
+          "moduleKey": "repairs",
+          "description": "Вводить замер",
+          "allowedScopeKinds": ["tenant", "org_unit", "project"],
+          "sensitivity": "standard"
+        },
+        {
+          "key": "repairs.documents.send",
+          "moduleKey": "repairs",
+          "description": "Отправлять документы на подпись",
+          "allowedScopeKinds": ["tenant", "org_unit", "project"],
+          "sensitivity": "personal"
+        },
+        {
+          "key": "repairs.crew.accrue",
+          "moduleKey": "repairs",
+          "description": "Начислять бригаде по акту",
+          "allowedScopeKinds": ["tenant", "org_unit", "project"],
+          "sensitivity": "financial"
+        },
+        {
+          "key": "repairs.crew.pay",
+          "moduleKey": "repairs",
+          "description": "Выплачивать бригаде через кассу",
+          "allowedScopeKinds": ["tenant", "org_unit", "project"],
+          "sensitivity": "financial"
+        },
+        {
+          "key": "repairs.subcontractors.manage",
+          "moduleKey": "repairs",
+          "description": "Открывать доступ подрядчикам",
+          "allowedScopeKinds": ["tenant", "org_unit", "project"],
+          "sensitivity": "personal"
+        },
+        {
+          "key": "repairs.client_link.manage",
+          "moduleKey": "repairs",
+          "description": "Выпускать и отзывать ссылку кабинета заказчика",
+          "allowedScopeKinds": ["tenant", "org_unit", "project"],
+          "sensitivity": "personal"
+        },
+        {
+          "key": "repairs.projects.hand_over",
+          "moduleKey": "repairs",
+          "description": "Сдавать объекты",
+          "allowedScopeKinds": ["tenant", "org_unit", "project"],
+          "sensitivity": "standard"
         }
       ],
       "datasets": [],

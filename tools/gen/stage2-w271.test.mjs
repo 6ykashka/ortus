@@ -15,6 +15,7 @@ import { parsePointer } from './lib/refs.mjs';
 import { checkAgainstSource, loadDeltas } from './lib/source-diff.mjs';
 import { readYaml } from './lib/yaml-io.mjs';
 import { W5_ADDED_KEYS, W5_CODES } from './lib/stage5.mjs';
+import { NEW_PERMISSIONS } from './stage6-w600-spec.mjs'; // W6.00: семь ключей repairs этапа 6 не считаются
 
 const doc = bundle();
 const source = readYaml(SOURCE_0_1);
@@ -91,7 +92,10 @@ describe('контракт 0.6.3-stage2 (W2.71): права и коды', () => 
     // (core.knowledge) не считаются — остальных 120, как в 0.7.1.
     const own = [...actions].filter(
       ([k, x]) =>
-        k !== 'branding.manage' && !W5_ADDED_KEYS.includes(k) && x.module !== 'core.knowledge',
+        k !== 'branding.manage' &&
+        !W5_ADDED_KEYS.includes(k) &&
+        !NEW_PERMISSIONS.includes(k) &&
+        x.module !== 'core.knowledge',
     );
     // W5.00 (0.12.0-stage5): ключи и коды этапа 5 не считаются; cash.manage → cash.accounts.manage — на один ключ меньше.
     assert.equal(own.length, 119);

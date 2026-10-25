@@ -24,11 +24,13 @@ var sensitivity = map[string]string{
 	"knowledge.members.manage": Sensitive, "members.invite": Sensitive,
 	"members.manage": Sensitive, "modules.settings.manage": Sensitive, "org_units.manage": Sensitive,
 	"roles.assign": Sensitive, "roles.manage": Sensitive, "tasks.automation.manage": Sensitive,
-	"tasks.members.manage": Sensitive,
+	"tasks.members.manage": Sensitive, "repairs.documents.send": Sensitive,
+	"repairs.subcontractors.manage": Sensitive, "repairs.client_link.manage": Sensitive,
 
 	"cash.payroll.post": Restricted, "cash.reports.finance": Restricted, "chat.audit.read": Restricted,
 	"chat.pdn.read": Restricted, "fleet.earnings.manage": Restricted,
 	"fleet.earnings.read": Restricted, "repairs.estimates.edit": Restricted, "repairs.finance.read": Restricted,
+	"repairs.crew.accrue": Restricted, "repairs.crew.pay": Restricted,
 }
 
 // Sensitivity returns the level of an action.

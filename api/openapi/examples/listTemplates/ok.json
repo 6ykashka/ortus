@@ -1,0 +1,609 @@
+{
+  "items": [
+    {
+      "id": "e48bdd15-c170-58da-bab2-72389ca237f9",
+      "name": "Капитальный ремонт квартиры",
+      "kind": "капитальный ремонт",
+      "source": "ortus",
+      "usedByObjects": 2,
+      "updatedAt": "2026-09-12T09:00:00Z",
+      "lines": [
+        {
+          "priceItemId": "9bf06bf1-e4bf-5f7d-a669-32be1c1788cb",
+          "section": "Демонтаж",
+          "formula": "floor"
+        },
+        {
+          "priceItemId": "cfef6f3d-1e8f-508f-9ccf-10117e3cd241",
+          "section": "Демонтаж",
+          "quantity": "2"
+        },
+        {
+          "priceItemId": "b5c60719-aa8e-5761-ab81-e24ac18d487c",
+          "section": "Электрика",
+          "quantity": "30"
+        },
+        {
+          "priceItemId": "2cc32eea-3fb1-549d-9dba-1c6a23d5a115",
+          "section": "Электрика",
+          "quantity": "1"
+        },
+        {
+          "priceItemId": "500f594a-ff1e-5ed3-a2da-e2d98b7f0463",
+          "section": "Стены",
+          "formula": "walls_dry"
+        },
+        {
+          "priceItemId": "498b310d-cbc3-5dd8-80d7-81ec0c271a41",
+          "section": "Стены",
+          "formula": "walls_dry"
+        },
+        {
+          "priceItemId": "852229b6-5c29-5856-baab-5f33bcf782bf",
+          "section": "Полы",
+          "formula": "floor"
+        },
+        {
+          "priceItemId": "ad72babe-efdc-5b00-9a66-1e781515058d",
+          "section": "Полы",
+          "formula": "floor_dry"
+        },
+        {
+          "priceItemId": "2f14d487-6501-5205-b5d5-de9c8016b647",
+          "section": "Полы",
+          "formula": "wet"
+        },
+        {
+          "priceItemId": "e449c613-8be6-5859-ba69-d5db86b0fcb5",
+          "section": "Полы",
+          "formula": "perimeter_dry"
+        },
+        {
+          "priceItemId": "28c4ac2f-7f41-5565-a807-0650562712f9",
+          "section": "Материалы",
+          "formula": "floor_dry",
+          "coef": "1.07"
+        },
+        {
+          "priceItemId": "ba92d36a-7bd5-55b8-9754-4ef1d532d793",
+          "section": "Материалы",
+          "formula": "walls_dry",
+          "coef": "0.4"
+        },
+        {
+          "priceItemId": "397ebbea-3961-5c4a-96a8-8a276ed48997",
+          "section": "Материалы",
+          "quantity": "1"
+        },
+        {
+          "priceItemId": "6123d5f7-3d8a-5ca9-915a-385ee7ceaaec",
+          "section": "Материалы",
+          "formula": "perimeter_dry",
+          "coef": "1.05"
+        }
+      ],
+      "stages": [
+        {
+          "name": "Демонтаж",
+          "pauseDays": 0,
+          "ratePerDay": "12"
+        },
+        {
+          "name": "Электрика · черновая",
+          "pauseDays": 0,
+          "ratePerDay": "5"
+        },
+        {
+          "name": "Штукатурка стен",
+          "pauseDays": -3,
+          "ratePerDay": "12"
+        },
+        {
+          "name": "Стяжка пола",
+          "pauseDays": 0,
+          "ratePerDay": "25"
+        },
+        {
+          "name": "Шпаклёвка и покраска",
+          "pauseDays": 5,
+          "ratePerDay": "10"
+        },
+        {
+          "name": "Плитка в санузле",
+          "pauseDays": 3,
+          "ratePerDay": "5"
+        },
+        {
+          "name": "Укладка ламината",
+          "pauseDays": 10,
+          "ratePerDay": "15"
+        },
+        {
+          "name": "Электрика · чистовая",
+          "pauseDays": 0,
+          "ratePerDay": "20"
+        },
+        {
+          "name": "Уборка и сдача объекта",
+          "pauseDays": 0
+        }
+      ],
+      "documents": ["contract", "act", "act", "act", "act", "handover_act", "warranty"],
+      "checklist": [
+        "Стены: отклонение не больше 2 мм на 2 м",
+        "Углы и откосы ровные, без трещин",
+        "Плитка: швы ровные, пустот при простукивании нет",
+        "Ламинат без щелей и скрипа, зазоры закрыты плинтусом",
+        "Розетки и выключатели работают, группы подписаны в щитке",
+        "Сантехника без протечек, вода уходит свободно",
+        "Двери и окна открываются без усилия",
+        "Мусор вывезен, объект убран"
+      ],
+      "materials": [
+        {
+          "priceItemId": "28c4ac2f-7f41-5565-a807-0650562712f9",
+          "section": "Материалы",
+          "formula": "floor_dry",
+          "coef": "1.07"
+        },
+        {
+          "priceItemId": "ba92d36a-7bd5-55b8-9754-4ef1d532d793",
+          "section": "Материалы",
+          "formula": "walls_dry",
+          "coef": "0.4"
+        },
+        {
+          "priceItemId": "397ebbea-3961-5c4a-96a8-8a276ed48997",
+          "section": "Материалы",
+          "quantity": "1"
+        },
+        {
+          "priceItemId": "6123d5f7-3d8a-5ca9-915a-385ee7ceaaec",
+          "section": "Материалы",
+          "formula": "perimeter_dry",
+          "coef": "1.05"
+        },
+        {
+          "priceItemId": "70c1b2a7-ed5f-5300-be6b-3382ae7e4510",
+          "section": "Материалы",
+          "formula": "wet",
+          "coef": "1.1"
+        },
+        {
+          "priceItemId": "9951ac09-3dd0-5cd5-a5f2-694093d8c625",
+          "section": "Материалы",
+          "formula": "walls",
+          "coef": "0.2"
+        }
+      ],
+      "warrantyMonths": 24,
+      "revision": 1
+    },
+    {
+      "id": "abd98dae-5eef-5303-a2f5-fb181e23a9ef",
+      "name": "Косметический ремонт",
+      "kind": "косметический ремонт",
+      "source": "ortus",
+      "usedByObjects": 1,
+      "updatedAt": "2026-09-01T09:00:00Z",
+      "lines": [
+        {
+          "priceItemId": "cfef6f3d-1e8f-508f-9ccf-10117e3cd241",
+          "section": "Демонтаж",
+          "quantity": "1"
+        },
+        {
+          "priceItemId": "8171fc5a-bd6e-580f-b82f-41c93e7dddbc",
+          "section": "Стены",
+          "formula": "walls_dry"
+        },
+        {
+          "priceItemId": "ad72babe-efdc-5b00-9a66-1e781515058d",
+          "section": "Полы",
+          "formula": "floor_dry"
+        },
+        {
+          "priceItemId": "e449c613-8be6-5859-ba69-d5db86b0fcb5",
+          "section": "Полы",
+          "formula": "perimeter_dry"
+        },
+        {
+          "priceItemId": "c180ec0d-3f13-59cb-8e13-61797b0113a6",
+          "section": "Материалы",
+          "formula": "floor_dry",
+          "coef": "1.07"
+        },
+        {
+          "priceItemId": "6123d5f7-3d8a-5ca9-915a-385ee7ceaaec",
+          "section": "Материалы",
+          "formula": "perimeter_dry",
+          "coef": "1.05"
+        }
+      ],
+      "stages": [
+        {
+          "name": "Подготовка и вывоз мусора",
+          "pauseDays": 0
+        },
+        {
+          "name": "Поклейка обоев",
+          "pauseDays": 0,
+          "ratePerDay": "20"
+        },
+        {
+          "name": "Укладка ламината",
+          "pauseDays": 0,
+          "ratePerDay": "20"
+        },
+        {
+          "name": "Монтаж плинтуса",
+          "pauseDays": 0,
+          "ratePerDay": "30"
+        },
+        {
+          "name": "Уборка и сдача объекта",
+          "pauseDays": 0
+        }
+      ],
+      "documents": ["contract", "handover_act", "warranty"],
+      "checklist": [
+        "Обои: стыки не видны, пузырей нет",
+        "Ламинат без щелей и скрипа",
+        "Плинтус закреплён, углы подогнаны",
+        "Мусор вывезен, объект убран"
+      ],
+      "materials": [
+        {
+          "priceItemId": "c180ec0d-3f13-59cb-8e13-61797b0113a6",
+          "section": "Материалы",
+          "formula": "floor_dry",
+          "coef": "1.07"
+        },
+        {
+          "priceItemId": "6123d5f7-3d8a-5ca9-915a-385ee7ceaaec",
+          "section": "Материалы",
+          "formula": "perimeter_dry",
+          "coef": "1.05"
+        },
+        {
+          "priceItemId": "9951ac09-3dd0-5cd5-a5f2-694093d8c625",
+          "section": "Материалы",
+          "formula": "walls",
+          "coef": "0.2"
+        }
+      ],
+      "warrantyMonths": 12,
+      "revision": 1
+    },
+    {
+      "id": "b0fea3d5-ba5d-5fb5-abb3-d21452897daa",
+      "name": "Ремонт под ключ · дом",
+      "kind": "ремонт под ключ",
+      "source": "own",
+      "usedByObjects": 1,
+      "updatedAt": "2026-09-12T09:00:00Z",
+      "lines": [
+        {
+          "priceItemId": "9bf06bf1-e4bf-5f7d-a669-32be1c1788cb",
+          "section": "Демонтаж",
+          "formula": "floor"
+        },
+        {
+          "priceItemId": "cfef6f3d-1e8f-508f-9ccf-10117e3cd241",
+          "section": "Демонтаж",
+          "quantity": "4"
+        },
+        {
+          "priceItemId": "b5c60719-aa8e-5761-ab81-e24ac18d487c",
+          "section": "Электрика",
+          "quantity": "64"
+        },
+        {
+          "priceItemId": "2cc32eea-3fb1-549d-9dba-1c6a23d5a115",
+          "section": "Электрика",
+          "quantity": "1"
+        },
+        {
+          "priceItemId": "500f594a-ff1e-5ed3-a2da-e2d98b7f0463",
+          "section": "Стены",
+          "formula": "walls_dry"
+        },
+        {
+          "priceItemId": "498b310d-cbc3-5dd8-80d7-81ec0c271a41",
+          "section": "Стены",
+          "formula": "walls_dry"
+        },
+        {
+          "priceItemId": "852229b6-5c29-5856-baab-5f33bcf782bf",
+          "section": "Полы",
+          "formula": "floor"
+        },
+        {
+          "priceItemId": "ad72babe-efdc-5b00-9a66-1e781515058d",
+          "section": "Полы",
+          "formula": "floor_dry"
+        },
+        {
+          "priceItemId": "2f14d487-6501-5205-b5d5-de9c8016b647",
+          "section": "Полы",
+          "formula": "wet"
+        },
+        {
+          "priceItemId": "e449c613-8be6-5859-ba69-d5db86b0fcb5",
+          "section": "Полы",
+          "formula": "perimeter_dry"
+        },
+        {
+          "priceItemId": "aa5c1bc8-d3e6-50a5-8563-064b581747e8",
+          "section": "Сантехника",
+          "quantity": "8"
+        },
+        {
+          "priceItemId": "28c4ac2f-7f41-5565-a807-0650562712f9",
+          "section": "Материалы",
+          "formula": "floor_dry",
+          "coef": "1.07"
+        },
+        {
+          "priceItemId": "ba92d36a-7bd5-55b8-9754-4ef1d532d793",
+          "section": "Материалы",
+          "formula": "walls_dry",
+          "coef": "0.4"
+        },
+        {
+          "priceItemId": "397ebbea-3961-5c4a-96a8-8a276ed48997",
+          "section": "Материалы",
+          "quantity": "2"
+        },
+        {
+          "priceItemId": "6123d5f7-3d8a-5ca9-915a-385ee7ceaaec",
+          "section": "Материалы",
+          "formula": "perimeter_dry",
+          "coef": "1.05"
+        },
+        {
+          "priceItemId": "70c1b2a7-ed5f-5300-be6b-3382ae7e4510",
+          "section": "Материалы",
+          "formula": "wet",
+          "coef": "1.1"
+        }
+      ],
+      "stages": [
+        {
+          "name": "Демонтаж",
+          "pauseDays": 0,
+          "ratePerDay": "12"
+        },
+        {
+          "name": "Электрика · черновая",
+          "pauseDays": 0,
+          "ratePerDay": "5"
+        },
+        {
+          "name": "Штукатурка стен",
+          "pauseDays": -3,
+          "ratePerDay": "12"
+        },
+        {
+          "name": "Стяжка пола",
+          "pauseDays": 0,
+          "ratePerDay": "25"
+        },
+        {
+          "name": "Шпаклёвка и покраска",
+          "pauseDays": 5,
+          "ratePerDay": "10"
+        },
+        {
+          "name": "Плитка в санузле",
+          "pauseDays": 3,
+          "ratePerDay": "5"
+        },
+        {
+          "name": "Укладка ламината",
+          "pauseDays": 10,
+          "ratePerDay": "15"
+        },
+        {
+          "name": "Сантехника · чистовая",
+          "pauseDays": 0,
+          "ratePerDay": "3"
+        },
+        {
+          "name": "Электрика · чистовая",
+          "pauseDays": 0,
+          "ratePerDay": "20"
+        },
+        {
+          "name": "Уборка и сдача объекта",
+          "pauseDays": 0
+        }
+      ],
+      "documents": ["contract", "act", "act", "act", "act", "act", "handover_act", "warranty"],
+      "checklist": [
+        "Стены: отклонение не больше 2 мм на 2 м",
+        "Углы и откосы ровные, без трещин",
+        "Плитка: швы ровные, пустот при простукивании нет",
+        "Ламинат без щелей и скрипа, зазоры закрыты плинтусом",
+        "Розетки и выключатели работают, группы подписаны в щитке",
+        "Сантехника без протечек, вода уходит свободно",
+        "Двери и окна открываются без усилия",
+        "Котельная: опрессовка отопления пройдена",
+        "Лестница: перила закреплены, ступени не скрипят",
+        "Мусор вывезен, объект убран"
+      ],
+      "materials": [
+        {
+          "priceItemId": "28c4ac2f-7f41-5565-a807-0650562712f9",
+          "section": "Материалы",
+          "formula": "floor_dry",
+          "coef": "1.07"
+        },
+        {
+          "priceItemId": "ba92d36a-7bd5-55b8-9754-4ef1d532d793",
+          "section": "Материалы",
+          "formula": "walls_dry",
+          "coef": "0.4"
+        },
+        {
+          "priceItemId": "397ebbea-3961-5c4a-96a8-8a276ed48997",
+          "section": "Материалы",
+          "quantity": "2"
+        },
+        {
+          "priceItemId": "6123d5f7-3d8a-5ca9-915a-385ee7ceaaec",
+          "section": "Материалы",
+          "formula": "perimeter_dry",
+          "coef": "1.05"
+        },
+        {
+          "priceItemId": "70c1b2a7-ed5f-5300-be6b-3382ae7e4510",
+          "section": "Материалы",
+          "formula": "wet",
+          "coef": "1.1"
+        },
+        {
+          "priceItemId": "9951ac09-3dd0-5cd5-a5f2-694093d8c625",
+          "section": "Материалы",
+          "formula": "walls",
+          "coef": "0.2"
+        }
+      ],
+      "warrantyMonths": 24,
+      "revision": 1,
+      "sourceProjectId": "79ad020d-bd3a-527d-8a9b-c07b72891b4b"
+    },
+    {
+      "id": "ae49fb5f-2799-554a-a293-22bab99460f8",
+      "name": "Коммерческое помещение",
+      "kind": "коммерческий ремонт",
+      "source": "ortus",
+      "usedByObjects": 1,
+      "updatedAt": "2026-09-01T09:00:00Z",
+      "lines": [
+        {
+          "priceItemId": "c04f017f-a200-5503-98b9-ce62ca743f65",
+          "section": "Демонтаж",
+          "quantity": "26"
+        },
+        {
+          "priceItemId": "cfef6f3d-1e8f-508f-9ccf-10117e3cd241",
+          "section": "Демонтаж",
+          "quantity": "3"
+        },
+        {
+          "priceItemId": "b5c60719-aa8e-5761-ab81-e24ac18d487c",
+          "section": "Электрика",
+          "quantity": "40"
+        },
+        {
+          "priceItemId": "2cc32eea-3fb1-549d-9dba-1c6a23d5a115",
+          "section": "Электрика",
+          "quantity": "1"
+        },
+        {
+          "priceItemId": "498b310d-cbc3-5dd8-80d7-81ec0c271a41",
+          "section": "Стены",
+          "formula": "walls"
+        },
+        {
+          "priceItemId": "852229b6-5c29-5856-baab-5f33bcf782bf",
+          "section": "Полы",
+          "formula": "floor"
+        },
+        {
+          "priceItemId": "2f14d487-6501-5205-b5d5-de9c8016b647",
+          "section": "Полы",
+          "formula": "floor"
+        },
+        {
+          "priceItemId": "ff2862ae-e9b5-5fc6-b2af-4f8855cecf07",
+          "section": "Материалы",
+          "formula": "walls",
+          "coef": "0.3"
+        },
+        {
+          "priceItemId": "70c1b2a7-ed5f-5300-be6b-3382ae7e4510",
+          "section": "Материалы",
+          "formula": "floor",
+          "coef": "1.1"
+        },
+        {
+          "priceItemId": "397ebbea-3961-5c4a-96a8-8a276ed48997",
+          "section": "Материалы",
+          "quantity": "2"
+        }
+      ],
+      "stages": [
+        {
+          "name": "Демонтаж перегородок",
+          "pauseDays": 0,
+          "ratePerDay": "10"
+        },
+        {
+          "name": "Электрика · черновая",
+          "pauseDays": 0,
+          "ratePerDay": "6"
+        },
+        {
+          "name": "Стяжка пола",
+          "pauseDays": 0,
+          "ratePerDay": "30"
+        },
+        {
+          "name": "Шпаклёвка и покраска",
+          "pauseDays": 0,
+          "ratePerDay": "15"
+        },
+        {
+          "name": "Укладка плитки",
+          "pauseDays": 3,
+          "ratePerDay": "8"
+        },
+        {
+          "name": "Электрика · чистовая",
+          "pauseDays": 0,
+          "ratePerDay": "25"
+        },
+        {
+          "name": "Уборка и сдача объекта",
+          "pauseDays": 0
+        }
+      ],
+      "documents": ["contract", "act", "act", "handover_act", "warranty"],
+      "checklist": [
+        "Покрытие пола ровное, швы затёрты",
+        "Освещение и розетки работают по проекту",
+        "Пути эвакуации свободны",
+        "Мусор вывезен, помещение убрано"
+      ],
+      "materials": [
+        {
+          "priceItemId": "ff2862ae-e9b5-5fc6-b2af-4f8855cecf07",
+          "section": "Материалы",
+          "formula": "walls",
+          "coef": "0.3"
+        },
+        {
+          "priceItemId": "70c1b2a7-ed5f-5300-be6b-3382ae7e4510",
+          "section": "Материалы",
+          "formula": "floor",
+          "coef": "1.1"
+        },
+        {
+          "priceItemId": "397ebbea-3961-5c4a-96a8-8a276ed48997",
+          "section": "Материалы",
+          "quantity": "2"
+        },
+        {
+          "priceItemId": "9951ac09-3dd0-5cd5-a5f2-694093d8c625",
+          "section": "Материалы",
+          "formula": "walls",
+          "coef": "0.2"
+        }
+      ],
+      "warrantyMonths": 12,
+      "revision": 1
+    }
+  ]
+}

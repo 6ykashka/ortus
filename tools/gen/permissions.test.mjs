@@ -123,7 +123,7 @@ describe('каталог прав api/permissions.yaml', () => {
     }
   });
 
-  it('14 ключей cash/inventory/spa из OpenAPI 0.1, forms.responses.assign и ключи этапов добавлены, итого 129', () => {
+  it('14 ключей cash/inventory/spa из OpenAPI 0.1, forms.responses.assign и ключи этапов добавлены, итого 129 + 7 ключей repairs этапа 6', () => {
     for (const k of ADDED_LATER) assert.ok(actions.has(k), k);
     for (const [mod, keys] of Object.entries(ADDED)) {
       assert.equal(catalog.modules[mod]?.proposed, true, `модуль ${mod} помечен proposed`);
@@ -136,7 +136,8 @@ describe('каталог прав api/permissions.yaml', () => {
     assert.deepEqual(assign.scopes, ['tenant', 'unit', 'project']);
     assert.match(assign.note ?? '', /PROPOSED W0\.07/);
     for (const k of W404_KEYS) assert.equal(actions.get(k)?.module, 'core.knowledge', k);
-    assert.equal(actions.size, 123 + 16 + ADDED_LATER.length + W404_KEYS.length);
+    // W5.00 — ещё 16 ключей этапа 5; W6.00 (0.12.0-stage6) — ещё 7 ключей repairs (NEW_PERMISSIONS).
+    assert.equal(actions.size, 123 + 16 + ADDED_LATER.length + W404_KEYS.length + 7);
   });
 
   it('каждый x-permissions бандла есть в каталоге', () => {

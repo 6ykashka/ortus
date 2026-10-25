@@ -1,0 +1,17 @@
+{
+  "movementIds": ["54aeb065-7079-5cc3-8ccf-b4605e92db3e"],
+  "items": [
+    {
+      "projectId": "79ad020d-bd3a-527d-8a9b-c07b72891b4b",
+      "projectName": "Дом на Лесной · Мытищи",
+      "priceItemId": "9951ac09-3dd0-5cd5-a5f2-694093d8c625",
+      "name": "Грунтовка глубокого проникновения",
+      "unit": "liter",
+      "quantity": "12",
+      "cost": {
+        "amountMinor": 93600,
+        "currency": "RUB"
+      }
+    }
+  ]
+}

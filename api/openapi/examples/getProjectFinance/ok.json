@@ -1,0 +1,49 @@
+{
+  "projectId": "73e23d56-2d9c-5a86-91d2-8969d90d1f5b",
+  "contract": {
+    "amountMinor": 43817500,
+    "currency": "RUB"
+  },
+  "received": {
+    "amountMinor": 13145300,
+    "currency": "RUB"
+  },
+  "expenses": {
+    "amountMinor": 3160000,
+    "currency": "RUB"
+  },
+  "marginPlan": {
+    "amountMinor": 11830725,
+    "currency": "RUB"
+  },
+  "movements": [
+    {
+      "at": "2026-10-05T08:00:00Z",
+      "kind": "expense",
+      "text": "Материалы по заявке З-12",
+      "amount": {
+        "amountMinor": -1840000,
+        "currency": "RUB"
+      }
+    },
+    {
+      "at": "2026-10-05T08:00:00Z",
+      "kind": "expense",
+      "text": "Материалы по заявке З-13",
+      "amount": {
+        "amountMinor": -1320000,
+        "currency": "RUB"
+      }
+    },
+    {
+      "at": "2026-10-02T10:00:00Z",
+      "kind": "payment",
+      "text": "Счёт № 1 · аванс 30%",
+      "amount": {
+        "amountMinor": 13145300,
+        "currency": "RUB"
+      }
+    }
+  ],
+  "estimateVersion": 2
+}

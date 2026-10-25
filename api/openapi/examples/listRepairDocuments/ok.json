@@ -1,0 +1,65 @@
+{
+  "items": [
+    {
+      "id": "7ab61e49-5147-5db1-b541-bb5a7563e415",
+      "projectId": "73e23d56-2d9c-5a86-91d2-8969d90d1f5b",
+      "kind": "contract",
+      "title": "Договор подряда № 42",
+      "state": "signed",
+      "estimateVersion": 2,
+      "amount": {
+        "amountMinor": 43817500,
+        "currency": "RUB"
+      },
+      "signedAt": "2026-10-01T09:00:00Z",
+      "sentAt": "2026-09-30T08:00:00Z"
+    },
+    {
+      "id": "67868961-17d7-50c1-8d17-4e002426d6e9",
+      "projectId": "73e23d56-2d9c-5a86-91d2-8969d90d1f5b",
+      "kind": "invoice",
+      "title": "Счёт № 1 · аванс 30%",
+      "state": "paid",
+      "estimateVersion": 2,
+      "amount": {
+        "amountMinor": 13145300,
+        "currency": "RUB"
+      },
+      "signedAt": "2026-10-02T10:00:00Z"
+    },
+    {
+      "id": "92255ba2-187f-52f8-b157-b57151abe4e1",
+      "projectId": "73e23d56-2d9c-5a86-91d2-8969d90d1f5b",
+      "kind": "act",
+      "title": "Акт № 1 · демонтаж",
+      "state": "draft",
+      "estimateVersion": 2,
+      "actNo": 1,
+      "amount": {
+        "amountMinor": 2142400,
+        "currency": "RUB"
+      }
+    },
+    {
+      "id": "76a272b9-8c7a-5afc-91b9-b13fa720896f",
+      "projectId": "73e23d56-2d9c-5a86-91d2-8969d90d1f5b",
+      "kind": "act",
+      "title": "Акт № 2 · электрика",
+      "state": "wait",
+      "estimateVersion": 2,
+      "actNo": 2,
+      "amount": {
+        "amountMinor": 5510000,
+        "currency": "RUB"
+      }
+    },
+    {
+      "id": "4195d31f-ac21-5ef0-8cd2-23155ebc1732",
+      "projectId": "73e23d56-2d9c-5a86-91d2-8969d90d1f5b",
+      "kind": "handover_act",
+      "title": "Акт сдачи объекта",
+      "state": "draft",
+      "estimateVersion": 2
+    }
+  ]
+}

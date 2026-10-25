@@ -1,0 +1,82 @@
+{
+  "id": "73e23d56-2d9c-5a86-91d2-8969d90d1f5b",
+  "orgUnitId": "6de355d2-b019-5bb6-b66a-ddae6a13fb65",
+  "name": "ЖК Речной · квартира 42",
+  "address": "Москва, ул. Речная, 5, кв. 42",
+  "status": "handed_over",
+  "foremanMemberId": "ebdf9767-327e-55cc-8c65-cb5fd313bdf4",
+  "workers": [
+    {
+      "id": "5526dde5-a67d-59c9-a706-d0ef365e53ae",
+      "displayName": "Иван Петров",
+      "trade": "отделочник",
+      "status": "active"
+    },
+    {
+      "id": "b2a6cb8b-a587-58a0-aa4f-802d62bf47ac",
+      "displayName": "Олег Смирнов",
+      "trade": "отделочник",
+      "status": "active"
+    },
+    {
+      "id": "679a554c-ed4d-5e9d-8266-b3f796f0b59b",
+      "displayName": "Роман Сергеев",
+      "trade": "маляр",
+      "status": "active"
+    },
+    {
+      "id": "ea383b9e-2801-5ca0-b887-4f0867aafce6",
+      "displayName": "Денис Волков",
+      "trade": "разнорабочий",
+      "status": "active"
+    }
+  ],
+  "revision": 2,
+  "access": [
+    {
+      "icon": "door_front",
+      "text": "Подъезд 2, этаж 9, домофон 42К"
+    },
+    {
+      "icon": "elevator",
+      "text": "Грузовой лифт до 20:00, материалы заносить со двора"
+    },
+    {
+      "icon": "key",
+      "text": "Ключи у прораба, запасной комплект в офисе"
+    },
+    {
+      "icon": "volume_up",
+      "text": "Шумные работы: будни 9:00–19:00, перерыв 13:00–15:00"
+    }
+  ],
+  "measured": true,
+  "readiness": {
+    "acceptedPct": 100,
+    "pendingPct": 0,
+    "clientPct": 100
+  },
+  "todoCount": 6,
+  "kind": "капитальный ремонт",
+  "stage": "Сдан",
+  "areaM2": "51",
+  "rooms": 2,
+  "contractNo": "договор № 42",
+  "dueOn": "2026-11-27",
+  "forecastDueOn": "2026-12-01",
+  "clientName": "Ольга Смирнова",
+  "clientPhone": "+7 *** *** 12-42",
+  "handedOverOn": "2026-10-20",
+  "warrantyUntil": "2028-10-20",
+  "templateId": "e48bdd15-c170-58da-bab2-72389ca237f9",
+  "todoTop": {
+    "kind": "schedule_slip",
+    "text": "Сдача сдвигается на 01.12",
+    "actionLabel": "Открыть график",
+    "tab": "schedule"
+  },
+  "budget": {
+    "amountMinor": 43817500,
+    "currency": "RUB"
+  }
+}

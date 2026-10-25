@@ -1,0 +1,26 @@
+{
+  "id": "54aeb065-7079-5cc3-8ccf-b4605e92db3e",
+  "projectId": "73e23d56-2d9c-5a86-91d2-8969d90d1f5b",
+  "submittedByMemberId": "ebdf9767-327e-55cc-8c65-cb5fd313bdf4",
+  "workDate": "2026-10-20",
+  "timeZone": "Europe/Moscow",
+  "lines": [
+    {
+      "quantity": "10",
+      "unit": "m2",
+      "workId": "f7e367e3-6688-5fda-ad31-298abe98955a"
+    }
+  ],
+  "evidenceFileIds": ["84f64702-2bfd-5456-bf2c-86db192fd65d"],
+  "status": "submitted",
+  "createdAt": "2026-10-20T07:30:00Z",
+  "revision": 1,
+  "number": "WL-12",
+  "crewWorkerIds": ["5526dde5-a67d-59c9-a706-d0ef365e53ae", "b2a6cb8b-a587-58a0-aa4f-802d62bf47ac"],
+  "materials": [
+    {
+      "priceItemId": "ba92d36a-7bd5-55b8-9754-4ef1d532d793",
+      "quantity": "4"
+    }
+  ]
+}

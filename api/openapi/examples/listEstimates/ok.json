@@ -1,0 +1,624 @@
+{
+  "items": [
+    {
+      "projectId": "73e23d56-2d9c-5a86-91d2-8969d90d1f5b",
+      "version": 1,
+      "kind": "first",
+      "state": "replaced",
+      "sections": [
+        {
+          "id": "a71f4bde-a791-5b7d-bcfc-4d14bf6c7461",
+          "name": "Демонтаж"
+        },
+        {
+          "id": "13f87f9d-7954-5ad0-879b-4dd9afa45ed4",
+          "name": "Электрика"
+        },
+        {
+          "id": "af896afc-b8a5-551c-ba04-ea5f2771f434",
+          "name": "Стены"
+        },
+        {
+          "id": "a896374b-c312-5ba3-937f-8069cc71a11d",
+          "name": "Полы"
+        },
+        {
+          "id": "4a9ca9b0-a661-515e-aaae-e727f3b1ebfa",
+          "name": "Материалы"
+        }
+      ],
+      "lines": [
+        {
+          "id": "f88220e4-49a2-5213-9660-052f1dce8721",
+          "sectionId": "a71f4bde-a791-5b7d-bcfc-4d14bf6c7461",
+          "name": "Демонтаж напольного покрытия",
+          "unit": "m2",
+          "kind": "work",
+          "price": {
+            "amountMinor": 18000,
+            "currency": "RUB"
+          },
+          "quantity": "46.8",
+          "sum": {
+            "amountMinor": 842400,
+            "currency": "RUB"
+          },
+          "manual": false,
+          "isNew": false,
+          "priceItemId": "9bf06bf1-e4bf-5f7d-a669-32be1c1788cb",
+          "formula": "floor"
+        },
+        {
+          "id": "386deb90-06e1-5994-a5ff-bc12d4bd57bd",
+          "sectionId": "a71f4bde-a791-5b7d-bcfc-4d14bf6c7461",
+          "name": "Вывоз мусора",
+          "unit": "trip",
+          "kind": "work",
+          "price": {
+            "amountMinor": 650000,
+            "currency": "RUB"
+          },
+          "quantity": "2",
+          "sum": {
+            "amountMinor": 1300000,
+            "currency": "RUB"
+          },
+          "manual": false,
+          "isNew": false,
+          "priceItemId": "cfef6f3d-1e8f-508f-9ccf-10117e3cd241"
+        },
+        {
+          "id": "1cde5368-e762-5ef2-a760-04725ab4b027",
+          "sectionId": "13f87f9d-7954-5ad0-879b-4dd9afa45ed4",
+          "name": "Электромонтаж, точка",
+          "unit": "piece",
+          "kind": "work",
+          "price": {
+            "amountMinor": 120000,
+            "currency": "RUB"
+          },
+          "quantity": "32",
+          "sum": {
+            "amountMinor": 3840000,
+            "currency": "RUB"
+          },
+          "manual": false,
+          "isNew": false,
+          "priceItemId": "b5c60719-aa8e-5761-ab81-e24ac18d487c"
+        },
+        {
+          "id": "c020c03d-d50a-5e1a-bd15-7d3ca3908f22",
+          "sectionId": "af896afc-b8a5-551c-ba04-ea5f2771f434",
+          "name": "Штукатурка по маякам",
+          "unit": "m2",
+          "kind": "work",
+          "price": {
+            "amountMinor": 65000,
+            "currency": "RUB"
+          },
+          "quantity": "114.6",
+          "sum": {
+            "amountMinor": 7449000,
+            "currency": "RUB"
+          },
+          "manual": false,
+          "isNew": false,
+          "priceItemId": "500f594a-ff1e-5ed3-a2da-e2d98b7f0463",
+          "formula": "walls_dry"
+        },
+        {
+          "id": "554cf86a-cc45-5ae4-b440-c1fc9f9a244b",
+          "sectionId": "af896afc-b8a5-551c-ba04-ea5f2771f434",
+          "name": "Шпаклёвка и покраска",
+          "unit": "m2",
+          "kind": "work",
+          "price": {
+            "amountMinor": 52000,
+            "currency": "RUB"
+          },
+          "quantity": "114.6",
+          "sum": {
+            "amountMinor": 5959200,
+            "currency": "RUB"
+          },
+          "manual": false,
+          "isNew": false,
+          "priceItemId": "498b310d-cbc3-5dd8-80d7-81ec0c271a41",
+          "formula": "walls_dry"
+        },
+        {
+          "id": "4d6575d5-28e8-51e7-94c5-99e4e49455cb",
+          "sectionId": "a896374b-c312-5ba3-937f-8069cc71a11d",
+          "name": "Стяжка пола",
+          "unit": "m2",
+          "kind": "work",
+          "price": {
+            "amountMinor": 75000,
+            "currency": "RUB"
+          },
+          "quantity": "46.8",
+          "sum": {
+            "amountMinor": 3510000,
+            "currency": "RUB"
+          },
+          "manual": false,
+          "isNew": false,
+          "priceItemId": "852229b6-5c29-5856-baab-5f33bcf782bf",
+          "formula": "floor"
+        },
+        {
+          "id": "acde90d9-ef80-58cf-96c5-fcecb97283d0",
+          "sectionId": "a896374b-c312-5ba3-937f-8069cc71a11d",
+          "name": "Укладка ламината",
+          "unit": "m2",
+          "kind": "work",
+          "price": {
+            "amountMinor": 49000,
+            "currency": "RUB"
+          },
+          "quantity": "43.1",
+          "sum": {
+            "amountMinor": 2111900,
+            "currency": "RUB"
+          },
+          "manual": false,
+          "isNew": false,
+          "priceItemId": "ad72babe-efdc-5b00-9a66-1e781515058d",
+          "formula": "floor_dry"
+        },
+        {
+          "id": "837a8561-bbb1-5ae4-84a8-34cc567e8e80",
+          "sectionId": "a896374b-c312-5ba3-937f-8069cc71a11d",
+          "name": "Укладка плитки",
+          "unit": "m2",
+          "kind": "work",
+          "price": {
+            "amountMinor": 160000,
+            "currency": "RUB"
+          },
+          "quantity": "23.4",
+          "sum": {
+            "amountMinor": 3744000,
+            "currency": "RUB"
+          },
+          "manual": false,
+          "isNew": false,
+          "priceItemId": "2f14d487-6501-5205-b5d5-de9c8016b647",
+          "formula": "wet"
+        },
+        {
+          "id": "2b3900c4-dab2-5bc3-9772-8320a8b2462a",
+          "sectionId": "a896374b-c312-5ba3-937f-8069cc71a11d",
+          "name": "Монтаж плинтуса",
+          "unit": "m",
+          "kind": "work",
+          "price": {
+            "amountMinor": 22000,
+            "currency": "RUB"
+          },
+          "quantity": "45.4",
+          "sum": {
+            "amountMinor": 998800,
+            "currency": "RUB"
+          },
+          "manual": false,
+          "isNew": false,
+          "priceItemId": "e449c613-8be6-5859-ba69-d5db86b0fcb5",
+          "formula": "perimeter_dry"
+        },
+        {
+          "id": "623e4e65-387d-5244-9fb1-afe981c15b79",
+          "sectionId": "4a9ca9b0-a661-515e-aaae-e727f3b1ebfa",
+          "name": "Ламинат 32 класс",
+          "unit": "m2",
+          "kind": "material",
+          "price": {
+            "amountMinor": 98000,
+            "currency": "RUB"
+          },
+          "quantity": "46.1",
+          "sum": {
+            "amountMinor": 4517800,
+            "currency": "RUB"
+          },
+          "manual": false,
+          "isNew": false,
+          "priceItemId": "c180ec0d-3f13-59cb-8e13-61797b0113a6",
+          "formula": "floor_dry",
+          "coef": "1.07"
+        },
+        {
+          "id": "8f51c562-475d-524d-bf4c-45a0d06ee95b",
+          "sectionId": "4a9ca9b0-a661-515e-aaae-e727f3b1ebfa",
+          "name": "Штукатурка гипсовая 30 кг",
+          "unit": "mesh",
+          "kind": "material",
+          "price": {
+            "amountMinor": 40000,
+            "currency": "RUB"
+          },
+          "quantity": "46",
+          "sum": {
+            "amountMinor": 1840000,
+            "currency": "RUB"
+          },
+          "manual": false,
+          "isNew": false,
+          "priceItemId": "ba92d36a-7bd5-55b8-9754-4ef1d532d793",
+          "formula": "walls_dry",
+          "coef": "0.4"
+        },
+        {
+          "id": "b27242f6-ff84-5b4b-a247-60257ac0b08d",
+          "sectionId": "4a9ca9b0-a661-515e-aaae-e727f3b1ebfa",
+          "name": "Кабель и фурнитура",
+          "unit": "set",
+          "kind": "material",
+          "price": {
+            "amountMinor": 2850000,
+            "currency": "RUB"
+          },
+          "quantity": "1",
+          "sum": {
+            "amountMinor": 2850000,
+            "currency": "RUB"
+          },
+          "manual": false,
+          "isNew": false,
+          "priceItemId": "397ebbea-3961-5c4a-96a8-8a276ed48997"
+        },
+        {
+          "id": "f0491da0-0b0a-56b2-b799-78c06cb40a3a",
+          "sectionId": "4a9ca9b0-a661-515e-aaae-e727f3b1ebfa",
+          "name": "Плинтус МДФ",
+          "unit": "m",
+          "kind": "material",
+          "price": {
+            "amountMinor": 31000,
+            "currency": "RUB"
+          },
+          "quantity": "47.7",
+          "sum": {
+            "amountMinor": 1478700,
+            "currency": "RUB"
+          },
+          "manual": false,
+          "isNew": false,
+          "priceItemId": "6123d5f7-3d8a-5ca9-915a-385ee7ceaaec",
+          "formula": "perimeter_dry",
+          "coef": "1.05"
+        }
+      ],
+      "discountPct": 0,
+      "total": {
+        "amountMinor": 40441800,
+        "currency": "RUB"
+      },
+      "changeOrderIds": [],
+      "revision": 1,
+      "templateId": "e48bdd15-c170-58da-bab2-72389ca237f9",
+      "sentAt": "2026-09-25T08:00:00Z",
+      "approvedAt": "2026-09-25T12:00:00Z"
+    },
+    {
+      "projectId": "73e23d56-2d9c-5a86-91d2-8969d90d1f5b",
+      "version": 2,
+      "kind": "revision",
+      "state": "approved",
+      "sections": [
+        {
+          "id": "54ddb7e5-f997-5136-9c4e-ad816f261313",
+          "name": "Демонтаж"
+        },
+        {
+          "id": "edb026a3-9c83-59a1-8742-674779523d81",
+          "name": "Электрика"
+        },
+        {
+          "id": "6e7dac18-db40-53ee-b02f-be974830291b",
+          "name": "Стены"
+        },
+        {
+          "id": "b7fee082-07f1-506b-b1c2-5d000269f625",
+          "name": "Полы"
+        },
+        {
+          "id": "31145e49-27fb-5ff4-a3ae-9d2cef2baf0d",
+          "name": "Материалы"
+        }
+      ],
+      "lines": [
+        {
+          "id": "f88220e4-49a2-5213-9660-052f1dce8721",
+          "sectionId": "54ddb7e5-f997-5136-9c4e-ad816f261313",
+          "name": "Демонтаж напольного покрытия",
+          "unit": "m2",
+          "kind": "work",
+          "price": {
+            "amountMinor": 18000,
+            "currency": "RUB"
+          },
+          "quantity": "46.8",
+          "sum": {
+            "amountMinor": 842400,
+            "currency": "RUB"
+          },
+          "manual": false,
+          "isNew": false,
+          "priceItemId": "9bf06bf1-e4bf-5f7d-a669-32be1c1788cb",
+          "formula": "floor"
+        },
+        {
+          "id": "386deb90-06e1-5994-a5ff-bc12d4bd57bd",
+          "sectionId": "54ddb7e5-f997-5136-9c4e-ad816f261313",
+          "name": "Вывоз мусора",
+          "unit": "trip",
+          "kind": "work",
+          "price": {
+            "amountMinor": 650000,
+            "currency": "RUB"
+          },
+          "quantity": "2",
+          "sum": {
+            "amountMinor": 1300000,
+            "currency": "RUB"
+          },
+          "manual": false,
+          "isNew": false,
+          "priceItemId": "cfef6f3d-1e8f-508f-9ccf-10117e3cd241"
+        },
+        {
+          "id": "1cde5368-e762-5ef2-a760-04725ab4b027",
+          "sectionId": "edb026a3-9c83-59a1-8742-674779523d81",
+          "name": "Электромонтаж, точка",
+          "unit": "piece",
+          "kind": "work",
+          "price": {
+            "amountMinor": 120000,
+            "currency": "RUB"
+          },
+          "quantity": "38",
+          "sum": {
+            "amountMinor": 4560000,
+            "currency": "RUB"
+          },
+          "manual": false,
+          "isNew": false,
+          "priceItemId": "b5c60719-aa8e-5761-ab81-e24ac18d487c"
+        },
+        {
+          "id": "991bcff7-3aa6-5888-ad78-a7866552abfc",
+          "sectionId": "edb026a3-9c83-59a1-8742-674779523d81",
+          "name": "Сборка щитка",
+          "unit": "piece",
+          "kind": "work",
+          "price": {
+            "amountMinor": 950000,
+            "currency": "RUB"
+          },
+          "quantity": "1",
+          "sum": {
+            "amountMinor": 950000,
+            "currency": "RUB"
+          },
+          "manual": false,
+          "isNew": false,
+          "priceItemId": "2cc32eea-3fb1-549d-9dba-1c6a23d5a115"
+        },
+        {
+          "id": "c020c03d-d50a-5e1a-bd15-7d3ca3908f22",
+          "sectionId": "6e7dac18-db40-53ee-b02f-be974830291b",
+          "name": "Штукатурка по маякам",
+          "unit": "m2",
+          "kind": "work",
+          "price": {
+            "amountMinor": 65000,
+            "currency": "RUB"
+          },
+          "quantity": "114.6",
+          "sum": {
+            "amountMinor": 7449000,
+            "currency": "RUB"
+          },
+          "manual": false,
+          "isNew": false,
+          "priceItemId": "500f594a-ff1e-5ed3-a2da-e2d98b7f0463",
+          "formula": "walls_dry"
+        },
+        {
+          "id": "554cf86a-cc45-5ae4-b440-c1fc9f9a244b",
+          "sectionId": "6e7dac18-db40-53ee-b02f-be974830291b",
+          "name": "Шпаклёвка и покраска",
+          "unit": "m2",
+          "kind": "work",
+          "price": {
+            "amountMinor": 52000,
+            "currency": "RUB"
+          },
+          "quantity": "114.6",
+          "sum": {
+            "amountMinor": 5959200,
+            "currency": "RUB"
+          },
+          "manual": false,
+          "isNew": false,
+          "priceItemId": "498b310d-cbc3-5dd8-80d7-81ec0c271a41",
+          "formula": "walls_dry"
+        },
+        {
+          "id": "4d6575d5-28e8-51e7-94c5-99e4e49455cb",
+          "sectionId": "b7fee082-07f1-506b-b1c2-5d000269f625",
+          "name": "Стяжка пола",
+          "unit": "m2",
+          "kind": "work",
+          "price": {
+            "amountMinor": 75000,
+            "currency": "RUB"
+          },
+          "quantity": "46.8",
+          "sum": {
+            "amountMinor": 3510000,
+            "currency": "RUB"
+          },
+          "manual": false,
+          "isNew": false,
+          "priceItemId": "852229b6-5c29-5856-baab-5f33bcf782bf",
+          "formula": "floor"
+        },
+        {
+          "id": "acde90d9-ef80-58cf-96c5-fcecb97283d0",
+          "sectionId": "b7fee082-07f1-506b-b1c2-5d000269f625",
+          "name": "Укладка ламината",
+          "unit": "m2",
+          "kind": "work",
+          "price": {
+            "amountMinor": 49000,
+            "currency": "RUB"
+          },
+          "quantity": "43.1",
+          "sum": {
+            "amountMinor": 2111900,
+            "currency": "RUB"
+          },
+          "manual": false,
+          "isNew": false,
+          "priceItemId": "ad72babe-efdc-5b00-9a66-1e781515058d",
+          "formula": "floor_dry"
+        },
+        {
+          "id": "837a8561-bbb1-5ae4-84a8-34cc567e8e80",
+          "sectionId": "b7fee082-07f1-506b-b1c2-5d000269f625",
+          "name": "Укладка плитки",
+          "unit": "m2",
+          "kind": "work",
+          "price": {
+            "amountMinor": 160000,
+            "currency": "RUB"
+          },
+          "quantity": "23.4",
+          "sum": {
+            "amountMinor": 3744000,
+            "currency": "RUB"
+          },
+          "manual": false,
+          "isNew": false,
+          "priceItemId": "2f14d487-6501-5205-b5d5-de9c8016b647",
+          "formula": "wet"
+        },
+        {
+          "id": "2b3900c4-dab2-5bc3-9772-8320a8b2462a",
+          "sectionId": "b7fee082-07f1-506b-b1c2-5d000269f625",
+          "name": "Монтаж плинтуса",
+          "unit": "m",
+          "kind": "work",
+          "price": {
+            "amountMinor": 22000,
+            "currency": "RUB"
+          },
+          "quantity": "45.4",
+          "sum": {
+            "amountMinor": 998800,
+            "currency": "RUB"
+          },
+          "manual": false,
+          "isNew": false,
+          "priceItemId": "e449c613-8be6-5859-ba69-d5db86b0fcb5",
+          "formula": "perimeter_dry"
+        },
+        {
+          "id": "826a02a5-983b-579c-b59a-4cabcc6eff3d",
+          "sectionId": "31145e49-27fb-5ff4-a3ae-9d2cef2baf0d",
+          "name": "Ламинат 33 класс",
+          "unit": "m2",
+          "kind": "material",
+          "price": {
+            "amountMinor": 135000,
+            "currency": "RUB"
+          },
+          "quantity": "46.1",
+          "sum": {
+            "amountMinor": 6223500,
+            "currency": "RUB"
+          },
+          "manual": false,
+          "isNew": false,
+          "priceItemId": "28c4ac2f-7f41-5565-a807-0650562712f9",
+          "formula": "floor_dry",
+          "coef": "1.07"
+        },
+        {
+          "id": "8f51c562-475d-524d-bf4c-45a0d06ee95b",
+          "sectionId": "31145e49-27fb-5ff4-a3ae-9d2cef2baf0d",
+          "name": "Штукатурка гипсовая 30 кг",
+          "unit": "mesh",
+          "kind": "material",
+          "price": {
+            "amountMinor": 40000,
+            "currency": "RUB"
+          },
+          "quantity": "46",
+          "sum": {
+            "amountMinor": 1840000,
+            "currency": "RUB"
+          },
+          "manual": false,
+          "isNew": false,
+          "priceItemId": "ba92d36a-7bd5-55b8-9754-4ef1d532d793",
+          "formula": "walls_dry",
+          "coef": "0.4"
+        },
+        {
+          "id": "b27242f6-ff84-5b4b-a247-60257ac0b08d",
+          "sectionId": "31145e49-27fb-5ff4-a3ae-9d2cef2baf0d",
+          "name": "Кабель и фурнитура",
+          "unit": "set",
+          "kind": "material",
+          "price": {
+            "amountMinor": 2850000,
+            "currency": "RUB"
+          },
+          "quantity": "1",
+          "sum": {
+            "amountMinor": 2850000,
+            "currency": "RUB"
+          },
+          "manual": false,
+          "isNew": false,
+          "priceItemId": "397ebbea-3961-5c4a-96a8-8a276ed48997"
+        },
+        {
+          "id": "f0491da0-0b0a-56b2-b799-78c06cb40a3a",
+          "sectionId": "31145e49-27fb-5ff4-a3ae-9d2cef2baf0d",
+          "name": "Плинтус МДФ",
+          "unit": "m",
+          "kind": "material",
+          "price": {
+            "amountMinor": 31000,
+            "currency": "RUB"
+          },
+          "quantity": "47.7",
+          "sum": {
+            "amountMinor": 1478700,
+            "currency": "RUB"
+          },
+          "manual": false,
+          "isNew": false,
+          "priceItemId": "6123d5f7-3d8a-5ca9-915a-385ee7ceaaec",
+          "formula": "perimeter_dry",
+          "coef": "1.05"
+        }
+      ],
+      "discountPct": 0,
+      "total": {
+        "amountMinor": 43817500,
+        "currency": "RUB"
+      },
+      "changeOrderIds": [],
+      "revision": 1,
+      "baseVersion": 1,
+      "templateId": "e48bdd15-c170-58da-bab2-72389ca237f9",
+      "sentAt": "2026-09-29T08:00:00Z",
+      "approvedAt": "2026-09-29T12:00:00Z"
+    }
+  ]
+}

@@ -391,7 +391,7 @@ modules:
     label: Ремонт и стройка
     industry: true
     depends_on: [core.files, core.tasks]
-    nav: { group: Ремонт и стройка, items: [objects] } # docs/19-construction.md, «Модуль «Объекты»»
+    nav: { group: Ремонт и стройка, items: [objects, supply, catalog] } # docs/19-construction.md, «Модуль «Объекты»»
     actions:
       repairs.projects.read: { level: view, label: Видеть объекты, scopes: [tenant, unit, project] }
       repairs.projects.manage: { level: settings, label: Вести объекты, scopes: [tenant, unit] } # в т. ч. назначение прораба: POST /repairs/objects/{id}/foreman (PROPOSED)
@@ -430,6 +430,49 @@ modules:
       repairs.changes.submit: { level: create, label: Предлагать допработы, scopes: [project] } # PROPOSED: описание, объём и фото без цен
       repairs.supply.request: { level: create, label: Просить материал, scopes: [project] } # PROPOSED: заявка прораба, получение со склада по заявке, сдача излишков
       repairs.supply.manage: { level: edit, label: Вести снабжение, scopes: [tenant, unit] } # PROPOSED: решение «со склада / купить», закупки на несколько объектов, перемещения; цены закупки — sensitivity: restricted
+      # W6.00 (0.12.0-stage6, repair.md §3.2): новые ключи этапа 6.
+      repairs.measurements.edit: {
+          level: edit,
+          label: Вводить замер,
+          scopes: [tenant, unit, project],
+        } # PROPOSED: замерщик и прораб (Q-W4.00-repair-17); правка — пока объект не сдан
+      repairs.documents.send: {
+          level: edit,
+          label: Отправлять документы на подпись,
+          scopes: [tenant, unit, project],
+          sensitivity: sensitive,
+        } # PROPOSED: договор, акты, счета (код SMS заказчику, решение о SMS-провайдере — кандидат 31 плана v2)
+      repairs.crew.accrue: {
+          level: edit,
+          label: Начислять бригаде по акту,
+          scopes: [tenant, unit, project],
+          sensitivity: restricted,
+          blocked_by_function: [driver],
+        } # PROPOSED: только по подписанному акту
+      repairs.crew.pay: {
+          level: review,
+          label: Выплачивать бригаде через кассу,
+          scopes: [tenant, unit, project],
+          sensitivity: restricted,
+          blocked_by_function: [driver],
+        } # PROPOSED: предложение операции в кассу (W5.31, Q-W4.00-repair-12)
+      repairs.subcontractors.manage: {
+          level: settings,
+          label: Открывать доступ подрядчикам,
+          scopes: [tenant, unit, project],
+          sensitivity: sensitive,
+        } # PROPOSED: временное назначение с областью объекта и сроком (Q-W4.00-repair-13)
+      repairs.client_link.manage: {
+          level: settings,
+          label: Выпускать и отзывать ссылку кабинета заказчика,
+          scopes: [tenant, unit, project],
+          sensitivity: sensitive,
+        } # PROPOSED: токен хранится хешем (Q-W4.00-repair-10)
+      repairs.projects.hand_over: {
+          level: review,
+          label: Сдавать объекты,
+          scopes: [tenant, unit, project],
+        } # PROPOSED: после подписанного акта сдачи (Q-W4.00-repair-21)
       # Выдача, возврат и приход — права общего модуля «Склад» (inventory.movements.post с областью «склад»), см. OpenAPI 0.1
 
   # W0.07: модули inventory, spa, cash — 14 ключей x-permissions OpenAPI 0.1, которых не было в 11
@@ -716,6 +759,7 @@ role_templates:
         repairs.schedule.shift,
         repairs.changes.submit,
         repairs.supply.request,
+        repairs.measurements.edit,
       ]
     note: "Без repairs.finance.read: вкладки Смета, Финансы, Оплата бригады, Подрядчики и Кабинет заказчика скрыты. Допработы предлагает без цен."
   estimator: # PROPOSED, docs/19-construction.md «Смета: кто правит…»
@@ -762,6 +806,7 @@ role_templates:
         repairs.projects.read,
         repairs.finance.read,
         repairs.estimates.edit,
+        repairs.measurements.edit,
       ]
     note: "Область — объекты, где он делал замер. Собирает и правит черновик сметы после замера."
   supply_manager: # PROPOSED, docs/19-construction.md «Снабжение по всем объектам и склады»
@@ -790,6 +835,19 @@ role_templates:
         inventory.movements.post,
       ]
     note: "Выдаёт зарезервированное по заявке, принимает возвраты и приход. Цен закупки не правит."
+  subcontractor: # PROPOSED, Q-W4.00-repair-13: участник с временной ролью, область — объект, срок until
+    label: Подрядчик
+    default_scope: project
+    actions:
+      [
+        files.read,
+        files.upload,
+        repairs.projects.read,
+        repairs.work_logs.read,
+        repairs.work_logs.submit,
+        repairs.schedule.read,
+      ]
+    note: "Назначение со сроком (until) на один объект; занимает место, как сотрудник. Видит только свои этапы и отметки, цен заказчика не видит."
   project_manager:
     label: Руководитель проекта
     default_scope: project

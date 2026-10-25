@@ -6,11 +6,11 @@
     operationId: listRepairProjects
     tags:
       - Repairs
-    summary: List visible repair projects and non-login workers
+    summary: List visible repair objects with the summary of the list
     x-permissions:
       - repairs.projects.read
-    x-scope: tenant-org-unit-project-assigned-foreman
-    description: List visible repair projects and non-login workers
+    x-scope: tenant-org-unit-repair-project
+    description: "W6.00 (0.12.0-stage6, Q-W4.00-repair-1). List visible repair objects with the summary of the list: stage, readiness (accepted + pending), due date and forecast, foreman, the most urgent item of «Требует решения» and the count («ещё N вопросов»). The foreman gets only the objects where he is assigned (the server filters); amounts and the client phone are omitted without repairs.finance.read. Filter: active («Активные»), todo («Требуют решения»), draft («До договора»), done («Сданы»); q searches address, client and foreman. Order: first objects with questions (the most urgent), then by due date."
     responses:
       "200":
         description: Successful result.
@@ -41,16 +41,18 @@
     parameters:
       - $ref: ../components/common/parameters.yaml#/Cursor
       - $ref: ../components/common/parameters.yaml#/Limit
+      - $ref: ../components/common/parameters.yaml#/RepairFilter
+      - $ref: ../components/common/parameters.yaml#/RepairQuery
     x-permissions-mode: all
   post:
     operationId: createRepairProject
     tags:
       - Repairs
-    summary: Create a repair project and non-login worker records
+    summary: Create a repair object (a draft from a lead or an active one)
     x-permissions:
       - repairs.projects.manage
     x-scope: tenant-org-unit
-    description: Create a repair project and non-login worker records
+    description: "W6.00 (Q-W4.00-repair-16). Create a draft object at the lead stage «Замер» (status draft: only the measurement and the estimate, the foreman does not see it) or an active object. The foreman and the budget are optional: an object without a foreman is a regular scenario («Не назначен прораб»). Creates local non-login workers and an empty measurement (version 1) in one transaction. Event repairs.object.draft_created.v1."
     responses:
       "201":
         description: Successful result.
@@ -100,6 +102,313 @@
           schema:
             $ref: ../components/repairs/schemas.yaml#/RepairProjectCreate
     x-permissions-mode: all
+/api/v1/tenants/{tenantId}/repairs/projects/{projectId}:
+  parameters:
+    - $ref: ../components/common/parameters.yaml#/tenantId
+    - $ref: ../components/common/parameters.yaml#/repairProjectId
+  get:
+    operationId: getRepairProject
+    tags:
+      - Repairs
+    summary: Read a repair object
+    x-permissions:
+      - repairs.projects.read
+    x-scope: tenant-org-unit-repair-project
+    description: W6.00. Read one repair object (the header of the card). A draft object is invisible to the foreman — 404.
+    responses:
+      "200":
+        description: Successful result.
+        headers:
+          X-Request-Id:
+            $ref: ../components/common/headers.yaml#/RequestId
+          ETag:
+            $ref: ../components/common/headers.yaml#/ETag
+          Cache-Control:
+            description: Never cache authenticated, confidential or capability-bearing API responses in shared caches.
+            schema:
+              type: string
+              const: private, no-store
+        content:
+          application/json:
+            schema:
+              $ref: ../components/repairs/schemas.yaml#/RepairProject
+      "400":
+        $ref: ../components/common/responses.yaml#/BadRequest
+      "401":
+        $ref: ../components/common/responses.yaml#/Unauthenticated
+      "403":
+        $ref: ../components/common/responses.yaml#/Forbidden
+      "404":
+        $ref: ../components/common/responses.yaml#/NotFound
+      "422":
+        $ref: ../components/common/responses.yaml#/Validation
+      "429":
+        $ref: ../components/common/responses.yaml#/RateLimited
+    x-permissions-mode: all
+  patch:
+    operationId: updateRepairProject
+    tags:
+      - Repairs
+    summary: Change fields of a repair object
+    x-permissions:
+      - repairs.projects.manage
+    x-scope: tenant-org-unit
+    description: "W6.00. Change the fields of the object: access («Как попасть на объект»), due date, client, area, contract number. If-Match — RepairProject.revision. Closed after the hand-over — invalid_transition, reason project_handed_over."
+    responses:
+      "200":
+        description: Successful result.
+        headers:
+          X-Request-Id:
+            $ref: ../components/common/headers.yaml#/RequestId
+          ETag:
+            $ref: ../components/common/headers.yaml#/ETag
+          Idempotency-Replayed:
+            $ref: ../components/common/headers.yaml#/IdempotencyReplayed
+          Cache-Control:
+            description: Never cache authenticated, confidential or capability-bearing API responses in shared caches.
+            schema:
+              type: string
+              const: private, no-store
+        content:
+          application/json:
+            schema:
+              $ref: ../components/repairs/schemas.yaml#/RepairProject
+      "400":
+        $ref: ../components/common/responses.yaml#/BadRequest
+      "401":
+        $ref: ../components/common/responses.yaml#/Unauthenticated
+      "402":
+        $ref: ../components/common/responses.yaml#/PlanRequired
+      "403":
+        $ref: ../components/common/responses.yaml#/Forbidden
+      "404":
+        $ref: ../components/common/responses.yaml#/NotFound
+      "409":
+        $ref: ../components/common/responses.yaml#/Conflict
+      "412":
+        $ref: ../components/common/responses.yaml#/PreconditionFailed
+      "422":
+        $ref: ../components/common/responses.yaml#/Validation
+      "428":
+        $ref: ../components/common/responses.yaml#/PreconditionRequired
+      "429":
+        $ref: ../components/common/responses.yaml#/RateLimited
+    x-csrf-required-for-cookie: true
+    parameters:
+      - $ref: ../components/common/parameters.yaml#/IdempotencyKey
+      - $ref: ../components/common/parameters.yaml#/Csrf
+      - $ref: ../components/common/parameters.yaml#/Origin
+      - $ref: ../components/common/parameters.yaml#/IfMatch
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: ../components/repairs/schemas.yaml#/RepairProjectPatch
+    x-permissions-mode: all
+/api/v1/tenants/{tenantId}/repairs/projects/{projectId}/overview:
+  parameters:
+    - $ref: ../components/common/parameters.yaml#/tenantId
+    - $ref: ../components/common/parameters.yaml#/repairProjectId
+  get:
+    operationId: getRepairProjectOverview
+    tags:
+      - Repairs
+    summary: "Read the overview: decisions, volumes, photos, people, money, feed"
+    x-permissions:
+      - repairs.projects.read
+    x-scope: tenant-org-unit-repair-project
+    description: "W6.00. The overview tab (variant 1a): «Требует решения» (the same function as the list), volumes of works, photos of accepted and pending marks, people, money (only with repairs.finance.read), feed. The foreman sees «Мои вопросы по объекту» without sums."
+    responses:
+      "200":
+        description: Successful result.
+        headers:
+          X-Request-Id:
+            $ref: ../components/common/headers.yaml#/RequestId
+          Cache-Control:
+            description: Never cache authenticated, confidential or capability-bearing API responses in shared caches.
+            schema:
+              type: string
+              const: private, no-store
+        content:
+          application/json:
+            schema:
+              $ref: ../components/repairs/schemas.yaml#/RepairProjectOverview
+      "400":
+        $ref: ../components/common/responses.yaml#/BadRequest
+      "401":
+        $ref: ../components/common/responses.yaml#/Unauthenticated
+      "403":
+        $ref: ../components/common/responses.yaml#/Forbidden
+      "404":
+        $ref: ../components/common/responses.yaml#/NotFound
+      "422":
+        $ref: ../components/common/responses.yaml#/Validation
+      "429":
+        $ref: ../components/common/responses.yaml#/RateLimited
+    x-permissions-mode: all
+/api/v1/tenants/{tenantId}/repairs/projects/{projectId}/foreman:
+  parameters:
+    - $ref: ../components/common/parameters.yaml#/tenantId
+    - $ref: ../components/common/parameters.yaml#/repairProjectId
+  post:
+    operationId: assignRepairForeman
+    tags:
+      - Repairs
+    summary: Assign the foreman of an object
+    x-permissions:
+      - repairs.projects.manage
+    x-scope: tenant-org-unit
+    description: "W6.00 (prototype assignForeman). Assign the foreman; a repeated call — 409 invalid_transition, reason foreman_already_assigned («Прораб уже назначен: …»). The object appears in the list of the foreman; he can send marks and material requests, he does not see the estimate, prices and money. Event repairs.object.foreman_assigned.v1."
+    responses:
+      "200":
+        description: Successful result.
+        headers:
+          X-Request-Id:
+            $ref: ../components/common/headers.yaml#/RequestId
+          ETag:
+            $ref: ../components/common/headers.yaml#/ETag
+          Idempotency-Replayed:
+            $ref: ../components/common/headers.yaml#/IdempotencyReplayed
+          Cache-Control:
+            description: Never cache authenticated, confidential or capability-bearing API responses in shared caches.
+            schema:
+              type: string
+              const: private, no-store
+        content:
+          application/json:
+            schema:
+              $ref: ../components/repairs/schemas.yaml#/RepairProject
+      "400":
+        $ref: ../components/common/responses.yaml#/BadRequest
+      "401":
+        $ref: ../components/common/responses.yaml#/Unauthenticated
+      "402":
+        $ref: ../components/common/responses.yaml#/PlanRequired
+      "403":
+        $ref: ../components/common/responses.yaml#/Forbidden
+      "404":
+        $ref: ../components/common/responses.yaml#/NotFound
+      "409":
+        $ref: ../components/common/responses.yaml#/Conflict
+      "422":
+        $ref: ../components/common/responses.yaml#/Validation
+      "428":
+        $ref: ../components/common/responses.yaml#/PreconditionRequired
+      "429":
+        $ref: ../components/common/responses.yaml#/RateLimited
+    x-csrf-required-for-cookie: true
+    parameters:
+      - $ref: ../components/common/parameters.yaml#/IdempotencyKey
+      - $ref: ../components/common/parameters.yaml#/Csrf
+      - $ref: ../components/common/parameters.yaml#/Origin
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: ../components/repairs/schemas.yaml#/RepairForemanAssign
+    x-permissions-mode: all
+/api/v1/tenants/{tenantId}/repairs/projects/{projectId}/activate:
+  parameters:
+    - $ref: ../components/common/parameters.yaml#/tenantId
+    - $ref: ../components/common/parameters.yaml#/repairProjectId
+  post:
+    operationId: activateRepairProject
+    tags:
+      - Repairs
+    summary: Activate a draft object after the estimate is approved
+    x-permissions:
+      - repairs.projects.manage
+    x-scope: tenant-org-unit
+    description: W6.00 (Q-W4.00-repair-16). draft → active when the lead reaches the stage «Объект»; requires an approved estimate version, otherwise 409 invalid_transition, reason repair_estimate_not_approved; a non-draft object — reason repair_project_not_draft. If-Match — RepairProject.revision. Event repairs.object.activated.v1.
+    responses:
+      "200":
+        description: Successful result.
+        headers:
+          X-Request-Id:
+            $ref: ../components/common/headers.yaml#/RequestId
+          ETag:
+            $ref: ../components/common/headers.yaml#/ETag
+          Idempotency-Replayed:
+            $ref: ../components/common/headers.yaml#/IdempotencyReplayed
+          Cache-Control:
+            description: Never cache authenticated, confidential or capability-bearing API responses in shared caches.
+            schema:
+              type: string
+              const: private, no-store
+        content:
+          application/json:
+            schema:
+              $ref: ../components/repairs/schemas.yaml#/RepairProject
+      "400":
+        $ref: ../components/common/responses.yaml#/BadRequest
+      "401":
+        $ref: ../components/common/responses.yaml#/Unauthenticated
+      "402":
+        $ref: ../components/common/responses.yaml#/PlanRequired
+      "403":
+        $ref: ../components/common/responses.yaml#/Forbidden
+      "404":
+        $ref: ../components/common/responses.yaml#/NotFound
+      "409":
+        $ref: ../components/common/responses.yaml#/Conflict
+      "412":
+        $ref: ../components/common/responses.yaml#/PreconditionFailed
+      "422":
+        $ref: ../components/common/responses.yaml#/Validation
+      "428":
+        $ref: ../components/common/responses.yaml#/PreconditionRequired
+      "429":
+        $ref: ../components/common/responses.yaml#/RateLimited
+    x-csrf-required-for-cookie: true
+    parameters:
+      - $ref: ../components/common/parameters.yaml#/IdempotencyKey
+      - $ref: ../components/common/parameters.yaml#/Csrf
+      - $ref: ../components/common/parameters.yaml#/Origin
+      - $ref: ../components/common/parameters.yaml#/IfMatch
+    x-permissions-mode: all
+/api/v1/tenants/{tenantId}/repairs/projects/{projectId}/works:
+  parameters:
+    - $ref: ../components/common/parameters.yaml#/tenantId
+    - $ref: ../components/common/parameters.yaml#/repairProjectId
+  get:
+    operationId: listRepairWorks
+    tags:
+      - Repairs
+    summary: "List volumes of works: plan, accepted fact, pending"
+    x-permissions:
+      - repairs.projects.read
+    x-scope: tenant-org-unit-repair-project
+    description: "W6.00. Volumes of works: plan, accepted fact, pending (the fact counts only accepted marks)."
+    responses:
+      "200":
+        description: Successful result.
+        headers:
+          X-Request-Id:
+            $ref: ../components/common/headers.yaml#/RequestId
+          Cache-Control:
+            description: Never cache authenticated, confidential or capability-bearing API responses in shared caches.
+            schema:
+              type: string
+              const: private, no-store
+        content:
+          application/json:
+            schema:
+              $ref: ../components/repairs/schemas.yaml#/RepairWorkList
+      "400":
+        $ref: ../components/common/responses.yaml#/BadRequest
+      "401":
+        $ref: ../components/common/responses.yaml#/Unauthenticated
+      "403":
+        $ref: ../components/common/responses.yaml#/Forbidden
+      "404":
+        $ref: ../components/common/responses.yaml#/NotFound
+      "422":
+        $ref: ../components/common/responses.yaml#/Validation
+      "429":
+        $ref: ../components/common/responses.yaml#/RateLimited
+    x-permissions-mode: all
 /api/v1/tenants/{tenantId}/repairs/work-logs:
   parameters:
     - $ref: ../components/common/parameters.yaml#/tenantId
@@ -107,11 +416,11 @@
     operationId: listWorkLogs
     tags:
       - Repairs
-    summary: List visible work, presence and evidence logs
+    summary: List visible work logs
     x-permissions:
       - repairs.work_logs.read
-    x-scope: tenant-org-unit-project-assigned-foreman
-    description: List visible work, presence and evidence logs
+    x-scope: tenant-org-unit-repair-project
+    description: "W6.00. List visible work marks (the foreman sees his objects). status: submitted («На проверке»), accepted («Принят»), rejected (returned with a reason). projectId narrows to one object."
     responses:
       "200":
         description: Successful result.
@@ -142,16 +451,18 @@
     parameters:
       - $ref: ../components/common/parameters.yaml#/Cursor
       - $ref: ../components/common/parameters.yaml#/Limit
+      - $ref: ../components/common/parameters.yaml#/RepairProjectFilter
+      - $ref: ../components/common/parameters.yaml#/WorkLogStatusFilter
     x-permissions-mode: all
   post:
     operationId: submitWorkLog
     tags:
       - Repairs
-    summary: Submit work and attendance for a foreman project
+    summary: Send a work mark of the foreman to acceptance
     x-permissions:
       - repairs.work_logs.submit
-    x-scope: tenant-org-unit-project-assigned-foreman
-    description: Submit work and attendance for a foreman project
+    x-scope: tenant-org-unit-repair-project
+    description: "W6.00 (prototype addWorkLog). The foreman of the object sends a mark to acceptance: work, volume, crew (учётные карточки without login), materials of the price list, ≥ 1 photo. Errors of the prototype as validation_failed fields: lines (work of the object, volume above zero, «Объём превышает план более чем на 10%: осталось …» — reason work_volume_exceeds_plan), crewWorkerIds («Отметьте работников»), evidenceFileIds («Добавьте хотя бы одно фото»). A handed-over object — 409 invalid_transition, reason project_handed_over («Объект сдан: новые отметки не принимаются»); a module in read-only mode — 403 module_read_only. Event repairs.work_log.submitted.v1."
     responses:
       "201":
         description: Successful result.
@@ -200,4 +511,3036 @@
         application/json:
           schema:
             $ref: ../components/repairs/schemas.yaml#/WorkLogCreate
+    x-permissions-mode: all
+/api/v1/tenants/{tenantId}/repairs/work-logs/{workLogId}/accept:
+  parameters:
+    - $ref: ../components/common/parameters.yaml#/tenantId
+    - $ref: ../components/common/parameters.yaml#/workLogId
+  post:
+    operationId: acceptWorkLog
+    tags:
+      - Repairs
+    summary: Accept the volume of a work log (once)
+    x-permissions:
+      - repairs.work_logs.review
+    x-scope: tenant-org-unit-repair-project
+    description: "W6.00 (prototype acceptWorkLog; one command for the overview, «Главная» and the tab «Работы»). Accept the volume: the fact grows, the materials of the mark are written off (movement use of the module «Склад», Q-W4.00-repair-7). A repeated call — 409 invalid_transition, reason work_log_already_reviewed («Отметка уже обработана»). If-Match — WorkLog.revision. Closed in the read-only mode (module_read_only). Event repairs.work_log.accepted.v1."
+    responses:
+      "200":
+        description: Successful result.
+        headers:
+          X-Request-Id:
+            $ref: ../components/common/headers.yaml#/RequestId
+          ETag:
+            $ref: ../components/common/headers.yaml#/ETag
+          Idempotency-Replayed:
+            $ref: ../components/common/headers.yaml#/IdempotencyReplayed
+          Cache-Control:
+            description: Never cache authenticated, confidential or capability-bearing API responses in shared caches.
+            schema:
+              type: string
+              const: private, no-store
+        content:
+          application/json:
+            schema:
+              $ref: ../components/repairs/schemas.yaml#/WorkLog
+      "400":
+        $ref: ../components/common/responses.yaml#/BadRequest
+      "401":
+        $ref: ../components/common/responses.yaml#/Unauthenticated
+      "402":
+        $ref: ../components/common/responses.yaml#/PlanRequired
+      "403":
+        $ref: ../components/common/responses.yaml#/Forbidden
+      "404":
+        $ref: ../components/common/responses.yaml#/NotFound
+      "409":
+        $ref: ../components/common/responses.yaml#/Conflict
+      "412":
+        $ref: ../components/common/responses.yaml#/PreconditionFailed
+      "422":
+        $ref: ../components/common/responses.yaml#/Validation
+      "428":
+        $ref: ../components/common/responses.yaml#/PreconditionRequired
+      "429":
+        $ref: ../components/common/responses.yaml#/RateLimited
+    x-csrf-required-for-cookie: true
+    parameters:
+      - $ref: ../components/common/parameters.yaml#/IdempotencyKey
+      - $ref: ../components/common/parameters.yaml#/Csrf
+      - $ref: ../components/common/parameters.yaml#/Origin
+      - $ref: ../components/common/parameters.yaml#/IfMatch
+    x-permissions-mode: all
+/api/v1/tenants/{tenantId}/repairs/work-logs/{workLogId}/return:
+  parameters:
+    - $ref: ../components/common/parameters.yaml#/tenantId
+    - $ref: ../components/common/parameters.yaml#/workLogId
+  post:
+    operationId: returnWorkLog
+    tags:
+      - Repairs
+    summary: Return a work log to the foreman with a reason
+    x-permissions:
+      - repairs.work_logs.review
+    x-scope: tenant-org-unit-repair-project
+    description: "W6.00 (RS-09, Q-W4.00-repair-3). Return the mark to the foreman with a required reason; the crew does not see the reason. rejected is final: the foreman sends a new mark. If-Match — WorkLog.revision; a reviewed mark — reason work_log_already_reviewed. Event repairs.work_log.returned.v1."
+    responses:
+      "200":
+        description: Successful result.
+        headers:
+          X-Request-Id:
+            $ref: ../components/common/headers.yaml#/RequestId
+          ETag:
+            $ref: ../components/common/headers.yaml#/ETag
+          Idempotency-Replayed:
+            $ref: ../components/common/headers.yaml#/IdempotencyReplayed
+          Cache-Control:
+            description: Never cache authenticated, confidential or capability-bearing API responses in shared caches.
+            schema:
+              type: string
+              const: private, no-store
+        content:
+          application/json:
+            schema:
+              $ref: ../components/repairs/schemas.yaml#/WorkLog
+      "400":
+        $ref: ../components/common/responses.yaml#/BadRequest
+      "401":
+        $ref: ../components/common/responses.yaml#/Unauthenticated
+      "402":
+        $ref: ../components/common/responses.yaml#/PlanRequired
+      "403":
+        $ref: ../components/common/responses.yaml#/Forbidden
+      "404":
+        $ref: ../components/common/responses.yaml#/NotFound
+      "409":
+        $ref: ../components/common/responses.yaml#/Conflict
+      "412":
+        $ref: ../components/common/responses.yaml#/PreconditionFailed
+      "422":
+        $ref: ../components/common/responses.yaml#/Validation
+      "428":
+        $ref: ../components/common/responses.yaml#/PreconditionRequired
+      "429":
+        $ref: ../components/common/responses.yaml#/RateLimited
+    x-csrf-required-for-cookie: true
+    parameters:
+      - $ref: ../components/common/parameters.yaml#/IdempotencyKey
+      - $ref: ../components/common/parameters.yaml#/Csrf
+      - $ref: ../components/common/parameters.yaml#/Origin
+      - $ref: ../components/common/parameters.yaml#/IfMatch
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: ../components/repairs/schemas.yaml#/WorkLogReturn
+    x-permissions-mode: all
+/api/v1/tenants/{tenantId}/repairs/projects/{projectId}/change-orders:
+  parameters:
+    - $ref: ../components/common/parameters.yaml#/tenantId
+    - $ref: ../components/common/parameters.yaml#/repairProjectId
+  get:
+    operationId: listChangeOrders
+    tags:
+      - Repairs
+    summary: List change orders of an object
+    x-permissions:
+      - repairs.projects.read
+    x-scope: tenant-org-unit-repair-project
+    description: W6.00. Change orders of the object (statuses proposed → priced → sent → signed, or rejected); the foreman sees them without prices.
+    responses:
+      "200":
+        description: Successful result.
+        headers:
+          X-Request-Id:
+            $ref: ../components/common/headers.yaml#/RequestId
+          Cache-Control:
+            description: Never cache authenticated, confidential or capability-bearing API responses in shared caches.
+            schema:
+              type: string
+              const: private, no-store
+        content:
+          application/json:
+            schema:
+              $ref: ../components/repairs/schemas.yaml#/ChangeOrderList
+      "400":
+        $ref: ../components/common/responses.yaml#/BadRequest
+      "401":
+        $ref: ../components/common/responses.yaml#/Unauthenticated
+      "403":
+        $ref: ../components/common/responses.yaml#/Forbidden
+      "404":
+        $ref: ../components/common/responses.yaml#/NotFound
+      "422":
+        $ref: ../components/common/responses.yaml#/Validation
+      "429":
+        $ref: ../components/common/responses.yaml#/RateLimited
+    x-permissions-mode: all
+  post:
+    operationId: proposeChangeOrder
+    tags:
+      - Repairs
+    summary: Propose a change order (without prices)
+    x-permissions:
+      - repairs.changes.submit
+    x-scope: tenant-org-unit-repair-project
+    description: "W6.00 (prototype proposeChange). The foreman describes the work, volume, unit, comment and photos (≥ 1); prices are never shown to him. Violations: title «Опишите, что нужно сделать», quantity «Укажите объём больше нуля», photoFileIds «Приложите хотя бы одно фото». A draft object («До договора допработ нет: правки вносятся новой версией сметы») and a handed-over object — 409 change_order_closed. Event repairs.change_order.proposed.v1."
+    responses:
+      "201":
+        description: Successful result.
+        headers:
+          X-Request-Id:
+            $ref: ../components/common/headers.yaml#/RequestId
+          ETag:
+            $ref: ../components/common/headers.yaml#/ETag
+          Idempotency-Replayed:
+            $ref: ../components/common/headers.yaml#/IdempotencyReplayed
+          Cache-Control:
+            description: Never cache authenticated, confidential or capability-bearing API responses in shared caches.
+            schema:
+              type: string
+              const: private, no-store
+        content:
+          application/json:
+            schema:
+              $ref: ../components/repairs/schemas.yaml#/ChangeOrder
+      "400":
+        $ref: ../components/common/responses.yaml#/BadRequest
+      "401":
+        $ref: ../components/common/responses.yaml#/Unauthenticated
+      "402":
+        $ref: ../components/common/responses.yaml#/PlanRequired
+      "403":
+        $ref: ../components/common/responses.yaml#/Forbidden
+      "404":
+        $ref: ../components/common/responses.yaml#/NotFound
+      "409":
+        $ref: ../components/common/responses.yaml#/Conflict
+      "422":
+        $ref: ../components/common/responses.yaml#/Validation
+      "428":
+        $ref: ../components/common/responses.yaml#/PreconditionRequired
+      "429":
+        $ref: ../components/common/responses.yaml#/RateLimited
+    x-csrf-required-for-cookie: true
+    parameters:
+      - $ref: ../components/common/parameters.yaml#/IdempotencyKey
+      - $ref: ../components/common/parameters.yaml#/Csrf
+      - $ref: ../components/common/parameters.yaml#/Origin
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: ../components/repairs/schemas.yaml#/ChangeOrderCreate
+    x-permissions-mode: all
+/api/v1/tenants/{tenantId}/repairs/change-orders/{changeOrderId}/reject:
+  parameters:
+    - $ref: ../components/common/parameters.yaml#/tenantId
+    - $ref: ../components/common/parameters.yaml#/changeOrderId
+  post:
+    operationId: rejectChangeOrder
+    tags:
+      - Repairs
+    summary: Reject a change order with a reason
+    x-permissions:
+      - repairs.estimates.edit
+    x-scope: tenant-org-unit-repair-project
+    description: W6.00 (prototype setChange reject). Reject with one of four reasons; the foreman sees the reason. A signed or already rejected change order — 409 change_order_closed («Допработа … уже подписана/отклонена»). If-Match — ChangeOrder.revision. Only with repairs.estimates.edit. Event repairs.change_order.rejected.v1.
+    responses:
+      "200":
+        description: Successful result.
+        headers:
+          X-Request-Id:
+            $ref: ../components/common/headers.yaml#/RequestId
+          ETag:
+            $ref: ../components/common/headers.yaml#/ETag
+          Idempotency-Replayed:
+            $ref: ../components/common/headers.yaml#/IdempotencyReplayed
+          Cache-Control:
+            description: Never cache authenticated, confidential or capability-bearing API responses in shared caches.
+            schema:
+              type: string
+              const: private, no-store
+        content:
+          application/json:
+            schema:
+              $ref: ../components/repairs/schemas.yaml#/ChangeOrder
+      "400":
+        $ref: ../components/common/responses.yaml#/BadRequest
+      "401":
+        $ref: ../components/common/responses.yaml#/Unauthenticated
+      "402":
+        $ref: ../components/common/responses.yaml#/PlanRequired
+      "403":
+        $ref: ../components/common/responses.yaml#/Forbidden
+      "404":
+        $ref: ../components/common/responses.yaml#/NotFound
+      "409":
+        $ref: ../components/common/responses.yaml#/Conflict
+      "412":
+        $ref: ../components/common/responses.yaml#/PreconditionFailed
+      "422":
+        $ref: ../components/common/responses.yaml#/Validation
+      "428":
+        $ref: ../components/common/responses.yaml#/PreconditionRequired
+      "429":
+        $ref: ../components/common/responses.yaml#/RateLimited
+    x-csrf-required-for-cookie: true
+    parameters:
+      - $ref: ../components/common/parameters.yaml#/IdempotencyKey
+      - $ref: ../components/common/parameters.yaml#/Csrf
+      - $ref: ../components/common/parameters.yaml#/Origin
+      - $ref: ../components/common/parameters.yaml#/IfMatch
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: ../components/repairs/schemas.yaml#/ChangeOrderReject
+    x-permissions-mode: all
+/api/v1/tenants/{tenantId}/repairs/projects/{projectId}/measurement:
+  parameters:
+    - $ref: ../components/common/parameters.yaml#/tenantId
+    - $ref: ../components/common/parameters.yaml#/repairProjectId
+  get:
+    operationId: getMeasurement
+    tags:
+      - Repairs
+    summary: Read the measurement of an object
+    x-permissions:
+      - repairs.projects.read
+    x-scope: tenant-org-unit-repair-project
+    description: "W6.00. The measurement of the object: rooms (length, width, height, openings) and totals of floor and walls; the sums of wet rooms are separate."
+    responses:
+      "200":
+        description: Successful result.
+        headers:
+          X-Request-Id:
+            $ref: ../components/common/headers.yaml#/RequestId
+          ETag:
+            $ref: ../components/common/headers.yaml#/ETag
+          Cache-Control:
+            description: Never cache authenticated, confidential or capability-bearing API responses in shared caches.
+            schema:
+              type: string
+              const: private, no-store
+        content:
+          application/json:
+            schema:
+              $ref: ../components/repairs/schemas.yaml#/Measurement
+      "400":
+        $ref: ../components/common/responses.yaml#/BadRequest
+      "401":
+        $ref: ../components/common/responses.yaml#/Unauthenticated
+      "403":
+        $ref: ../components/common/responses.yaml#/Forbidden
+      "404":
+        $ref: ../components/common/responses.yaml#/NotFound
+      "422":
+        $ref: ../components/common/responses.yaml#/Validation
+      "429":
+        $ref: ../components/common/responses.yaml#/RateLimited
+    x-permissions-mode: all
+  put:
+    operationId: putMeasurement
+    tags:
+      - Repairs
+    summary: Save a new version of the measurement
+    x-permissions:
+      - repairs.measurements.edit
+    x-scope: tenant-org-unit-repair-project
+    description: W6.00 (Q-W4.00-repair-17). Save a new measurement version. A draft estimate is recalculated (lines «из замера» only, a manually changed volume is kept); sent and approved versions are never changed. Allowed until the object is handed over (project_handed_over). If-Match — Measurement.revision.
+    responses:
+      "200":
+        description: Successful result.
+        headers:
+          X-Request-Id:
+            $ref: ../components/common/headers.yaml#/RequestId
+          ETag:
+            $ref: ../components/common/headers.yaml#/ETag
+          Idempotency-Replayed:
+            $ref: ../components/common/headers.yaml#/IdempotencyReplayed
+          Cache-Control:
+            description: Never cache authenticated, confidential or capability-bearing API responses in shared caches.
+            schema:
+              type: string
+              const: private, no-store
+        content:
+          application/json:
+            schema:
+              $ref: ../components/repairs/schemas.yaml#/Measurement
+      "400":
+        $ref: ../components/common/responses.yaml#/BadRequest
+      "401":
+        $ref: ../components/common/responses.yaml#/Unauthenticated
+      "402":
+        $ref: ../components/common/responses.yaml#/PlanRequired
+      "403":
+        $ref: ../components/common/responses.yaml#/Forbidden
+      "404":
+        $ref: ../components/common/responses.yaml#/NotFound
+      "409":
+        $ref: ../components/common/responses.yaml#/Conflict
+      "412":
+        $ref: ../components/common/responses.yaml#/PreconditionFailed
+      "422":
+        $ref: ../components/common/responses.yaml#/Validation
+      "428":
+        $ref: ../components/common/responses.yaml#/PreconditionRequired
+      "429":
+        $ref: ../components/common/responses.yaml#/RateLimited
+    x-csrf-required-for-cookie: true
+    parameters:
+      - $ref: ../components/common/parameters.yaml#/IdempotencyKey
+      - $ref: ../components/common/parameters.yaml#/Csrf
+      - $ref: ../components/common/parameters.yaml#/Origin
+      - $ref: ../components/common/parameters.yaml#/IfMatch
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: ../components/repairs/schemas.yaml#/MeasurementPut
+    x-permissions-mode: all
+/api/v1/tenants/{tenantId}/repairs/projects/{projectId}/estimates:
+  parameters:
+    - $ref: ../components/common/parameters.yaml#/tenantId
+    - $ref: ../components/common/parameters.yaml#/repairProjectId
+  get:
+    operationId: listEstimates
+    tags:
+      - Repairs
+    summary: List estimate versions of an object
+    x-permissions:
+      - repairs.finance.read
+    x-scope: tenant-org-unit-repair-project
+    description: W6.00. Versions of the estimate of the object (only with repairs.finance.read).
+    responses:
+      "200":
+        description: Successful result.
+        headers:
+          X-Request-Id:
+            $ref: ../components/common/headers.yaml#/RequestId
+          Cache-Control:
+            description: Never cache authenticated, confidential or capability-bearing API responses in shared caches.
+            schema:
+              type: string
+              const: private, no-store
+        content:
+          application/json:
+            schema:
+              $ref: ../components/repairs/schemas.yaml#/EstimateList
+      "400":
+        $ref: ../components/common/responses.yaml#/BadRequest
+      "401":
+        $ref: ../components/common/responses.yaml#/Unauthenticated
+      "403":
+        $ref: ../components/common/responses.yaml#/Forbidden
+      "404":
+        $ref: ../components/common/responses.yaml#/NotFound
+      "422":
+        $ref: ../components/common/responses.yaml#/Validation
+      "429":
+        $ref: ../components/common/responses.yaml#/RateLimited
+    x-permissions-mode: all
+  post:
+    operationId: createEstimateRevision
+    tags:
+      - Repairs
+    summary: Create a draft revision or additional agreement from the current version
+    x-permissions:
+      - repairs.estimates.edit
+    x-scope: tenant-org-unit-repair-project
+    description: W6.00. Create a draft revision (before the contract) or an additional agreement (after it, kind change) from the current version; changeOrderIds are put into the section «Допработы · ДР-N» and become priced. While an agreement is with the client — 409 agreement_pending; a draft already exists — 409 estimate_draft_exists.
+    responses:
+      "201":
+        description: Successful result.
+        headers:
+          X-Request-Id:
+            $ref: ../components/common/headers.yaml#/RequestId
+          ETag:
+            $ref: ../components/common/headers.yaml#/ETag
+          Idempotency-Replayed:
+            $ref: ../components/common/headers.yaml#/IdempotencyReplayed
+          Cache-Control:
+            description: Never cache authenticated, confidential or capability-bearing API responses in shared caches.
+            schema:
+              type: string
+              const: private, no-store
+        content:
+          application/json:
+            schema:
+              $ref: ../components/repairs/schemas.yaml#/Estimate
+      "400":
+        $ref: ../components/common/responses.yaml#/BadRequest
+      "401":
+        $ref: ../components/common/responses.yaml#/Unauthenticated
+      "402":
+        $ref: ../components/common/responses.yaml#/PlanRequired
+      "403":
+        $ref: ../components/common/responses.yaml#/Forbidden
+      "404":
+        $ref: ../components/common/responses.yaml#/NotFound
+      "409":
+        $ref: ../components/common/responses.yaml#/Conflict
+      "422":
+        $ref: ../components/common/responses.yaml#/Validation
+      "428":
+        $ref: ../components/common/responses.yaml#/PreconditionRequired
+      "429":
+        $ref: ../components/common/responses.yaml#/RateLimited
+    x-csrf-required-for-cookie: true
+    parameters:
+      - $ref: ../components/common/parameters.yaml#/IdempotencyKey
+      - $ref: ../components/common/parameters.yaml#/Csrf
+      - $ref: ../components/common/parameters.yaml#/Origin
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: ../components/repairs/schemas.yaml#/EstimateRevisionCreate
+    x-permissions-mode: all
+/api/v1/tenants/{tenantId}/repairs/projects/{projectId}/estimates/{version}:
+  parameters:
+    - $ref: ../components/common/parameters.yaml#/tenantId
+    - $ref: ../components/common/parameters.yaml#/repairProjectId
+    - $ref: ../components/common/parameters.yaml#/estimateVersion
+  get:
+    operationId: getEstimate
+    tags:
+      - Repairs
+    summary: Read an estimate version
+    x-permissions:
+      - repairs.finance.read
+    x-scope: tenant-org-unit-repair-project
+    description: "W6.00. One version of the estimate: sections, lines, discount, total, state."
+    responses:
+      "200":
+        description: Successful result.
+        headers:
+          X-Request-Id:
+            $ref: ../components/common/headers.yaml#/RequestId
+          ETag:
+            $ref: ../components/common/headers.yaml#/ETag
+          Cache-Control:
+            description: Never cache authenticated, confidential or capability-bearing API responses in shared caches.
+            schema:
+              type: string
+              const: private, no-store
+        content:
+          application/json:
+            schema:
+              $ref: ../components/repairs/schemas.yaml#/Estimate
+      "400":
+        $ref: ../components/common/responses.yaml#/BadRequest
+      "401":
+        $ref: ../components/common/responses.yaml#/Unauthenticated
+      "403":
+        $ref: ../components/common/responses.yaml#/Forbidden
+      "404":
+        $ref: ../components/common/responses.yaml#/NotFound
+      "422":
+        $ref: ../components/common/responses.yaml#/Validation
+      "429":
+        $ref: ../components/common/responses.yaml#/RateLimited
+    x-permissions-mode: all
+  patch:
+    operationId: updateEstimateDraft
+    tags:
+      - Repairs
+    summary: Change lines, sections and discount of a draft estimate
+    x-permissions:
+      - repairs.estimates.edit
+    x-scope: tenant-org-unit-repair-project
+    description: "W6.00. Change a draft in one batch: sections, lines from the price list, volume (manual from then on) or price, «вернуть из замера» (resetLineIds), removal, discount (any editor may give it). A sent or approved version — 409 estimate_version_locked. If-Match — Estimate.revision."
+    responses:
+      "200":
+        description: Successful result.
+        headers:
+          X-Request-Id:
+            $ref: ../components/common/headers.yaml#/RequestId
+          ETag:
+            $ref: ../components/common/headers.yaml#/ETag
+          Idempotency-Replayed:
+            $ref: ../components/common/headers.yaml#/IdempotencyReplayed
+          Cache-Control:
+            description: Never cache authenticated, confidential or capability-bearing API responses in shared caches.
+            schema:
+              type: string
+              const: private, no-store
+        content:
+          application/json:
+            schema:
+              $ref: ../components/repairs/schemas.yaml#/Estimate
+      "400":
+        $ref: ../components/common/responses.yaml#/BadRequest
+      "401":
+        $ref: ../components/common/responses.yaml#/Unauthenticated
+      "402":
+        $ref: ../components/common/responses.yaml#/PlanRequired
+      "403":
+        $ref: ../components/common/responses.yaml#/Forbidden
+      "404":
+        $ref: ../components/common/responses.yaml#/NotFound
+      "409":
+        $ref: ../components/common/responses.yaml#/Conflict
+      "412":
+        $ref: ../components/common/responses.yaml#/PreconditionFailed
+      "422":
+        $ref: ../components/common/responses.yaml#/Validation
+      "428":
+        $ref: ../components/common/responses.yaml#/PreconditionRequired
+      "429":
+        $ref: ../components/common/responses.yaml#/RateLimited
+    x-csrf-required-for-cookie: true
+    parameters:
+      - $ref: ../components/common/parameters.yaml#/IdempotencyKey
+      - $ref: ../components/common/parameters.yaml#/Csrf
+      - $ref: ../components/common/parameters.yaml#/Origin
+      - $ref: ../components/common/parameters.yaml#/IfMatch
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: ../components/repairs/schemas.yaml#/EstimateDraftPatch
+    x-permissions-mode: all
+  delete:
+    operationId: deleteEstimateDraft
+    tags:
+      - Repairs
+    summary: Delete a draft estimate; its change orders return to proposed
+    x-permissions:
+      - repairs.estimates.edit
+    x-scope: tenant-org-unit-repair-project
+    description: W6.00. Delete a draft; its change orders return to proposed. Only a draft (estimate_version_locked for others). If-Match — Estimate.revision.
+    responses:
+      "204":
+        description: Completed with no response body.
+        headers:
+          X-Request-Id:
+            $ref: ../components/common/headers.yaml#/RequestId
+          Idempotency-Replayed:
+            $ref: ../components/common/headers.yaml#/IdempotencyReplayed
+          Cache-Control:
+            description: Never cache authenticated, confidential or capability-bearing API responses in shared caches.
+            schema:
+              type: string
+              const: private, no-store
+      "400":
+        $ref: ../components/common/responses.yaml#/BadRequest
+      "401":
+        $ref: ../components/common/responses.yaml#/Unauthenticated
+      "402":
+        $ref: ../components/common/responses.yaml#/PlanRequired
+      "403":
+        $ref: ../components/common/responses.yaml#/Forbidden
+      "404":
+        $ref: ../components/common/responses.yaml#/NotFound
+      "409":
+        $ref: ../components/common/responses.yaml#/Conflict
+      "412":
+        $ref: ../components/common/responses.yaml#/PreconditionFailed
+      "422":
+        $ref: ../components/common/responses.yaml#/Validation
+      "428":
+        $ref: ../components/common/responses.yaml#/PreconditionRequired
+      "429":
+        $ref: ../components/common/responses.yaml#/RateLimited
+    x-csrf-required-for-cookie: true
+    parameters:
+      - $ref: ../components/common/parameters.yaml#/IdempotencyKey
+      - $ref: ../components/common/parameters.yaml#/Csrf
+      - $ref: ../components/common/parameters.yaml#/Origin
+      - $ref: ../components/common/parameters.yaml#/IfMatch
+    x-permissions-mode: all
+/api/v1/tenants/{tenantId}/repairs/projects/{projectId}/estimate-drafts:
+  parameters:
+    - $ref: ../components/common/parameters.yaml#/tenantId
+    - $ref: ../components/common/parameters.yaml#/repairProjectId
+  post:
+    operationId: createEstimateFromTemplate
+    tags:
+      - Repairs
+    summary: Build the first draft estimate from a template and the measurement
+    x-permissions:
+      - repairs.estimates.edit
+    x-scope: tenant-org-unit-repair-project
+    description: "W6.00. Build the first draft (version 1) from a template and the measurement: volumes by the formulas, prices of the price list on the date of the build. If a draft or a sent version exists — 409 estimate_draft_exists. Only for an object without an approved version."
+    responses:
+      "201":
+        description: Successful result.
+        headers:
+          X-Request-Id:
+            $ref: ../components/common/headers.yaml#/RequestId
+          ETag:
+            $ref: ../components/common/headers.yaml#/ETag
+          Idempotency-Replayed:
+            $ref: ../components/common/headers.yaml#/IdempotencyReplayed
+          Cache-Control:
+            description: Never cache authenticated, confidential or capability-bearing API responses in shared caches.
+            schema:
+              type: string
+              const: private, no-store
+        content:
+          application/json:
+            schema:
+              $ref: ../components/repairs/schemas.yaml#/Estimate
+      "400":
+        $ref: ../components/common/responses.yaml#/BadRequest
+      "401":
+        $ref: ../components/common/responses.yaml#/Unauthenticated
+      "402":
+        $ref: ../components/common/responses.yaml#/PlanRequired
+      "403":
+        $ref: ../components/common/responses.yaml#/Forbidden
+      "404":
+        $ref: ../components/common/responses.yaml#/NotFound
+      "409":
+        $ref: ../components/common/responses.yaml#/Conflict
+      "422":
+        $ref: ../components/common/responses.yaml#/Validation
+      "428":
+        $ref: ../components/common/responses.yaml#/PreconditionRequired
+      "429":
+        $ref: ../components/common/responses.yaml#/RateLimited
+    x-csrf-required-for-cookie: true
+    parameters:
+      - $ref: ../components/common/parameters.yaml#/IdempotencyKey
+      - $ref: ../components/common/parameters.yaml#/Csrf
+      - $ref: ../components/common/parameters.yaml#/Origin
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: ../components/repairs/schemas.yaml#/EstimateFromTemplate
+    x-permissions-mode: all
+/api/v1/tenants/{tenantId}/repairs/projects/{projectId}/estimates/{version}/send:
+  parameters:
+    - $ref: ../components/common/parameters.yaml#/tenantId
+    - $ref: ../components/common/parameters.yaml#/repairProjectId
+    - $ref: ../components/common/parameters.yaml#/estimateVersion
+  post:
+    operationId: sendEstimate
+    tags:
+      - Repairs
+    summary: Send the estimate to the client cabinet (fixes the volumes)
+    x-permissions:
+      - repairs.estimates.edit
+    x-scope: tenant-org-unit-repair-project
+    description: "W6.00. Send the version to the client cabinet: volumes are fixed; change orders of an agreement become sent; a document of the agreement appears in the documents. If-Match — Estimate.revision; sent already — estimate_version_locked."
+    responses:
+      "200":
+        description: Successful result.
+        headers:
+          X-Request-Id:
+            $ref: ../components/common/headers.yaml#/RequestId
+          ETag:
+            $ref: ../components/common/headers.yaml#/ETag
+          Idempotency-Replayed:
+            $ref: ../components/common/headers.yaml#/IdempotencyReplayed
+          Cache-Control:
+            description: Never cache authenticated, confidential or capability-bearing API responses in shared caches.
+            schema:
+              type: string
+              const: private, no-store
+        content:
+          application/json:
+            schema:
+              $ref: ../components/repairs/schemas.yaml#/Estimate
+      "400":
+        $ref: ../components/common/responses.yaml#/BadRequest
+      "401":
+        $ref: ../components/common/responses.yaml#/Unauthenticated
+      "402":
+        $ref: ../components/common/responses.yaml#/PlanRequired
+      "403":
+        $ref: ../components/common/responses.yaml#/Forbidden
+      "404":
+        $ref: ../components/common/responses.yaml#/NotFound
+      "409":
+        $ref: ../components/common/responses.yaml#/Conflict
+      "412":
+        $ref: ../components/common/responses.yaml#/PreconditionFailed
+      "422":
+        $ref: ../components/common/responses.yaml#/Validation
+      "428":
+        $ref: ../components/common/responses.yaml#/PreconditionRequired
+      "429":
+        $ref: ../components/common/responses.yaml#/RateLimited
+    x-csrf-required-for-cookie: true
+    parameters:
+      - $ref: ../components/common/parameters.yaml#/IdempotencyKey
+      - $ref: ../components/common/parameters.yaml#/Csrf
+      - $ref: ../components/common/parameters.yaml#/Origin
+      - $ref: ../components/common/parameters.yaml#/IfMatch
+    x-permissions-mode: all
+/api/v1/tenants/{tenantId}/repairs/projects/{projectId}/estimates/{version}/recall:
+  parameters:
+    - $ref: ../components/common/parameters.yaml#/tenantId
+    - $ref: ../components/common/parameters.yaml#/repairProjectId
+    - $ref: ../components/common/parameters.yaml#/estimateVersion
+  post:
+    operationId: recallEstimate
+    tags:
+      - Repairs
+    summary: Recall a sent estimate to edit it again
+    x-permissions:
+      - repairs.estimates.edit
+    x-scope: tenant-org-unit-repair-project
+    description: "W6.00. Recall a sent version (until the client approves it): the draft is editable again, change orders return to priced. An approved version — 409 estimate_version_locked."
+    responses:
+      "200":
+        description: Successful result.
+        headers:
+          X-Request-Id:
+            $ref: ../components/common/headers.yaml#/RequestId
+          ETag:
+            $ref: ../components/common/headers.yaml#/ETag
+          Idempotency-Replayed:
+            $ref: ../components/common/headers.yaml#/IdempotencyReplayed
+          Cache-Control:
+            description: Never cache authenticated, confidential or capability-bearing API responses in shared caches.
+            schema:
+              type: string
+              const: private, no-store
+        content:
+          application/json:
+            schema:
+              $ref: ../components/repairs/schemas.yaml#/Estimate
+      "400":
+        $ref: ../components/common/responses.yaml#/BadRequest
+      "401":
+        $ref: ../components/common/responses.yaml#/Unauthenticated
+      "402":
+        $ref: ../components/common/responses.yaml#/PlanRequired
+      "403":
+        $ref: ../components/common/responses.yaml#/Forbidden
+      "404":
+        $ref: ../components/common/responses.yaml#/NotFound
+      "409":
+        $ref: ../components/common/responses.yaml#/Conflict
+      "412":
+        $ref: ../components/common/responses.yaml#/PreconditionFailed
+      "422":
+        $ref: ../components/common/responses.yaml#/Validation
+      "428":
+        $ref: ../components/common/responses.yaml#/PreconditionRequired
+      "429":
+        $ref: ../components/common/responses.yaml#/RateLimited
+    x-csrf-required-for-cookie: true
+    parameters:
+      - $ref: ../components/common/parameters.yaml#/IdempotencyKey
+      - $ref: ../components/common/parameters.yaml#/Csrf
+      - $ref: ../components/common/parameters.yaml#/Origin
+      - $ref: ../components/common/parameters.yaml#/IfMatch
+    x-permissions-mode: all
+/api/v1/tenants/{tenantId}/repairs/projects/{projectId}/estimates/{version}/diff:
+  parameters:
+    - $ref: ../components/common/parameters.yaml#/tenantId
+    - $ref: ../components/common/parameters.yaml#/repairProjectId
+    - $ref: ../components/common/parameters.yaml#/estimateVersion
+  get:
+    operationId: diffEstimates
+    tags:
+      - Repairs
+    summary: Compare two estimate versions by the id of the line
+    x-permissions:
+      - repairs.finance.read
+    x-scope: tenant-org-unit-repair-project
+    description: "W6.00. Compare version `version` with `to` by the id of the line: added, removed, changed (volume and price), same; a replaced position is «removed» plus «added». Only with repairs.finance.read."
+    responses:
+      "200":
+        description: Successful result.
+        headers:
+          X-Request-Id:
+            $ref: ../components/common/headers.yaml#/RequestId
+          Cache-Control:
+            description: Never cache authenticated, confidential or capability-bearing API responses in shared caches.
+            schema:
+              type: string
+              const: private, no-store
+        content:
+          application/json:
+            schema:
+              $ref: ../components/repairs/schemas.yaml#/EstimateDiff
+      "400":
+        $ref: ../components/common/responses.yaml#/BadRequest
+      "401":
+        $ref: ../components/common/responses.yaml#/Unauthenticated
+      "403":
+        $ref: ../components/common/responses.yaml#/Forbidden
+      "404":
+        $ref: ../components/common/responses.yaml#/NotFound
+      "422":
+        $ref: ../components/common/responses.yaml#/Validation
+      "429":
+        $ref: ../components/common/responses.yaml#/RateLimited
+    parameters:
+      - $ref: ../components/common/parameters.yaml#/EstimateDiffTo
+    x-permissions-mode: all
+/api/v1/tenants/{tenantId}/repairs/projects/{projectId}/save-as-template:
+  parameters:
+    - $ref: ../components/common/parameters.yaml#/tenantId
+    - $ref: ../components/common/parameters.yaml#/repairProjectId
+  post:
+    operationId: saveProjectAsTemplate
+    tags:
+      - Repairs
+    summary: Save the current estimate of an object as a template
+    x-permissions:
+      - repairs.catalog.manage
+    x-scope: tenant
+    description: W6.00. Save the lines of the current version with the formulas and the other parts of the source template as a new own template (source own).
+    responses:
+      "201":
+        description: Successful result.
+        headers:
+          X-Request-Id:
+            $ref: ../components/common/headers.yaml#/RequestId
+          ETag:
+            $ref: ../components/common/headers.yaml#/ETag
+          Idempotency-Replayed:
+            $ref: ../components/common/headers.yaml#/IdempotencyReplayed
+          Cache-Control:
+            description: Never cache authenticated, confidential or capability-bearing API responses in shared caches.
+            schema:
+              type: string
+              const: private, no-store
+        content:
+          application/json:
+            schema:
+              $ref: ../components/repairs/schemas.yaml#/Template
+      "400":
+        $ref: ../components/common/responses.yaml#/BadRequest
+      "401":
+        $ref: ../components/common/responses.yaml#/Unauthenticated
+      "402":
+        $ref: ../components/common/responses.yaml#/PlanRequired
+      "403":
+        $ref: ../components/common/responses.yaml#/Forbidden
+      "404":
+        $ref: ../components/common/responses.yaml#/NotFound
+      "409":
+        $ref: ../components/common/responses.yaml#/Conflict
+      "422":
+        $ref: ../components/common/responses.yaml#/Validation
+      "428":
+        $ref: ../components/common/responses.yaml#/PreconditionRequired
+      "429":
+        $ref: ../components/common/responses.yaml#/RateLimited
+    x-csrf-required-for-cookie: true
+    parameters:
+      - $ref: ../components/common/parameters.yaml#/IdempotencyKey
+      - $ref: ../components/common/parameters.yaml#/Csrf
+      - $ref: ../components/common/parameters.yaml#/Origin
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: ../components/repairs/schemas.yaml#/TemplateCopy
+    x-permissions-mode: all
+/api/v1/tenants/{tenantId}/repairs/price-items:
+  parameters:
+    - $ref: ../components/common/parameters.yaml#/tenantId
+  get:
+    operationId: listPriceItems
+    tags:
+      - Repairs
+    summary: List price list items
+    x-permissions:
+      - repairs.catalog.manage
+      - repairs.estimates.edit
+    x-scope: tenant
+    description: "W6.00. The price list: works and materials with section, unit and price; usedInTemplates — in how many templates the item is used. q — search by name, kind — work or material."
+    responses:
+      "200":
+        description: Successful result.
+        headers:
+          X-Request-Id:
+            $ref: ../components/common/headers.yaml#/RequestId
+          Cache-Control:
+            description: Never cache authenticated, confidential or capability-bearing API responses in shared caches.
+            schema:
+              type: string
+              const: private, no-store
+        content:
+          application/json:
+            schema:
+              $ref: ../components/repairs/schemas.yaml#/PriceItemPage
+      "400":
+        $ref: ../components/common/responses.yaml#/BadRequest
+      "401":
+        $ref: ../components/common/responses.yaml#/Unauthenticated
+      "403":
+        $ref: ../components/common/responses.yaml#/Forbidden
+      "404":
+        $ref: ../components/common/responses.yaml#/NotFound
+      "422":
+        $ref: ../components/common/responses.yaml#/Validation
+      "429":
+        $ref: ../components/common/responses.yaml#/RateLimited
+    parameters:
+      - $ref: ../components/common/parameters.yaml#/Cursor
+      - $ref: ../components/common/parameters.yaml#/Limit
+      - $ref: ../components/common/parameters.yaml#/RepairQuery
+      - $ref: ../components/common/parameters.yaml#/PriceKindFilter
+    x-permissions-mode: any
+  post:
+    operationId: createPriceItem
+    tags:
+      - Repairs
+    summary: Add a price list item
+    x-permissions:
+      - repairs.catalog.manage
+    x-scope: tenant
+    description: "W6.00. Add an item. Violations of the prototype: name «Укажите название позиции», price «Укажите цену больше нуля»; a duplicate name — 422 validation_failed, reason price_item_duplicate («Такая позиция уже есть в справочнике»). Event repairs.price_item.changed.v1."
+    responses:
+      "201":
+        description: Successful result.
+        headers:
+          X-Request-Id:
+            $ref: ../components/common/headers.yaml#/RequestId
+          ETag:
+            $ref: ../components/common/headers.yaml#/ETag
+          Idempotency-Replayed:
+            $ref: ../components/common/headers.yaml#/IdempotencyReplayed
+          Cache-Control:
+            description: Never cache authenticated, confidential or capability-bearing API responses in shared caches.
+            schema:
+              type: string
+              const: private, no-store
+        content:
+          application/json:
+            schema:
+              $ref: ../components/repairs/schemas.yaml#/PriceItem
+      "400":
+        $ref: ../components/common/responses.yaml#/BadRequest
+      "401":
+        $ref: ../components/common/responses.yaml#/Unauthenticated
+      "402":
+        $ref: ../components/common/responses.yaml#/PlanRequired
+      "403":
+        $ref: ../components/common/responses.yaml#/Forbidden
+      "404":
+        $ref: ../components/common/responses.yaml#/NotFound
+      "409":
+        $ref: ../components/common/responses.yaml#/Conflict
+      "422":
+        $ref: ../components/common/responses.yaml#/Validation
+      "428":
+        $ref: ../components/common/responses.yaml#/PreconditionRequired
+      "429":
+        $ref: ../components/common/responses.yaml#/RateLimited
+    x-csrf-required-for-cookie: true
+    parameters:
+      - $ref: ../components/common/parameters.yaml#/IdempotencyKey
+      - $ref: ../components/common/parameters.yaml#/Csrf
+      - $ref: ../components/common/parameters.yaml#/Origin
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: ../components/repairs/schemas.yaml#/PriceItemCreate
+    x-permissions-mode: all
+/api/v1/tenants/{tenantId}/repairs/price-items/{priceItemId}:
+  parameters:
+    - $ref: ../components/common/parameters.yaml#/tenantId
+    - $ref: ../components/common/parameters.yaml#/priceItemId
+  patch:
+    operationId: updatePriceItem
+    tags:
+      - Repairs
+    summary: Change a price list item (new prices reach only new drafts)
+    x-permissions:
+      - repairs.catalog.manage
+    x-scope: tenant
+    description: W6.00. Change the price or the attributes. A new price reaches only new drafts and lines added from the price list afterwards; sent and approved versions do not change. If-Match — PriceItem.revision.
+    responses:
+      "200":
+        description: Successful result.
+        headers:
+          X-Request-Id:
+            $ref: ../components/common/headers.yaml#/RequestId
+          ETag:
+            $ref: ../components/common/headers.yaml#/ETag
+          Idempotency-Replayed:
+            $ref: ../components/common/headers.yaml#/IdempotencyReplayed
+          Cache-Control:
+            description: Never cache authenticated, confidential or capability-bearing API responses in shared caches.
+            schema:
+              type: string
+              const: private, no-store
+        content:
+          application/json:
+            schema:
+              $ref: ../components/repairs/schemas.yaml#/PriceItem
+      "400":
+        $ref: ../components/common/responses.yaml#/BadRequest
+      "401":
+        $ref: ../components/common/responses.yaml#/Unauthenticated
+      "402":
+        $ref: ../components/common/responses.yaml#/PlanRequired
+      "403":
+        $ref: ../components/common/responses.yaml#/Forbidden
+      "404":
+        $ref: ../components/common/responses.yaml#/NotFound
+      "409":
+        $ref: ../components/common/responses.yaml#/Conflict
+      "412":
+        $ref: ../components/common/responses.yaml#/PreconditionFailed
+      "422":
+        $ref: ../components/common/responses.yaml#/Validation
+      "428":
+        $ref: ../components/common/responses.yaml#/PreconditionRequired
+      "429":
+        $ref: ../components/common/responses.yaml#/RateLimited
+    x-csrf-required-for-cookie: true
+    parameters:
+      - $ref: ../components/common/parameters.yaml#/IdempotencyKey
+      - $ref: ../components/common/parameters.yaml#/Csrf
+      - $ref: ../components/common/parameters.yaml#/Origin
+      - $ref: ../components/common/parameters.yaml#/IfMatch
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: ../components/repairs/schemas.yaml#/PriceItemPatch
+    x-permissions-mode: all
+/api/v1/tenants/{tenantId}/repairs/templates:
+  parameters:
+    - $ref: ../components/common/parameters.yaml#/tenantId
+  get:
+    operationId: listTemplates
+    tags:
+      - Repairs
+    summary: List object templates
+    x-permissions:
+      - repairs.catalog.manage
+      - repairs.estimates.edit
+    x-scope: tenant
+    description: W6.00. Object templates (Ortus copies are made in the organization when the module is connected, design/docs/19; own templates). Without a template a draft estimate cannot be built.
+    responses:
+      "200":
+        description: Successful result.
+        headers:
+          X-Request-Id:
+            $ref: ../components/common/headers.yaml#/RequestId
+          Cache-Control:
+            description: Never cache authenticated, confidential or capability-bearing API responses in shared caches.
+            schema:
+              type: string
+              const: private, no-store
+        content:
+          application/json:
+            schema:
+              $ref: ../components/repairs/schemas.yaml#/TemplateList
+      "400":
+        $ref: ../components/common/responses.yaml#/BadRequest
+      "401":
+        $ref: ../components/common/responses.yaml#/Unauthenticated
+      "403":
+        $ref: ../components/common/responses.yaml#/Forbidden
+      "404":
+        $ref: ../components/common/responses.yaml#/NotFound
+      "422":
+        $ref: ../components/common/responses.yaml#/Validation
+      "429":
+        $ref: ../components/common/responses.yaml#/RateLimited
+    x-permissions-mode: any
+/api/v1/tenants/{tenantId}/repairs/templates/{templateId}:
+  parameters:
+    - $ref: ../components/common/parameters.yaml#/tenantId
+    - $ref: ../components/common/parameters.yaml#/templateId
+  get:
+    operationId: getTemplate
+    tags:
+      - Repairs
+    summary: Read an object template
+    x-permissions:
+      - repairs.catalog.manage
+      - repairs.estimates.edit
+    x-scope: tenant
+    description: "W6.00. One template with six parts: lines and formulas, technology of the schedule, documents, checklist of acceptance, materials for supply, warranty."
+    responses:
+      "200":
+        description: Successful result.
+        headers:
+          X-Request-Id:
+            $ref: ../components/common/headers.yaml#/RequestId
+          ETag:
+            $ref: ../components/common/headers.yaml#/ETag
+          Cache-Control:
+            description: Never cache authenticated, confidential or capability-bearing API responses in shared caches.
+            schema:
+              type: string
+              const: private, no-store
+        content:
+          application/json:
+            schema:
+              $ref: ../components/repairs/schemas.yaml#/Template
+      "400":
+        $ref: ../components/common/responses.yaml#/BadRequest
+      "401":
+        $ref: ../components/common/responses.yaml#/Unauthenticated
+      "403":
+        $ref: ../components/common/responses.yaml#/Forbidden
+      "404":
+        $ref: ../components/common/responses.yaml#/NotFound
+      "422":
+        $ref: ../components/common/responses.yaml#/Validation
+      "429":
+        $ref: ../components/common/responses.yaml#/RateLimited
+    x-permissions-mode: any
+  patch:
+    operationId: updateTemplate
+    tags:
+      - Repairs
+    summary: Change lines, formulas and parts of a template
+    x-permissions:
+      - repairs.catalog.manage
+    x-scope: tenant
+    description: W6.00. Change a template of the organization; it does not change objects and estimates already created. If-Match — Template.revision. Event repairs.template.saved.v1.
+    responses:
+      "200":
+        description: Successful result.
+        headers:
+          X-Request-Id:
+            $ref: ../components/common/headers.yaml#/RequestId
+          ETag:
+            $ref: ../components/common/headers.yaml#/ETag
+          Idempotency-Replayed:
+            $ref: ../components/common/headers.yaml#/IdempotencyReplayed
+          Cache-Control:
+            description: Never cache authenticated, confidential or capability-bearing API responses in shared caches.
+            schema:
+              type: string
+              const: private, no-store
+        content:
+          application/json:
+            schema:
+              $ref: ../components/repairs/schemas.yaml#/Template
+      "400":
+        $ref: ../components/common/responses.yaml#/BadRequest
+      "401":
+        $ref: ../components/common/responses.yaml#/Unauthenticated
+      "402":
+        $ref: ../components/common/responses.yaml#/PlanRequired
+      "403":
+        $ref: ../components/common/responses.yaml#/Forbidden
+      "404":
+        $ref: ../components/common/responses.yaml#/NotFound
+      "409":
+        $ref: ../components/common/responses.yaml#/Conflict
+      "412":
+        $ref: ../components/common/responses.yaml#/PreconditionFailed
+      "422":
+        $ref: ../components/common/responses.yaml#/Validation
+      "428":
+        $ref: ../components/common/responses.yaml#/PreconditionRequired
+      "429":
+        $ref: ../components/common/responses.yaml#/RateLimited
+    x-csrf-required-for-cookie: true
+    parameters:
+      - $ref: ../components/common/parameters.yaml#/IdempotencyKey
+      - $ref: ../components/common/parameters.yaml#/Csrf
+      - $ref: ../components/common/parameters.yaml#/Origin
+      - $ref: ../components/common/parameters.yaml#/IfMatch
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: ../components/repairs/schemas.yaml#/TemplatePatch
+    x-permissions-mode: all
+/api/v1/tenants/{tenantId}/repairs/templates/{templateId}/copy:
+  parameters:
+    - $ref: ../components/common/parameters.yaml#/tenantId
+    - $ref: ../components/common/parameters.yaml#/templateId
+  post:
+    operationId: copyTemplate
+    tags:
+      - Repairs
+    summary: Copy a template
+    x-permissions:
+      - repairs.catalog.manage
+    x-scope: tenant
+    description: W6.00. Copy any template into an own template.
+    responses:
+      "201":
+        description: Successful result.
+        headers:
+          X-Request-Id:
+            $ref: ../components/common/headers.yaml#/RequestId
+          ETag:
+            $ref: ../components/common/headers.yaml#/ETag
+          Idempotency-Replayed:
+            $ref: ../components/common/headers.yaml#/IdempotencyReplayed
+          Cache-Control:
+            description: Never cache authenticated, confidential or capability-bearing API responses in shared caches.
+            schema:
+              type: string
+              const: private, no-store
+        content:
+          application/json:
+            schema:
+              $ref: ../components/repairs/schemas.yaml#/Template
+      "400":
+        $ref: ../components/common/responses.yaml#/BadRequest
+      "401":
+        $ref: ../components/common/responses.yaml#/Unauthenticated
+      "402":
+        $ref: ../components/common/responses.yaml#/PlanRequired
+      "403":
+        $ref: ../components/common/responses.yaml#/Forbidden
+      "404":
+        $ref: ../components/common/responses.yaml#/NotFound
+      "409":
+        $ref: ../components/common/responses.yaml#/Conflict
+      "422":
+        $ref: ../components/common/responses.yaml#/Validation
+      "428":
+        $ref: ../components/common/responses.yaml#/PreconditionRequired
+      "429":
+        $ref: ../components/common/responses.yaml#/RateLimited
+    x-csrf-required-for-cookie: true
+    parameters:
+      - $ref: ../components/common/parameters.yaml#/IdempotencyKey
+      - $ref: ../components/common/parameters.yaml#/Csrf
+      - $ref: ../components/common/parameters.yaml#/Origin
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: ../components/repairs/schemas.yaml#/TemplateCopy
+    x-permissions-mode: all
+/api/v1/tenants/{tenantId}/repairs/projects/{projectId}/schedule:
+  parameters:
+    - $ref: ../components/common/parameters.yaml#/tenantId
+    - $ref: ../components/common/parameters.yaml#/repairProjectId
+  get:
+    operationId: getSchedule
+    tags:
+      - Repairs
+    summary: "Read the schedule: stages, links, baseline, forecast"
+    x-permissions:
+      - repairs.schedule.read
+    x-scope: tenant-org-unit-repair-project
+    description: W6.00. Stages, links, the baseline, the forecast, slack and issues; without sums. The foreman sees the stages of his object, a subcontractor — only his own.
+    responses:
+      "200":
+        description: Successful result.
+        headers:
+          X-Request-Id:
+            $ref: ../components/common/headers.yaml#/RequestId
+          ETag:
+            $ref: ../components/common/headers.yaml#/ETag
+          Cache-Control:
+            description: Never cache authenticated, confidential or capability-bearing API responses in shared caches.
+            schema:
+              type: string
+              const: private, no-store
+        content:
+          application/json:
+            schema:
+              $ref: ../components/repairs/schemas.yaml#/Schedule
+      "400":
+        $ref: ../components/common/responses.yaml#/BadRequest
+      "401":
+        $ref: ../components/common/responses.yaml#/Unauthenticated
+      "403":
+        $ref: ../components/common/responses.yaml#/Forbidden
+      "404":
+        $ref: ../components/common/responses.yaml#/NotFound
+      "422":
+        $ref: ../components/common/responses.yaml#/Validation
+      "429":
+        $ref: ../components/common/responses.yaml#/RateLimited
+    x-permissions-mode: all
+/api/v1/tenants/{tenantId}/repairs/projects/{projectId}/schedule/from-estimate:
+  parameters:
+    - $ref: ../components/common/parameters.yaml#/tenantId
+    - $ref: ../components/common/parameters.yaml#/repairProjectId
+  post:
+    operationId: createScheduleFromEstimate
+    tags:
+      - Repairs
+    summary: Build the schedule from the sections of an estimate and the technology of the template
+    x-permissions:
+      - repairs.schedule.shift
+    x-scope: tenant-org-unit-repair-project
+    description: W6.00 (Q-W4.00-repair-19). Build the stages from the sections of an estimate version by the technology of the template. The foreman checks the draft, the owner approves it with the contract. Requires an approved version — repair_estimate_not_approved.
+    responses:
+      "201":
+        description: Successful result.
+        headers:
+          X-Request-Id:
+            $ref: ../components/common/headers.yaml#/RequestId
+          ETag:
+            $ref: ../components/common/headers.yaml#/ETag
+          Idempotency-Replayed:
+            $ref: ../components/common/headers.yaml#/IdempotencyReplayed
+          Cache-Control:
+            description: Never cache authenticated, confidential or capability-bearing API responses in shared caches.
+            schema:
+              type: string
+              const: private, no-store
+        content:
+          application/json:
+            schema:
+              $ref: ../components/repairs/schemas.yaml#/Schedule
+      "400":
+        $ref: ../components/common/responses.yaml#/BadRequest
+      "401":
+        $ref: ../components/common/responses.yaml#/Unauthenticated
+      "402":
+        $ref: ../components/common/responses.yaml#/PlanRequired
+      "403":
+        $ref: ../components/common/responses.yaml#/Forbidden
+      "404":
+        $ref: ../components/common/responses.yaml#/NotFound
+      "409":
+        $ref: ../components/common/responses.yaml#/Conflict
+      "422":
+        $ref: ../components/common/responses.yaml#/Validation
+      "428":
+        $ref: ../components/common/responses.yaml#/PreconditionRequired
+      "429":
+        $ref: ../components/common/responses.yaml#/RateLimited
+    x-csrf-required-for-cookie: true
+    parameters:
+      - $ref: ../components/common/parameters.yaml#/IdempotencyKey
+      - $ref: ../components/common/parameters.yaml#/Csrf
+      - $ref: ../components/common/parameters.yaml#/Origin
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: ../components/repairs/schemas.yaml#/ScheduleFromEstimate
+    x-permissions-mode: all
+/api/v1/tenants/{tenantId}/repairs/projects/{projectId}/schedule/preview:
+  parameters:
+    - $ref: ../components/common/parameters.yaml#/tenantId
+    - $ref: ../components/common/parameters.yaml#/repairProjectId
+  post:
+    operationId: previewScheduleChange
+    tags:
+      - Repairs
+    summary: Preview a move without saving
+    x-permissions:
+      - repairs.schedule.shift
+    x-scope: tenant-org-unit-repair-project
+    description: "W6.00. Consequences of a change without saving (no record): moved stages, the forecast of the hand-over and who gets the notification."
+    responses:
+      "200":
+        description: Successful result.
+        headers:
+          X-Request-Id:
+            $ref: ../components/common/headers.yaml#/RequestId
+          Idempotency-Replayed:
+            $ref: ../components/common/headers.yaml#/IdempotencyReplayed
+          Cache-Control:
+            description: Never cache authenticated, confidential or capability-bearing API responses in shared caches.
+            schema:
+              type: string
+              const: private, no-store
+        content:
+          application/json:
+            schema:
+              $ref: ../components/repairs/schemas.yaml#/SchedulePreview
+      "400":
+        $ref: ../components/common/responses.yaml#/BadRequest
+      "401":
+        $ref: ../components/common/responses.yaml#/Unauthenticated
+      "402":
+        $ref: ../components/common/responses.yaml#/PlanRequired
+      "403":
+        $ref: ../components/common/responses.yaml#/Forbidden
+      "404":
+        $ref: ../components/common/responses.yaml#/NotFound
+      "409":
+        $ref: ../components/common/responses.yaml#/Conflict
+      "422":
+        $ref: ../components/common/responses.yaml#/Validation
+      "428":
+        $ref: ../components/common/responses.yaml#/PreconditionRequired
+      "429":
+        $ref: ../components/common/responses.yaml#/RateLimited
+    x-csrf-required-for-cookie: true
+    parameters:
+      - $ref: ../components/common/parameters.yaml#/IdempotencyKey
+      - $ref: ../components/common/parameters.yaml#/Csrf
+      - $ref: ../components/common/parameters.yaml#/Origin
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: ../components/repairs/schemas.yaml#/SchedulePreviewRequest
+    x-permissions-mode: all
+/api/v1/tenants/{tenantId}/repairs/projects/{projectId}/schedule/changes:
+  parameters:
+    - $ref: ../components/common/parameters.yaml#/tenantId
+    - $ref: ../components/common/parameters.yaml#/repairProjectId
+  post:
+    operationId: applyScheduleChange
+    tags:
+      - Repairs
+    summary: Save a move with a reason and notify
+    x-permissions:
+      - repairs.schedule.shift
+    x-scope: tenant-org-unit-repair-project
+    description: "W6.00. Save a move: the start offset, the duration or the pause of a stage with a reason (required: validation_failed, reason schedule_reason_required). A started or done stage is not moved — 409 invalid_transition, reason schedule_stage_locked. If-Match — Schedule.revision. Notifications go through the outbox to the executors of the affected stages and to the client when the due date changes. Event repairs.schedule.changed.v1."
+    responses:
+      "200":
+        description: Successful result.
+        headers:
+          X-Request-Id:
+            $ref: ../components/common/headers.yaml#/RequestId
+          ETag:
+            $ref: ../components/common/headers.yaml#/ETag
+          Idempotency-Replayed:
+            $ref: ../components/common/headers.yaml#/IdempotencyReplayed
+          Cache-Control:
+            description: Never cache authenticated, confidential or capability-bearing API responses in shared caches.
+            schema:
+              type: string
+              const: private, no-store
+        content:
+          application/json:
+            schema:
+              $ref: ../components/repairs/schemas.yaml#/Schedule
+      "400":
+        $ref: ../components/common/responses.yaml#/BadRequest
+      "401":
+        $ref: ../components/common/responses.yaml#/Unauthenticated
+      "402":
+        $ref: ../components/common/responses.yaml#/PlanRequired
+      "403":
+        $ref: ../components/common/responses.yaml#/Forbidden
+      "404":
+        $ref: ../components/common/responses.yaml#/NotFound
+      "409":
+        $ref: ../components/common/responses.yaml#/Conflict
+      "412":
+        $ref: ../components/common/responses.yaml#/PreconditionFailed
+      "422":
+        $ref: ../components/common/responses.yaml#/Validation
+      "428":
+        $ref: ../components/common/responses.yaml#/PreconditionRequired
+      "429":
+        $ref: ../components/common/responses.yaml#/RateLimited
+    x-csrf-required-for-cookie: true
+    parameters:
+      - $ref: ../components/common/parameters.yaml#/IdempotencyKey
+      - $ref: ../components/common/parameters.yaml#/Csrf
+      - $ref: ../components/common/parameters.yaml#/Origin
+      - $ref: ../components/common/parameters.yaml#/IfMatch
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: ../components/repairs/schemas.yaml#/ScheduleChangeApply
+    x-permissions-mode: all
+/api/v1/tenants/{tenantId}/repairs/projects/{projectId}/schedule/stages/{stageId}:
+  parameters:
+    - $ref: ../components/common/parameters.yaml#/tenantId
+    - $ref: ../components/common/parameters.yaml#/repairProjectId
+    - $ref: ../components/common/parameters.yaml#/stageId
+  patch:
+    operationId: setScheduleStageExecutor
+    tags:
+      - Repairs
+    summary: Change the executor of a stage
+    x-permissions:
+      - repairs.schedule.shift
+    x-scope: tenant-org-unit-repair-project
+    description: W6.00 (Q-W4.00-repair-20). Change the executor of a stage without a reason; the change is written to the history and the executor is notified. If-Match — Schedule.revision.
+    responses:
+      "200":
+        description: Successful result.
+        headers:
+          X-Request-Id:
+            $ref: ../components/common/headers.yaml#/RequestId
+          Idempotency-Replayed:
+            $ref: ../components/common/headers.yaml#/IdempotencyReplayed
+          Cache-Control:
+            description: Never cache authenticated, confidential or capability-bearing API responses in shared caches.
+            schema:
+              type: string
+              const: private, no-store
+        content:
+          application/json:
+            schema:
+              $ref: ../components/repairs/schemas.yaml#/ScheduleStage
+      "400":
+        $ref: ../components/common/responses.yaml#/BadRequest
+      "401":
+        $ref: ../components/common/responses.yaml#/Unauthenticated
+      "402":
+        $ref: ../components/common/responses.yaml#/PlanRequired
+      "403":
+        $ref: ../components/common/responses.yaml#/Forbidden
+      "404":
+        $ref: ../components/common/responses.yaml#/NotFound
+      "409":
+        $ref: ../components/common/responses.yaml#/Conflict
+      "412":
+        $ref: ../components/common/responses.yaml#/PreconditionFailed
+      "422":
+        $ref: ../components/common/responses.yaml#/Validation
+      "428":
+        $ref: ../components/common/responses.yaml#/PreconditionRequired
+      "429":
+        $ref: ../components/common/responses.yaml#/RateLimited
+    x-csrf-required-for-cookie: true
+    parameters:
+      - $ref: ../components/common/parameters.yaml#/IdempotencyKey
+      - $ref: ../components/common/parameters.yaml#/Csrf
+      - $ref: ../components/common/parameters.yaml#/Origin
+      - $ref: ../components/common/parameters.yaml#/IfMatch
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: ../components/repairs/schemas.yaml#/StageExecutorSet
+    x-permissions-mode: all
+/api/v1/tenants/{tenantId}/repairs/projects/{projectId}/schedule/baselines:
+  parameters:
+    - $ref: ../components/common/parameters.yaml#/tenantId
+    - $ref: ../components/common/parameters.yaml#/repairProjectId
+  post:
+    operationId: createScheduleBaseline
+    tags:
+      - Repairs
+    summary: Fix a new baseline by an additional agreement
+    x-permissions:
+      - repairs.schedule.baseline
+    x-scope: tenant-org-unit
+    description: W6.00. Fix a new baseline by an additional agreement (the due date by the contract changes only this way). If-Match — Schedule.revision. Event repairs.schedule.baseline_set.v1.
+    responses:
+      "201":
+        description: Successful result.
+        headers:
+          X-Request-Id:
+            $ref: ../components/common/headers.yaml#/RequestId
+          ETag:
+            $ref: ../components/common/headers.yaml#/ETag
+          Idempotency-Replayed:
+            $ref: ../components/common/headers.yaml#/IdempotencyReplayed
+          Cache-Control:
+            description: Never cache authenticated, confidential or capability-bearing API responses in shared caches.
+            schema:
+              type: string
+              const: private, no-store
+        content:
+          application/json:
+            schema:
+              $ref: ../components/repairs/schemas.yaml#/Schedule
+      "400":
+        $ref: ../components/common/responses.yaml#/BadRequest
+      "401":
+        $ref: ../components/common/responses.yaml#/Unauthenticated
+      "402":
+        $ref: ../components/common/responses.yaml#/PlanRequired
+      "403":
+        $ref: ../components/common/responses.yaml#/Forbidden
+      "404":
+        $ref: ../components/common/responses.yaml#/NotFound
+      "409":
+        $ref: ../components/common/responses.yaml#/Conflict
+      "412":
+        $ref: ../components/common/responses.yaml#/PreconditionFailed
+      "422":
+        $ref: ../components/common/responses.yaml#/Validation
+      "428":
+        $ref: ../components/common/responses.yaml#/PreconditionRequired
+      "429":
+        $ref: ../components/common/responses.yaml#/RateLimited
+    x-csrf-required-for-cookie: true
+    parameters:
+      - $ref: ../components/common/parameters.yaml#/IdempotencyKey
+      - $ref: ../components/common/parameters.yaml#/Csrf
+      - $ref: ../components/common/parameters.yaml#/Origin
+      - $ref: ../components/common/parameters.yaml#/IfMatch
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: ../components/repairs/schemas.yaml#/ScheduleBaselineCreate
+    x-permissions-mode: all
+/api/v1/tenants/{tenantId}/repairs/projects/{projectId}/hand-over:
+  parameters:
+    - $ref: ../components/common/parameters.yaml#/tenantId
+    - $ref: ../components/common/parameters.yaml#/repairProjectId
+  post:
+    operationId: handOverRepairProject
+    tags:
+      - Repairs
+    summary: "Hand the object over: warranty, new marks and change orders are closed"
+    x-permissions:
+      - repairs.projects.hand_over
+    x-scope: tenant-org-unit-repair-project
+    description: "W6.00 (Q-W4.00-repair-21). Hand the object over after the signed «Акт сдачи объекта»: status handed_over, warranty from the passport of the template. New marks and change orders are closed afterwards (project_handed_over); a not signed act — repair_act_not_signed. If-Match — RepairProject.revision. Event repairs.object.handed_over.v1."
+    responses:
+      "200":
+        description: Successful result.
+        headers:
+          X-Request-Id:
+            $ref: ../components/common/headers.yaml#/RequestId
+          ETag:
+            $ref: ../components/common/headers.yaml#/ETag
+          Idempotency-Replayed:
+            $ref: ../components/common/headers.yaml#/IdempotencyReplayed
+          Cache-Control:
+            description: Never cache authenticated, confidential or capability-bearing API responses in shared caches.
+            schema:
+              type: string
+              const: private, no-store
+        content:
+          application/json:
+            schema:
+              $ref: ../components/repairs/schemas.yaml#/RepairProject
+      "400":
+        $ref: ../components/common/responses.yaml#/BadRequest
+      "401":
+        $ref: ../components/common/responses.yaml#/Unauthenticated
+      "402":
+        $ref: ../components/common/responses.yaml#/PlanRequired
+      "403":
+        $ref: ../components/common/responses.yaml#/Forbidden
+      "404":
+        $ref: ../components/common/responses.yaml#/NotFound
+      "409":
+        $ref: ../components/common/responses.yaml#/Conflict
+      "412":
+        $ref: ../components/common/responses.yaml#/PreconditionFailed
+      "422":
+        $ref: ../components/common/responses.yaml#/Validation
+      "428":
+        $ref: ../components/common/responses.yaml#/PreconditionRequired
+      "429":
+        $ref: ../components/common/responses.yaml#/RateLimited
+    x-csrf-required-for-cookie: true
+    parameters:
+      - $ref: ../components/common/parameters.yaml#/IdempotencyKey
+      - $ref: ../components/common/parameters.yaml#/Csrf
+      - $ref: ../components/common/parameters.yaml#/Origin
+      - $ref: ../components/common/parameters.yaml#/IfMatch
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: ../components/repairs/schemas.yaml#/RepairHandOver
+    x-permissions-mode: all
+/api/v1/tenants/{tenantId}/repairs/projects/{projectId}/documents:
+  parameters:
+    - $ref: ../components/common/parameters.yaml#/tenantId
+    - $ref: ../components/common/parameters.yaml#/repairProjectId
+  get:
+    operationId: listRepairDocuments
+    tags:
+      - Repairs
+    summary: List documents of an object (amounts only with repairs.finance.read)
+    x-permissions:
+      - repairs.projects.read
+    x-scope: tenant-org-unit-repair-project
+    description: "W6.00. Documents of the object (contract, agreements, acts, invoices): status draft, wait, sms, signed, paid. Amounts only with repairs.finance.read."
+    responses:
+      "200":
+        description: Successful result.
+        headers:
+          X-Request-Id:
+            $ref: ../components/common/headers.yaml#/RequestId
+          Cache-Control:
+            description: Never cache authenticated, confidential or capability-bearing API responses in shared caches.
+            schema:
+              type: string
+              const: private, no-store
+        content:
+          application/json:
+            schema:
+              $ref: ../components/repairs/schemas.yaml#/RepairDocumentList
+      "400":
+        $ref: ../components/common/responses.yaml#/BadRequest
+      "401":
+        $ref: ../components/common/responses.yaml#/Unauthenticated
+      "403":
+        $ref: ../components/common/responses.yaml#/Forbidden
+      "404":
+        $ref: ../components/common/responses.yaml#/NotFound
+      "422":
+        $ref: ../components/common/responses.yaml#/Validation
+      "429":
+        $ref: ../components/common/responses.yaml#/RateLimited
+    x-permissions-mode: all
+/api/v1/tenants/{tenantId}/repairs/documents/{documentId}/sign-requests:
+  parameters:
+    - $ref: ../components/common/parameters.yaml#/tenantId
+    - $ref: ../components/common/parameters.yaml#/documentId
+  post:
+    operationId: requestDocumentSignature
+    tags:
+      - Repairs
+    summary: Send the document to the client for the signature by an SMS code
+    x-permissions:
+      - repairs.documents.send
+    x-scope: tenant-org-unit-repair-project
+    description: "W6.00 (SMS provider decision pending, Q-W4.00-repair-11). draft → sms: send the SMS code to the client through the code delivery port (stub; on a stand the code goes to the developer inbox). The code is never returned. Not a draft — reason repair_document_state. Event repairs.document.sign_requested.v1."
+    responses:
+      "201":
+        description: Successful result.
+        headers:
+          X-Request-Id:
+            $ref: ../components/common/headers.yaml#/RequestId
+          Idempotency-Replayed:
+            $ref: ../components/common/headers.yaml#/IdempotencyReplayed
+          Cache-Control:
+            description: Never cache authenticated, confidential or capability-bearing API responses in shared caches.
+            schema:
+              type: string
+              const: private, no-store
+        content:
+          application/json:
+            schema:
+              $ref: ../components/repairs/schemas.yaml#/RepairSignRequestResult
+      "400":
+        $ref: ../components/common/responses.yaml#/BadRequest
+      "401":
+        $ref: ../components/common/responses.yaml#/Unauthenticated
+      "402":
+        $ref: ../components/common/responses.yaml#/PlanRequired
+      "403":
+        $ref: ../components/common/responses.yaml#/Forbidden
+      "404":
+        $ref: ../components/common/responses.yaml#/NotFound
+      "409":
+        $ref: ../components/common/responses.yaml#/Conflict
+      "422":
+        $ref: ../components/common/responses.yaml#/Validation
+      "428":
+        $ref: ../components/common/responses.yaml#/PreconditionRequired
+      "429":
+        $ref: ../components/common/responses.yaml#/RateLimited
+    x-csrf-required-for-cookie: true
+    parameters:
+      - $ref: ../components/common/parameters.yaml#/IdempotencyKey
+      - $ref: ../components/common/parameters.yaml#/Csrf
+      - $ref: ../components/common/parameters.yaml#/Origin
+    x-permissions-mode: all
+/api/v1/tenants/{tenantId}/repairs/supply-requests:
+  parameters:
+    - $ref: ../components/common/parameters.yaml#/tenantId
+  get:
+    operationId: listSupplyRequests
+    tags:
+      - Repairs
+    summary: List supply requests of all visible objects
+    x-permissions:
+      - repairs.supply.manage
+      - repairs.supply.request
+    x-scope: tenant-org-unit-repair-project
+    description: "W6.00. Requests of all visible objects (the foreman — his own). State: request → reserved → issued, or request → ordered → bought, then used. Cost — only with repairs.supply.manage."
+    responses:
+      "200":
+        description: Successful result.
+        headers:
+          X-Request-Id:
+            $ref: ../components/common/headers.yaml#/RequestId
+          Cache-Control:
+            description: Never cache authenticated, confidential or capability-bearing API responses in shared caches.
+            schema:
+              type: string
+              const: private, no-store
+        content:
+          application/json:
+            schema:
+              $ref: ../components/repairs/schemas.yaml#/SupplyRequestPage
+      "400":
+        $ref: ../components/common/responses.yaml#/BadRequest
+      "401":
+        $ref: ../components/common/responses.yaml#/Unauthenticated
+      "403":
+        $ref: ../components/common/responses.yaml#/Forbidden
+      "404":
+        $ref: ../components/common/responses.yaml#/NotFound
+      "422":
+        $ref: ../components/common/responses.yaml#/Validation
+      "429":
+        $ref: ../components/common/responses.yaml#/RateLimited
+    parameters:
+      - $ref: ../components/common/parameters.yaml#/Cursor
+      - $ref: ../components/common/parameters.yaml#/Limit
+      - $ref: ../components/common/parameters.yaml#/SupplyStateFilter
+      - $ref: ../components/common/parameters.yaml#/RepairProjectFilter
+    x-permissions-mode: any
+/api/v1/tenants/{tenantId}/repairs/projects/{projectId}/supply-requests:
+  parameters:
+    - $ref: ../components/common/parameters.yaml#/tenantId
+    - $ref: ../components/common/parameters.yaml#/repairProjectId
+  post:
+    operationId: createSupplyRequest
+    tags:
+      - Repairs
+    summary: Ask for a material (foreman)
+    x-permissions:
+      - repairs.supply.request
+    x-scope: tenant-org-unit-repair-project
+    description: W6.00 (Q-W4.00-repair-6). The foreman asks for a material of the price list with the date «Нужно к». Event repairs.supply_request.created.v1.
+    responses:
+      "201":
+        description: Successful result.
+        headers:
+          X-Request-Id:
+            $ref: ../components/common/headers.yaml#/RequestId
+          ETag:
+            $ref: ../components/common/headers.yaml#/ETag
+          Idempotency-Replayed:
+            $ref: ../components/common/headers.yaml#/IdempotencyReplayed
+          Cache-Control:
+            description: Never cache authenticated, confidential or capability-bearing API responses in shared caches.
+            schema:
+              type: string
+              const: private, no-store
+        content:
+          application/json:
+            schema:
+              $ref: ../components/repairs/schemas.yaml#/SupplyRequest
+      "400":
+        $ref: ../components/common/responses.yaml#/BadRequest
+      "401":
+        $ref: ../components/common/responses.yaml#/Unauthenticated
+      "402":
+        $ref: ../components/common/responses.yaml#/PlanRequired
+      "403":
+        $ref: ../components/common/responses.yaml#/Forbidden
+      "404":
+        $ref: ../components/common/responses.yaml#/NotFound
+      "409":
+        $ref: ../components/common/responses.yaml#/Conflict
+      "422":
+        $ref: ../components/common/responses.yaml#/Validation
+      "428":
+        $ref: ../components/common/responses.yaml#/PreconditionRequired
+      "429":
+        $ref: ../components/common/responses.yaml#/RateLimited
+    x-csrf-required-for-cookie: true
+    parameters:
+      - $ref: ../components/common/parameters.yaml#/IdempotencyKey
+      - $ref: ../components/common/parameters.yaml#/Csrf
+      - $ref: ../components/common/parameters.yaml#/Origin
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: ../components/repairs/schemas.yaml#/SupplyRequestCreate
+    x-permissions-mode: all
+/api/v1/tenants/{tenantId}/repairs/supply-requests/{supplyRequestId}/reserve:
+  parameters:
+    - $ref: ../components/common/parameters.yaml#/tenantId
+    - $ref: ../components/common/parameters.yaml#/supplyRequestId
+  post:
+    operationId: reserveSupplyRequest
+    tags:
+      - Repairs
+    summary: "Decide «со склада»: reserve on a warehouse"
+    x-permissions:
+      - repairs.supply.manage
+    x-scope: tenant-org-unit
+    description: "W6.00. «Выдать со склада»: reserve on a warehouse; a request not in state request — reason repair_supply_state; not enough free stock — reason repair_stock_insufficient. If-Match — SupplyRequest.revision."
+    responses:
+      "200":
+        description: Successful result.
+        headers:
+          X-Request-Id:
+            $ref: ../components/common/headers.yaml#/RequestId
+          ETag:
+            $ref: ../components/common/headers.yaml#/ETag
+          Idempotency-Replayed:
+            $ref: ../components/common/headers.yaml#/IdempotencyReplayed
+          Cache-Control:
+            description: Never cache authenticated, confidential or capability-bearing API responses in shared caches.
+            schema:
+              type: string
+              const: private, no-store
+        content:
+          application/json:
+            schema:
+              $ref: ../components/repairs/schemas.yaml#/SupplyRequest
+      "400":
+        $ref: ../components/common/responses.yaml#/BadRequest
+      "401":
+        $ref: ../components/common/responses.yaml#/Unauthenticated
+      "402":
+        $ref: ../components/common/responses.yaml#/PlanRequired
+      "403":
+        $ref: ../components/common/responses.yaml#/Forbidden
+      "404":
+        $ref: ../components/common/responses.yaml#/NotFound
+      "409":
+        $ref: ../components/common/responses.yaml#/Conflict
+      "412":
+        $ref: ../components/common/responses.yaml#/PreconditionFailed
+      "422":
+        $ref: ../components/common/responses.yaml#/Validation
+      "428":
+        $ref: ../components/common/responses.yaml#/PreconditionRequired
+      "429":
+        $ref: ../components/common/responses.yaml#/RateLimited
+    x-csrf-required-for-cookie: true
+    parameters:
+      - $ref: ../components/common/parameters.yaml#/IdempotencyKey
+      - $ref: ../components/common/parameters.yaml#/Csrf
+      - $ref: ../components/common/parameters.yaml#/Origin
+      - $ref: ../components/common/parameters.yaml#/IfMatch
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: ../components/repairs/schemas.yaml#/SupplyReserve
+    x-permissions-mode: all
+/api/v1/tenants/{tenantId}/repairs/supply-requests/{supplyRequestId}/issue:
+  parameters:
+    - $ref: ../components/common/parameters.yaml#/tenantId
+    - $ref: ../components/common/parameters.yaml#/supplyRequestId
+  post:
+    operationId: issueSupplyRequest
+    tags:
+      - Repairs
+    summary: Issue a reserved request from the warehouse (storekeeper)
+    x-permissions:
+      - inventory.movements.post
+    x-scope: tenant-org-unit-warehouse
+    description: "W6.00. The storekeeper issues the reserved material: the movement issue at the average price, the cost goes to the expenses of the object. If-Match — SupplyRequest.revision."
+    responses:
+      "200":
+        description: Successful result.
+        headers:
+          X-Request-Id:
+            $ref: ../components/common/headers.yaml#/RequestId
+          ETag:
+            $ref: ../components/common/headers.yaml#/ETag
+          Idempotency-Replayed:
+            $ref: ../components/common/headers.yaml#/IdempotencyReplayed
+          Cache-Control:
+            description: Never cache authenticated, confidential or capability-bearing API responses in shared caches.
+            schema:
+              type: string
+              const: private, no-store
+        content:
+          application/json:
+            schema:
+              $ref: ../components/repairs/schemas.yaml#/SupplyRequest
+      "400":
+        $ref: ../components/common/responses.yaml#/BadRequest
+      "401":
+        $ref: ../components/common/responses.yaml#/Unauthenticated
+      "402":
+        $ref: ../components/common/responses.yaml#/PlanRequired
+      "403":
+        $ref: ../components/common/responses.yaml#/Forbidden
+      "404":
+        $ref: ../components/common/responses.yaml#/NotFound
+      "409":
+        $ref: ../components/common/responses.yaml#/Conflict
+      "412":
+        $ref: ../components/common/responses.yaml#/PreconditionFailed
+      "422":
+        $ref: ../components/common/responses.yaml#/Validation
+      "428":
+        $ref: ../components/common/responses.yaml#/PreconditionRequired
+      "429":
+        $ref: ../components/common/responses.yaml#/RateLimited
+    x-csrf-required-for-cookie: true
+    parameters:
+      - $ref: ../components/common/parameters.yaml#/IdempotencyKey
+      - $ref: ../components/common/parameters.yaml#/Csrf
+      - $ref: ../components/common/parameters.yaml#/Origin
+      - $ref: ../components/common/parameters.yaml#/IfMatch
+    x-permissions-mode: all
+/api/v1/tenants/{tenantId}/repairs/supply-requests/{supplyRequestId}/consume:
+  parameters:
+    - $ref: ../components/common/parameters.yaml#/tenantId
+    - $ref: ../components/common/parameters.yaml#/supplyRequestId
+  post:
+    operationId: consumeSupplyRequest
+    tags:
+      - Repairs
+    summary: Write the material off to the object
+    x-permissions:
+      - repairs.supply.request
+      - repairs.work_logs.review
+    x-scope: tenant-org-unit-repair-project
+    description: "W6.00 (Q-W4.00-repair-7). Write the material off to the work: the movement use of the module «Склад». If-Match — SupplyRequest.revision."
+    responses:
+      "200":
+        description: Successful result.
+        headers:
+          X-Request-Id:
+            $ref: ../components/common/headers.yaml#/RequestId
+          ETag:
+            $ref: ../components/common/headers.yaml#/ETag
+          Idempotency-Replayed:
+            $ref: ../components/common/headers.yaml#/IdempotencyReplayed
+          Cache-Control:
+            description: Never cache authenticated, confidential or capability-bearing API responses in shared caches.
+            schema:
+              type: string
+              const: private, no-store
+        content:
+          application/json:
+            schema:
+              $ref: ../components/repairs/schemas.yaml#/SupplyRequest
+      "400":
+        $ref: ../components/common/responses.yaml#/BadRequest
+      "401":
+        $ref: ../components/common/responses.yaml#/Unauthenticated
+      "402":
+        $ref: ../components/common/responses.yaml#/PlanRequired
+      "403":
+        $ref: ../components/common/responses.yaml#/Forbidden
+      "404":
+        $ref: ../components/common/responses.yaml#/NotFound
+      "409":
+        $ref: ../components/common/responses.yaml#/Conflict
+      "412":
+        $ref: ../components/common/responses.yaml#/PreconditionFailed
+      "422":
+        $ref: ../components/common/responses.yaml#/Validation
+      "428":
+        $ref: ../components/common/responses.yaml#/PreconditionRequired
+      "429":
+        $ref: ../components/common/responses.yaml#/RateLimited
+    x-csrf-required-for-cookie: true
+    parameters:
+      - $ref: ../components/common/parameters.yaml#/IdempotencyKey
+      - $ref: ../components/common/parameters.yaml#/Csrf
+      - $ref: ../components/common/parameters.yaml#/Origin
+      - $ref: ../components/common/parameters.yaml#/IfMatch
+    x-permissions-mode: any
+/api/v1/tenants/{tenantId}/repairs/purchases:
+  parameters:
+    - $ref: ../components/common/parameters.yaml#/tenantId
+  post:
+    operationId: createPurchase
+    tags:
+      - Repairs
+    summary: Order one purchase for several requests
+    x-permissions:
+      - repairs.supply.manage
+    x-scope: tenant-org-unit
+    description: "W6.00. One purchase for several requests and objects: supplier and prices (the default — Q-W4.00-repair-23). The requests become ordered. Event repairs.purchase.ordered.v1."
+    responses:
+      "201":
+        description: Successful result.
+        headers:
+          X-Request-Id:
+            $ref: ../components/common/headers.yaml#/RequestId
+          ETag:
+            $ref: ../components/common/headers.yaml#/ETag
+          Idempotency-Replayed:
+            $ref: ../components/common/headers.yaml#/IdempotencyReplayed
+          Cache-Control:
+            description: Never cache authenticated, confidential or capability-bearing API responses in shared caches.
+            schema:
+              type: string
+              const: private, no-store
+        content:
+          application/json:
+            schema:
+              $ref: ../components/repairs/schemas.yaml#/Purchase
+      "400":
+        $ref: ../components/common/responses.yaml#/BadRequest
+      "401":
+        $ref: ../components/common/responses.yaml#/Unauthenticated
+      "402":
+        $ref: ../components/common/responses.yaml#/PlanRequired
+      "403":
+        $ref: ../components/common/responses.yaml#/Forbidden
+      "404":
+        $ref: ../components/common/responses.yaml#/NotFound
+      "409":
+        $ref: ../components/common/responses.yaml#/Conflict
+      "422":
+        $ref: ../components/common/responses.yaml#/Validation
+      "428":
+        $ref: ../components/common/responses.yaml#/PreconditionRequired
+      "429":
+        $ref: ../components/common/responses.yaml#/RateLimited
+    x-csrf-required-for-cookie: true
+    parameters:
+      - $ref: ../components/common/parameters.yaml#/IdempotencyKey
+      - $ref: ../components/common/parameters.yaml#/Csrf
+      - $ref: ../components/common/parameters.yaml#/Origin
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: ../components/repairs/schemas.yaml#/PurchaseCreate
+    x-permissions-mode: all
+  get:
+    operationId: listPurchases
+    tags:
+      - Repairs
+    summary: List purchases
+    x-permissions:
+      - repairs.supply.manage
+    x-scope: tenant-org-unit
+    description: "W6.00. Purchases: ordered and received."
+    responses:
+      "200":
+        description: Successful result.
+        headers:
+          X-Request-Id:
+            $ref: ../components/common/headers.yaml#/RequestId
+          Cache-Control:
+            description: Never cache authenticated, confidential or capability-bearing API responses in shared caches.
+            schema:
+              type: string
+              const: private, no-store
+        content:
+          application/json:
+            schema:
+              $ref: ../components/repairs/schemas.yaml#/PurchasePage
+      "400":
+        $ref: ../components/common/responses.yaml#/BadRequest
+      "401":
+        $ref: ../components/common/responses.yaml#/Unauthenticated
+      "403":
+        $ref: ../components/common/responses.yaml#/Forbidden
+      "404":
+        $ref: ../components/common/responses.yaml#/NotFound
+      "422":
+        $ref: ../components/common/responses.yaml#/Validation
+      "429":
+        $ref: ../components/common/responses.yaml#/RateLimited
+    parameters:
+      - $ref: ../components/common/parameters.yaml#/Cursor
+      - $ref: ../components/common/parameters.yaml#/Limit
+    x-permissions-mode: all
+/api/v1/tenants/{tenantId}/repairs/purchases/{purchaseId}/receive:
+  parameters:
+    - $ref: ../components/common/parameters.yaml#/tenantId
+    - $ref: ../components/common/parameters.yaml#/purchaseId
+  post:
+    operationId: receivePurchase
+    tags:
+      - Repairs
+    summary: Receive a purchase by the receipt QR and spread the cost over the objects
+    x-permissions:
+      - repairs.supply.manage
+    x-scope: tenant-org-unit
+    description: "W6.00. Receive the purchase by the receipt QR: movements buy to the objects, requests become bought, the cost is spread over the objects. A received purchase — reason repair_purchase_state. If-Match — Purchase.revision. Event repairs.purchase.received.v1."
+    responses:
+      "200":
+        description: Successful result.
+        headers:
+          X-Request-Id:
+            $ref: ../components/common/headers.yaml#/RequestId
+          ETag:
+            $ref: ../components/common/headers.yaml#/ETag
+          Idempotency-Replayed:
+            $ref: ../components/common/headers.yaml#/IdempotencyReplayed
+          Cache-Control:
+            description: Never cache authenticated, confidential or capability-bearing API responses in shared caches.
+            schema:
+              type: string
+              const: private, no-store
+        content:
+          application/json:
+            schema:
+              $ref: ../components/repairs/schemas.yaml#/Purchase
+      "400":
+        $ref: ../components/common/responses.yaml#/BadRequest
+      "401":
+        $ref: ../components/common/responses.yaml#/Unauthenticated
+      "402":
+        $ref: ../components/common/responses.yaml#/PlanRequired
+      "403":
+        $ref: ../components/common/responses.yaml#/Forbidden
+      "404":
+        $ref: ../components/common/responses.yaml#/NotFound
+      "409":
+        $ref: ../components/common/responses.yaml#/Conflict
+      "412":
+        $ref: ../components/common/responses.yaml#/PreconditionFailed
+      "422":
+        $ref: ../components/common/responses.yaml#/Validation
+      "428":
+        $ref: ../components/common/responses.yaml#/PreconditionRequired
+      "429":
+        $ref: ../components/common/responses.yaml#/RateLimited
+    x-csrf-required-for-cookie: true
+    parameters:
+      - $ref: ../components/common/parameters.yaml#/IdempotencyKey
+      - $ref: ../components/common/parameters.yaml#/Csrf
+      - $ref: ../components/common/parameters.yaml#/Origin
+      - $ref: ../components/common/parameters.yaml#/IfMatch
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: ../components/repairs/schemas.yaml#/PurchaseReceive
+    x-permissions-mode: all
+/api/v1/tenants/{tenantId}/repairs/project-stock:
+  parameters:
+    - $ref: ../components/common/parameters.yaml#/tenantId
+  get:
+    operationId: listProjectStock
+    tags:
+      - Repairs
+    summary: List the stock on objects
+    x-permissions:
+      - repairs.supply.manage
+    x-scope: tenant-org-unit
+    description: W6.00. The stock on objects (a warehouse of type object of the module «Склад»).
+    responses:
+      "200":
+        description: Successful result.
+        headers:
+          X-Request-Id:
+            $ref: ../components/common/headers.yaml#/RequestId
+          Cache-Control:
+            description: Never cache authenticated, confidential or capability-bearing API responses in shared caches.
+            schema:
+              type: string
+              const: private, no-store
+        content:
+          application/json:
+            schema:
+              $ref: ../components/repairs/schemas.yaml#/ProjectStockList
+      "400":
+        $ref: ../components/common/responses.yaml#/BadRequest
+      "401":
+        $ref: ../components/common/responses.yaml#/Unauthenticated
+      "403":
+        $ref: ../components/common/responses.yaml#/Forbidden
+      "404":
+        $ref: ../components/common/responses.yaml#/NotFound
+      "422":
+        $ref: ../components/common/responses.yaml#/Validation
+      "429":
+        $ref: ../components/common/responses.yaml#/RateLimited
+    x-permissions-mode: all
+/api/v1/tenants/{tenantId}/repairs/projects/{projectId}/stock/return:
+  parameters:
+    - $ref: ../components/common/parameters.yaml#/tenantId
+    - $ref: ../components/common/parameters.yaml#/repairProjectId
+  post:
+    operationId: returnProjectStock
+    tags:
+      - Repairs
+    summary: Return the stock of an object to a warehouse
+    x-permissions:
+      - repairs.supply.manage
+      - inventory.movements.post
+    x-scope: tenant-org-unit
+    description: "W6.00. Return the stock of an object to a warehouse: the expenses of the object decrease, the average price of the warehouse is recalculated. More than there is — reason repair_stock_insufficient. Event repairs.project_stock.returned.v1."
+    responses:
+      "200":
+        description: Successful result.
+        headers:
+          X-Request-Id:
+            $ref: ../components/common/headers.yaml#/RequestId
+          Idempotency-Replayed:
+            $ref: ../components/common/headers.yaml#/IdempotencyReplayed
+          Cache-Control:
+            description: Never cache authenticated, confidential or capability-bearing API responses in shared caches.
+            schema:
+              type: string
+              const: private, no-store
+        content:
+          application/json:
+            schema:
+              $ref: ../components/repairs/schemas.yaml#/StockMoveResult
+      "400":
+        $ref: ../components/common/responses.yaml#/BadRequest
+      "401":
+        $ref: ../components/common/responses.yaml#/Unauthenticated
+      "402":
+        $ref: ../components/common/responses.yaml#/PlanRequired
+      "403":
+        $ref: ../components/common/responses.yaml#/Forbidden
+      "404":
+        $ref: ../components/common/responses.yaml#/NotFound
+      "409":
+        $ref: ../components/common/responses.yaml#/Conflict
+      "422":
+        $ref: ../components/common/responses.yaml#/Validation
+      "428":
+        $ref: ../components/common/responses.yaml#/PreconditionRequired
+      "429":
+        $ref: ../components/common/responses.yaml#/RateLimited
+    x-csrf-required-for-cookie: true
+    parameters:
+      - $ref: ../components/common/parameters.yaml#/IdempotencyKey
+      - $ref: ../components/common/parameters.yaml#/Csrf
+      - $ref: ../components/common/parameters.yaml#/Origin
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: ../components/repairs/schemas.yaml#/StockReturn
+    x-permissions-mode: all
+/api/v1/tenants/{tenantId}/repairs/projects/{projectId}/stock/transfer:
+  parameters:
+    - $ref: ../components/common/parameters.yaml#/tenantId
+    - $ref: ../components/common/parameters.yaml#/repairProjectId
+  post:
+    operationId: transferProjectStock
+    tags:
+      - Repairs
+    summary: Move the stock of an object to another object
+    x-permissions:
+      - repairs.supply.manage
+      - inventory.movements.post
+    x-scope: tenant-org-unit
+    description: "W6.00. Move the stock to another object: the cost moves, a request for the same material at the target decreases or closes. Event repairs.project_stock.transferred.v1."
+    responses:
+      "200":
+        description: Successful result.
+        headers:
+          X-Request-Id:
+            $ref: ../components/common/headers.yaml#/RequestId
+          Idempotency-Replayed:
+            $ref: ../components/common/headers.yaml#/IdempotencyReplayed
+          Cache-Control:
+            description: Never cache authenticated, confidential or capability-bearing API responses in shared caches.
+            schema:
+              type: string
+              const: private, no-store
+        content:
+          application/json:
+            schema:
+              $ref: ../components/repairs/schemas.yaml#/StockMoveResult
+      "400":
+        $ref: ../components/common/responses.yaml#/BadRequest
+      "401":
+        $ref: ../components/common/responses.yaml#/Unauthenticated
+      "402":
+        $ref: ../components/common/responses.yaml#/PlanRequired
+      "403":
+        $ref: ../components/common/responses.yaml#/Forbidden
+      "404":
+        $ref: ../components/common/responses.yaml#/NotFound
+      "409":
+        $ref: ../components/common/responses.yaml#/Conflict
+      "422":
+        $ref: ../components/common/responses.yaml#/Validation
+      "428":
+        $ref: ../components/common/responses.yaml#/PreconditionRequired
+      "429":
+        $ref: ../components/common/responses.yaml#/RateLimited
+    x-csrf-required-for-cookie: true
+    parameters:
+      - $ref: ../components/common/parameters.yaml#/IdempotencyKey
+      - $ref: ../components/common/parameters.yaml#/Csrf
+      - $ref: ../components/common/parameters.yaml#/Origin
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: ../components/repairs/schemas.yaml#/StockTransfer
+    x-permissions-mode: all
+/api/v1/tenants/{tenantId}/repairs/projects/{projectId}/finance:
+  parameters:
+    - $ref: ../components/common/parameters.yaml#/tenantId
+    - $ref: ../components/common/parameters.yaml#/repairProjectId
+  get:
+    operationId: getProjectFinance
+    tags:
+      - Repairs
+    summary: Read the finance of an object
+    x-permissions:
+      - repairs.finance.read
+    x-scope: tenant-org-unit-repair-project
+    description: W6.00. Contract, received, expenses, planned margin and the movement of money of the object (only with repairs.finance.read).
+    responses:
+      "200":
+        description: Successful result.
+        headers:
+          X-Request-Id:
+            $ref: ../components/common/headers.yaml#/RequestId
+          Cache-Control:
+            description: Never cache authenticated, confidential or capability-bearing API responses in shared caches.
+            schema:
+              type: string
+              const: private, no-store
+        content:
+          application/json:
+            schema:
+              $ref: ../components/repairs/schemas.yaml#/ProjectFinance
+      "400":
+        $ref: ../components/common/responses.yaml#/BadRequest
+      "401":
+        $ref: ../components/common/responses.yaml#/Unauthenticated
+      "403":
+        $ref: ../components/common/responses.yaml#/Forbidden
+      "404":
+        $ref: ../components/common/responses.yaml#/NotFound
+      "422":
+        $ref: ../components/common/responses.yaml#/Validation
+      "429":
+        $ref: ../components/common/responses.yaml#/RateLimited
+    x-permissions-mode: all
+/api/v1/tenants/{tenantId}/repairs/projects/{projectId}/accruals:
+  parameters:
+    - $ref: ../components/common/parameters.yaml#/tenantId
+    - $ref: ../components/common/parameters.yaml#/repairProjectId
+  get:
+    operationId: listCrewAccruals
+    tags:
+      - Repairs
+    summary: List crew accruals of an object
+    x-permissions:
+      - repairs.finance.read
+    x-scope: tenant-org-unit-repair-project
+    description: "W6.00. Accruals of the crew by acts: pending_act, accrued, proposed, paid."
+    responses:
+      "200":
+        description: Successful result.
+        headers:
+          X-Request-Id:
+            $ref: ../components/common/headers.yaml#/RequestId
+          Cache-Control:
+            description: Never cache authenticated, confidential or capability-bearing API responses in shared caches.
+            schema:
+              type: string
+              const: private, no-store
+        content:
+          application/json:
+            schema:
+              $ref: ../components/repairs/schemas.yaml#/CrewAccrualList
+      "400":
+        $ref: ../components/common/responses.yaml#/BadRequest
+      "401":
+        $ref: ../components/common/responses.yaml#/Unauthenticated
+      "403":
+        $ref: ../components/common/responses.yaml#/Forbidden
+      "404":
+        $ref: ../components/common/responses.yaml#/NotFound
+      "422":
+        $ref: ../components/common/responses.yaml#/Validation
+      "429":
+        $ref: ../components/common/responses.yaml#/RateLimited
+    x-permissions-mode: all
+/api/v1/tenants/{tenantId}/repairs/acts/{documentId}/accruals:
+  parameters:
+    - $ref: ../components/common/parameters.yaml#/tenantId
+    - $ref: ../components/common/parameters.yaml#/documentId
+  post:
+    operationId: accrueByAct
+    tags:
+      - Repairs
+    summary: Accrue the crew by a signed act
+    x-permissions:
+      - repairs.crew.accrue
+    x-scope: tenant-org-unit-repair-project
+    description: W6.00. Accrue by a signed act of the client; before the signature — 409 invalid_transition, reason repair_act_not_signed («Начисление откроется после подписания акта …»). Event repairs.crew_accrual.created.v1.
+    responses:
+      "201":
+        description: Successful result.
+        headers:
+          X-Request-Id:
+            $ref: ../components/common/headers.yaml#/RequestId
+          Idempotency-Replayed:
+            $ref: ../components/common/headers.yaml#/IdempotencyReplayed
+          Cache-Control:
+            description: Never cache authenticated, confidential or capability-bearing API responses in shared caches.
+            schema:
+              type: string
+              const: private, no-store
+        content:
+          application/json:
+            schema:
+              $ref: ../components/repairs/schemas.yaml#/CrewAccrualList
+      "400":
+        $ref: ../components/common/responses.yaml#/BadRequest
+      "401":
+        $ref: ../components/common/responses.yaml#/Unauthenticated
+      "402":
+        $ref: ../components/common/responses.yaml#/PlanRequired
+      "403":
+        $ref: ../components/common/responses.yaml#/Forbidden
+      "404":
+        $ref: ../components/common/responses.yaml#/NotFound
+      "409":
+        $ref: ../components/common/responses.yaml#/Conflict
+      "422":
+        $ref: ../components/common/responses.yaml#/Validation
+      "428":
+        $ref: ../components/common/responses.yaml#/PreconditionRequired
+      "429":
+        $ref: ../components/common/responses.yaml#/RateLimited
+    x-csrf-required-for-cookie: true
+    parameters:
+      - $ref: ../components/common/parameters.yaml#/IdempotencyKey
+      - $ref: ../components/common/parameters.yaml#/Csrf
+      - $ref: ../components/common/parameters.yaml#/Origin
+    x-permissions-mode: all
+/api/v1/tenants/{tenantId}/repairs/accruals/payout:
+  parameters:
+    - $ref: ../components/common/parameters.yaml#/tenantId
+  post:
+    operationId: payoutAccruals
+    tags:
+      - Repairs
+    summary: Propose the payout of accruals to the cash
+    x-permissions:
+      - repairs.crew.pay
+    x-scope: tenant-org-unit
+    description: W6.00 (Q-W4.00-repair-12). Create a proposal of a cash operation (W5.31) for accrued items; the payment is posted by the cashier. Event repairs.crew_accrual.paid.v1 after posting.
+    responses:
+      "200":
+        description: Successful result.
+        headers:
+          X-Request-Id:
+            $ref: ../components/common/headers.yaml#/RequestId
+          Idempotency-Replayed:
+            $ref: ../components/common/headers.yaml#/IdempotencyReplayed
+          Cache-Control:
+            description: Never cache authenticated, confidential or capability-bearing API responses in shared caches.
+            schema:
+              type: string
+              const: private, no-store
+        content:
+          application/json:
+            schema:
+              $ref: ../components/repairs/schemas.yaml#/PayoutResult
+      "400":
+        $ref: ../components/common/responses.yaml#/BadRequest
+      "401":
+        $ref: ../components/common/responses.yaml#/Unauthenticated
+      "402":
+        $ref: ../components/common/responses.yaml#/PlanRequired
+      "403":
+        $ref: ../components/common/responses.yaml#/Forbidden
+      "404":
+        $ref: ../components/common/responses.yaml#/NotFound
+      "409":
+        $ref: ../components/common/responses.yaml#/Conflict
+      "422":
+        $ref: ../components/common/responses.yaml#/Validation
+      "428":
+        $ref: ../components/common/responses.yaml#/PreconditionRequired
+      "429":
+        $ref: ../components/common/responses.yaml#/RateLimited
+    x-csrf-required-for-cookie: true
+    parameters:
+      - $ref: ../components/common/parameters.yaml#/IdempotencyKey
+      - $ref: ../components/common/parameters.yaml#/Csrf
+      - $ref: ../components/common/parameters.yaml#/Origin
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: ../components/repairs/schemas.yaml#/PayoutRequest
+    x-permissions-mode: all
+/api/v1/tenants/{tenantId}/repairs/projects/{projectId}/subcontractors:
+  parameters:
+    - $ref: ../components/common/parameters.yaml#/tenantId
+    - $ref: ../components/common/parameters.yaml#/repairProjectId
+  get:
+    operationId: listSubcontractors
+    tags:
+      - Repairs
+    summary: List subcontractors of an object
+    x-permissions:
+      - repairs.subcontractors.manage
+    x-scope: tenant-org-unit-repair-project
+    description: "W6.00. Subcontractors of the object: temporary access to one object with a term."
+    responses:
+      "200":
+        description: Successful result.
+        headers:
+          X-Request-Id:
+            $ref: ../components/common/headers.yaml#/RequestId
+          Cache-Control:
+            description: Never cache authenticated, confidential or capability-bearing API responses in shared caches.
+            schema:
+              type: string
+              const: private, no-store
+        content:
+          application/json:
+            schema:
+              $ref: ../components/repairs/schemas.yaml#/SubcontractorList
+      "400":
+        $ref: ../components/common/responses.yaml#/BadRequest
+      "401":
+        $ref: ../components/common/responses.yaml#/Unauthenticated
+      "403":
+        $ref: ../components/common/responses.yaml#/Forbidden
+      "404":
+        $ref: ../components/common/responses.yaml#/NotFound
+      "422":
+        $ref: ../components/common/responses.yaml#/Validation
+      "429":
+        $ref: ../components/common/responses.yaml#/RateLimited
+    x-permissions-mode: all
+/api/v1/tenants/{tenantId}/repairs/projects/{projectId}/subcontractors/{subcontractorId}:
+  parameters:
+    - $ref: ../components/common/parameters.yaml#/tenantId
+    - $ref: ../components/common/parameters.yaml#/repairProjectId
+    - $ref: ../components/common/parameters.yaml#/subcontractorId
+  put:
+    operationId: setSubcontractorAccess
+    tags:
+      - Repairs
+    summary: Open or close the temporary access of a subcontractor
+    x-permissions:
+      - repairs.subcontractors.manage
+    x-scope: tenant-org-unit-repair-project
+    description: W6.00 (Q-W4.00-repair-13). Open the access until a date or close it; the subcontractor is a member with the role «Подрядчик» scoped to the object. Events repairs.subcontractor.access_granted/revoked.v1.
+    responses:
+      "200":
+        description: Successful result.
+        headers:
+          X-Request-Id:
+            $ref: ../components/common/headers.yaml#/RequestId
+          Idempotency-Replayed:
+            $ref: ../components/common/headers.yaml#/IdempotencyReplayed
+          Cache-Control:
+            description: Never cache authenticated, confidential or capability-bearing API responses in shared caches.
+            schema:
+              type: string
+              const: private, no-store
+        content:
+          application/json:
+            schema:
+              $ref: ../components/repairs/schemas.yaml#/Subcontractor
+      "400":
+        $ref: ../components/common/responses.yaml#/BadRequest
+      "401":
+        $ref: ../components/common/responses.yaml#/Unauthenticated
+      "402":
+        $ref: ../components/common/responses.yaml#/PlanRequired
+      "403":
+        $ref: ../components/common/responses.yaml#/Forbidden
+      "404":
+        $ref: ../components/common/responses.yaml#/NotFound
+      "409":
+        $ref: ../components/common/responses.yaml#/Conflict
+      "422":
+        $ref: ../components/common/responses.yaml#/Validation
+      "428":
+        $ref: ../components/common/responses.yaml#/PreconditionRequired
+      "429":
+        $ref: ../components/common/responses.yaml#/RateLimited
+    x-csrf-required-for-cookie: true
+    parameters:
+      - $ref: ../components/common/parameters.yaml#/IdempotencyKey
+      - $ref: ../components/common/parameters.yaml#/Csrf
+      - $ref: ../components/common/parameters.yaml#/Origin
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: ../components/repairs/schemas.yaml#/SubcontractorAccessSet
+    x-permissions-mode: all
+/api/v1/tenants/{tenantId}/repairs/projects/{projectId}/client-link:
+  parameters:
+    - $ref: ../components/common/parameters.yaml#/tenantId
+    - $ref: ../components/common/parameters.yaml#/repairProjectId
+  get:
+    operationId: getClientLink
+    tags:
+      - Repairs
+    summary: Read the state of the client cabinet link
+    x-permissions:
+      - repairs.client_link.manage
+    x-scope: tenant-org-unit-repair-project
+    description: "W6.00. The state of the link of the client cabinet: sent, valid until, revoked."
+    responses:
+      "200":
+        description: Successful result.
+        headers:
+          X-Request-Id:
+            $ref: ../components/common/headers.yaml#/RequestId
+          Cache-Control:
+            description: Never cache authenticated, confidential or capability-bearing API responses in shared caches.
+            schema:
+              type: string
+              const: private, no-store
+        content:
+          application/json:
+            schema:
+              $ref: ../components/repairs/schemas.yaml#/ClientLink
+      "400":
+        $ref: ../components/common/responses.yaml#/BadRequest
+      "401":
+        $ref: ../components/common/responses.yaml#/Unauthenticated
+      "403":
+        $ref: ../components/common/responses.yaml#/Forbidden
+      "404":
+        $ref: ../components/common/responses.yaml#/NotFound
+      "422":
+        $ref: ../components/common/responses.yaml#/Validation
+      "429":
+        $ref: ../components/common/responses.yaml#/RateLimited
+    x-permissions-mode: all
+  post:
+    operationId: issueClientLink
+    tags:
+      - Repairs
+    summary: Issue a new client cabinet link
+    x-permissions:
+      - repairs.client_link.manage
+    x-scope: tenant-org-unit-repair-project
+    description: W6.00. Issue a link (the previous one stops working). The token is returned once inside the URL; the database keeps only the hash; it lives until the object is handed over. Event repairs.client_link.issued.v1.
+    responses:
+      "201":
+        description: Successful result.
+        headers:
+          X-Request-Id:
+            $ref: ../components/common/headers.yaml#/RequestId
+          Idempotency-Replayed:
+            $ref: ../components/common/headers.yaml#/IdempotencyReplayed
+          Cache-Control:
+            description: Never cache authenticated, confidential or capability-bearing API responses in shared caches.
+            schema:
+              type: string
+              const: private, no-store
+        content:
+          application/json:
+            schema:
+              $ref: ../components/repairs/schemas.yaml#/ClientLinkIssued
+      "400":
+        $ref: ../components/common/responses.yaml#/BadRequest
+      "401":
+        $ref: ../components/common/responses.yaml#/Unauthenticated
+      "402":
+        $ref: ../components/common/responses.yaml#/PlanRequired
+      "403":
+        $ref: ../components/common/responses.yaml#/Forbidden
+      "404":
+        $ref: ../components/common/responses.yaml#/NotFound
+      "409":
+        $ref: ../components/common/responses.yaml#/Conflict
+      "422":
+        $ref: ../components/common/responses.yaml#/Validation
+      "428":
+        $ref: ../components/common/responses.yaml#/PreconditionRequired
+      "429":
+        $ref: ../components/common/responses.yaml#/RateLimited
+    x-csrf-required-for-cookie: true
+    parameters:
+      - $ref: ../components/common/parameters.yaml#/IdempotencyKey
+      - $ref: ../components/common/parameters.yaml#/Csrf
+      - $ref: ../components/common/parameters.yaml#/Origin
+    x-permissions-mode: all
+  delete:
+    operationId: revokeClientLink
+    tags:
+      - Repairs
+    summary: Revoke the client cabinet link
+    x-permissions:
+      - repairs.client_link.manage
+    x-scope: tenant-org-unit-repair-project
+    description: "W6.00. Revoke the link in one click: the old URL answers 410 public_token_expired. Event repairs.client_link.revoked.v1."
+    responses:
+      "204":
+        description: Completed with no response body.
+        headers:
+          X-Request-Id:
+            $ref: ../components/common/headers.yaml#/RequestId
+          Idempotency-Replayed:
+            $ref: ../components/common/headers.yaml#/IdempotencyReplayed
+          Cache-Control:
+            description: Never cache authenticated, confidential or capability-bearing API responses in shared caches.
+            schema:
+              type: string
+              const: private, no-store
+      "400":
+        $ref: ../components/common/responses.yaml#/BadRequest
+      "401":
+        $ref: ../components/common/responses.yaml#/Unauthenticated
+      "402":
+        $ref: ../components/common/responses.yaml#/PlanRequired
+      "403":
+        $ref: ../components/common/responses.yaml#/Forbidden
+      "404":
+        $ref: ../components/common/responses.yaml#/NotFound
+      "409":
+        $ref: ../components/common/responses.yaml#/Conflict
+      "422":
+        $ref: ../components/common/responses.yaml#/Validation
+      "428":
+        $ref: ../components/common/responses.yaml#/PreconditionRequired
+      "429":
+        $ref: ../components/common/responses.yaml#/RateLimited
+    x-csrf-required-for-cookie: true
+    parameters:
+      - $ref: ../components/common/parameters.yaml#/IdempotencyKey
+      - $ref: ../components/common/parameters.yaml#/Csrf
+      - $ref: ../components/common/parameters.yaml#/Origin
+    x-permissions-mode: all
+/api/v1/public/client/{clientToken}:
+  parameters:
+    - $ref: ../components/common/parameters.yaml#/clientToken
+  get:
+    operationId: getClientCabinet
+    tags:
+      - Repairs
+    summary: Read the client cabinet by the link
+    x-permissions: []
+    x-scope: public-client-capability
+    description: "W6.00 (Q-W4.00-repair-10). The cabinet by the personal link without registration: readiness by closed acts, stages, photos of accepted marks, documents, paid. A revoked or expired link — 410 public_token_expired."
+    responses:
+      "200":
+        description: Successful result.
+        headers:
+          X-Request-Id:
+            $ref: ../components/common/headers.yaml#/RequestId
+          Cache-Control:
+            description: Never cache authenticated, confidential or capability-bearing API responses in shared caches.
+            schema:
+              type: string
+              const: private, no-store
+        content:
+          application/json:
+            schema:
+              $ref: ../components/repairs/schemas.yaml#/ClientCabinet
+      "400":
+        $ref: ../components/common/responses.yaml#/BadRequest
+      "403":
+        $ref: ../components/common/responses.yaml#/Forbidden
+      "404":
+        $ref: ../components/common/responses.yaml#/NotFound
+      "410":
+        $ref: ../components/common/responses.yaml#/Gone
+      "422":
+        $ref: ../components/common/responses.yaml#/Validation
+      "429":
+        $ref: ../components/common/responses.yaml#/RateLimited
+    security: []
+    x-public-capability: clientToken; the digest of the token resolves the tenant, only the hash is stored, revocable
+    x-permissions-mode: all
+/api/v1/public/client/{clientToken}/estimates/{version}/approve:
+  parameters:
+    - $ref: ../components/common/parameters.yaml#/clientToken
+    - $ref: ../components/common/parameters.yaml#/estimateVersion
+  post:
+    operationId: approveEstimateByClient
+    tags:
+      - Repairs
+    summary: Approve the sent estimate version
+    x-permissions: []
+    x-scope: public-client-capability
+    description: "W6.00. The client approves the sent version: approved, the previous one becomes replaced. A version that was not sent — 409 invalid_transition. Event repairs.estimate.approved.v1."
+    responses:
+      "200":
+        description: Successful result.
+        headers:
+          X-Request-Id:
+            $ref: ../components/common/headers.yaml#/RequestId
+          Idempotency-Replayed:
+            $ref: ../components/common/headers.yaml#/IdempotencyReplayed
+          Cache-Control:
+            description: Never cache authenticated, confidential or capability-bearing API responses in shared caches.
+            schema:
+              type: string
+              const: private, no-store
+        content:
+          application/json:
+            schema:
+              $ref: ../components/repairs/schemas.yaml#/ClientEstimateApproval
+      "400":
+        $ref: ../components/common/responses.yaml#/BadRequest
+      "403":
+        $ref: ../components/common/responses.yaml#/Forbidden
+      "404":
+        $ref: ../components/common/responses.yaml#/NotFound
+      "409":
+        $ref: ../components/common/responses.yaml#/Conflict
+      "410":
+        $ref: ../components/common/responses.yaml#/Gone
+      "422":
+        $ref: ../components/common/responses.yaml#/Validation
+      "428":
+        $ref: ../components/common/responses.yaml#/PreconditionRequired
+      "429":
+        $ref: ../components/common/responses.yaml#/RateLimited
+    parameters:
+      - $ref: ../components/common/parameters.yaml#/IdempotencyKey
+      - $ref: ../components/common/parameters.yaml#/Origin
+    security: []
+    x-public-capability: clientToken; the digest of the token resolves the tenant, only the hash is stored, revocable
+    x-permissions-mode: all
+/api/v1/public/client/{clientToken}/documents/{documentId}/sign:
+  parameters:
+    - $ref: ../components/common/parameters.yaml#/clientToken
+    - $ref: ../components/common/parameters.yaml#/documentId
+  post:
+    operationId: signDocumentByClient
+    tags:
+      - Repairs
+    summary: Sign a document by the SMS code
+    x-permissions: []
+    x-scope: public-client-capability
+    description: "W6.00 (SMS provider decision pending). Sign by the SMS code: a wrong code — 422 validation_failed, reason sms_code_invalid; an expired one — sms_code_expired. After the signature of an agreement the version acts and the work appears in the volumes. Event repairs.document.signed.v1."
+    responses:
+      "200":
+        description: Successful result.
+        headers:
+          X-Request-Id:
+            $ref: ../components/common/headers.yaml#/RequestId
+          Idempotency-Replayed:
+            $ref: ../components/common/headers.yaml#/IdempotencyReplayed
+          Cache-Control:
+            description: Never cache authenticated, confidential or capability-bearing API responses in shared caches.
+            schema:
+              type: string
+              const: private, no-store
+        content:
+          application/json:
+            schema:
+              $ref: ../components/repairs/schemas.yaml#/RepairDocument
+      "400":
+        $ref: ../components/common/responses.yaml#/BadRequest
+      "403":
+        $ref: ../components/common/responses.yaml#/Forbidden
+      "404":
+        $ref: ../components/common/responses.yaml#/NotFound
+      "409":
+        $ref: ../components/common/responses.yaml#/Conflict
+      "410":
+        $ref: ../components/common/responses.yaml#/Gone
+      "422":
+        $ref: ../components/common/responses.yaml#/Validation
+      "428":
+        $ref: ../components/common/responses.yaml#/PreconditionRequired
+      "429":
+        $ref: ../components/common/responses.yaml#/RateLimited
+    parameters:
+      - $ref: ../components/common/parameters.yaml#/IdempotencyKey
+      - $ref: ../components/common/parameters.yaml#/Origin
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: ../components/repairs/schemas.yaml#/ClientSign
+    security: []
+    x-public-capability: clientToken; the digest of the token resolves the tenant, only the hash is stored, revocable
     x-permissions-mode: all

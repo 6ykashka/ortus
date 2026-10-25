@@ -1,0 +1,14 @@
+{
+  "id": "54aeb065-7079-5cc3-8ccf-b4605e92db3e",
+  "projectId": "73e23d56-2d9c-5a86-91d2-8969d90d1f5b",
+  "kind": "agreement",
+  "title": "Допсоглашение № 1 · ДР-1",
+  "state": "signed",
+  "estimateVersion": 3,
+  "amount": {
+    "amountMinor": 1305000,
+    "currency": "RUB"
+  },
+  "signedAt": "2026-10-20T07:30:00Z",
+  "sentAt": "2026-10-20T07:30:00Z"
+}

@@ -1,0 +1,289 @@
+{
+  "projectId": "73e23d56-2d9c-5a86-91d2-8969d90d1f5b",
+  "from": 1,
+  "to": 2,
+  "rows": [
+    {
+      "change": "same",
+      "name": "Демонтаж напольного покрытия",
+      "lineId": "f88220e4-49a2-5213-9660-052f1dce8721",
+      "quantityA": "46.8",
+      "priceA": {
+        "amountMinor": 18000,
+        "currency": "RUB"
+      },
+      "quantityB": "46.8",
+      "priceB": {
+        "amountMinor": 18000,
+        "currency": "RUB"
+      },
+      "delta": {
+        "amountMinor": 0,
+        "currency": "RUB"
+      }
+    },
+    {
+      "change": "same",
+      "name": "Вывоз мусора",
+      "lineId": "386deb90-06e1-5994-a5ff-bc12d4bd57bd",
+      "quantityA": "2",
+      "priceA": {
+        "amountMinor": 650000,
+        "currency": "RUB"
+      },
+      "quantityB": "2",
+      "priceB": {
+        "amountMinor": 650000,
+        "currency": "RUB"
+      },
+      "delta": {
+        "amountMinor": 0,
+        "currency": "RUB"
+      }
+    },
+    {
+      "change": "changed",
+      "name": "Электромонтаж, точка",
+      "lineId": "1cde5368-e762-5ef2-a760-04725ab4b027",
+      "quantityA": "32",
+      "priceA": {
+        "amountMinor": 120000,
+        "currency": "RUB"
+      },
+      "quantityB": "38",
+      "priceB": {
+        "amountMinor": 120000,
+        "currency": "RUB"
+      },
+      "delta": {
+        "amountMinor": 720000,
+        "currency": "RUB"
+      }
+    },
+    {
+      "change": "same",
+      "name": "Штукатурка по маякам",
+      "lineId": "c020c03d-d50a-5e1a-bd15-7d3ca3908f22",
+      "quantityA": "114.6",
+      "priceA": {
+        "amountMinor": 65000,
+        "currency": "RUB"
+      },
+      "quantityB": "114.6",
+      "priceB": {
+        "amountMinor": 65000,
+        "currency": "RUB"
+      },
+      "delta": {
+        "amountMinor": 0,
+        "currency": "RUB"
+      }
+    },
+    {
+      "change": "same",
+      "name": "Шпаклёвка и покраска",
+      "lineId": "554cf86a-cc45-5ae4-b440-c1fc9f9a244b",
+      "quantityA": "114.6",
+      "priceA": {
+        "amountMinor": 52000,
+        "currency": "RUB"
+      },
+      "quantityB": "114.6",
+      "priceB": {
+        "amountMinor": 52000,
+        "currency": "RUB"
+      },
+      "delta": {
+        "amountMinor": 0,
+        "currency": "RUB"
+      }
+    },
+    {
+      "change": "same",
+      "name": "Стяжка пола",
+      "lineId": "4d6575d5-28e8-51e7-94c5-99e4e49455cb",
+      "quantityA": "46.8",
+      "priceA": {
+        "amountMinor": 75000,
+        "currency": "RUB"
+      },
+      "quantityB": "46.8",
+      "priceB": {
+        "amountMinor": 75000,
+        "currency": "RUB"
+      },
+      "delta": {
+        "amountMinor": 0,
+        "currency": "RUB"
+      }
+    },
+    {
+      "change": "same",
+      "name": "Укладка ламината",
+      "lineId": "acde90d9-ef80-58cf-96c5-fcecb97283d0",
+      "quantityA": "43.1",
+      "priceA": {
+        "amountMinor": 49000,
+        "currency": "RUB"
+      },
+      "quantityB": "43.1",
+      "priceB": {
+        "amountMinor": 49000,
+        "currency": "RUB"
+      },
+      "delta": {
+        "amountMinor": 0,
+        "currency": "RUB"
+      }
+    },
+    {
+      "change": "same",
+      "name": "Укладка плитки",
+      "lineId": "837a8561-bbb1-5ae4-84a8-34cc567e8e80",
+      "quantityA": "23.4",
+      "priceA": {
+        "amountMinor": 160000,
+        "currency": "RUB"
+      },
+      "quantityB": "23.4",
+      "priceB": {
+        "amountMinor": 160000,
+        "currency": "RUB"
+      },
+      "delta": {
+        "amountMinor": 0,
+        "currency": "RUB"
+      }
+    },
+    {
+      "change": "same",
+      "name": "Монтаж плинтуса",
+      "lineId": "2b3900c4-dab2-5bc3-9772-8320a8b2462a",
+      "quantityA": "45.4",
+      "priceA": {
+        "amountMinor": 22000,
+        "currency": "RUB"
+      },
+      "quantityB": "45.4",
+      "priceB": {
+        "amountMinor": 22000,
+        "currency": "RUB"
+      },
+      "delta": {
+        "amountMinor": 0,
+        "currency": "RUB"
+      }
+    },
+    {
+      "change": "removed",
+      "name": "Ламинат 32 класс",
+      "lineId": "623e4e65-387d-5244-9fb1-afe981c15b79",
+      "quantityA": "46.1",
+      "priceA": {
+        "amountMinor": 98000,
+        "currency": "RUB"
+      },
+      "delta": {
+        "amountMinor": -4517800,
+        "currency": "RUB"
+      }
+    },
+    {
+      "change": "same",
+      "name": "Штукатурка гипсовая 30 кг",
+      "lineId": "8f51c562-475d-524d-bf4c-45a0d06ee95b",
+      "quantityA": "46",
+      "priceA": {
+        "amountMinor": 40000,
+        "currency": "RUB"
+      },
+      "quantityB": "46",
+      "priceB": {
+        "amountMinor": 40000,
+        "currency": "RUB"
+      },
+      "delta": {
+        "amountMinor": 0,
+        "currency": "RUB"
+      }
+    },
+    {
+      "change": "same",
+      "name": "Кабель и фурнитура",
+      "lineId": "b27242f6-ff84-5b4b-a247-60257ac0b08d",
+      "quantityA": "1",
+      "priceA": {
+        "amountMinor": 2850000,
+        "currency": "RUB"
+      },
+      "quantityB": "1",
+      "priceB": {
+        "amountMinor": 2850000,
+        "currency": "RUB"
+      },
+      "delta": {
+        "amountMinor": 0,
+        "currency": "RUB"
+      }
+    },
+    {
+      "change": "same",
+      "name": "Плинтус МДФ",
+      "lineId": "f0491da0-0b0a-56b2-b799-78c06cb40a3a",
+      "quantityA": "47.7",
+      "priceA": {
+        "amountMinor": 31000,
+        "currency": "RUB"
+      },
+      "quantityB": "47.7",
+      "priceB": {
+        "amountMinor": 31000,
+        "currency": "RUB"
+      },
+      "delta": {
+        "amountMinor": 0,
+        "currency": "RUB"
+      }
+    },
+    {
+      "change": "added",
+      "name": "Сборка щитка",
+      "lineId": "991bcff7-3aa6-5888-ad78-a7866552abfc",
+      "quantityB": "1",
+      "priceB": {
+        "amountMinor": 950000,
+        "currency": "RUB"
+      },
+      "delta": {
+        "amountMinor": 950000,
+        "currency": "RUB"
+      }
+    },
+    {
+      "change": "added",
+      "name": "Ламинат 33 класс",
+      "lineId": "826a02a5-983b-579c-b59a-4cabcc6eff3d",
+      "quantityB": "46.1",
+      "priceB": {
+        "amountMinor": 135000,
+        "currency": "RUB"
+      },
+      "delta": {
+        "amountMinor": 6223500,
+        "currency": "RUB"
+      }
+    }
+  ],
+  "totalFrom": {
+    "amountMinor": 40441800,
+    "currency": "RUB"
+  },
+  "totalTo": {
+    "amountMinor": 43817500,
+    "currency": "RUB"
+  },
+  "delta": {
+    "amountMinor": 3375700,
+    "currency": "RUB"
+  }
+}

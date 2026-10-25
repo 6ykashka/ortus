@@ -173,6 +173,14 @@
             "resourceIds": [],
             "includeDescendants": false
           }
+        },
+        {
+          "permission": "repairs.measurements.edit",
+          "scope": {
+            "kind": "self",
+            "resourceIds": [],
+            "includeDescendants": false
+          }
         }
       ],
       "tenantState": {
@@ -365,6 +373,14 @@
         },
         {
           "permission": "repairs.supply.request",
+          "scope": {
+            "kind": "self",
+            "resourceIds": [],
+            "includeDescendants": false
+          }
+        },
+        {
+          "permission": "repairs.measurements.edit",
           "scope": {
             "kind": "self",
             "resourceIds": [],

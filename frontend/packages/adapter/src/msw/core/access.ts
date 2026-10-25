@@ -91,6 +91,10 @@ esponsible-*…) — любая
 export function scopeKinds(opScope: string): readonly string[] | 'any' {
   if (opScope === 'tenant' || opScope.startsWith('tenant-owner')) return ['tenant'];
   if (!opScope.startsWith('tenant')) return 'any';
+  // W6.00: объект ремонта — repair_project (RS-08; project остаётся за «Задачами»), связь с записью (прораб объекта,
+  // менеджер заявки, замерщик) и «своё» (прораб сида 14.10 назначен на self).
+  if (opScope.includes('repair-project'))
+    return ['tenant', 'org_unit', 'repair_project', 'relation', 'self'];
   const kinds = ['tenant'];
   if (opScope.includes('org-unit')) kinds.push('org_unit');
   if (opScope.includes('project')) kinds.push('project');

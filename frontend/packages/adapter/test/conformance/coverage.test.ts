@@ -13,7 +13,9 @@ const stage2 = contract.operations.filter((o) => o.stage2);
 const stage4 = contract.operations.filter((o) => o.stage4);
 /** W5.00: операции тега Cash на экранах кассы этапа 5 (screens.yaml). */
 const stage5 = contract.operations.filter((o) => o.stage5);
-const examples = [...stage1, ...stage2, ...stage4, ...stage5].flatMap((o) =>
+/** W6.00: операции тега Repairs на экранах этапа 6 (screens.yaml, stage: 6). */
+const stage6 = contract.operations.filter((o) => o.stage6);
+const examples = [...stage1, ...stage2, ...stage4, ...stage5, ...stage6].flatMap((o) =>
   Object.keys(contract.examples[o.id] ?? {}).map((n) => `${o.id}/${n}`),
 );
 
@@ -53,12 +55,22 @@ describe('покрытие conformance', () => {
     const missing = stage5.flatMap((o) =>
       (['success', 'error'] as const)
         .filter((kind) => !ALL_CASES.some((c) => c.operationId === o.id && c.expect === kind))
-        .map((kind) => `: нет кейса ${kind}`),
+        .map((kind) => `${o.id}: нет кейса ${kind}`),
     );
     expect(missing).toEqual([]);
   });
 
-  it('каждый пример этапов 1, 2, 4 и 5 воспроизведён кейсом или записан в deviations.ts', () => {
+  it('операции экранов этапа 6 тега Repairs (W6.00, 66), у каждой — кейс успеха и кейс ошибки', () => {
+    expect(stage6.length).toBeGreaterThanOrEqual(66);
+    const missing = stage6.flatMap((o) =>
+      (['success', 'error'] as const)
+        .filter((kind) => !ALL_CASES.some((c) => c.operationId === o.id && c.expect === kind))
+        .map((kind) => `${o.id}: нет кейса ${kind}`),
+    );
+    expect(missing).toEqual([]);
+  });
+
+  it('каждый пример этапов 1, 2, 4, 5 и 6 воспроизведён кейсом или записан в deviations.ts', () => {
     const covered = new Set(ALL_CASES.flatMap((c) => (c.example ? [c.example] : [])));
     const scenario = new Set(DEVIATIONS.filter((d) => d.kind === 'scenario').map((d) => d.example));
     expect(examples.filter((e) => !covered.has(e) && !scenario.has(e))).toEqual([]);

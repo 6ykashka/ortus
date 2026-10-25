@@ -1168,6 +1168,188 @@ screens:
         completeAppointment,
         listSpaServices,
       ]
+  # W6.00 (0.12.0-stage6): экраны этапа 6 «Ремонт и стройка» (разбор repair.md §6.1; эталон design-2026-10-19).
+  repair-list:
+    title: Ремонт и стройка · Объекты
+    stage: 6
+    ws: W6.20
+    reference: design-2026-10-19 · Ортус CRM.dc.html · Список объектов (CRM:1917–1977)
+    operations:
+      - listRepairProjects
+      - createRepairProject
+      - getMyDecisionQueue
+    note: Владелец — таблица (≥ 880 px) или карточки, прораб — карточки; прораб видит только свои объекты (сервер); объект-черновик создаётся из заявки на этапе «Замер».
+  repair-card:
+    title: Карточка объекта · Обзор
+    stage: 6
+    ws: W6.20
+    reference: design-2026-10-19 · Ортус CRM.dc.html · Карточка объекта (CRM:1978–2075)
+    operations:
+      - getRepairProject
+      - getRepairProjectOverview
+      - updateRepairProject
+      - activateRepairProject
+    note: "Вкладки: Обзор, Работы, Замер, Смета, График, Документы, Снабжение, Финансы, Оплата бригады, Подрядчики, Кабинет заказчика; смета и деньги — только с repairs.finance.read (Q-W4.00-repair-24)."
+  repair-works:
+    title: Карточка объекта · Работы и допработы
+    stage: 6
+    ws: W6.20
+    reference: design-2026-10-19 · Ортус CRM.dc.html · Работы (CRM:2077–2119)
+    operations:
+      - listRepairWorks
+      - listWorkLogs
+      - submitWorkLog
+      - acceptWorkLog
+      - returnWorkLog
+      - listChangeOrders
+      - proposeChangeOrder
+    note: Приёмка одна команда на обзор, «Главную» и вкладку; «Вернуть» — без кнопки до дорисовки (Q-W4.00-repair-3).
+  modal-assign-foreman:
+    title: Назначить прораба?
+    stage: 6
+    ws: W6.20
+    reference: design-2026-10-19 · Ортус CRM.dc.html · Диалог «Назначить прораба?» (CRM:4423–4430)
+    operations:
+      - assignRepairForeman
+  repair-measure:
+    title: Карточка объекта · Замер
+    stage: 6
+    ws: W6.21
+    reference: design-2026-10-19 · Ремонт и стройка.dc.html · Замер (:73–101)
+    operations:
+      - getMeasurement
+      - putMeasurement
+  repair-estimate:
+    title: Карточка объекта · Смета
+    stage: 6
+    ws: W6.21
+    reference: design-2026-10-19 · Ремонт и стройка.dc.html · Смета (:103–277)
+    operations:
+      - listEstimates
+      - getEstimate
+      - createEstimateFromTemplate
+      - createEstimateRevision
+      - updateEstimateDraft
+      - sendEstimate
+      - recallEstimate
+      - deleteEstimateDraft
+      - diffEstimates
+      - rejectChangeOrder
+      - listPriceItems
+      - listTemplates
+      - saveProjectAsTemplate
+    note: Версии, сравнение, допработы, шаблоны; отправка и согласование заказчиком — в публичном кабинете (кнопки «Демо:» не переносятся, Q-W4.00-repair-9).
+  repair-schedule:
+    title: Карточка объекта · График
+    stage: 6
+    ws: W6.23
+    reference: design-2026-10-19 · Ремонт и стройка.dc.html · График (:279–511)
+    operations:
+      - getSchedule
+      - createScheduleFromEstimate
+      - previewScheduleChange
+      - applyScheduleChange
+      - setScheduleStageExecutor
+      - createScheduleBaseline
+    note: Диаграмма и drag считает клиент по домену W6.17, сохранение и прогноз — сервер.
+  repair-docs:
+    title: Карточка объекта · Документы
+    stage: 6
+    ws: W6.24
+    reference: design-2026-10-19 · Ремонт и стройка.dc.html · Документы (:513–529)
+    operations:
+      - listRepairDocuments
+      - requestDocumentSignature
+      - handOverRepairProject
+  repair-supply-tab:
+    title: Карточка объекта · Снабжение
+    stage: 6
+    ws: W6.22
+    reference: design-2026-10-19 · Ремонт и стройка.dc.html · Снабжение (:531–545)
+    operations:
+      - listSupplyRequests
+      - createSupplyRequest
+      - consumeSupplyRequest
+  repair-finance:
+    title: Карточка объекта · Финансы
+    stage: 6
+    ws: W6.24
+    reference: design-2026-10-19 · Ремонт и стройка.dc.html · Финансы объекта (:547–558)
+    operations:
+      - getProjectFinance
+  repair-pay:
+    title: Карточка объекта · Оплата бригады
+    stage: 6
+    ws: W6.24
+    reference: design-2026-10-19 · Ремонт и стройка.dc.html · Оплата бригад (:560–575)
+    operations:
+      - listCrewAccruals
+      - accrueByAct
+      - payoutAccruals
+  repair-subs:
+    title: Карточка объекта · Подрядчики
+    stage: 6
+    ws: W6.24
+    reference: design-2026-10-19 · Ремонт и стройка.dc.html · Подрядчики (:577–588)
+    operations:
+      - listSubcontractors
+      - setSubcontractorAccess
+  repair-client:
+    title: Карточка объекта · Кабинет заказчика
+    stage: 6
+    ws: W6.24
+    reference: design-2026-10-19 · Ремонт и стройка.dc.html · Кабинет заказчика (:590–611)
+    operations:
+      - getClientLink
+      - issueClientLink
+      - revokeClientLink
+  repair-catalog:
+    title: Шаблоны и расценки
+    stage: 6
+    ws: W6.25
+    reference: design-2026-10-19 · Ремонт и стройка.dc.html · Шаблоны и расценки (CRM:1903, :613–722)
+    operations:
+      - listPriceItems
+      - createPriceItem
+      - updatePriceItem
+      - listTemplates
+      - getTemplate
+      - updateTemplate
+      - copyTemplate
+  repair-supply:
+    title: Снабжение
+    stage: 6
+    ws: W6.22
+    reference: design-2026-10-19 · Ремонт и стройка.dc.html · Снабжение и склады (CRM:1910, :724–829)
+    operations:
+      - listSupplyRequests
+      - reserveSupplyRequest
+      - issueSupplyRequest
+      - createPurchase
+      - listPurchases
+      - receivePurchase
+      - listProjectStock
+      - returnProjectStock
+      - transferProjectStock
+    note: Решение «со склада / купить», закупка на несколько объектов, остатки на объектах; склады и движения — модуль «Склад» этапа 5.
+  public-client-cabinet:
+    title: Кабинет заказчика (публичная страница)
+    stage: 6
+    ws: W6.26
+    reference: "no-reference · публичная страница по токену (Q-W4.00-repair-10): превью 420 px вкладки «Кабинет заказчика»"
+    operations:
+      - getClientCabinet
+      - approveEstimateByClient
+      - signDocumentByClient
+    note: "Нет в эталоне (B-6): по превью 420 px вкладки «Кабинет заказчика», подпись вводом SMS-кода (Q-W4.00-repair-10, -11); дорисовка в design-requests."
+  repair-supply-request:
+    title: Заявка прораба на материал
+    stage: 6
+    ws: W6.22
+    reference: "no-reference · форма заявки прораба (Q-W4.00-repair-6): дорисовка во вкладке «Снабжение» объекта"
+    operations:
+      - createSupplyRequest
+    note: "Нет в эталоне (B-6): форма заявки прораба во вкладке «Снабжение» объекта; дорисовка в design-requests."
 
 # Истории без своего экрана (DoR W1.00, W2.00): серверные механизмы и проверки, видимые только тестами и изоляцией.
 storiesWithoutScreen:

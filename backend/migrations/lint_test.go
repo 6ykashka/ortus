@@ -46,12 +46,14 @@ var migrationBlocks = map[migrations.Kind][][2]int{
 // (блок закрыт); блок этапа 4 — 0020 (W4.02), 0021–0022 (W4.06), 0023 (W2.71, S2-20, после W4.02 и W4.06), 0024
 // (W4.04, в ветке — 0023, после W2.71), 0025 (W4.03, «Задачи и проекты», в ветке — 0023, после W4.04), 0026 (W4.05,
 // «Формы и опросы»), 0027 (W2.78, S2-20 «машина отпущена», Q-W2.72-1; следующий свободный, стюарду — подтвердить),
-// резерв 0028–0039; блок этапа 5 — 0040–0044 (W5.00: касса, склад, SPA), резерв 0045–0049. Без дублей и без дыр\n// внутри блоков.
+// резерв 0028–0039; блок этапа 5 — 0040–0044 (W5.00: касса, склад, SPA), резерв 0045–0049; блок этапа 6 — 0050–0054
+// (W6.00, схема repairs «Ремонта и стройки»), резерв 0055–0059; control 0010 (W6.00, индекс публичных ссылок кабинета
+// заказчика). Без дублей и без дыр внутри блоков.
 func TestNumberingContiguous(t *testing.T) {
 	t.Parallel()
 	want := map[migrations.Kind]struct{ files, latest int }{
-		migrations.Control: {9, 9},
-		migrations.Tenant:  {29, 44}, // + 0040–0044 (W5.00, контракт 0.12.0-stage5)
+		migrations.Control: {10, 10},
+		migrations.Tenant:  {34, 54}, // + 0040–0044 (W5.00) и 0050–0054 (W6.00)
 	}
 	for k, w := range want {
 		names := files(t, k)
@@ -89,6 +91,11 @@ func blockOf(blocks [][2]int, v int) int {
 	return -1
 }
 
+// pendingStageBlocks — блоки, чей этап ещё не влит, хотя блок после него уже занят: пустой блок из списка не считается
+// ошибкой; номера, выданные в нём позже, раннер goose без out-of-order на БД, уже стоящую выше, не накатит
+// (api/README.md, «Порядок вливания номеров»). Сейчас таких нет: этап 5 влит (W5.00).
+var pendingStageBlocks = map[int]bool{}
+
 // blockErrors checks the stage-block rule: every version lies in a block; every block up to the last used one is
 // non-empty and has no gaps from its start to its highest version (the unused tail of a block is a reserve).
 func blockErrors(blocks [][2]int, used map[int]bool) []string {
@@ -106,7 +113,7 @@ func blockErrors(blocks [][2]int, used map[int]bool) []string {
 	}
 	for i := 0; i <= last; i++ {
 		b := blocks[i]
-		if top[i] == 0 {
+		if top[i] == 0 && !pendingStageBlocks[b[0]] {
 			errs = append(errs, fmt.Sprintf("block %04d–%04d is empty below a used block", b[0], b[1]))
 		}
 		for v := b[0]; v <= top[i]; v++ {
@@ -151,6 +158,7 @@ var tenantSchemas = []string{
 	"cash",      // W5.00, tenant 0040–0042: касса
 	"inventory", // W5.00, tenant 0043: склад
 	"spa",       // W5.00, tenant 0044: салон и SPA
+	"repairs",   // W6.00, tenants 0050–0054: «Ремонт и стройка»
 }
 
 var objectRe = regexp.MustCompile(`(?im)^\s*(?:create\s+table|alter\s+table|create\s+view|create\s+type)\s+(?:if\s+(?:not\s+)?exists\s+)?([a-z0-9_."]+)` +

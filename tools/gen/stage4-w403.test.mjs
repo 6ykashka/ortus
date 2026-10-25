@@ -319,9 +319,9 @@ describe('контракт 0.10.0-stage4 (W4.03): операции и права
   it('права: ключей не прибавилось, tasks.projects.manage получил область project (Q-W4.00-tasks-6)', () => {
     const actions = flattenActions(loadCatalog());
     // W4.03 своих ключей не добавляет: 125 — после W2.71 (fleet.reservations.choose) и W4.07 (branding.manage);
-    // W4.04 (влит раньше) — ещё 5 ключей «Базы знаний»: 130.
+    // W4.04 (влит раньше) — ещё 5 ключей «Базы знаний»: 130; W6.00 — ещё 7 ключей repairs.
     // W5.00 (0.12.0-stage5): ключи и коды этапа 5 не считаются; cash.manage → cash.accounts.manage — на один ключ меньше.
-    assert.equal(actions.size - W5_ADDED_KEYS.length, 129);
+    assert.equal(actions.size - W5_ADDED_KEYS.length - 7, 129);
     assert.deepEqual(actions.get('tasks.projects.manage').scopes, ['tenant', 'unit', 'project']);
     for (const [k, scopes] of [
       ['tasks.read', ['tenant', 'unit', 'project', 'self']],

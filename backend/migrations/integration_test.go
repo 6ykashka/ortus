@@ -142,7 +142,8 @@ func TestRolesConcurrent(t *testing.T) {
 
 // control: Up → Down → Up даёт ту же схему; контрольные числа v0.2 и этапа 1 (W1.00: control 0005 —
 // таблица idempotency_keys; W1.03: control 0006 — auth_sessions, auth_login_states; W4.07: control 0007 —
-// tenant_usage_daily, 0008 — branding_assets; W4.05: control 0009 — public_form_links). Версия — последняя
+// tenant_usage_daily, 0008 — branding_assets; W4.05: control 0009 — public_form_links; W6.00: control 0010 —
+// public_client_links). Версия — последняя
 // выданная стюардом (PD-59).
 func TestControlUpDownUp(t *testing.T) {
 	t.Parallel()
@@ -157,8 +158,8 @@ func TestControlUpDownUp(t *testing.T) {
 			where table_schema = 'public' and table_type = 'BASE TABLE' and table_name <> 'goose_db_version'`)
 		views := scalar[int](t, db, `select count(*) from information_schema.views where table_schema = 'public'`)
 		enums := scalar[int](t, db, `select count(*) from pg_type where typtype = 'e'`)
-		if tables != 22 || views != 2 || enums != 2 {
-			t.Errorf("tables=%d views=%d enums=%d; want 22, 2, 2", tables, views, enums)
+		if tables != 23 || views != 2 || enums != 2 {
+			t.Errorf("tables=%d views=%d enums=%d; want 23, 2, 2", tables, views, enums)
 		}
 		s1 := migratetest.Snapshot(t, db)
 		if !strings.Contains(s1, "extension btree_gist") {
@@ -202,9 +203,10 @@ func TestTenantUpDownUp(t *testing.T) {
 		// + sched.bookings (W4.06, tenant 0021) и схема data с data.saved_views, data.export_jobs (W4.06, tenant 0022);
 		// 61 и 14 схем — + схема kb «Базы знаний», 13 таблиц (W4.04, tenant 0024); 71 и 15 — + схема tasks с 10
 		// таблицами «Задач и проектов» (W4.03, tenant 0025); 79 и 16 — + схема forms с 8 таблицами «Форм и опросов» (W4.05,
-		// tenant 0026); 105 и 19 — + схемы cash (13 таблиц), inventory (8) и spa (5) этапа 5 (W5.00, tenant 0040–0044).
-		if schemas != 19 || tables != 105 {
-			t.Errorf("schemas=%d tables=%d; want 19, 105", schemas, tables)
+		// tenant 0026); 107 и 17 — + схема repairs с 28 таблицами «Ремонта и стройки» (W6.00, tenants 0050–0054);
+		// 133 и 20 — + схемы cash (13 таблиц), inventory (8) и spa (5) этапа 5 (W5.00, tenant 0040–0044).
+		if schemas != 20 || tables != 133 {
+			t.Errorf("schemas=%d tables=%d; want 20, 133", schemas, tables)
 		}
 		s1 := migratetest.Snapshot(t, db)
 
@@ -290,6 +292,8 @@ func TestAppendOnlyForRuntimeRoles(t *testing.T) {
 				{"inventory.movements", runtime, appendOnly},
 				{"inventory.movement_lines", runtime, appendOnly},
 				{"spa.service_revisions", runtime, appendOnly},
+				{"repairs.project_events", runtime, appendOnly},   // W6.00: лента объекта
+				{"repairs.schedule_changes", runtime, appendOnly}, // W6.00: журнал переносов графика
 				{"files.quota_ledger", runtime, appendOnly},
 				{"outbox.events", []string{migrations.RoleAPI}, appendOnly},
 				{"outbox.events", []string{migrations.RoleWorker}, writable},

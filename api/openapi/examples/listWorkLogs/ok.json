@@ -1,0 +1,171 @@
+{
+  "items": [
+    {
+      "id": "d16fc1b8-d9d8-5e40-bb11-3c1acd43e276",
+      "projectId": "73e23d56-2d9c-5a86-91d2-8969d90d1f5b",
+      "submittedByMemberId": "ebdf9767-327e-55cc-8c65-cb5fd313bdf4",
+      "workDate": "2026-09-30",
+      "timeZone": "Europe/Moscow",
+      "lines": [
+        {
+          "quantity": "22",
+          "unit": "m2",
+          "workId": "f7e367e3-6688-5fda-ad31-298abe98955a"
+        }
+      ],
+      "evidenceFileIds": [
+        "143762b0-3cd0-5618-89f3-4085bc030c66",
+        "8b827427-56d3-5d54-9ca0-c75c2ee4bf41",
+        "e3a7b15a-36de-5896-b53f-45e9388b2bca"
+      ],
+      "status": "accepted",
+      "createdAt": "2026-09-30T15:00:00Z",
+      "revision": 1,
+      "number": "WL-11",
+      "crewWorkerIds": [
+        "5526dde5-a67d-59c9-a706-d0ef365e53ae",
+        "b2a6cb8b-a587-58a0-aa4f-802d62bf47ac"
+      ],
+      "materials": [
+        {
+          "priceItemId": "ba92d36a-7bd5-55b8-9754-4ef1d532d793",
+          "quantity": "40"
+        }
+      ],
+      "acceptedAt": "2026-09-30T17:00:00Z",
+      "acceptedByMemberId": "b8df06ec-317e-5f46-b54c-e76603e41b5b"
+    },
+    {
+      "id": "50b17f65-4db4-569e-b321-cbd6599c1623",
+      "projectId": "4d132a07-45c5-55a7-9738-9117f7f86838",
+      "submittedByMemberId": "ebdf9767-327e-55cc-8c65-cb5fd313bdf4",
+      "workDate": "2026-09-30",
+      "timeZone": "Europe/Moscow",
+      "lines": [
+        {
+          "quantity": "18",
+          "unit": "m2",
+          "workId": "5165ff91-b2e1-54d9-84cd-48944f625188"
+        }
+      ],
+      "evidenceFileIds": [
+        "3ee6d916-7dab-51cd-9b00-3aee75d5b55d",
+        "832e799f-fd4a-57d4-8260-bb99a5a06747",
+        "68859d89-85dd-511a-8683-fd0140fce7ca"
+      ],
+      "status": "submitted",
+      "createdAt": "2026-09-30T15:00:00Z",
+      "revision": 1,
+      "number": "WL-09",
+      "crewWorkerIds": [
+        "0d04ccbb-b8c0-503f-b072-3f5bb769cab1",
+        "7ac4f33f-8751-50a7-be7c-e99c35b45a33"
+      ],
+      "materials": [
+        {
+          "priceItemId": "c180ec0d-3f13-59cb-8e13-61797b0113a6",
+          "quantity": "18"
+        }
+      ]
+    },
+    {
+      "id": "8f087079-af9b-5975-8345-3a3e39793069",
+      "projectId": "4d132a07-45c5-55a7-9738-9117f7f86838",
+      "submittedByMemberId": "ebdf9767-327e-55cc-8c65-cb5fd313bdf4",
+      "workDate": "2026-09-29",
+      "timeZone": "Europe/Moscow",
+      "lines": [
+        {
+          "quantity": "60",
+          "unit": "m2",
+          "workId": "da157531-f52a-5b2f-a398-7a8cd0c110ff"
+        }
+      ],
+      "evidenceFileIds": [
+        "7d0d021f-e971-52ff-824e-d9452ae2ba37",
+        "4eb9d253-7355-5d63-aed7-d6d4323db823",
+        "e1be722a-7f1c-5342-87be-4f8dfbe375c1",
+        "5d2e5506-fcc2-5dcd-9122-de0e14229aa6"
+      ],
+      "status": "accepted",
+      "createdAt": "2026-09-29T15:00:00Z",
+      "revision": 1,
+      "number": "WL-08",
+      "crewWorkerIds": [
+        "64a353c5-e617-58d0-8a7d-a89b33b53c44",
+        "0d04ccbb-b8c0-503f-b072-3f5bb769cab1"
+      ],
+      "materials": [
+        {
+          "priceItemId": "ff2862ae-e9b5-5fc6-b2af-4f8855cecf07",
+          "quantity": "12"
+        }
+      ],
+      "acceptedAt": "2026-09-29T17:00:00Z",
+      "acceptedByMemberId": "b8df06ec-317e-5f46-b54c-e76603e41b5b"
+    },
+    {
+      "id": "770e9a6b-b79e-5b73-af45-59b7e9b80d6d",
+      "projectId": "2c1cc0f1-d23e-50bd-ba0a-fc1328e73af2",
+      "submittedByMemberId": "ebdf9767-327e-55cc-8c65-cb5fd313bdf4",
+      "workDate": "2026-09-29",
+      "timeZone": "Europe/Moscow",
+      "lines": [
+        {
+          "quantity": "12",
+          "unit": "m2",
+          "workId": "8c834292-1b07-5739-8a75-db14e533fb82"
+        }
+      ],
+      "evidenceFileIds": [
+        "bbddc12c-55c8-52bf-8138-4e8a472d024e",
+        "752393f3-3add-5a18-aa4c-e3812f134e26"
+      ],
+      "status": "accepted",
+      "createdAt": "2026-09-29T15:00:00Z",
+      "revision": 1,
+      "number": "WL-06",
+      "crewWorkerIds": [
+        "e97fdad6-6469-535b-85c3-7b3103761a10",
+        "98271003-a8ee-5152-90eb-fc7baca92da0"
+      ],
+      "materials": [],
+      "acceptedAt": "2026-09-29T17:00:00Z",
+      "acceptedByMemberId": "b8df06ec-317e-5f46-b54c-e76603e41b5b"
+    },
+    {
+      "id": "513f2e80-c7bc-5ffc-bd29-db483ac25da9",
+      "projectId": "79ad020d-bd3a-527d-8a9b-c07b72891b4b",
+      "submittedByMemberId": "ebdf9767-327e-55cc-8c65-cb5fd313bdf4",
+      "workDate": "2026-09-10",
+      "timeZone": "Europe/Moscow",
+      "lines": [
+        {
+          "quantity": "42",
+          "unit": "m2",
+          "workId": "2350c025-758c-5cdc-b6bf-315ee03700ea"
+        }
+      ],
+      "evidenceFileIds": [
+        "3f286ceb-92b0-5da9-a4e2-6760ac31d5e9",
+        "f2e9f70c-033d-5646-b426-8222246d5824",
+        "126f071f-4a8b-5b84-97e3-ceca54d9c484",
+        "7c530710-0bc4-5661-90e5-9e0a8e353a9b",
+        "9a073810-2042-5c22-9a2c-aec7a1c2dd20",
+        "e7035db8-750e-56c4-9ae1-8c07272becc0"
+      ],
+      "status": "accepted",
+      "createdAt": "2026-09-10T15:00:00Z",
+      "revision": 1,
+      "number": "WL-02",
+      "crewWorkerIds": [
+        "68d1309e-fcb4-5a09-8a6e-a3f3122d17af",
+        "bc3e719a-3bc1-585b-9e74-a571520c153d"
+      ],
+      "materials": [],
+      "acceptedAt": "2026-09-10T17:00:00Z",
+      "acceptedByMemberId": "b8df06ec-317e-5f46-b54c-e76603e41b5b"
+    }
+  ],
+  "nextCursor": null
+}

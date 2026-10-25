@@ -1,0 +1,31 @@
+{
+  "id": "50b17f65-4db4-569e-b321-cbd6599c1623",
+  "projectId": "4d132a07-45c5-55a7-9738-9117f7f86838",
+  "submittedByMemberId": "ebdf9767-327e-55cc-8c65-cb5fd313bdf4",
+  "workDate": "2026-09-30",
+  "timeZone": "Europe/Moscow",
+  "lines": [
+    {
+      "quantity": "18",
+      "unit": "m2",
+      "workId": "5165ff91-b2e1-54d9-84cd-48944f625188"
+    }
+  ],
+  "evidenceFileIds": [
+    "3ee6d916-7dab-51cd-9b00-3aee75d5b55d",
+    "832e799f-fd4a-57d4-8260-bb99a5a06747",
+    "68859d89-85dd-511a-8683-fd0140fce7ca"
+  ],
+  "status": "rejected",
+  "createdAt": "2026-09-30T15:00:00Z",
+  "revision": 2,
+  "number": "WL-09",
+  "crewWorkerIds": ["0d04ccbb-b8c0-503f-b072-3f5bb769cab1", "7ac4f33f-8751-50a7-be7c-e99c35b45a33"],
+  "materials": [
+    {
+      "priceItemId": "c180ec0d-3f13-59cb-8e13-61797b0113a6",
+      "quantity": "18"
+    }
+  ],
+  "returnReason": "Не видно объём на фото"
+}

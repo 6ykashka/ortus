@@ -1,0 +1,17 @@
+{
+  "moved": [
+    {
+      "stageId": "8b53b80b-347c-5034-9954-dc316ebe7035",
+      "fromStartOn": "2026-11-05",
+      "toStartOn": "2026-11-09"
+    },
+    {
+      "stageId": "6ddf4ea8-e52f-543a-9d96-8eb1af0347da",
+      "fromStartOn": "2026-11-10",
+      "toStartOn": "2026-11-16"
+    }
+  ],
+  "forecastDueOn": "2026-12-01",
+  "delayWd": 2,
+  "notifyWho": ["Бригада О. Дронова"]
+}

@@ -1,0 +1,8 @@
+{
+  "type": "https://docs.ortus.example/errors/estimate_version_locked",
+  "title": "Правка отправленной или согласованной версии сметы",
+  "status": 409,
+  "code": "estimate_version_locked",
+  "detail": "Версия уже отправлена или согласована.",
+  "requestId": "01J9Z4QK8M6T2V5X7Y9A1B3C5D"
+}

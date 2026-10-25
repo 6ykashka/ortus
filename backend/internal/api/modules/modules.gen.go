@@ -742,17 +742,29 @@ type CashTransferId = Id
 // CategoryCode defines model for categoryCode.
 type CategoryCode = string
 
+// ChangeOrderId Examples: 10000000-0000-4000-8000-000000000001
+type ChangeOrderId = Id
+
 // ChangeRequestId Examples: 10000000-0000-4000-8000-000000000001
 type ChangeRequestId = Id
 
 // ChecklistItemId defines model for checklistItemId.
 type ChecklistItemId = string
 
+// ClientToken defines model for clientToken.
+type ClientToken = string
+
 // DatasetId defines model for datasetId.
 type DatasetId = string
 
 // DefectId Examples: 10000000-0000-4000-8000-000000000001
 type DefectId = Id
+
+// DocumentId Examples: 10000000-0000-4000-8000-000000000001
+type DocumentId = Id
+
+// EstimateVersion defines model for estimateVersion.
+type EstimateVersion = int
 
 // ExpenseId Examples: 10000000-0000-4000-8000-000000000001
 type ExpenseId = Id
@@ -811,6 +823,9 @@ type OrgUnitId = Id
 // PageId Examples: 10000000-0000-4000-8000-000000000001
 type PageId = Id
 
+// PriceItemId Examples: 10000000-0000-4000-8000-000000000001
+type PriceItemId = Id
+
 // PriceVersionNumber defines model for priceVersionNumber.
 type PriceVersionNumber = int
 
@@ -822,6 +837,12 @@ type PublicToken = string
 
 // PublicationId Examples: 10000000-0000-4000-8000-000000000001
 type PublicationId = Id
+
+// PurchaseId Examples: 10000000-0000-4000-8000-000000000001
+type PurchaseId = Id
+
+// RepairProjectId Examples: 10000000-0000-4000-8000-000000000001
+type RepairProjectId = Id
 
 // RequestId Examples: 10000000-0000-4000-8000-000000000001
 type RequestId = Id
@@ -844,8 +865,20 @@ type SpaServiceId = Id
 // SpaceId Examples: 10000000-0000-4000-8000-000000000001
 type SpaceId = Id
 
+// StageId Examples: 10000000-0000-4000-8000-000000000001
+type StageId = Id
+
+// SubcontractorId Examples: 10000000-0000-4000-8000-000000000001
+type SubcontractorId = Id
+
+// SupplyRequestId Examples: 10000000-0000-4000-8000-000000000001
+type SupplyRequestId = Id
+
 // TaskId Examples: 10000000-0000-4000-8000-000000000001
 type TaskId = Id
+
+// TemplateId Examples: 10000000-0000-4000-8000-000000000001
+type TemplateId = Id
 
 // TenantId Examples: 10000000-0000-4000-8000-000000000001
 type TenantId = Id
@@ -867,6 +900,9 @@ type VersionId = Id
 
 // ViewId Examples: 10000000-0000-4000-8000-000000000001
 type ViewId = Id
+
+// WorkLogId Examples: 10000000-0000-4000-8000-000000000001
+type WorkLogId = Id
 
 // WorkProfileId Examples: 10000000-0000-4000-8000-000000000001
 type WorkProfileId = Id

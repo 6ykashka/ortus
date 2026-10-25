@@ -122,6 +122,13 @@ module repairs | Ремонт и стройка | core.files core.tasks
   repairs.changes.submit | Предлагать допработы | create | project | normal
   repairs.supply.request | Просить материал | create | project | normal
   repairs.supply.manage | Вести снабжение | edit | tenant unit | normal
+  repairs.measurements.edit | Вводить замер | edit | tenant unit project | normal
+  repairs.documents.send | Отправлять документы на подпись | edit | tenant unit project | sensitive
+  repairs.crew.accrue | Начислять бригаде по акту | edit | tenant unit project | restricted
+  repairs.crew.pay | Выплачивать бригаде через кассу | review | tenant unit project | restricted
+  repairs.subcontractors.manage | Открывать доступ подрядчикам | settings | tenant unit project | sensitive
+  repairs.client_link.manage | Выпускать и отзывать ссылку кабинета заказчика | settings | tenant unit project | sensitive
+  repairs.projects.hand_over | Сдавать объекты | review | tenant unit project | normal
 module inventory | Склад и материалы |
   inventory.items.read | Видеть номенклатуру и остатки | view | tenant unit warehouse | normal
   inventory.items.manage | Вести номенклатуру | settings | tenant unit | normal

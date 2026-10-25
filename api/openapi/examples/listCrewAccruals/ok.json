@@ -1,0 +1,46 @@
+{
+  "items": [
+    {
+      "id": "388633f7-5c56-5c24-a462-fdb843ddd9a9",
+      "projectId": "73e23d56-2d9c-5a86-91d2-8969d90d1f5b",
+      "workerId": "5526dde5-a67d-59c9-a706-d0ef365e53ae",
+      "workerName": "Иван Петров",
+      "role": "отделочник",
+      "amount": {
+        "amountMinor": 1980000,
+        "currency": "RUB"
+      },
+      "state": "pending_act",
+      "selfEmployed": false,
+      "work": "Демонтаж"
+    },
+    {
+      "id": "9cfb21f3-0d3d-5e46-bf52-eb7db827be01",
+      "projectId": "73e23d56-2d9c-5a86-91d2-8969d90d1f5b",
+      "workerId": "b2a6cb8b-a587-58a0-aa4f-802d62bf47ac",
+      "workerName": "Олег Смирнов",
+      "role": "отделочник",
+      "amount": {
+        "amountMinor": 1420000,
+        "currency": "RUB"
+      },
+      "state": "pending_act",
+      "selfEmployed": true,
+      "work": "Демонтаж"
+    },
+    {
+      "id": "33173f1d-b02e-5d0a-a97c-18a88bef215d",
+      "projectId": "73e23d56-2d9c-5a86-91d2-8969d90d1f5b",
+      "workerId": "ea383b9e-2801-5ca0-b887-4f0867aafce6",
+      "workerName": "Денис Волков",
+      "role": "разнорабочий",
+      "amount": {
+        "amountMinor": 940000,
+        "currency": "RUB"
+      },
+      "state": "pending_act",
+      "selfEmployed": true,
+      "work": "Демонтаж"
+    }
+  ]
+}

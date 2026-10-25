@@ -1,0 +1,28 @@
+{
+  "id": "54aeb065-7079-5cc3-8ccf-b4605e92db3e",
+  "orgUnitId": "6de355d2-b019-5bb6-b66a-ddae6a13fb65",
+  "name": "Квартира 64 м², Химки",
+  "address": "Химки, ул. Ленинградская, 12, кв. 31",
+  "status": "draft",
+  "foremanMemberId": null,
+  "workers": [],
+  "revision": 1,
+  "access": [],
+  "measured": false,
+  "readiness": {
+    "acceptedPct": 0,
+    "pendingPct": 0,
+    "clientPct": 0
+  },
+  "todoCount": 1,
+  "kind": "капитальный ремонт",
+  "stage": "Замер",
+  "clientName": "Пётр Фомин",
+  "leadTaskId": "84f64702-2bfd-5456-bf2c-86db192fd65d",
+  "todoTop": {
+    "kind": "estimate_missing",
+    "text": "Смета не собрана",
+    "actionLabel": "Собрать смету",
+    "tab": "estimate"
+  }
+}

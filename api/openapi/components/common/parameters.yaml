@@ -474,3 +474,161 @@ spaServiceId:
   description: W5.00 (0.12.0-stage5). Opaque UUID of a SPA service (SpaService.id).
   schema:
     $ref: ../common/schemas.yaml#/Id
+# W6.00 (0.12.0-stage6): «Ремонт и стройка» — объект, отметка, допработа, версия сметы, справочник, шаблон, этап, документ, заявка, закупка, подрядчик, ссылка кабинета; фильтры.
+repairProjectId:
+  name: projectId
+  in: path
+  required: true
+  description: W6.00 (0.12.0-stage6). Opaque UUID of a repair object (repairs.projects); an object the member may not see — 404, as a missing one.
+  schema:
+    $ref: ./schemas.yaml#/Id
+workLogId:
+  name: workLogId
+  in: path
+  required: true
+  description: W6.00. Opaque UUID of a work log (mark of the foreman).
+  schema:
+    $ref: ./schemas.yaml#/Id
+changeOrderId:
+  name: changeOrderId
+  in: path
+  required: true
+  description: W6.00. Opaque UUID of a change order (допработа).
+  schema:
+    $ref: ./schemas.yaml#/Id
+estimateVersion:
+  name: version
+  in: path
+  required: true
+  description: W6.00. Number of an estimate version of the object (1, 2, …).
+  schema:
+    type: integer
+    minimum: 1
+priceItemId:
+  name: priceItemId
+  in: path
+  required: true
+  description: W6.00. Opaque UUID of a price list item.
+  schema:
+    $ref: ./schemas.yaml#/Id
+templateId:
+  name: templateId
+  in: path
+  required: true
+  description: W6.00. Opaque UUID of an object template.
+  schema:
+    $ref: ./schemas.yaml#/Id
+stageId:
+  name: stageId
+  in: path
+  required: true
+  description: W6.00. Opaque UUID of a schedule stage.
+  schema:
+    $ref: ./schemas.yaml#/Id
+documentId:
+  name: documentId
+  in: path
+  required: true
+  description: W6.00. Opaque UUID of a document of an object (contract, act, invoice).
+  schema:
+    $ref: ./schemas.yaml#/Id
+supplyRequestId:
+  name: supplyRequestId
+  in: path
+  required: true
+  description: W6.00. Opaque UUID of a supply request.
+  schema:
+    $ref: ./schemas.yaml#/Id
+purchaseId:
+  name: purchaseId
+  in: path
+  required: true
+  description: W6.00. Opaque UUID of a purchase.
+  schema:
+    $ref: ./schemas.yaml#/Id
+subcontractorId:
+  name: subcontractorId
+  in: path
+  required: true
+  description: W6.00. Opaque UUID of a subcontractor of the object.
+  schema:
+    $ref: ./schemas.yaml#/Id
+clientToken:
+  name: clientToken
+  in: path
+  required: true
+  description: "W6.00. Unpredictable revocable capability of the client cabinet (Q-W4.00-repair-10): the tenant is resolved by the token digest; only the hash is stored; the link lives until the object is handed over. Avoid logs and referrer leakage."
+  schema:
+    type: string
+    minLength: 32
+    maxLength: 256
+RepairFilter:
+  name: filter
+  in: query
+  required: false
+  description: "W6.00. Filter of the object list: active, todo («Требуют решения»), draft («До договора»), done («Сданы»)."
+  schema:
+    type: string
+    enum:
+      - active
+      - todo
+      - draft
+      - done
+RepairQuery:
+  name: q
+  in: query
+  required: false
+  description: W6.00. Search by address, client or foreman.
+  schema:
+    type: string
+    maxLength: 200
+RepairProjectFilter:
+  name: projectId
+  in: query
+  required: false
+  description: W6.00. Only the records of one object.
+  schema:
+    $ref: ./schemas.yaml#/Id
+WorkLogStatusFilter:
+  name: status
+  in: query
+  required: false
+  description: W6.00. Status of a work log.
+  schema:
+    type: string
+    enum:
+      - submitted
+      - accepted
+      - rejected
+PriceKindFilter:
+  name: kind
+  in: query
+  required: false
+  description: W6.00. Kind of a price list item.
+  schema:
+    type: string
+    enum:
+      - work
+      - material
+SupplyStateFilter:
+  name: state
+  in: query
+  required: false
+  description: W6.00. State of a supply request.
+  schema:
+    type: string
+    enum:
+      - request
+      - reserved
+      - issued
+      - ordered
+      - bought
+      - used
+EstimateDiffTo:
+  name: to
+  in: query
+  required: true
+  description: W6.00. Version to compare with.
+  schema:
+    type: integer
+    minimum: 1

@@ -89,13 +89,15 @@ describe('contract.gen.json', () => {
     expect(operation('listVehicles').stage1).toBe(false);
   });
 
-  it('примеры всех операций этапа 1, примеры этапов 2 (W2.00) и 4 (W4.06) и карта seed-ids', () => {
+  it('примеры всех операций этапа 1, примеры этапов 2 (W2.00), 4 (W4.06) и 6 (W6.00) и карта seed-ids', () => {
     const stage1 = contract.operations.filter((o) => o.stage1).map((o) => o.id);
     const stage2 = contract.operations.filter((o) => o.stage2).map((o) => o.id);
     // W4.07: операции нового тега этапа 4 Branding тоже несут примеры.
     const stage4 = contract.operations.filter((o) => o.stage4).map((o) => o.id);
     // W5.00: операции тега Cash на экранах кассы этапа 5 тоже несут примеры.
     const stage5 = contract.operations.filter((o) => o.stage5).map((o) => o.id);
+    // W6.00: операции тега Repairs этапа 6 тоже несут примеры.
+    const stage6 = contract.operations.filter((o) => o.stage6).map((o) => o.id);
     const keys = Object.keys(contract.examples);
     expect(stage1.filter((id) => !keys.includes(id))).toEqual([]);
     expect(
@@ -104,7 +106,8 @@ describe('contract.gen.json', () => {
           !stage1.includes(id) &&
           !stage2.includes(id) &&
           !stage4.includes(id) &&
-          !stage5.includes(id),
+          !stage5.includes(id) &&
+          !stage6.includes(id),
       ),
     ).toEqual([]);
     expect(keys).toContain('listCalendarBookings');

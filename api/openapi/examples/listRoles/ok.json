@@ -190,7 +190,8 @@
         "repairs.schedule.read",
         "repairs.schedule.shift",
         "repairs.changes.submit",
-        "repairs.supply.request"
+        "repairs.supply.request",
+        "repairs.measurements.edit"
       ],
       "revision": 1
     },

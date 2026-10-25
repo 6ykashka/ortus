@@ -1,0 +1,14 @@
+{
+  "id": "76775cb6-a480-5a5b-aae4-c7519c05bdd0",
+  "projectId": "73e23d56-2d9c-5a86-91d2-8969d90d1f5b",
+  "number": "ДР-1",
+  "title": "Перенос розеток на кухне",
+  "quantity": "6",
+  "unit": "piece",
+  "note": "Заказчик меняет расстановку кухни: 6 розеток перенести, штроба по бетону около 9 м.",
+  "photoFileIds": ["b8583c1d-392d-5bff-ba11-a4828f0ed0c8", "5b903019-e15d-56ef-8254-bc621cae9602"],
+  "status": "rejected",
+  "createdAt": "2026-10-18T09:00:00Z",
+  "revision": 2,
+  "rejectReason": "client_refused"
+}

@@ -90,7 +90,7 @@ var (
 		"spa.appointments.read,spa.appointments.create,calendar.bookings.read,calendar.bookings.manage,knowledge.read")}
 	roleForeman = roleDef{"r-foreman", "Прораб", kindTemplate, "foreman", actions(
 		"files.read,files.upload,tasks.read,tasks.create,knowledge.read,repairs.projects.read,repairs.work_logs.read," +
-			"repairs.work_logs.submit,repairs.schedule.read,repairs.schedule.shift,repairs.changes.submit,repairs.supply.request")}
+			"repairs.work_logs.submit,repairs.schedule.read,repairs.schedule.shift,repairs.changes.submit,repairs.supply.request,repairs.measurements.edit")}
 	rolePM = roleDef{"r-pm", "Руководитель проекта", kindTemplate, "project_manager", actions(
 		"tasks.projects.read,tasks.projects.manage,tasks.read,tasks.create,tasks.update,tasks.transition,tasks.approve," +
 			"tasks.members.manage,tasks.workflow.manage,tasks.automation.manage,files.read,files.upload")}

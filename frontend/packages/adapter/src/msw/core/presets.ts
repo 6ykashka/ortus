@@ -2,7 +2,8 @@
 //   logistics-ready — «Логистика» подключена, Марина Котова — «Менеджер логистики» в «Север Логистик»;
 //   seats-full      — занято 10 из 10: приглашён Иван Тестов (пример inviteMember/ok);
 //   trial-ended     — пробный период закончился: организация и подписка только для чтения;
-//   storage-full    — место организации заполнено (quota_exceeded при загрузке).
+//   storage-full    — место организации заполнено (quota_exceeded при загрузке);
+//   repairs-ready   — «Ремонт и стройка» подключён, сегодня 20.10.2026 (W6.00, Q-W4.00-repair-15).
 import type { components } from '@ortus/api-client';
 import { seedUuid } from '@ortus/domain/seed';
 
@@ -11,7 +12,13 @@ import { inviteMember } from './people.ts';
 import { orgOf, type ScenarioState, seatsUsed, type TenantRow } from './state.ts';
 import { HOUR, iso } from './time.ts';
 
-export const PRESETS = ['logistics-ready', 'seats-full', 'trial-ended', 'storage-full'] as const;
+export const PRESETS = [
+  'logistics-ready',
+  'seats-full',
+  'trial-ended',
+  'storage-full',
+  'repairs-ready',
+] as const;
 export type PresetName = (typeof PRESETS)[number];
 
 export const isPreset = (x: unknown): x is PresetName =>
@@ -96,12 +103,25 @@ function storageFull(s: ScenarioState): void {
   t.storage.measuredAt = s.clock;
 }
 
+/** «Ремонт и стройка» подключён; часы сервера — 20.10.2026 10:30 МСК: сценарий ремонта и график идут от этой даты. */
+function repairsReady(s: ScenarioState): void {
+  const org = orgOf(s, ALTA);
+  const repairs = org.modules.repairs;
+  if (repairs && repairs.state !== 'active') {
+    repairs.state = 'active';
+    repairs.revision++;
+  }
+  s.clock = '2026-10-20T07:30:00Z';
+  org.policyVersion++;
+}
+
 export function applyPreset(s: ScenarioState, name: PresetName): void {
   const run: Record<PresetName, (s: ScenarioState) => void> = {
     'logistics-ready': logisticsReady,
     'seats-full': seatsFull,
     'trial-ended': trialEnded,
     'storage-full': storageFull,
+    'repairs-ready': repairsReady,
   };
   run[name](s);
 }

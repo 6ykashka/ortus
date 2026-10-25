@@ -1702,14 +1702,14 @@ export interface paths {
       cookie?: never;
     };
     /**
-     * List visible repair projects and non-login workers
-     * @description List visible repair projects and non-login workers
+     * List visible repair objects with the summary of the list
+     * @description W6.00 (0.12.0-stage6, Q-W4.00-repair-1). List visible repair objects with the summary of the list: stage, readiness (accepted + pending), due date and forecast, foreman, the most urgent item of «Требует решения» and the count («ещё N вопросов»). The foreman gets only the objects where he is assigned (the server filters); amounts and the client phone are omitted without repairs.finance.read. Filter: active («Активные»), todo («Требуют решения»), draft («До договора»), done («Сданы»); q searches address, client and foreman. Order: first objects with questions (the most urgent), then by due date.
      */
     get: operations['listRepairProjects'];
     put?: never;
     /**
-     * Create a repair project and non-login worker records
-     * @description Create a repair project and non-login worker records
+     * Create a repair object (a draft from a lead or an active one)
+     * @description W6.00 (Q-W4.00-repair-16). Create a draft object at the lead stage «Замер» (status draft: only the measurement and the estimate, the foreman does not see it) or an active object. The foreman and the budget are optional: an object without a foreman is a regular scenario («Не назначен прораб»). Creates local non-login workers and an empty measurement (version 1) in one transaction. Event repairs.object.draft_created.v1.
      */
     post: operations['createRepairProject'];
     delete?: never;
@@ -1729,14 +1729,14 @@ export interface paths {
       cookie?: never;
     };
     /**
-     * List visible work, presence and evidence logs
-     * @description List visible work, presence and evidence logs
+     * List visible work logs
+     * @description W6.00. List visible work marks (the foreman sees his objects). status: submitted («На проверке»), accepted («Принят»), rejected (returned with a reason). projectId narrows to one object.
      */
     get: operations['listWorkLogs'];
     put?: never;
     /**
-     * Submit work and attendance for a foreman project
-     * @description Submit work and attendance for a foreman project
+     * Send a work mark of the foreman to acceptance
+     * @description W6.00 (prototype addWorkLog). The foreman of the object sends a mark to acceptance: work, volume, crew (учётные карточки without login), materials of the price list, ≥ 1 photo. Errors of the prototype as validation_failed fields: lines (work of the object, volume above zero, «Объём превышает план более чем на 10%: осталось …» — reason work_volume_exceeds_plan), crewWorkerIds («Отметьте работников»), evidenceFileIds («Добавьте хотя бы одно фото»). A handed-over object — 409 invalid_transition, reason project_handed_over («Объект сдан: новые отметки не принимаются»); a module in read-only mode — 403 module_read_only. Event repairs.work_log.submitted.v1.
      */
     post: operations['submitWorkLog'];
     delete?: never;
@@ -6124,6 +6124,1323 @@ export interface paths {
     patch?: never;
     trace?: never;
   };
+  '/api/v1/tenants/{tenantId}/repairs/projects/{projectId}': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+        /** @description W6.00 (0.12.0-stage6). Opaque UUID of a repair object (repairs.projects); an object the member may not see — 404, as a missing one. */
+        projectId: components['parameters']['repairProjectId'];
+      };
+      cookie?: never;
+    };
+    /**
+     * Read a repair object
+     * @description W6.00. Read one repair object (the header of the card). A draft object is invisible to the foreman — 404.
+     */
+    get: operations['getRepairProject'];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    /**
+     * Change fields of a repair object
+     * @description W6.00. Change the fields of the object: access («Как попасть на объект»), due date, client, area, contract number. If-Match — RepairProject.revision. Closed after the hand-over — invalid_transition, reason project_handed_over.
+     */
+    patch: operations['updateRepairProject'];
+    trace?: never;
+  };
+  '/api/v1/tenants/{tenantId}/repairs/projects/{projectId}/overview': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+        /** @description W6.00 (0.12.0-stage6). Opaque UUID of a repair object (repairs.projects); an object the member may not see — 404, as a missing one. */
+        projectId: components['parameters']['repairProjectId'];
+      };
+      cookie?: never;
+    };
+    /**
+     * Read the overview: decisions, volumes, photos, people, money, feed
+     * @description W6.00. The overview tab (variant 1a): «Требует решения» (the same function as the list), volumes of works, photos of accepted and pending marks, people, money (only with repairs.finance.read), feed. The foreman sees «Мои вопросы по объекту» without sums.
+     */
+    get: operations['getRepairProjectOverview'];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/v1/tenants/{tenantId}/repairs/projects/{projectId}/foreman': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+        /** @description W6.00 (0.12.0-stage6). Opaque UUID of a repair object (repairs.projects); an object the member may not see — 404, as a missing one. */
+        projectId: components['parameters']['repairProjectId'];
+      };
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /**
+     * Assign the foreman of an object
+     * @description W6.00 (prototype assignForeman). Assign the foreman; a repeated call — 409 invalid_transition, reason foreman_already_assigned («Прораб уже назначен: …»). The object appears in the list of the foreman; he can send marks and material requests, he does not see the estimate, prices and money. Event repairs.object.foreman_assigned.v1.
+     */
+    post: operations['assignRepairForeman'];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/v1/tenants/{tenantId}/repairs/projects/{projectId}/activate': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+        /** @description W6.00 (0.12.0-stage6). Opaque UUID of a repair object (repairs.projects); an object the member may not see — 404, as a missing one. */
+        projectId: components['parameters']['repairProjectId'];
+      };
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /**
+     * Activate a draft object after the estimate is approved
+     * @description W6.00 (Q-W4.00-repair-16). draft → active when the lead reaches the stage «Объект»; requires an approved estimate version, otherwise 409 invalid_transition, reason repair_estimate_not_approved; a non-draft object — reason repair_project_not_draft. If-Match — RepairProject.revision. Event repairs.object.activated.v1.
+     */
+    post: operations['activateRepairProject'];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/v1/tenants/{tenantId}/repairs/projects/{projectId}/works': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+        /** @description W6.00 (0.12.0-stage6). Opaque UUID of a repair object (repairs.projects); an object the member may not see — 404, as a missing one. */
+        projectId: components['parameters']['repairProjectId'];
+      };
+      cookie?: never;
+    };
+    /**
+     * List volumes of works: plan, accepted fact, pending
+     * @description W6.00. Volumes of works: plan, accepted fact, pending (the fact counts only accepted marks).
+     */
+    get: operations['listRepairWorks'];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/v1/tenants/{tenantId}/repairs/work-logs/{workLogId}/accept': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+        /** @description W6.00. Opaque UUID of a work log (mark of the foreman). */
+        workLogId: components['parameters']['workLogId'];
+      };
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /**
+     * Accept the volume of a work log (once)
+     * @description W6.00 (prototype acceptWorkLog; one command for the overview, «Главная» and the tab «Работы»). Accept the volume: the fact grows, the materials of the mark are written off (movement use of the module «Склад», Q-W4.00-repair-7). A repeated call — 409 invalid_transition, reason work_log_already_reviewed («Отметка уже обработана»). If-Match — WorkLog.revision. Closed in the read-only mode (module_read_only). Event repairs.work_log.accepted.v1.
+     */
+    post: operations['acceptWorkLog'];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/v1/tenants/{tenantId}/repairs/work-logs/{workLogId}/return': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+        /** @description W6.00. Opaque UUID of a work log (mark of the foreman). */
+        workLogId: components['parameters']['workLogId'];
+      };
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /**
+     * Return a work log to the foreman with a reason
+     * @description W6.00 (RS-09, Q-W4.00-repair-3). Return the mark to the foreman with a required reason; the crew does not see the reason. rejected is final: the foreman sends a new mark. If-Match — WorkLog.revision; a reviewed mark — reason work_log_already_reviewed. Event repairs.work_log.returned.v1.
+     */
+    post: operations['returnWorkLog'];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/v1/tenants/{tenantId}/repairs/projects/{projectId}/change-orders': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+        /** @description W6.00 (0.12.0-stage6). Opaque UUID of a repair object (repairs.projects); an object the member may not see — 404, as a missing one. */
+        projectId: components['parameters']['repairProjectId'];
+      };
+      cookie?: never;
+    };
+    /**
+     * List change orders of an object
+     * @description W6.00. Change orders of the object (statuses proposed → priced → sent → signed, or rejected); the foreman sees them without prices.
+     */
+    get: operations['listChangeOrders'];
+    put?: never;
+    /**
+     * Propose a change order (without prices)
+     * @description W6.00 (prototype proposeChange). The foreman describes the work, volume, unit, comment and photos (≥ 1); prices are never shown to him. Violations: title «Опишите, что нужно сделать», quantity «Укажите объём больше нуля», photoFileIds «Приложите хотя бы одно фото». A draft object («До договора допработ нет: правки вносятся новой версией сметы») and a handed-over object — 409 change_order_closed. Event repairs.change_order.proposed.v1.
+     */
+    post: operations['proposeChangeOrder'];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/v1/tenants/{tenantId}/repairs/change-orders/{changeOrderId}/reject': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+        /** @description W6.00. Opaque UUID of a change order (допработа). */
+        changeOrderId: components['parameters']['changeOrderId'];
+      };
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /**
+     * Reject a change order with a reason
+     * @description W6.00 (prototype setChange reject). Reject with one of four reasons; the foreman sees the reason. A signed or already rejected change order — 409 change_order_closed («Допработа … уже подписана/отклонена»). If-Match — ChangeOrder.revision. Only with repairs.estimates.edit. Event repairs.change_order.rejected.v1.
+     */
+    post: operations['rejectChangeOrder'];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/v1/tenants/{tenantId}/repairs/projects/{projectId}/measurement': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+        /** @description W6.00 (0.12.0-stage6). Opaque UUID of a repair object (repairs.projects); an object the member may not see — 404, as a missing one. */
+        projectId: components['parameters']['repairProjectId'];
+      };
+      cookie?: never;
+    };
+    /**
+     * Read the measurement of an object
+     * @description W6.00. The measurement of the object: rooms (length, width, height, openings) and totals of floor and walls; the sums of wet rooms are separate.
+     */
+    get: operations['getMeasurement'];
+    /**
+     * Save a new version of the measurement
+     * @description W6.00 (Q-W4.00-repair-17). Save a new measurement version. A draft estimate is recalculated (lines «из замера» only, a manually changed volume is kept); sent and approved versions are never changed. Allowed until the object is handed over (project_handed_over). If-Match — Measurement.revision.
+     */
+    put: operations['putMeasurement'];
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/v1/tenants/{tenantId}/repairs/projects/{projectId}/estimates': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+        /** @description W6.00 (0.12.0-stage6). Opaque UUID of a repair object (repairs.projects); an object the member may not see — 404, as a missing one. */
+        projectId: components['parameters']['repairProjectId'];
+      };
+      cookie?: never;
+    };
+    /**
+     * List estimate versions of an object
+     * @description W6.00. Versions of the estimate of the object (only with repairs.finance.read).
+     */
+    get: operations['listEstimates'];
+    put?: never;
+    /**
+     * Create a draft revision or additional agreement from the current version
+     * @description W6.00. Create a draft revision (before the contract) or an additional agreement (after it, kind change) from the current version; changeOrderIds are put into the section «Допработы · ДР-N» and become priced. While an agreement is with the client — 409 agreement_pending; a draft already exists — 409 estimate_draft_exists.
+     */
+    post: operations['createEstimateRevision'];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/v1/tenants/{tenantId}/repairs/projects/{projectId}/estimates/{version}': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+        /** @description W6.00 (0.12.0-stage6). Opaque UUID of a repair object (repairs.projects); an object the member may not see — 404, as a missing one. */
+        projectId: components['parameters']['repairProjectId'];
+        /** @description W6.00. Number of an estimate version of the object (1, 2, …). */
+        version: components['parameters']['estimateVersion'];
+      };
+      cookie?: never;
+    };
+    /**
+     * Read an estimate version
+     * @description W6.00. One version of the estimate: sections, lines, discount, total, state.
+     */
+    get: operations['getEstimate'];
+    put?: never;
+    post?: never;
+    /**
+     * Delete a draft estimate; its change orders return to proposed
+     * @description W6.00. Delete a draft; its change orders return to proposed. Only a draft (estimate_version_locked for others). If-Match — Estimate.revision.
+     */
+    delete: operations['deleteEstimateDraft'];
+    options?: never;
+    head?: never;
+    /**
+     * Change lines, sections and discount of a draft estimate
+     * @description W6.00. Change a draft in one batch: sections, lines from the price list, volume (manual from then on) or price, «вернуть из замера» (resetLineIds), removal, discount (any editor may give it). A sent or approved version — 409 estimate_version_locked. If-Match — Estimate.revision.
+     */
+    patch: operations['updateEstimateDraft'];
+    trace?: never;
+  };
+  '/api/v1/tenants/{tenantId}/repairs/projects/{projectId}/estimate-drafts': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+        /** @description W6.00 (0.12.0-stage6). Opaque UUID of a repair object (repairs.projects); an object the member may not see — 404, as a missing one. */
+        projectId: components['parameters']['repairProjectId'];
+      };
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /**
+     * Build the first draft estimate from a template and the measurement
+     * @description W6.00. Build the first draft (version 1) from a template and the measurement: volumes by the formulas, prices of the price list on the date of the build. If a draft or a sent version exists — 409 estimate_draft_exists. Only for an object without an approved version.
+     */
+    post: operations['createEstimateFromTemplate'];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/v1/tenants/{tenantId}/repairs/projects/{projectId}/estimates/{version}/send': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+        /** @description W6.00 (0.12.0-stage6). Opaque UUID of a repair object (repairs.projects); an object the member may not see — 404, as a missing one. */
+        projectId: components['parameters']['repairProjectId'];
+        /** @description W6.00. Number of an estimate version of the object (1, 2, …). */
+        version: components['parameters']['estimateVersion'];
+      };
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /**
+     * Send the estimate to the client cabinet (fixes the volumes)
+     * @description W6.00. Send the version to the client cabinet: volumes are fixed; change orders of an agreement become sent; a document of the agreement appears in the documents. If-Match — Estimate.revision; sent already — estimate_version_locked.
+     */
+    post: operations['sendEstimate'];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/v1/tenants/{tenantId}/repairs/projects/{projectId}/estimates/{version}/recall': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+        /** @description W6.00 (0.12.0-stage6). Opaque UUID of a repair object (repairs.projects); an object the member may not see — 404, as a missing one. */
+        projectId: components['parameters']['repairProjectId'];
+        /** @description W6.00. Number of an estimate version of the object (1, 2, …). */
+        version: components['parameters']['estimateVersion'];
+      };
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /**
+     * Recall a sent estimate to edit it again
+     * @description W6.00. Recall a sent version (until the client approves it): the draft is editable again, change orders return to priced. An approved version — 409 estimate_version_locked.
+     */
+    post: operations['recallEstimate'];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/v1/tenants/{tenantId}/repairs/projects/{projectId}/estimates/{version}/diff': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+        /** @description W6.00 (0.12.0-stage6). Opaque UUID of a repair object (repairs.projects); an object the member may not see — 404, as a missing one. */
+        projectId: components['parameters']['repairProjectId'];
+        /** @description W6.00. Number of an estimate version of the object (1, 2, …). */
+        version: components['parameters']['estimateVersion'];
+      };
+      cookie?: never;
+    };
+    /**
+     * Compare two estimate versions by the id of the line
+     * @description W6.00. Compare version `version` with `to` by the id of the line: added, removed, changed (volume and price), same; a replaced position is «removed» plus «added». Only with repairs.finance.read.
+     */
+    get: operations['diffEstimates'];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/v1/tenants/{tenantId}/repairs/projects/{projectId}/save-as-template': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+        /** @description W6.00 (0.12.0-stage6). Opaque UUID of a repair object (repairs.projects); an object the member may not see — 404, as a missing one. */
+        projectId: components['parameters']['repairProjectId'];
+      };
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /**
+     * Save the current estimate of an object as a template
+     * @description W6.00. Save the lines of the current version with the formulas and the other parts of the source template as a new own template (source own).
+     */
+    post: operations['saveProjectAsTemplate'];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/v1/tenants/{tenantId}/repairs/price-items': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+      };
+      cookie?: never;
+    };
+    /**
+     * List price list items
+     * @description W6.00. The price list: works and materials with section, unit and price; usedInTemplates — in how many templates the item is used. q — search by name, kind — work or material.
+     */
+    get: operations['listPriceItems'];
+    put?: never;
+    /**
+     * Add a price list item
+     * @description W6.00. Add an item. Violations of the prototype: name «Укажите название позиции», price «Укажите цену больше нуля»; a duplicate name — 422 validation_failed, reason price_item_duplicate («Такая позиция уже есть в справочнике»). Event repairs.price_item.changed.v1.
+     */
+    post: operations['createPriceItem'];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/v1/tenants/{tenantId}/repairs/price-items/{priceItemId}': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+        /** @description W6.00. Opaque UUID of a price list item. */
+        priceItemId: components['parameters']['priceItemId'];
+      };
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    /**
+     * Change a price list item (new prices reach only new drafts)
+     * @description W6.00. Change the price or the attributes. A new price reaches only new drafts and lines added from the price list afterwards; sent and approved versions do not change. If-Match — PriceItem.revision.
+     */
+    patch: operations['updatePriceItem'];
+    trace?: never;
+  };
+  '/api/v1/tenants/{tenantId}/repairs/templates': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+      };
+      cookie?: never;
+    };
+    /**
+     * List object templates
+     * @description W6.00. Object templates (Ortus copies are made in the organization when the module is connected, design/docs/19; own templates). Without a template a draft estimate cannot be built.
+     */
+    get: operations['listTemplates'];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/v1/tenants/{tenantId}/repairs/templates/{templateId}': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+        /** @description W6.00. Opaque UUID of an object template. */
+        templateId: components['parameters']['templateId'];
+      };
+      cookie?: never;
+    };
+    /**
+     * Read an object template
+     * @description W6.00. One template with six parts: lines and formulas, technology of the schedule, documents, checklist of acceptance, materials for supply, warranty.
+     */
+    get: operations['getTemplate'];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    /**
+     * Change lines, formulas and parts of a template
+     * @description W6.00. Change a template of the organization; it does not change objects and estimates already created. If-Match — Template.revision. Event repairs.template.saved.v1.
+     */
+    patch: operations['updateTemplate'];
+    trace?: never;
+  };
+  '/api/v1/tenants/{tenantId}/repairs/templates/{templateId}/copy': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+        /** @description W6.00. Opaque UUID of an object template. */
+        templateId: components['parameters']['templateId'];
+      };
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /**
+     * Copy a template
+     * @description W6.00. Copy any template into an own template.
+     */
+    post: operations['copyTemplate'];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/v1/tenants/{tenantId}/repairs/projects/{projectId}/schedule': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+        /** @description W6.00 (0.12.0-stage6). Opaque UUID of a repair object (repairs.projects); an object the member may not see — 404, as a missing one. */
+        projectId: components['parameters']['repairProjectId'];
+      };
+      cookie?: never;
+    };
+    /**
+     * Read the schedule: stages, links, baseline, forecast
+     * @description W6.00. Stages, links, the baseline, the forecast, slack and issues; without sums. The foreman sees the stages of his object, a subcontractor — only his own.
+     */
+    get: operations['getSchedule'];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/v1/tenants/{tenantId}/repairs/projects/{projectId}/schedule/from-estimate': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+        /** @description W6.00 (0.12.0-stage6). Opaque UUID of a repair object (repairs.projects); an object the member may not see — 404, as a missing one. */
+        projectId: components['parameters']['repairProjectId'];
+      };
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /**
+     * Build the schedule from the sections of an estimate and the technology of the template
+     * @description W6.00 (Q-W4.00-repair-19). Build the stages from the sections of an estimate version by the technology of the template. The foreman checks the draft, the owner approves it with the contract. Requires an approved version — repair_estimate_not_approved.
+     */
+    post: operations['createScheduleFromEstimate'];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/v1/tenants/{tenantId}/repairs/projects/{projectId}/schedule/preview': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+        /** @description W6.00 (0.12.0-stage6). Opaque UUID of a repair object (repairs.projects); an object the member may not see — 404, as a missing one. */
+        projectId: components['parameters']['repairProjectId'];
+      };
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /**
+     * Preview a move without saving
+     * @description W6.00. Consequences of a change without saving (no record): moved stages, the forecast of the hand-over and who gets the notification.
+     */
+    post: operations['previewScheduleChange'];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/v1/tenants/{tenantId}/repairs/projects/{projectId}/schedule/changes': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+        /** @description W6.00 (0.12.0-stage6). Opaque UUID of a repair object (repairs.projects); an object the member may not see — 404, as a missing one. */
+        projectId: components['parameters']['repairProjectId'];
+      };
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /**
+     * Save a move with a reason and notify
+     * @description W6.00. Save a move: the start offset, the duration or the pause of a stage with a reason (required: validation_failed, reason schedule_reason_required). A started or done stage is not moved — 409 invalid_transition, reason schedule_stage_locked. If-Match — Schedule.revision. Notifications go through the outbox to the executors of the affected stages and to the client when the due date changes. Event repairs.schedule.changed.v1.
+     */
+    post: operations['applyScheduleChange'];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/v1/tenants/{tenantId}/repairs/projects/{projectId}/schedule/stages/{stageId}': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+        /** @description W6.00 (0.12.0-stage6). Opaque UUID of a repair object (repairs.projects); an object the member may not see — 404, as a missing one. */
+        projectId: components['parameters']['repairProjectId'];
+        /** @description W6.00. Opaque UUID of a schedule stage. */
+        stageId: components['parameters']['stageId'];
+      };
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    /**
+     * Change the executor of a stage
+     * @description W6.00 (Q-W4.00-repair-20). Change the executor of a stage without a reason; the change is written to the history and the executor is notified. If-Match — Schedule.revision.
+     */
+    patch: operations['setScheduleStageExecutor'];
+    trace?: never;
+  };
+  '/api/v1/tenants/{tenantId}/repairs/projects/{projectId}/schedule/baselines': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+        /** @description W6.00 (0.12.0-stage6). Opaque UUID of a repair object (repairs.projects); an object the member may not see — 404, as a missing one. */
+        projectId: components['parameters']['repairProjectId'];
+      };
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /**
+     * Fix a new baseline by an additional agreement
+     * @description W6.00. Fix a new baseline by an additional agreement (the due date by the contract changes only this way). If-Match — Schedule.revision. Event repairs.schedule.baseline_set.v1.
+     */
+    post: operations['createScheduleBaseline'];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/v1/tenants/{tenantId}/repairs/projects/{projectId}/hand-over': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+        /** @description W6.00 (0.12.0-stage6). Opaque UUID of a repair object (repairs.projects); an object the member may not see — 404, as a missing one. */
+        projectId: components['parameters']['repairProjectId'];
+      };
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /**
+     * Hand the object over: warranty, new marks and change orders are closed
+     * @description W6.00 (Q-W4.00-repair-21). Hand the object over after the signed «Акт сдачи объекта»: status handed_over, warranty from the passport of the template. New marks and change orders are closed afterwards (project_handed_over); a not signed act — repair_act_not_signed. If-Match — RepairProject.revision. Event repairs.object.handed_over.v1.
+     */
+    post: operations['handOverRepairProject'];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/v1/tenants/{tenantId}/repairs/projects/{projectId}/documents': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+        /** @description W6.00 (0.12.0-stage6). Opaque UUID of a repair object (repairs.projects); an object the member may not see — 404, as a missing one. */
+        projectId: components['parameters']['repairProjectId'];
+      };
+      cookie?: never;
+    };
+    /**
+     * List documents of an object (amounts only with repairs.finance.read)
+     * @description W6.00. Documents of the object (contract, agreements, acts, invoices): status draft, wait, sms, signed, paid. Amounts only with repairs.finance.read.
+     */
+    get: operations['listRepairDocuments'];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/v1/tenants/{tenantId}/repairs/documents/{documentId}/sign-requests': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+        /** @description W6.00. Opaque UUID of a document of an object (contract, act, invoice). */
+        documentId: components['parameters']['documentId'];
+      };
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /**
+     * Send the document to the client for the signature by an SMS code
+     * @description W6.00 (SMS provider decision pending, Q-W4.00-repair-11). draft → sms: send the SMS code to the client through the code delivery port (stub; on a stand the code goes to the developer inbox). The code is never returned. Not a draft — reason repair_document_state. Event repairs.document.sign_requested.v1.
+     */
+    post: operations['requestDocumentSignature'];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/v1/tenants/{tenantId}/repairs/supply-requests': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+      };
+      cookie?: never;
+    };
+    /**
+     * List supply requests of all visible objects
+     * @description W6.00. Requests of all visible objects (the foreman — his own). State: request → reserved → issued, or request → ordered → bought, then used. Cost — only with repairs.supply.manage.
+     */
+    get: operations['listSupplyRequests'];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/v1/tenants/{tenantId}/repairs/projects/{projectId}/supply-requests': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+        /** @description W6.00 (0.12.0-stage6). Opaque UUID of a repair object (repairs.projects); an object the member may not see — 404, as a missing one. */
+        projectId: components['parameters']['repairProjectId'];
+      };
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /**
+     * Ask for a material (foreman)
+     * @description W6.00 (Q-W4.00-repair-6). The foreman asks for a material of the price list with the date «Нужно к». Event repairs.supply_request.created.v1.
+     */
+    post: operations['createSupplyRequest'];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/v1/tenants/{tenantId}/repairs/supply-requests/{supplyRequestId}/reserve': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+        /** @description W6.00. Opaque UUID of a supply request. */
+        supplyRequestId: components['parameters']['supplyRequestId'];
+      };
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /**
+     * Decide «со склада»: reserve on a warehouse
+     * @description W6.00. «Выдать со склада»: reserve on a warehouse; a request not in state request — reason repair_supply_state; not enough free stock — reason repair_stock_insufficient. If-Match — SupplyRequest.revision.
+     */
+    post: operations['reserveSupplyRequest'];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/v1/tenants/{tenantId}/repairs/supply-requests/{supplyRequestId}/issue': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+        /** @description W6.00. Opaque UUID of a supply request. */
+        supplyRequestId: components['parameters']['supplyRequestId'];
+      };
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /**
+     * Issue a reserved request from the warehouse (storekeeper)
+     * @description W6.00. The storekeeper issues the reserved material: the movement issue at the average price, the cost goes to the expenses of the object. If-Match — SupplyRequest.revision.
+     */
+    post: operations['issueSupplyRequest'];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/v1/tenants/{tenantId}/repairs/supply-requests/{supplyRequestId}/consume': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+        /** @description W6.00. Opaque UUID of a supply request. */
+        supplyRequestId: components['parameters']['supplyRequestId'];
+      };
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /**
+     * Write the material off to the object
+     * @description W6.00 (Q-W4.00-repair-7). Write the material off to the work: the movement use of the module «Склад». If-Match — SupplyRequest.revision.
+     */
+    post: operations['consumeSupplyRequest'];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/v1/tenants/{tenantId}/repairs/purchases': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+      };
+      cookie?: never;
+    };
+    /**
+     * List purchases
+     * @description W6.00. Purchases: ordered and received.
+     */
+    get: operations['listPurchases'];
+    put?: never;
+    /**
+     * Order one purchase for several requests
+     * @description W6.00. One purchase for several requests and objects: supplier and prices (the default — Q-W4.00-repair-23). The requests become ordered. Event repairs.purchase.ordered.v1.
+     */
+    post: operations['createPurchase'];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/v1/tenants/{tenantId}/repairs/purchases/{purchaseId}/receive': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+        /** @description W6.00. Opaque UUID of a purchase. */
+        purchaseId: components['parameters']['purchaseId'];
+      };
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /**
+     * Receive a purchase by the receipt QR and spread the cost over the objects
+     * @description W6.00. Receive the purchase by the receipt QR: movements buy to the objects, requests become bought, the cost is spread over the objects. A received purchase — reason repair_purchase_state. If-Match — Purchase.revision. Event repairs.purchase.received.v1.
+     */
+    post: operations['receivePurchase'];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/v1/tenants/{tenantId}/repairs/project-stock': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+      };
+      cookie?: never;
+    };
+    /**
+     * List the stock on objects
+     * @description W6.00. The stock on objects (a warehouse of type object of the module «Склад»).
+     */
+    get: operations['listProjectStock'];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/v1/tenants/{tenantId}/repairs/projects/{projectId}/stock/return': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+        /** @description W6.00 (0.12.0-stage6). Opaque UUID of a repair object (repairs.projects); an object the member may not see — 404, as a missing one. */
+        projectId: components['parameters']['repairProjectId'];
+      };
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /**
+     * Return the stock of an object to a warehouse
+     * @description W6.00. Return the stock of an object to a warehouse: the expenses of the object decrease, the average price of the warehouse is recalculated. More than there is — reason repair_stock_insufficient. Event repairs.project_stock.returned.v1.
+     */
+    post: operations['returnProjectStock'];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/v1/tenants/{tenantId}/repairs/projects/{projectId}/stock/transfer': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+        /** @description W6.00 (0.12.0-stage6). Opaque UUID of a repair object (repairs.projects); an object the member may not see — 404, as a missing one. */
+        projectId: components['parameters']['repairProjectId'];
+      };
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /**
+     * Move the stock of an object to another object
+     * @description W6.00. Move the stock to another object: the cost moves, a request for the same material at the target decreases or closes. Event repairs.project_stock.transferred.v1.
+     */
+    post: operations['transferProjectStock'];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/v1/tenants/{tenantId}/repairs/projects/{projectId}/finance': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+        /** @description W6.00 (0.12.0-stage6). Opaque UUID of a repair object (repairs.projects); an object the member may not see — 404, as a missing one. */
+        projectId: components['parameters']['repairProjectId'];
+      };
+      cookie?: never;
+    };
+    /**
+     * Read the finance of an object
+     * @description W6.00. Contract, received, expenses, planned margin and the movement of money of the object (only with repairs.finance.read).
+     */
+    get: operations['getProjectFinance'];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/v1/tenants/{tenantId}/repairs/projects/{projectId}/accruals': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+        /** @description W6.00 (0.12.0-stage6). Opaque UUID of a repair object (repairs.projects); an object the member may not see — 404, as a missing one. */
+        projectId: components['parameters']['repairProjectId'];
+      };
+      cookie?: never;
+    };
+    /**
+     * List crew accruals of an object
+     * @description W6.00. Accruals of the crew by acts: pending_act, accrued, proposed, paid.
+     */
+    get: operations['listCrewAccruals'];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/v1/tenants/{tenantId}/repairs/acts/{documentId}/accruals': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+        /** @description W6.00. Opaque UUID of a document of an object (contract, act, invoice). */
+        documentId: components['parameters']['documentId'];
+      };
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /**
+     * Accrue the crew by a signed act
+     * @description W6.00. Accrue by a signed act of the client; before the signature — 409 invalid_transition, reason repair_act_not_signed («Начисление откроется после подписания акта …»). Event repairs.crew_accrual.created.v1.
+     */
+    post: operations['accrueByAct'];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/v1/tenants/{tenantId}/repairs/accruals/payout': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+      };
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /**
+     * Propose the payout of accruals to the cash
+     * @description W6.00 (Q-W4.00-repair-12). Create a proposal of a cash operation (W5.31) for accrued items; the payment is posted by the cashier. Event repairs.crew_accrual.paid.v1 after posting.
+     */
+    post: operations['payoutAccruals'];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/v1/tenants/{tenantId}/repairs/projects/{projectId}/subcontractors': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+        /** @description W6.00 (0.12.0-stage6). Opaque UUID of a repair object (repairs.projects); an object the member may not see — 404, as a missing one. */
+        projectId: components['parameters']['repairProjectId'];
+      };
+      cookie?: never;
+    };
+    /**
+     * List subcontractors of an object
+     * @description W6.00. Subcontractors of the object: temporary access to one object with a term.
+     */
+    get: operations['listSubcontractors'];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/v1/tenants/{tenantId}/repairs/projects/{projectId}/subcontractors/{subcontractorId}': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+        /** @description W6.00 (0.12.0-stage6). Opaque UUID of a repair object (repairs.projects); an object the member may not see — 404, as a missing one. */
+        projectId: components['parameters']['repairProjectId'];
+        /** @description W6.00. Opaque UUID of a subcontractor of the object. */
+        subcontractorId: components['parameters']['subcontractorId'];
+      };
+      cookie?: never;
+    };
+    get?: never;
+    /**
+     * Open or close the temporary access of a subcontractor
+     * @description W6.00 (Q-W4.00-repair-13). Open the access until a date or close it; the subcontractor is a member with the role «Подрядчик» scoped to the object. Events repairs.subcontractor.access_granted/revoked.v1.
+     */
+    put: operations['setSubcontractorAccess'];
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/v1/tenants/{tenantId}/repairs/projects/{projectId}/client-link': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+        /** @description W6.00 (0.12.0-stage6). Opaque UUID of a repair object (repairs.projects); an object the member may not see — 404, as a missing one. */
+        projectId: components['parameters']['repairProjectId'];
+      };
+      cookie?: never;
+    };
+    /**
+     * Read the state of the client cabinet link
+     * @description W6.00. The state of the link of the client cabinet: sent, valid until, revoked.
+     */
+    get: operations['getClientLink'];
+    put?: never;
+    /**
+     * Issue a new client cabinet link
+     * @description W6.00. Issue a link (the previous one stops working). The token is returned once inside the URL; the database keeps only the hash; it lives until the object is handed over. Event repairs.client_link.issued.v1.
+     */
+    post: operations['issueClientLink'];
+    /**
+     * Revoke the client cabinet link
+     * @description W6.00. Revoke the link in one click: the old URL answers 410 public_token_expired. Event repairs.client_link.revoked.v1.
+     */
+    delete: operations['revokeClientLink'];
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/v1/public/client/{clientToken}': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        /** @description W6.00. Unpredictable revocable capability of the client cabinet (Q-W4.00-repair-10): the tenant is resolved by the token digest; only the hash is stored; the link lives until the object is handed over. Avoid logs and referrer leakage. */
+        clientToken: components['parameters']['clientToken'];
+      };
+      cookie?: never;
+    };
+    /**
+     * Read the client cabinet by the link
+     * @description W6.00 (Q-W4.00-repair-10). The cabinet by the personal link without registration: readiness by closed acts, stages, photos of accepted marks, documents, paid. A revoked or expired link — 410 public_token_expired.
+     */
+    get: operations['getClientCabinet'];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/v1/public/client/{clientToken}/estimates/{version}/approve': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        /** @description W6.00. Unpredictable revocable capability of the client cabinet (Q-W4.00-repair-10): the tenant is resolved by the token digest; only the hash is stored; the link lives until the object is handed over. Avoid logs and referrer leakage. */
+        clientToken: components['parameters']['clientToken'];
+        /** @description W6.00. Number of an estimate version of the object (1, 2, …). */
+        version: components['parameters']['estimateVersion'];
+      };
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /**
+     * Approve the sent estimate version
+     * @description W6.00. The client approves the sent version: approved, the previous one becomes replaced. A version that was not sent — 409 invalid_transition. Event repairs.estimate.approved.v1.
+     */
+    post: operations['approveEstimateByClient'];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/v1/public/client/{clientToken}/documents/{documentId}/sign': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        /** @description W6.00. Unpredictable revocable capability of the client cabinet (Q-W4.00-repair-10): the tenant is resolved by the token digest; only the hash is stored; the link lives until the object is handed over. Avoid logs and referrer leakage. */
+        clientToken: components['parameters']['clientToken'];
+        /** @description W6.00. Opaque UUID of a document of an object (contract, act, invoice). */
+        documentId: components['parameters']['documentId'];
+      };
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /**
+     * Sign a document by the SMS code
+     * @description W6.00 (SMS provider decision pending). Sign by the SMS code: a wrong code — 422 validation_failed, reason sms_code_invalid; an expired one — sms_code_expired. After the signature of an agreement the version acts and the work appears in the volumes. Event repairs.document.signed.v1.
+     */
+    post: operations['signDocumentByClient'];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -7139,6 +8456,38 @@ export interface components {
       items: components['schemas']['CashTransfer'][];
       nextCursor: string | null;
     };
+    ChangeOrder: {
+      id: components['schemas']['Id'];
+      projectId: components['schemas']['Id'];
+      number: string;
+      title: string;
+      quantity: components['schemas']['Quantity'];
+      unit: components['schemas']['RepairUnit'];
+      note: string;
+      photoFileIds: components['schemas']['Id'][];
+      /** @enum {string} */
+      status: 'proposed' | 'priced' | 'sent' | 'signed' | 'rejected';
+      createdAt: components['schemas']['Instant'];
+      /** Format: int64 */
+      revision: number;
+      rejectReason?: components['schemas']['RepairRejectReason'];
+      agreementNo?: number;
+      estimateVersion?: number;
+    };
+    /** @description The foreman describes the work without prices. «Опишите, что нужно сделать», «Укажите объём больше нуля», «Приложите хотя бы одно фото»; no change orders before the contract (draft object) and on a handed-over object — change_order_closed. */
+    ChangeOrderCreate: {
+      title: string;
+      quantity: components['schemas']['Quantity'];
+      unit: components['schemas']['RepairUnit'];
+      photoFileIds: components['schemas']['Id'][];
+      note?: string;
+    };
+    ChangeOrderList: {
+      items: components['schemas']['ChangeOrder'][];
+    };
+    ChangeOrderReject: {
+      reason: components['schemas']['RepairRejectReason'];
+    };
     ChoiceOption: {
       key: string;
       label: string;
@@ -7153,6 +8502,51 @@ export interface components {
       /** @description W4.05 (0.11.0-stage4). «Другое — свой вариант» of a question with FormQuestion.otherOption — the text of the respondent; value then carries the key other. */
       otherText?: string;
     };
+    ClientCabinet: {
+      projectName: string;
+      address: string;
+      clientName: string;
+      readinessPct: number;
+      stages: {
+        name: string;
+        /** @enum {string} */
+        state: 'done' | 'started' | 'planned';
+      }[];
+      photos: {
+        fileId: components['schemas']['Id'];
+        /** Format: date */
+        date: string;
+      }[];
+      documents: components['schemas']['RepairDocument'][];
+      paid: components['schemas']['Money'];
+      contract: components['schemas']['Money'];
+      estimate?: {
+        version: number;
+        /** @enum {string} */
+        state: 'draft' | 'sent' | 'approved' | 'replaced';
+        total: components['schemas']['Money'];
+      };
+    };
+    ClientEstimateApproval: {
+      version: number;
+      /** @enum {string} */
+      state: 'draft' | 'sent' | 'approved' | 'replaced';
+    };
+    ClientLink: {
+      active: boolean;
+      sentAt?: components['schemas']['Instant'];
+      expiresAt?: components['schemas']['Instant'];
+      revokedAt?: components['schemas']['Instant'];
+      sentTo?: string;
+    };
+    /** @description The URL with the token is returned once; the database keeps only the token hash. The link lives until the object is handed over (Q-W4.00-repair-10). */
+    ClientLinkIssued: {
+      link: components['schemas']['ClientLink'];
+      url: string;
+    };
+    ClientSign: {
+      smsCode: string;
+    };
     ConsumptionOverride: {
       itemId: components['schemas']['Id'];
       actualQuantity: components['schemas']['Quantity'];
@@ -7164,6 +8558,22 @@ export interface components {
       quantity: components['schemas']['Quantity'];
       /** @enum {string} */
       unit: 'ml' | 'g' | 'piece';
+    };
+    CrewAccrual: {
+      id: components['schemas']['Id'];
+      projectId: components['schemas']['Id'];
+      workerId: components['schemas']['Id'];
+      workerName: string;
+      role: string;
+      amount: components['schemas']['Money'];
+      /** @enum {string} */
+      state: 'pending_act' | 'accrued' | 'proposed' | 'paid';
+      selfEmployed: boolean;
+      actId?: components['schemas']['Id'];
+      work?: string;
+    };
+    CrewAccrualList: {
+      items: components['schemas']['CrewAccrual'][];
     };
     /** @description Valid until the session ends or expiresAt; never stored in localStorage or URLs. */
     CsrfToken: {
@@ -7649,6 +9059,97 @@ export interface components {
       /** Format: int64 */
       value: number;
       validUntil?: components['schemas']['Instant'];
+    };
+    /** @description Version of the estimate (repairs.finance.read). Sent and approved versions are locked (estimate_version_locked); an approved one is replaced only by a new version (before the contract) or an additional agreement (after it). */
+    Estimate: {
+      projectId: components['schemas']['Id'];
+      version: number;
+      /** @enum {string} */
+      kind: 'first' | 'revision' | 'change';
+      /** @enum {string} */
+      state: 'draft' | 'sent' | 'approved' | 'replaced';
+      sections: components['schemas']['EstimateSection'][];
+      lines: components['schemas']['EstimateLine'][];
+      discountPct: number;
+      total: components['schemas']['Money'];
+      changeOrderIds: components['schemas']['Id'][];
+      /** Format: int64 */
+      revision: number;
+      baseVersion?: number;
+      templateId?: components['schemas']['Id'];
+      agreementNo?: number;
+      sentAt?: components['schemas']['Instant'];
+      approvedAt?: components['schemas']['Instant'];
+    };
+    EstimateDiff: {
+      projectId: components['schemas']['Id'];
+      from: number;
+      to: number;
+      rows: components['schemas']['EstimateDiffRow'][];
+      totalFrom: components['schemas']['Money'];
+      totalTo: components['schemas']['Money'];
+      delta: components['schemas']['RepairMoneyDelta'];
+    };
+    EstimateDiffRow: {
+      /** @enum {string} */
+      change: 'added' | 'removed' | 'changed' | 'same';
+      name: string;
+      lineId?: components['schemas']['Id'];
+      quantityA?: components['schemas']['Quantity'];
+      quantityB?: components['schemas']['Quantity'];
+      priceA?: components['schemas']['Money'];
+      priceB?: components['schemas']['Money'];
+      delta: components['schemas']['RepairMoneyDelta'];
+    };
+    EstimateDraftPatch: {
+      addSections?: string[];
+      addLines?: components['schemas']['EstimateLineAdd'][];
+      lines?: components['schemas']['EstimateLinePatch'][];
+      removeLineIds?: components['schemas']['Id'][];
+      resetLineIds?: components['schemas']['Id'][];
+      discountPct?: number;
+    };
+    EstimateFromTemplate: {
+      templateId: components['schemas']['Id'];
+    };
+    /** @description id is the stable key of the line between versions of the estimate (repairs.estimate_lines.line_key): a new version copies the lines with the same id and diffEstimates matches them by it; replacing a price list item is «убрано» plus «добавлено». */
+    EstimateLine: {
+      id: components['schemas']['Id'];
+      sectionId: components['schemas']['Id'];
+      name: string;
+      unit: components['schemas']['RepairUnit'];
+      /** @enum {string} */
+      kind: 'work' | 'material';
+      price: components['schemas']['Money'];
+      quantity: components['schemas']['Quantity'];
+      sum: components['schemas']['Money'];
+      manual: boolean;
+      isNew: boolean;
+      priceItemId?: components['schemas']['Id'];
+      formula?: string;
+      coef?: components['schemas']['Quantity'];
+    };
+    EstimateLineAdd: {
+      sectionId: components['schemas']['Id'];
+      priceItemId: components['schemas']['Id'];
+      quantity?: components['schemas']['Quantity'];
+    };
+    EstimateLinePatch: {
+      id: components['schemas']['Id'];
+      quantity?: components['schemas']['Quantity'];
+      price?: components['schemas']['Money'];
+    };
+    EstimateList: {
+      items: components['schemas']['Estimate'][];
+    };
+    EstimateRevisionCreate: {
+      /** @enum {string} */
+      kind: 'revision' | 'change';
+      changeOrderIds?: components['schemas']['Id'][];
+    };
+    EstimateSection: {
+      id: components['schemas']['Id'];
+      name: string;
     };
     /** @description A category of driver expenses of the tenant (fleet.expense_categories, tenant 0015). Fines are not driver expenses (D-12 комплекта) and are not a category. */
     ExpenseCategory: {
@@ -9690,6 +11191,44 @@ export interface components {
       /** Format: uuid */
       lastTenantId?: string | null;
     };
+    Measurement: {
+      projectId: components['schemas']['Id'];
+      version: number;
+      rooms: components['schemas']['MeasurementRoom'][];
+      totals: components['schemas']['MeasurementTotals'];
+      /** Format: int64 */
+      revision: number;
+      measuredAt?: components['schemas']['Instant'];
+      measuredByMemberId?: components['schemas']['Id'];
+    };
+    /** @description A new measurement version; a draft estimate is recalculated (lines «из замера»), sent and approved versions are never changed (Q-W4.00-repair-17). */
+    MeasurementPut: {
+      rooms: components['schemas']['MeasurementRoomInput'][];
+    };
+    MeasurementRoom: {
+      id: components['schemas']['Id'];
+      name: string;
+      lengthM: components['schemas']['Quantity'];
+      widthM: components['schemas']['Quantity'];
+      heightM: components['schemas']['Quantity'];
+      openingsM2: components['schemas']['Quantity'];
+      wet?: boolean;
+    };
+    MeasurementRoomInput: {
+      name: string;
+      lengthM: components['schemas']['Quantity'];
+      widthM: components['schemas']['Quantity'];
+      heightM: components['schemas']['Quantity'];
+      openingsM2: components['schemas']['Quantity'];
+      wet?: boolean;
+    };
+    MeasurementTotals: {
+      floorM2: components['schemas']['Quantity'];
+      wallsM2: components['schemas']['Quantity'];
+      perimeterM: components['schemas']['Quantity'];
+      wetFloorM2: components['schemas']['Quantity'];
+      wetWallsM2: components['schemas']['Quantity'];
+    };
     Member: {
       id: components['schemas']['Id'];
       userId?: components['schemas']['Id'];
@@ -9965,6 +11504,14 @@ export interface components {
       /** @description E-mail of the target member typed by the owner; compared case-insensitively. */
       confirmation: string;
       reason: string;
+    };
+    PayoutRequest: {
+      accrualIds: components['schemas']['Id'][];
+    };
+    /** @description The payout creates a proposal of a cash operation (W5.31, Q-W4.00-repair-12); the payment itself is posted by the cashier. No integration with «Мой налог» — accounting only. */
+    PayoutResult: {
+      proposalId: components['schemas']['Id'];
+      accruals: components['schemas']['CrewAccrual'][];
     };
     /** @description Preview and result of a CSV import of people (S1-10). The raw file is not stored; rows keep only parsed values and errors. Personal data is minimised (152-FZ). An uncommitted preview is deleted with its rows after expiresAt (24 hours). After commit the parsed rows are kept for 30 days for the result view, then deleted; the import keeps fileName, totals and the audit trail, rows becomes empty and rowsPurgedAt is set. */
     PeopleImport: {
@@ -10383,6 +11930,39 @@ export interface components {
       items: components['schemas']['PriceBookVersion'][];
       nextCursor: string | null;
     };
+    PriceItem: {
+      id: components['schemas']['Id'];
+      section: string;
+      name: string;
+      unit: components['schemas']['RepairUnit'];
+      /** @enum {string} */
+      kind: 'work' | 'material';
+      price: components['schemas']['Money'];
+      usedInTemplates: number;
+      archived: boolean;
+      /** Format: int64 */
+      revision: number;
+    };
+    PriceItemCreate: {
+      section: string;
+      name: string;
+      unit: components['schemas']['RepairUnit'];
+      /** @enum {string} */
+      kind: 'work' | 'material';
+      price: components['schemas']['Money'];
+    };
+    /** @description Opaque cursor is bound to tenant, principal, effective scopes, filters and sort. */
+    PriceItemPage: {
+      items: components['schemas']['PriceItem'][];
+      nextCursor: string | null;
+    };
+    PriceItemPatch: {
+      section?: string;
+      name?: string;
+      unit?: components['schemas']['RepairUnit'];
+      price?: components['schemas']['Money'];
+      archived?: boolean;
+    };
     /** @description Payment term. The set of terms is fixed: 1, 4, 8 and 12 months. Monthly price with the term = round(monthAmountMinor × (1 − discountPercent/100)) to whole roubles; amount of the period = that × months. */
     PriceTerm: {
       /** @enum {integer} */
@@ -10538,10 +12118,37 @@ export interface components {
       access: components['schemas']['TaskProjectAccessLevel'];
       copyFromProjectId?: components['schemas']['Id'];
     };
+    ProjectFinance: {
+      projectId: components['schemas']['Id'];
+      contract: components['schemas']['Money'];
+      received: components['schemas']['Money'];
+      expenses: components['schemas']['Money'];
+      marginPlan: components['schemas']['RepairMoneyDelta'];
+      movements: {
+        at: components['schemas']['Instant'];
+        /** @enum {string} */
+        kind: 'payment' | 'expense' | 'accrual';
+        text: string;
+        amount: components['schemas']['RepairMoneyDelta'];
+      }[];
+      estimateVersion?: number;
+    };
     /** @description Opaque cursor is bound to tenant, principal, effective scopes, filters and sort. Permission changes invalidate the cursor. */
     ProjectPage: {
       items: components['schemas']['Project'][];
       nextCursor: string | null;
+    };
+    ProjectStockItem: {
+      projectId: components['schemas']['Id'];
+      projectName: string;
+      priceItemId: components['schemas']['Id'];
+      name: string;
+      unit: components['schemas']['RepairUnit'];
+      quantity: components['schemas']['Quantity'];
+      cost: components['schemas']['Money'];
+    };
+    ProjectStockList: {
+      items: components['schemas']['ProjectStockItem'][];
     };
     /** @description Only a sanitized published definition. No internal tenant IDs, reviewers, other responses, authenticated reference lookup, directory, dataset or file enumeration. W4.05 (0.11.0-stage4, return 1): the guest never receives the key of a test or values he does not enter — FormOption.score of every option is removed (the server counts the score at submission, Q-W4.00-forms-24; presentation.showScore only says whether the result is shown after submission), and defaultValue of hidden questions is removed (the server applies it at submission; a hidden question stays in the definition with its key, so that a parameter of the link ?{key}=… can fill it — the page passes the parameters of its address in PublicResponseCreate.linkParams). The link is found by token_digest of forms.public_links (FormShare.publicToken). W4.05 (return 2): the tenant of the guest — by the same token_digest in the control index public_form_links (control 0009), the path carries no tenant. */
     PublicForm: {
@@ -10604,6 +12211,44 @@ export interface components {
     };
     PublicUploadStatusQuery: {
       submissionNonce: string;
+    };
+    Purchase: {
+      id: components['schemas']['Id'];
+      number: string;
+      supplier: string;
+      /** @enum {string} */
+      state: 'ordered' | 'received';
+      lines: components['schemas']['PurchaseLine'][];
+      total: components['schemas']['Money'];
+      createdAt: components['schemas']['Instant'];
+      /** Format: int64 */
+      revision: number;
+      receiptQr?: string;
+      receivedAt?: components['schemas']['Instant'];
+    };
+    /** @description One purchase for several objects. The default price is the average price of the warehouse, then the last purchase, then the catalog price (Q-W4.00-repair-23). */
+    PurchaseCreate: {
+      supplier: string;
+      lines: components['schemas']['PurchaseLineInput'][];
+    };
+    PurchaseLine: {
+      supplyRequestId: components['schemas']['Id'];
+      projectId: components['schemas']['Id'];
+      priceItemId: components['schemas']['Id'];
+      quantity: components['schemas']['Quantity'];
+      price: components['schemas']['Money'];
+    };
+    PurchaseLineInput: {
+      supplyRequestId: components['schemas']['Id'];
+      price?: components['schemas']['Money'];
+    };
+    /** @description Opaque cursor is bound to tenant, principal, effective scopes, filters and sort. */
+    PurchasePage: {
+      items: components['schemas']['Purchase'][];
+      nextCursor: string | null;
+    };
+    PurchaseReceive: {
+      receiptQr: string;
     };
     /**
      * @description Nonnegative exact quantity; operations requiring a positive value additionally reject zero.
@@ -10686,32 +12331,241 @@ export interface components {
       /** @description W4.05 (0.11.0-stage4, Q-W4.00-forms-23). The label of the object at the moment of the answer («Рейс Р-196», «Марина Котова») — kept when the object is renamed or hidden later; set by the server. */
       label?: string;
     };
+    RepairAccessItem: {
+      icon: string;
+      text: string;
+    };
+    /** @description One item of «Требует решения» (the same function feeds the list, the card and «Главная»). Items with sums are returned only with repairs.finance.read. */
+    RepairDecision: {
+      /** @enum {string} */
+      kind:
+        | 'no_foreman'
+        | 'work_log_pending'
+        | 'work_log_missing'
+        | 'schedule_slip'
+        | 'stage_no_executor'
+        | 'document_wait_signature'
+        | 'document_ready'
+        | 'supply_pending'
+        | 'estimate_with_client'
+        | 'change_order_new'
+        | 'change_order_priced'
+        | 'change_order_sent'
+        | 'estimate_missing'
+        | 'estimate_draft'
+        | 'estimate_sent'
+        | 'estimate_approved';
+      text: string;
+      actionLabel?: string;
+      /** @enum {string} */
+      tab:
+        | 'overview'
+        | 'works'
+        | 'measure'
+        | 'estimate'
+        | 'schedule'
+        | 'docs'
+        | 'supply'
+        | 'finance'
+        | 'pay'
+        | 'subs'
+        | 'client';
+      refId?: components['schemas']['Id'];
+    };
+    RepairDocument: {
+      id: components['schemas']['Id'];
+      projectId: components['schemas']['Id'];
+      kind: components['schemas']['RepairDocumentKind'];
+      title: string;
+      /** @enum {string} */
+      state: 'draft' | 'wait' | 'sms' | 'signed' | 'paid';
+      estimateVersion?: number;
+      actNo?: number;
+      amount?: components['schemas']['Money'];
+      signedAt?: components['schemas']['Instant'];
+      sentAt?: components['schemas']['Instant'];
+    };
+    /** @enum {string} */
+    RepairDocumentKind: 'contract' | 'agreement' | 'act' | 'invoice' | 'handover_act' | 'warranty';
+    RepairDocumentList: {
+      items: components['schemas']['RepairDocument'][];
+    };
+    RepairFeedItem: {
+      at: components['schemas']['Instant'];
+      text: string;
+      actorName?: string;
+    };
+    RepairForemanAssign: {
+      foremanMemberId: components['schemas']['Id'];
+    };
+    /** @description The signed «Акт сдачи объекта» (Q-W4.00-repair-21); warranty defaults to the warranty passport of the template (24 or 12 months). */
+    RepairHandOver: {
+      actDocumentId: components['schemas']['Id'];
+      warrantyMonths?: number;
+    };
+    RepairMoneyCard: {
+      contract: components['schemas']['Money'];
+      received: components['schemas']['Money'];
+      expenses: components['schemas']['Money'];
+      marginPlan: components['schemas']['RepairMoneyDelta'];
+    };
+    /** @description Signed minor units (difference, margin). */
+    RepairMoneyDelta: {
+      /** Format: int64 */
+      amountMinor: number;
+      currency: string;
+    };
+    RepairPeople: {
+      clientName: string | null;
+      clientLinkActive: boolean;
+      foreman: {
+        memberId: components['schemas']['Id'];
+        displayName: string;
+      } | null;
+      crew: components['schemas']['Worker'][];
+      subcontractor?: {
+        name: string;
+        /** Format: date */
+        accessUntil: string | null;
+      };
+    };
+    RepairPhoto: {
+      fileId: components['schemas']['Id'];
+      workLogId: components['schemas']['Id'];
+      takenAt: components['schemas']['Instant'];
+      /** @enum {string} */
+      status: 'accepted' | 'pending';
+    };
+    /** @description Repair object (RS-08: RepairProject, UI «Объект»). foremanMemberId is null until the owner assigns a foreman; a draft object (status draft) is created at the lead stage «Замер» and has only measurement and estimate. budget (contract amount) and clientPhone are omitted without repairs.finance.read — the server never returns them to the foreman, the crew or a subcontractor. */
     RepairProject: {
       id: components['schemas']['Id'];
       orgUnitId: components['schemas']['Id'];
       name: string;
       address: string;
-      foremanMemberId: components['schemas']['Id'];
-      budget: components['schemas']['Money'];
       /** @enum {string} */
-      status: 'planned' | 'active' | 'completed' | 'archived';
+      status: 'draft' | 'planned' | 'active' | 'completed' | 'archived' | 'handed_over';
+      foremanMemberId: components['schemas']['Id'] | null;
       workers: components['schemas']['Worker'][];
       /** Format: int64 */
       revision: number;
+      kind?: string;
+      stage?: string;
+      areaM2?: components['schemas']['Quantity'];
+      rooms?: number;
+      contractNo?: string;
+      /** Format: date */
+      startOn?: string;
+      /** Format: date */
+      dueOn?: string;
+      /** Format: date */
+      forecastDueOn?: string;
+      clientName?: string;
+      clientPhone?: string;
+      access: components['schemas']['RepairAccessItem'][];
+      measured: boolean;
+      /** Format: date */
+      handedOverOn?: string;
+      /** Format: date */
+      warrantyUntil?: string;
+      templateId?: components['schemas']['Id'];
+      leadTaskId?: components['schemas']['Id'];
+      readiness: components['schemas']['RepairReadiness'];
+      todoCount: number;
+      todoTop?: components['schemas']['RepairDecision'];
+      budget?: components['schemas']['Money'];
     };
-    /** @description Creates local non-login workers. Later shared contractor/worker directory and estimate/stage CRUD are extensions, not hidden generic mutation fields. */
+    /** @description Creates a draft object (from a lead at the stage «Замер», Q-W4.00-repair-16) or an active one. Local non-login workers are created in the same transaction. An empty measurement (version 1) is created with the object. */
     RepairProjectCreate: {
       orgUnitId: components['schemas']['Id'];
       name: string;
       address: string;
-      foremanMemberId: components['schemas']['Id'];
-      budget: components['schemas']['Money'];
       workers: components['schemas']['WorkerCreate'][];
+      kind?: string;
+      areaM2?: components['schemas']['Quantity'];
+      rooms?: number;
+      clientName?: string;
+      clientPhone?: string;
+      leadTaskId?: components['schemas']['Id'];
+      access?: components['schemas']['RepairAccessItem'][];
+      templateId?: components['schemas']['Id'];
+      foremanMemberId?: components['schemas']['Id'] | null;
+      budget?: components['schemas']['Money'];
     };
-    /** @description Opaque cursor is bound to tenant, principal, effective scopes, filters and sort. Permission changes invalidate the cursor. */
+    /** @description Overview tab (variant 1a). money is present only with repairs.finance.read. */
+    RepairProjectOverview: {
+      project: components['schemas']['RepairProject'];
+      decisions: components['schemas']['RepairDecision'][];
+      works: components['schemas']['RepairWork'][];
+      photos: components['schemas']['RepairPhoto'][];
+      people: components['schemas']['RepairPeople'];
+      money?: components['schemas']['RepairMoneyCard'];
+      feed: components['schemas']['RepairFeedItem'][];
+    };
+    /** @description Opaque cursor is bound to tenant, principal, effective scopes, filters and sort. */
     RepairProjectPage: {
       items: components['schemas']['RepairProject'][];
       nextCursor: string | null;
+    };
+    RepairProjectPatch: {
+      name?: string;
+      address?: string;
+      kind?: string;
+      areaM2?: components['schemas']['Quantity'];
+      rooms?: number;
+      contractNo?: string;
+      /** Format: date */
+      dueOn?: string;
+      clientName?: string;
+      clientPhone?: string;
+      access?: components['schemas']['RepairAccessItem'][];
+    };
+    /** @description Team readiness = accepted volumes to plan (+ pending); client readiness — by signed acts only (Q-W4.00-repair-4). Pending volume is never part of the fact. */
+    RepairReadiness: {
+      acceptedPct: number;
+      pendingPct: number;
+      clientPct: number;
+    };
+    /**
+     * @description Reason of rejecting a change order (design/docs/19 «Допработы после договора»): already in the estimate, client refused, warranty, not agreed with the client. The foreman sees it.
+     * @enum {string}
+     */
+    RepairRejectReason:
+      'already_in_estimate' | 'client_refused' | 'warranty' | 'not_agreed_with_client';
+    /**
+     * @description Reason of a schedule move (prototype GREASONS): client request, material delay, executor busy, rework, weather or drying, scope change, other.
+     * @enum {string}
+     */
+    RepairScheduleReason:
+      | 'client_request'
+      | 'material_delay'
+      | 'executor_busy'
+      | 'rework'
+      | 'weather_or_drying'
+      | 'scope_change'
+      | 'other';
+    /** @description The SMS code goes to the client through the code delivery port (SMS provider decision pending: stub; on a stand the code is written to the developer inbox). The code is never returned. */
+    RepairSignRequestResult: {
+      document: components['schemas']['RepairDocument'];
+      codeExpiresAt: components['schemas']['Instant'];
+      deliveredTo: string;
+    };
+    /**
+     * @description Unit of volume. 0.1 units hour, m2, m3, m, piece plus set (комплект), trip (рейс), mesh (мешок), liter (литр) of the prototype.
+     * @enum {string}
+     */
+    RepairUnit: 'hour' | 'm2' | 'm3' | 'm' | 'piece' | 'set' | 'trip' | 'mesh' | 'liter';
+    RepairWork: {
+      id: components['schemas']['Id'];
+      projectId: components['schemas']['Id'];
+      name: string;
+      unit: components['schemas']['RepairUnit'];
+      plan: components['schemas']['Quantity'];
+      fact: components['schemas']['Quantity'];
+      pending: components['schemas']['Quantity'];
+      estimateLineId?: components['schemas']['Id'];
+    };
+    RepairWorkList: {
+      items: components['schemas']['RepairWork'][];
     };
     /** @description held is server-confirmed and blocks overlaps only until holdExpiresAt. Trip start must consume the hold before expiry. A client offline draft is never a reservation. W2.71 (0.6.3-stage2, S2-20, Q-W2.70-1): confirmed — the vehicle chosen from an offer or the only vehicle offered to the driver (the approval of a pool request, assignTripVehicle on a trip of a temporary driver of the pool): it holds the vehicle for the trip window until the trip starts or the window ends and does not expire before (holdExpiresAt = window.endsAt); startTrip consumes held or confirmed. The reservations of an offer (offerGroupId) are held with holdExpiresAt = chooseUntil; the vehicle is occupied only for the trip window (sched.reservations.during — the window, rule 3), before it the usual vehicle works in its company. */
     Reservation: {
@@ -10878,6 +12732,98 @@ export interface components {
       loadCargoIds: components['schemas']['Id'][];
       unloadCargoIds: components['schemas']['Id'][];
     };
+    /** @description Schedule without sums. Forecast, slack and critical path are computed by the server; the client only shows the preview (design/docs/19 «График»). */
+    Schedule: {
+      projectId: components['schemas']['Id'];
+      stages: components['schemas']['ScheduleStage'][];
+      links: components['schemas']['ScheduleLink'][];
+      baseline: components['schemas']['ScheduleBaseline'] | null;
+      /** Format: date */
+      forecastDueOn: string | null;
+      delayWd: number;
+      holidays: string[];
+      issues: components['schemas']['ScheduleIssue'][];
+      changes: components['schemas']['ScheduleChangeEntry'][];
+      /** Format: int64 */
+      revision: number;
+    };
+    ScheduleBaseline: {
+      version: number;
+      /** Format: date */
+      dueOn: string;
+      approvedAt: components['schemas']['Instant'];
+      agreementNo?: number;
+    };
+    ScheduleBaselineCreate: {
+      agreementNo: number;
+    };
+    /** @description Without a reason a move is not saved (reason is required, schedule_reason_required in violations). A started stage is not moved (schedule_stage_locked). Notifications go through the outbox to the executors of affected stages and to the client when the due date changes. */
+    ScheduleChangeApply: {
+      changes: components['schemas']['ScheduleStageChange'][];
+      reason: components['schemas']['RepairScheduleReason'];
+    };
+    ScheduleChangeEntry: {
+      id: components['schemas']['Id'];
+      at: components['schemas']['Instant'];
+      authorName: string;
+      text: string;
+      reason?: components['schemas']['RepairScheduleReason'];
+    };
+    ScheduleFromEstimate: {
+      estimateVersion: number;
+    };
+    ScheduleIssue: {
+      /** @enum {string} */
+      kind: 'no_executor' | 'executor_busy' | 'no_material';
+      stageId: components['schemas']['Id'];
+      text: string;
+    };
+    ScheduleLink: {
+      fromStageId: components['schemas']['Id'];
+      toStageId: components['schemas']['Id'];
+      lagDays: number;
+      note?: string;
+    };
+    SchedulePreview: {
+      moved: {
+        stageId: components['schemas']['Id'];
+        /** Format: date */
+        fromStartOn: string;
+        /** Format: date */
+        toStartOn: string;
+      }[];
+      /** Format: date */
+      forecastDueOn: string | null;
+      delayWd: number;
+      notifyWho: string[];
+    };
+    SchedulePreviewRequest: {
+      changes: components['schemas']['ScheduleStageChange'][];
+    };
+    ScheduleStage: {
+      id: components['schemas']['Id'];
+      phase: string;
+      name: string;
+      /** Format: date */
+      startOn: string;
+      /** Format: date */
+      endOn: string;
+      durationWd: number;
+      offsetWd: number;
+      slackWd: number;
+      critical: boolean;
+      /** @enum {string} */
+      status: 'planned' | 'started' | 'done';
+      executorName?: string;
+      executorMemberId?: components['schemas']['Id'];
+      estimateSectionId?: components['schemas']['Id'];
+    };
+    ScheduleStageChange: {
+      stageId: components['schemas']['Id'];
+      offsetWd?: number;
+      durationWd?: number;
+      lagDays?: number;
+    };
     /** @description tenant/self require empty resourceIds; other kinds require IDs. Project/pool membership and descendant rules are evaluated server-side. Org-unit trees never cross tenants. Kinds of stages 4–7 (0.7.0-stage4, W4.02; ADR-0014 п. 3, 7): space — a knowledge space; page — a knowledge node with its subnodes; folder and doc — a folder and a document of «Документы»; account — a cash account (its acquiring included); chat — a chat; repair_project — a repair object («Объекты» of «Ремонт и стройка»; project stays the project of «Задачи», RS-08, Q-W4.00-tasks-1, Q-W4.00-repair-2); each names exactly one object of its own kind in resourceIds, and includeDescendants is ignored (a page covers its subnodes by its kind). relation is a computed relation of the member with a record (foreman of a repair object, driver of a trip, assignee of a task) and, like self, takes empty resourceIds; which relation counts is defined by the module of the record. An object-bound kind counts only for a request about an object of the same kind and id or its descendant (PD-53): without an object such a grant gives nothing. Until the evaluator registers a kind (W4.01 for stage 4; W5.00, W6.00, W7.00 for theirs), createAssignment answers 422 validation_failed for it and a stored grant of the kind gives nothing (fail-closed). Clients show a kind they do not know as «Особая область» and do not fail. */
     Scope: {
       /** @enum {string} */
@@ -10976,6 +12922,27 @@ export interface components {
       allowNegativeStock: false;
       defaultTimeZone: components['schemas']['TimeZone'];
     };
+    /** @description The executor is changed at once, without a reason, and journaled (Q-W4.00-repair-20). */
+    StageExecutorSet: {
+      executorMemberId?: components['schemas']['Id'] | null;
+      executorName?: string;
+    };
+    StockItemInput: {
+      priceItemId: components['schemas']['Id'];
+      quantity: components['schemas']['Quantity'];
+    };
+    StockMoveResult: {
+      movementIds: components['schemas']['Id'][];
+      items: components['schemas']['ProjectStockItem'][];
+    };
+    StockReturn: {
+      warehouseId: components['schemas']['Id'];
+      items: components['schemas']['StockItemInput'][];
+    };
+    StockTransfer: {
+      toProjectId: components['schemas']['Id'];
+      items: components['schemas']['StockItemInput'][];
+    };
     /** @description Explains committedBytes of getStorageUsage twice — by group and by module; each list adds up to committedBytes. Disabled modules keep their bytes (history is retained). */
     StorageBreakdown: {
       /** Format: int64 */
@@ -11042,6 +13009,25 @@ export interface components {
       /** Format: int64 */
       pendingQuotaBytes?: number;
       pendingEffectiveAt?: components['schemas']['Instant'];
+    };
+    Subcontractor: {
+      id: components['schemas']['Id'];
+      name: string;
+      scope: string;
+      active: boolean;
+      memberId?: components['schemas']['Id'];
+      /** Format: date */
+      accessUntil?: string;
+      contract?: components['schemas']['Money'];
+      paid?: components['schemas']['Money'];
+    };
+    SubcontractorAccessSet: {
+      active: boolean;
+      /** Format: date */
+      until?: string;
+    };
+    SubcontractorList: {
+      items: components['schemas']['Subcontractor'][];
     };
     Subscription: {
       planKey: string;
@@ -11148,6 +13134,45 @@ export interface components {
       decision: 'approve' | 'reject';
       /** @description «Оплата по счёту получена»; mandatory (non-blank) on reject — the owner sees it. */
       note?: string;
+    };
+    SupplyRequest: {
+      id: components['schemas']['Id'];
+      number: string;
+      projectId: components['schemas']['Id'];
+      projectName: string;
+      priceItemId: components['schemas']['Id'];
+      name: string;
+      unit: components['schemas']['RepairUnit'];
+      quantity: components['schemas']['Quantity'];
+      /** Format: date */
+      needBy: string;
+      /** @enum {string} */
+      state: 'request' | 'reserved' | 'issued' | 'ordered' | 'bought' | 'used';
+      createdAt: components['schemas']['Instant'];
+      /** Format: int64 */
+      revision: number;
+      warehouseId?: components['schemas']['Id'];
+      purchaseId?: components['schemas']['Id'];
+      cost?: components['schemas']['Money'];
+      available?: {
+        warehouseId: components['schemas']['Id'];
+        warehouseName: string;
+        free: components['schemas']['Quantity'];
+      }[];
+    };
+    SupplyRequestCreate: {
+      priceItemId: components['schemas']['Id'];
+      quantity: components['schemas']['Quantity'];
+      /** Format: date */
+      needBy: string;
+    };
+    /** @description Opaque cursor is bound to tenant, principal, effective scopes, filters and sort. */
+    SupplyRequestPage: {
+      items: components['schemas']['SupplyRequest'][];
+      nextCursor: string | null;
+    };
+    SupplyReserve: {
+      warehouseId: components['schemas']['Id'];
     };
     /** @description W4.03 (0.10.0-stage4). A task of a project. listTasks returns the fields of the board card; getTask and the commands on a task return the whole card (availableTransitions, approval, checklist, files). status is the id of the status of the workflow version of the task (statusName — its name), for a funnel — the id of the stage. */
     Task: {
@@ -11581,6 +13606,55 @@ export interface components {
       moduleKey: 'tasks';
       defaultProjectId?: components['schemas']['Id'];
       allowUnassignedTasks: boolean;
+    };
+    Template: {
+      id: components['schemas']['Id'];
+      name: string;
+      kind: string;
+      /** @enum {string} */
+      source: 'ortus' | 'own';
+      usedByObjects: number;
+      updatedAt: components['schemas']['Instant'];
+      lines: components['schemas']['TemplateLine'][];
+      stages: components['schemas']['TemplateStage'][];
+      documents: components['schemas']['RepairDocumentKind'][];
+      checklist: string[];
+      materials: components['schemas']['TemplateLine'][];
+      warrantyMonths: number;
+      /** Format: int64 */
+      revision: number;
+      copiedFromId?: components['schemas']['Id'];
+      sourceProjectId?: components['schemas']['Id'];
+    };
+    TemplateCopy: {
+      name?: string;
+    };
+    TemplateLine: {
+      priceItemId: components['schemas']['Id'];
+      section: string;
+      quantity?: components['schemas']['Quantity'];
+      /** @enum {string} */
+      formula?:
+        'floor' | 'floor_dry' | 'walls' | 'walls_dry' | 'wet' | 'perimeter' | 'perimeter_dry';
+      coef?: components['schemas']['Quantity'];
+    };
+    TemplateList: {
+      items: components['schemas']['Template'][];
+    };
+    TemplatePatch: {
+      name?: string;
+      lines?: components['schemas']['TemplateLine'][];
+      stages?: components['schemas']['TemplateStage'][];
+      documents?: components['schemas']['RepairDocumentKind'][];
+      checklist?: string[];
+      materials?: components['schemas']['TemplateLine'][];
+      warrantyMonths?: number;
+    };
+    TemplateStage: {
+      name: string;
+      ratePerDay?: components['schemas']['Quantity'];
+      pauseDays?: number;
+      sections?: string[];
     };
     /** @description Narrow temporary operational assignment created by approval (AUTH-07). Never grants earnings of either company. W2.57 (0.6.2-stage2, Q-W2.07-1 «только рейс»): the role «Временный водитель» — the trip and its objects only, no tasks, knowledge, calendar or vehicles of the target company besides the reserved one. */
     TemporaryDriverGrant: {
@@ -12204,6 +14278,7 @@ export interface components {
       items: components['schemas']['Warehouse'][];
       nextCursor: string | null;
     };
+    /** @description Accepted volumes only count in the fact (submitted = «На проверке»). The return reason is visible to the foreman, not to the crew (Q-W4.00-repair-3). */
     WorkLog: {
       id: components['schemas']['Id'];
       projectId: components['schemas']['Id'];
@@ -12218,8 +14293,14 @@ export interface components {
       createdAt: components['schemas']['Instant'];
       /** Format: int64 */
       revision: number;
+      number?: string;
+      crewWorkerIds?: components['schemas']['Id'][];
+      materials?: components['schemas']['WorkLogMaterial'][];
+      acceptedAt?: components['schemas']['Instant'];
+      acceptedByMemberId?: components['schemas']['Id'];
+      returnReason?: string;
     };
-    /** @description Foreman can submit only for assigned visible projects and project-linked workers. Corrections are revisions/compensations; historical worker attribution is preserved. */
+    /** @description Only the foreman of the object (repairs.work_logs.submit in its scope). «Отметьте работников» and «Добавьте хотя бы одно фото» of the prototype are validation_failed fields crewWorkerIds and evidenceFileIds; volume above plan + 10 % — reason work_volume_exceeds_plan. */
     WorkLogCreate: {
       projectId: components['schemas']['Id'];
       /** Format: date */
@@ -12228,22 +14309,32 @@ export interface components {
       lines: components['schemas']['WorkLogLine'][];
       evidenceFileIds: components['schemas']['Id'][];
       note?: string;
+      crewWorkerIds?: components['schemas']['Id'][];
+      materials?: components['schemas']['WorkLogMaterial'][];
     };
-    /** @description Presence, accepted work quantity and payment are separate facts. A work log does not create wages or cash posting. */
+    /** @description W6.00: one line = one work of the object with a volume (the prototype mark). workerId and workCode of 0.1 stay optional; presence is not implemented in stage 6 (Q-W4.00-repair-14). */
     WorkLogLine: {
-      workerId: components['schemas']['Id'];
-      workCode: string;
-      description?: string;
       quantity: components['schemas']['Quantity'];
       /** @enum {string} */
-      unit: 'hour' | 'm2' | 'm3' | 'm' | 'piece';
+      unit: 'hour' | 'm2' | 'm3' | 'm' | 'piece' | 'set' | 'trip' | 'mesh' | 'liter';
+      workId?: components['schemas']['Id'];
+      workerId?: components['schemas']['Id'];
+      workCode?: string;
+      description?: string;
       /** Format: int64 */
       presenceMinutes?: number;
     };
-    /** @description Opaque cursor is bound to tenant, principal, effective scopes, filters and sort. Permission changes invalidate the cursor. */
+    WorkLogMaterial: {
+      priceItemId: components['schemas']['Id'];
+      quantity: components['schemas']['Quantity'];
+    };
+    /** @description Opaque cursor is bound to tenant, principal, effective scopes, filters and sort. */
     WorkLogPage: {
       items: components['schemas']['WorkLog'][];
       nextCursor: string | null;
+    };
+    WorkLogReturn: {
+      reason: string;
     };
     /** @description A work function of a person with a half-open period [validFrom, validUntil) — people.work_profiles (tenant 0001). Periods of the same function never overlap. */
     WorkProfile: {
@@ -12430,6 +14521,8 @@ export interface components {
     Csrf: string;
     /** @description Opaque cursor from the preceding response; no offset pagination. */
     Cursor: string;
+    /** @description W6.00. Version to compare with. */
+    EstimateDiffTo: number;
     /** @description Stable per intended command. Retain record at least 7 days; financial deduplication also retains a durable tenant+actor+operation+key digest receipt. Key is scoped to tenant+actor+operation. Reuse only for an identical request. */
     IdempotencyKey: string;
     /** @description Strong ETag obtained from latest GET or mutation response. * is not accepted. Missing=428; stale=412. Idempotent replay is checked before current revision precondition. */
@@ -12439,6 +14532,18 @@ export interface components {
     OrgUnitFilter: components['schemas']['Id'];
     /** @description Required and checked against the deployment allowlist for cookie-authenticated state changes and browser public-form submissions/uploads. Never accept wildcard with credentialed requests. */
     Origin: string;
+    /** @description W6.00. Kind of a price list item. */
+    PriceKindFilter: 'work' | 'material';
+    /** @description W6.00. Filter of the object list: active, todo («Требуют решения»), draft («До договора»), done («Сданы»). */
+    RepairFilter: 'active' | 'todo' | 'draft' | 'done';
+    /** @description W6.00. Only the records of one object. */
+    RepairProjectFilter: components['schemas']['Id'];
+    /** @description W6.00. Search by address, client or foreman. */
+    RepairQuery: string;
+    /** @description W6.00. State of a supply request. */
+    SupplyStateFilter: 'request' | 'reserved' | 'issued' | 'ordered' | 'bought' | 'used';
+    /** @description W6.00. Status of a work log. */
+    WorkLogStatusFilter: 'submitted' | 'accepted' | 'rejected';
     /** @description W4.07. Opaque UUID of an account of the control DB (PlatformUser.id); an operator account is not in the catalogue of client accounts (404). */
     accountId: components['schemas']['Id'];
     /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
@@ -12465,14 +14570,22 @@ export interface components {
     cashTransferId: components['schemas']['Id'];
     /** @description W2.52 (0.6.1-stage2). ExpenseCategory.code — the stable code of a tenant expense category (fuel, wash, parking, toll, tire_service, other or a code of a category created by the owner); TripExpense.kind carries the same value. */
     categoryCode: string;
+    /** @description W6.00. Opaque UUID of a change order (допработа). */
+    changeOrderId: components['schemas']['Id'];
     /** @description W4.07. Opaque UUID of a subscription change request (SubscriptionChangeRequest.id). A request of another tenant answers 404, as a missing one. */
     changeRequestId: components['schemas']['Id'];
     /** @description W4.03 (0.10.0-stage4). TaskChecklistItem.id — the id of an item of the checklist within the task. */
     checklistItemId: string;
+    /** @description W6.00. Unpredictable revocable capability of the client cabinet (Q-W4.00-repair-10): the tenant is resolved by the token digest; only the hash is stored; the link lives until the object is handed over. Avoid logs and referrer leakage. */
+    clientToken: string;
     /** @description Authorized logical dataset key, not a SQL table. */
     datasetId: string;
     /** @description W2.00 (0.5.0-stage2). Opaque UUID of a fleet.defects row; same-tenant and visibility checks are mandatory. */
     defectId: components['schemas']['Id'];
+    /** @description W6.00. Opaque UUID of a document of an object (contract, act, invoice). */
+    documentId: components['schemas']['Id'];
+    /** @description W6.00. Number of an estimate version of the object (1, 2, …). */
+    estimateVersion: number;
     /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
     expenseId: components['schemas']['Id'];
     /** @description W4.06 (0.7.0-stage4). Opaque UUID of an export job; a job of another member — 404 (the owner of the organization reads the journal, never the file). */
@@ -12511,6 +14624,8 @@ export interface components {
     orgUnitId: components['schemas']['Id'];
     /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
     pageId: components['schemas']['Id'];
+    /** @description W6.00. Opaque UUID of a price list item. */
+    priceItemId: components['schemas']['Id'];
     /** @description W4.07. Number of a price book version (PriceBookVersion.version). */
     priceVersionNumber: number;
     /** @description W4.03 (0.10.0-stage4). Opaque UUID of a task project (tasks.projects); a project the member may not see (a closed project without a role in it, TP-03) — 404, as a missing one. */
@@ -12519,6 +14634,10 @@ export interface components {
     publicToken: string;
     /** @description W2.51 (0.6.0-stage2). DriverPoolPublication.id — opaque UUID of a fleet.pool_publications row (id, not catalog_ref), the same value as DriverAvailability.publicationId; the publication itself is visible to the source company only. */
     publicationId: components['schemas']['Id'];
+    /** @description W6.00. Opaque UUID of a purchase. */
+    purchaseId: components['schemas']['Id'];
+    /** @description W6.00 (0.12.0-stage6). Opaque UUID of a repair object (repairs.projects); an object the member may not see — 404, as a missing one. */
+    repairProjectId: components['schemas']['Id'];
     /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
     requestId: components['schemas']['Id'];
     /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
@@ -12533,8 +14652,16 @@ export interface components {
     spaServiceId: components['schemas']['Id'];
     /** @description W4.04. Opaque UUID of a knowledge space; a space the member does not see — 404, as a missing one. */
     spaceId: components['schemas']['Id'];
+    /** @description W6.00. Opaque UUID of a schedule stage. */
+    stageId: components['schemas']['Id'];
+    /** @description W6.00. Opaque UUID of a subcontractor of the object. */
+    subcontractorId: components['schemas']['Id'];
+    /** @description W6.00. Opaque UUID of a supply request. */
+    supplyRequestId: components['schemas']['Id'];
     /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
     taskId: components['schemas']['Id'];
+    /** @description W6.00. Opaque UUID of an object template. */
+    templateId: components['schemas']['Id'];
     /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
     tenantId: components['schemas']['Id'];
     /** @description W4.03 (0.10.0-stage4). TaskWorkflowTransition.key — a transition of the workflow version of the task. */
@@ -12549,6 +14676,8 @@ export interface components {
     versionId: components['schemas']['Id'];
     /** @description W4.06 (0.7.0-stage4). Opaque UUID of a saved view of the dataset; a view the member may not see — 404. */
     viewId: components['schemas']['Id'];
+    /** @description W6.00. Opaque UUID of a work log (mark of the foreman). */
+    workLogId: components['schemas']['Id'];
     /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
     workProfileId: components['schemas']['Id'];
   };
@@ -17348,6 +19477,10 @@ export interface operations {
         /** @description Opaque cursor from the preceding response; no offset pagination. */
         cursor?: components['parameters']['Cursor'];
         limit?: components['parameters']['Limit'];
+        /** @description W6.00. Filter of the object list: active, todo («Требуют решения»), draft («До договора»), done («Сданы»). */
+        filter?: components['parameters']['RepairFilter'];
+        /** @description W6.00. Search by address, client or foreman. */
+        q?: components['parameters']['RepairQuery'];
       };
       header?: never;
       path: {
@@ -17432,6 +19565,10 @@ export interface operations {
         /** @description Opaque cursor from the preceding response; no offset pagination. */
         cursor?: components['parameters']['Cursor'];
         limit?: components['parameters']['Limit'];
+        /** @description W6.00. Only the records of one object. */
+        projectId?: components['parameters']['RepairProjectFilter'];
+        /** @description W6.00. Status of a work log. */
+        status?: components['parameters']['WorkLogStatusFilter'];
       };
       header?: never;
       path: {
@@ -26433,6 +28570,2785 @@ export interface operations {
       404: components['responses']['NotFound'];
       409: components['responses']['Conflict'];
       412: components['responses']['PreconditionFailed'];
+      422: components['responses']['Validation'];
+      428: components['responses']['PreconditionRequired'];
+      429: components['responses']['RateLimited'];
+    };
+  };
+  getRepairProject: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+        /** @description W6.00 (0.12.0-stage6). Opaque UUID of a repair object (repairs.projects); an object the member may not see — 404, as a missing one. */
+        projectId: components['parameters']['repairProjectId'];
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Successful result. */
+      200: {
+        headers: {
+          'X-Request-Id': components['headers']['RequestId'];
+          ETag: components['headers']['ETag'];
+          /** @description Never cache authenticated, confidential or capability-bearing API responses in shared caches. */
+          'Cache-Control'?: 'private, no-store';
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['RepairProject'];
+        };
+      };
+      400: components['responses']['BadRequest'];
+      401: components['responses']['Unauthenticated'];
+      403: components['responses']['Forbidden'];
+      404: components['responses']['NotFound'];
+      422: components['responses']['Validation'];
+      429: components['responses']['RateLimited'];
+    };
+  };
+  updateRepairProject: {
+    parameters: {
+      query?: never;
+      header: {
+        /** @description Stable per intended command. Retain record at least 7 days; financial deduplication also retains a durable tenant+actor+operation+key digest receipt. Key is scoped to tenant+actor+operation. Reuse only for an identical request. */
+        'Idempotency-Key': components['parameters']['IdempotencyKey'];
+        /** @description Required for cookie-authenticated state changes; not required with bearer-only authentication. Invalid/missing token or Origin yields 403. Conditional requirement cannot be represented by OpenAPI required=true. */
+        'X-CSRF-Token'?: components['parameters']['Csrf'];
+        /** @description Required and checked against the deployment allowlist for cookie-authenticated state changes and browser public-form submissions/uploads. Never accept wildcard with credentialed requests. */
+        Origin?: components['parameters']['Origin'];
+        /** @description Strong ETag obtained from latest GET or mutation response. * is not accepted. Missing=428; stale=412. Idempotent replay is checked before current revision precondition. */
+        'If-Match': components['parameters']['IfMatch'];
+      };
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+        /** @description W6.00 (0.12.0-stage6). Opaque UUID of a repair object (repairs.projects); an object the member may not see — 404, as a missing one. */
+        projectId: components['parameters']['repairProjectId'];
+      };
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['RepairProjectPatch'];
+      };
+    };
+    responses: {
+      /** @description Successful result. */
+      200: {
+        headers: {
+          'X-Request-Id': components['headers']['RequestId'];
+          ETag: components['headers']['ETag'];
+          'Idempotency-Replayed': components['headers']['IdempotencyReplayed'];
+          /** @description Never cache authenticated, confidential or capability-bearing API responses in shared caches. */
+          'Cache-Control'?: 'private, no-store';
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['RepairProject'];
+        };
+      };
+      400: components['responses']['BadRequest'];
+      401: components['responses']['Unauthenticated'];
+      402: components['responses']['PlanRequired'];
+      403: components['responses']['Forbidden'];
+      404: components['responses']['NotFound'];
+      409: components['responses']['Conflict'];
+      412: components['responses']['PreconditionFailed'];
+      422: components['responses']['Validation'];
+      428: components['responses']['PreconditionRequired'];
+      429: components['responses']['RateLimited'];
+    };
+  };
+  getRepairProjectOverview: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+        /** @description W6.00 (0.12.0-stage6). Opaque UUID of a repair object (repairs.projects); an object the member may not see — 404, as a missing one. */
+        projectId: components['parameters']['repairProjectId'];
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Successful result. */
+      200: {
+        headers: {
+          'X-Request-Id': components['headers']['RequestId'];
+          /** @description Never cache authenticated, confidential or capability-bearing API responses in shared caches. */
+          'Cache-Control'?: 'private, no-store';
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['RepairProjectOverview'];
+        };
+      };
+      400: components['responses']['BadRequest'];
+      401: components['responses']['Unauthenticated'];
+      403: components['responses']['Forbidden'];
+      404: components['responses']['NotFound'];
+      422: components['responses']['Validation'];
+      429: components['responses']['RateLimited'];
+    };
+  };
+  assignRepairForeman: {
+    parameters: {
+      query?: never;
+      header: {
+        /** @description Stable per intended command. Retain record at least 7 days; financial deduplication also retains a durable tenant+actor+operation+key digest receipt. Key is scoped to tenant+actor+operation. Reuse only for an identical request. */
+        'Idempotency-Key': components['parameters']['IdempotencyKey'];
+        /** @description Required for cookie-authenticated state changes; not required with bearer-only authentication. Invalid/missing token or Origin yields 403. Conditional requirement cannot be represented by OpenAPI required=true. */
+        'X-CSRF-Token'?: components['parameters']['Csrf'];
+        /** @description Required and checked against the deployment allowlist for cookie-authenticated state changes and browser public-form submissions/uploads. Never accept wildcard with credentialed requests. */
+        Origin?: components['parameters']['Origin'];
+      };
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+        /** @description W6.00 (0.12.0-stage6). Opaque UUID of a repair object (repairs.projects); an object the member may not see — 404, as a missing one. */
+        projectId: components['parameters']['repairProjectId'];
+      };
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['RepairForemanAssign'];
+      };
+    };
+    responses: {
+      /** @description Successful result. */
+      200: {
+        headers: {
+          'X-Request-Id': components['headers']['RequestId'];
+          ETag: components['headers']['ETag'];
+          'Idempotency-Replayed': components['headers']['IdempotencyReplayed'];
+          /** @description Never cache authenticated, confidential or capability-bearing API responses in shared caches. */
+          'Cache-Control'?: 'private, no-store';
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['RepairProject'];
+        };
+      };
+      400: components['responses']['BadRequest'];
+      401: components['responses']['Unauthenticated'];
+      402: components['responses']['PlanRequired'];
+      403: components['responses']['Forbidden'];
+      404: components['responses']['NotFound'];
+      409: components['responses']['Conflict'];
+      422: components['responses']['Validation'];
+      428: components['responses']['PreconditionRequired'];
+      429: components['responses']['RateLimited'];
+    };
+  };
+  activateRepairProject: {
+    parameters: {
+      query?: never;
+      header: {
+        /** @description Stable per intended command. Retain record at least 7 days; financial deduplication also retains a durable tenant+actor+operation+key digest receipt. Key is scoped to tenant+actor+operation. Reuse only for an identical request. */
+        'Idempotency-Key': components['parameters']['IdempotencyKey'];
+        /** @description Required for cookie-authenticated state changes; not required with bearer-only authentication. Invalid/missing token or Origin yields 403. Conditional requirement cannot be represented by OpenAPI required=true. */
+        'X-CSRF-Token'?: components['parameters']['Csrf'];
+        /** @description Required and checked against the deployment allowlist for cookie-authenticated state changes and browser public-form submissions/uploads. Never accept wildcard with credentialed requests. */
+        Origin?: components['parameters']['Origin'];
+        /** @description Strong ETag obtained from latest GET or mutation response. * is not accepted. Missing=428; stale=412. Idempotent replay is checked before current revision precondition. */
+        'If-Match': components['parameters']['IfMatch'];
+      };
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+        /** @description W6.00 (0.12.0-stage6). Opaque UUID of a repair object (repairs.projects); an object the member may not see — 404, as a missing one. */
+        projectId: components['parameters']['repairProjectId'];
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Successful result. */
+      200: {
+        headers: {
+          'X-Request-Id': components['headers']['RequestId'];
+          ETag: components['headers']['ETag'];
+          'Idempotency-Replayed': components['headers']['IdempotencyReplayed'];
+          /** @description Never cache authenticated, confidential or capability-bearing API responses in shared caches. */
+          'Cache-Control'?: 'private, no-store';
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['RepairProject'];
+        };
+      };
+      400: components['responses']['BadRequest'];
+      401: components['responses']['Unauthenticated'];
+      402: components['responses']['PlanRequired'];
+      403: components['responses']['Forbidden'];
+      404: components['responses']['NotFound'];
+      409: components['responses']['Conflict'];
+      412: components['responses']['PreconditionFailed'];
+      422: components['responses']['Validation'];
+      428: components['responses']['PreconditionRequired'];
+      429: components['responses']['RateLimited'];
+    };
+  };
+  listRepairWorks: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+        /** @description W6.00 (0.12.0-stage6). Opaque UUID of a repair object (repairs.projects); an object the member may not see — 404, as a missing one. */
+        projectId: components['parameters']['repairProjectId'];
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Successful result. */
+      200: {
+        headers: {
+          'X-Request-Id': components['headers']['RequestId'];
+          /** @description Never cache authenticated, confidential or capability-bearing API responses in shared caches. */
+          'Cache-Control'?: 'private, no-store';
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['RepairWorkList'];
+        };
+      };
+      400: components['responses']['BadRequest'];
+      401: components['responses']['Unauthenticated'];
+      403: components['responses']['Forbidden'];
+      404: components['responses']['NotFound'];
+      422: components['responses']['Validation'];
+      429: components['responses']['RateLimited'];
+    };
+  };
+  acceptWorkLog: {
+    parameters: {
+      query?: never;
+      header: {
+        /** @description Stable per intended command. Retain record at least 7 days; financial deduplication also retains a durable tenant+actor+operation+key digest receipt. Key is scoped to tenant+actor+operation. Reuse only for an identical request. */
+        'Idempotency-Key': components['parameters']['IdempotencyKey'];
+        /** @description Required for cookie-authenticated state changes; not required with bearer-only authentication. Invalid/missing token or Origin yields 403. Conditional requirement cannot be represented by OpenAPI required=true. */
+        'X-CSRF-Token'?: components['parameters']['Csrf'];
+        /** @description Required and checked against the deployment allowlist for cookie-authenticated state changes and browser public-form submissions/uploads. Never accept wildcard with credentialed requests. */
+        Origin?: components['parameters']['Origin'];
+        /** @description Strong ETag obtained from latest GET or mutation response. * is not accepted. Missing=428; stale=412. Idempotent replay is checked before current revision precondition. */
+        'If-Match': components['parameters']['IfMatch'];
+      };
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+        /** @description W6.00. Opaque UUID of a work log (mark of the foreman). */
+        workLogId: components['parameters']['workLogId'];
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Successful result. */
+      200: {
+        headers: {
+          'X-Request-Id': components['headers']['RequestId'];
+          ETag: components['headers']['ETag'];
+          'Idempotency-Replayed': components['headers']['IdempotencyReplayed'];
+          /** @description Never cache authenticated, confidential or capability-bearing API responses in shared caches. */
+          'Cache-Control'?: 'private, no-store';
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['WorkLog'];
+        };
+      };
+      400: components['responses']['BadRequest'];
+      401: components['responses']['Unauthenticated'];
+      402: components['responses']['PlanRequired'];
+      403: components['responses']['Forbidden'];
+      404: components['responses']['NotFound'];
+      409: components['responses']['Conflict'];
+      412: components['responses']['PreconditionFailed'];
+      422: components['responses']['Validation'];
+      428: components['responses']['PreconditionRequired'];
+      429: components['responses']['RateLimited'];
+    };
+  };
+  returnWorkLog: {
+    parameters: {
+      query?: never;
+      header: {
+        /** @description Stable per intended command. Retain record at least 7 days; financial deduplication also retains a durable tenant+actor+operation+key digest receipt. Key is scoped to tenant+actor+operation. Reuse only for an identical request. */
+        'Idempotency-Key': components['parameters']['IdempotencyKey'];
+        /** @description Required for cookie-authenticated state changes; not required with bearer-only authentication. Invalid/missing token or Origin yields 403. Conditional requirement cannot be represented by OpenAPI required=true. */
+        'X-CSRF-Token'?: components['parameters']['Csrf'];
+        /** @description Required and checked against the deployment allowlist for cookie-authenticated state changes and browser public-form submissions/uploads. Never accept wildcard with credentialed requests. */
+        Origin?: components['parameters']['Origin'];
+        /** @description Strong ETag obtained from latest GET or mutation response. * is not accepted. Missing=428; stale=412. Idempotent replay is checked before current revision precondition. */
+        'If-Match': components['parameters']['IfMatch'];
+      };
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+        /** @description W6.00. Opaque UUID of a work log (mark of the foreman). */
+        workLogId: components['parameters']['workLogId'];
+      };
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['WorkLogReturn'];
+      };
+    };
+    responses: {
+      /** @description Successful result. */
+      200: {
+        headers: {
+          'X-Request-Id': components['headers']['RequestId'];
+          ETag: components['headers']['ETag'];
+          'Idempotency-Replayed': components['headers']['IdempotencyReplayed'];
+          /** @description Never cache authenticated, confidential or capability-bearing API responses in shared caches. */
+          'Cache-Control'?: 'private, no-store';
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['WorkLog'];
+        };
+      };
+      400: components['responses']['BadRequest'];
+      401: components['responses']['Unauthenticated'];
+      402: components['responses']['PlanRequired'];
+      403: components['responses']['Forbidden'];
+      404: components['responses']['NotFound'];
+      409: components['responses']['Conflict'];
+      412: components['responses']['PreconditionFailed'];
+      422: components['responses']['Validation'];
+      428: components['responses']['PreconditionRequired'];
+      429: components['responses']['RateLimited'];
+    };
+  };
+  listChangeOrders: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+        /** @description W6.00 (0.12.0-stage6). Opaque UUID of a repair object (repairs.projects); an object the member may not see — 404, as a missing one. */
+        projectId: components['parameters']['repairProjectId'];
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Successful result. */
+      200: {
+        headers: {
+          'X-Request-Id': components['headers']['RequestId'];
+          /** @description Never cache authenticated, confidential or capability-bearing API responses in shared caches. */
+          'Cache-Control'?: 'private, no-store';
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['ChangeOrderList'];
+        };
+      };
+      400: components['responses']['BadRequest'];
+      401: components['responses']['Unauthenticated'];
+      403: components['responses']['Forbidden'];
+      404: components['responses']['NotFound'];
+      422: components['responses']['Validation'];
+      429: components['responses']['RateLimited'];
+    };
+  };
+  proposeChangeOrder: {
+    parameters: {
+      query?: never;
+      header: {
+        /** @description Stable per intended command. Retain record at least 7 days; financial deduplication also retains a durable tenant+actor+operation+key digest receipt. Key is scoped to tenant+actor+operation. Reuse only for an identical request. */
+        'Idempotency-Key': components['parameters']['IdempotencyKey'];
+        /** @description Required for cookie-authenticated state changes; not required with bearer-only authentication. Invalid/missing token or Origin yields 403. Conditional requirement cannot be represented by OpenAPI required=true. */
+        'X-CSRF-Token'?: components['parameters']['Csrf'];
+        /** @description Required and checked against the deployment allowlist for cookie-authenticated state changes and browser public-form submissions/uploads. Never accept wildcard with credentialed requests. */
+        Origin?: components['parameters']['Origin'];
+      };
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+        /** @description W6.00 (0.12.0-stage6). Opaque UUID of a repair object (repairs.projects); an object the member may not see — 404, as a missing one. */
+        projectId: components['parameters']['repairProjectId'];
+      };
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['ChangeOrderCreate'];
+      };
+    };
+    responses: {
+      /** @description Successful result. */
+      201: {
+        headers: {
+          'X-Request-Id': components['headers']['RequestId'];
+          ETag: components['headers']['ETag'];
+          'Idempotency-Replayed': components['headers']['IdempotencyReplayed'];
+          /** @description Never cache authenticated, confidential or capability-bearing API responses in shared caches. */
+          'Cache-Control'?: 'private, no-store';
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['ChangeOrder'];
+        };
+      };
+      400: components['responses']['BadRequest'];
+      401: components['responses']['Unauthenticated'];
+      402: components['responses']['PlanRequired'];
+      403: components['responses']['Forbidden'];
+      404: components['responses']['NotFound'];
+      409: components['responses']['Conflict'];
+      422: components['responses']['Validation'];
+      428: components['responses']['PreconditionRequired'];
+      429: components['responses']['RateLimited'];
+    };
+  };
+  rejectChangeOrder: {
+    parameters: {
+      query?: never;
+      header: {
+        /** @description Stable per intended command. Retain record at least 7 days; financial deduplication also retains a durable tenant+actor+operation+key digest receipt. Key is scoped to tenant+actor+operation. Reuse only for an identical request. */
+        'Idempotency-Key': components['parameters']['IdempotencyKey'];
+        /** @description Required for cookie-authenticated state changes; not required with bearer-only authentication. Invalid/missing token or Origin yields 403. Conditional requirement cannot be represented by OpenAPI required=true. */
+        'X-CSRF-Token'?: components['parameters']['Csrf'];
+        /** @description Required and checked against the deployment allowlist for cookie-authenticated state changes and browser public-form submissions/uploads. Never accept wildcard with credentialed requests. */
+        Origin?: components['parameters']['Origin'];
+        /** @description Strong ETag obtained from latest GET or mutation response. * is not accepted. Missing=428; stale=412. Idempotent replay is checked before current revision precondition. */
+        'If-Match': components['parameters']['IfMatch'];
+      };
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+        /** @description W6.00. Opaque UUID of a change order (допработа). */
+        changeOrderId: components['parameters']['changeOrderId'];
+      };
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['ChangeOrderReject'];
+      };
+    };
+    responses: {
+      /** @description Successful result. */
+      200: {
+        headers: {
+          'X-Request-Id': components['headers']['RequestId'];
+          ETag: components['headers']['ETag'];
+          'Idempotency-Replayed': components['headers']['IdempotencyReplayed'];
+          /** @description Never cache authenticated, confidential or capability-bearing API responses in shared caches. */
+          'Cache-Control'?: 'private, no-store';
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['ChangeOrder'];
+        };
+      };
+      400: components['responses']['BadRequest'];
+      401: components['responses']['Unauthenticated'];
+      402: components['responses']['PlanRequired'];
+      403: components['responses']['Forbidden'];
+      404: components['responses']['NotFound'];
+      409: components['responses']['Conflict'];
+      412: components['responses']['PreconditionFailed'];
+      422: components['responses']['Validation'];
+      428: components['responses']['PreconditionRequired'];
+      429: components['responses']['RateLimited'];
+    };
+  };
+  getMeasurement: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+        /** @description W6.00 (0.12.0-stage6). Opaque UUID of a repair object (repairs.projects); an object the member may not see — 404, as a missing one. */
+        projectId: components['parameters']['repairProjectId'];
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Successful result. */
+      200: {
+        headers: {
+          'X-Request-Id': components['headers']['RequestId'];
+          ETag: components['headers']['ETag'];
+          /** @description Never cache authenticated, confidential or capability-bearing API responses in shared caches. */
+          'Cache-Control'?: 'private, no-store';
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['Measurement'];
+        };
+      };
+      400: components['responses']['BadRequest'];
+      401: components['responses']['Unauthenticated'];
+      403: components['responses']['Forbidden'];
+      404: components['responses']['NotFound'];
+      422: components['responses']['Validation'];
+      429: components['responses']['RateLimited'];
+    };
+  };
+  putMeasurement: {
+    parameters: {
+      query?: never;
+      header: {
+        /** @description Stable per intended command. Retain record at least 7 days; financial deduplication also retains a durable tenant+actor+operation+key digest receipt. Key is scoped to tenant+actor+operation. Reuse only for an identical request. */
+        'Idempotency-Key': components['parameters']['IdempotencyKey'];
+        /** @description Required for cookie-authenticated state changes; not required with bearer-only authentication. Invalid/missing token or Origin yields 403. Conditional requirement cannot be represented by OpenAPI required=true. */
+        'X-CSRF-Token'?: components['parameters']['Csrf'];
+        /** @description Required and checked against the deployment allowlist for cookie-authenticated state changes and browser public-form submissions/uploads. Never accept wildcard with credentialed requests. */
+        Origin?: components['parameters']['Origin'];
+        /** @description Strong ETag obtained from latest GET or mutation response. * is not accepted. Missing=428; stale=412. Idempotent replay is checked before current revision precondition. */
+        'If-Match': components['parameters']['IfMatch'];
+      };
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+        /** @description W6.00 (0.12.0-stage6). Opaque UUID of a repair object (repairs.projects); an object the member may not see — 404, as a missing one. */
+        projectId: components['parameters']['repairProjectId'];
+      };
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['MeasurementPut'];
+      };
+    };
+    responses: {
+      /** @description Successful result. */
+      200: {
+        headers: {
+          'X-Request-Id': components['headers']['RequestId'];
+          ETag: components['headers']['ETag'];
+          'Idempotency-Replayed': components['headers']['IdempotencyReplayed'];
+          /** @description Never cache authenticated, confidential or capability-bearing API responses in shared caches. */
+          'Cache-Control'?: 'private, no-store';
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['Measurement'];
+        };
+      };
+      400: components['responses']['BadRequest'];
+      401: components['responses']['Unauthenticated'];
+      402: components['responses']['PlanRequired'];
+      403: components['responses']['Forbidden'];
+      404: components['responses']['NotFound'];
+      409: components['responses']['Conflict'];
+      412: components['responses']['PreconditionFailed'];
+      422: components['responses']['Validation'];
+      428: components['responses']['PreconditionRequired'];
+      429: components['responses']['RateLimited'];
+    };
+  };
+  listEstimates: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+        /** @description W6.00 (0.12.0-stage6). Opaque UUID of a repair object (repairs.projects); an object the member may not see — 404, as a missing one. */
+        projectId: components['parameters']['repairProjectId'];
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Successful result. */
+      200: {
+        headers: {
+          'X-Request-Id': components['headers']['RequestId'];
+          /** @description Never cache authenticated, confidential or capability-bearing API responses in shared caches. */
+          'Cache-Control'?: 'private, no-store';
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['EstimateList'];
+        };
+      };
+      400: components['responses']['BadRequest'];
+      401: components['responses']['Unauthenticated'];
+      403: components['responses']['Forbidden'];
+      404: components['responses']['NotFound'];
+      422: components['responses']['Validation'];
+      429: components['responses']['RateLimited'];
+    };
+  };
+  createEstimateRevision: {
+    parameters: {
+      query?: never;
+      header: {
+        /** @description Stable per intended command. Retain record at least 7 days; financial deduplication also retains a durable tenant+actor+operation+key digest receipt. Key is scoped to tenant+actor+operation. Reuse only for an identical request. */
+        'Idempotency-Key': components['parameters']['IdempotencyKey'];
+        /** @description Required for cookie-authenticated state changes; not required with bearer-only authentication. Invalid/missing token or Origin yields 403. Conditional requirement cannot be represented by OpenAPI required=true. */
+        'X-CSRF-Token'?: components['parameters']['Csrf'];
+        /** @description Required and checked against the deployment allowlist for cookie-authenticated state changes and browser public-form submissions/uploads. Never accept wildcard with credentialed requests. */
+        Origin?: components['parameters']['Origin'];
+      };
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+        /** @description W6.00 (0.12.0-stage6). Opaque UUID of a repair object (repairs.projects); an object the member may not see — 404, as a missing one. */
+        projectId: components['parameters']['repairProjectId'];
+      };
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['EstimateRevisionCreate'];
+      };
+    };
+    responses: {
+      /** @description Successful result. */
+      201: {
+        headers: {
+          'X-Request-Id': components['headers']['RequestId'];
+          ETag: components['headers']['ETag'];
+          'Idempotency-Replayed': components['headers']['IdempotencyReplayed'];
+          /** @description Never cache authenticated, confidential or capability-bearing API responses in shared caches. */
+          'Cache-Control'?: 'private, no-store';
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['Estimate'];
+        };
+      };
+      400: components['responses']['BadRequest'];
+      401: components['responses']['Unauthenticated'];
+      402: components['responses']['PlanRequired'];
+      403: components['responses']['Forbidden'];
+      404: components['responses']['NotFound'];
+      409: components['responses']['Conflict'];
+      422: components['responses']['Validation'];
+      428: components['responses']['PreconditionRequired'];
+      429: components['responses']['RateLimited'];
+    };
+  };
+  getEstimate: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+        /** @description W6.00 (0.12.0-stage6). Opaque UUID of a repair object (repairs.projects); an object the member may not see — 404, as a missing one. */
+        projectId: components['parameters']['repairProjectId'];
+        /** @description W6.00. Number of an estimate version of the object (1, 2, …). */
+        version: components['parameters']['estimateVersion'];
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Successful result. */
+      200: {
+        headers: {
+          'X-Request-Id': components['headers']['RequestId'];
+          ETag: components['headers']['ETag'];
+          /** @description Never cache authenticated, confidential or capability-bearing API responses in shared caches. */
+          'Cache-Control'?: 'private, no-store';
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['Estimate'];
+        };
+      };
+      400: components['responses']['BadRequest'];
+      401: components['responses']['Unauthenticated'];
+      403: components['responses']['Forbidden'];
+      404: components['responses']['NotFound'];
+      422: components['responses']['Validation'];
+      429: components['responses']['RateLimited'];
+    };
+  };
+  deleteEstimateDraft: {
+    parameters: {
+      query?: never;
+      header: {
+        /** @description Stable per intended command. Retain record at least 7 days; financial deduplication also retains a durable tenant+actor+operation+key digest receipt. Key is scoped to tenant+actor+operation. Reuse only for an identical request. */
+        'Idempotency-Key': components['parameters']['IdempotencyKey'];
+        /** @description Required for cookie-authenticated state changes; not required with bearer-only authentication. Invalid/missing token or Origin yields 403. Conditional requirement cannot be represented by OpenAPI required=true. */
+        'X-CSRF-Token'?: components['parameters']['Csrf'];
+        /** @description Required and checked against the deployment allowlist for cookie-authenticated state changes and browser public-form submissions/uploads. Never accept wildcard with credentialed requests. */
+        Origin?: components['parameters']['Origin'];
+        /** @description Strong ETag obtained from latest GET or mutation response. * is not accepted. Missing=428; stale=412. Idempotent replay is checked before current revision precondition. */
+        'If-Match': components['parameters']['IfMatch'];
+      };
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+        /** @description W6.00 (0.12.0-stage6). Opaque UUID of a repair object (repairs.projects); an object the member may not see — 404, as a missing one. */
+        projectId: components['parameters']['repairProjectId'];
+        /** @description W6.00. Number of an estimate version of the object (1, 2, …). */
+        version: components['parameters']['estimateVersion'];
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Completed with no response body. */
+      204: {
+        headers: {
+          'X-Request-Id': components['headers']['RequestId'];
+          'Idempotency-Replayed': components['headers']['IdempotencyReplayed'];
+          /** @description Never cache authenticated, confidential or capability-bearing API responses in shared caches. */
+          'Cache-Control'?: 'private, no-store';
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
+      400: components['responses']['BadRequest'];
+      401: components['responses']['Unauthenticated'];
+      402: components['responses']['PlanRequired'];
+      403: components['responses']['Forbidden'];
+      404: components['responses']['NotFound'];
+      409: components['responses']['Conflict'];
+      412: components['responses']['PreconditionFailed'];
+      422: components['responses']['Validation'];
+      428: components['responses']['PreconditionRequired'];
+      429: components['responses']['RateLimited'];
+    };
+  };
+  updateEstimateDraft: {
+    parameters: {
+      query?: never;
+      header: {
+        /** @description Stable per intended command. Retain record at least 7 days; financial deduplication also retains a durable tenant+actor+operation+key digest receipt. Key is scoped to tenant+actor+operation. Reuse only for an identical request. */
+        'Idempotency-Key': components['parameters']['IdempotencyKey'];
+        /** @description Required for cookie-authenticated state changes; not required with bearer-only authentication. Invalid/missing token or Origin yields 403. Conditional requirement cannot be represented by OpenAPI required=true. */
+        'X-CSRF-Token'?: components['parameters']['Csrf'];
+        /** @description Required and checked against the deployment allowlist for cookie-authenticated state changes and browser public-form submissions/uploads. Never accept wildcard with credentialed requests. */
+        Origin?: components['parameters']['Origin'];
+        /** @description Strong ETag obtained from latest GET or mutation response. * is not accepted. Missing=428; stale=412. Idempotent replay is checked before current revision precondition. */
+        'If-Match': components['parameters']['IfMatch'];
+      };
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+        /** @description W6.00 (0.12.0-stage6). Opaque UUID of a repair object (repairs.projects); an object the member may not see — 404, as a missing one. */
+        projectId: components['parameters']['repairProjectId'];
+        /** @description W6.00. Number of an estimate version of the object (1, 2, …). */
+        version: components['parameters']['estimateVersion'];
+      };
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['EstimateDraftPatch'];
+      };
+    };
+    responses: {
+      /** @description Successful result. */
+      200: {
+        headers: {
+          'X-Request-Id': components['headers']['RequestId'];
+          ETag: components['headers']['ETag'];
+          'Idempotency-Replayed': components['headers']['IdempotencyReplayed'];
+          /** @description Never cache authenticated, confidential or capability-bearing API responses in shared caches. */
+          'Cache-Control'?: 'private, no-store';
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['Estimate'];
+        };
+      };
+      400: components['responses']['BadRequest'];
+      401: components['responses']['Unauthenticated'];
+      402: components['responses']['PlanRequired'];
+      403: components['responses']['Forbidden'];
+      404: components['responses']['NotFound'];
+      409: components['responses']['Conflict'];
+      412: components['responses']['PreconditionFailed'];
+      422: components['responses']['Validation'];
+      428: components['responses']['PreconditionRequired'];
+      429: components['responses']['RateLimited'];
+    };
+  };
+  createEstimateFromTemplate: {
+    parameters: {
+      query?: never;
+      header: {
+        /** @description Stable per intended command. Retain record at least 7 days; financial deduplication also retains a durable tenant+actor+operation+key digest receipt. Key is scoped to tenant+actor+operation. Reuse only for an identical request. */
+        'Idempotency-Key': components['parameters']['IdempotencyKey'];
+        /** @description Required for cookie-authenticated state changes; not required with bearer-only authentication. Invalid/missing token or Origin yields 403. Conditional requirement cannot be represented by OpenAPI required=true. */
+        'X-CSRF-Token'?: components['parameters']['Csrf'];
+        /** @description Required and checked against the deployment allowlist for cookie-authenticated state changes and browser public-form submissions/uploads. Never accept wildcard with credentialed requests. */
+        Origin?: components['parameters']['Origin'];
+      };
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+        /** @description W6.00 (0.12.0-stage6). Opaque UUID of a repair object (repairs.projects); an object the member may not see — 404, as a missing one. */
+        projectId: components['parameters']['repairProjectId'];
+      };
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['EstimateFromTemplate'];
+      };
+    };
+    responses: {
+      /** @description Successful result. */
+      201: {
+        headers: {
+          'X-Request-Id': components['headers']['RequestId'];
+          ETag: components['headers']['ETag'];
+          'Idempotency-Replayed': components['headers']['IdempotencyReplayed'];
+          /** @description Never cache authenticated, confidential or capability-bearing API responses in shared caches. */
+          'Cache-Control'?: 'private, no-store';
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['Estimate'];
+        };
+      };
+      400: components['responses']['BadRequest'];
+      401: components['responses']['Unauthenticated'];
+      402: components['responses']['PlanRequired'];
+      403: components['responses']['Forbidden'];
+      404: components['responses']['NotFound'];
+      409: components['responses']['Conflict'];
+      422: components['responses']['Validation'];
+      428: components['responses']['PreconditionRequired'];
+      429: components['responses']['RateLimited'];
+    };
+  };
+  sendEstimate: {
+    parameters: {
+      query?: never;
+      header: {
+        /** @description Stable per intended command. Retain record at least 7 days; financial deduplication also retains a durable tenant+actor+operation+key digest receipt. Key is scoped to tenant+actor+operation. Reuse only for an identical request. */
+        'Idempotency-Key': components['parameters']['IdempotencyKey'];
+        /** @description Required for cookie-authenticated state changes; not required with bearer-only authentication. Invalid/missing token or Origin yields 403. Conditional requirement cannot be represented by OpenAPI required=true. */
+        'X-CSRF-Token'?: components['parameters']['Csrf'];
+        /** @description Required and checked against the deployment allowlist for cookie-authenticated state changes and browser public-form submissions/uploads. Never accept wildcard with credentialed requests. */
+        Origin?: components['parameters']['Origin'];
+        /** @description Strong ETag obtained from latest GET or mutation response. * is not accepted. Missing=428; stale=412. Idempotent replay is checked before current revision precondition. */
+        'If-Match': components['parameters']['IfMatch'];
+      };
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+        /** @description W6.00 (0.12.0-stage6). Opaque UUID of a repair object (repairs.projects); an object the member may not see — 404, as a missing one. */
+        projectId: components['parameters']['repairProjectId'];
+        /** @description W6.00. Number of an estimate version of the object (1, 2, …). */
+        version: components['parameters']['estimateVersion'];
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Successful result. */
+      200: {
+        headers: {
+          'X-Request-Id': components['headers']['RequestId'];
+          ETag: components['headers']['ETag'];
+          'Idempotency-Replayed': components['headers']['IdempotencyReplayed'];
+          /** @description Never cache authenticated, confidential or capability-bearing API responses in shared caches. */
+          'Cache-Control'?: 'private, no-store';
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['Estimate'];
+        };
+      };
+      400: components['responses']['BadRequest'];
+      401: components['responses']['Unauthenticated'];
+      402: components['responses']['PlanRequired'];
+      403: components['responses']['Forbidden'];
+      404: components['responses']['NotFound'];
+      409: components['responses']['Conflict'];
+      412: components['responses']['PreconditionFailed'];
+      422: components['responses']['Validation'];
+      428: components['responses']['PreconditionRequired'];
+      429: components['responses']['RateLimited'];
+    };
+  };
+  recallEstimate: {
+    parameters: {
+      query?: never;
+      header: {
+        /** @description Stable per intended command. Retain record at least 7 days; financial deduplication also retains a durable tenant+actor+operation+key digest receipt. Key is scoped to tenant+actor+operation. Reuse only for an identical request. */
+        'Idempotency-Key': components['parameters']['IdempotencyKey'];
+        /** @description Required for cookie-authenticated state changes; not required with bearer-only authentication. Invalid/missing token or Origin yields 403. Conditional requirement cannot be represented by OpenAPI required=true. */
+        'X-CSRF-Token'?: components['parameters']['Csrf'];
+        /** @description Required and checked against the deployment allowlist for cookie-authenticated state changes and browser public-form submissions/uploads. Never accept wildcard with credentialed requests. */
+        Origin?: components['parameters']['Origin'];
+        /** @description Strong ETag obtained from latest GET or mutation response. * is not accepted. Missing=428; stale=412. Idempotent replay is checked before current revision precondition. */
+        'If-Match': components['parameters']['IfMatch'];
+      };
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+        /** @description W6.00 (0.12.0-stage6). Opaque UUID of a repair object (repairs.projects); an object the member may not see — 404, as a missing one. */
+        projectId: components['parameters']['repairProjectId'];
+        /** @description W6.00. Number of an estimate version of the object (1, 2, …). */
+        version: components['parameters']['estimateVersion'];
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Successful result. */
+      200: {
+        headers: {
+          'X-Request-Id': components['headers']['RequestId'];
+          ETag: components['headers']['ETag'];
+          'Idempotency-Replayed': components['headers']['IdempotencyReplayed'];
+          /** @description Never cache authenticated, confidential or capability-bearing API responses in shared caches. */
+          'Cache-Control'?: 'private, no-store';
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['Estimate'];
+        };
+      };
+      400: components['responses']['BadRequest'];
+      401: components['responses']['Unauthenticated'];
+      402: components['responses']['PlanRequired'];
+      403: components['responses']['Forbidden'];
+      404: components['responses']['NotFound'];
+      409: components['responses']['Conflict'];
+      412: components['responses']['PreconditionFailed'];
+      422: components['responses']['Validation'];
+      428: components['responses']['PreconditionRequired'];
+      429: components['responses']['RateLimited'];
+    };
+  };
+  diffEstimates: {
+    parameters: {
+      query: {
+        /** @description W6.00. Version to compare with. */
+        to: components['parameters']['EstimateDiffTo'];
+      };
+      header?: never;
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+        /** @description W6.00 (0.12.0-stage6). Opaque UUID of a repair object (repairs.projects); an object the member may not see — 404, as a missing one. */
+        projectId: components['parameters']['repairProjectId'];
+        /** @description W6.00. Number of an estimate version of the object (1, 2, …). */
+        version: components['parameters']['estimateVersion'];
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Successful result. */
+      200: {
+        headers: {
+          'X-Request-Id': components['headers']['RequestId'];
+          /** @description Never cache authenticated, confidential or capability-bearing API responses in shared caches. */
+          'Cache-Control'?: 'private, no-store';
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['EstimateDiff'];
+        };
+      };
+      400: components['responses']['BadRequest'];
+      401: components['responses']['Unauthenticated'];
+      403: components['responses']['Forbidden'];
+      404: components['responses']['NotFound'];
+      422: components['responses']['Validation'];
+      429: components['responses']['RateLimited'];
+    };
+  };
+  saveProjectAsTemplate: {
+    parameters: {
+      query?: never;
+      header: {
+        /** @description Stable per intended command. Retain record at least 7 days; financial deduplication also retains a durable tenant+actor+operation+key digest receipt. Key is scoped to tenant+actor+operation. Reuse only for an identical request. */
+        'Idempotency-Key': components['parameters']['IdempotencyKey'];
+        /** @description Required for cookie-authenticated state changes; not required with bearer-only authentication. Invalid/missing token or Origin yields 403. Conditional requirement cannot be represented by OpenAPI required=true. */
+        'X-CSRF-Token'?: components['parameters']['Csrf'];
+        /** @description Required and checked against the deployment allowlist for cookie-authenticated state changes and browser public-form submissions/uploads. Never accept wildcard with credentialed requests. */
+        Origin?: components['parameters']['Origin'];
+      };
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+        /** @description W6.00 (0.12.0-stage6). Opaque UUID of a repair object (repairs.projects); an object the member may not see — 404, as a missing one. */
+        projectId: components['parameters']['repairProjectId'];
+      };
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['TemplateCopy'];
+      };
+    };
+    responses: {
+      /** @description Successful result. */
+      201: {
+        headers: {
+          'X-Request-Id': components['headers']['RequestId'];
+          ETag: components['headers']['ETag'];
+          'Idempotency-Replayed': components['headers']['IdempotencyReplayed'];
+          /** @description Never cache authenticated, confidential or capability-bearing API responses in shared caches. */
+          'Cache-Control'?: 'private, no-store';
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['Template'];
+        };
+      };
+      400: components['responses']['BadRequest'];
+      401: components['responses']['Unauthenticated'];
+      402: components['responses']['PlanRequired'];
+      403: components['responses']['Forbidden'];
+      404: components['responses']['NotFound'];
+      409: components['responses']['Conflict'];
+      422: components['responses']['Validation'];
+      428: components['responses']['PreconditionRequired'];
+      429: components['responses']['RateLimited'];
+    };
+  };
+  listPriceItems: {
+    parameters: {
+      query?: {
+        /** @description Opaque cursor from the preceding response; no offset pagination. */
+        cursor?: components['parameters']['Cursor'];
+        limit?: components['parameters']['Limit'];
+        /** @description W6.00. Search by address, client or foreman. */
+        q?: components['parameters']['RepairQuery'];
+        /** @description W6.00. Kind of a price list item. */
+        kind?: components['parameters']['PriceKindFilter'];
+      };
+      header?: never;
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Successful result. */
+      200: {
+        headers: {
+          'X-Request-Id': components['headers']['RequestId'];
+          /** @description Never cache authenticated, confidential or capability-bearing API responses in shared caches. */
+          'Cache-Control'?: 'private, no-store';
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['PriceItemPage'];
+        };
+      };
+      400: components['responses']['BadRequest'];
+      401: components['responses']['Unauthenticated'];
+      403: components['responses']['Forbidden'];
+      404: components['responses']['NotFound'];
+      422: components['responses']['Validation'];
+      429: components['responses']['RateLimited'];
+    };
+  };
+  createPriceItem: {
+    parameters: {
+      query?: never;
+      header: {
+        /** @description Stable per intended command. Retain record at least 7 days; financial deduplication also retains a durable tenant+actor+operation+key digest receipt. Key is scoped to tenant+actor+operation. Reuse only for an identical request. */
+        'Idempotency-Key': components['parameters']['IdempotencyKey'];
+        /** @description Required for cookie-authenticated state changes; not required with bearer-only authentication. Invalid/missing token or Origin yields 403. Conditional requirement cannot be represented by OpenAPI required=true. */
+        'X-CSRF-Token'?: components['parameters']['Csrf'];
+        /** @description Required and checked against the deployment allowlist for cookie-authenticated state changes and browser public-form submissions/uploads. Never accept wildcard with credentialed requests. */
+        Origin?: components['parameters']['Origin'];
+      };
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+      };
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['PriceItemCreate'];
+      };
+    };
+    responses: {
+      /** @description Successful result. */
+      201: {
+        headers: {
+          'X-Request-Id': components['headers']['RequestId'];
+          ETag: components['headers']['ETag'];
+          'Idempotency-Replayed': components['headers']['IdempotencyReplayed'];
+          /** @description Never cache authenticated, confidential or capability-bearing API responses in shared caches. */
+          'Cache-Control'?: 'private, no-store';
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['PriceItem'];
+        };
+      };
+      400: components['responses']['BadRequest'];
+      401: components['responses']['Unauthenticated'];
+      402: components['responses']['PlanRequired'];
+      403: components['responses']['Forbidden'];
+      404: components['responses']['NotFound'];
+      409: components['responses']['Conflict'];
+      422: components['responses']['Validation'];
+      428: components['responses']['PreconditionRequired'];
+      429: components['responses']['RateLimited'];
+    };
+  };
+  updatePriceItem: {
+    parameters: {
+      query?: never;
+      header: {
+        /** @description Stable per intended command. Retain record at least 7 days; financial deduplication also retains a durable tenant+actor+operation+key digest receipt. Key is scoped to tenant+actor+operation. Reuse only for an identical request. */
+        'Idempotency-Key': components['parameters']['IdempotencyKey'];
+        /** @description Required for cookie-authenticated state changes; not required with bearer-only authentication. Invalid/missing token or Origin yields 403. Conditional requirement cannot be represented by OpenAPI required=true. */
+        'X-CSRF-Token'?: components['parameters']['Csrf'];
+        /** @description Required and checked against the deployment allowlist for cookie-authenticated state changes and browser public-form submissions/uploads. Never accept wildcard with credentialed requests. */
+        Origin?: components['parameters']['Origin'];
+        /** @description Strong ETag obtained from latest GET or mutation response. * is not accepted. Missing=428; stale=412. Idempotent replay is checked before current revision precondition. */
+        'If-Match': components['parameters']['IfMatch'];
+      };
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+        /** @description W6.00. Opaque UUID of a price list item. */
+        priceItemId: components['parameters']['priceItemId'];
+      };
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['PriceItemPatch'];
+      };
+    };
+    responses: {
+      /** @description Successful result. */
+      200: {
+        headers: {
+          'X-Request-Id': components['headers']['RequestId'];
+          ETag: components['headers']['ETag'];
+          'Idempotency-Replayed': components['headers']['IdempotencyReplayed'];
+          /** @description Never cache authenticated, confidential or capability-bearing API responses in shared caches. */
+          'Cache-Control'?: 'private, no-store';
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['PriceItem'];
+        };
+      };
+      400: components['responses']['BadRequest'];
+      401: components['responses']['Unauthenticated'];
+      402: components['responses']['PlanRequired'];
+      403: components['responses']['Forbidden'];
+      404: components['responses']['NotFound'];
+      409: components['responses']['Conflict'];
+      412: components['responses']['PreconditionFailed'];
+      422: components['responses']['Validation'];
+      428: components['responses']['PreconditionRequired'];
+      429: components['responses']['RateLimited'];
+    };
+  };
+  listTemplates: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Successful result. */
+      200: {
+        headers: {
+          'X-Request-Id': components['headers']['RequestId'];
+          /** @description Never cache authenticated, confidential or capability-bearing API responses in shared caches. */
+          'Cache-Control'?: 'private, no-store';
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['TemplateList'];
+        };
+      };
+      400: components['responses']['BadRequest'];
+      401: components['responses']['Unauthenticated'];
+      403: components['responses']['Forbidden'];
+      404: components['responses']['NotFound'];
+      422: components['responses']['Validation'];
+      429: components['responses']['RateLimited'];
+    };
+  };
+  getTemplate: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+        /** @description W6.00. Opaque UUID of an object template. */
+        templateId: components['parameters']['templateId'];
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Successful result. */
+      200: {
+        headers: {
+          'X-Request-Id': components['headers']['RequestId'];
+          ETag: components['headers']['ETag'];
+          /** @description Never cache authenticated, confidential or capability-bearing API responses in shared caches. */
+          'Cache-Control'?: 'private, no-store';
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['Template'];
+        };
+      };
+      400: components['responses']['BadRequest'];
+      401: components['responses']['Unauthenticated'];
+      403: components['responses']['Forbidden'];
+      404: components['responses']['NotFound'];
+      422: components['responses']['Validation'];
+      429: components['responses']['RateLimited'];
+    };
+  };
+  updateTemplate: {
+    parameters: {
+      query?: never;
+      header: {
+        /** @description Stable per intended command. Retain record at least 7 days; financial deduplication also retains a durable tenant+actor+operation+key digest receipt. Key is scoped to tenant+actor+operation. Reuse only for an identical request. */
+        'Idempotency-Key': components['parameters']['IdempotencyKey'];
+        /** @description Required for cookie-authenticated state changes; not required with bearer-only authentication. Invalid/missing token or Origin yields 403. Conditional requirement cannot be represented by OpenAPI required=true. */
+        'X-CSRF-Token'?: components['parameters']['Csrf'];
+        /** @description Required and checked against the deployment allowlist for cookie-authenticated state changes and browser public-form submissions/uploads. Never accept wildcard with credentialed requests. */
+        Origin?: components['parameters']['Origin'];
+        /** @description Strong ETag obtained from latest GET or mutation response. * is not accepted. Missing=428; stale=412. Idempotent replay is checked before current revision precondition. */
+        'If-Match': components['parameters']['IfMatch'];
+      };
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+        /** @description W6.00. Opaque UUID of an object template. */
+        templateId: components['parameters']['templateId'];
+      };
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['TemplatePatch'];
+      };
+    };
+    responses: {
+      /** @description Successful result. */
+      200: {
+        headers: {
+          'X-Request-Id': components['headers']['RequestId'];
+          ETag: components['headers']['ETag'];
+          'Idempotency-Replayed': components['headers']['IdempotencyReplayed'];
+          /** @description Never cache authenticated, confidential or capability-bearing API responses in shared caches. */
+          'Cache-Control'?: 'private, no-store';
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['Template'];
+        };
+      };
+      400: components['responses']['BadRequest'];
+      401: components['responses']['Unauthenticated'];
+      402: components['responses']['PlanRequired'];
+      403: components['responses']['Forbidden'];
+      404: components['responses']['NotFound'];
+      409: components['responses']['Conflict'];
+      412: components['responses']['PreconditionFailed'];
+      422: components['responses']['Validation'];
+      428: components['responses']['PreconditionRequired'];
+      429: components['responses']['RateLimited'];
+    };
+  };
+  copyTemplate: {
+    parameters: {
+      query?: never;
+      header: {
+        /** @description Stable per intended command. Retain record at least 7 days; financial deduplication also retains a durable tenant+actor+operation+key digest receipt. Key is scoped to tenant+actor+operation. Reuse only for an identical request. */
+        'Idempotency-Key': components['parameters']['IdempotencyKey'];
+        /** @description Required for cookie-authenticated state changes; not required with bearer-only authentication. Invalid/missing token or Origin yields 403. Conditional requirement cannot be represented by OpenAPI required=true. */
+        'X-CSRF-Token'?: components['parameters']['Csrf'];
+        /** @description Required and checked against the deployment allowlist for cookie-authenticated state changes and browser public-form submissions/uploads. Never accept wildcard with credentialed requests. */
+        Origin?: components['parameters']['Origin'];
+      };
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+        /** @description W6.00. Opaque UUID of an object template. */
+        templateId: components['parameters']['templateId'];
+      };
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['TemplateCopy'];
+      };
+    };
+    responses: {
+      /** @description Successful result. */
+      201: {
+        headers: {
+          'X-Request-Id': components['headers']['RequestId'];
+          ETag: components['headers']['ETag'];
+          'Idempotency-Replayed': components['headers']['IdempotencyReplayed'];
+          /** @description Never cache authenticated, confidential or capability-bearing API responses in shared caches. */
+          'Cache-Control'?: 'private, no-store';
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['Template'];
+        };
+      };
+      400: components['responses']['BadRequest'];
+      401: components['responses']['Unauthenticated'];
+      402: components['responses']['PlanRequired'];
+      403: components['responses']['Forbidden'];
+      404: components['responses']['NotFound'];
+      409: components['responses']['Conflict'];
+      422: components['responses']['Validation'];
+      428: components['responses']['PreconditionRequired'];
+      429: components['responses']['RateLimited'];
+    };
+  };
+  getSchedule: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+        /** @description W6.00 (0.12.0-stage6). Opaque UUID of a repair object (repairs.projects); an object the member may not see — 404, as a missing one. */
+        projectId: components['parameters']['repairProjectId'];
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Successful result. */
+      200: {
+        headers: {
+          'X-Request-Id': components['headers']['RequestId'];
+          ETag: components['headers']['ETag'];
+          /** @description Never cache authenticated, confidential or capability-bearing API responses in shared caches. */
+          'Cache-Control'?: 'private, no-store';
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['Schedule'];
+        };
+      };
+      400: components['responses']['BadRequest'];
+      401: components['responses']['Unauthenticated'];
+      403: components['responses']['Forbidden'];
+      404: components['responses']['NotFound'];
+      422: components['responses']['Validation'];
+      429: components['responses']['RateLimited'];
+    };
+  };
+  createScheduleFromEstimate: {
+    parameters: {
+      query?: never;
+      header: {
+        /** @description Stable per intended command. Retain record at least 7 days; financial deduplication also retains a durable tenant+actor+operation+key digest receipt. Key is scoped to tenant+actor+operation. Reuse only for an identical request. */
+        'Idempotency-Key': components['parameters']['IdempotencyKey'];
+        /** @description Required for cookie-authenticated state changes; not required with bearer-only authentication. Invalid/missing token or Origin yields 403. Conditional requirement cannot be represented by OpenAPI required=true. */
+        'X-CSRF-Token'?: components['parameters']['Csrf'];
+        /** @description Required and checked against the deployment allowlist for cookie-authenticated state changes and browser public-form submissions/uploads. Never accept wildcard with credentialed requests. */
+        Origin?: components['parameters']['Origin'];
+      };
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+        /** @description W6.00 (0.12.0-stage6). Opaque UUID of a repair object (repairs.projects); an object the member may not see — 404, as a missing one. */
+        projectId: components['parameters']['repairProjectId'];
+      };
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['ScheduleFromEstimate'];
+      };
+    };
+    responses: {
+      /** @description Successful result. */
+      201: {
+        headers: {
+          'X-Request-Id': components['headers']['RequestId'];
+          ETag: components['headers']['ETag'];
+          'Idempotency-Replayed': components['headers']['IdempotencyReplayed'];
+          /** @description Never cache authenticated, confidential or capability-bearing API responses in shared caches. */
+          'Cache-Control'?: 'private, no-store';
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['Schedule'];
+        };
+      };
+      400: components['responses']['BadRequest'];
+      401: components['responses']['Unauthenticated'];
+      402: components['responses']['PlanRequired'];
+      403: components['responses']['Forbidden'];
+      404: components['responses']['NotFound'];
+      409: components['responses']['Conflict'];
+      422: components['responses']['Validation'];
+      428: components['responses']['PreconditionRequired'];
+      429: components['responses']['RateLimited'];
+    };
+  };
+  previewScheduleChange: {
+    parameters: {
+      query?: never;
+      header: {
+        /** @description Stable per intended command. Retain record at least 7 days; financial deduplication also retains a durable tenant+actor+operation+key digest receipt. Key is scoped to tenant+actor+operation. Reuse only for an identical request. */
+        'Idempotency-Key': components['parameters']['IdempotencyKey'];
+        /** @description Required for cookie-authenticated state changes; not required with bearer-only authentication. Invalid/missing token or Origin yields 403. Conditional requirement cannot be represented by OpenAPI required=true. */
+        'X-CSRF-Token'?: components['parameters']['Csrf'];
+        /** @description Required and checked against the deployment allowlist for cookie-authenticated state changes and browser public-form submissions/uploads. Never accept wildcard with credentialed requests. */
+        Origin?: components['parameters']['Origin'];
+      };
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+        /** @description W6.00 (0.12.0-stage6). Opaque UUID of a repair object (repairs.projects); an object the member may not see — 404, as a missing one. */
+        projectId: components['parameters']['repairProjectId'];
+      };
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['SchedulePreviewRequest'];
+      };
+    };
+    responses: {
+      /** @description Successful result. */
+      200: {
+        headers: {
+          'X-Request-Id': components['headers']['RequestId'];
+          'Idempotency-Replayed': components['headers']['IdempotencyReplayed'];
+          /** @description Never cache authenticated, confidential or capability-bearing API responses in shared caches. */
+          'Cache-Control'?: 'private, no-store';
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['SchedulePreview'];
+        };
+      };
+      400: components['responses']['BadRequest'];
+      401: components['responses']['Unauthenticated'];
+      402: components['responses']['PlanRequired'];
+      403: components['responses']['Forbidden'];
+      404: components['responses']['NotFound'];
+      409: components['responses']['Conflict'];
+      422: components['responses']['Validation'];
+      428: components['responses']['PreconditionRequired'];
+      429: components['responses']['RateLimited'];
+    };
+  };
+  applyScheduleChange: {
+    parameters: {
+      query?: never;
+      header: {
+        /** @description Stable per intended command. Retain record at least 7 days; financial deduplication also retains a durable tenant+actor+operation+key digest receipt. Key is scoped to tenant+actor+operation. Reuse only for an identical request. */
+        'Idempotency-Key': components['parameters']['IdempotencyKey'];
+        /** @description Required for cookie-authenticated state changes; not required with bearer-only authentication. Invalid/missing token or Origin yields 403. Conditional requirement cannot be represented by OpenAPI required=true. */
+        'X-CSRF-Token'?: components['parameters']['Csrf'];
+        /** @description Required and checked against the deployment allowlist for cookie-authenticated state changes and browser public-form submissions/uploads. Never accept wildcard with credentialed requests. */
+        Origin?: components['parameters']['Origin'];
+        /** @description Strong ETag obtained from latest GET or mutation response. * is not accepted. Missing=428; stale=412. Idempotent replay is checked before current revision precondition. */
+        'If-Match': components['parameters']['IfMatch'];
+      };
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+        /** @description W6.00 (0.12.0-stage6). Opaque UUID of a repair object (repairs.projects); an object the member may not see — 404, as a missing one. */
+        projectId: components['parameters']['repairProjectId'];
+      };
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['ScheduleChangeApply'];
+      };
+    };
+    responses: {
+      /** @description Successful result. */
+      200: {
+        headers: {
+          'X-Request-Id': components['headers']['RequestId'];
+          ETag: components['headers']['ETag'];
+          'Idempotency-Replayed': components['headers']['IdempotencyReplayed'];
+          /** @description Never cache authenticated, confidential or capability-bearing API responses in shared caches. */
+          'Cache-Control'?: 'private, no-store';
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['Schedule'];
+        };
+      };
+      400: components['responses']['BadRequest'];
+      401: components['responses']['Unauthenticated'];
+      402: components['responses']['PlanRequired'];
+      403: components['responses']['Forbidden'];
+      404: components['responses']['NotFound'];
+      409: components['responses']['Conflict'];
+      412: components['responses']['PreconditionFailed'];
+      422: components['responses']['Validation'];
+      428: components['responses']['PreconditionRequired'];
+      429: components['responses']['RateLimited'];
+    };
+  };
+  setScheduleStageExecutor: {
+    parameters: {
+      query?: never;
+      header: {
+        /** @description Stable per intended command. Retain record at least 7 days; financial deduplication also retains a durable tenant+actor+operation+key digest receipt. Key is scoped to tenant+actor+operation. Reuse only for an identical request. */
+        'Idempotency-Key': components['parameters']['IdempotencyKey'];
+        /** @description Required for cookie-authenticated state changes; not required with bearer-only authentication. Invalid/missing token or Origin yields 403. Conditional requirement cannot be represented by OpenAPI required=true. */
+        'X-CSRF-Token'?: components['parameters']['Csrf'];
+        /** @description Required and checked against the deployment allowlist for cookie-authenticated state changes and browser public-form submissions/uploads. Never accept wildcard with credentialed requests. */
+        Origin?: components['parameters']['Origin'];
+        /** @description Strong ETag obtained from latest GET or mutation response. * is not accepted. Missing=428; stale=412. Idempotent replay is checked before current revision precondition. */
+        'If-Match': components['parameters']['IfMatch'];
+      };
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+        /** @description W6.00 (0.12.0-stage6). Opaque UUID of a repair object (repairs.projects); an object the member may not see — 404, as a missing one. */
+        projectId: components['parameters']['repairProjectId'];
+        /** @description W6.00. Opaque UUID of a schedule stage. */
+        stageId: components['parameters']['stageId'];
+      };
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['StageExecutorSet'];
+      };
+    };
+    responses: {
+      /** @description Successful result. */
+      200: {
+        headers: {
+          'X-Request-Id': components['headers']['RequestId'];
+          'Idempotency-Replayed': components['headers']['IdempotencyReplayed'];
+          /** @description Never cache authenticated, confidential or capability-bearing API responses in shared caches. */
+          'Cache-Control'?: 'private, no-store';
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['ScheduleStage'];
+        };
+      };
+      400: components['responses']['BadRequest'];
+      401: components['responses']['Unauthenticated'];
+      402: components['responses']['PlanRequired'];
+      403: components['responses']['Forbidden'];
+      404: components['responses']['NotFound'];
+      409: components['responses']['Conflict'];
+      412: components['responses']['PreconditionFailed'];
+      422: components['responses']['Validation'];
+      428: components['responses']['PreconditionRequired'];
+      429: components['responses']['RateLimited'];
+    };
+  };
+  createScheduleBaseline: {
+    parameters: {
+      query?: never;
+      header: {
+        /** @description Stable per intended command. Retain record at least 7 days; financial deduplication also retains a durable tenant+actor+operation+key digest receipt. Key is scoped to tenant+actor+operation. Reuse only for an identical request. */
+        'Idempotency-Key': components['parameters']['IdempotencyKey'];
+        /** @description Required for cookie-authenticated state changes; not required with bearer-only authentication. Invalid/missing token or Origin yields 403. Conditional requirement cannot be represented by OpenAPI required=true. */
+        'X-CSRF-Token'?: components['parameters']['Csrf'];
+        /** @description Required and checked against the deployment allowlist for cookie-authenticated state changes and browser public-form submissions/uploads. Never accept wildcard with credentialed requests. */
+        Origin?: components['parameters']['Origin'];
+        /** @description Strong ETag obtained from latest GET or mutation response. * is not accepted. Missing=428; stale=412. Idempotent replay is checked before current revision precondition. */
+        'If-Match': components['parameters']['IfMatch'];
+      };
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+        /** @description W6.00 (0.12.0-stage6). Opaque UUID of a repair object (repairs.projects); an object the member may not see — 404, as a missing one. */
+        projectId: components['parameters']['repairProjectId'];
+      };
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['ScheduleBaselineCreate'];
+      };
+    };
+    responses: {
+      /** @description Successful result. */
+      201: {
+        headers: {
+          'X-Request-Id': components['headers']['RequestId'];
+          ETag: components['headers']['ETag'];
+          'Idempotency-Replayed': components['headers']['IdempotencyReplayed'];
+          /** @description Never cache authenticated, confidential or capability-bearing API responses in shared caches. */
+          'Cache-Control'?: 'private, no-store';
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['Schedule'];
+        };
+      };
+      400: components['responses']['BadRequest'];
+      401: components['responses']['Unauthenticated'];
+      402: components['responses']['PlanRequired'];
+      403: components['responses']['Forbidden'];
+      404: components['responses']['NotFound'];
+      409: components['responses']['Conflict'];
+      412: components['responses']['PreconditionFailed'];
+      422: components['responses']['Validation'];
+      428: components['responses']['PreconditionRequired'];
+      429: components['responses']['RateLimited'];
+    };
+  };
+  handOverRepairProject: {
+    parameters: {
+      query?: never;
+      header: {
+        /** @description Stable per intended command. Retain record at least 7 days; financial deduplication also retains a durable tenant+actor+operation+key digest receipt. Key is scoped to tenant+actor+operation. Reuse only for an identical request. */
+        'Idempotency-Key': components['parameters']['IdempotencyKey'];
+        /** @description Required for cookie-authenticated state changes; not required with bearer-only authentication. Invalid/missing token or Origin yields 403. Conditional requirement cannot be represented by OpenAPI required=true. */
+        'X-CSRF-Token'?: components['parameters']['Csrf'];
+        /** @description Required and checked against the deployment allowlist for cookie-authenticated state changes and browser public-form submissions/uploads. Never accept wildcard with credentialed requests. */
+        Origin?: components['parameters']['Origin'];
+        /** @description Strong ETag obtained from latest GET or mutation response. * is not accepted. Missing=428; stale=412. Idempotent replay is checked before current revision precondition. */
+        'If-Match': components['parameters']['IfMatch'];
+      };
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+        /** @description W6.00 (0.12.0-stage6). Opaque UUID of a repair object (repairs.projects); an object the member may not see — 404, as a missing one. */
+        projectId: components['parameters']['repairProjectId'];
+      };
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['RepairHandOver'];
+      };
+    };
+    responses: {
+      /** @description Successful result. */
+      200: {
+        headers: {
+          'X-Request-Id': components['headers']['RequestId'];
+          ETag: components['headers']['ETag'];
+          'Idempotency-Replayed': components['headers']['IdempotencyReplayed'];
+          /** @description Never cache authenticated, confidential or capability-bearing API responses in shared caches. */
+          'Cache-Control'?: 'private, no-store';
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['RepairProject'];
+        };
+      };
+      400: components['responses']['BadRequest'];
+      401: components['responses']['Unauthenticated'];
+      402: components['responses']['PlanRequired'];
+      403: components['responses']['Forbidden'];
+      404: components['responses']['NotFound'];
+      409: components['responses']['Conflict'];
+      412: components['responses']['PreconditionFailed'];
+      422: components['responses']['Validation'];
+      428: components['responses']['PreconditionRequired'];
+      429: components['responses']['RateLimited'];
+    };
+  };
+  listRepairDocuments: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+        /** @description W6.00 (0.12.0-stage6). Opaque UUID of a repair object (repairs.projects); an object the member may not see — 404, as a missing one. */
+        projectId: components['parameters']['repairProjectId'];
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Successful result. */
+      200: {
+        headers: {
+          'X-Request-Id': components['headers']['RequestId'];
+          /** @description Never cache authenticated, confidential or capability-bearing API responses in shared caches. */
+          'Cache-Control'?: 'private, no-store';
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['RepairDocumentList'];
+        };
+      };
+      400: components['responses']['BadRequest'];
+      401: components['responses']['Unauthenticated'];
+      403: components['responses']['Forbidden'];
+      404: components['responses']['NotFound'];
+      422: components['responses']['Validation'];
+      429: components['responses']['RateLimited'];
+    };
+  };
+  requestDocumentSignature: {
+    parameters: {
+      query?: never;
+      header: {
+        /** @description Stable per intended command. Retain record at least 7 days; financial deduplication also retains a durable tenant+actor+operation+key digest receipt. Key is scoped to tenant+actor+operation. Reuse only for an identical request. */
+        'Idempotency-Key': components['parameters']['IdempotencyKey'];
+        /** @description Required for cookie-authenticated state changes; not required with bearer-only authentication. Invalid/missing token or Origin yields 403. Conditional requirement cannot be represented by OpenAPI required=true. */
+        'X-CSRF-Token'?: components['parameters']['Csrf'];
+        /** @description Required and checked against the deployment allowlist for cookie-authenticated state changes and browser public-form submissions/uploads. Never accept wildcard with credentialed requests. */
+        Origin?: components['parameters']['Origin'];
+      };
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+        /** @description W6.00. Opaque UUID of a document of an object (contract, act, invoice). */
+        documentId: components['parameters']['documentId'];
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Successful result. */
+      201: {
+        headers: {
+          'X-Request-Id': components['headers']['RequestId'];
+          'Idempotency-Replayed': components['headers']['IdempotencyReplayed'];
+          /** @description Never cache authenticated, confidential or capability-bearing API responses in shared caches. */
+          'Cache-Control'?: 'private, no-store';
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['RepairSignRequestResult'];
+        };
+      };
+      400: components['responses']['BadRequest'];
+      401: components['responses']['Unauthenticated'];
+      402: components['responses']['PlanRequired'];
+      403: components['responses']['Forbidden'];
+      404: components['responses']['NotFound'];
+      409: components['responses']['Conflict'];
+      422: components['responses']['Validation'];
+      428: components['responses']['PreconditionRequired'];
+      429: components['responses']['RateLimited'];
+    };
+  };
+  listSupplyRequests: {
+    parameters: {
+      query?: {
+        /** @description Opaque cursor from the preceding response; no offset pagination. */
+        cursor?: components['parameters']['Cursor'];
+        limit?: components['parameters']['Limit'];
+        /** @description W6.00. State of a supply request. */
+        state?: components['parameters']['SupplyStateFilter'];
+        /** @description W6.00. Only the records of one object. */
+        projectId?: components['parameters']['RepairProjectFilter'];
+      };
+      header?: never;
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Successful result. */
+      200: {
+        headers: {
+          'X-Request-Id': components['headers']['RequestId'];
+          /** @description Never cache authenticated, confidential or capability-bearing API responses in shared caches. */
+          'Cache-Control'?: 'private, no-store';
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['SupplyRequestPage'];
+        };
+      };
+      400: components['responses']['BadRequest'];
+      401: components['responses']['Unauthenticated'];
+      403: components['responses']['Forbidden'];
+      404: components['responses']['NotFound'];
+      422: components['responses']['Validation'];
+      429: components['responses']['RateLimited'];
+    };
+  };
+  createSupplyRequest: {
+    parameters: {
+      query?: never;
+      header: {
+        /** @description Stable per intended command. Retain record at least 7 days; financial deduplication also retains a durable tenant+actor+operation+key digest receipt. Key is scoped to tenant+actor+operation. Reuse only for an identical request. */
+        'Idempotency-Key': components['parameters']['IdempotencyKey'];
+        /** @description Required for cookie-authenticated state changes; not required with bearer-only authentication. Invalid/missing token or Origin yields 403. Conditional requirement cannot be represented by OpenAPI required=true. */
+        'X-CSRF-Token'?: components['parameters']['Csrf'];
+        /** @description Required and checked against the deployment allowlist for cookie-authenticated state changes and browser public-form submissions/uploads. Never accept wildcard with credentialed requests. */
+        Origin?: components['parameters']['Origin'];
+      };
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+        /** @description W6.00 (0.12.0-stage6). Opaque UUID of a repair object (repairs.projects); an object the member may not see — 404, as a missing one. */
+        projectId: components['parameters']['repairProjectId'];
+      };
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['SupplyRequestCreate'];
+      };
+    };
+    responses: {
+      /** @description Successful result. */
+      201: {
+        headers: {
+          'X-Request-Id': components['headers']['RequestId'];
+          ETag: components['headers']['ETag'];
+          'Idempotency-Replayed': components['headers']['IdempotencyReplayed'];
+          /** @description Never cache authenticated, confidential or capability-bearing API responses in shared caches. */
+          'Cache-Control'?: 'private, no-store';
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['SupplyRequest'];
+        };
+      };
+      400: components['responses']['BadRequest'];
+      401: components['responses']['Unauthenticated'];
+      402: components['responses']['PlanRequired'];
+      403: components['responses']['Forbidden'];
+      404: components['responses']['NotFound'];
+      409: components['responses']['Conflict'];
+      422: components['responses']['Validation'];
+      428: components['responses']['PreconditionRequired'];
+      429: components['responses']['RateLimited'];
+    };
+  };
+  reserveSupplyRequest: {
+    parameters: {
+      query?: never;
+      header: {
+        /** @description Stable per intended command. Retain record at least 7 days; financial deduplication also retains a durable tenant+actor+operation+key digest receipt. Key is scoped to tenant+actor+operation. Reuse only for an identical request. */
+        'Idempotency-Key': components['parameters']['IdempotencyKey'];
+        /** @description Required for cookie-authenticated state changes; not required with bearer-only authentication. Invalid/missing token or Origin yields 403. Conditional requirement cannot be represented by OpenAPI required=true. */
+        'X-CSRF-Token'?: components['parameters']['Csrf'];
+        /** @description Required and checked against the deployment allowlist for cookie-authenticated state changes and browser public-form submissions/uploads. Never accept wildcard with credentialed requests. */
+        Origin?: components['parameters']['Origin'];
+        /** @description Strong ETag obtained from latest GET or mutation response. * is not accepted. Missing=428; stale=412. Idempotent replay is checked before current revision precondition. */
+        'If-Match': components['parameters']['IfMatch'];
+      };
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+        /** @description W6.00. Opaque UUID of a supply request. */
+        supplyRequestId: components['parameters']['supplyRequestId'];
+      };
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['SupplyReserve'];
+      };
+    };
+    responses: {
+      /** @description Successful result. */
+      200: {
+        headers: {
+          'X-Request-Id': components['headers']['RequestId'];
+          ETag: components['headers']['ETag'];
+          'Idempotency-Replayed': components['headers']['IdempotencyReplayed'];
+          /** @description Never cache authenticated, confidential or capability-bearing API responses in shared caches. */
+          'Cache-Control'?: 'private, no-store';
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['SupplyRequest'];
+        };
+      };
+      400: components['responses']['BadRequest'];
+      401: components['responses']['Unauthenticated'];
+      402: components['responses']['PlanRequired'];
+      403: components['responses']['Forbidden'];
+      404: components['responses']['NotFound'];
+      409: components['responses']['Conflict'];
+      412: components['responses']['PreconditionFailed'];
+      422: components['responses']['Validation'];
+      428: components['responses']['PreconditionRequired'];
+      429: components['responses']['RateLimited'];
+    };
+  };
+  issueSupplyRequest: {
+    parameters: {
+      query?: never;
+      header: {
+        /** @description Stable per intended command. Retain record at least 7 days; financial deduplication also retains a durable tenant+actor+operation+key digest receipt. Key is scoped to tenant+actor+operation. Reuse only for an identical request. */
+        'Idempotency-Key': components['parameters']['IdempotencyKey'];
+        /** @description Required for cookie-authenticated state changes; not required with bearer-only authentication. Invalid/missing token or Origin yields 403. Conditional requirement cannot be represented by OpenAPI required=true. */
+        'X-CSRF-Token'?: components['parameters']['Csrf'];
+        /** @description Required and checked against the deployment allowlist for cookie-authenticated state changes and browser public-form submissions/uploads. Never accept wildcard with credentialed requests. */
+        Origin?: components['parameters']['Origin'];
+        /** @description Strong ETag obtained from latest GET or mutation response. * is not accepted. Missing=428; stale=412. Idempotent replay is checked before current revision precondition. */
+        'If-Match': components['parameters']['IfMatch'];
+      };
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+        /** @description W6.00. Opaque UUID of a supply request. */
+        supplyRequestId: components['parameters']['supplyRequestId'];
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Successful result. */
+      200: {
+        headers: {
+          'X-Request-Id': components['headers']['RequestId'];
+          ETag: components['headers']['ETag'];
+          'Idempotency-Replayed': components['headers']['IdempotencyReplayed'];
+          /** @description Never cache authenticated, confidential or capability-bearing API responses in shared caches. */
+          'Cache-Control'?: 'private, no-store';
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['SupplyRequest'];
+        };
+      };
+      400: components['responses']['BadRequest'];
+      401: components['responses']['Unauthenticated'];
+      402: components['responses']['PlanRequired'];
+      403: components['responses']['Forbidden'];
+      404: components['responses']['NotFound'];
+      409: components['responses']['Conflict'];
+      412: components['responses']['PreconditionFailed'];
+      422: components['responses']['Validation'];
+      428: components['responses']['PreconditionRequired'];
+      429: components['responses']['RateLimited'];
+    };
+  };
+  consumeSupplyRequest: {
+    parameters: {
+      query?: never;
+      header: {
+        /** @description Stable per intended command. Retain record at least 7 days; financial deduplication also retains a durable tenant+actor+operation+key digest receipt. Key is scoped to tenant+actor+operation. Reuse only for an identical request. */
+        'Idempotency-Key': components['parameters']['IdempotencyKey'];
+        /** @description Required for cookie-authenticated state changes; not required with bearer-only authentication. Invalid/missing token or Origin yields 403. Conditional requirement cannot be represented by OpenAPI required=true. */
+        'X-CSRF-Token'?: components['parameters']['Csrf'];
+        /** @description Required and checked against the deployment allowlist for cookie-authenticated state changes and browser public-form submissions/uploads. Never accept wildcard with credentialed requests. */
+        Origin?: components['parameters']['Origin'];
+        /** @description Strong ETag obtained from latest GET or mutation response. * is not accepted. Missing=428; stale=412. Idempotent replay is checked before current revision precondition. */
+        'If-Match': components['parameters']['IfMatch'];
+      };
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+        /** @description W6.00. Opaque UUID of a supply request. */
+        supplyRequestId: components['parameters']['supplyRequestId'];
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Successful result. */
+      200: {
+        headers: {
+          'X-Request-Id': components['headers']['RequestId'];
+          ETag: components['headers']['ETag'];
+          'Idempotency-Replayed': components['headers']['IdempotencyReplayed'];
+          /** @description Never cache authenticated, confidential or capability-bearing API responses in shared caches. */
+          'Cache-Control'?: 'private, no-store';
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['SupplyRequest'];
+        };
+      };
+      400: components['responses']['BadRequest'];
+      401: components['responses']['Unauthenticated'];
+      402: components['responses']['PlanRequired'];
+      403: components['responses']['Forbidden'];
+      404: components['responses']['NotFound'];
+      409: components['responses']['Conflict'];
+      412: components['responses']['PreconditionFailed'];
+      422: components['responses']['Validation'];
+      428: components['responses']['PreconditionRequired'];
+      429: components['responses']['RateLimited'];
+    };
+  };
+  listPurchases: {
+    parameters: {
+      query?: {
+        /** @description Opaque cursor from the preceding response; no offset pagination. */
+        cursor?: components['parameters']['Cursor'];
+        limit?: components['parameters']['Limit'];
+      };
+      header?: never;
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Successful result. */
+      200: {
+        headers: {
+          'X-Request-Id': components['headers']['RequestId'];
+          /** @description Never cache authenticated, confidential or capability-bearing API responses in shared caches. */
+          'Cache-Control'?: 'private, no-store';
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['PurchasePage'];
+        };
+      };
+      400: components['responses']['BadRequest'];
+      401: components['responses']['Unauthenticated'];
+      403: components['responses']['Forbidden'];
+      404: components['responses']['NotFound'];
+      422: components['responses']['Validation'];
+      429: components['responses']['RateLimited'];
+    };
+  };
+  createPurchase: {
+    parameters: {
+      query?: never;
+      header: {
+        /** @description Stable per intended command. Retain record at least 7 days; financial deduplication also retains a durable tenant+actor+operation+key digest receipt. Key is scoped to tenant+actor+operation. Reuse only for an identical request. */
+        'Idempotency-Key': components['parameters']['IdempotencyKey'];
+        /** @description Required for cookie-authenticated state changes; not required with bearer-only authentication. Invalid/missing token or Origin yields 403. Conditional requirement cannot be represented by OpenAPI required=true. */
+        'X-CSRF-Token'?: components['parameters']['Csrf'];
+        /** @description Required and checked against the deployment allowlist for cookie-authenticated state changes and browser public-form submissions/uploads. Never accept wildcard with credentialed requests. */
+        Origin?: components['parameters']['Origin'];
+      };
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+      };
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['PurchaseCreate'];
+      };
+    };
+    responses: {
+      /** @description Successful result. */
+      201: {
+        headers: {
+          'X-Request-Id': components['headers']['RequestId'];
+          ETag: components['headers']['ETag'];
+          'Idempotency-Replayed': components['headers']['IdempotencyReplayed'];
+          /** @description Never cache authenticated, confidential or capability-bearing API responses in shared caches. */
+          'Cache-Control'?: 'private, no-store';
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['Purchase'];
+        };
+      };
+      400: components['responses']['BadRequest'];
+      401: components['responses']['Unauthenticated'];
+      402: components['responses']['PlanRequired'];
+      403: components['responses']['Forbidden'];
+      404: components['responses']['NotFound'];
+      409: components['responses']['Conflict'];
+      422: components['responses']['Validation'];
+      428: components['responses']['PreconditionRequired'];
+      429: components['responses']['RateLimited'];
+    };
+  };
+  receivePurchase: {
+    parameters: {
+      query?: never;
+      header: {
+        /** @description Stable per intended command. Retain record at least 7 days; financial deduplication also retains a durable tenant+actor+operation+key digest receipt. Key is scoped to tenant+actor+operation. Reuse only for an identical request. */
+        'Idempotency-Key': components['parameters']['IdempotencyKey'];
+        /** @description Required for cookie-authenticated state changes; not required with bearer-only authentication. Invalid/missing token or Origin yields 403. Conditional requirement cannot be represented by OpenAPI required=true. */
+        'X-CSRF-Token'?: components['parameters']['Csrf'];
+        /** @description Required and checked against the deployment allowlist for cookie-authenticated state changes and browser public-form submissions/uploads. Never accept wildcard with credentialed requests. */
+        Origin?: components['parameters']['Origin'];
+        /** @description Strong ETag obtained from latest GET or mutation response. * is not accepted. Missing=428; stale=412. Idempotent replay is checked before current revision precondition. */
+        'If-Match': components['parameters']['IfMatch'];
+      };
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+        /** @description W6.00. Opaque UUID of a purchase. */
+        purchaseId: components['parameters']['purchaseId'];
+      };
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['PurchaseReceive'];
+      };
+    };
+    responses: {
+      /** @description Successful result. */
+      200: {
+        headers: {
+          'X-Request-Id': components['headers']['RequestId'];
+          ETag: components['headers']['ETag'];
+          'Idempotency-Replayed': components['headers']['IdempotencyReplayed'];
+          /** @description Never cache authenticated, confidential or capability-bearing API responses in shared caches. */
+          'Cache-Control'?: 'private, no-store';
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['Purchase'];
+        };
+      };
+      400: components['responses']['BadRequest'];
+      401: components['responses']['Unauthenticated'];
+      402: components['responses']['PlanRequired'];
+      403: components['responses']['Forbidden'];
+      404: components['responses']['NotFound'];
+      409: components['responses']['Conflict'];
+      412: components['responses']['PreconditionFailed'];
+      422: components['responses']['Validation'];
+      428: components['responses']['PreconditionRequired'];
+      429: components['responses']['RateLimited'];
+    };
+  };
+  listProjectStock: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Successful result. */
+      200: {
+        headers: {
+          'X-Request-Id': components['headers']['RequestId'];
+          /** @description Never cache authenticated, confidential or capability-bearing API responses in shared caches. */
+          'Cache-Control'?: 'private, no-store';
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['ProjectStockList'];
+        };
+      };
+      400: components['responses']['BadRequest'];
+      401: components['responses']['Unauthenticated'];
+      403: components['responses']['Forbidden'];
+      404: components['responses']['NotFound'];
+      422: components['responses']['Validation'];
+      429: components['responses']['RateLimited'];
+    };
+  };
+  returnProjectStock: {
+    parameters: {
+      query?: never;
+      header: {
+        /** @description Stable per intended command. Retain record at least 7 days; financial deduplication also retains a durable tenant+actor+operation+key digest receipt. Key is scoped to tenant+actor+operation. Reuse only for an identical request. */
+        'Idempotency-Key': components['parameters']['IdempotencyKey'];
+        /** @description Required for cookie-authenticated state changes; not required with bearer-only authentication. Invalid/missing token or Origin yields 403. Conditional requirement cannot be represented by OpenAPI required=true. */
+        'X-CSRF-Token'?: components['parameters']['Csrf'];
+        /** @description Required and checked against the deployment allowlist for cookie-authenticated state changes and browser public-form submissions/uploads. Never accept wildcard with credentialed requests. */
+        Origin?: components['parameters']['Origin'];
+      };
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+        /** @description W6.00 (0.12.0-stage6). Opaque UUID of a repair object (repairs.projects); an object the member may not see — 404, as a missing one. */
+        projectId: components['parameters']['repairProjectId'];
+      };
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['StockReturn'];
+      };
+    };
+    responses: {
+      /** @description Successful result. */
+      200: {
+        headers: {
+          'X-Request-Id': components['headers']['RequestId'];
+          'Idempotency-Replayed': components['headers']['IdempotencyReplayed'];
+          /** @description Never cache authenticated, confidential or capability-bearing API responses in shared caches. */
+          'Cache-Control'?: 'private, no-store';
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['StockMoveResult'];
+        };
+      };
+      400: components['responses']['BadRequest'];
+      401: components['responses']['Unauthenticated'];
+      402: components['responses']['PlanRequired'];
+      403: components['responses']['Forbidden'];
+      404: components['responses']['NotFound'];
+      409: components['responses']['Conflict'];
+      422: components['responses']['Validation'];
+      428: components['responses']['PreconditionRequired'];
+      429: components['responses']['RateLimited'];
+    };
+  };
+  transferProjectStock: {
+    parameters: {
+      query?: never;
+      header: {
+        /** @description Stable per intended command. Retain record at least 7 days; financial deduplication also retains a durable tenant+actor+operation+key digest receipt. Key is scoped to tenant+actor+operation. Reuse only for an identical request. */
+        'Idempotency-Key': components['parameters']['IdempotencyKey'];
+        /** @description Required for cookie-authenticated state changes; not required with bearer-only authentication. Invalid/missing token or Origin yields 403. Conditional requirement cannot be represented by OpenAPI required=true. */
+        'X-CSRF-Token'?: components['parameters']['Csrf'];
+        /** @description Required and checked against the deployment allowlist for cookie-authenticated state changes and browser public-form submissions/uploads. Never accept wildcard with credentialed requests. */
+        Origin?: components['parameters']['Origin'];
+      };
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+        /** @description W6.00 (0.12.0-stage6). Opaque UUID of a repair object (repairs.projects); an object the member may not see — 404, as a missing one. */
+        projectId: components['parameters']['repairProjectId'];
+      };
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['StockTransfer'];
+      };
+    };
+    responses: {
+      /** @description Successful result. */
+      200: {
+        headers: {
+          'X-Request-Id': components['headers']['RequestId'];
+          'Idempotency-Replayed': components['headers']['IdempotencyReplayed'];
+          /** @description Never cache authenticated, confidential or capability-bearing API responses in shared caches. */
+          'Cache-Control'?: 'private, no-store';
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['StockMoveResult'];
+        };
+      };
+      400: components['responses']['BadRequest'];
+      401: components['responses']['Unauthenticated'];
+      402: components['responses']['PlanRequired'];
+      403: components['responses']['Forbidden'];
+      404: components['responses']['NotFound'];
+      409: components['responses']['Conflict'];
+      422: components['responses']['Validation'];
+      428: components['responses']['PreconditionRequired'];
+      429: components['responses']['RateLimited'];
+    };
+  };
+  getProjectFinance: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+        /** @description W6.00 (0.12.0-stage6). Opaque UUID of a repair object (repairs.projects); an object the member may not see — 404, as a missing one. */
+        projectId: components['parameters']['repairProjectId'];
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Successful result. */
+      200: {
+        headers: {
+          'X-Request-Id': components['headers']['RequestId'];
+          /** @description Never cache authenticated, confidential or capability-bearing API responses in shared caches. */
+          'Cache-Control'?: 'private, no-store';
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['ProjectFinance'];
+        };
+      };
+      400: components['responses']['BadRequest'];
+      401: components['responses']['Unauthenticated'];
+      403: components['responses']['Forbidden'];
+      404: components['responses']['NotFound'];
+      422: components['responses']['Validation'];
+      429: components['responses']['RateLimited'];
+    };
+  };
+  listCrewAccruals: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+        /** @description W6.00 (0.12.0-stage6). Opaque UUID of a repair object (repairs.projects); an object the member may not see — 404, as a missing one. */
+        projectId: components['parameters']['repairProjectId'];
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Successful result. */
+      200: {
+        headers: {
+          'X-Request-Id': components['headers']['RequestId'];
+          /** @description Never cache authenticated, confidential or capability-bearing API responses in shared caches. */
+          'Cache-Control'?: 'private, no-store';
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['CrewAccrualList'];
+        };
+      };
+      400: components['responses']['BadRequest'];
+      401: components['responses']['Unauthenticated'];
+      403: components['responses']['Forbidden'];
+      404: components['responses']['NotFound'];
+      422: components['responses']['Validation'];
+      429: components['responses']['RateLimited'];
+    };
+  };
+  accrueByAct: {
+    parameters: {
+      query?: never;
+      header: {
+        /** @description Stable per intended command. Retain record at least 7 days; financial deduplication also retains a durable tenant+actor+operation+key digest receipt. Key is scoped to tenant+actor+operation. Reuse only for an identical request. */
+        'Idempotency-Key': components['parameters']['IdempotencyKey'];
+        /** @description Required for cookie-authenticated state changes; not required with bearer-only authentication. Invalid/missing token or Origin yields 403. Conditional requirement cannot be represented by OpenAPI required=true. */
+        'X-CSRF-Token'?: components['parameters']['Csrf'];
+        /** @description Required and checked against the deployment allowlist for cookie-authenticated state changes and browser public-form submissions/uploads. Never accept wildcard with credentialed requests. */
+        Origin?: components['parameters']['Origin'];
+      };
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+        /** @description W6.00. Opaque UUID of a document of an object (contract, act, invoice). */
+        documentId: components['parameters']['documentId'];
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Successful result. */
+      201: {
+        headers: {
+          'X-Request-Id': components['headers']['RequestId'];
+          'Idempotency-Replayed': components['headers']['IdempotencyReplayed'];
+          /** @description Never cache authenticated, confidential or capability-bearing API responses in shared caches. */
+          'Cache-Control'?: 'private, no-store';
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['CrewAccrualList'];
+        };
+      };
+      400: components['responses']['BadRequest'];
+      401: components['responses']['Unauthenticated'];
+      402: components['responses']['PlanRequired'];
+      403: components['responses']['Forbidden'];
+      404: components['responses']['NotFound'];
+      409: components['responses']['Conflict'];
+      422: components['responses']['Validation'];
+      428: components['responses']['PreconditionRequired'];
+      429: components['responses']['RateLimited'];
+    };
+  };
+  payoutAccruals: {
+    parameters: {
+      query?: never;
+      header: {
+        /** @description Stable per intended command. Retain record at least 7 days; financial deduplication also retains a durable tenant+actor+operation+key digest receipt. Key is scoped to tenant+actor+operation. Reuse only for an identical request. */
+        'Idempotency-Key': components['parameters']['IdempotencyKey'];
+        /** @description Required for cookie-authenticated state changes; not required with bearer-only authentication. Invalid/missing token or Origin yields 403. Conditional requirement cannot be represented by OpenAPI required=true. */
+        'X-CSRF-Token'?: components['parameters']['Csrf'];
+        /** @description Required and checked against the deployment allowlist for cookie-authenticated state changes and browser public-form submissions/uploads. Never accept wildcard with credentialed requests. */
+        Origin?: components['parameters']['Origin'];
+      };
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+      };
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['PayoutRequest'];
+      };
+    };
+    responses: {
+      /** @description Successful result. */
+      200: {
+        headers: {
+          'X-Request-Id': components['headers']['RequestId'];
+          'Idempotency-Replayed': components['headers']['IdempotencyReplayed'];
+          /** @description Never cache authenticated, confidential or capability-bearing API responses in shared caches. */
+          'Cache-Control'?: 'private, no-store';
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['PayoutResult'];
+        };
+      };
+      400: components['responses']['BadRequest'];
+      401: components['responses']['Unauthenticated'];
+      402: components['responses']['PlanRequired'];
+      403: components['responses']['Forbidden'];
+      404: components['responses']['NotFound'];
+      409: components['responses']['Conflict'];
+      422: components['responses']['Validation'];
+      428: components['responses']['PreconditionRequired'];
+      429: components['responses']['RateLimited'];
+    };
+  };
+  listSubcontractors: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+        /** @description W6.00 (0.12.0-stage6). Opaque UUID of a repair object (repairs.projects); an object the member may not see — 404, as a missing one. */
+        projectId: components['parameters']['repairProjectId'];
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Successful result. */
+      200: {
+        headers: {
+          'X-Request-Id': components['headers']['RequestId'];
+          /** @description Never cache authenticated, confidential or capability-bearing API responses in shared caches. */
+          'Cache-Control'?: 'private, no-store';
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['SubcontractorList'];
+        };
+      };
+      400: components['responses']['BadRequest'];
+      401: components['responses']['Unauthenticated'];
+      403: components['responses']['Forbidden'];
+      404: components['responses']['NotFound'];
+      422: components['responses']['Validation'];
+      429: components['responses']['RateLimited'];
+    };
+  };
+  setSubcontractorAccess: {
+    parameters: {
+      query?: never;
+      header: {
+        /** @description Stable per intended command. Retain record at least 7 days; financial deduplication also retains a durable tenant+actor+operation+key digest receipt. Key is scoped to tenant+actor+operation. Reuse only for an identical request. */
+        'Idempotency-Key': components['parameters']['IdempotencyKey'];
+        /** @description Required for cookie-authenticated state changes; not required with bearer-only authentication. Invalid/missing token or Origin yields 403. Conditional requirement cannot be represented by OpenAPI required=true. */
+        'X-CSRF-Token'?: components['parameters']['Csrf'];
+        /** @description Required and checked against the deployment allowlist for cookie-authenticated state changes and browser public-form submissions/uploads. Never accept wildcard with credentialed requests. */
+        Origin?: components['parameters']['Origin'];
+      };
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+        /** @description W6.00 (0.12.0-stage6). Opaque UUID of a repair object (repairs.projects); an object the member may not see — 404, as a missing one. */
+        projectId: components['parameters']['repairProjectId'];
+        /** @description W6.00. Opaque UUID of a subcontractor of the object. */
+        subcontractorId: components['parameters']['subcontractorId'];
+      };
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['SubcontractorAccessSet'];
+      };
+    };
+    responses: {
+      /** @description Successful result. */
+      200: {
+        headers: {
+          'X-Request-Id': components['headers']['RequestId'];
+          'Idempotency-Replayed': components['headers']['IdempotencyReplayed'];
+          /** @description Never cache authenticated, confidential or capability-bearing API responses in shared caches. */
+          'Cache-Control'?: 'private, no-store';
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['Subcontractor'];
+        };
+      };
+      400: components['responses']['BadRequest'];
+      401: components['responses']['Unauthenticated'];
+      402: components['responses']['PlanRequired'];
+      403: components['responses']['Forbidden'];
+      404: components['responses']['NotFound'];
+      409: components['responses']['Conflict'];
+      422: components['responses']['Validation'];
+      428: components['responses']['PreconditionRequired'];
+      429: components['responses']['RateLimited'];
+    };
+  };
+  getClientLink: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+        /** @description W6.00 (0.12.0-stage6). Opaque UUID of a repair object (repairs.projects); an object the member may not see — 404, as a missing one. */
+        projectId: components['parameters']['repairProjectId'];
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Successful result. */
+      200: {
+        headers: {
+          'X-Request-Id': components['headers']['RequestId'];
+          /** @description Never cache authenticated, confidential or capability-bearing API responses in shared caches. */
+          'Cache-Control'?: 'private, no-store';
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['ClientLink'];
+        };
+      };
+      400: components['responses']['BadRequest'];
+      401: components['responses']['Unauthenticated'];
+      403: components['responses']['Forbidden'];
+      404: components['responses']['NotFound'];
+      422: components['responses']['Validation'];
+      429: components['responses']['RateLimited'];
+    };
+  };
+  issueClientLink: {
+    parameters: {
+      query?: never;
+      header: {
+        /** @description Stable per intended command. Retain record at least 7 days; financial deduplication also retains a durable tenant+actor+operation+key digest receipt. Key is scoped to tenant+actor+operation. Reuse only for an identical request. */
+        'Idempotency-Key': components['parameters']['IdempotencyKey'];
+        /** @description Required for cookie-authenticated state changes; not required with bearer-only authentication. Invalid/missing token or Origin yields 403. Conditional requirement cannot be represented by OpenAPI required=true. */
+        'X-CSRF-Token'?: components['parameters']['Csrf'];
+        /** @description Required and checked against the deployment allowlist for cookie-authenticated state changes and browser public-form submissions/uploads. Never accept wildcard with credentialed requests. */
+        Origin?: components['parameters']['Origin'];
+      };
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+        /** @description W6.00 (0.12.0-stage6). Opaque UUID of a repair object (repairs.projects); an object the member may not see — 404, as a missing one. */
+        projectId: components['parameters']['repairProjectId'];
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Successful result. */
+      201: {
+        headers: {
+          'X-Request-Id': components['headers']['RequestId'];
+          'Idempotency-Replayed': components['headers']['IdempotencyReplayed'];
+          /** @description Never cache authenticated, confidential or capability-bearing API responses in shared caches. */
+          'Cache-Control'?: 'private, no-store';
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['ClientLinkIssued'];
+        };
+      };
+      400: components['responses']['BadRequest'];
+      401: components['responses']['Unauthenticated'];
+      402: components['responses']['PlanRequired'];
+      403: components['responses']['Forbidden'];
+      404: components['responses']['NotFound'];
+      409: components['responses']['Conflict'];
+      422: components['responses']['Validation'];
+      428: components['responses']['PreconditionRequired'];
+      429: components['responses']['RateLimited'];
+    };
+  };
+  revokeClientLink: {
+    parameters: {
+      query?: never;
+      header: {
+        /** @description Stable per intended command. Retain record at least 7 days; financial deduplication also retains a durable tenant+actor+operation+key digest receipt. Key is scoped to tenant+actor+operation. Reuse only for an identical request. */
+        'Idempotency-Key': components['parameters']['IdempotencyKey'];
+        /** @description Required for cookie-authenticated state changes; not required with bearer-only authentication. Invalid/missing token or Origin yields 403. Conditional requirement cannot be represented by OpenAPI required=true. */
+        'X-CSRF-Token'?: components['parameters']['Csrf'];
+        /** @description Required and checked against the deployment allowlist for cookie-authenticated state changes and browser public-form submissions/uploads. Never accept wildcard with credentialed requests. */
+        Origin?: components['parameters']['Origin'];
+      };
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+        /** @description W6.00 (0.12.0-stage6). Opaque UUID of a repair object (repairs.projects); an object the member may not see — 404, as a missing one. */
+        projectId: components['parameters']['repairProjectId'];
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Completed with no response body. */
+      204: {
+        headers: {
+          'X-Request-Id': components['headers']['RequestId'];
+          'Idempotency-Replayed': components['headers']['IdempotencyReplayed'];
+          /** @description Never cache authenticated, confidential or capability-bearing API responses in shared caches. */
+          'Cache-Control'?: 'private, no-store';
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
+      400: components['responses']['BadRequest'];
+      401: components['responses']['Unauthenticated'];
+      402: components['responses']['PlanRequired'];
+      403: components['responses']['Forbidden'];
+      404: components['responses']['NotFound'];
+      409: components['responses']['Conflict'];
+      422: components['responses']['Validation'];
+      428: components['responses']['PreconditionRequired'];
+      429: components['responses']['RateLimited'];
+    };
+  };
+  getClientCabinet: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        /** @description W6.00. Unpredictable revocable capability of the client cabinet (Q-W4.00-repair-10): the tenant is resolved by the token digest; only the hash is stored; the link lives until the object is handed over. Avoid logs and referrer leakage. */
+        clientToken: components['parameters']['clientToken'];
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Successful result. */
+      200: {
+        headers: {
+          'X-Request-Id': components['headers']['RequestId'];
+          /** @description Never cache authenticated, confidential or capability-bearing API responses in shared caches. */
+          'Cache-Control'?: 'private, no-store';
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['ClientCabinet'];
+        };
+      };
+      400: components['responses']['BadRequest'];
+      403: components['responses']['Forbidden'];
+      404: components['responses']['NotFound'];
+      410: components['responses']['Gone'];
+      422: components['responses']['Validation'];
+      429: components['responses']['RateLimited'];
+    };
+  };
+  approveEstimateByClient: {
+    parameters: {
+      query?: never;
+      header: {
+        /** @description Stable per intended command. Retain record at least 7 days; financial deduplication also retains a durable tenant+actor+operation+key digest receipt. Key is scoped to tenant+actor+operation. Reuse only for an identical request. */
+        'Idempotency-Key': components['parameters']['IdempotencyKey'];
+        /** @description Required and checked against the deployment allowlist for cookie-authenticated state changes and browser public-form submissions/uploads. Never accept wildcard with credentialed requests. */
+        Origin?: components['parameters']['Origin'];
+      };
+      path: {
+        /** @description W6.00. Unpredictable revocable capability of the client cabinet (Q-W4.00-repair-10): the tenant is resolved by the token digest; only the hash is stored; the link lives until the object is handed over. Avoid logs and referrer leakage. */
+        clientToken: components['parameters']['clientToken'];
+        /** @description W6.00. Number of an estimate version of the object (1, 2, …). */
+        version: components['parameters']['estimateVersion'];
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Successful result. */
+      200: {
+        headers: {
+          'X-Request-Id': components['headers']['RequestId'];
+          'Idempotency-Replayed': components['headers']['IdempotencyReplayed'];
+          /** @description Never cache authenticated, confidential or capability-bearing API responses in shared caches. */
+          'Cache-Control'?: 'private, no-store';
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['ClientEstimateApproval'];
+        };
+      };
+      400: components['responses']['BadRequest'];
+      403: components['responses']['Forbidden'];
+      404: components['responses']['NotFound'];
+      409: components['responses']['Conflict'];
+      410: components['responses']['Gone'];
+      422: components['responses']['Validation'];
+      428: components['responses']['PreconditionRequired'];
+      429: components['responses']['RateLimited'];
+    };
+  };
+  signDocumentByClient: {
+    parameters: {
+      query?: never;
+      header: {
+        /** @description Stable per intended command. Retain record at least 7 days; financial deduplication also retains a durable tenant+actor+operation+key digest receipt. Key is scoped to tenant+actor+operation. Reuse only for an identical request. */
+        'Idempotency-Key': components['parameters']['IdempotencyKey'];
+        /** @description Required and checked against the deployment allowlist for cookie-authenticated state changes and browser public-form submissions/uploads. Never accept wildcard with credentialed requests. */
+        Origin?: components['parameters']['Origin'];
+      };
+      path: {
+        /** @description W6.00. Unpredictable revocable capability of the client cabinet (Q-W4.00-repair-10): the tenant is resolved by the token digest; only the hash is stored; the link lives until the object is handed over. Avoid logs and referrer leakage. */
+        clientToken: components['parameters']['clientToken'];
+        /** @description W6.00. Opaque UUID of a document of an object (contract, act, invoice). */
+        documentId: components['parameters']['documentId'];
+      };
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['ClientSign'];
+      };
+    };
+    responses: {
+      /** @description Successful result. */
+      200: {
+        headers: {
+          'X-Request-Id': components['headers']['RequestId'];
+          'Idempotency-Replayed': components['headers']['IdempotencyReplayed'];
+          /** @description Never cache authenticated, confidential or capability-bearing API responses in shared caches. */
+          'Cache-Control'?: 'private, no-store';
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['RepairDocument'];
+        };
+      };
+      400: components['responses']['BadRequest'];
+      403: components['responses']['Forbidden'];
+      404: components['responses']['NotFound'];
+      409: components['responses']['Conflict'];
+      410: components['responses']['Gone'];
       422: components['responses']['Validation'];
       428: components['responses']['PreconditionRequired'];
       429: components['responses']['RateLimited'];

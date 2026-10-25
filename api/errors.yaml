@@ -221,6 +221,44 @@ codes:
         title: Перемещение уже принято или отклонено
         ui: Перемещение уже принято
         source: "W5.00; склад, касса (analysis/dor/cash.md §2.4)"
+      # W6.00 (0.12.0-stage6): «Ремонт и стройка» (repair.md §2.4).
+      foreman_already_assigned:
+        title: У объекта уже есть прораб
+        ui: "Прораб уже назначен: {имя}"
+        source: "W6.00; api.js:921 (assignForeman)"
+      work_log_already_reviewed:
+        title: Отметка уже принята или возвращена
+        ui: "Отметка уже обработана"
+        source: "W6.00; api.js:913 (acceptWorkLog)"
+      project_handed_over:
+        title: Объект сдан — новые отметки, допработы и правки закрыты
+        ui: "Объект сдан: новые отметки не принимаются"
+        source: "W6.00; api.js:899–907, 935–942; Q-W4.00-repair-21"
+      schedule_stage_locked:
+        title: Начавшийся или выполненный этап не сдвигается
+        source: "W6.00; design/docs/19 «Правила графика»"
+      repair_stock_insufficient:
+        title: На складе или на объекте нет нужного остатка — в минус не уходим
+        source: "W6.00; design/docs/19 «Снабжение»; Q-W4.00-repair-18"
+      repair_project_not_draft:
+        title: Операция только для объекта-черновика (до договора)
+        source: "W6.00; repair.md §2.2 (activateRepairProject)"
+      repair_estimate_not_approved:
+        title: Нет согласованной версии сметы — объект не активируется, график не строится
+        source: "W6.00; Q-W4.00-repair-16"
+      repair_act_not_signed:
+        title: Акт ещё не подписан заказчиком — начисления и сдача закрыты
+        ui: "Начисление откроется после подписания акта заказчиком"
+        source: "W6.00; Ремонт и стройка.dc.html:560–575"
+      repair_document_state:
+        title: Документ не в том состоянии для операции (подпись запрашивают у черновика)
+        source: "W6.00; repair.md §2.2 (requestDocumentSignature)"
+      repair_supply_state:
+        title: Заявка снабжения не в том состоянии для операции
+        source: "W6.00; design/docs/19 «Снабжение»"
+      repair_purchase_state:
+        title: Закупка уже получена
+        source: "W6.00; design/docs/19 «Снабжение»"
   separation_of_duties_conflict:
     status: 409
     title: Финансовое право + функция driver
@@ -317,6 +355,26 @@ codes:
     ui: Ошибки у полей из `violations`
     retryable: false
     source: 12:64
+    # W6.00 (0.12.0-stage6): «Ремонт и стройка» (repair.md §2.4).
+    reasons:
+      work_volume_exceeds_plan:
+        title: Объём отметки больше плана объекта более чем на 10 %
+        ui: "Объём превышает план более чем на 10%: осталось {N} {ед}"
+        source: "W6.00; api.js:899–907 (addWorkLog)"
+      schedule_reason_required:
+        title: Перенос этапа сохраняется только с причиной
+        ui: "Выберите причину"
+        source: "W6.00; Ремонт и стройка.dc.html: «Сохранить и уведомить» неактивна без причины"
+      sms_code_invalid:
+        title: Код из SMS не совпал
+        source: "W6.00; решение о SMS-провайдере (кандидат 31 плана v2); Q-W4.00-repair-11 (дорисовка ввода кода)"
+      sms_code_expired:
+        title: Срок кода из SMS истёк — запросите новый
+        source: "W6.00; решение о SMS-провайдере (кандидат 31 плана v2); Q-W4.00-repair-11"
+      price_item_duplicate:
+        title: Позиция с таким названием уже есть в справочнике расценок
+        ui: "Такая позиция уже есть в справочнике"
+        source: "W6.00; Ремонт и стройка.dc.html:1490–1542"
   odometer_decrease:
     status: 422
     title: Пробег меньше начального

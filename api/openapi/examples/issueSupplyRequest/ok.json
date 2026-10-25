@@ -1,0 +1,19 @@
+{
+  "id": "3ff3a5cc-c537-568d-be27-a19c6b37244c",
+  "number": "З-21",
+  "projectId": "4d132a07-45c5-55a7-9738-9117f7f86838",
+  "projectName": "ЖК Северный парк · квартира 117",
+  "priceItemId": "6123d5f7-3d8a-5ca9-915a-385ee7ceaaec",
+  "name": "Плинтус МДФ",
+  "unit": "m",
+  "quantity": "42",
+  "needBy": "2026-10-22",
+  "state": "issued",
+  "createdAt": "2026-10-05T08:00:00Z",
+  "revision": 3,
+  "warehouseId": "d2034b58-ffd7-5bbe-8081-733d8c5fb89b",
+  "cost": {
+    "amountMinor": 1113000,
+    "currency": "RUB"
+  }
+}

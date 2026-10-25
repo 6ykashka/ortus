@@ -1,0 +1,19 @@
+{
+  "id": "d0f95bee-a6da-53c4-8bf0-3e0c0a6dc2eb",
+  "number": "З-13",
+  "projectId": "73e23d56-2d9c-5a86-91d2-8969d90d1f5b",
+  "projectName": "ЖК Речной · квартира 42",
+  "priceItemId": "397ebbea-3961-5c4a-96a8-8a276ed48997",
+  "name": "Кабель и фурнитура",
+  "unit": "set",
+  "quantity": "1",
+  "needBy": "2026-10-14",
+  "state": "used",
+  "createdAt": "2026-10-05T08:00:00Z",
+  "revision": 2,
+  "purchaseId": "27dea568-06bf-5707-85f1-1243550dd676",
+  "cost": {
+    "amountMinor": 1320000,
+    "currency": "RUB"
+  }
+}

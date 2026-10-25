@@ -354,7 +354,7 @@ func TestRequestReadsSubjectOnce(t *testing.T) {
 func TestDriverClosed(t *testing.T) {
 	t.Parallel()
 	p := authz.DefaultPolicy()
-	if got := kit.ClosedByDriver(p); !slices.Equal(got, []string{"cash.payroll.post", "cash.reports.finance", "chat.pdn.read", "fleet.earnings.manage", "fleet.earnings.read"}) {
+	if got := kit.ClosedByDriver(p); !slices.Equal(got, []string{"cash.payroll.post", "cash.reports.finance", "chat.pdn.read", "fleet.earnings.manage", "fleet.earnings.read", "repairs.crew.accrue", "repairs.crew.pay"}) {
 		t.Errorf("ClosedByDriver = %v", got)
 	}
 	if got := kit.DriverClosed(p, []string{"fleet.trips.read", "fleet.earnings.read", "members.read"}); !slices.Equal(got, []string{"fleet.earnings.read"}) {

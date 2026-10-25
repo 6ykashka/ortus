@@ -16,6 +16,8 @@ export interface OperationInfo {
   stage4: boolean;
   /** Операция тега Cash на экране этапа 5 (W5.00): хендлер src/msw/cash/, примеры, кейсы. */
   stage5: boolean;
+  /** Операция тега Repairs на экране этапа 6 (W6.00): хендлер src/msw/repairs/, примеры, кейсы. */
+  stage6: boolean;
   permissions: string[];
   mode: 'all' | 'any';
   scope: string;
