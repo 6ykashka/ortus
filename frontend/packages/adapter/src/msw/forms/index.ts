@@ -38,6 +38,7 @@ import {
   type Violation,
   nextVersion,
 } from './engine.ts';
+import { publicFormsHandlers } from './public.ts';
 import {
   CRM,
   current,
@@ -1022,4 +1023,7 @@ export const formsHandlers: Registry = {
     v.data.groups = v.data.groups.filter((x) => x.id !== g.id);
     return { status: 204 };
   },
+
+  // W4.70: тег PublicForms — гость по публичной ссылке (msw/forms/public.ts).
+  ...publicFormsHandlers,
 };

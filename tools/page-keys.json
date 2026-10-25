@@ -216,6 +216,24 @@
       "reference": "Ортус CRM.dc.html"
     },
     {
+      "key": "form-fill",
+      "stage": 4,
+      "paths": [
+        "frontend/apps/web/src/routes/core/forms/fill/**",
+        "frontend/apps/web/src/routes/core/forms/preview.tsx"
+      ],
+      "reference": null
+    },
+    {
+      "key": "public-form",
+      "stage": 4,
+      "paths": [
+        "frontend/apps/web/src/routes/public-form/**",
+        "frontend/apps/web/src/routes/core/forms/fill/**"
+      ],
+      "reference": null
+    },
+    {
       "key": "tasks-people",
       "stage": 4,
       "paths": [

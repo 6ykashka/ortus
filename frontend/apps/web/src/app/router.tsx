@@ -3,7 +3,9 @@
 //   /t/$tenantId/$page   — оболочка организации, страница из реестра (`src/app/pages.tsx`);
 //   /platform/$page      — оболочка оператора;
 //   /auth/login          — вход (W1.22, src/routes/auth/LoginPage.tsx);
-//   /auth/invitation     — принятие приглашения по ссылке письма #token= (W1.22, Q-W1.41-3).
+//   /auth/invitation     — принятие приглашения по ссылке письма #token= (W1.22, Q-W1.41-3);
+//   /forms/$formId       — заполнение формы сотрудником без оболочки (W4.70, Q-W4.00-forms-21);
+//   /f/$token            — публичная форма гостя без сессии, `?embed=1` — встраивание (W4.70).
 // Неизвестный маршрут и неизвестная страница — «Страница не найдена» (404).
 import {
   createBrowserHistory,
@@ -36,6 +38,18 @@ const invitationRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: '/auth/invitation',
   component: lazyRouteComponent(() => import('../routes/auth/InvitationPage.tsx')),
+});
+
+const formFillRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: '/forms/$formId',
+  component: lazyRouteComponent(() => import('../routes/core/forms/fill/FormFillScreen.tsx')),
+});
+
+const publicFormRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: '/f/$token',
+  component: lazyRouteComponent(() => import('../routes/public-form/PublicFormScreen.tsx')),
 });
 
 const tenantRoute = createRoute({
@@ -77,6 +91,8 @@ const routeTree = rootRoute.addChildren([
   indexRoute,
   loginRoute,
   invitationRoute,
+  formFillRoute,
+  publicFormRoute,
   tenantRoute,
   tenantPageRoute,
   platformRoute,

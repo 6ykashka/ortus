@@ -5,7 +5,7 @@
 // «Назад / Далее / Отправить», «Спасибо…», ссылка на страницу БЗ правила, результат теста, «Пройти ещё раз».
 import type { components } from '@ortus/api-client';
 import { format, forms as F } from '@ortus/texts';
-import { type ReactElement, useState } from 'react';
+import { type ReactElement, type ReactNode, useState } from 'react';
 
 import {
   type Def,
@@ -93,25 +93,66 @@ export function Preview(p: {
   );
 }
 
-interface RenderState {
-  page: number;
-  vals: Record<string, string | string[]>;
-  errs: Record<string, string>;
-  done: boolean;
+type RenderVals = Record<string, string | string[]>;
+
+/** Итог экрана «Спасибо» заполнения (W4.70): текст и результат теста от сервера. */
+export interface FillDone {
+  text: string;
+  score: { text: string; ok: boolean } | null;
+}
+
+/** Ответ отправки (W4.70): «Спасибо», ошибки ввода по вопросам (с переходом на их страницу) или остановка. */
+export type FillOutcome =
+  | ({ kind: 'done' } & FillDone)
+  | { kind: 'errors'; errs: Record<string, string> }
+  | { kind: 'stop' };
+
+/** Доступность своего поля вопроса: подпись, ошибка, описание ошибки. */
+export interface FieldA11y {
+  label: string;
+  invalid: boolean;
+  describedBy: string | undefined;
 }
 
 /**
- * Рендер формы (dc:114–140): ответ в памяти; «Отправить» после проверок показывает «Спасибо». `onSubmit` (W4.28) —
- * отправка ответа вместо демонстрационного завершения.
+ * Заполнение формы сотрудником и гостем (W4.70, Q-W4.00-forms-19): `submit` — отправка ответа вместо демонстрационного
+ * завершения; `control` — своё поле вопроса (файлы, варианты CRM) или null — поле рендера.
+ */
+export interface FillHooks {
+  submit: (vals: RenderVals) => Promise<FillOutcome>;
+  control?: (
+    x: Question,
+    v: string | string[] | undefined,
+    setV: (v: string | string[]) => void,
+    a11y: FieldA11y,
+  ) => ReactElement | null;
+}
+
+interface RenderState {
+  page: number;
+  vals: RenderVals;
+  errs: Record<string, string>;
+  done: boolean;
+  /** Идёт отправка (W4.70). */
+  busy: boolean;
+  /** «Спасибо» от сервера (W4.70). */
+  result: FillDone | null;
+}
+
+/**
+ * Рендер формы (dc:114–140): ответ в памяти; «Отправить» после проверок показывает «Спасибо». `fill` (W4.70) —
+ * отправка ответа вместо демонстрационного завершения и свои поля; без `onRestart` нет «Пройти ещё раз»
+ * (заполнение — Q-W4.00-forms-19).
  */
 export function FormRender(p: {
   def: Def;
   title: string;
   settings: S['FormSettings'];
   tenantName: string;
-  kbLink: string | null;
+  kbLink: ReactNode;
   device: Device;
-  onRestart: () => void;
+  onRestart?: () => void;
+  fill?: FillHooks;
 }): ReactElement {
   const [seed] = useState(rnd);
   const [st, setSt] = useState<RenderState>(() => ({
@@ -119,6 +160,8 @@ export function FormRender(p: {
     vals: previewDefaults(p.def),
     errs: {},
     done: false,
+    busy: false,
+    result: null,
   }));
   const S = p.settings;
   const vals: Vals = st.vals;
@@ -135,6 +178,7 @@ export function FormRender(p: {
     }));
 
   const next = () => {
+    if (st.busy) return;
     const errs: Record<string, string> = {};
     for (const x of cur?.qs ?? []) {
       const e = pvCheck(x, vals[x.key]);
@@ -144,10 +188,30 @@ export function FormRender(p: {
       setSt((s) => ({ ...s, errs }));
       return;
     }
-    setSt((s) => (last ? { ...s, errs: {}, done: true } : { ...s, errs: {}, page: s.page + 1 }));
+    if (!last || !p.fill) {
+      setSt((s) => (last ? { ...s, errs: {}, done: true } : { ...s, errs: {}, page: s.page + 1 }));
+      return;
+    }
+    // W4.70: отправка ответа; ошибки сервера по вопросам — на странице первого из них.
+    setSt((s) => ({ ...s, errs: {}, busy: true }));
+    void p.fill
+      .submit(st.vals)
+      .catch((): FillOutcome => ({ kind: 'stop' }))
+      .then((o) =>
+        setSt((s) => {
+          if (o.kind === 'done') {
+            return { ...s, busy: false, done: true, result: { text: o.text, score: o.score } };
+          }
+          if (o.kind === 'errors') {
+            const at = pages.findIndex((x) => x.qs.some((q) => q.key in o.errs));
+            return { ...s, busy: false, errs: o.errs, page: at >= 0 ? at : s.page };
+          }
+          return { ...s, busy: false };
+        }),
+      );
   };
 
-  const sc = st.done && S.scoring ? scoreOf(p.def, vals) : null;
+  const sc = st.done && S.scoring && !st.result ? scoreOf(p.def, vals) : null;
   const pass = S.passScore;
   const passed = sc && pass !== null ? sc.got >= pass : true;
   const scoreText = sc
@@ -182,21 +246,27 @@ export function FormRender(p: {
       {st.done ? (
         <div className="ox-fm-pv-done">
           <Glyph name="task_alt" size={44} />
-          <strong>{S.confirmationText || F.preview.thanks}</strong>
+          <strong>{st.result?.text ?? (S.confirmationText || F.preview.thanks)}</strong>
           {p.kbLink ? (
             <span className="ox-fm-pv-kb">
               <Glyph name="menu_book" size={18} />
               {p.kbLink}
             </span>
           ) : null}
-          {sc && S.showScore ? (
+          {st.result?.score ? (
+            <span className="ox-fm-pv-score" data-tone={st.result.score.ok ? 'ok' : 'warn'}>
+              {st.result.score.text}
+            </span>
+          ) : sc && S.showScore ? (
             <span className="ox-fm-pv-score" data-tone={passed ? 'ok' : 'warn'}>
               {scoreText}
             </span>
           ) : null}
-          <button type="button" className="ox-fm-btn" onClick={p.onRestart}>
-            {F.preview.again}
-          </button>
+          {p.onRestart ? (
+            <button type="button" className="ox-fm-btn" onClick={p.onRestart}>
+              {F.preview.again}
+            </button>
+          ) : null}
         </div>
       ) : (
         <>
@@ -204,7 +274,15 @@ export function FormRender(p: {
             <h3 className="ox-fm-pv-page">{cur.page.title}</h3>
           ) : null}
           {(cur?.qs ?? []).map((x) => (
-            <Field key={x.key} x={x} vals={st.vals} err={st.errs[x.key]} seed={seed} setV={setV} />
+            <Field
+              key={x.key}
+              x={x}
+              vals={st.vals}
+              err={st.errs[x.key]}
+              seed={seed}
+              setV={setV}
+              own={p.fill?.control}
+            />
           ))}
           {!cur ? <p className="ox-fm-pv-empty">{F.preview.empty}</p> : null}
           <div className="ox-fm-pv-nav">
@@ -224,6 +302,8 @@ export function FormRender(p: {
               className="ox-fm-btn"
               data-variant="primary"
               data-size="next"
+              aria-disabled={st.busy || undefined}
+              aria-busy={st.busy || undefined}
               onClick={next}
             >
               {last ? F.preview.submit : F.preview.next}
@@ -241,12 +321,14 @@ function Field({
   err,
   seed,
   setV,
+  own,
 }: {
   x: Question;
   vals: RenderState['vals'];
   err: string | undefined;
   seed: string;
   setV: (id: string, v: string | string[]) => void;
+  own: FillHooks['control'];
 }): ReactElement {
   const t = x.type;
   const v = vals[x.key];
@@ -259,9 +341,17 @@ function Field({
     );
   }
   const desc = err ? { 'aria-invalid': true as const, 'aria-describedby': errId } : {};
-  let control: ReactElement | null = null;
+  // W4.70: своё поле заполнения (файлы, варианты CRM) вместо демонстрационного.
+  let control: ReactElement | null =
+    own?.(x, v, (nv) => setV(x.key, nv), {
+      label: x.label,
+      invalid: Boolean(err),
+      describedBy: err ? errId : undefined,
+    }) ?? null;
   const inp = IN[t];
-  if (inp || t === 'date') {
+  if (control) {
+    // поле заполнения уже есть
+  } else if (inp || t === 'date') {
     control = (
       <input
         className="ox-fm-pv-input"

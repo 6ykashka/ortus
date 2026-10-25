@@ -60,6 +60,8 @@ const NOT_FROM_DESIGN = [
   // W2.41 (Q-W2.40-3, Q-W2.41-2): экран «Категории расходов» без эталона — справочник тенанта (ответ владельца 17.10).
   'shell.nav.items.expenseCategories',
   'logisticsManager.expenseCategories.',
+  // W4.70 (Q-W4.00-forms-19, Q-W4.05-9): заполнение формы сотрудником и публичная форма гостя — экранов в эталоне нет.
+  'forms.fill.',
 ];
 const PD37_FROM_DESIGN = ['usage', 'requests', 'accounts', 'plans', 'billing', 'branding'];
 

@@ -1362,4 +1362,493 @@ export const formsCases = cases('forms')([
       );
     },
   },
+
+  // ── PublicForms: гость по публичной ссылке (W4.70; поведение backend W4.21 — public.go) ──
+  {
+    title: 'гость читает форму: без баллов и умолчаний скрытых вопросов, оформление, нонс',
+    operationId: 'getPublicForm',
+    expect: 'success',
+    run: async (ctx) => {
+      const s = await as(ctx);
+      const p = await publicForm(ctx, s, 'Тест для гостей', QUIZ);
+      const r = await ctx.anon().get(pub(p.token));
+      expect(r.status).toBe(200);
+      const b = body(r);
+      expect(b).toMatchObject({
+        formId: p.formId,
+        versionId: p.versionId,
+        acceptingResponses: true,
+        uploadAllowed: false,
+        uploadMaxBytes: 0,
+        presentation: {
+          organizationName: 'Альта Групп',
+          progressBar: true,
+          backButton: true,
+          confirmationText: 'Спасибо! Ответ отправлен.',
+          showScore: true,
+        },
+      });
+      expect(String(b.submissionNonce).length).toBeGreaterThanOrEqual(16);
+      const fields = b.definition?.fields ?? [];
+      expect(fields.map((x) => x.key)).toEqual(['q-helmet', 'q-src']);
+      expect(fields[0]?.options).toEqual([
+        { key: 'o1', label: 'Да' },
+        { key: 'o2', label: 'Нет' },
+      ]);
+      expect(fields[1]).not.toHaveProperty('defaultValue');
+      expect(fields[1]).toMatchObject({ hidden: true });
+    },
+  },
+  {
+    title: 'закрытая форма — 200 и acceptingResponses false; форма с файлом — загрузка до 10 МБ',
+    operationId: 'getPublicForm',
+    expect: 'success',
+    run: async (ctx) => {
+      const s = await as(ctx);
+      const p = await publicForm(ctx, s, 'Заявка с фото', PHOTO);
+      expect(body(await ctx.anon().get(pub(p.token)))).toMatchObject({
+        uploadAllowed: true,
+        uploadMaxBytes: 10 * 1024 * 1024,
+      });
+      const f = body(await s.get(p.url));
+      await s.patch(p.url, { status: 'closed' }, { ifMatch: f.revision as number });
+      expect(body(await ctx.anon().get(pub(p.token)))).toMatchObject({
+        acceptingResponses: false,
+      });
+    },
+  },
+  {
+    title: 'неизвестный токен — 404; форма больше не публичная — 410 public_token_expired',
+    operationId: 'getPublicForm',
+    expect: 'error',
+    run: async (ctx) => {
+      const s = await as(ctx);
+      ctx.expectProblem(await ctx.anon().get(pub('fUnknownToken0000000000000000')), 'not_found');
+      const p = await publicForm(ctx, s, 'Отзыв о доставке');
+      const f = body(await s.get(p.url));
+      await s.patch(p.url, { settings: { access: 'members' } }, { ifMatch: f.revision as number });
+      ctx.expectProblem(await ctx.anon().get(pub(p.token)), 'public_token_expired');
+    },
+  },
+  {
+    title:
+      'ответ гостя: квитанция, «На проверке», «Гость», ключи из ссылки; повтор с тем же нонсом — та же квитанция',
+    operationId: 'submitPublicForm',
+    expect: 'success',
+    run: async (ctx) => {
+      const s = await as(ctx);
+      const p = await publicForm(ctx, s, 'Тест по технике', QUIZ);
+      const g = ctx.anon();
+      const form = body(await g.get(pub(p.token)));
+      const send = {
+        versionId: p.versionId,
+        submissionNonce: form.submissionNonce,
+        answers: [{ fieldKey: 'q-helmet', value: { type: 'choices', value: ['o1'] } }],
+        linkParams: { 'q-src': 'email' },
+      };
+      const r = await g.post(`${pub(p.token)}/responses`, send);
+      expect(r.status).toBe(201);
+      expect(body(r).message).toBe(
+        'Спасибо! Ответ отправлен.\nРезультат: 1 из 1 балла · тест пройден',
+      );
+      const again = await g.post(`${pub(p.token)}/responses`, send);
+      expect(again.status).toBe(201);
+      expect(again.headers.get('Idempotency-Replayed')).toBe('true');
+      expect(body(again).receiptId).toBe(body(r).receiptId);
+      const list = body(await s.get(`${p.url}/responses`)).items ?? [];
+      expect(list).toHaveLength(1);
+      expect(list[0]).toMatchObject({
+        id: body(r).receiptId,
+        channel: 'public',
+        reviewStatus: 'pending',
+        author: { memberId: null, displayName: 'Гость' },
+        linkParamKeys: ['q-src'],
+        score: { points: 1, maxPoints: 1, passed: true },
+      });
+      expect(list[0]?.answers).toContainEqual({
+        fieldKey: 'q-src',
+        value: { type: 'text', value: 'email' },
+      });
+    },
+  },
+  {
+    title: 'нонс: другие ответы — 410 nonce_used, чужой — 422, устаревший — 410',
+    operationId: 'submitPublicForm',
+    expect: 'error',
+    run: async (ctx) => {
+      const s = await as(ctx);
+      const p = await publicForm(ctx, s, 'Отзыв о курьере', QUIZ);
+      const g = ctx.anon();
+      const nonce = String(body(await g.get(pub(p.token))).submissionNonce);
+      const ans = (k: string) => [{ fieldKey: 'q-helmet', value: { type: 'choices', value: [k] } }];
+      const url = `${pub(p.token)}/responses`;
+      const r1 = await g.post(url, {
+        versionId: p.versionId,
+        submissionNonce: nonce,
+        answers: ans('o1'),
+      });
+      expect(r1.status).toBe(201);
+      const used = await g.post(url, {
+        versionId: p.versionId,
+        submissionNonce: nonce,
+        answers: ans('o2'),
+      });
+      ctx.expectProblem(used, 'nonce_used');
+      expect(body(used).detail).toBe('Ответ с этой страницы уже отправлен');
+      const forged = await g.post(url, {
+        versionId: p.versionId,
+        submissionNonce: 'forged-nonce-0000000000000000',
+        answers: ans('o1'),
+      });
+      ctx.expectProblem(forged, 'validation_failed');
+      expect(body(forged).violations).toEqual([
+        { field: 'submissionNonce', code: 'invalid', message: 'Откройте форму по ссылке заново' },
+      ]);
+      const fresh = String(body(await g.get(pub(p.token))).submissionNonce);
+      ctx.server.setNow('2026-10-01T10:00:00Z');
+      const old = await g.post(url, {
+        versionId: p.versionId,
+        submissionNonce: fresh,
+        answers: ans('o1'),
+      });
+      ctx.expectProblem(old, 'nonce_used');
+      expect(body(old).detail).toBe('Страница формы устарела — откройте ссылку заново');
+    },
+  },
+  {
+    title: 'новая версия — 409 form_version_changed; закрыта — 409 form_closed',
+    operationId: 'submitPublicForm',
+    expect: 'error',
+    run: async (ctx) => {
+      const s = await as(ctx);
+      const p = await publicForm(ctx, s, 'Отзыв о мастере', QUIZ);
+      const g = ctx.anon();
+      const nonce = String(body(await g.get(pub(p.token))).submissionNonce);
+      const send = (n: string) =>
+        g.post(`${pub(p.token)}/responses`, {
+          versionId: p.versionId,
+          submissionNonce: n,
+          answers: [{ fieldKey: 'q-helmet', value: { type: 'choices', value: ['o1'] } }],
+        });
+      const d = body(await s.get(`${p.url}/draft`));
+      const def = structuredClone(d.definition) as NonNullable<Body['definition']>;
+      def.fields.push({
+        key: 'q-city',
+        pageId: 'p1',
+        type: 'text',
+        label: 'Город',
+        required: false,
+      });
+      const saved = body(
+        await s.put(`${p.url}/draft`, { definition: def }, { ifMatch: d.revision as number }),
+      );
+      const f = body(await s.get(p.url));
+      await s.post(
+        `${p.url}/publish`,
+        { draftRevision: saved.revision },
+        { ifMatch: f.revision as number },
+      );
+      const moved = await send(nonce);
+      expect(body(moved)).toMatchObject({
+        code: 'invalid_transition',
+        reason: 'form_version_changed',
+        detail: 'Форма обновилась — откройте её заново',
+      });
+      const f2 = body(await s.get(p.url));
+      await s.patch(p.url, { status: 'closed' }, { ifMatch: f2.revision as number });
+      const v2 = body(await g.get(pub(p.token)));
+      const closed = await g.post(`${pub(p.token)}/responses`, {
+        versionId: v2.versionId,
+        submissionNonce: v2.submissionNonce,
+        answers: [{ fieldKey: 'q-helmet', value: { type: 'choices', value: ['o1'] } }],
+      });
+      expect(body(closed)).toMatchObject({
+        code: 'invalid_transition',
+        reason: 'form_closed',
+        detail: 'Приём ответов закрыт',
+      });
+    },
+  },
+  {
+    title: 'ответ гостя: обязательный, скрытый вопрос в answers, параметр ссылки не скрытого — 422',
+    operationId: 'submitPublicForm',
+    expect: 'error',
+    run: async (ctx) => {
+      const s = await as(ctx);
+      const p = await publicForm(ctx, s, 'Тест по охране труда', QUIZ);
+      const g = ctx.anon();
+      const nonce = String(body(await g.get(pub(p.token))).submissionNonce);
+      const r = await g.post(`${pub(p.token)}/responses`, {
+        versionId: p.versionId,
+        submissionNonce: nonce,
+        answers: [{ fieldKey: 'q-src', value: { type: 'text', value: 'реклама' } }],
+        linkParams: { 'q-helmet': 'o1' },
+      });
+      ctx.expectProblem(r, 'validation_failed');
+      expect(body(r).violations).toEqual([
+        {
+          field: 'q-src',
+          code: 'hidden',
+          message: 'Скрытый вопрос заполняют ссылка и значение по умолчанию',
+        },
+        {
+          field: 'linkParams.q-helmet',
+          code: 'not_hidden',
+          message: 'Параметр ссылки — только для скрытого вопроса',
+        },
+        { field: 'q-helmet', code: 'invalid', message: 'Обязательный вопрос' },
+      ]);
+    },
+  },
+  {
+    title: 'файл гостя: билет загрузки на вопрос «Файл или фото»',
+    operationId: 'initiatePublicUpload',
+    expect: 'success',
+    run: async (ctx) => {
+      const s = await as(ctx);
+      const p = await publicForm(ctx, s, 'Заявка на ремонт', PHOTO);
+      const g = ctx.anon();
+      const nonce = String(body(await g.get(pub(p.token))).submissionNonce);
+      const r = await g.post(`${pub(p.token)}/uploads`, upload(p.versionId, nonce));
+      expect(r.status).toBe(201);
+      expect(body(r)).toMatchObject({ method: 'PUT', requiredContentType: 'image/jpeg' });
+    },
+  },
+  {
+    title: 'не вопрос файла — 422, больше 10 МБ — 413, нонс уже с ответом — 410',
+    operationId: 'initiatePublicUpload',
+    expect: 'error',
+    run: async (ctx) => {
+      const s = await as(ctx);
+      const p = await publicForm(ctx, s, 'Заявка с фото дефекта', PHOTO);
+      const g = ctx.anon();
+      const nonce = String(body(await g.get(pub(p.token))).submissionNonce);
+      const url = `${pub(p.token)}/uploads`;
+      const wrong = await g.post(url, { ...upload(p.versionId, nonce), fieldKey: 'q-what' });
+      ctx.expectProblem(wrong, 'validation_failed');
+      expect(body(wrong).violations).toEqual([
+        { field: 'fieldKey', code: 'invalid', message: 'Вопрос не найден' },
+      ]);
+      const big = await g.post(url, { ...upload(p.versionId, nonce), sizeBytes: 11 * 1024 * 1024 });
+      ctx.expectProblem(big, 'payload_too_large');
+      expect(body(big).detail).toBe('Файл больше 10 МБ.');
+      const done = await g.post(`${pub(p.token)}/responses`, {
+        versionId: p.versionId,
+        submissionNonce: nonce,
+        answers: [{ fieldKey: 'q-what', value: { type: 'text', value: 'Течёт кран' } }],
+      });
+      expect(done.status).toBe(201);
+      ctx.expectProblem(await g.post(url, upload(p.versionId, nonce)), 'nonce_used');
+    },
+  },
+  {
+    title: 'завершение загрузки своего нонса: файл на проверке; после проверки — ответ с файлом',
+    operationId: 'completePublicUpload',
+    expect: 'success',
+    run: async (ctx) => {
+      const s = await as(ctx);
+      const p = await publicForm(ctx, s, 'Заявка на замену стекла', PHOTO);
+      const g = ctx.anon();
+      const nonce = String(body(await g.get(pub(p.token))).submissionNonce);
+      const t = body(await g.post(`${pub(p.token)}/uploads`, upload(p.versionId, nonce)));
+      await putFile(String(t.uploadUrl));
+      const c = await g.post(`${pub(p.token)}/uploads/${String(t.uploadId)}/complete`, {
+        submissionNonce: nonce,
+        sha256: SHA,
+      });
+      expect(c.status).toBe(202);
+      expect(body(c)).toMatchObject({ id: t.fileId, status: 'quarantined' });
+      const answers = [
+        { fieldKey: 'q-what', value: { type: 'text', value: 'Трещина' } },
+        { fieldKey: 'q-photo', value: { type: 'files', value: [t.fileId] } },
+      ];
+      const early = await g.post(`${pub(p.token)}/responses`, {
+        versionId: p.versionId,
+        submissionNonce: nonce,
+        answers,
+      });
+      ctx.expectProblem(early, 'validation_failed');
+      expect(body(early).violations).toEqual([
+        { field: 'q-photo', code: 'invalid', message: 'Файл не найден' },
+      ]);
+      await g.post('/api/v1/dev/scenario', { scanFiles: true });
+      const r = await g.post(`${pub(p.token)}/responses`, {
+        versionId: p.versionId,
+        submissionNonce: nonce,
+        answers,
+      });
+      expect(r.status).toBe(201);
+    },
+  },
+  {
+    title: 'чужая загрузка или другой нонс — 404; контрольная сумма — 422',
+    operationId: 'completePublicUpload',
+    expect: 'error',
+    run: async (ctx) => {
+      const s = await as(ctx);
+      const p = await publicForm(ctx, s, 'Заявка на уборку', PHOTO);
+      const g = ctx.anon();
+      const n1 = String(body(await g.get(pub(p.token))).submissionNonce);
+      const n2 = String(body(await g.get(pub(p.token))).submissionNonce);
+      const t = body(await g.post(`${pub(p.token)}/uploads`, upload(p.versionId, n1)));
+      await putFile(String(t.uploadUrl));
+      const url = `${pub(p.token)}/uploads/${String(t.uploadId)}/complete`;
+      ctx.expectProblem(await g.post(url, { submissionNonce: n2, sha256: SHA }), 'not_found');
+      const bad = await g.post(url, { submissionNonce: n1, sha256: 'f'.repeat(64) });
+      ctx.expectProblem(bad, 'validation_failed');
+    },
+  },
+  {
+    title: 'состояние проверки своего файла: quarantined → ready',
+    operationId: 'getPublicUploadStatus',
+    expect: 'success',
+    run: async (ctx) => {
+      const s = await as(ctx);
+      const p = await publicForm(ctx, s, 'Заявка на покраску', PHOTO);
+      const g = ctx.anon();
+      const nonce = String(body(await g.get(pub(p.token))).submissionNonce);
+      const t = body(await g.post(`${pub(p.token)}/uploads`, upload(p.versionId, nonce)));
+      await putFile(String(t.uploadUrl));
+      await g.post(`${pub(p.token)}/uploads/${String(t.uploadId)}/complete`, {
+        submissionNonce: nonce,
+        sha256: SHA,
+      });
+      const url = `${pub(p.token)}/uploads/${String(t.uploadId)}/status`;
+      const q = await g.post(url, { submissionNonce: nonce });
+      expect(q.status).toBe(200);
+      expect(body(q)).toMatchObject({ id: t.fileId, status: 'quarantined' });
+      await g.post('/api/v1/dev/scenario', { scanFiles: true });
+      expect(body(await g.post(url, { submissionNonce: nonce }))).toMatchObject({
+        status: 'ready',
+      });
+    },
+  },
+  {
+    title: 'загрузка другого нонса — 404',
+    operationId: 'getPublicUploadStatus',
+    expect: 'error',
+    run: async (ctx) => {
+      const s = await as(ctx);
+      const p = await publicForm(ctx, s, 'Заявка на вывоз', PHOTO);
+      const g = ctx.anon();
+      const n1 = String(body(await g.get(pub(p.token))).submissionNonce);
+      const n2 = String(body(await g.get(pub(p.token))).submissionNonce);
+      const t = body(await g.post(`${pub(p.token)}/uploads`, upload(p.versionId, n1)));
+      ctx.expectProblem(
+        await g.post(`${pub(p.token)}/uploads/${String(t.uploadId)}/status`, {
+          submissionNonce: n2,
+        }),
+        'not_found',
+      );
+    },
+  },
 ]);
+
+// ---------------------------------------------------------------------------------------------
+// PublicForms (W4.70): публичная форма «Альты» и запросы гостя
+
+const pub = (token: string): string => `/api/v1/public/forms/${token}`;
+
+/** Тест с баллами и скрытым вопросом со значением по умолчанию. */
+const QUIZ = {
+  settings: { scoring: true, passScore: 1, showScore: true },
+  fields: [
+    {
+      key: 'q-helmet',
+      pageId: 'p1',
+      type: 'choice',
+      label: 'Каска обязательна?',
+      required: true,
+      options: [
+        { key: 'o1', label: 'Да', score: 1 },
+        { key: 'o2', label: 'Нет', score: 0 },
+      ],
+    },
+    {
+      key: 'q-src',
+      pageId: 'p1',
+      type: 'text',
+      label: 'Источник',
+      required: false,
+      hidden: true,
+      defaultValue: 'сайт',
+    },
+  ],
+};
+
+/** Заявка с вопросом «Файл или фото». */
+const PHOTO = {
+  settings: {},
+  fields: [
+    { key: 'q-what', pageId: 'p1', type: 'text', label: 'Что случилось', required: true },
+    { key: 'q-photo', pageId: 'p1', type: 'photo', label: 'Фото', required: false, maxFiles: 3 },
+  ],
+};
+
+const SHA = 'a'.repeat(64);
+
+const upload = (versionId: string, submissionNonce: string) => ({
+  versionId,
+  submissionNonce,
+  fieldKey: 'q-photo',
+  fileName: 'kran.jpg',
+  contentType: 'image/jpeg',
+  sizeBytes: 4,
+  sha256: SHA,
+});
+
+/** PUT объекта по билету в хранилище mock (W2.53). */
+async function putFile(url: string): Promise<void> {
+  const r = await fetch(url, {
+    method: 'PUT',
+    headers: { 'Content-Type': 'image/jpeg' },
+    body: new Uint8Array([0xff, 0xd8, 0xff, 0xd9]),
+  });
+  expect(r.status).toBe(200);
+}
+
+/**
+ * Публичная форма «Альты» («Все, у кого есть ссылка»), опубликованная v1: шаблон «Форма обратной связи» или пустая с
+ * вопросами и настройками `spec`; токен — FormShare.publicToken владельца.
+ */
+async function publicForm(
+  ctx: CaseContext,
+  s: Session,
+  name: string,
+  spec?: { settings: Record<string, unknown>; fields: Record<string, unknown>[] },
+): Promise<{ url: string; formId: string; versionId: string; token: string }> {
+  const f = body(
+    await s.post(at(ctx, 'forms'), {
+      name,
+      orgUnitId: null,
+      templateId: spec ? 'blank' : 'tpl-feedback',
+    }),
+  );
+  const url = at(ctx, `forms/${String(f.id)}`);
+  if (spec) {
+    const d = body(await s.get(`${url}/draft`));
+    await s.put(
+      `${url}/draft`,
+      { definition: { pages: [{ id: 'p1', title: 'Страница 1' }], fields: spec.fields } },
+      { ifMatch: d.revision as number },
+    );
+    const cur = body(await s.get(url));
+    await s.patch(
+      url,
+      { settings: { ...spec.settings, access: 'public' } },
+      { ifMatch: cur.revision as number },
+    );
+  }
+  const d = body(await s.get(`${url}/draft`));
+  const cur = body(await s.get(url));
+  const pubd = body(
+    await s.post(
+      `${url}/publish`,
+      { draftRevision: d.revision },
+      { ifMatch: cur.revision as number },
+    ),
+  );
+  const token = (pubd.share as { publicToken: string | null }).publicToken;
+  if (!token) throw new Error(`нет публичной ссылки: ${JSON.stringify(pubd)}`);
+  return { url, formId: String(f.id), versionId: String(pubd.publishedVersionId), token };
+}

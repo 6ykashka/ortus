@@ -1,0 +1,124 @@
+/* W4.70 · Страницы заполнения формы (сотрудник `/forms/{id}`, гость `/f/{token}`; no-reference, Q-W4.00-forms-19):
+   рендер вкладки «Предпросмотр» (forms.css, dc:114–142) по центру страницы без оболочки; встраивание `?embed=1` —
+   только карточка формы. Цвета — переменные модуля `.ox-fm` (forms.css). */
+
+.ox-ff {
+  min-height: 100dvh;
+  padding: 24px 16px 48px;
+  align-items: center;
+  background: #f4f6f3;
+}
+.ox-ff[data-embed] {
+  min-height: 0;
+  padding: 0;
+  background: transparent;
+}
+.ox-ff > .ox-fm-pv-card {
+  margin: 0 auto;
+}
+.ox-ff[data-embed] > .ox-fm-pv-card {
+  border: 0;
+  border-radius: 0;
+}
+
+.ox-ff-loading {
+  margin: 48px 0 0;
+  color: var(--fm-muted);
+}
+
+.ox-ff-alert {
+  width: 100%;
+  max-width: 720px;
+  margin: 0;
+  padding: 10px 14px;
+  border-radius: 10px;
+  background: #fbeae7;
+  color: #a13a33;
+  font-weight: 500;
+  text-wrap: pretty;
+}
+
+.ox-ff-state {
+  width: 100%;
+  max-width: 560px;
+  margin-top: 24px;
+  padding: 28px 22px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  background: #ffffff;
+  border: 1px solid var(--fm-line);
+  border-radius: 16px;
+  text-align: center;
+}
+.ox-ff-state > .material-symbols-rounded {
+  color: var(--fm-muted);
+}
+.ox-ff-state > h1 {
+  margin: 0;
+  font-size: 20px;
+  font-weight: 600;
+  text-wrap: pretty;
+}
+.ox-ff-state > p {
+  margin: 0;
+  color: var(--fm-muted);
+  text-wrap: pretty;
+}
+.ox-ff-state > .ox-fm-btn {
+  min-height: 44px;
+  margin-top: 6px;
+}
+
+/* «Файл или фото» */
+.ox-ff-files {
+  width: 100%;
+}
+.ox-ff-file-list {
+  width: 100%;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.ox-ff-file-list > li {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding-left: 10px;
+  border-radius: 8px;
+  background: #f4f6f3;
+  font-size: 13px;
+  overflow-wrap: anywhere;
+}
+.ox-ff-file-list > li[data-phase='failed'],
+.ox-ff-file-list > li[data-phase='rejected'] {
+  background: #fbeae7;
+  color: #a13a33;
+}
+.ox-ff-file-remove {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  border: 0;
+  background: transparent;
+  color: var(--fm-muted);
+}
+
+/* Ссылка на страницу «Базы знаний» после отправки */
+.ox-ff-kb {
+  min-height: 44px;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: inherit;
+  text-align: left;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}

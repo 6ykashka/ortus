@@ -420,4 +420,43 @@ export const forms = {
     toBuilder: 'Перейти к конструктору',
     cancel: shell.modal.cancel,
   },
+
+  /**
+   * W4.70 · Заполнение формы сотрудником (`form-fill`, `{origin}/forms/{id}`) и публичная форма гостя (`public-form`,
+   * `{origin}/f/{token}`): экранов в эталоне нет (no-reference, Q-W4.00-forms-19, Q-W4.05-9). Рендер — `preview`;
+   * тексты отказов сервера — дословно backend W4.21 (texts.go, public.go).
+   */
+  fill: {
+    loading: 'Загружаем форму…',
+    notFound: 'Форма не найдена',
+    notFoundText: 'Проверьте ссылку или спросите того, кто её прислал.',
+    noAccess: 'Нет доступа к форме',
+    noAccessText: 'Ответить могут сотрудники с правом «Формы» в области формы.',
+    loadError: 'Не удалось загрузить форму: {error}',
+    retry: logisticsDriver.inspection.retry,
+    closed: 'Приём ответов закрыт',
+    closedText: 'Форма больше не принимает ответы.',
+    answered: 'Вы уже отвечали на эту форму',
+    answeredText: 'В форме включено «Один ответ от сотрудника» — повторный ответ не принимается.',
+    changed: 'Форма обновилась — откройте её заново',
+    changedText: 'Ответ не отправлен: пока форма была открыта, опубликовали новую версию.',
+    reopen: 'Открыть заново',
+    linkInvalid: 'Ссылка недействительна',
+    linkInvalidText: 'Форма больше не принимает ответы по этой ссылке.',
+    offline: 'Нет связи с сервером. Ответ не отправлен — повторите.',
+    failed: 'Ответ не отправлен: {error}',
+    attach: 'Прикрепить файл',
+    remove: 'Убрать «{name}»',
+    uploading: 'Загружаем «{name}»…',
+    scanning: 'Проверяем «{name}»…',
+    uploadFailed: 'Не удалось загрузить «{name}»: {error}',
+    rejected: 'Файл «{name}» не прошёл проверку',
+    tooBig: 'Файл больше {mb} МБ',
+    tooMany:
+      '{n, plural, one {Не больше # файла} few {Не больше # файлов} many {Не больше # файлов} other {Не больше # файла}}',
+    pending: 'Файл ещё проверяется — подождите',
+    searchAria: 'Поиск: {label}',
+    truncated: 'Показаны первые 50 — уточните поиск',
+    noOptions: 'Вариантов нет',
+  },
 } as const satisfies TextTree;

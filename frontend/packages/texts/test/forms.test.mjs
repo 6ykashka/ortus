@@ -594,3 +594,43 @@ describe('forms: диалог «Опубликовать» (dc:457–466, modalV
     ['dc:1079', forms.publish.confirm, { v: 4 }, 'Опубликовать v4'],
   ]);
 });
+
+// W4.70 · Заполнение формы сотрудником (`form-fill`) и публичная форма гостя (`public-form`): экранов в эталоне нет
+// (no-reference, Q-W4.00-forms-19, Q-W4.05-9); тексты сервера — дословно backend W4.21 (texts.go, public.go).
+describe('forms: заполнение формы и публичная форма (W4.70, no-reference)', () => {
+  it('состояния страницы', () => {
+    const f = forms.fill;
+    assert.equal(f.loading, 'Загружаем форму…');
+    assert.equal(f.notFound, 'Форма не найдена');
+    assert.equal(f.noAccess, 'Нет доступа к форме');
+    assert.equal(f.closed, 'Приём ответов закрыт');
+    assert.equal(f.answered, 'Вы уже отвечали на эту форму');
+    assert.equal(f.changed, 'Форма обновилась — откройте её заново');
+    assert.equal(f.reopen, 'Открыть заново');
+    assert.equal(f.linkInvalid, 'Ссылка недействительна');
+    assert.equal(f.retry, 'Повторить');
+    assert.equal(f.offline, 'Нет связи с сервером. Ответ не отправлен — повторите.');
+    assert.equal(f.attach, 'Прикрепить файл');
+    assert.equal(f.pending, 'Файл ещё проверяется — подождите');
+  });
+
+  run([
+    ['W4.70', forms.fill.loadError, { error: 'сеть' }, 'Не удалось загрузить форму: сеть'],
+    ['W4.70', forms.fill.failed, { error: 'Ошибка' }, 'Ответ не отправлен: Ошибка'],
+    ['W4.70', forms.fill.remove, { name: 'kran.jpg' }, 'Убрать «kran.jpg»'],
+    ['W4.70', forms.fill.uploading, { name: 'kran.jpg' }, 'Загружаем «kran.jpg»…'],
+    ['W4.70', forms.fill.scanning, { name: 'kran.jpg' }, 'Проверяем «kran.jpg»…'],
+    [
+      'W4.70',
+      forms.fill.uploadFailed,
+      { name: 'a.pdf', error: 'нет связи' },
+      'Не удалось загрузить «a.pdf»: нет связи',
+    ],
+    ['W4.70', forms.fill.rejected, { name: 'a.pdf' }, 'Файл «a.pdf» не прошёл проверку'],
+    ['W4.70', forms.fill.tooBig, { mb: 20 }, 'Файл больше 20 МБ'],
+    ['W4.70', forms.fill.tooMany, { n: 1 }, 'Не больше 1 файла'],
+    ['W4.70', forms.fill.tooMany, { n: 3 }, 'Не больше 3 файлов'],
+    ['W4.70', forms.fill.tooMany, { n: 5 }, 'Не больше 5 файлов'],
+    ['W4.70', forms.fill.searchAria, { label: 'Дежурный' }, 'Поиск: Дежурный'],
+  ]);
+});
