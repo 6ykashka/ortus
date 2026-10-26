@@ -3,6 +3,87 @@
 - stage: 2 · проверяющий выхода и критик полноты (проверка 1) · mode: `ci:local` + stand (`e2e-stand` под сторожем, слот 12) + mock (job `e2e`)
 - Критика полноты: [../critique/stage-2.md](../critique/stage-2.md)
 
+## Проверка 2 — 2026-10-26
+
+- main: `f181f5db4` (docs(plan): статус W4.81), совпадает с `origin/main` на старте. Worktree `.claude/worktrees/exit-s2` (detached). Код продукта не менялся.
+- Среда: Windows 11, Docker 27.4.0 (общий, не перезапускался), pnpm 9.15.9, `GOFLAGS=-p=2`. Слот 12: Vite стенда 5212, API 8112, SMTP 2225, compose `ortus-s12`. Mock — проверяющий `E2E_ROLE=verifier`; эталон (`design/` текущего `main`) на свободных портах 7212, потом 6312/7312 (порты 6112 и 7212 остались занятыми сиротами первого mock-прогона). Слот 0 и `docs/demo/**` не трогались. Замок стенда слота 1 держался до конца, снят.
+- MVP: облачных stage и prod-pilot нет (W3.00, W3.06 отложены решением пользователя 19.10); «стенд stage» — локальный compose слота 12.
+
+### Вердикт
+
+**Не пройден.** Сквозная смена водителя на телефоне и у менеджера на стенде проходит. AC-03, 04, 05, 12 и AC-06 (Q-W2.07-1 «только рейс» и D-35) зелёные: backend, изоляция, concurrency и стенд на трёх вьюпортах. Все прежние блокеры проверки 1 сняты: W2.73 влит, журни W2.75 есть, `driver-a11y` без `@known-defect` (W2.76), блокеры W2.72 закрыты (W2.78, W2.79), `unit` на GitHub зелёный (W2.80), mock на `main` зелёный (W2.81). Не выполнены два пункта критерия:
+
+1. **В `journeys/stage2` остаются две строки `@known-defect` без решения людей** — оба дефекта технические и исправимы агентами: `temporary-driver-vehicle-shift.spec.ts:135` (Q-W2.75-3, `releaseUsualSQL` даёт пустой интервал брони при осмотре сдачи раньше окна рейса, `listReservations` отвечает 503; Q-W2.75-3 сам требует «исправить до выхода этапа 2») и `temporary-driver-vehicle.spec.ts:629` (Q-W2.75-1, до окна рейса «Моя смена» временного водителя без предложенных машин показывает ошибку вместо «Машину ещё не поставили»). Следствие — полная смена временного водителя на стенде проверена только после начала окна рейса.
+2. **Строка этапа 2 красная на GitHub и недетерминированно красная на стенде:** `modal-finish-route.spec.ts:120` падает на `reserveVehicle 409 reservation_overlap` (`logistics.stand.ts:72`, вызов `modal-finish-route.spec.ts:135`) — на GitHub в двух шардах (5/8 [tablet-768], 8/8 [desktop-1440], три попытки), локально на стенде слота 12 в третьем проекте ([desktop-1440]; mobile и tablet прошли); на свежем стенде строка проходит. Предыдущие строки на том же стенде оставляют занятой ту же ГАЗель на окно рейса.
+
+Прочее для выхода: основная масса красного на GitHub — не этап 2 (см. «CI на GitHub»), но `driver-offer.visual.spec.ts` (W2.74) вешает три из пяти красных шардов mock.
+
+### Критерий выхода по пунктам
+
+| # | Пункт (план v2 §4) | Итог | Основание |
+|---|---|---|---|
+| 1 | Полная смена водителя на телефоне и у менеджера на стенде | **выполнен** | `driver-shift.spec.ts` (`:543`, `:169`, `:213`), `guide-path.spec.ts:336`, `temporary-driver-vehicle-shift.spec.ts:40` (полная смена на обычной машине) — mobile-390, tablet-768, desktop-1440 зелёные на слоте 12 (прогон Б ниже) |
+| 2 | AC-03 | **выполнен** | `TestAC03HundredParallelReservations`, `TestAC03TwoDriversOneVehicle` (concurrency 84 с под нагрузкой), `reservation-race.spec.ts:185` stand × 3 |
+| 3 | AC-04 | **выполнен** | `TestAC04DepartureRefusals`; `defect-decision.spec.ts:184` stand × 3 |
+| 4 | AC-05 | **выполнен** | isolation (`fleet_review_gate`, `data_trips`, `fleet_w252_export_*`) 163 с; `guide-path.spec.ts:241`, `driver-shift.spec.ts:460`/`:543` |
+| 5 | AC-06 (Q-W2.07-1, W2.57) | **выполнен** | `fleet_pool_ac06_test.go`; `temporary-driver.spec.ts:702`, `:737` stand × 3 (узкая роль, после срока — только сдача, после приёмки — 404) |
+| 6 | AC-06 — дополнения D-35 (S2-20, W2.70–W2.75) | **выполнен после начала окна рейса; до окна — нет** | все экраны на `main` (W2.73: 1a, 1b, 1f, 1g; W2.74: 1c–1e); `temporary-driver-vehicle.spec.ts` (`:244`, `:429`) и `modal-driver-request-s220`, `driver-today-offer.spec.ts:357`/`:409` stand × 3 зелёные; строки «до окна» — в `fixme` (пункт 9) |
+| 7 | AC-12 | **выполнен** | `module-draining.spec.ts:194`, `:255` stand × 3, `:124` mock |
+| 8 | Все WS этапа «готово» (или блокеры людей) | **выполнен** | реестр §4: W2.00…W2.09, W2.20…W2.26, W2.30…W2.32, W2.41…W2.57, W2.60…W2.62, W2.70…W2.76, W2.78…W2.83, W2.87 — «готово»; W2.84…W2.86 — «в работе» с 24.10 (учёт интегратора, в критерий не входят; строки устарели, если ветки влиты) |
+| 9 | Нет `@known-defect` в `journeys/stage2` (или решение людей) | **не выполнен** | две строки, обе технические: `temporary-driver-vehicle-shift.spec.ts:135` (Q-W2.75-3), `temporary-driver-vehicle.spec.ts:629` (Q-W2.75-1) |
+| 10 | Строки этапа 2 на стенде без красного | **не выполнен** | `modal-finish-route.spec.ts:120` [desktop-1440] — 3 падения на накопленном стенде, зелёный только на свежем (повтор сторожа) |
+
+### Прогоны
+
+#### 1. `corepack pnpm install --frozen-lockfile` — exit 0 (`Lockfile is up to date`, 6,7 с).
+
+#### 2. `corepack pnpm run ci:local` (`GOFLAGS=-p=2`) — по job
+
+```text
+✔ lint (prettier, eslint, golangci-lint, actionlint, spectral)
+✔ contract (openapi, permissions, migrations, codegen-drift)
+✔ unit (check-icu, typecheck, test, check-decisions, allowlist-lint, mcp-check)
+✔ integration (go-integration)
+✖ isolation/go-isolation — первый прогон (под нагрузкой ПК: параллельно шли стенд и тесты)
+✔ isolation/go-concurrency
+```
+
+- Isolation упал на проверке AC-01 «время ответа чужого и несуществующего id различается»: `getFormResponse` 259 мс против 3 мс (прогон 1) и ещё пять строк `calendar_w482`, `fleet_vehicle_assignments`, `knowledge_w482`, `forms_w482` (прогон 2: 315–367 мс против 7–22 мс). Строки каждый раз разные, это не регрессия изоляции. Повтор `--job isolation` на спокойном ПК (стенд шёл, CPU мало занят) — **зелёный**: `test/isolation` 163 с, `fixtures` 110 с, `matrix` 2,5 с, `concurrency` 84 с. Предложение W2.97: сравнение времени по медиане серии, а не по одному замеру.
+- `build` (повтор отдельным `--job build`): build, storybook, check-k6, images — зелёные.
+- `e2e` (job mock, `pipeline.mjs --job e2e`, 11 воркеров, параллельно с первым стендом): **3952 теста, 801 failed, 468 skipped, 2683 passed, 3,6 ч** (в предыдущей проверке 2734 теста за 48 мин). Память ПК упиралась в 7 МБ свободных, CPU 100 %; стенд при этом тоже терял тесты. Прогон как результат не засчитан: красное — нагрузка ПК, не продукт. Все 728 уникальных упавших строк (по логу) повторены: `playwright test <file:line…> --project=… --workers=3` — зелёные, кроме 5 (`files.spec.ts:260`, `:328` [390], `shell.spec.ts:171`, `platform-orgs.spec.ts:178` [768], `inbox.spec.ts:240` [1440]); эти 5 повторены по одному воркеру — **5 из 5 passed**. Итог job mock: **красных строк нет**. `visual/driver-offer.visual.spec.ts` (W2.74): 3/3 за 8 с на [390] при одном воркере; в полном прогоне те же строки шли 33–70 с.
+- Причина «3,6 ч»: у локального mock нет предела воркеров (`workers: h.ci ? 1 : undefined` → 11 на этом ПК). Предложение W2.96: `E2E_WORKERS` (по умолчанию 4).
+
+#### 3. e2e-stand (`stand-guard.mjs`, слот 12)
+
+Прогон А — полный, `stand-guard.mjs --slot 12`, 429 строк `@stand|@mailpit`. Параллельно, по моей ошибке, шёл полный mock (п. 2) — оба тормозили. Предел 135 мин сторож снял на тесте 189 из 429: пройдено 171, упало 5, не дошли 253 (хвост tablet-768 и весь desktop-1440). Сторож упал на повторе: `ENOENT … .claude/tmp/stand-guard-plan-s12.json` — в свежем worktree нет каталога `.claude/tmp` (создан, повтор не делался; к продукту не относится). Все строки этапа 2 в mobile-390 и tablet-768 до `files.spec.ts` прошли. Упали (3 попытки): `company-users.spec.ts:489`, `core-calendar.spec.ts:475`, `forms.spec.ts:645` [390], `journeys/stage1/acceptance.spec.ts:237`, `owner-onboarding.spec.ts:189` [390], `core-calendar.spec.ts:475` [768] — строки этапов 1 и 4, тайм-ауты 30–90 с под нагрузкой.
+
+Прогон Б — узкий (`stand-guard.mjs --slot 12 --shards 1 --files "journeys/stage2|driver-|logistics-|modal-(driver|finish|accept)|home\.spec|core-data\.spec"`): 27 файлов, 141 строка, три проекта, свежий стенд без параллельной нагрузки, 186 мин (в них 2 × ожидание окна рейса ≈ 34 мин на проект). Итог: `✔ e2e-stand: зелёный (шарды 1, 186 мин, пройдено 140; 1 прошла только на повторе)`. На повторе (свежий стенд) прошла `modal-finish-route.spec.ts:120` [desktop-1440] (первый проход — три падения по 5–8 с на `reserveVehicle 409`). Остальные строки этапа 2 — на трёх вьюпортах с первой попытки, включая `journeys/stage2/*`, `temporary-driver*.spec.ts`, `driver-today-offer.spec.ts`, `logistics-pool-s220`, `modal-driver-request-s220`, `module-draining`, `reservation-race`, `defect-decision`, `driver-a11y` (mock-строки).
+
+Прогон В — повтор строк, упавших в А: `--files "company-users|core-calendar|forms\.spec|journeys[\\/]stage1"`: `✔ e2e-stand: зелёный (3 мин, пройдено 42)`. Красное в А — нагрузка.
+
+Полный e2e-stand за один проход на спокойном ПК не получен (А — нагрузка, Б и В — выборка). Строки этапов 1 и 3–7 вне выборки в трёх проектах на слоте 12 не повторялись; на GitHub они идут шардами (см. ниже).
+
+#### 4. CI на GitHub (`gh`, `6ykashka/ortus`)
+
+Последний завершённый прогон `main`: run 40281422068 (`f181f5db4`, 55 мин) — красный, как и три предыдущих. Первые шесть job зелёные: lint, contract, unit (8 мин), integration, isolation + concurrency, build. Красные:
+
+- **e2e-stand: 5 шардов из 8.** Шарды 2/8, 4/8, 7/8 — упёрлись в лимит job 30 мин (не этап 2); шарды 5/8 [tablet-768] и 8/8 [desktop-1440] — `modal-finish-route.spec.ts:120`, `reserveVehicle 409 reservation_overlap` (строка этапа 2, п. 2 вердикта). Шарды 1, 3, 6 зелёные.
+- **e2e mock: 5 шардов из 20** (6, 7, 13, 14, 20): тайм-ауты `2.0m` строк `visual/*` — `driver-offer.visual.spec.ts:48`, `:59` на трёх проектах (шарды 6, 13, 20), `forms.visual.spec.ts:204`, `knowledge.visual.spec.ts:301` (шард 7), `tasks-leads.visual.spec.ts:125`, `:139` (шард 14). Локально строка `driver-offer` — 8 с. Причину на раннере по логу не установить (лог оборван отменой job); нужен артефакт отчёта Playwright.
+- Предыдущие красные `unit` (UTC в `home.page.test.tsx`) и `integration`/`isolation` из проверки 1 больше не наблюдаются: **AC этапа в CI запускаются и зелёные**.
+
+### Сверка с историями и инвентарём
+
+| История | Итог | Примечание |
+|---|---|---|
+| S2-01…S2-19 | закрыты | как в проверке 1; S2-19 — полевой тест у людей |
+| S2-14 пул | закрыта | AC-06 «только рейс», 3 вьюпорта |
+| **S2-20** | **почти закрыта** | экраны 1a–1g и backend на `main`; осталась сторона «до окна рейса» (Q-W2.75-1, -3), строки в `fixme`; Q-W2.75-6 (уведомление фирме, сроки на настоящих часах) — minor |
+| Инвентарь экранов | 16 из 16 | `driver-offer`/`modal-driver-request-s220`/`logistics-pool-s220` добавлены S2-20; все со спеками mock и `@stand` |
+
+### Что дальше
+
+FollowUps W2.91…W2.97 (в критике). Без W2.91, W2.92 и W2.93 выход не закрыть.
+
 ## Проверка 1 — 2026-10-22
 
 - main: `db7046e` (docs(plan): пакет W2.73 + W2.74 — полный e2e-stand, W2.73 не влит), совпадает с `origin/main`. Отдельный worktree `.claude/worktrees/exit-s2` (detached) и второй, `exit-s2-stand`, на том же коммите — для параллельного стенда, чтобы прогоны не делили `test-results/`. Код продукта не менялся.
