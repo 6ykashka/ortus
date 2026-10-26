@@ -19,8 +19,14 @@ var inventoryW500Matrix = matrix.File{
 			Method:  "GET",
 			Path:    "/api/v1/tenants/{tenantId}/inventory/warehouses",
 			Channel: "http",
-			Pending: "W5.10",
 			Rows: []matrix.Row{
+				{
+					Actor:  "a.owner",
+					Params: map[string]string{"tenantId": "tenant:a"},
+					Status: 200,
+					Absent: []string{"tenant:b"},
+					Note:   "владелец видит свою организацию; чужой tenant:b в ответе нет (AC-02)",
+				},
 				{
 					Actor:  "anonymous",
 					Params: map[string]string{"tenantId": "tenant:a"},
@@ -40,7 +46,6 @@ var inventoryW500Matrix = matrix.File{
 			Method:  "POST",
 			Path:    "/api/v1/tenants/{tenantId}/inventory/warehouses",
 			Channel: "http",
-			Pending: "W5.10",
 			Rows: []matrix.Row{
 				{
 					Actor:  "anonymous",
@@ -63,7 +68,6 @@ var inventoryW500Matrix = matrix.File{
 			Method:  "PATCH",
 			Path:    "/api/v1/tenants/{tenantId}/inventory/items/{itemId}",
 			Channel: "http",
-			Pending: "W5.10",
 			Rows: []matrix.Row{
 				{
 					Actor:  "anonymous",
@@ -86,8 +90,14 @@ var inventoryW500Matrix = matrix.File{
 			Method:  "GET",
 			Path:    "/api/v1/tenants/{tenantId}/inventory/balances",
 			Channel: "http",
-			Pending: "W5.10",
 			Rows: []matrix.Row{
+				{
+					Actor:  "a.owner",
+					Params: map[string]string{"tenantId": "tenant:a"},
+					Status: 200,
+					Absent: []string{"tenant:b"},
+					Note:   "владелец видит свою организацию; чужой tenant:b в ответе нет (AC-02)",
+				},
 				{
 					Actor:  "anonymous",
 					Params: map[string]string{"tenantId": "tenant:a"},
@@ -107,8 +117,14 @@ var inventoryW500Matrix = matrix.File{
 			Method:  "GET",
 			Path:    "/api/v1/tenants/{tenantId}/inventory/reservations",
 			Channel: "http",
-			Pending: "W5.10",
 			Rows: []matrix.Row{
+				{
+					Actor:  "a.owner",
+					Params: map[string]string{"tenantId": "tenant:a"},
+					Status: 200,
+					Absent: []string{"tenant:b"},
+					Note:   "владелец видит свою организацию; чужой tenant:b в ответе нет (AC-02)",
+				},
 				{
 					Actor:  "anonymous",
 					Params: map[string]string{"tenantId": "tenant:a"},
@@ -128,7 +144,6 @@ var inventoryW500Matrix = matrix.File{
 			Method:  "POST",
 			Path:    "/api/v1/tenants/{tenantId}/inventory/reservations",
 			Channel: "http",
-			Pending: "W5.10",
 			Rows: []matrix.Row{
 				{
 					Actor:  "anonymous",
@@ -151,8 +166,14 @@ var inventoryW500Matrix = matrix.File{
 			Method:  "POST",
 			Path:    "/api/v1/tenants/{tenantId}/inventory/reservations/{reservationId}/release",
 			Channel: "http",
-			Pending: "W5.10",
 			Rows: []matrix.Row{
+				{
+					Actor:  "a.owner",
+					Params: map[string]string{"reservationId": "tenant:missing", "tenantId": "tenant:a"},
+					Status: 404,
+					Code:   "not_found",
+					Note:   "нет такого резерва — 404 владельцу, как и чужой (AC-01)",
+				},
 				{
 					Actor:  "anonymous",
 					Params: map[string]string{"reservationId": "tenant:missing", "tenantId": "tenant:a"},

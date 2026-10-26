@@ -979,10 +979,13 @@ describe('контракт 0.12.0-stage5 (W5.00): дельты, экраны, п
     assert.match(readme, /резерв 0045–0049/);
   });
 
-  it('строки изоляции: pending до хендлера (кассa — W5.31, склад — W5.10, SPA — W5.20)', () => {
+  it('строки изоляции: pending до хендлера (кассa — W5.31, SPA — W5.20); склад — W5.10 снял pending', () => {
+    // W5.10 (хендлеры склада) снял pending со строк inventory_w500.yaml: строки теперь проверяют настоящие ответы.
+    const inventory = abs('backend/test/isolation/inventory_w500.yaml');
+    assert.ok(existsSync(inventory), 'inventory_w500.yaml');
+    assert.doesNotMatch(readFileSync(inventory, 'utf8'), /^\s*pending:/m, 'inventory_w500.yaml');
     for (const [f, pending] of [
       ['cash_w500.yaml', 'W5.31'],
-      ['inventory_w500.yaml', 'W5.10'],
       ['spa_w500.yaml', 'W5.20'],
     ]) {
       const p = abs(`backend/test/isolation/${f}`);
