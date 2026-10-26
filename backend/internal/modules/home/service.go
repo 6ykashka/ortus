@@ -32,6 +32,7 @@ type Service struct {
 	Registry *Registry
 	Modules  Modules          // nil: no installable module is installed
 	Now      func() time.Time // the clock of the application (APP_FIXED_NOW outside prod); nil: time.Now
+	Tasks    TaskCounter      // the counters of getMyTaskSummary (W4.81); nil: zeros
 }
 
 // askedStates are the module states whose sources give cards: an installed module that is not disabled (read_only

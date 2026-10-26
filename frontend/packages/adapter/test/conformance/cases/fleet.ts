@@ -1279,7 +1279,8 @@ export const fleetCases = cases('fleet')([
       const { driver, manager } = await ready(ctx);
       await departure(ctx, driver, true);
       const q = body(await manager.get(`/api/v1/me/decisions?tenantId=${ctx.P('t-alta')}&limit=1`));
-      expect(q).toMatchObject({ total: 2 });
+      // Дефект, рейс без водителя и (W4.81) срочная T-64 Котовой; источник логистики — первым среди danger.
+      expect(q).toMatchObject({ total: 3 });
       expect(q.items?.[0]).toMatchObject({
         kind: 'fleet.blocking_defect',
         tone: 'danger',
@@ -1302,6 +1303,109 @@ export const fleetCases = cases('fleet')([
       ctx.expectExample(
         await manager.get(`/api/v1/me/decisions?tenantId=${ctx.P('t-lotos')}`),
         'getMyDecisionQueue/not_found',
+      );
+    },
+  },
+
+  // W4.81 (0.11.1-stage4): задачи на «Главной» — источник задач и сводка задач (homeVM :4081–4084, :4113).
+  {
+    title: 'логист без роли: срочная T-64 — tasks.task_new (danger), срок 01.10',
+    operationId: 'getMyDecisionQueue',
+    expect: 'success',
+    run: async (ctx) => {
+      const manager = await ctx.as('manager');
+      const q = body(await manager.get(`/api/v1/me/decisions?tenantId=${ctx.P('t-alta')}`));
+      expect(q).toMatchObject({ total: 1 });
+      expect(q.items?.[0]).toMatchObject({
+        key: `tasks.task_new:${ctx.A('T-64')}`,
+        kind: 'tasks.task_new',
+        moduleKey: 'tasks',
+        tone: 'danger',
+        object: { moduleKey: 'tasks', entityType: 'task', entityId: ctx.A('T-64') },
+        params: {
+          taskKey: 'T-64',
+          title: 'Найти водителя на рейс Р-211',
+          projectId: ctx.A('fleet'),
+          dueAt: '2026-10-01T21:00:00Z',
+        },
+      });
+    },
+  },
+  {
+    title: 'задача правила формы «Осмотр машины» — fromForm у карточки исполнителя',
+    operationId: 'getMyDecisionQueue',
+    expect: 'success',
+    run: async (ctx) => {
+      ctx.server.applyPreset('logistics-ready');
+      const owner = await ctx.as('owner');
+      const forms = body(await owner.get(`${ctx.alta}/forms?limit=200`)) as {
+        items: { id: string; name: string }[];
+      };
+      const form = forms.items.find((f) => f.name === 'Осмотр машины')?.id ?? '';
+      const versions = body(await owner.get(`${ctx.alta}/forms/${form}/versions`)) as {
+        items: { id: string; number: number }[];
+      };
+      const files = readyFiles(ctx, 'form', 1);
+      const r = await owner.post(`${ctx.alta}/forms/${form}/responses`, {
+        versionId: versions.items.find((v) => v.number === 3)?.id,
+        answers: [
+          { fieldKey: 'q-photos', value: { type: 'files', value: files } },
+          { fieldKey: 'q-odo', value: { type: 'decimal', value: '85000' } },
+          { fieldKey: 'q-fuel', value: { type: 'choices', value: ['o4'] } },
+          { fieldKey: 'q-checks', value: { type: 'choices', value: ['o1', 'o2', 'o3'] } },
+          { fieldKey: 'q-defect', value: { type: 'boolean', value: false } },
+        ],
+      });
+      expect(r.status).toBe(201);
+      const manager = await ctx.as('manager');
+      const q = body(await manager.get(`/api/v1/me/decisions?tenantId=${ctx.P('t-alta')}`));
+      const cards = (q.items ?? []) as unknown as {
+        kind: string;
+        params: Record<string, string>;
+      }[];
+      const fromForm = cards.filter(
+        (c) => c.kind === 'tasks.task_new' && c.params.fromForm === 'true',
+      );
+      expect(fromForm).toHaveLength(1);
+      expect(fromForm[0]?.params.title).toMatch(/^Проверить осмотр/);
+    },
+  },
+  {
+    title: 'сводка задач владельца «Альты»: Новые 2, В работе 2, На проверке 2, своих новых нет',
+    operationId: 'getMyTaskSummary',
+    expect: 'success',
+    example: 'getMyTaskSummary/ok',
+    run: async (ctx) => {
+      const owner = await ctx.as('owner');
+      ctx.expectExample(
+        await owner.get(`/api/v1/me/task-summary?tenantId=${ctx.P('t-alta')}`),
+        'getMyTaskSummary/ok',
+      );
+    },
+  },
+  {
+    title: 'сводка задач логиста: Новые 1, В работе 2, На проверке 2, бейдж 1',
+    operationId: 'getMyTaskSummary',
+    expect: 'success',
+    example: 'getMyTaskSummary/manager',
+    run: async (ctx) => {
+      const manager = await ctx.as('manager');
+      ctx.expectExample(
+        await manager.get(`/api/v1/me/task-summary?tenantId=${ctx.P('t-alta')}`),
+        'getMyTaskSummary/manager',
+      );
+    },
+  },
+  {
+    title: 'сводка задач чужой организации — 404',
+    operationId: 'getMyTaskSummary',
+    expect: 'error',
+    example: 'getMyTaskSummary/not_found',
+    run: async (ctx) => {
+      const manager = await ctx.as('manager');
+      ctx.expectExample(
+        await manager.get(`/api/v1/me/task-summary?tenantId=${ctx.P('t-lotos')}`),
+        'getMyTaskSummary/not_found',
       );
     },
   },

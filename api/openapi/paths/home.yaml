@@ -54,3 +54,49 @@
           maximum: 50
           default: 8
     x-permissions-mode: all
+# W4.81 (0.11.1-stage4): сводка задач участника — карточка «Задачи» «Сегодня в работе» и бейдж пункта меню «Задачи».
+/api/v1/me/task-summary:
+  parameters: []
+  get:
+    operationId: getMyTaskSummary
+    tags:
+      - Home
+    summary: Counters of the tasks the signed-in member sees in one business
+    x-permissions: []
+    x-scope: identity
+    description: "W4.81 (0.11.1-stage4, homeVM :4113, menu :2995–2996; tasks.md Р-27). Counters of the card «Задачи» of the home page and the badge of the menu item «Задачи» for the current person in the given business. The counters run over the tasks the member sees as listTasks shows them (tasks.read in the project by its level of access, TP-03, or the scope self for the own tasks), deleted tasks and archived projects excluded: new «Новые» — a status of the category todo (the first stage «Новая» of a funnel too); review «На проверке» — a status of the category progress of a project with a workflow that is not the first status of this category in the workflow and has its own transition (not «Из любого») into a status of the category done («Принять», «Согласовать»); inProgress «В работе» — the other statuses of the category progress of a project with a workflow (the stages of a funnel are in neither); myNew — the tasks assigned to the member in the first status of the category todo of a project with a workflow (the badge). A member without access to tasks gets zeros. tenantId must be an active membership of the identity, otherwise 404 not_found."
+    responses:
+      "200":
+        description: Successful result.
+        headers:
+          X-Request-Id:
+            $ref: ../components/common/headers.yaml#/RequestId
+          Cache-Control:
+            description: Never cache authenticated, confidential or capability-bearing API responses in shared caches.
+            schema:
+              type: string
+              const: private, no-store
+        content:
+          application/json:
+            schema:
+              $ref: ../components/home/schemas.yaml#/TaskSummary
+      "400":
+        $ref: ../components/common/responses.yaml#/BadRequest
+      "401":
+        $ref: ../components/common/responses.yaml#/Unauthenticated
+      "403":
+        $ref: ../components/common/responses.yaml#/Forbidden
+      "404":
+        $ref: ../components/common/responses.yaml#/NotFound
+      "422":
+        $ref: ../components/common/responses.yaml#/Validation
+      "429":
+        $ref: ../components/common/responses.yaml#/RateLimited
+    parameters:
+      - name: tenantId
+        in: query
+        required: true
+        description: Business whose tasks are counted; one tenant DB per request.
+        schema:
+          $ref: ../components/common/schemas.yaml#/Id
+    x-permissions-mode: all

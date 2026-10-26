@@ -10,6 +10,8 @@ import {
   offModules,
   setupSteps,
   summary,
+  tasksBadges,
+  tasksWork,
   tripsToday,
   type TripLike,
   type VehicleLike,
@@ -150,6 +152,29 @@ describe('«Сегодня в работе» (:4097–4113)', () => {
     expect(
       offModules([{ moduleKey: 'fleet', state: 'read_only' }]).map((m) => m.moduleKey),
     ).toEqual(['spa', 'repairs']);
+  });
+
+  // W4.81 · Карточка «Задачи» (:4113): «Новые», «В работе», «На проверке» по категориям статусов — сводка
+  // getMyTaskSummary (контракт 0.11.1-stage4); переход — «Задачи».
+  it('«Задачи»: Новые, В работе, На проверке → «Задачи»', () => {
+    expect(tasksWork({ new: 2, inProgress: 2, review: 1, myNew: 0 })).toEqual({
+      icon: 'task_alt',
+      title: { key: 'work.tasks' },
+      target: { page: 'tasks' },
+      lines: [
+        { label: { key: 'work.tasksNew' }, value: '2' },
+        { label: { key: 'work.tasksProgress' }, value: '2' },
+        { label: { key: 'work.tasksReview' }, value: '1' },
+      ],
+    });
+  });
+});
+
+describe('бейдж пункта меню «Задачи» (Р-27, меню :2995–2996)', () => {
+  it('мои задачи в первом статусе «К выполнению» (myNew сводки); 0 и нет сводки — без бейджа', () => {
+    expect(tasksBadges({ new: 1, inProgress: 2, review: 2, myNew: 1 })).toEqual({ tasks: 1 });
+    expect(tasksBadges({ new: 2, inProgress: 2, review: 2, myNew: 0 })).toEqual({});
+    expect(tasksBadges(undefined)).toEqual({});
   });
 });
 

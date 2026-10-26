@@ -2235,5 +2235,11 @@
   "errors.problem.duplicate_source",
   "errors.problem.duplicate_receipt",
   "errors.problem.self_approval",
-  "errors.problem.insufficient_funds"
+  "errors.problem.insufficient_funds",
+  "home.queue.task",
+  "home.queue.taskDue",
+  "home.queue.actions.open",
+  "home.work.tasks",
+  "home.work.tasksNew",
+  "home.work.tasksProgress"
 ]

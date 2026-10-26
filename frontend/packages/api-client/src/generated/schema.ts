@@ -7441,6 +7441,26 @@ export interface paths {
     patch?: never;
     trace?: never;
   };
+  '/api/v1/me/task-summary': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /**
+     * Counters of the tasks the signed-in member sees in one business
+     * @description W4.81 (0.11.1-stage4, homeVM :4113, menu :2995–2996; tasks.md Р-27). Counters of the card «Задачи» of the home page and the badge of the menu item «Задачи» for the current person in the given business. The counters run over the tasks the member sees as listTasks shows them (tasks.read in the project by its level of access, TP-03, or the scope self for the own tasks), deleted tasks and archived projects excluded: new «Новые» — a status of the category todo (the first stage «Новая» of a funnel too); review «На проверке» — a status of the category progress of a project with a workflow that is not the first status of this category in the workflow and has its own transition (not «Из любого») into a status of the category done («Принять», «Согласовать»); inProgress «В работе» — the other statuses of the category progress of a project with a workflow (the stages of a funnel are in neither); myNew — the tasks assigned to the member in the first status of the category todo of a project with a workflow (the badge). A member without access to tasks gets zeros. tenantId must be an active membership of the identity, otherwise 404 not_found.
+     */
+    get: operations['getMyTaskSummary'];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -8825,7 +8845,7 @@ export interface components {
     DecisionItem: {
       /** @description Stable key of the card within the queue (<kind>:<object id>); the same situation keeps its key between reads. */
       key: string;
-      /** @description Source and situation, <module>.<event>. Stage 2 sources: fleet.blocking_defect, fleet.trip_review, fleet.trip_without_driver (logistics); tenant.trial_ended, tenant.trial_ending, tenant.storage_high, access.members_without_role (organization, owner only). Sources of later stages add kinds additively; a client shows an unknown kind as a neutral card without action. W2.71 (0.6.3-stage2, S2-20, 1g) — two kinds of the logistics source for the logist of the trip company (fleet.routes.manage over the unit of the trip), never together for one trip: fleet.vehicle_choice_pending (warn) — from 15 minutes before chooseUntil until the choice or the deadline, the temporary driver has not chosen between the offered vehicles; params tripNumber, driverName, homeOrgUnitName, chooseUntil, hostVehicle and homeVehicle (model · plate), reservationId — the reservation of the vehicle of the trip company («Оставить …» = chooseReservation); fleet.trip_without_vehicle (danger) — a trip of a temporary driver of the pool not started yet has no vehicle (the home company approved the driver only, or the vehicle was released); params tripNumber, driverName, homeOrgUnitName, startsAt («Поставить машину» = assignTripVehicle). object — the trip. */
+      /** @description Source and situation, <module>.<event>. Stage 2 sources: fleet.blocking_defect, fleet.trip_review, fleet.trip_without_driver (logistics); tenant.trial_ended, tenant.trial_ending, tenant.storage_high, access.members_without_role (organization, owner only). Sources of later stages add kinds additively; a client shows an unknown kind as a neutral card without action. W2.71 (0.6.3-stage2, S2-20, 1g) — two kinds of the logistics source for the logist of the trip company (fleet.routes.manage over the unit of the trip), never together for one trip: fleet.vehicle_choice_pending (warn) — from 15 minutes before chooseUntil until the choice or the deadline, the temporary driver has not chosen between the offered vehicles; params tripNumber, driverName, homeOrgUnitName, chooseUntil, hostVehicle and homeVehicle (model · plate), reservationId — the reservation of the vehicle of the trip company («Оставить …» = chooseReservation); fleet.trip_without_vehicle (danger) — a trip of a temporary driver of the pool not started yet has no vehicle (the home company approved the driver only, or the vehicle was released); params tripNumber, driverName, homeOrgUnitName, startsAt («Поставить машину» = assignTripVehicle). object — the trip. W4.81 (0.11.1-stage4, homeVM :4081–4084) — the source of tasks (moduleKey tasks, a core source) for the tasks assigned to the member that it sees (tasks.read, as listTasks): tasks.task_new — a status of the category todo (the first stage «Новая» of a funnel too); tasks.task_review — a status of review of a workflow (the category progress, not the first status of this category, with its own transition into the category done, as getMyTaskSummary counts it). At most three cards, newest task first; tone danger for priority urgent, otherwise neutral. params taskKey («LOG-101», «T-64»), title, projectId, dueAt (optional, RFC3339), fromForm ("true" — made by a rule of a form), funnel ("true" — a request of a funnel, opened on its board). object — the task (tasks/task). */
       kind: string;
       /** @description Module of the source (fleet, billing, members); a disabled module contributes no cards. */
       moduleKey: string;
@@ -13522,6 +13542,31 @@ export interface components {
      * @enum {string}
      */
     TaskStatusCategory: 'todo' | 'progress' | 'done';
+    /** @description W4.81 (0.11.1-stage4, homeVM :4113, menu :2995–2996; tasks.md Р-27). Counters of the tasks the member sees in one business — the card «Задачи» of «Сегодня в работе» («Новые», «В работе», «На проверке») and the badge of the menu item «Задачи» (myNew). The rules — getMyTaskSummary. */
+    TaskSummary: {
+      tenantId: components['schemas']['Id'];
+      /**
+       * Format: int64
+       * @description «Новые» — tasks in a status of the category todo.
+       */
+      new: number;
+      /**
+       * Format: int64
+       * @description «В работе» — tasks in a status of the category progress of a project with a workflow that is not a status of review.
+       */
+      inProgress: number;
+      /**
+       * Format: int64
+       * @description «На проверке» — tasks in a status of review of a project with a workflow.
+       */
+      review: number;
+      /**
+       * Format: int64
+       * @description The badge — tasks assigned to the member in the first status of the category todo of a project with a workflow.
+       */
+      myNew: number;
+      generatedAt: components['schemas']['Instant'];
+    };
     TaskTransition: {
       transitionKey: string;
       comment?: string;
@@ -31351,6 +31396,38 @@ export interface operations {
       410: components['responses']['Gone'];
       422: components['responses']['Validation'];
       428: components['responses']['PreconditionRequired'];
+      429: components['responses']['RateLimited'];
+    };
+  };
+  getMyTaskSummary: {
+    parameters: {
+      query: {
+        /** @description Business whose tasks are counted; one tenant DB per request. */
+        tenantId: components['schemas']['Id'];
+      };
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Successful result. */
+      200: {
+        headers: {
+          'X-Request-Id': components['headers']['RequestId'];
+          /** @description Never cache authenticated, confidential or capability-bearing API responses in shared caches. */
+          'Cache-Control'?: 'private, no-store';
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['TaskSummary'];
+        };
+      };
+      400: components['responses']['BadRequest'];
+      401: components['responses']['Unauthenticated'];
+      403: components['responses']['Forbidden'];
+      404: components['responses']['NotFound'];
+      422: components['responses']['Validation'];
       429: components['responses']['RateLimited'];
     };
   };

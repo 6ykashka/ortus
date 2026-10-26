@@ -14,7 +14,9 @@ import (
 	"github.com/ortus/ortus-crm/backend/internal/modules/home"
 	homefleet "github.com/ortus/ortus-crm/backend/internal/modules/home/fleet"
 	homeorg "github.com/ortus/ortus-crm/backend/internal/modules/home/org"
+	hometasks "github.com/ortus/ortus-crm/backend/internal/modules/home/tasks"
 	"github.com/ortus/ortus-crm/backend/internal/modules/modulesreg"
+	"github.com/ortus/ortus-crm/backend/internal/modules/tasks"
 	"github.com/ortus/ortus-crm/backend/internal/platform/authz"
 	"github.com/ortus/ortus-crm/backend/internal/platform/tenantctx"
 )
@@ -39,14 +41,40 @@ func TestHome(t *testing.T) {
 		t.Fatalf("service %+v", s.S)
 	}
 	checkSources(t, s.S.Registry.Sources(), ev, control)
+	// W4.81: the counters of getMyTaskSummary come from the source of tasks of the registry.
+	if src := s.S.Registry.Sources(); len(src) < 3 || s.S.Tasks == nil || any(s.S.Tasks) != any(src[2]) {
+		t.Fatalf("task counter %#v, want the source of tasks", s.S.Tasks)
+	}
 }
 
-// checkSources checks the registry of homeServer: logistics, then the organization, over the pools and ev.
+// W4.81: the port of «Главная» of the module «Задачи» is adapted to the source of tasks field by field.
+func TestTaskPortView(t *testing.T) {
+	t.Parallel()
+	id, project := uuid.New(), uuid.New()
+	due := time.Date(2026, 10, 1, 21, 0, 0, 0, time.UTC)
+	got := viewOf(tasks.HomeView{
+		Summary: tasks.HomeSummary{New: 2, InProgress: 3, Review: 4, MyNew: 1},
+		Mine: []tasks.HomeTask{{ID: id, Project: project, Key: "T-64", Title: "Найти водителя", Place: tasks.PlaceNew, Urgent: true,
+			DueAt: &due, FromForm: true, Funnel: true}},
+	})
+	if got.Summary != (home.TaskCounts{New: 2, InProgress: 3, Review: 4, MyNew: 1}) || len(got.Mine) != 1 {
+		t.Fatalf("view %+v", got)
+	}
+	want := hometasks.Task{ID: id, Project: project, Key: "T-64", Title: "Найти водителя", Place: hometasks.PlaceNew, Urgent: true,
+		DueAt: &due, FromForm: true, Funnel: true}
+	if got.Mine[0] != want {
+		t.Fatalf("task %+v, want %+v", got.Mine[0], want)
+	}
+}
+
+// checkSources checks the registry of homeServer: logistics, then the organization, over the pools and ev, then (W4.81)
+// the tasks over the port of the module «Задачи» on the same pools, evaluator and control DB.
 func checkSources(t *testing.T, src []home.Source, ev *authz.Evaluator, control *pgxpool.Pool) {
 	t.Helper()
-	if len(src) != 2 {
-		t.Fatalf("sources %#v, want logistics and the organization", src)
+	if len(src) != 3 {
+		t.Fatalf("sources %#v, want logistics, the organization and the tasks", src)
 	}
+	checkTaskSource(t, src[2], ev, control)
 	f, ok := src[0].(homefleet.Source)
 	if !ok || f.Authz != ev || f.Pools != (noPools{}) || f.Module() != modulesreg.KeyFleet {
 		t.Fatalf("logistics source %#v", src[0])
@@ -54,6 +82,20 @@ func checkSources(t *testing.T, src []home.Source, ev *authz.Evaluator, control 
 	o, ok := src[1].(homeorg.Source)
 	if !ok || o.Authz != ev || o.Pools != (noPools{}) || o.Control != control || o.Subscriptions == nil || o.Module() != "" {
 		t.Fatalf("organization source %#v", src[1])
+	}
+}
+
+// checkTaskSource checks the source of tasks (W4.81): a core source over the port of «Задачи» on the pools, ev and the
+// control DB.
+func checkTaskSource(t *testing.T, src home.Source, ev *authz.Evaluator, control *pgxpool.Pool) {
+	t.Helper()
+	tk, ok := src.(hometasks.Source)
+	port, isPort := tk.Tasks.(taskPort)
+	if !ok || !isPort || port.S == nil || tk.Module() != "" {
+		t.Fatalf("tasks source %#v", src)
+	}
+	if port.S.Authz != ev || port.S.Pools != (noPools{}) || port.S.Directory != (tasks.ControlDirectory{DB: control}) {
+		t.Fatalf("tasks service %#v", port.S)
 	}
 }
 

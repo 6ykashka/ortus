@@ -2,6 +2,23 @@
   "tenantId": "f04f636e-b66d-509e-ae10-9c27a18e3baa",
   "items": [
     {
+      "key": "tasks.task_new:a51ba39b-9199-51cc-8acf-0bf66df47df6",
+      "kind": "tasks.task_new",
+      "moduleKey": "tasks",
+      "tone": "danger",
+      "object": {
+        "moduleKey": "tasks",
+        "entityType": "task",
+        "entityId": "a51ba39b-9199-51cc-8acf-0bf66df47df6"
+      },
+      "params": {
+        "taskKey": "T-64",
+        "title": "Найти водителя на рейс Р-211",
+        "projectId": "1380e888-13ac-5357-9a6f-a592a20e8220",
+        "dueAt": "2026-10-01T21:00:00Z"
+      }
+    },
+    {
       "key": "fleet.trip_without_driver:604f2a38-8d47-5a47-90b6-7b4ca5e6f791",
       "kind": "fleet.trip_without_driver",
       "moduleKey": "fleet",
@@ -19,6 +36,6 @@
       }
     }
   ],
-  "total": 1,
+  "total": 2,
   "generatedAt": "2026-10-01T07:30:00Z"
 }

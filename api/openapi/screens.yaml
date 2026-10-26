@@ -298,14 +298,23 @@ screens:
     stories: [S2-18, S2-20]
     reference: design-stage-2 · Ортус CRM.dc.html · pg.home «Требует решения», «Сегодня в работе», «Рейсы сегодня» (05 §5, 01 §23)
     operations:
-      [getMyDecisionQueue, listTripPlans, getMyContext, chooseReservation, assignTripVehicle]
+      [
+        getMyDecisionQueue,
+        listTripPlans,
+        getMyContext,
+        chooseReservation,
+        assignTripVehicle,
+        getMyTaskSummary,
+      ]
     note: >-
       Источники «Требует решения» этапа 2 — логистика (дефект, приёмка, рейс без водителя) и организация (пробный
       период, место, сотрудники без роли); источники этапов 4–7 (задачи, SPA, ремонт, обращения, документы, чаты,
       касса) — allowlist out-of-stage. Тексты карточек собирает клиент из словаря по kind и params. W2.71 (S2-20,
       D-35 комплекта): «водитель ещё не выбрал машину» (fleet.vehicle_choice_pending, «Оставить …» = chooseReservation) и «нет
       машины» (fleet.trip_without_vehicle, «Поставить машину» = assignTripVehicle) — эталон «Временный водитель -
-      варианты.dc.html» 1g (снимок 19.10b).
+      варианты.dc.html» 1g (снимок 19.10b). W4.81 (0.11.1-stage4, design-2026-10-19 homeVM :4081–4084, :4113): мои
+      задачи «Новая» и «На проверке» (tasks.task_new, tasks.task_review, «Открыть» — карточка задачи), карточка
+      «Задачи» и бейдж пункта меню — getMyTaskSummary.
 
   logistics-fleet:
     title: Рабочее место логиста

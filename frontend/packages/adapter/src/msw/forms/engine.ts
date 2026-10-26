@@ -515,6 +515,7 @@ function runTask(v: FormsView, f: FormRow, r: ResponseRow, rule: RuleRow): Actio
     authorId: rule.authorId,
     checklist: [],
     files: [],
+    fromForm: true,
     revision: 1,
     createdAt: v.now,
     updatedAt: v.now,

@@ -52,6 +52,10 @@ export const home = {
       until: 'до {time}',
       tripAt: 'рейс в {time}',
     },
+    // W4.81 · Мои задачи «Новая» и «На проверке» (homeVM :4083): «{номер} · {тема}», срок и задача правила формы. Чипы
+    // «Задача» и «На проверке» — строки словарей tasks и knowledge (они импортируют home: подписи берёт страница).
+    task: '{key} · {title}',
+    taskDue: 'Срок {due}{form, select, yes { · создана из ответа формы} other {}}',
     // W2.73 · S2-20 1g: водитель ещё не выбрал машину, нет машины (:476–491).
     vehicleChoice: '{trip}: водитель ещё не выбрал машину',
     vehicleChoiceText:
@@ -88,6 +92,8 @@ export const home = {
       // W2.73 · S2-20 1g (:482, :490).
       keepVehicle: 'Оставить {vehicle}',
       assignVehicle: 'Поставить машину',
+      // W4.81 · «Открыть» задачи (:4083).
+      open: shell.actions.open,
     },
   },
 
@@ -101,6 +107,10 @@ export const home = {
     freeVehicles: 'Свободных машин',
     freeOf: '{free} из {total}',
     awaitingReview: 'Ждут приёмки',
+    // W4.81 · Карточка «Задачи» (:4113).
+    tasks: shell.nav.items.tasks,
+    tasksNew: 'Новые',
+    tasksProgress: 'В работе',
     off: gate.chips.moduleOff,
     connect: company.modules.industry.connect,
   },

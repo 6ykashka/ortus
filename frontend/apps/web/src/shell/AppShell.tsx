@@ -33,7 +33,7 @@ import { useStoredQueueStatus } from '../pwa/status.ts';
 import { clearDeviceData } from '../pwa/store.ts';
 import { AccessGate } from './AccessGate.tsx';
 import { Banners, OfflineBootBanner } from './Banners.tsx';
-import { usePlatformBadges } from './badges.ts';
+import { usePlatformBadges, useTenantBadges } from './badges.ts';
 import { applyBrand, brandHeader, brandNav } from './brand.ts';
 import { ShellContext, type ShellValue } from './context.tsx';
 import { Header, type Popover, ProfilePopover } from './Header.tsx';
@@ -176,9 +176,19 @@ export function AppShell({ me, area, tenant, page }: AppShellProps): ReactElemen
   // W4.61: бейдж «Заявки на тариф» — число заявок на рассмотрении (navForBase :2972).
   const badges = usePlatformBadges(operator);
   const requests = badges.requests;
+  // W4.81: бейдж «Задачи» — мои задачи в первом статусе «К выполнению» (Р-27).
+  const tasks = useTenantBadges(
+    area === 'tenant' && ctx.audience !== 'driver' ? tenantId : null,
+  ).tasks;
   const groups = useMemo(
-    () => brandNav(buildNav(ctx, { badges: requests ? { requests } : {} }), theme),
-    [ctx, requests, theme],
+    () =>
+      brandNav(
+        buildNav(ctx, {
+          badges: { ...(requests ? { requests } : {}), ...(tasks ? { tasks } : {}) },
+        }),
+        theme,
+      ),
+    [ctx, requests, tasks, theme],
   );
   const access = page ? pageAccess(ctx, page) : ({ kind: 'not_found' } as const);
   const readOnly = access.kind === 'allow' && access.readOnly;

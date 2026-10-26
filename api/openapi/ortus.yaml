@@ -27,6 +27,8 @@
 # 0.12.0-stage5 (W5.00, контрактный PR этапа 5): касса — 22 операции (смены, перемещения, предложения, подотчёт,
 # заявки, статьи), 17 ключей с limit, 5 кодов; склад — склады, остатки по партиям FEFO, резервы; SPA — правка
 # услуги с техкартой, перенос и отмена визита.
+# 0.11.1-stage4 (W4.81, FollowUp выхода этапа 4): задачи на «Главной» — виды tasks.* «Требует решения» и сводка
+# задач getMyTaskSummary (карточка «Задачи», бейдж меню).
 openapi: 3.1.0
 jsonSchemaDialect: https://json-schema.org/draft/2020-12/schema
 info:
@@ -683,6 +685,8 @@ paths:
     $ref: paths/repairs.yaml#/~1api~1v1~1public~1client~1%7BclientToken%7D~1estimates~1%7Bversion%7D~1approve
   /api/v1/public/client/{clientToken}/documents/{documentId}/sign:
     $ref: paths/repairs.yaml#/~1api~1v1~1public~1client~1%7BclientToken%7D~1documents~1%7BdocumentId%7D~1sign
+  /api/v1/me/task-summary:
+    $ref: paths/home.yaml#/~1api~1v1~1me~1task-summary
 x-contract-status: design-proposal-not-implemented
 x-authorization-order:
   - authenticate

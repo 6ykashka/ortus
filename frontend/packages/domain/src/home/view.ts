@@ -1,7 +1,10 @@
 // W2.25 · Вид «Главной» (homeVM :4097–4136; 05 §5.3–5.7): приветствие по часам, дата (вычисляется, Q-61),
 // сводка, «Начало работы» владельца, «Сегодня в работе» (логистика и неподключённые отраслевые модули),
-// «Рейсы сегодня». Подписи — ключи словаря `home.*`; состояния рейса — TRIP_STATE домена логистики.
+// «Рейсы сегодня». Подписи — ключи словаря `home.*`; состояния рейса — TRIP_STATE домена логистики. W4.81: карточка
+// «Задачи» и бейдж пункта меню по сводке задач getMyTaskSummary.
 import { TRIP_STATE } from '../modules/logistics/dictionaries.ts';
+import { badges as taskBadge } from '../nav/modules/tasks.ts';
+import type { NavBadges } from '../nav/types.ts';
 import { dayKey, hhmm, hourOf } from './time.ts';
 import type { HomeMsg, HomeTarget } from './types.ts';
 
@@ -136,6 +139,34 @@ export function logisticsWork(
     ],
   };
 }
+
+/** Сводка задач участника (`TaskSummary` getMyTaskSummary, контракт 0.11.1-stage4). */
+export interface TaskSummaryLike {
+  new: number;
+  inProgress: number;
+  review: number;
+  myNew: number;
+}
+
+/**
+ * W4.81 · Карточка «Задачи» (:4113): «Новые», «В работе», «На проверке» по категориям статусов задач, которые участник
+ * видит (эталон считает по именам статусов, DoR tasks.md Р-27 — по категориям); переход — «Задачи».
+ */
+export function tasksWork(s: TaskSummaryLike): WorkCard {
+  return {
+    icon: 'task_alt',
+    title: { key: 'work.tasks' },
+    target: { page: 'tasks' },
+    lines: [
+      { label: { key: 'work.tasksNew' }, value: String(s.new) },
+      { label: { key: 'work.tasksProgress' }, value: String(s.inProgress) },
+      { label: { key: 'work.tasksReview' }, value: String(s.review) },
+    ],
+  };
+}
+
+/** W4.81 · Бейдж пункта меню «Задачи» по сводке задач — правило манифеста `nav/modules/tasks.ts` (Р-27). */
+export const tasksBadges = (s: TaskSummaryLike | undefined): NavBadges => taskBadge(s);
 
 const INDUSTRY = [
   { moduleKey: 'fleet', icon: 'local_shipping', title: { key: 'work.logistics' } },

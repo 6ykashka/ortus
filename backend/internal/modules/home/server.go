@@ -39,3 +39,22 @@ func (h Server) GetMyDecisionQueue(ctx context.Context, r homeapi.GetMyDecisionQ
 	}
 	return homeapi.GetMyDecisionQueue200JSONResponse{Body: q, Headers: headers}, nil
 }
+
+// GetMyTaskSummary implements homeapi.StrictServerInterface (W4.81): the counters of the tasks of the account of the
+// session in the tenant of the query.
+func (h Server) GetMyTaskSummary(ctx context.Context, r homeapi.GetMyTaskSummaryRequestObject) (homeapi.GetMyTaskSummaryResponseObject, error) {
+	sess, ok := session.FromContext(ctx)
+	if !ok {
+		return nil, problem.New(problem.CodeSessionExpired, "")
+	}
+	sum, err := h.S.TaskSummary(ctx, sess.AccountID, r.Params.TenantId)
+	if err != nil {
+		return nil, err
+	}
+	cc := noStore
+	headers := homeapi.GetMyTaskSummary200ResponseHeaders{CacheControl: &cc}
+	if rid := requestid.FromContext(ctx); rid != "" {
+		headers.XRequestId = &rid
+	}
+	return homeapi.GetMyTaskSummary200JSONResponse{Body: sum, Headers: headers}, nil
+}

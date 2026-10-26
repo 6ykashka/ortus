@@ -14183,6 +14183,28 @@
         "properties": { "smsCode": { "type": "string", "pattern": "^[0-9]{4,8}$" } },
         "required": ["smsCode"]
       }
+    },
+    {
+      "id": "getMyTaskSummary",
+      "method": "GET",
+      "path": "/api/v1/me/task-summary",
+      "tag": "Home",
+      "stage1": false,
+      "stage2": true,
+      "stage4": false,
+      "stage5": false,
+      "stage6": false,
+      "permissions": [],
+      "mode": "all",
+      "scope": "identity",
+      "public": false,
+      "mutating": false,
+      "ifMatch": false,
+      "idempotent": false,
+      "statuses": [200, 400, 401, 403, 404, 422, 429],
+      "success": 200,
+      "successBody": true,
+      "etag": false
     }
   ],
   "errors": {
@@ -25824,6 +25846,23 @@
         "tenantId": "f04f636e-b66d-509e-ae10-9c27a18e3baa",
         "items": [
           {
+            "key": "tasks.task_new:a51ba39b-9199-51cc-8acf-0bf66df47df6",
+            "kind": "tasks.task_new",
+            "moduleKey": "tasks",
+            "tone": "danger",
+            "object": {
+              "moduleKey": "tasks",
+              "entityType": "task",
+              "entityId": "a51ba39b-9199-51cc-8acf-0bf66df47df6"
+            },
+            "params": {
+              "taskKey": "T-64",
+              "title": "Найти водителя на рейс Р-211",
+              "projectId": "1380e888-13ac-5357-9a6f-a592a20e8220",
+              "dueAt": "2026-10-01T21:00:00Z"
+            }
+          },
+          {
             "key": "fleet.trip_without_driver:604f2a38-8d47-5a47-90b6-7b4ca5e6f791",
             "kind": "fleet.trip_without_driver",
             "moduleKey": "fleet",
@@ -25841,7 +25880,7 @@
             }
           }
         ],
-        "total": 1,
+        "total": 2,
         "generatedAt": "2026-10-01T07:30:00Z"
       },
       "not_found": {
@@ -25868,9 +25907,44 @@
             "moduleKey": "members",
             "tone": "neutral",
             "params": { "count": "3", "names": "Марина Котова, Вера Котельникова, Тимур Ахмедов" }
+          },
+          {
+            "key": "tasks.task_review:f12c3e97-42a6-50bd-aaf3-d70bf1ffd460",
+            "kind": "tasks.task_review",
+            "moduleKey": "tasks",
+            "tone": "neutral",
+            "object": {
+              "moduleKey": "tasks",
+              "entityType": "task",
+              "entityId": "f12c3e97-42a6-50bd-aaf3-d70bf1ffd460"
+            },
+            "params": {
+              "taskKey": "T-63",
+              "title": "Обновить регламент приёмки смены",
+              "projectId": "1380e888-13ac-5357-9a6f-a592a20e8220",
+              "dueAt": "2026-10-03T21:00:00Z"
+            }
+          },
+          {
+            "key": "tasks.task_new:8eb1b711-c340-54ac-b2a4-4fc76537403c",
+            "kind": "tasks.task_new",
+            "moduleKey": "tasks",
+            "tone": "neutral",
+            "object": {
+              "moduleKey": "tasks",
+              "entityType": "task",
+              "entityId": "8eb1b711-c340-54ac-b2a4-4fc76537403c"
+            },
+            "params": {
+              "taskKey": "L-31",
+              "title": "Квартира 64 м², Химки",
+              "projectId": "22011b60-f6d0-56d6-9e42-98202e5e319a",
+              "dueAt": "2026-10-03T21:00:00Z",
+              "funnel": "true"
+            }
           }
         ],
-        "total": 2,
+        "total": 4,
         "generatedAt": "2026-10-01T07:30:00Z"
       }
     },
@@ -39687,6 +39761,32 @@
         "violations": [{ "field": "smsCode", "code": "invalid", "message": "Код не совпал." }],
         "reason": "sms_code_invalid"
       }
+    },
+    "getMyTaskSummary": {
+      "manager": {
+        "tenantId": "f04f636e-b66d-509e-ae10-9c27a18e3baa",
+        "new": 1,
+        "inProgress": 2,
+        "review": 2,
+        "myNew": 1,
+        "generatedAt": "2026-10-01T07:30:00Z"
+      },
+      "not_found": {
+        "type": "https://docs.ortus.example/errors/not_found",
+        "title": "Нет объекта или он вне области",
+        "status": 404,
+        "code": "not_found",
+        "detail": "Организация не найдена.",
+        "requestId": "01J9Z4QK8M6T2V5X7Y9A1B3C5D"
+      },
+      "ok": {
+        "tenantId": "f04f636e-b66d-509e-ae10-9c27a18e3baa",
+        "new": 2,
+        "inProgress": 2,
+        "review": 2,
+        "myNew": 0,
+        "generatedAt": "2026-10-01T07:30:00Z"
+      }
     }
   },
   "seedIds": {
@@ -39752,6 +39852,7 @@
       "K-325": "a610ddaf-a010-5083-885c-05e081bdde71",
       "K-326": "16447cc4-ecf1-53f6-885b-f0cb74d3197a",
       "L-29": "55f673e7-7b98-5bd1-a017-31d3b3b97587",
+      "L-31": "8eb1b711-c340-54ac-b2a4-4fc76537403c",
       "R-0988": "d530b3dc-6b28-5f5c-be4c-a14813678265",
       "R-1012": "9c64b00c-9706-549f-b788-8456dd9c35ea",
       "R-1013": "a6f36b82-b4ca-5c77-a87a-16a35f713b45",

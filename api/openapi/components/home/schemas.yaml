@@ -13,7 +13,7 @@ DecisionItem:
       type: string
       pattern: ^[a-z][a-z0-9]*(\.[a-z][a-z0-9_]*)+$
       maxLength: 100
-      description: "Source and situation, <module>.<event>. Stage 2 sources: fleet.blocking_defect, fleet.trip_review, fleet.trip_without_driver (logistics); tenant.trial_ended, tenant.trial_ending, tenant.storage_high, access.members_without_role (organization, owner only). Sources of later stages add kinds additively; a client shows an unknown kind as a neutral card without action. W2.71 (0.6.3-stage2, S2-20, 1g) — two kinds of the logistics source for the logist of the trip company (fleet.routes.manage over the unit of the trip), never together for one trip: fleet.vehicle_choice_pending (warn) — from 15 minutes before chooseUntil until the choice or the deadline, the temporary driver has not chosen between the offered vehicles; params tripNumber, driverName, homeOrgUnitName, chooseUntil, hostVehicle and homeVehicle (model · plate), reservationId — the reservation of the vehicle of the trip company («Оставить …» = chooseReservation); fleet.trip_without_vehicle (danger) — a trip of a temporary driver of the pool not started yet has no vehicle (the home company approved the driver only, or the vehicle was released); params tripNumber, driverName, homeOrgUnitName, startsAt («Поставить машину» = assignTripVehicle). object — the trip."
+      description: 'Source and situation, <module>.<event>. Stage 2 sources: fleet.blocking_defect, fleet.trip_review, fleet.trip_without_driver (logistics); tenant.trial_ended, tenant.trial_ending, tenant.storage_high, access.members_without_role (organization, owner only). Sources of later stages add kinds additively; a client shows an unknown kind as a neutral card without action. W2.71 (0.6.3-stage2, S2-20, 1g) — two kinds of the logistics source for the logist of the trip company (fleet.routes.manage over the unit of the trip), never together for one trip: fleet.vehicle_choice_pending (warn) — from 15 minutes before chooseUntil until the choice or the deadline, the temporary driver has not chosen between the offered vehicles; params tripNumber, driverName, homeOrgUnitName, chooseUntil, hostVehicle and homeVehicle (model · plate), reservationId — the reservation of the vehicle of the trip company («Оставить …» = chooseReservation); fleet.trip_without_vehicle (danger) — a trip of a temporary driver of the pool not started yet has no vehicle (the home company approved the driver only, or the vehicle was released); params tripNumber, driverName, homeOrgUnitName, startsAt («Поставить машину» = assignTripVehicle). object — the trip. W4.81 (0.11.1-stage4, homeVM :4081–4084) — the source of tasks (moduleKey tasks, a core source) for the tasks assigned to the member that it sees (tasks.read, as listTasks): tasks.task_new — a status of the category todo (the first stage «Новая» of a funnel too); tasks.task_review — a status of review of a workflow (the category progress, not the first status of this category, with its own transition into the category done, as getMyTaskSummary counts it). At most three cards, newest task first; tone danger for priority urgent, otherwise neutral. params taskKey («LOG-101», «T-64»), title, projectId, dueAt (optional, RFC3339), fromForm ("true" — made by a rule of a form), funnel ("true" — a request of a funnel, opened on its board). object — the task (tasks/task).'
     moduleKey:
       type: string
       pattern: ^[a-z][a-z0-9_-]{1,49}$
@@ -66,3 +66,40 @@ DecisionQueue:
     - total
     - generatedAt
   description: Cards ordered by tone (danger → warn → info → neutral), then by the source registration order (logistics → organization → later modules), as homeVM of the prototype.
+# W4.81 (0.11.1-stage4): сводка задач участника — карточка «Задачи» и бейдж меню (getMyTaskSummary).
+TaskSummary:
+  type: object
+  additionalProperties: false
+  description: W4.81 (0.11.1-stage4, homeVM :4113, menu :2995–2996; tasks.md Р-27). Counters of the tasks the member sees in one business — the card «Задачи» of «Сегодня в работе» («Новые», «В работе», «На проверке») and the badge of the menu item «Задачи» (myNew). The rules — getMyTaskSummary.
+  properties:
+    tenantId:
+      $ref: ../common/schemas.yaml#/Id
+    new:
+      type: integer
+      minimum: 0
+      format: int64
+      description: «Новые» — tasks in a status of the category todo.
+    inProgress:
+      type: integer
+      minimum: 0
+      format: int64
+      description: «В работе» — tasks in a status of the category progress of a project with a workflow that is not a status of review.
+    review:
+      type: integer
+      minimum: 0
+      format: int64
+      description: «На проверке» — tasks in a status of review of a project with a workflow.
+    myNew:
+      type: integer
+      minimum: 0
+      format: int64
+      description: The badge — tasks assigned to the member in the first status of the category todo of a project with a workflow.
+    generatedAt:
+      $ref: ../common/schemas.yaml#/Instant
+  required:
+    - tenantId
+    - new
+    - inProgress
+    - review
+    - myNew
+    - generatedAt

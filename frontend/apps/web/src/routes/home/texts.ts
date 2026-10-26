@@ -1,7 +1,7 @@
 // W2.25 · Подписи «Главной» по ключам домена (`HomeMsg` из @ortus/domain/home → строка словаря `home`
 // @ortus/texts). Домен решает, какая подпись и с какими аргументами; страница собирает строку ICU.
 import type { HomeMsg, HomeTextKey } from '@ortus/domain/home';
-import { format, home } from '@ortus/texts';
+import { format, home, knowledge, tasks } from '@ortus/texts';
 
 /** Все ключи домена: объект-перечень — компилятор требует каждый ключ `HomeTextKey`. */
 const KEYS: Readonly<Record<HomeTextKey, true>> = {
@@ -47,6 +47,12 @@ const KEYS: Readonly<Record<HomeTextKey, true>> = {
   'queue.chips.tripAt': true,
   'queue.actions.keepVehicle': true,
   'queue.actions.assignVehicle': true,
+  // W4.81 · Задачи участника.
+  'queue.task': true,
+  'queue.taskDue': true,
+  'queue.chips.task': true,
+  'queue.chips.taskReview': true,
+  'queue.actions.open': true,
   'setup.progress': true,
   'setup.module.title': true,
   'setup.module.text': true,
@@ -65,6 +71,11 @@ const KEYS: Readonly<Record<HomeTextKey, true>> = {
   'work.freeVehicles': true,
   'work.freeOf': true,
   'work.awaitingReview': true,
+  // W4.81 · Карточка «Задачи».
+  'work.tasks': true,
+  'work.tasksNew': true,
+  'work.tasksProgress': true,
+  'work.tasksReview': true,
   'trips.row': true,
   'trips.sub': true,
   'trips.noDriver': true,
@@ -73,7 +84,22 @@ const KEYS: Readonly<Record<HomeTextKey, true>> = {
 
 export const HOME_TEXT_KEYS = Object.keys(KEYS) as HomeTextKey[];
 
+/**
+ * W4.81 · Подписи «Главной», которые уже есть в словарях других доменов (одна строка — один файл): «Задача» и «На
+ * проверке» задач (homeVM :4083, :4113). Словарь `home` их не импортирует — `tasks` и `knowledge` сами ссылаются на него.
+ */
+const ELSEWHERE: Partial<Record<HomeTextKey, string>> = {
+  'queue.chips.task': tasks.board.quickButton,
+  'queue.chips.taskReview': knowledge.status.review,
+  'work.tasksReview': knowledge.status.review,
+};
+
+/** Ключи домена, подписи которых берутся из словарей других доменов (`ELSEWHERE`). */
+export const OTHER_DICTIONARY_KEYS = Object.keys(ELSEWHERE) as HomeTextKey[];
+
 function template(key: HomeTextKey): string {
+  const other = ELSEWHERE[key];
+  if (other !== undefined) return other;
   const value = key
     .split('.')
     .reduce<unknown>((node, k) => (node as Record<string, unknown> | undefined)?.[k], home);

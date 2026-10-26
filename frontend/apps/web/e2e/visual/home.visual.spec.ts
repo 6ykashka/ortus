@@ -94,6 +94,39 @@ test.describe('home — визуальная сверка с эталоном @m
     const p = testInfo.project.name;
     const h1 = (x: Page) => x.locator('#h-home');
     await same(h1(page), h1(ref.page), `home-h1-${p}`, testInfo);
+    // W4.81: над блоком в эталоне и в реализации разные карточки очереди (эталон — ещё обращение ГРЗ-57), дробные
+    // высоты расходятся — кадры блока лежат на разной доле пикселя; сдвиг на долю выравнивает положение.
+    const dy =
+      ((await events(ref.page).boundingBox())?.y ?? 0) -
+      ((await events(page).boundingBox())?.y ?? 0);
+    await events(page).evaluate((el, s) => (el.style.marginTop = `${s}px`), ((dy % 1) + 1) % 1);
     await same(events(page), events(ref.page), `home-events-${p}`, testInfo);
   });
+
+  // W4.81 · Карточка «Задачи» (:4113): пиксели против эталона у владельца и логиста.
+  for (const persona of ['owner', 'manager'] as const) {
+    test(`${persona}: карточка «Задачи» в допуске`, async ({ app, page, reference }, testInfo) => {
+      // Владелец на 1440: в эталоне перед «Задачи» стоит «Салон и SPA» (этап 5) — другая колонка сетки, ширина 268,67 px
+      // округляется иначе (allowlist/home.md, home-tasks-owner-desktop-1440).
+      test.skip(
+        persona === 'owner' && ['desktop-1440', 'tablet-768'].includes(testInfo.project.name),
+        'allowlist: home-tasks-owner-desktop-1440, home-tasks-owner-tablet-768',
+      );
+      const work = (p: Page): Locator =>
+        home(p)
+          .locator('button')
+          .filter({ has: p.locator('strong', { hasText: /^Задачи$/ }) });
+      const ref = await reference(undefined, { persona, hidePanel: true });
+      await work(ref.page).waitFor();
+      await openHome(app, page, { persona });
+      await work(page).waitFor();
+      await page.waitForLoadState('networkidle');
+      await same(
+        work(page),
+        work(ref.page),
+        `home-tasks-${persona}-${testInfo.project.name}`,
+        testInfo,
+      );
+    });
+  }
 });

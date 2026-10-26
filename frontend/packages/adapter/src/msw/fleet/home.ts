@@ -12,6 +12,7 @@ import { uuidParam } from '../core/page.ts';
 import { fail } from '../core/problem.ts';
 import type { Registry } from '../core/registry.ts';
 import { addMs, DAY, MINUTE } from '../core/time.ts';
+import { tasksHome } from '../tasks/home.ts';
 import { CHOICE_PENDING_MINUTES } from './offers.ts';
 import { covers, fleetOf, type TripRow, unitsFor } from './state.ts';
 
@@ -243,7 +244,7 @@ export const homeHandlers: Registry = {
     const t = m ? accessOf(ctx.s, m) : undefined;
     if (!t || t.tenant.status === 'suspended') fail('not_found', 'Организация не найдена.');
     const now = ctx.now();
-    const all = [...fleetSource(t, now), ...tenantSource(t, now)]
+    const all = [...fleetSource(t, now), ...tenantSource(t, now), ...tasksHome(ctx, t).cards]
       .map((item, i) => ({ item, i }))
       .sort((a, b) => TONE[a.item.tone] - TONE[b.item.tone] || a.i - b.i)
       .map((x) => x.item);
@@ -252,6 +253,23 @@ export const homeHandlers: Registry = {
       items: all.slice(0, limit),
       total: all.length,
       generatedAt: now,
+    };
+    return { body };
+  },
+
+  // W4.81 (0.11.1-stage4): счётчики карточки «Задачи» и бейдж меню по задачам, которые видит участник.
+  getMyTaskSummary: (ctx) => {
+    const user = ctx.user();
+    const tenantId = uuidParam(ctx.query, 'tenantId') ?? '';
+    const m = ctx.s.memberships.find(
+      (x) => x.accountId === user.id && x.tenantId === tenantId && x.status === 'active',
+    );
+    const t = m ? accessOf(ctx.s, m) : undefined;
+    if (!t || t.tenant.status === 'suspended') fail('not_found', 'Организация не найдена.');
+    const body: S['TaskSummary'] = {
+      tenantId: t.tenant.id,
+      ...tasksHome(ctx, t).summary,
+      generatedAt: ctx.now(),
     };
     return { body };
   },

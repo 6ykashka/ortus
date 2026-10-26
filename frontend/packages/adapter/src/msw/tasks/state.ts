@@ -101,6 +101,8 @@ export interface TaskRow {
   files: FileLink[];
   round?: RoundRow;
   deleted?: boolean;
+  /** Создана правилом формы (tasks.tasks.source forms/response, W4.24): «Главная» помечает карточку (W4.81). */
+  fromForm?: boolean;
   revision: number;
   createdAt: string;
   updatedAt: string;
@@ -155,7 +157,7 @@ export interface TasksData {
   runs: RunRow[];
 }
 
-type WithTasks = Org & { tasksData?: TasksData };
+type WithTasks = Org & { tasksData?: TasksData; tasksFilesSeeded?: boolean };
 
 /** Действия core.tasks в порядке каталога. */
 export const TASK_KEYS = [
@@ -476,10 +478,15 @@ function seedTasks(org: Org): TasksData {
 }
 
 /** Задачи организации (сид при первом обращении — и для состояний, сохранённых до W4.03). */
-export function tasksDataOf(org: Org): TasksData {
+/**
+ * Файлы вложений сида попадают в файлы организации при первом обращении к задачам; «Главная» и бейдж меню (W4.81)
+ * читают только счётчики и не должны менять список файлов — они зовут с withFiles: false.
+ */
+export function tasksDataOf(org: Org, withFiles = true): TasksData {
   const x = org as WithTasks;
-  if (!x.tasksData) {
-    x.tasksData = seedTasks(org);
+  x.tasksData ??= seedTasks(org);
+  if (withFiles && !x.tasksFilesSeeded) {
+    x.tasksFilesSeeded = true;
     seedFiles(org, x.tasksData);
   }
   return x.tasksData;
@@ -679,10 +686,10 @@ function selfGrant(t: TenantAccess, key: string, now: string): boolean {
   );
 }
 
-export function viewOf(ctx: HandlerContext): TasksView {
+export function viewOf(ctx: HandlerContext, withFiles = true): TasksView {
   const t = ctx.org();
   const now = ctx.now();
-  const data = tasksDataOf(t.org);
+  const data = tasksDataOf(t.org, withFiles);
   const me = t.member?.id ?? '';
   const cache = new Map<string, Access | null>();
   const access = (p: ProjectRow): Access | null => {

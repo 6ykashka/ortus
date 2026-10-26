@@ -20,8 +20,43 @@
         "count": "3",
         "names": "Марина Котова, Вера Котельникова, Тимур Ахмедов"
       }
+    },
+    {
+      "key": "tasks.task_review:f12c3e97-42a6-50bd-aaf3-d70bf1ffd460",
+      "kind": "tasks.task_review",
+      "moduleKey": "tasks",
+      "tone": "neutral",
+      "object": {
+        "moduleKey": "tasks",
+        "entityType": "task",
+        "entityId": "f12c3e97-42a6-50bd-aaf3-d70bf1ffd460"
+      },
+      "params": {
+        "taskKey": "T-63",
+        "title": "Обновить регламент приёмки смены",
+        "projectId": "1380e888-13ac-5357-9a6f-a592a20e8220",
+        "dueAt": "2026-10-03T21:00:00Z"
+      }
+    },
+    {
+      "key": "tasks.task_new:8eb1b711-c340-54ac-b2a4-4fc76537403c",
+      "kind": "tasks.task_new",
+      "moduleKey": "tasks",
+      "tone": "neutral",
+      "object": {
+        "moduleKey": "tasks",
+        "entityType": "task",
+        "entityId": "8eb1b711-c340-54ac-b2a4-4fc76537403c"
+      },
+      "params": {
+        "taskKey": "L-31",
+        "title": "Квартира 64 м², Химки",
+        "projectId": "22011b60-f6d0-56d6-9e42-98202e5e319a",
+        "dueAt": "2026-10-03T21:00:00Z",
+        "funnel": "true"
+      }
     }
   ],
-  "total": 2,
+  "total": 4,
   "generatedAt": "2026-10-01T07:30:00Z"
 }

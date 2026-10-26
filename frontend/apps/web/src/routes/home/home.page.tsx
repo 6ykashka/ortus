@@ -15,6 +15,7 @@ import {
   offModules,
   setupSteps,
   summary,
+  tasksWork,
   tripsToday,
 } from '@ortus/domain/home';
 import { buildNav, defaultPage, segmentOf } from '@ortus/domain/nav';
@@ -23,6 +24,7 @@ import { DecisionQueue, Icon } from '@ortus/ui';
 import { Navigate, useNavigate } from '@tanstack/react-router';
 import { type ReactElement, useState } from 'react';
 
+import { useTaskSummary } from '../../shell/badges.ts';
 import { useCan, useShell } from '../../shell/context.tsx';
 import { problemText } from '../../shell/run.tsx';
 import { ALL_UNITS, unitLabel, useOrgUnits } from '../../shell/scope.ts';
@@ -88,6 +90,7 @@ function OfficeHome(): ReactElement {
   const trips = useTripPlans(tenantId, fleetView);
   const vehicles = useVehicles(tenantId, fleetView && can('fleet.vehicles.read'));
   const events = useRecentEvents(tenantId);
+  const taskSummary = useTaskSummary(tenantId);
   const staff = useHasStaff(tenantId, owner);
   const units =
     useOrgUnits(tenantId, owner || caps.some((c) => c.permission === 'org_units.read')).data ?? [];
@@ -124,6 +127,12 @@ function OfficeHome(): ReactElement {
   const work = fleetView
     ? logisticsWork(trips.data ?? [], vehicles.data ?? [], now, timeZone)
     : null;
+  // W4.81 · Карточка «Задачи» — последней среди рабочих (:4113), если у участника есть доступ к задачам.
+  const tasks =
+    taskSummary.data && can('tasks.read', 'tasks.projects.read')
+      ? tasksWork(taskSummary.data)
+      : null;
+  const works = [work, tasks].filter((w): w is NonNullable<typeof w> => w !== null);
   const off = owner
     ? offModules(
         ['fleet', 'spa', 'repairs'].map((k) => ({
@@ -215,20 +224,25 @@ function OfficeHome(): ReactElement {
 
           <h2 className="ox-home-h2 ox-home-work-title">{home.work.title}</h2>
           <div className="ox-home-grid">
-            {work ? (
-              <button type="button" className="ox-home-work" onClick={() => go(work.target)}>
+            {works.map((w) => (
+              <button
+                key={w.title.key}
+                type="button"
+                className="ox-home-work"
+                onClick={() => go(w.target)}
+              >
                 <span className="ox-home-work-head">
-                  <Icon name={work.icon} size={20} />
-                  <strong>{textOf(work.title)}</strong>
-                </span>
-                {work.lines.map((l) => (
+                  <Icon name={w.icon} size={20} />
+                  <strong>{textOf(w.title)}</strong>
+                </span>{' '}
+                {w.lines.map((l) => (
                   <span key={l.label.key} className="ox-home-line">
                     <span className="ox-home-muted">{textOf(l.label)}</span>
                     <span className="ox-home-value">{textOf(l.value)}</span>
                   </span>
                 ))}
               </button>
-            ) : null}
+            ))}
             {off.map((o) => (
               <div key={o.moduleKey} className="ox-home-off">
                 <span className="ox-home-off-head">

@@ -1,0 +1,85 @@
+# Матрица изоляции: задачи на «Главной» (W4.81, контракт 0.11.1-stage4). Источник задач «Требует решения»
+# (GET /api/v1/me/decisions, виды tasks.task_new и tasks.task_review) отдаёт только задачи участника, которые он видит как
+# listTasks (tasks.read по уровню доступа проекта, TP-03, или область self); сводка задач GET /api/v1/me/task-summary —
+# операция личности: tenantId — активное членство аккаунта, иначе 404 not_found (AC-01, AC-02). Содержимое фикстур
+# (W4.11, content_tasks.go): «Автопарк» (ограниченный, Москва-1) — fleet-1 «Новая» у водителя, fleet-2 «На проверке» у
+# руководителя проекта; закрытая «Стройка» — build-1 «В работе» у водителя. Счётчики сводки формат строк не выражает —
+# их проверяют integration-тесты backend/internal/modules/home/tasks и backend/internal/modules/tasks. Формат — README.md.
+# После правки: go -C backend generate ./test/isolation
+module: home_tasks
+endpoints:
+  - op: getMyDecisionQueue
+    method: GET
+    path: /api/v1/me/decisions?tenantId={tenantId}
+    rows:
+      - actor: a.project-lead
+        params: { tenantId: tenant:a }
+        status: 200
+        present: [tenant:a, task:a.fleet-2]
+        absent: [tenant:b, task:b.fleet-2, task:a.fleet-1, task:a.build-1]
+        note: руководитель «Автопарка» — своя задача «На проверке»; задача водителя и закрытой «Стройки» — не его
+      - actor: a.driver-msk1
+        params: { tenantId: tenant:a }
+        status: 200
+        present: [tenant:a, task:a.fleet-1]
+        absent: [tenant:b, task:b.fleet-1, task:a.fleet-2, task:a.build-1]
+        note: водитель (область self) — своя «Новая»; build-1 «В работе» карточки не даёт, задача руководителя — чужая
+      - actor: a.owner
+        params: { tenantId: tenant:a }
+        status: 200
+        present: [tenant:a]
+        absent: [tenant:b, task:a.fleet-1, task:a.fleet-2, task:a.build-1]
+        note: владелец не исполнитель ни одной задачи — карточек задач нет
+      - actor: b.manager-msk1
+        params: { tenantId: tenant:b }
+        status: 200
+        present: [tenant:b]
+        absent: [tenant:a, task:a.fleet-2, task:a.fleet-1, task:a.build-1]
+        note: менеджер Москвы-1 тенанта B (исполнитель fleet-2 B без права «Задач») — ни одной задачи A
+      - actor: a.two-roles
+        params: { tenantId: tenant:a }
+        status: 200
+        present: [tenant:a]
+        absent: [tenant:b, task:a.fleet-1, task:a.fleet-2, task:a.build-1]
+        note: наблюдатель Самары-2 задач «Автопарка» Москвы-1 не получает
+  - op: getMyTaskSummary
+    method: GET
+    path: /api/v1/me/task-summary?tenantId={tenantId}
+    rows:
+      - actor: anonymous
+        params: { tenantId: tenant:a }
+        status: 401
+        note: без сессии сводки нет
+      - actor: a.owner
+        params: { tenantId: tenant:a }
+        status: 200
+        present: [tenant:a]
+        absent: [tenant:b]
+        note: сводка своей организации
+      - actor: a.driver-msk1
+        params: { tenantId: tenant:a }
+        status: 200
+        present: [tenant:a]
+        absent: [tenant:b]
+        note: водитель — счётчики своих задач (область self)
+      - actor: ab.member
+        params: { tenantId: tenant:b }
+        status: 200
+        present: [tenant:b]
+        absent: [tenant:a]
+        note: сводка одной организации даже у аккаунта в двух (BR-T2)
+      - actor: a.owner
+        params: { tenantId: tenant:b }
+        status: 404
+        code: not_found
+        note: чужая организация отвечает как несуществующая (AC-02)
+      - actor: b.manager-msk1
+        params: { tenantId: tenant:a }
+        status: 404
+        code: not_found
+        note: менеджер фирмы-тёзки Москва-1 тенанта B не читает сводку A
+      - actor: p.operator
+        params: { tenantId: tenant:a }
+        status: 404
+        code: not_found
+        note: оператор платформы — не участник организации

@@ -12,7 +12,7 @@ import { hitHeight, noHorizontalScroll, openPage } from './modules.helpers.ts';
 import { devScenario, LOTOS } from './shell.helpers.ts';
 
 const GREETING = /^(Доброе утро|Добрый день|Добрый вечер), /;
-const SUMMARY_2 = 'Требует решения: 2. Сначала то, что блокирует работу.';
+const SUMMARY_2 = 'Требует решения: 4. Сначала то, что блокирует работу.';
 const EMPTY = 'Решений не требуется. Новые вопросы появятся здесь.';
 
 const home = (page: Page) => page.locator('section[aria-labelledby="h-home"]');
@@ -72,10 +72,12 @@ test.describe('home — «Главная» @mock', () => {
   }) => {
     await openHome(app, page);
     await expect(h2(page, 'Требует решения')).toBeVisible();
-    await expect(cards(page)).toHaveCount(2);
+    await expect(cards(page)).toHaveCount(4);
     expect(await cardTitles(page)).toEqual([
       'Пробный период: осталось 12 дней',
       '3 сотрудника без роли',
+      'T-63 · Обновить регламент приёмки смены',
+      'L-31 · Квартира 64 м², Химки',
     ]);
     const trial = card(page, 'Пробный период: осталось 12 дней');
     await expect(trial).toContainText('Подписка');
@@ -116,11 +118,15 @@ test.describe('home — «Главная» @mock', () => {
     await openHome(app, page, { persona: 'manager' });
     await expect(page.getByRole('heading', { level: 1 })).toHaveText('Доброе утро, Марина');
     await expect(home(page)).toContainText('Четверг, 1 октября · Область не назначена');
-    await expect(home(page).locator('p').first()).toHaveText('Срочных вопросов нет.');
-    await expect(queue(page)).toContainText(EMPTY);
-    await expect(cards(page)).toHaveCount(0);
+    // W4.81: срочная задача логиста T-64 — в «Требует решения», карточка «Задачи» — в «Сегодня в работе».
+    await expect(home(page).locator('p').first()).toHaveText(
+      'Требует решения: 1. Сначала то, что блокирует работу.',
+    );
+    await expect(cards(page)).toHaveCount(1);
+    await expect(card(page, 'T-64 · Найти водителя на рейс Р-211')).toBeVisible();
     await expect(page.locator('.ox-home-setup')).toHaveCount(0);
-    await expect(page.locator('.ox-home-work')).toHaveCount(0);
+    await expect(page.locator('.ox-home-work')).toHaveCount(1);
+    await expect(page.locator('.ox-home-work')).toContainText('Задачи');
     await expect(home(page)).toContainText('Событий пока нет');
   });
 
@@ -131,13 +137,15 @@ test.describe('home — «Главная» @mock', () => {
     await openHome(app, page, { persona: 'manager', preset: 'logistics-ready' });
     await expect(home(page)).toContainText('Четверг, 1 октября · Север Логистик');
     await expect(home(page).locator('p').first()).toHaveText(
-      'Требует решения: 1. Сначала то, что блокирует работу.',
+      'Требует решения: 2. Сначала то, что блокирует работу.',
     );
     const trip = card(page, 'Рейс Р-211 без водителя');
     await expect(trip).toContainText('Сегодня 14:00');
     await expect(trip).toContainText('Охлаждённая продукция · Молочная продукция · +2…+6 °C');
-    const work = page.locator('.ox-home-work');
-    await expect(work).toHaveCount(1);
+    // Карточка «Задачи» (W4.81) — после логистики.
+    await expect(page.locator('.ox-home-work')).toHaveCount(2);
+    await expect(page.locator('.ox-home-work').nth(1)).toContainText('Задачи');
+    const work = page.locator('.ox-home-work').first();
     await expect(work).toContainText('Логистика');
     for (const line of ['Рейсов сегодня', 'В пути', 'Свободных машин', 'Ждут приёмки']) {
       await expect(work).toContainText(line);
@@ -162,9 +170,10 @@ test.describe('home — «Главная» @mock', () => {
     const ids = await tripIds(page, alta);
     await patchFleet(page, alta, ['defect', 'submitted']);
     await page.reload();
-    await expect(cards(page)).toHaveCount(3);
+    await expect(cards(page)).toHaveCount(4);
     expect(await cardTitles(page)).toEqual([
       'Критический дефект · рейс Р-208',
+      'T-64 · Найти водителя на рейс Р-211',
       'Смена Р-205 ждёт приёмки',
       'Рейс Р-211 без водителя',
     ]);
@@ -179,15 +188,15 @@ test.describe('home — «Главная» @mock', () => {
     await expect(page).toHaveURL(new RegExp(`/review\\?trip=${ids['Р-208']}$`));
   });
 
-  test('больше 8 карточек: «показано 8 из 10»', async ({ app, page }) => {
+  test('больше 8 карточек: «показано 8 из 11»', async ({ app, page }) => {
     const alta = await openHome(app, page, { persona: 'manager', preset: 'logistics-ready' });
     await expect(card(page, 'Рейс Р-211 без водителя')).toBeVisible();
     await patchFleet(page, alta, ['many-without-driver']);
     await page.reload();
-    await expect(queue(page)).toContainText('показано 8 из 10');
+    await expect(queue(page)).toContainText('показано 8 из 11');
     await expect(cards(page)).toHaveCount(8);
     await expect(home(page).locator('p').first()).toHaveText(
-      'Требует решения: 10. Сначала то, что блокирует работу.',
+      'Требует решения: 11. Сначала то, что блокирует работу.',
     );
   });
 
@@ -198,7 +207,7 @@ test.describe('home — «Главная» @mock', () => {
     const err = queue(page).getByRole('alert');
     await expect(err).toBeVisible();
     await err.getByRole('button', { name: 'Повторить' }).click();
-    await expect(cards(page)).toHaveCount(2);
+    await expect(cards(page)).toHaveCount(4);
   });
 
   test('загрузка: скелетон очереди до ответа', async ({ app, page }) => {
@@ -206,7 +215,7 @@ test.describe('home — «Главная» @mock', () => {
     await devScenario(page, { scenario: 'getMyDecisionQueue=delay=1500', once: true });
     await page.reload();
     await expect(queue(page).getByRole('status', { name: 'Загрузка' })).toBeVisible();
-    await expect(cards(page)).toHaveCount(2);
+    await expect(cards(page)).toHaveCount(4);
   });
 
   test('пробный период завершён: danger «Пробный период завершён» → «Подробнее»', async ({
@@ -224,10 +233,10 @@ test.describe('home — «Главная» @mock', () => {
 
   test('офлайн: баннер «Нет связи», «Главная» остаётся на экране', async ({ app, page }) => {
     await openHome(app, page);
-    await expect(cards(page)).toHaveCount(2);
+    await expect(cards(page)).toHaveCount(4);
     await page.context().setOffline(true);
     await expect(page.getByText(/^Нет связи\./).first()).toBeVisible();
-    await expect(cards(page)).toHaveCount(2);
+    await expect(cards(page)).toHaveCount(4);
     await page.context().setOffline(false);
   });
 
@@ -322,10 +331,10 @@ test.describe('home — «Главная» @mock', () => {
     // W2.81, возврат 1: вход двух персонажей и два прогона axe — под нагрузкой дольше 30 с.
     test.slow();
     await openHome(app, page);
-    await expect(cards(page)).toHaveCount(2);
+    await expect(cards(page)).toHaveCount(4);
     expect(serious(await axe(page))).toEqual([]);
     await openHome(app, page, { persona: 'manager' });
-    await expect(queue(page)).toContainText(EMPTY);
+    await expect(cards(page)).toHaveCount(1);
     expect(serious(await axe(page))).toEqual([]);
   });
 });
@@ -375,7 +384,7 @@ test.describe('home — стенд @stand @stand-spec', () => {
     await expect(h2(page, 'Требует решения')).toBeVisible();
     await expect(queue(page).getByRole('alert')).toHaveCount(0);
     // Виды с провайдером этапа 2 (`sources/<m>.ts`); прочие — out-of-stage, не показываются и не считаются (Q-W2.25-6).
-    const known = body.items.filter((i) => /^(fleet|tenant|access)\./.test(i.kind)).length;
+    const known = body.items.filter((i) => /^(fleet|tenant|access|tasks)\./.test(i.kind)).length;
     const total = Math.max(body.total - (body.items.length - known), known);
     await expect(cards(page)).toHaveCount(Math.min(known, 8));
     if (total === 0) {

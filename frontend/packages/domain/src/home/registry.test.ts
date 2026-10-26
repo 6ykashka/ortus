@@ -1,6 +1,6 @@
 // W2.25 · Реестр источников «Требует решения» (план v2 §3.5, 01-shell.md §23): генерируется по sources/*.ts,
 // общий VM не правится при новом источнике; виды этапа 2 (контракт DecisionItem.kind) покрыты; источники
-// этапов 4–7 — allowlist out-of-stage до своих этапов.
+// этапов 4–7 — allowlist out-of-stage до своих этапов. W4.81: источник задач (этап 4) — sources/tasks.ts.
 import { describe, expect, it } from 'vitest';
 
 import { OUT_OF_STAGE } from './out-of-stage.ts';
@@ -24,6 +24,9 @@ const STAGE2_KINDS = [
   'tenant.trial_ending',
   'tenant.storage_high',
   'access.members_without_role',
+  // W4.81 (0.11.1-stage4): задачи участника «Новая» и «На проверке».
+  'tasks.task_new',
+  'tasks.task_review',
 ];
 
 describe('реестр источников «Главной»', () => {
@@ -35,7 +38,7 @@ describe('реестр источников «Главной»', () => {
     expect(HOME_SOURCES.map((s) => s.id)).toEqual([...files].sort());
   });
 
-  it('у каждого вида этапа 2 есть ровно один провайдер', () => {
+  it('у каждого вида этапа 2 и задач этапа 4 есть ровно один провайдер', () => {
     const kinds = HOME_SOURCES.flatMap((s) => Object.keys(s.kinds));
     expect([...kinds].sort()).toEqual([...STAGE2_KINDS].sort());
     expect(new Set(kinds).size).toBe(kinds.length);
@@ -47,18 +50,17 @@ describe('реестр источников «Главной»', () => {
     }
   });
 
-  it('источники этапов 4–7 (homeVM :4060–4093) — out-of-stage: провайдера нет, этап > 2', () => {
+  it('источники этапов 5–7 (homeVM :4060–4093) — out-of-stage: провайдера нет, этап > 4; задачи — с W4.81', () => {
     expect(OUT_OF_STAGE.map((o) => o.id)).toEqual([
       'spa',
       'repairs',
       'service',
-      'tasks',
       'docs',
       'chat',
       'cash',
     ]);
     for (const o of OUT_OF_STAGE) {
-      expect(o.stage, o.id).toBeGreaterThan(2);
+      expect(o.stage, o.id).toBeGreaterThan(4);
       expect(files, o.id).not.toContain(o.id);
     }
   });

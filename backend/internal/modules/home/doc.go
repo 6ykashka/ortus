@@ -9,4 +9,7 @@
 //
 // The operation is an identity operation (x-scope identity): the tenant comes from the query and must be an active
 // membership of the identity, otherwise 404 not_found — its database is not opened.
+//
+// W4.81: getMyTaskSummary — the counters of the card «Задачи» and of the badge of the menu from the source of tasks
+// (home/tasks, a core source over the port of the module «Задачи»), resolved for the same tenant as the queue.
 package home

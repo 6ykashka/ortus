@@ -27,6 +27,7 @@ import { stage4w406Examples } from './examples-w406.mjs';
 import { stage4w480Examples } from './examples-w480.mjs';
 import { stage4w407Examples } from './examples-w407.mjs';
 import { stage6w600Examples } from './examples-w600.mjs';
+import { stage4w481Examples } from './examples-w481.mjs';
 import { seedUuid } from './lib/examples.mjs';
 import { EXAMPLES_DIR, SEED_IDS_PATH } from './lib/paths.mjs';
 import { flattenActions, loadCatalog } from './lib/permissions.mjs';
@@ -1010,6 +1011,11 @@ function build() {
 
   // Контрактная дельта W4.80 (0.11.1-stage4): наборы «Данных» модулей ядра — «Ответы на осмотр» и «Задачи».
   for (const [op, bodies] of Object.entries(stage4w480Examples({ id, prior: ex }))) {
+    for (const [name, body] of Object.entries(bodies)) add(op, name, body);
+  }
+
+  // W4.81 (0.11.1-stage4): задачи на «Главной» — карточки tasks.* в очередях W2.00, сводка задач.
+  for (const [op, bodies] of Object.entries(stage4w481Examples({ id, problem, NOW, prior: ex }))) {
     for (const [name, body] of Object.entries(bodies)) add(op, name, body);
   }
   return ex;

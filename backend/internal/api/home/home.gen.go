@@ -232,7 +232,7 @@ type DecisionItem struct {
 	// Key Stable key of the card within the queue (<kind>:<object id>); the same situation keeps its key between reads.
 	Key string `json:"key"`
 
-	// Kind Source and situation, <module>.<event>. Stage 2 sources: fleet.blocking_defect, fleet.trip_review, fleet.trip_without_driver (logistics); tenant.trial_ended, tenant.trial_ending, tenant.storage_high, access.members_without_role (organization, owner only). Sources of later stages add kinds additively; a client shows an unknown kind as a neutral card without action. W2.71 (0.6.3-stage2, S2-20, 1g) — two kinds of the logistics source for the logist of the trip company (fleet.routes.manage over the unit of the trip), never together for one trip: fleet.vehicle_choice_pending (warn) — from 15 minutes before chooseUntil until the choice or the deadline, the temporary driver has not chosen between the offered vehicles; params tripNumber, driverName, homeOrgUnitName, chooseUntil, hostVehicle and homeVehicle (model · plate), reservationId — the reservation of the vehicle of the trip company («Оставить …» = chooseReservation); fleet.trip_without_vehicle (danger) — a trip of a temporary driver of the pool not started yet has no vehicle (the home company approved the driver only, or the vehicle was released); params tripNumber, driverName, homeOrgUnitName, startsAt («Поставить машину» = assignTripVehicle). object — the trip.
+	// Kind Source and situation, <module>.<event>. Stage 2 sources: fleet.blocking_defect, fleet.trip_review, fleet.trip_without_driver (logistics); tenant.trial_ended, tenant.trial_ending, tenant.storage_high, access.members_without_role (organization, owner only). Sources of later stages add kinds additively; a client shows an unknown kind as a neutral card without action. W2.71 (0.6.3-stage2, S2-20, 1g) — two kinds of the logistics source for the logist of the trip company (fleet.routes.manage over the unit of the trip), never together for one trip: fleet.vehicle_choice_pending (warn) — from 15 minutes before chooseUntil until the choice or the deadline, the temporary driver has not chosen between the offered vehicles; params tripNumber, driverName, homeOrgUnitName, chooseUntil, hostVehicle and homeVehicle (model · plate), reservationId — the reservation of the vehicle of the trip company («Оставить …» = chooseReservation); fleet.trip_without_vehicle (danger) — a trip of a temporary driver of the pool not started yet has no vehicle (the home company approved the driver only, or the vehicle was released); params tripNumber, driverName, homeOrgUnitName, startsAt («Поставить машину» = assignTripVehicle). object — the trip. W4.81 (0.11.1-stage4, homeVM :4081–4084) — the source of tasks (moduleKey tasks, a core source) for the tasks assigned to the member that it sees (tasks.read, as listTasks): tasks.task_new — a status of the category todo (the first stage «Новая» of a funnel too); tasks.task_review — a status of review of a workflow (the category progress, not the first status of this category, with its own transition into the category done, as getMyTaskSummary counts it). At most three cards, newest task first; tone danger for priority urgent, otherwise neutral. params taskKey («LOG-101», «T-64»), title, projectId, dueAt (optional, RFC3339), fromForm ("true" — made by a rule of a form), funnel ("true" — a request of a funnel, opened on its board). object — the task (tasks/task).
 	Kind string `json:"kind"`
 
 	// ModuleKey Module of the source (fleet, billing, members); a disabled module contributes no cards.
@@ -311,6 +311,29 @@ type ProblemViolation struct {
 	Code    string `json:"code"`
 	Field   string `json:"field"`
 	Message string `json:"message"`
+}
+
+// TaskSummary W4.81 (0.11.1-stage4, homeVM :4113, menu :2995–2996; tasks.md Р-27). Counters of the tasks the member sees in one business — the card «Задачи» of «Сегодня в работе» («Новые», «В работе», «На проверке») and the badge of the menu item «Задачи» (myNew). The rules — getMyTaskSummary.
+type TaskSummary struct {
+	// GeneratedAt UTC RFC3339 instant. Write requests must use the Z suffix; retain the IANA timezone separately for local calendars.
+	//
+	// Examples: 2026-10-05T06:00:00Z
+	GeneratedAt Instant `json:"generatedAt"`
+
+	// InProgress «В работе» — tasks in a status of the category progress of a project with a workflow that is not a status of review.
+	InProgress int64 `json:"inProgress"`
+
+	// MyNew The badge — tasks assigned to the member in the first status of the category todo of a project with a workflow.
+	MyNew int64 `json:"myNew"`
+
+	// New «Новые» — tasks in a status of the category todo.
+	New int64 `json:"new"`
+
+	// Review «На проверке» — tasks in a status of review of a project with a workflow.
+	Review int64 `json:"review"`
+
+	// TenantId Examples: 10000000-0000-4000-8000-000000000001
+	TenantId Id `json:"tenantId"`
 }
 
 // AccountId Examples: 10000000-0000-4000-8000-000000000001
@@ -544,11 +567,20 @@ type GetMyDecisionQueueParams struct {
 	Limit *int `form:"limit,omitempty" json:"limit,omitempty"`
 }
 
+// GetMyTaskSummaryParams defines parameters for GetMyTaskSummary.
+type GetMyTaskSummaryParams struct {
+	// TenantId Business whose tasks are counted; one tenant DB per request.
+	TenantId Id `form:"tenantId" json:"tenantId"`
+}
+
 // ServerInterface represents all server handlers.
 type ServerInterface interface {
 	// GetMyDecisionQueue Cards that need a decision of the signed-in member in one business
 	// (GET /api/v1/me/decisions)
 	GetMyDecisionQueue(w http.ResponseWriter, r *http.Request, params GetMyDecisionQueueParams)
+	// GetMyTaskSummary Counters of the tasks the signed-in member sees in one business
+	// (GET /api/v1/me/task-summary)
+	GetMyTaskSummary(w http.ResponseWriter, r *http.Request, params GetMyTaskSummaryParams)
 }
 
 // Unimplemented server implementation that returns http.StatusNotImplemented for each endpoint.
@@ -558,6 +590,12 @@ type Unimplemented struct{}
 // GetMyDecisionQueue Cards that need a decision of the signed-in member in one business
 // (GET /api/v1/me/decisions)
 func (_ Unimplemented) GetMyDecisionQueue(w http.ResponseWriter, r *http.Request, params GetMyDecisionQueueParams) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// GetMyTaskSummary Counters of the tasks the signed-in member sees in one business
+// (GET /api/v1/me/task-summary)
+func (_ Unimplemented) GetMyTaskSummary(w http.ResponseWriter, r *http.Request, params GetMyTaskSummaryParams) {
 	w.WriteHeader(http.StatusNotImplemented)
 }
 
@@ -607,6 +645,39 @@ func (siw *ServerInterfaceWrapper) GetMyDecisionQueue(w http.ResponseWriter, r *
 
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		siw.Handler.GetMyDecisionQueue(w, r, params)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// GetMyTaskSummary operation middleware
+func (siw *ServerInterfaceWrapper) GetMyTaskSummary(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+	_ = err
+
+	// Parameter object where we will unmarshal all parameters from the context
+	var params GetMyTaskSummaryParams
+
+	// ------------- Required query parameter "tenantId" -------------
+
+	err = runtime.BindQueryParameterWithOptions("form", true, true, "tenantId", r.URL.Query(), &params.TenantId, runtime.BindQueryParameterOptions{Type: "string", Format: "uuid"})
+	if err != nil {
+		var requiredError *runtime.RequiredParameterError
+		if errors.As(err, &requiredError) {
+			siw.ErrorHandlerFunc(w, r, &RequiredParamError{ParamName: "tenantId"})
+		} else {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "tenantId", Err: err})
+		}
+		return
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.GetMyTaskSummary(w, r, params)
 	}))
 
 	for _, middleware := range siw.HandlerMiddlewares {
@@ -731,6 +802,9 @@ func HandlerWithOptions(si ServerInterface, options ChiServerOptions) http.Handl
 
 	r.Group(func(r chi.Router) {
 		r.Get(options.BaseURL+"/api/v1/me/decisions", wrapper.GetMyDecisionQueue)
+	})
+	r.Group(func(r chi.Router) {
+		r.Get(options.BaseURL+"/api/v1/me/task-summary", wrapper.GetMyTaskSummary)
 	})
 
 	return r
@@ -944,11 +1018,167 @@ func (response GetMyDecisionQueue429ApplicationProblemPlusJSONResponse) VisitGet
 	return err
 }
 
+type GetMyTaskSummaryRequestObject struct {
+	Params GetMyTaskSummaryParams
+}
+
+type GetMyTaskSummaryResponseObject interface {
+	VisitGetMyTaskSummaryResponse(w http.ResponseWriter) error
+}
+
+type GetMyTaskSummary200ResponseHeaders struct {
+	CacheControl *string
+	XRequestId   *string
+}
+
+type GetMyTaskSummary200JSONResponse struct {
+	Body    TaskSummary
+	Headers GetMyTaskSummary200ResponseHeaders
+}
+
+func (response GetMyTaskSummary200JSONResponse) VisitGetMyTaskSummaryResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	if response.Headers.CacheControl != nil {
+		w.Header().Set("Cache-Control", fmt.Sprint(*response.Headers.CacheControl))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(200)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type GetMyTaskSummary400ApplicationProblemPlusJSONResponse struct {
+	BadRequestApplicationProblemPlusJSONResponse
+}
+
+func (response GetMyTaskSummary400ApplicationProblemPlusJSONResponse) VisitGetMyTaskSummaryResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(400)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type GetMyTaskSummary401ApplicationProblemPlusJSONResponse struct {
+	UnauthenticatedApplicationProblemPlusJSONResponse
+}
+
+func (response GetMyTaskSummary401ApplicationProblemPlusJSONResponse) VisitGetMyTaskSummaryResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(401)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type GetMyTaskSummary403ApplicationProblemPlusJSONResponse struct {
+	ForbiddenApplicationProblemPlusJSONResponse
+}
+
+func (response GetMyTaskSummary403ApplicationProblemPlusJSONResponse) VisitGetMyTaskSummaryResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(403)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type GetMyTaskSummary404ApplicationProblemPlusJSONResponse struct {
+	NotFoundApplicationProblemPlusJSONResponse
+}
+
+func (response GetMyTaskSummary404ApplicationProblemPlusJSONResponse) VisitGetMyTaskSummaryResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(404)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type GetMyTaskSummary422ApplicationProblemPlusJSONResponse struct {
+	ValidationApplicationProblemPlusJSONResponse
+}
+
+func (response GetMyTaskSummary422ApplicationProblemPlusJSONResponse) VisitGetMyTaskSummaryResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(422)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type GetMyTaskSummary429ApplicationProblemPlusJSONResponse struct {
+	RateLimitedApplicationProblemPlusJSONResponse
+}
+
+func (response GetMyTaskSummary429ApplicationProblemPlusJSONResponse) VisitGetMyTaskSummaryResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.RetryAfter != nil {
+		w.Header().Set("Retry-After", fmt.Sprint(*response.Headers.RetryAfter))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(429)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
 // StrictServerInterface represents all server handlers.
 type StrictServerInterface interface {
 	// GetMyDecisionQueue Cards that need a decision of the signed-in member in one business
 	// (GET /api/v1/me/decisions)
 	GetMyDecisionQueue(ctx context.Context, request GetMyDecisionQueueRequestObject) (GetMyDecisionQueueResponseObject, error)
+	// GetMyTaskSummary Counters of the tasks the signed-in member sees in one business
+	// (GET /api/v1/me/task-summary)
+	GetMyTaskSummary(ctx context.Context, request GetMyTaskSummaryRequestObject) (GetMyTaskSummaryResponseObject, error)
 }
 
 type StrictHandlerFunc func(ctx context.Context, w http.ResponseWriter, r *http.Request, request any) (any, error)
@@ -1009,6 +1239,32 @@ func (sh *strictHandler) GetMyDecisionQueue(w http.ResponseWriter, r *http.Reque
 		sh.options.ResponseErrorHandlerFunc(w, r, err)
 	} else if validResponse, ok := response.(GetMyDecisionQueueResponseObject); ok {
 		if err := validResponse.VisitGetMyDecisionQueueResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// GetMyTaskSummary operation middleware
+func (sh *strictHandler) GetMyTaskSummary(w http.ResponseWriter, r *http.Request, params GetMyTaskSummaryParams) {
+	var request GetMyTaskSummaryRequestObject
+
+	request.Params = params
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.GetMyTaskSummary(ctx, request.(GetMyTaskSummaryRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "GetMyTaskSummary")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(GetMyTaskSummaryResponseObject); ok {
+		if err := validResponse.VisitGetMyTaskSummaryResponse(w); err != nil {
 			sh.options.ResponseErrorHandlerFunc(w, r, err)
 		}
 	} else if response != nil {
