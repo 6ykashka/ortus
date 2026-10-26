@@ -17,6 +17,7 @@ import {
   unitsFor,
   vehicleDto,
 } from '../fleet/state.ts';
+import { coreDatasetsFor } from './core.ts';
 
 type S = components['schemas'];
 
@@ -120,8 +121,40 @@ const mskDate = (at: string): string =>
 
 const has = (units: Set<string> | 'all'): boolean => units === 'all' || units.size > 0;
 
-/** Наборы, видимые участнику (в порядке эталона), с их строками. */
+/** Наборы, видимые участнику (в порядке эталона), с их строками; W4.80 — после логистики наборы модулей ядра. */
 export function datasetsFor(ctx: HandlerContext): DatasetDef[] {
+  return [...fleetDatasetsFor(ctx), ...coreDatasetsFor(ctx, baseOf(ctx))];
+}
+
+/** Описание набора участника: агрегаты, версия прав, выгрузка (data.export и право набора). */
+function baseOf(ctx: HandlerContext) {
+  const t: TenantAccess = ctx.org();
+  const units = (key: string) => unitsFor(t, key, ctx.now());
+  return (
+    id: string,
+    moduleKey: string,
+    name: string,
+    permissionKey: string,
+    entityType: string,
+    fields: S['FieldDescriptor'][],
+    defaultSort: S['QuerySort'][],
+  ): S['Dataset'] => ({
+    id,
+    moduleKey,
+    name,
+    fields,
+    allowedAggregations: ['count', 'sum', 'avg', 'min', 'max'],
+    permissionVersion: String(t.org.policyVersion),
+    permissionKey,
+    entityType,
+    exportAllowed: has(units('data.export')),
+    hiddenFieldLabels: [],
+    defaultSort,
+  });
+}
+
+/** Наборы логистики (при подключённой «Логистике»). */
+function fleetDatasetsFor(ctx: HandlerContext): DatasetDef[] {
   const t: TenantAccess = ctx.org();
   if (t.org.modules.fleet?.state !== 'active') return [];
   const now = ctx.now();
@@ -280,7 +313,7 @@ export function datasetsFor(ctx: HandlerContext): DatasetDef[] {
   return out;
 }
 
-/** Ключи наборов этапа 2 (известный набор без права — 403, неизвестный — 404). */
+/** Ключи наборов логистики (известный набор без права — 403, неизвестный — 404); модулей ядра — CORE_KEYS. */
 export const DATASET_KEYS: Readonly<Record<string, string>> = {
   'fleet.vehicles': 'fleet.vehicles.read',
   'fleet.trips': 'fleet.trips.read',

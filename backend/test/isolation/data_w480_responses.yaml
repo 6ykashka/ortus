@@ -1,0 +1,41 @@
+# Матрица изоляции: выборка набора «Ответы на осмотр» (forms.responses, W4.80) — ответы формы «Осмотр машины», как
+# их показывает listFormResponses (Q-W4.00-forms-9). Ответ фикстур (W4.21): form_response:<t>.insp-1 водителя
+# Москвы-1 на «Осмотр машины» всей организации; recordId строки — «{formId}:{responseId}». forms.responses.read в
+# фикстурах — только у владельцев: у наблюдателя (ab.member) data.query есть, права набора нет — 403. «Логист видит
+# только ответы своих рейсов» — рейсов и права ответов у логиста в фикстурах W1.04 нет: integration-тесты
+# backend/internal/modules/data/forms (TestRows). Формат — README.md. После правки: go -C backend generate ./test/isolation
+module: data_w480_responses
+endpoints:
+  - op: queryDataset
+    method: POST
+    path: /api/v1/tenants/{tenantId}/datasets/forms.responses/query
+    rows:
+      - actor: a.owner
+        params: { tenantId: tenant:a }
+        status: 200
+        present: [form_response:a.insp-1]
+        absent: [form_response:b.insp-1, tenant:b]
+        body: '{"select": ["response", "object", "author", "version", "fuel"], "filters": [], "sort": [], "limit": 50, "includeCount": true}'
+        note: владелец — ответы «Осмотра машины» своей организации
+      - actor: ab.member
+        params: { tenantId: tenant:a }
+        status: 403
+        code: forbidden_action
+        body: '{"select": ["response"], "filters": [], "sort": [], "limit": 50}'
+        note: data.query есть, forms.responses.read нет ни в одной области — набор закрыт
+      - actor: b.owner
+        params: { tenantId: tenant:b }
+        status: 200
+        present: [form_response:b.insp-1]
+        absent: [form_response:a.insp-1, tenant:a]
+        body: '{"select": ["response"], "filters": [], "sort": [], "limit": 50}'
+      - actor: b.owner
+        params: { tenantId: tenant:a }
+        status: 404
+        absent: [tenant:a, form_response:a.insp-1]
+        body: '{"select": ["response"], "filters": [], "sort": [], "limit": 50}'
+        note: чужая организация — как несуществующая
+      - actor: anonymous
+        params: { tenantId: tenant:a }
+        status: 401
+        body: '{"select": ["response"], "filters": [], "sort": [], "limit": 50}'

@@ -8,6 +8,7 @@ import { fail } from '../core/problem.ts';
 import type { HandlerContext, Registry } from '../core/registry.ts';
 import { unitsFor } from '../fleet/state.ts';
 import { type Cell, DATASET_KEYS, type DatasetDef, type DataRow, datasetsFor } from './catalog.ts';
+import { CORE_KEYS } from './core.ts';
 
 type S = components['schemas'];
 
@@ -132,6 +133,8 @@ export const datasetOr404 = (ctx: HandlerContext): DatasetDef => {
     const units = unitsFor(ctx.org(), key, ctx.now());
     if (units !== 'all' && units.size === 0) fail('forbidden_action');
   }
+  // W4.80: набор модуля ядра есть всегда — не найден он только без права набора.
+  if (CORE_KEYS[id]) fail('forbidden_action');
   return fail('not_found', 'Набор не найден.');
 };
 

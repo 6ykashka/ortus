@@ -22,6 +22,8 @@ import (
 
 	"github.com/ortus/ortus-crm/backend/internal/modules/data"
 	datafleet "github.com/ortus/ortus-crm/backend/internal/modules/data/fleet"
+	dataforms "github.com/ortus/ortus-crm/backend/internal/modules/data/forms"
+	datatasks "github.com/ortus/ortus-crm/backend/internal/modules/data/tasks"
 	"github.com/ortus/ortus-crm/backend/internal/modules/fleet/csv"
 	"github.com/ortus/ortus-crm/backend/internal/modules/fleet/pool"
 	"github.com/ortus/ortus-crm/backend/internal/modules/modulesreg"
@@ -60,15 +62,14 @@ func exportJob(d exportDeps) (func(context.Context), error) {
 	if err != nil || every == 0 {
 		return func(context.Context) {}, err
 	}
-	reg, err := data.NewRegistry(datafleet.Provider{})
+	reg, err := exportRegistry()
 	if err != nil {
 		return nil, err
 	}
-	src := authz.PGSource{Pools: d.pools}
 	modules := &modulesreg.Service{Store: modulesreg.PGStore{Pools: d.pools}, Activity: modulesreg.DefaultRegistry(), Now: d.now}
 	r := &data.Runner{
 		S: &data.Service{
-			Pools: d.pools, Authz: csv.ExportScope{Scoper: authz.New(src, src, d.now)}, Registry: reg,
+			Pools: d.pools, Authz: csv.ExportScope{Scoper: exportScoper(d.pools, d.now)}, Registry: reg,
 			Modules: moduleStates{s: modules}, Hidden: poolHider{s: &pool.Service{Pools: d.pools, Now: d.now}}, Now: d.now,
 		},
 		Members: controlMembers{control: d.control}, Format: csv.File, Log: d.log,
@@ -89,6 +90,19 @@ func exportJob(d exportDeps) (func(context.Context), error) {
 	}
 	x := exportRun{tenants: d.tenants, runner: r, every: every, log: d.log}
 	return x.run, nil
+}
+
+// exportRegistry is the registry of the datasets of the export jobs — that of cmd/api (dataRegistry, data.go): logistics,
+// «Ответы на осмотр» of the forms and «Задачи» (W4.80).
+func exportRegistry() (*data.Registry, error) {
+	return data.NewRegistry(datafleet.Provider{}, dataforms.Provider{}, datatasks.Provider{})
+}
+
+// exportScoper is the evaluator of the export jobs on the clock of the application with the projects of tasks
+// registered as in cmd/api (projectsIn): the rows of «Задачи» of a file follow the level of a project (W4.80).
+func exportScoper(pools *tenantctx.Pools, now func() time.Time) *authz.Evaluator {
+	src := authz.PGSource{Pools: pools}
+	return projectsIn(authz.New(src, src, now), pools)
 }
 
 // exportRun runs the worker of the export jobs in every tenant on a schedule.

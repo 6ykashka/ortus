@@ -90,12 +90,18 @@ export const dataCases = cases('data')([
     expect: 'success',
     run: async (ctx) => {
       const owner = await ctx.as('owner');
-      expect(body(await owner.get(datasets(ctx))).items).toEqual([]);
+      // W4.80: наборы модулей ядра («Формы», «Задачи») — и без «Логистики».
+      expect(body(await owner.get(datasets(ctx))).items?.map((d) => d.id)).toEqual([
+        'forms.responses',
+        'tasks',
+      ]);
       const { manager } = await ready(ctx);
       dropKey(ctx, 'fleet.expenses.read');
       expect(body(await manager.get(datasets(ctx))).items?.map((d) => d.id)).toEqual([
         'fleet.vehicles',
         'fleet.trips',
+        'forms.responses',
+        'tasks',
       ]);
       ctx.expectProblem(
         await manager.post(query(ctx, 'fleet.expenses'), {

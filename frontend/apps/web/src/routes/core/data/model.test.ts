@@ -99,7 +99,10 @@ describe('набор: вкладки', () => {
     expect(setIcon('fleet.vehicles')).toBe('local_shipping');
     expect(setIcon('fleet.trips')).toBe('route');
     expect(setIcon('fleet.expenses')).toBe('receipt_long');
-    expect(setIcon('forms.responses')).toBe('table_view');
+    // W4.80: наборы этапа 4 (dataVM :4189) — иконки эталона; набор без иконки эталона — пункт меню «Данные».
+    expect(setIcon('forms.responses')).toBe('dynamic_form');
+    expect(setIcon('tasks')).toBe('task_alt');
+    expect(setIcon('cash.operations')).toBe('table_view');
   });
   it('счётчик: число строк области; больше 10 000 — «10 000+»; пока не пришёл — пусто', () => {
     expect(countLabel(7)).toBe('7');
@@ -189,6 +192,13 @@ describe('подвал, пусто, вид, выгрузка', () => {
   it('«Источник: Логистика · fleet.trips»', () => {
     expect(sourceText(trips)).toBe('Источник: Логистика · fleet.trips');
     expect(sourceText(vehicles)).toBe('Источник: Логистика · fleet.vehicles');
+    // W4.80 (dataVM :4189): «Формы · forms.responses», «Задачи · tasks».
+    expect(sourceText({ ...vehicles, id: 'forms.responses', moduleKey: 'forms' })).toBe(
+      'Источник: Формы · forms.responses',
+    );
+    expect(sourceText({ ...vehicles, id: 'tasks', moduleKey: 'tasks' })).toBe(
+      'Источник: Задачи · tasks',
+    );
   });
   it('скрытое правами поле — подпись эталона, иначе — «Строки ограничены вашей областью доступа»', () => {
     expect(noteText(trips)).toBe('Строки ограничены вашей областью доступа');
@@ -227,7 +237,22 @@ describe('строка открывает карточку модуля (:4185�
     });
     expect(openTarget(expenses, row('e1', {}))).toEqual({ page: 'review' });
   });
+  // W4.80 (dataVM :4189): ответ — «Формы и опросы», ответы формы с выбранным ответом (formSel, formTab, respSel);
+  // задача — карточка задачи (taskSel, ?task=).
+  it('ответ на осмотр — ответ в редакторе формы: recordId «{formId}:{responseId}»', () => {
+    const responses = { ...vehicles, id: 'forms.responses', entityType: 'form_response' };
+    expect(openTarget(responses, row('f1:r1', {}))).toEqual({
+      page: 'forms',
+      form: 'f1',
+      resp: 'r1',
+    });
+    expect(openTarget(responses, row('r1', {}))).toBeNull();
+  });
+  it('задача — карточка задачи', () => {
+    const tasks = { ...vehicles, id: 'tasks', entityType: 'task' };
+    expect(openTarget(tasks, row('t1', {}))).toEqual({ page: 'tasks', task: 't1' });
+  });
   it('другой вид записи — строка не открывается', () => {
-    expect(openTarget({ ...vehicles, entityType: 'task' }, row('x', {}))).toBeNull();
+    expect(openTarget({ ...vehicles, entityType: 'cash_operation' }, row('x', {}))).toBeNull();
   });
 });

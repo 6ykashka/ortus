@@ -39,7 +39,8 @@ func TestNewData(t *testing.T) {
 	if s.S.Pools != (noPools{}) || s.S.Authz != ev || s.S.Modules != states || s.S.Now == nil || !s.S.Now().Equal(at) || s.S.Files != store {
 		t.Fatalf("service %+v", s.S)
 	}
-	if got := s.S.Registry.IDs(); !slices.Equal(got, []string{"fleet.vehicles", "fleet.trips", "fleet.expenses"}) {
+	// W4.80: after logistics — «Ответы на осмотр» and «Задачи» (modules of the core).
+	if got := s.S.Registry.IDs(); !slices.Equal(got, []string{"fleet.vehicles", "fleet.trips", "fleet.expenses", "forms.responses", "tasks"}) {
 		t.Fatalf("datasets %v", got)
 	}
 }

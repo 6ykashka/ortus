@@ -1,0 +1,47 @@
+# Матрица изоляции: выборка набора «Задачи» (tasks, W4.80). Строки — как listTasks: проекты участника по уровню
+# доступа (TP-03: закрытая «Стройка» закрыта и владельцу), свои задачи — по области «своё», чужая организация — 404.
+# Задачи фикстур (W4.11): task:<t>.fleet-1 (водитель Москвы-1), task:<t>.fleet-2 (руководитель проекта) — «Автопарк»
+# Москвы-1, ограниченный; task:<t>.build-1 — закрытая «Стройка». data.query фикстур — у владельцев и «Наблюдателя»
+# (ab.member — наблюдатель Москвы-2 с tasks.read: проект Москвы-1 вне его области). Водитель без data.query —
+# data_w480_gate.yaml. Формат — README.md. После правки: go -C backend generate ./test/isolation
+module: data_w480_tasks
+endpoints:
+  - op: queryDataset
+    method: POST
+    path: /api/v1/tenants/{tenantId}/datasets/tasks/query
+    rows:
+      - actor: a.owner
+        params: { tenantId: tenant:a }
+        status: 200
+        present: [task:a.fleet-1, task:a.fleet-2]
+        absent: [task:a.build-1, task:b.fleet-1, task:b.fleet-2, tenant:b]
+        body: '{"select": ["task", "assignee", "status", "due"], "filters": [], "sort": [], "limit": 50, "includeCount": true}'
+        note: владелец — задачи «Автопарка»; закрытая «Стройка» и задачи тенанта B не попадают
+      - actor: ab.member
+        params: { tenantId: tenant:a }
+        status: 200
+        absent: [task:a.fleet-1, task:a.fleet-2, task:a.build-1, task:b.fleet-1]
+        body: '{"select": ["task"], "filters": [], "sort": [], "limit": 50, "includeCount": true}'
+        note: наблюдатель Москвы-2 — проект Москвы-1 вне области tasks.read, в счётчике его задач нет
+      - actor: ab.member
+        params: { tenantId: tenant:b }
+        status: 200
+        absent: [task:b.fleet-1, task:b.fleet-2, task:a.fleet-1]
+        body: '{"select": ["task"], "filters": [], "sort": [], "limit": 50, "search": "шины"}'
+        note: тот же аккаунт в B (BR-T2) — поиск не находит задачи вне области
+      - actor: b.owner
+        params: { tenantId: tenant:b }
+        status: 200
+        present: [task:b.fleet-1, task:b.fleet-2]
+        absent: [task:a.fleet-1, task:a.fleet-2, task:b.build-1, tenant:a]
+        body: '{"select": ["task"], "filters": [], "sort": [], "limit": 50}'
+      - actor: b.owner
+        params: { tenantId: tenant:a }
+        status: 404
+        absent: [tenant:a, task:a.fleet-1]
+        body: '{"select": ["task"], "filters": [], "sort": [], "limit": 50}'
+        note: чужая организация — как несуществующая
+      - actor: anonymous
+        params: { tenantId: tenant:a }
+        status: 401
+        body: '{"select": ["task"], "filters": [], "sort": [], "limit": 50}'

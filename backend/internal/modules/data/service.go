@@ -4,7 +4,6 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"slices"
 	"strconv"
 	"time"
 
@@ -76,8 +75,8 @@ func (s *Service) timeout() time.Duration {
 	return DefaultTimeout
 }
 
-// Catalog returns the datasets the member of tc may read (listDatasets): those of the open modules whose permission
-// the member holds in some scope, in the order of the registry.
+// Catalog returns the datasets the member of tc may read (listDatasets): those of the open modules (the modules of the
+// core always, W4.80) whose permission the member holds in some scope, in the order of the registry.
 func (s *Service) Catalog(ctx context.Context, tc tenantctx.TenantContext) (dataapi.DatasetCatalog, error) {
 	out := dataapi.DatasetCatalog{Items: []dataapi.Dataset{}}
 	states, err := s.states(ctx, tc.TenantID)
@@ -86,7 +85,7 @@ func (s *Service) Catalog(ctx context.Context, tc tenantctx.TenantContext) (data
 	}
 	var entries []entry
 	for _, e := range s.Registry.all() {
-		if slices.Contains(openStates, states[e.module]) {
+		if e.opened(states) {
 			entries = append(entries, e)
 		}
 	}
@@ -142,7 +141,7 @@ func (s *Service) open(ctx context.Context, tc tenantctx.TenantContext, id strin
 	if err != nil {
 		return view{}, err
 	}
-	if !slices.Contains(openStates, states[e.module]) {
+	if !e.opened(states) {
 		return view{}, &closedError{err: problem.New(problem.CodeNotFound, textNotFound)}
 	}
 	version, err := s.version(ctx, tc)

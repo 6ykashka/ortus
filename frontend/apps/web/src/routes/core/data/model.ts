@@ -1,5 +1,5 @@
 // W2.26 · Модель страницы «Данные» (`core-data`, S2-16; эталон design-stage-2 «Ортус CRM.dc.html» dataVM :4179–4208,
-// 06 §7): набор по умолчанию и иконки вкладок, ячейки по типу значения контракта (FieldValue), колонки и сортировка,
+// 06 §7): набор по умолчанию и иконки вкладок (W4.80 — наборы «Форм» и «Задач» эталона design-2026-10-19), ячейки по типу значения контракта (FieldValue), колонки и сортировка,
 // подвал, имя личного вида, тост выгрузки, переход строки в карточку модуля («Изменения — в карточке модуля»).
 import type { components } from '@ortus/api-client';
 import { ALL_MODULES, int, rub } from '@ortus/domain';
@@ -20,18 +20,27 @@ export interface Column {
   sortable: boolean;
   icon: SortIcon;
 }
-/** Куда ведёт строка: страница модуля и рейс (`?trip=`) или номер рейса расхода (id ищется по номеру). */
+/**
+ * Куда ведёт строка: страница модуля и рейс (`?trip=`) или номер рейса расхода (id ищется по номеру); W4.80 — ответ в
+ * редакторе формы (`?form=&tab=responses&resp=`) и карточка задачи (`?task=`).
+ */
 export type Target =
-  { page: 'fleet' | 'review'; trip?: string } | { page: 'review'; tripNumber: string };
+  | { page: 'fleet' | 'review'; trip?: string }
+  | { page: 'review'; tripNumber: string }
+  | { page: 'forms'; form: string; resp: string }
+  | { page: 'tasks'; task: string };
 
 /** Набор по умолчанию — «Поездки» (`s.dtSet || 'trips'`, :4191). */
 export const DEFAULT_SET = 'fleet.trips';
 
-/** Иконки вкладок эталона (:4185–4187); набор другого модуля — иконка пункта меню «Данные». */
+/** Иконки вкладок эталона (:4185–4189); набор без иконки эталона — иконка пункта меню «Данные». */
 const ICONS: Readonly<Record<string, string>> = {
   'fleet.vehicles': 'local_shipping',
   'fleet.trips': 'route',
   'fleet.expenses': 'receipt_long',
+  // W4.80 (design-2026-10-19 dataVM :4189): SETS.responses, SETS.tasks.
+  'forms.responses': 'dynamic_form',
+  tasks: 'task_alt',
 };
 export const setIcon = (id: string): string => ICONS[id] ?? 'table_view';
 
@@ -138,7 +147,10 @@ const REVIEW = new Set(['submitted', 'accepted', 'rework', 'defect_review']);
 const valueOf = (row: S['DatasetRow'], key: string) =>
   row.cells.find((c) => c.fieldKey === key)?.value;
 
-/** Карточка модуля строки (:4185–4187); вид записи без своей страницы — строка не открывается. */
+/**
+ * Карточка модуля строки (:4185–4189); вид записи без своей страницы — строка не открывается. Ответ на осмотр
+ * адресуется внутри формы: `recordId` — «{formId}:{responseId}» (контракт 0.11.1-stage4, W4.80).
+ */
 export function openTarget(ds: S['Dataset'], row: S['DatasetRow']): Target | null {
   switch (ds.entityType) {
     case 'vehicle':
@@ -154,6 +166,12 @@ export function openTarget(ds: S['Dataset'], row: S['DatasetRow']): Target | nul
         ? { page: 'review', tripNumber: trip.value }
         : { page: 'review' };
     }
+    case 'form_response': {
+      const [form, resp, ...rest] = row.recordId.split(':');
+      return form && resp && !rest.length ? { page: 'forms', form, resp } : null;
+    }
+    case 'task':
+      return { page: 'tasks', task: row.recordId };
     default:
       return null;
   }

@@ -65,6 +65,18 @@ type Sort struct {
 	Desc  bool
 }
 
+// Reach is a way a row of a dataset is visible besides the scope of Spec.Permission over Spec.Columns (W4.80): a row
+// for which When holds is visible in the scope of Permission over Columns — a response about a trip the member sees by
+// fleet.trips.read, as listFormResponses (Q-W4.00-forms-9). Anywhere: the row is visible when the member holds
+// Permission in some scope (a response about a trip that is gone, Q-W4.21-17; his own response). The dataset itself is
+// still open only with Spec.Permission in some scope.
+type Reach struct {
+	When       string // SQL over the aliases of Spec.From; may use PersonParam, NowParam and HiddenParam ("" — every row)
+	Permission string
+	Columns    authz.Columns
+	Anywhere   bool
+}
+
 // Spec is a dataset of a module: what the catalog shows and where its rows come from.
 type Spec struct {
 	ID, Name   string
@@ -78,4 +90,5 @@ type Spec struct {
 	Order       []string      // expressions of the stable order of the rows after the sort of a query
 	Fields      []Field
 	DefaultSort []Sort
+	Reaches     []Reach // other ways a row is visible (OR with the scope of Permission); nil — the scope alone
 }

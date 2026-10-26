@@ -24,6 +24,7 @@ import { stage4w404Examples } from './examples-w404.mjs';
 import { stage4w405Examples } from './examples-w405.mjs';
 import { stage5w500Examples } from './examples-w500.mjs';
 import { stage4w406Examples } from './examples-w406.mjs';
+import { stage4w480Examples } from './examples-w480.mjs';
 import { stage4w407Examples } from './examples-w407.mjs';
 import { stage6w600Examples } from './examples-w600.mjs';
 import { seedUuid } from './lib/examples.mjs';
@@ -1004,6 +1005,11 @@ function build() {
 
   // Контрактный PR этапа 6 (W6.00): «Ремонт и стройка» — снимки сценарного сервера на сиде эталона «Альты».
   for (const [op, bodies] of Object.entries(stage6w600Examples({ id }))) {
+    for (const [name, body] of Object.entries(bodies)) add(op, name, body);
+  }
+
+  // Контрактная дельта W4.80 (0.11.1-stage4): наборы «Данных» модулей ядра — «Ответы на осмотр» и «Задачи».
+  for (const [op, bodies] of Object.entries(stage4w480Examples({ id, prior: ex }))) {
     for (const [name, body] of Object.entries(bodies)) add(op, name, body);
   }
   return ex;

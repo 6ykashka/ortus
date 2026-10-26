@@ -1,7 +1,7 @@
 // W2.26 · e2e страницы `core-data` «Данные» (S2-16, AC-14; эталон design-stage-2 «Ортус CRM.dc.html» pg.data
 // :1960–1979, dataVM :4179–4208; чек-лист docs/plan/analysis/06-calendar-kb-data-files-spa-cash-repair.md §13 п. 16–22,
-// наборы этапов 4–5 «Ответы на осмотр» и «Задачи» — out-of-stage). Наборы — listDatasets, строки — queryDataset
-// (MSW W2.51 поверх пресета logistics-ready; на стенде — backend W2.08). Обязательные пункты verification-protocol
+// W4.80 — наборы этапа 4 «Ответы на осмотр» и «Задачи» эталона design-2026-10-19, dataVM :4189). Наборы —
+// listDatasets, строки — queryDataset (MSW W2.51 поверх пресета logistics-ready; на стенде — backend W2.08). Обязательные пункты verification-protocol
 // §1.3: меню и URL, состояния (загрузка, ошибка, нет связи, гейт), клавиатура, axe, 390 / 1440.
 import { expect, test } from './_stand/fixtures.ts';
 import { phone } from './logistics-review.helpers.ts';
@@ -73,6 +73,8 @@ test.describe('core-data — «Данные» @mock', () => {
       /^local_shipping\s*Автомобили\s*7$/,
       /^route\s*Поездки\s*2$/,
       /^receipt_long\s*Расходы\s*0$/,
+      /^dynamic_form\s*Ответы на осмотр\s*2$/,
+      /^task_alt\s*Задачи\s*11$/,
     ]);
     await expect(tab(page, /Поездки/)).toHaveAttribute('aria-selected', 'true');
     await page.reload();
@@ -290,6 +292,111 @@ test.describe('core-data — «Данные» @mock', () => {
     await expect(page).toHaveURL(/\/fleet\?trip=/);
   });
 
+  // W4.80: наборы этапа 4 эталона design-2026-10-19 (dataVM :4189 — SETS.responses, SETS.tasks).
+  test('W4.80: вкладки «Ответы на осмотр» и «Задачи» после «Расходов» со счётчиками', async ({
+    app,
+    page,
+  }) => {
+    await open(app, page);
+    await expect(tabs(page).getByRole('tab')).toHaveText([
+      /^local_shipping\s*Автомобили\s*7$/,
+      /^route\s*Поездки\s*2$/,
+      /^receipt_long\s*Расходы\s*0$/,
+      /^dynamic_form\s*Ответы на осмотр\s*2$/,
+      /^task_alt\s*Задачи\s*11$/,
+    ]);
+  });
+
+  test('W4.80: «Ответы на осмотр» — колонки, R-0988 и R-1012, подвал «Формы · forms.responses»', async ({
+    app,
+    page,
+  }) => {
+    await open(app, page, { search: '?set=forms.responses' });
+    await expect(tab(page, /Ответы на осмотр/)).toHaveAttribute('aria-selected', 'true');
+    await expect(bodyRows(page)).toHaveCount(2);
+    expect(await heads(page)).toEqual([
+      'Ответunfold_more',
+      'Объектunfold_more',
+      'Авторunfold_more',
+      'Версия формыunfold_more',
+      'Топливоunfold_more',
+    ]);
+    await expect(bodyRows(page).nth(0).locator('td')).toHaveText([
+      'R-0988',
+      'Рейс Р-171',
+      'Кирилл Громов',
+      'v2',
+      'почти полный',
+    ]);
+    await expect(bodyRows(page).nth(1).locator('td')).toHaveText([
+      'R-1012',
+      'Рейс Р-196',
+      'Илья Васильев',
+      'v3',
+      '¾',
+    ]);
+    await expect(footer(page)).toHaveText(
+      `Источник: Формы · forms.responsesОбновлено: только что${SCOPE}`,
+    );
+  });
+
+  test('W4.80: «Задачи» — колонки, строка «T-61 · Проверить осмотр Р-196», подвал «Задачи · tasks»', async ({
+    app,
+    page,
+  }) => {
+    await open(app, page);
+    await tab(page, /Задачи/).click();
+    await expect(page).toHaveURL(/[?&]set=tasks/);
+    await expect(bodyRows(page)).toHaveCount(11);
+    expect(await heads(page)).toEqual([
+      'Задачаunfold_more',
+      'Исполнительunfold_more',
+      'Статусunfold_more',
+      'Срокunfold_more',
+    ]);
+    await expect(
+      bodyRows(page).filter({ hasText: 'T-61 · Проверить осмотр Р-196' }).locator('td'),
+    ).toHaveText(['T-61 · Проверить осмотр Р-196', 'Марина Котова', 'Готово', '27.09.2026']);
+    await filter(page).fill('Котова');
+    // T-58, T-61, T-64 эталона и T-66 «Подготовить парк к зиме» сида api.js.
+    await expect(bodyRows(page)).toHaveCount(4);
+    await expect(footer(page)).toHaveText(`Источник: Задачи · tasksОбновлено: только что${SCOPE}`);
+  });
+
+  test('W4.80: строка ответа открывает ответ в редакторе формы, строка задачи — карточку задачи', async ({
+    app,
+    page,
+  }) => {
+    const alta = await open(app, page, { search: '?set=forms.responses' });
+    await bodyRows(page).filter({ hasText: 'R-1012' }).click();
+    await expect(page).toHaveURL(new RegExp(`/t/${alta}/forms\\?.*tab=responses`));
+    await expect(page).toHaveURL(/[?&]resp=/);
+    await expect(page.getByText('R-1012').first()).toBeVisible({ timeout: 15_000 });
+    await page.goBack();
+    await expect(tab(page, /Ответы на осмотр/)).toHaveAttribute('aria-selected', 'true');
+    await tab(page, /Задачи/).click();
+    const row = bodyRows(page).filter({ hasText: 'T-64 · Найти водителя на рейс Р-211' });
+    await row.focus();
+    await page.keyboard.press('Enter');
+    await expect(page).toHaveURL(new RegExp(`/t/${alta}/tasks\\?.*task=`));
+    await expect(
+      page.getByText('Найти водителя на рейс Р-211').locator('visible=true').first(),
+    ).toBeVisible({
+      timeout: 15_000,
+    });
+  });
+
+  test('W4.80: логист видит «Ответы на осмотр» и «Задачи» своей области', async ({ app, page }) => {
+    await open(app, page, { persona: 'manager', search: '?set=tasks' });
+    await expect(tab(page, /Задачи/)).toHaveAttribute('aria-selected', 'true');
+    await expect(
+      bodyRows(page).filter({ hasText: 'T-64 · Найти водителя на рейс Р-211' }),
+    ).toHaveCount(1);
+    await tab(page, /Ответы на осмотр/).click();
+    await expect(bodyRows(page).first()).toBeVisible();
+    await expect(footer(page)).toContainText('Источник: Формы · forms.responses');
+  });
+
   test('axe без serious; 390 — цели не меньше 44 px', async ({ app, page, axe }) => {
     await open(app, page);
     await expect(bodyRows(page).first()).toBeVisible();
@@ -315,7 +422,8 @@ test.describe('core-data — «Данные» @mock', () => {
   });
 });
 
-// W2.08 («Данные» на backend: listDatasets, queryDataset с правами набора и полей) в main — строки без fixme.
+// W2.08 («Данные» на backend: listDatasets, queryDataset с правами набора и полей) в main — строки без fixme; W4.80 —
+// наборы «Задач» и «Форм» (data/tasks, data/forms).
 test.describe('core-data — стенд @stand', () => {
   test.skip(({ harness }) => harness.mode !== 'stand', 'режим stand');
 
@@ -329,7 +437,8 @@ test.describe('core-data — стенд @stand', () => {
     const s = await logisticsOn(session, undo);
     await app(`/t/${s.tenant}/data`, { persona: 'owner' });
     await expect(h1(page, H1)).toBeVisible({ timeout: 15_000 });
-    await expect(tabs(page).getByRole('tab')).toHaveCount(3);
+    // W4.80: после наборов логистики — «Ответы на осмотр» и «Задачи».
+    await expect(tabs(page).getByRole('tab')).toHaveCount(5);
     await expect(tab(page, /Поездки/)).toHaveAttribute('aria-selected', 'true');
     const q = await call(
       page,
@@ -365,5 +474,63 @@ test.describe('core-data — стенд @stand', () => {
     await expect(footer(page)).toContainText('Источник: Логистика · fleet.trips');
     await app(`/t/${s.tenant}/data`, { persona: 'driver' });
     await expect(page.getByText('Нет доступа к разделу «Данные»')).toBeVisible({ timeout: 15_000 });
+  });
+
+  // W4.80: наборы «Задач» и «Форм» на backend (data/tasks, data/forms).
+  test('W4.80: владелец на стенде — «Ответы на осмотр» и «Задачи» по queryDataset стенда, переход в задачу', async ({
+    app,
+    page,
+    session,
+    undo,
+  }) => {
+    test.slow();
+    const s = await logisticsOn(session, undo);
+    await app(`/t/${s.tenant}/data?set=forms.responses`, { persona: 'owner' });
+    await expect(h1(page, H1)).toBeVisible({ timeout: 15_000 });
+    await expect(tabs(page).getByRole('tab')).toHaveCount(5);
+    const count = async (set: string, select: string): Promise<number> => {
+      const q = await call(page, 'POST', `/api/v1/tenants/${s.tenant}/datasets/${set}/query`, {
+        body: { select: [select], filters: [], sort: [], limit: 1, includeCount: true },
+      });
+      expect(q.status, JSON.stringify(q.body)).toBe(200);
+      return (q.body as { visibleCount: number }).visibleCount;
+    };
+    const responses = await count('forms.responses', 'response');
+    await expect(tab(page, /Ответы на осмотр/)).toHaveText(
+      new RegExp(`Ответы на осмотр\\s*${responses}$`),
+    );
+    await expect(bodyRows(page).filter({ hasText: 'R-1012' }).locator('td')).toHaveText([
+      'R-1012',
+      'Рейс Р-196',
+      'Илья Васильев',
+      'v3',
+      '¾',
+    ]);
+    await expect(footer(page)).toContainText('Источник: Формы · forms.responses');
+    const tasks = await count('tasks', 'task');
+    await tab(page, /Задачи/).click();
+    await expect(tab(page, /Задачи/)).toHaveText(new RegExp(`Задачи\\s*${tasks}$`));
+    await expect(bodyRows(page)).toHaveCount(Math.min(tasks, 50));
+    await filter(page).fill('Найти водителя на рейс Р-211');
+    await expect(bodyRows(page)).toHaveCount(1);
+    await bodyRows(page).first().click();
+    await expect(page).toHaveURL(new RegExp(`/t/${s.tenant}/tasks\\?.*task=`));
+  });
+
+  test('W4.80: логист на стенде — «Ответы на осмотр» своих рейсов и «Задачи» своих проектов', async ({
+    app,
+    page,
+    session,
+    undo,
+  }) => {
+    test.slow();
+    const s = await logisticsOn(session, undo);
+    await app(`/t/${s.tenant}/data?set=tasks`, { persona: 'manager' });
+    await expect(h1(page, H1)).toBeVisible({ timeout: 15_000 });
+    await expect(tab(page, /Задачи/)).toHaveAttribute('aria-selected', 'true');
+    await expect(bodyRows(page).first()).toBeVisible();
+    await expect(footer(page)).toContainText('Источник: Задачи · tasks');
+    await tab(page, /Ответы на осмотр/).click();
+    await expect(footer(page)).toContainText('Источник: Формы · forms.responses');
   });
 });

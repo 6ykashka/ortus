@@ -1,0 +1,38 @@
+# Матрица изоляции: отказы шлюза наборов «Данных» этапа 4 (W4.80) — без pending. У водителя фикстур tasks.read есть
+# (область «своё»), forms.responses.read нет, а data.query нет вовсе — выборка «Задач» закрыта шлюзом (403) до хендлера
+# и после него; у логиста фикстур нет ни data.query, ни права набора. Выгрузка — data.export (у наблюдателя её нет).
+# Формат — README.md. После правки: go -C backend generate ./test/isolation
+module: data_w480_gate
+endpoints:
+  - op: queryDataset
+    method: POST
+    path: /api/v1/tenants/{tenantId}/datasets/tasks/query
+    rows:
+      - actor: a.driver-msk1
+        params: { tenantId: tenant:a }
+        status: 403
+        code: forbidden_action
+        body: '{"select": ["task"], "filters": [], "sort": [], "limit": 50}'
+        note: водитель — tasks.read «своё» без data.query; «Данные» ему закрыты
+      - actor: a.manager-msk1
+        params: { tenantId: tenant:a }
+        status: 403
+        code: forbidden_action
+        body: '{"select": ["task"], "filters": [], "sort": [], "limit": 50}'
+        note: у шаблона «Менеджер логистики» фикстур нет data.query и tasks.read
+  - op: createDatasetExportJob
+    method: POST
+    path: /api/v1/tenants/{tenantId}/datasets/forms.responses/export-jobs
+    rows:
+      - actor: ab.member
+        params: { tenantId: tenant:a }
+        status: 403
+        code: forbidden_action
+        body: '{"select": ["response"], "filters": [], "sort": []}'
+        note: наблюдатель без data.export — выгрузки нет
+      - actor: a.driver-msk1
+        params: { tenantId: tenant:a }
+        status: 403
+        code: forbidden_action
+        body: '{"select": ["response"], "filters": [], "sort": []}'
+        note: водитель без data.export и forms.responses.read

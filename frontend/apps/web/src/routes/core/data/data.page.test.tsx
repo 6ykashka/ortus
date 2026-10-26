@@ -89,6 +89,9 @@ describe('«Данные»: наборы, таблица, подвал', () => {
           'local_shippingАвтомобили7',
           'routeПоездки2',
           'receipt_longРасходы0',
+          // W4.80: наборы этапа 4 эталона (dataVM :4189).
+          'dynamic_formОтветы на осмотр2',
+          'task_altЗадачи11',
         ]),
       SLOW,
     );
@@ -228,16 +231,83 @@ describe('«Данные»: права и переходы', () => {
     );
   });
 
-  it('набор без права не приходит: без fleet.expenses.read — две вкладки', async () => {
+  it('набор без права не приходит: без fleet.expenses.read — четыре вкладки', async () => {
     await open({ persona: 'manager', setup: (s) => dropKey(s, 'fleet.expenses.read') });
-    await waitFor(async () => expect(await tabs()).toHaveLength(2), SLOW);
+    await waitFor(async () => expect(await tabs()).toHaveLength(4), SLOW);
   });
 
-  it('«Логистика» не подключена — наборов нет: «В вашей области записей нет»', async () => {
+  // W4.80: «Задачи» и «Формы» — модули ядра, их наборы есть и без «Логистики».
+  it('«Логистика» не подключена — наборы ядра «Ответы на осмотр» и «Задачи»', async () => {
     app = await renderMockApp(`/t/${ALTA}/data`, { persona: 'owner' });
     await screen.findByRole('heading', { level: 1, name: 'Данные' }, SLOW);
+    await waitFor(
+      async () =>
+        expect((await tabs()).map((t) => t.textContent)).toEqual([
+          'dynamic_formОтветы на осмотр2',
+          'task_altЗадачи11',
+        ]),
+      SLOW,
+    );
+    expect((await tab(/Ответы на осмотр/)).getAttribute('aria-selected')).toBe('true');
+  });
+
+  it('ни одного набора по правам — «В вашей области записей нет» без вкладок', async () => {
+    await open({
+      persona: 'manager',
+      // Ключи снимаются со всех ролей: у логиста есть и роль проекта LOG (tasks.read).
+      setup: (s) => {
+        for (const role of alta(s).roles) {
+          role.permissions = role.permissions.filter(
+            (k) =>
+              ![
+                'fleet.vehicles.read',
+                'fleet.trips.read',
+                'fleet.expenses.read',
+                'forms.responses.read',
+                'tasks.read',
+              ].includes(k),
+          );
+        }
+      },
+    });
     expect(await screen.findByText('В вашей области записей нет', undefined, SLOW)).toBeTruthy();
     expect(screen.queryByRole('tablist')).toBeNull();
+  });
+
+  it('строка ответа на осмотр открывает ответ в редакторе формы (formSel, formTab, respSel)', async () => {
+    const a = await open({ search: '?set=forms.responses' });
+    await rowsLoaded(2);
+    expect(cells(rows()[1] as HTMLTableRowElement)).toEqual([
+      'R-1012',
+      'Рейс Р-196',
+      'Илья Васильев',
+      'v3',
+      '¾',
+    ]);
+    fireEvent.click(rows()[1] as HTMLTableRowElement);
+    await waitFor(() => expect(a.path()).toBe(`/t/${ALTA}/forms`), SLOW);
+    expect(a.router.state.location.search).toEqual({
+      form: seedUuid('t-alta', 'fm-insp'),
+      tab: 'responses',
+      resp: seedUuid('t-alta', 'R-1012'),
+    });
+  });
+
+  it('Enter по строке задачи открывает карточку задачи (?task=)', async () => {
+    const a = await open({ search: '?set=tasks' });
+    await rowsLoaded(11);
+    const r = rows().find((x) => cells(x)[0] === 'T-64 · Найти водителя на рейс Р-211');
+    expect(r && cells(r)).toEqual([
+      'T-64 · Найти водителя на рейс Р-211',
+      'Марина Котова',
+      'Новая',
+      '01.10.2026',
+    ]);
+    fireEvent.keyDown(r as HTMLTableRowElement, { key: 'Enter' });
+    await waitFor(() => expect(a.path()).toBe(`/t/${ALTA}/tasks`), SLOW);
+    await waitFor(() =>
+      expect(a.router.state.location.search).toMatchObject({ task: seedUuid('t-alta', 'T-64') }),
+    );
   });
 
   it('строка рейса открывает «Рабочее место логиста» с ?trip=', async () => {
@@ -291,7 +361,7 @@ describe('«Данные»: состояния', () => {
     expect(alert.textContent).toBe(
       'Не удалось загрузить данные: Нет связи с сервером. Операция не выполнена.',
     );
-    expect(await tabs()).toHaveLength(3);
+    expect(await tabs()).toHaveLength(5);
   });
 
   it('больше 50 строк — «Показать ещё» догружает следующую страницу', async () => {

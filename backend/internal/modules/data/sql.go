@@ -64,11 +64,14 @@ func (s Spec) hides() bool {
 
 // expressions are the SQL parts of the spec inner builds its statement from.
 func (s Spec) expressions() []string {
-	out := make([]string, 0, 3+len(s.Order)+2*len(s.Fields))
+	out := make([]string, 0, 3+len(s.Order)+2*len(s.Fields)+len(s.Reaches))
 	out = append(out, s.From, s.Where, s.RecordID)
 	out = append(out, s.Order...)
 	for _, f := range s.Fields {
 		out = append(out, f.SQL, f.Currency)
+	}
+	for _, r := range s.Reaches {
+		out = append(out, r.When)
 	}
 	return out
 }
@@ -100,7 +103,10 @@ func (p plan) inner(a *args, person uuid.UUID, now time.Time, restrict restricto
 			cols = append(cols, "("+currency+`)::text as "c_`+f.Key+`"`)
 		}
 	}
-	where := scopeddb.Placeholder
+	where, err := p.reaches(a, restrict)
+	if err != nil {
+		return "", err
+	}
 	if s.Where != "" {
 		where = "(" + s.Where + ") and " + where
 	}
@@ -119,6 +125,39 @@ func (p plan) inner(a *args, person uuid.UUID, now time.Time, restrict restricto
 		sql = strings.ReplaceAll(sql, HiddenParam, a.add(hidden)+"::uuid[]")
 	}
 	return sql, nil
+}
+
+// reaches is the condition of the visible rows (W4.80): the scope of the dataset permission ({{scope}}) or one of the
+// reaches of the spec — the predicate of its permission over its columns where its condition holds; a reach Anywhere
+// is «true» when the member holds its permission in some scope and «false» otherwise (no argument). Without reaches —
+// the scope alone.
+func (p plan) reaches(a *args, restrict restrictor) (string, error) {
+	rs := p.view.spec.Reaches
+	if len(rs) == 0 {
+		return scopeddb.Placeholder, nil
+	}
+	alts := make([]string, 0, len(rs)+1)
+	alts = append(alts, scopeddb.Placeholder)
+	for _, r := range rs {
+		pred, err := restrict(Restriction{Permission: r.Permission, Columns: r.Columns}, len(a.vals))
+		if err != nil {
+			return "", err
+		}
+		cond := pred.SQL
+		switch {
+		case r.Anywhere && pred.SQL == sqlFalse:
+			cond = sqlFalse
+		case r.Anywhere:
+			cond = "true"
+		default:
+			a.vals = append(a.vals, pred.Args...)
+		}
+		if r.When != "" {
+			cond = "(" + r.When + ") and (" + cond + ")"
+		}
+		alts = append(alts, "("+cond+")")
+	}
+	return "(" + strings.Join(alts, " or ") + ")", nil
 }
 
 // where is the condition of the filters and the search over the rows of inner ("" — none).

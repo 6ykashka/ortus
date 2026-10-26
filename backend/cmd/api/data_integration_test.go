@@ -128,6 +128,7 @@ func TestStackData(t *testing.T) { //nolint:paralleltest // one seeded stack; sw
 	sameBody(t, "queryDataset/validation_failed", bad, want)
 
 	checkVehicles(t, manager)
+	checkCoreSets(t, newBrowser(t, srv).login("owner"), version)
 	if status, body := newBrowser(t, srv).login("driver").call(http.MethodGet, altaPath("/datasets"), ""); status != http.StatusForbidden ||
 		body["code"] != "forbidden_action" {
 		t.Fatalf("driver: %d %v", status, body)
@@ -135,19 +136,44 @@ func TestStackData(t *testing.T) { //nolint:paralleltest // one seeded stack; sw
 	checkLogisticsOff(t, newBrowser(t, srv).login("owner"), db)
 }
 
-// checkLogisticsOff: «Логистика» switched off — no dataset, the query of a known dataset is 404 (S2-16, a disabled
-// module).
+// checkLogisticsOff: «Логистика» switched off — no dataset of logistics, the query of a known dataset is 404 (S2-16, a
+// disabled module); W4.80 — the datasets of the modules of the core stay.
 func checkLogisticsOff(t *testing.T, owner *browser, db *sql.DB) {
 	t.Helper()
 	if _, err := db.ExecContext(t.Context(), `update modules.installations set state = 'disabled' where module_key = 'logistics'`); err != nil {
 		t.Fatal(err)
 	}
-	if status, body := owner.call(http.MethodGet, altaPath("/datasets"), ""); status != http.StatusOK || len(asSlice(body["items"])) != 0 {
+	status, body := owner.call(http.MethodGet, altaPath("/datasets"), "")
+	var ids []string
+	for _, it := range asSlice(body["items"]) {
+		m, _ := it.(map[string]any)
+		id, _ := m["id"].(string)
+		ids = append(ids, id)
+	}
+	if status != http.StatusOK || !slices.Equal(ids, []string{"forms.responses", "tasks"}) {
 		t.Fatalf("logistics off: %d %v", status, body)
 	}
 	if status, body := owner.call(http.MethodPost, altaPath("/datasets/fleet.vehicles/query"),
 		`{"select": ["displayName"], "filters": [], "sort": [], "limit": 50}`); status != http.StatusNotFound || body["detail"] != "Набор не найден." {
 		t.Fatalf("query with logistics off: %d %v", status, body)
+	}
+}
+
+// checkCoreSets (W4.80): «Ответы на осмотр» and «Задачи» of the owner on the Go seed of the stand are the examples
+// queryDataset/responses and queryDataset/tasks — snapshots of MSW (parity mock ↔ stand); the version is the stand's.
+func checkCoreSets(t *testing.T, owner *browser, version string) {
+	t.Helper()
+	for _, c := range []struct{ set, query, example string }{
+		{"forms.responses", `{"select": ["response", "object", "author", "version", "fuel"], "filters": [], "sort": [], "limit": 50, "includeCount": true}`, "responses"},
+		{"tasks", `{"select": ["task", "assignee", "status", "due"], "filters": [], "sort": [], "limit": 50, "includeCount": true, "search": "осмотр"}`, "tasks"},
+	} {
+		status, rows := owner.call(http.MethodPost, altaPath("/datasets/"+c.set+"/query"), c.query)
+		if status != http.StatusOK {
+			t.Fatalf("%s: %d %v", c.set, status, rows)
+		}
+		want := example(t, "queryDataset", c.example)
+		want["schemaVersion"] = version
+		sameBody(t, "queryDataset/"+c.example, rows, want)
 	}
 }
 

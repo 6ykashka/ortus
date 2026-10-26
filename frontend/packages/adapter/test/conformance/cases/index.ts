@@ -9,6 +9,7 @@ import { cashCases } from './cash.ts';
 import { contextCases } from './context.ts';
 import { dataCases } from './data.ts';
 import { dataW406Cases } from './data-w406.ts';
+import { dataW480Cases } from './data-w480.ts';
 import { filesCases } from './files.ts';
 import { fleetCases } from './fleet.ts';
 import { formsCases } from './forms.ts';
@@ -59,4 +60,6 @@ export const ALL_CASES: readonly ConformanceCase[] = [
   ...cashCases,
   // W6.00 (0.12.0-stage6): «Ремонт и стройка».
   ...repairsCases,
+  // W4.80 (0.11.1-stage4): наборы «Данных» этапа 4 — «Ответы на осмотр» и «Задачи».
+  ...dataW480Cases,
 ];

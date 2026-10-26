@@ -1,0 +1,87 @@
+{
+  "rows": [
+    {
+      "recordId": "3a5f4ca2-f3bf-5b37-819f-a9511aee0211:d530b3dc-6b28-5f5c-be4c-a14813678265",
+      "cells": [
+        {
+          "fieldKey": "response",
+          "value": {
+            "type": "text",
+            "value": "R-0988"
+          }
+        },
+        {
+          "fieldKey": "object",
+          "value": {
+            "type": "text",
+            "value": "Рейс Р-171"
+          }
+        },
+        {
+          "fieldKey": "author",
+          "value": {
+            "type": "text",
+            "value": "Кирилл Громов"
+          }
+        },
+        {
+          "fieldKey": "version",
+          "value": {
+            "type": "text",
+            "value": "v2"
+          }
+        },
+        {
+          "fieldKey": "fuel",
+          "value": {
+            "type": "text",
+            "value": "почти полный"
+          }
+        }
+      ]
+    },
+    {
+      "recordId": "3a5f4ca2-f3bf-5b37-819f-a9511aee0211:9c64b00c-9706-549f-b788-8456dd9c35ea",
+      "cells": [
+        {
+          "fieldKey": "response",
+          "value": {
+            "type": "text",
+            "value": "R-1012"
+          }
+        },
+        {
+          "fieldKey": "object",
+          "value": {
+            "type": "text",
+            "value": "Рейс Р-196"
+          }
+        },
+        {
+          "fieldKey": "author",
+          "value": {
+            "type": "text",
+            "value": "Илья Васильев"
+          }
+        },
+        {
+          "fieldKey": "version",
+          "value": {
+            "type": "text",
+            "value": "v3"
+          }
+        },
+        {
+          "fieldKey": "fuel",
+          "value": {
+            "type": "text",
+            "value": "¾"
+          }
+        }
+      ]
+    }
+  ],
+  "nextCursor": null,
+  "schemaVersion": "2",
+  "visibleCount": 2
+}

@@ -1,0 +1,40 @@
+{
+  "rows": [
+    {
+      "recordId": "75610db3-5bca-57ff-b2f2-c5e49e9f24e1",
+      "cells": [
+        {
+          "fieldKey": "task",
+          "value": {
+            "type": "text",
+            "value": "T-61 · Проверить осмотр Р-196"
+          }
+        },
+        {
+          "fieldKey": "assignee",
+          "value": {
+            "type": "text",
+            "value": "Марина Котова"
+          }
+        },
+        {
+          "fieldKey": "status",
+          "value": {
+            "type": "text",
+            "value": "Готово"
+          }
+        },
+        {
+          "fieldKey": "due",
+          "value": {
+            "type": "date",
+            "value": "2026-09-27"
+          }
+        }
+      ]
+    }
+  ],
+  "nextCursor": null,
+  "schemaVersion": "2",
+  "visibleCount": 1
+}

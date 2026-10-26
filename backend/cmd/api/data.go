@@ -6,6 +6,8 @@ import (
 	dataapi "github.com/ortus/ortus-crm/backend/internal/api/data"
 	"github.com/ortus/ortus-crm/backend/internal/modules/data"
 	datafleet "github.com/ortus/ortus-crm/backend/internal/modules/data/fleet"
+	dataforms "github.com/ortus/ortus-crm/backend/internal/modules/data/forms"
+	datatasks "github.com/ortus/ortus-crm/backend/internal/modules/data/tasks"
 	"github.com/ortus/ortus-crm/backend/internal/platform/authz"
 	"github.com/ortus/ortus-crm/backend/internal/platform/scopeddb"
 	"github.com/ortus/ortus-crm/backend/internal/platform/storage"
@@ -33,12 +35,21 @@ func exportFiles(getenv func(string) string) (data.ExportFiles, error) {
 // W4.50: the saved views and the export jobs of the tag are served by the same service; files is the object storage of
 // the export files (the link of a download, the deletion of a revoked file; nil — downloads answer 503), the worker
 // writes them (cmd/worker/exports.go).
+//
+// W4.80: after logistics — «Ответы на осмотр» of the forms and «Задачи» (modules of the core, no installation); the
+// rows of «Задачи» follow the level of a project through the projects of tasks registered in ev (tasks.go).
 func newData(pools scopeddb.Pools, ev *authz.Evaluator, states data.Modules, files data.ExportFiles, now func() time.Time) dataapi.StrictServerInterface {
-	reg, err := data.NewRegistry(datafleet.Provider{})
-	if err != nil { // the providers above are never nil and their ids differ: a programming error
+	reg, err := dataRegistry()
+	if err != nil { // the providers are never nil and their ids differ: a programming error
 		panic(err)
 	}
 	// W2.50: exportDataset — the CSV export over the server (data_export.go).
 	return withExport(data.Server{S: &data.Service{Pools: pools, Authz: ev, Registry: reg, Modules: states, Now: now,
 		Hidden: newPoolTrips(pools, now), Files: files}})
+}
+
+// dataRegistry is the registry of the datasets of «Данные» in the order of the catalog (dataVM of the prototype):
+// logistics, the forms, the tasks.
+func dataRegistry() (*data.Registry, error) {
+	return data.NewRegistry(datafleet.Provider{}, dataforms.Provider{}, datatasks.Provider{})
 }

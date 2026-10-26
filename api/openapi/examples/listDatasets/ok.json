@@ -302,6 +302,134 @@
           "direction": "desc"
         }
       ]
+    },
+    {
+      "id": "forms.responses",
+      "moduleKey": "forms",
+      "name": "Ответы на осмотр",
+      "fields": [
+        {
+          "key": "response",
+          "label": "Ответ",
+          "valueType": "text",
+          "nullable": false,
+          "filterOperators": ["eq", "ne", "in", "contains"],
+          "sortable": true,
+          "aggregatable": false,
+          "sensitivity": "standard"
+        },
+        {
+          "key": "object",
+          "label": "Объект",
+          "valueType": "text",
+          "nullable": true,
+          "filterOperators": ["eq", "ne", "in", "contains", "is_null"],
+          "sortable": true,
+          "aggregatable": false,
+          "sensitivity": "standard"
+        },
+        {
+          "key": "author",
+          "label": "Автор",
+          "valueType": "text",
+          "nullable": true,
+          "filterOperators": ["eq", "ne", "in", "contains", "is_null"],
+          "sortable": true,
+          "aggregatable": false,
+          "sensitivity": "standard"
+        },
+        {
+          "key": "version",
+          "label": "Версия формы",
+          "valueType": "text",
+          "nullable": false,
+          "filterOperators": ["eq", "ne", "in", "contains"],
+          "sortable": true,
+          "aggregatable": false,
+          "sensitivity": "standard"
+        },
+        {
+          "key": "fuel",
+          "label": "Топливо",
+          "valueType": "text",
+          "nullable": true,
+          "filterOperators": ["eq", "ne", "in", "contains", "is_null"],
+          "sortable": true,
+          "aggregatable": false,
+          "sensitivity": "standard"
+        }
+      ],
+      "allowedAggregations": ["count", "sum", "avg", "min", "max"],
+      "permissionVersion": "2",
+      "permissionKey": "forms.responses.read",
+      "entityType": "form_response",
+      "exportAllowed": true,
+      "hiddenFieldLabels": [],
+      "defaultSort": [
+        {
+          "fieldKey": "response",
+          "direction": "asc"
+        }
+      ]
+    },
+    {
+      "id": "tasks",
+      "moduleKey": "tasks",
+      "name": "Задачи",
+      "fields": [
+        {
+          "key": "task",
+          "label": "Задача",
+          "valueType": "text",
+          "nullable": false,
+          "filterOperators": ["eq", "ne", "in", "contains"],
+          "sortable": true,
+          "aggregatable": false,
+          "sensitivity": "standard"
+        },
+        {
+          "key": "assignee",
+          "label": "Исполнитель",
+          "valueType": "text",
+          "nullable": true,
+          "filterOperators": ["eq", "ne", "in", "contains", "is_null"],
+          "sortable": true,
+          "aggregatable": false,
+          "sensitivity": "standard"
+        },
+        {
+          "key": "status",
+          "label": "Статус",
+          "valueType": "text",
+          "nullable": false,
+          "filterOperators": ["eq", "ne", "in", "contains"],
+          "sortable": true,
+          "aggregatable": false,
+          "sensitivity": "standard"
+        },
+        {
+          "key": "due",
+          "label": "Срок",
+          "valueType": "date",
+          "nullable": true,
+          "filterOperators": ["eq", "ne", "lt", "lte", "gt", "gte", "is_null"],
+          "sortable": true,
+          "aggregatable": false,
+          "sensitivity": "standard"
+        }
+      ],
+      "allowedAggregations": ["count", "sum", "avg", "min", "max"],
+      "permissionVersion": "2",
+      "permissionKey": "tasks.read",
+      "entityType": "task",
+      "exportAllowed": true,
+      "hiddenFieldLabels": [],
+      "defaultSort": [
+        {
+          "fieldKey": "task",
+          "direction": "asc"
+        }
+      ]
     }
   ]
 }

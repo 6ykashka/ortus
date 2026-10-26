@@ -331,6 +331,23 @@ export default function DataPage(): ReactElement {
     });
 
   const onOpen = (t: Target): void => {
+    // W4.80: ответ — «Формы и опросы», ответы формы с выбранным ответом; задача — её карточка (dataVM :4189).
+    if (t.page === 'forms') {
+      void navigate({
+        to: '/t/$tenantId/$page',
+        params: { tenantId, page: 'forms' },
+        search: { form: t.form, tab: 'responses', resp: t.resp } as never,
+      });
+      return;
+    }
+    if (t.page === 'tasks') {
+      void navigate({
+        to: '/t/$tenantId/$page',
+        params: { tenantId, page: 'tasks' },
+        search: { task: t.task } as never,
+      });
+      return;
+    }
     if (!('tripNumber' in t)) {
       go(t.page, t.trip);
       return;

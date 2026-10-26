@@ -1,0 +1,39 @@
+# Матрица изоляции: наборы «Данных» этапа 4 — «Задачи» (tasks) и «Ответы на осмотр» (forms.responses), W4.80
+# (FollowUp критики выхода этапа 4, П-1). Здесь — сохранённые виды и выгрузка заданием новых наборов (W4.50 поверх
+# реестра); выборки — data_w480_tasks.yaml и data_w480_responses.yaml, отказы шлюза — data_w480_gate.yaml.
+# До провайдеров W4.80 набора не было (404 «Набор не найден.») — положительные строки были красными до хендлера.
+# 202 задания выгрузки формат не выражает (статусы 200…409) — его проверяют integration-тесты data/tasks, data/forms.
+# Формат — README.md. После правки: go -C backend generate ./test/isolation
+module: data_w480
+endpoints:
+  - op: listDatasetViews
+    method: GET
+    path: /api/v1/tenants/{tenantId}/datasets/tasks/views
+    rows:
+      - actor: a.owner
+        params: { tenantId: tenant:a }
+        status: 200
+        absent: [tenant:b]
+        note: виды набора «Задачи» своей организации
+      - actor: b.owner
+        params: { tenantId: tenant:a }
+        status: 404
+        absent: [tenant:a]
+        note: чужая организация — как несуществующая
+      - actor: anonymous
+        params: { tenantId: tenant:a }
+        status: 401
+  - op: createDatasetExportJob
+    method: POST
+    path: /api/v1/tenants/{tenantId}/datasets/forms.responses/export-jobs
+    rows:
+      - actor: b.owner
+        params: { tenantId: tenant:a }
+        status: 404
+        absent: [tenant:a]
+        body: '{"select": ["response"], "filters": [], "sort": []}'
+        note: выгрузка ответов чужой организации — 404
+      - actor: anonymous
+        params: { tenantId: tenant:a }
+        status: 401
+        body: '{"select": ["response"], "filters": [], "sort": []}'

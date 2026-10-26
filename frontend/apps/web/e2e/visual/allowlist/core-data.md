@@ -3,13 +3,10 @@
 Сверка «Данных» со снимком `design-stage-2` (`Ортус CRM.dc.html` pg.data :1960–1979, dataVM :4179–4208), владелец
 «Альты», набор «Поездки». Шапка и меню закрыты маской — их сверяет ключ `shell`. Поле `decision` — решение журнала,
 затем `Q-W2.26-N` отчёта W2.26. W4.50: виды и выгрузка — снимок `design-2026-10-19` (pg.data :1837–1856, dataVM
-:4189–4222).
+:4189–4222). W4.80: наборы этапа 4 «Ответы на осмотр» (forms.responses) и «Задачи» (tasks) — в продукте, их записи сняты.
 
 ## Наборы будущих этапов
 
-- kind: out-of-stage · target: tab:Ответы на осмотр2 · mode: both · reason: набор «Ответы на осмотр» (forms.responses, dataVM :4188) — модуль «Формы и опросы», этап 4; listDatasets этапа 2 отдаёт только наборы логистики (W2.51, W2.08), на пиксельной сверке вкладка снимается с эталона · decision: B-5, Q-W2.26-1 · owner: W2.26 · expires: stage-4
-- kind: out-of-stage · target: tab:Задачи9 · mode: both · reason: набор «Задачи» (tasks, dataVM :4189) — модуль «Задачи», этап 4; на пиксельной сверке вкладка снимается с эталона · decision: B-5, Q-W2.26-1 · owner: W2.26 · expires: stage-4
-- kind: out-of-stage · target: tab:Задачи11 · mode: both · reason: снимок design-2026-10-19 (W4.50): набор «Задачи» эталона — 11 строк; модуль «Задачи», этап 4, наборов в listDatasets ещё нет · decision: B-5, Q-W2.26-1 · owner: W4.50 · expires: stage-4
 - kind: out-of-stage · target: tab:Кассовые операции26 · mode: both · reason: снимок design-2026-10-19 (W4.50): набор «Кассовые операции» (cash.operations, dataVM :4189) — модуль «Касса», этап 5; на пиксельной сверке вкладка снимается с эталона · decision: B-5, Q-W2.26-1 · owner: W4.50 · expires: stage-5
 - kind: out-of-stage · target: tab:Смены кассы2 · mode: both · reason: снимок design-2026-10-19 (W4.50): набор «Смены кассы» (cash.shifts) — модуль «Касса», этап 5; на пиксельной сверке вкладка снимается с эталона · decision: B-5, Q-W2.26-1 · owner: W4.50 · expires: stage-5
 
@@ -18,7 +15,7 @@
 - kind: no-reference · target: button:Показать ещё · mode: both · reason: в эталоне выборка без пагинации; queryDataset отдаёт строки страницами по 50 — «Показать ещё» при nextCursor (как «Файлы», Q-W1.24-12); дорисовать в прототипе не требуется — общий вид кнопки страниц ядра · decision: Q-76, Q-W1.24-12, Q-W2.26-4 · owner: W2.26
 - kind: state · target: .ox-dt-skel · mode: both · reason: загрузка каталога и строк — полосы-скелетон (role=status «Загрузка») под заголовками колонок; состояния загрузки в эталоне нет (данные в памяти страницы) · decision: B-6, Q-W2.26-5 · owner: W2.26
 - kind: label · target: button:Повторить · mode: both · reason: ошибка каталога или выборки — alert «Не удалось загрузить данные: …» и «Повторить» (общий LoadFailed страниц ядра W1.24); состояния ошибки в эталоне нет · decision: B-6, Q-W2.26-5 · owner: W2.26
-- kind: state · target: .ox-dt-card .ox-dt-empty · mode: both · reason: наборов нет (модуль «Логистика» не подключён или нет права ни на один набор) — карточка «В вашей области записей нет» без вкладок и подвала; в эталоне наборы есть всегда · decision: B-6, Q-W2.26-6 · owner: W2.26
+- kind: state · target: .ox-dt-card .ox-dt-empty · mode: both · reason: наборов нет (нет права ни на один набор; W4.80 — наборы «Форм» и «Задач» есть и без «Логистики») — карточка «В вашей области записей нет» без вкладок и подвала; в эталоне наборы есть всегда · decision: B-6, Q-W2.26-6 · owner: W2.26
 - kind: state · target: .ox-dt-count · mode: both · reason: счётчик вкладки — visibleCount выборки набора без фильтра (до 10 000, дальше «10 000+»); эталон считает строки набора в памяти страницы · decision: PD-22, Q-W2.51-7, Q-W2.26-5 · owner: W2.26
 
 ## Переходы и действия

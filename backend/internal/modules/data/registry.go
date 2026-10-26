@@ -15,15 +15,22 @@ type Provider interface {
 	Datasets() []Spec
 }
 
+// Core is implemented by the provider of a module of the core (W4.80: tasks, forms — modulesreg.CoreKeys): such a
+// module is never installed, its datasets exist in every tenant whatever the registry of modules says.
+type Core interface {
+	Core() bool
+}
+
 // Errors of NewRegistry: programming errors of the wiring.
 var (
 	ErrNilProvider      = errors.New("data: nil provider")
 	ErrDuplicateDataset = errors.New("data: duplicate dataset id")
 )
 
-// entry is a dataset of the registry with the module of its provider.
+// entry is a dataset of the registry with the module of its provider; core — the module is of the core.
 type entry struct {
 	module string
+	core   bool
 	spec   Spec
 }
 
@@ -37,14 +44,22 @@ func NewRegistry(providers ...Provider) (*Registry, error) {
 		if p == nil {
 			return nil, ErrNilProvider
 		}
+		c, ok := p.(Core)
+		core := ok && c.Core()
 		for _, s := range p.Datasets() {
 			if _, dup := r.lookup(s.ID); dup {
 				return nil, fmt.Errorf("%w: %s", ErrDuplicateDataset, s.ID)
 			}
-			r.entries = append(r.entries, entry{module: p.Module(), spec: s})
+			r.entries = append(r.entries, entry{module: p.Module(), core: core, spec: s})
 		}
 	}
 	return r, nil
+}
+
+// opened reports whether the dataset of e exists with the module states of the tenant: a module of the core always,
+// an installable module while it is installed and not disabled (openStates).
+func (e entry) opened(states map[string]string) bool {
+	return e.core || slices.Contains(openStates, states[e.module])
 }
 
 // lookup returns the dataset id with its module.

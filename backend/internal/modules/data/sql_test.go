@@ -190,6 +190,79 @@ func TestHidesMatchesTheStatement(t *testing.T) {
 	}
 }
 
+// reachScope is the restriction predicate of the tests of Spec.Reaches: «false» for the permissions of closed (held in
+// no scope), else the unit of the columns.
+func reachScope(calls *[]string, closed ...string) restrictor {
+	return func(r Restriction, start int) (authz.Predicate, error) {
+		*calls = append(*calls, r.Permission)
+		if slices.Contains(closed, r.Permission) {
+			return authz.Predicate{SQL: "false"}, nil
+		}
+		a := authz.NewArgs(start)
+		return authz.Predicate{SQL: r.Columns.Unit + " = " + a.Add("unit-"+r.Permission), Args: a.Values()}, nil
+	}
+}
+
+// reachView is itemsView with the reaches of «Ответы на осмотр» (W4.80): its own rows (author — the member) with the
+// key anywhere, the rows about a trip the member sees, the rows about a trip that is gone with fleet.trips.read anywhere.
+func reachView() view {
+	v := itemsView(false)
+	v.spec.Reaches = []Reach{
+		{When: "x.author_id = " + PersonParam, Permission: "forms.responses.read", Columns: testColumns, Anywhere: true},
+		{When: "t.id is not null and t.id <> all(" + HiddenParam + ")", Permission: "fleet.trips.read", Columns: authz.Columns{Unit: "t.unit_id"}},
+		{When: "x.subject_id is not null and t.id is null", Permission: "fleet.trips.read", Columns: authz.Columns{Unit: "t.unit_id"}, Anywhere: true},
+	}
+	return v
+}
+
+// checkReachStatement: one scope placeholder among the alternatives, no placeholder of a reach left.
+func checkReachStatement(t *testing.T, name string, s statement) {
+	t.Helper()
+	checkStatement(t, s)
+	if !strings.Contains(s.sql, "("+scopeddb.Placeholder+" or (") {
+		t.Fatalf("%s: the scope is not one of the alternatives:\n%s", name, s.sql)
+	}
+	if !strings.Contains(s.sql, "(x.author_id = $") || strings.Contains(s.sql, "{{hidden}}") || strings.Contains(s.sql, "{{person}}") {
+		t.Fatalf("%s: placeholders of the reaches:\n%s", name, s.sql)
+	}
+}
+
+// W4.80: a row is visible in the scope of the dataset permission OR by a reach — the predicate of its permission
+// over its columns where its condition holds (Anywhere: the member holds the permission in some scope, no arguments);
+// the reaches are in the rows and in the count, the scope placeholder stays once.
+func TestReachesStatement(t *testing.T) {
+	t.Parallel()
+	p := mustParse(t, reachView(), `{"select": ["name"], "filters": [], "sort": [], "limit": 10, "includeCount": true}`)
+	var calls []string
+	st, _, err := p.rows(testPerson, testNow, reachScope(&calls, "fleet.trips.read"))
+	if err != nil {
+		t.Fatal(err)
+	}
+	ct, err := p.counted(testPerson, testNow, reachScope(&calls))
+	if err != nil {
+		t.Fatal(err)
+	}
+	checkReachStatement(t, "rows", st)
+	checkReachStatement(t, "count", ct)
+	if !slices.Equal(calls, []string{"forms.responses.read", "fleet.trips.read", "fleet.trips.read",
+		"forms.responses.read", "fleet.trips.read", "fleet.trips.read"}) {
+		t.Fatalf("restrictions %v", calls)
+	}
+	// fleet.trips.read held in no scope: the trip reaches give nothing; forms.responses.read anywhere — «true».
+	if !strings.Contains(st.sql, ") and (false))") || !strings.Contains(st.sql, ") and (true))") ||
+		slices.Contains(st.args, any("unit-fleet.trips.read")) || slices.Contains(st.args, any("unit-forms.responses.read")) {
+		t.Fatalf("rows:\n%s\n%v", st.sql, st.args)
+	}
+	// Held in a scope: the trip reach takes the predicate and its argument; Anywhere — still no argument.
+	if !strings.Contains(ct.sql, "and (t.unit_id = $") || !slices.Contains(ct.args, any("unit-fleet.trips.read")) ||
+		slices.Contains(ct.args, any("unit-forms.responses.read")) {
+		t.Fatalf("count:\n%s\n%v", ct.sql, ct.args)
+	}
+	if !reachView().spec.hides() {
+		t.Fatal("{{hidden}} in a reach — hides false, the Hider is not asked (fail-open)")
+	}
+}
+
 func TestGroupedAndCountStatements(t *testing.T) {
 	t.Parallel()
 	p := mustParse(t, itemsView(false), `{"select": ["kind", "total", "n"], "filters": [], "sort": [{"fieldKey": "total", "direction": "desc"}],
