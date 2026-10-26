@@ -19,7 +19,6 @@ var cashW500Matrix = matrix.File{
 			Method:  "GET",
 			Path:    "/api/v1/tenants/{tenantId}/cash/accounts/access-preview",
 			Channel: "http",
-			Pending: "W5.31",
 			Rows: []matrix.Row{
 				{
 					Actor:  "anonymous",
@@ -40,7 +39,6 @@ var cashW500Matrix = matrix.File{
 			Method:  "POST",
 			Path:    "/api/v1/tenants/{tenantId}/cash/operations/{operationId}/reverse",
 			Channel: "http",
-			Pending: "W5.31",
 			Rows: []matrix.Row{
 				{
 					Actor:  "anonymous",
@@ -63,7 +61,6 @@ var cashW500Matrix = matrix.File{
 			Method:  "POST",
 			Path:    "/api/v1/tenants/{tenantId}/cash/operations/{operationId}/source-link",
 			Channel: "http",
-			Pending: "W5.31",
 			Rows: []matrix.Row{
 				{
 					Actor:  "anonymous",
@@ -86,7 +83,6 @@ var cashW500Matrix = matrix.File{
 			Method:  "GET",
 			Path:    "/api/v1/tenants/{tenantId}/cash/duplicates",
 			Channel: "http",
-			Pending: "W5.31",
 			Rows: []matrix.Row{
 				{
 					Actor:  "anonymous",
@@ -107,7 +103,6 @@ var cashW500Matrix = matrix.File{
 			Method:  "GET",
 			Path:    "/api/v1/tenants/{tenantId}/cash/proposals",
 			Channel: "http",
-			Pending: "W5.31",
 			Rows: []matrix.Row{
 				{
 					Actor:  "anonymous",
@@ -128,7 +123,6 @@ var cashW500Matrix = matrix.File{
 			Method:  "POST",
 			Path:    "/api/v1/tenants/{tenantId}/cash/proposals/{proposalKey}/post",
 			Channel: "http",
-			Pending: "W5.31",
 			Rows: []matrix.Row{
 				{
 					Actor:  "anonymous",
@@ -151,7 +145,6 @@ var cashW500Matrix = matrix.File{
 			Method:  "POST",
 			Path:    "/api/v1/tenants/{tenantId}/cash/proposals/{proposalKey}/dismiss",
 			Channel: "http",
-			Pending: "W5.31",
 			Rows: []matrix.Row{
 				{
 					Actor:  "anonymous",
@@ -174,7 +167,6 @@ var cashW500Matrix = matrix.File{
 			Method:  "GET",
 			Path:    "/api/v1/tenants/{tenantId}/cash/shifts",
 			Channel: "http",
-			Pending: "W5.31",
 			Rows: []matrix.Row{
 				{
 					Actor:  "anonymous",
@@ -195,7 +187,6 @@ var cashW500Matrix = matrix.File{
 			Method:  "POST",
 			Path:    "/api/v1/tenants/{tenantId}/cash/accounts/{accountId}/shifts",
 			Channel: "http",
-			Pending: "W5.31",
 			Rows: []matrix.Row{
 				{
 					Actor:  "anonymous",
@@ -218,7 +209,6 @@ var cashW500Matrix = matrix.File{
 			Method:  "POST",
 			Path:    "/api/v1/tenants/{tenantId}/cash/shifts/{shiftId}/close",
 			Channel: "http",
-			Pending: "W5.31",
 			Rows: []matrix.Row{
 				{
 					Actor:  "anonymous",
@@ -241,7 +231,6 @@ var cashW500Matrix = matrix.File{
 			Method:  "POST",
 			Path:    "/api/v1/tenants/{tenantId}/cash/shifts/{shiftId}/review",
 			Channel: "http",
-			Pending: "W5.31",
 			Rows: []matrix.Row{
 				{
 					Actor:  "anonymous",
@@ -264,7 +253,6 @@ var cashW500Matrix = matrix.File{
 			Method:  "GET",
 			Path:    "/api/v1/tenants/{tenantId}/cash/transfers",
 			Channel: "http",
-			Pending: "W5.31",
 			Rows: []matrix.Row{
 				{
 					Actor:  "anonymous",
@@ -285,7 +273,6 @@ var cashW500Matrix = matrix.File{
 			Method:  "POST",
 			Path:    "/api/v1/tenants/{tenantId}/cash/transfers",
 			Channel: "http",
-			Pending: "W5.31",
 			Rows: []matrix.Row{
 				{
 					Actor:  "anonymous",
@@ -308,7 +295,6 @@ var cashW500Matrix = matrix.File{
 			Method:  "POST",
 			Path:    "/api/v1/tenants/{tenantId}/cash/transfers/{transferId}/decision",
 			Channel: "http",
-			Pending: "W5.31",
 			Rows: []matrix.Row{
 				{
 					Actor:  "anonymous",
@@ -331,7 +317,6 @@ var cashW500Matrix = matrix.File{
 			Method:  "POST",
 			Path:    "/api/v1/tenants/{tenantId}/cash/accounts/{accountId}/advance-issues",
 			Channel: "http",
-			Pending: "W5.31",
 			Rows: []matrix.Row{
 				{
 					Actor:  "anonymous",
@@ -354,7 +339,6 @@ var cashW500Matrix = matrix.File{
 			Method:  "POST",
 			Path:    "/api/v1/tenants/{tenantId}/cash/accounts/{accountId}/receipts",
 			Channel: "http",
-			Pending: "W5.31",
 			Rows: []matrix.Row{
 				{
 					Actor:  "anonymous",
@@ -377,7 +361,6 @@ var cashW500Matrix = matrix.File{
 			Method:  "GET",
 			Path:    "/api/v1/tenants/{tenantId}/cash/receipts",
 			Channel: "http",
-			Pending: "W5.31",
 			Rows: []matrix.Row{
 				{
 					Actor:  "anonymous",
@@ -398,7 +381,6 @@ var cashW500Matrix = matrix.File{
 			Method:  "POST",
 			Path:    "/api/v1/tenants/{tenantId}/cash/receipts/{receiptId}/decision",
 			Channel: "http",
-			Pending: "W5.31",
 			Rows: []matrix.Row{
 				{
 					Actor:  "anonymous",
@@ -421,7 +403,6 @@ var cashW500Matrix = matrix.File{
 			Method:  "POST",
 			Path:    "/api/v1/tenants/{tenantId}/cash/accounts/{accountId}/advance-returns",
 			Channel: "http",
-			Pending: "W5.31",
 			Rows: []matrix.Row{
 				{
 					Actor:  "anonymous",
@@ -444,7 +425,6 @@ var cashW500Matrix = matrix.File{
 			Method:  "GET",
 			Path:    "/api/v1/tenants/{tenantId}/cash/approval-requests",
 			Channel: "http",
-			Pending: "W5.31",
 			Rows: []matrix.Row{
 				{
 					Actor:  "anonymous",
@@ -465,7 +445,6 @@ var cashW500Matrix = matrix.File{
 			Method:  "POST",
 			Path:    "/api/v1/tenants/{tenantId}/cash/approval-requests/{approvalRequestId}/decision",
 			Channel: "http",
-			Pending: "W5.31",
 			Rows: []matrix.Row{
 				{
 					Actor:  "anonymous",
@@ -488,7 +467,6 @@ var cashW500Matrix = matrix.File{
 			Method:  "GET",
 			Path:    "/api/v1/tenants/{tenantId}/cash/categories",
 			Channel: "http",
-			Pending: "W5.31",
 			Rows: []matrix.Row{
 				{
 					Actor:  "anonymous",

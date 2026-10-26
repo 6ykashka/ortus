@@ -265,6 +265,7 @@ func build(ctx context.Context, cfg config, log *slog.Logger, getenv func(string
 			// fleet.go: W2.02 vehicles and reservations under the inspections of W2.04; W2.03…W2.07 wire theirs there.
 			Fleet:       newFleet(pools, ev, control, cfg.clock()),
 			Earnings:    newEarnings(pools, ev, cfg.clock()),                                // W2.06: earnings by a separate route (earnings.go)
+			Cash:        newCash(pools, ev, cfg.clock()),                                    // W5.31: «Касса» (cash.go)
 			Data:        newData(pools, ev, moduleStates{S: modules}, exports, cfg.clock()), // W2.08, W4.50: «Данные» (data.go)
 			Calendar:    newCalendar(pools, ev, moduleStates{S: modules}, cfg.clock()),      // W4.40: календарь ресурсов (calendar.go)
 			Tasks:       newTasks(pools, ev, control, cfg.clock()),                          // W4.11: задачи и проекты (tasks.go)
