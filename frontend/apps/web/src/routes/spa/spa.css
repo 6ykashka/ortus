@@ -1,0 +1,387 @@
+/* W5.21 · «Салон и SPA» по рендеру эталона design-2026-10-19 («Ортус CRM.dc.html» pg.spa :1870–1900; PD-28): шапка и
+   заголовок 26/600, карточки визитов с цветной полосой слева, чипы техкарты, баннер «Учёт материалов не завершён»,
+   боковая колонка остатков. Запись, перенос, отмена и услуги — без эталона (B-6), в стиле карточек и фильтров
+   календаря. Ошибка загрузки — общие классы modules.css. */
+
+.ox-spa {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.ox-spa-crumb {
+  font-size: 13px;
+  color: var(--ox-text-muted);
+}
+
+.ox-spa-title {
+  margin: 0;
+  font-size: 26px;
+  font-weight: var(--ox-fw-semibold);
+  letter-spacing: -0.02em;
+}
+
+/* Цель фокуса после «Повторить» (tabIndex=-1), не элемент управления. */
+.ox-spa-title:focus {
+  outline: none;
+}
+
+.ox-spa-visits {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  padding-top: 14px;
+}
+
+/* Баннер :1873 */
+.ox-spa-issue {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 12px;
+  align-items: center;
+  padding: 12px 14px;
+  border-radius: var(--ox-radius-lg);
+  background: var(--ox-warn-bg);
+  color: var(--ox-warn-fg);
+  border: 1px solid var(--ox-warn-border);
+}
+
+.ox-spa-issue-text {
+  flex: 1 1 260px;
+  text-wrap: pretty;
+}
+
+.ox-spa-issue-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.ox-spa-issue-btn {
+  position: relative;
+  min-height: 36px;
+  padding: 0 10px;
+  border-radius: var(--ox-radius-md);
+  border: 1px solid var(--ox-warn-fg);
+  background: var(--ox-card);
+  color: var(--ox-warn-fg);
+  font-weight: var(--ox-fw-medium);
+  cursor: pointer;
+}
+
+/* Видимая высота — 36 px эталона (:1873); область нажатия — не меньше 44 px (verification-protocol §1.3). */
+.ox-spa-issue-btn::after,
+.ox-spa-pill::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: -5px;
+  bottom: -5px;
+}
+
+.ox-spa-issue-btn:disabled {
+  opacity: 0.6;
+  cursor: default;
+}
+
+.ox-spa-issue-wait {
+  font-size: 13px;
+}
+
+/* Панель дня */
+.ox-spa-bar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.ox-spa-days,
+.ox-spa-tools {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  align-items: center;
+}
+
+.ox-spa-pill {
+  position: relative;
+  min-height: 36px;
+  padding: 0 12px;
+  border-radius: var(--ox-radius-pill);
+  border: 1px solid var(--ox-line-control);
+  background: var(--ox-card);
+  color: var(--ox-text);
+  font-size: 13px;
+  font-weight: var(--ox-fw-medium);
+  cursor: pointer;
+}
+
+.ox-spa-pill[data-icon] {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 36px;
+  padding: 0 6px;
+}
+
+.ox-spa-pill[aria-pressed='true'] {
+  border-color: var(--ox-accent);
+  background: var(--ox-accent);
+  color: var(--ox-on-accent);
+}
+
+@media (max-width: 639px) {
+  .ox-spa-days,
+  .ox-spa-tools,
+  .ox-spa-issue-actions {
+    row-gap: 8px;
+  }
+}
+
+.ox-spa-date {
+  margin-left: 6px;
+  font-size: 13px;
+  color: var(--ox-text-muted);
+}
+
+.ox-spa-filter {
+  min-width: 190px;
+}
+
+.ox-spa-layout {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  align-items: flex-start;
+}
+
+.ox-spa-list {
+  flex: 999 1 420px;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.ox-spa-li {
+  display: contents;
+}
+
+/* Карточка визита :1881 */
+.ox-spa-card {
+  display: grid;
+  grid-template-columns: 62px minmax(0, 1fr);
+  gap: 12px;
+  background: var(--ox-card);
+  border: 1px solid var(--ox-line);
+  border-left: 4px solid var(--ox-ok-border);
+  border-radius: var(--ox-radius-xl);
+  padding: 14px;
+}
+
+.ox-spa-service {
+  grid-template-columns: minmax(0, 1fr);
+  border-left-color: var(--ox-accent);
+}
+
+.ox-spa-card[data-status='completed'] {
+  border-left-color: var(--ox-accent);
+}
+
+.ox-spa-card[data-status='performed_pending_posting'] {
+  border-left-color: var(--ox-warn-fg);
+}
+
+.ox-spa-card[data-status='cancelled'],
+.ox-spa-card[data-status='no_show'] {
+  border-left-color: var(--ox-neutral-border);
+}
+
+.ox-spa-time {
+  font-variant-numeric: tabular-nums;
+  font-size: 13px;
+  color: var(--ox-text-muted);
+}
+
+.ox-spa-body {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 0;
+}
+
+.ox-spa-row {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.ox-spa-h3 {
+  margin: 0;
+  font-size: var(--ox-fs-lg);
+  font-weight: var(--ox-fw-semibold);
+}
+
+.ox-spa-rev {
+  font-size: 12px;
+  color: var(--ox-text-muted);
+}
+
+.ox-spa-meta {
+  font-size: 13px;
+  color: var(--ox-text-label);
+}
+
+.ox-spa-sub {
+  font-size: 12px;
+  color: var(--ox-text-muted);
+}
+
+.ox-spa-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.ox-spa-chip {
+  padding: 2px 8px;
+  border-radius: var(--ox-radius-sm);
+  font-size: 12px;
+  background: var(--ox-surface);
+  color: var(--ox-text-label);
+}
+
+.ox-spa-chip[data-lack] {
+  background: var(--ox-danger-bg);
+  color: var(--ox-danger-fg);
+}
+
+.ox-spa-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  padding-top: 2px;
+}
+
+/* Боковая колонка :1895 */
+.ox-spa-aside {
+  flex: 1 1 260px;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  background: var(--ox-card);
+  border: 1px solid var(--ox-line);
+  border-radius: var(--ox-radius-xl);
+  padding: 16px;
+}
+
+.ox-spa-h2 {
+  margin: 0;
+  font-size: 15px;
+  font-weight: var(--ox-fw-semibold);
+}
+
+.ox-spa-stock {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+  font-size: 13px;
+}
+
+.ox-spa-stock strong {
+  font-weight: var(--ox-fw-semibold);
+  font-variant-numeric: tabular-nums;
+}
+
+.ox-spa-stock strong[data-low] {
+  color: var(--ox-danger-fg);
+}
+
+/* Формы диалогов */
+.ox-spa-form {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.ox-spa-when {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 12px;
+}
+
+.ox-spa-set {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  min-width: 0;
+}
+
+.ox-spa-set > legend {
+  padding: 0;
+  margin-bottom: 4px;
+  font-size: var(--ox-fs-sm);
+  font-weight: var(--ox-fw-medium);
+  color: var(--ox-text-label);
+}
+
+.ox-spa-line {
+  display: grid;
+  grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr) 44px;
+  gap: 8px;
+  align-items: end;
+}
+
+@media (max-width: 639px) {
+  .ox-spa-line {
+    grid-template-columns: minmax(0, 1fr) 44px;
+  }
+
+  .ox-spa-line > :first-child {
+    grid-column: 1 / -1;
+  }
+}
+
+.ox-spa-x {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  border: 0;
+  border-radius: var(--ox-radius-md);
+  background: transparent;
+  color: var(--ox-text-muted);
+  cursor: pointer;
+}
+
+.ox-spa-err {
+  font-size: 13px;
+  color: var(--ox-danger-fg);
+}
+
+.ox-spa-note {
+  margin: 0;
+  font-size: 13px;
+  color: var(--ox-text-muted);
+}
+
+.ox-spa-conflict {
+  display: flex;
+  gap: 8px;
+  align-items: flex-start;
+  padding: 10px 12px;
+  border-radius: var(--ox-radius-lg);
+  background: var(--ox-danger-bg);
+  color: var(--ox-danger-fg);
+  border: 1px solid var(--ox-danger-border);
+  font-size: 13px;
+}

@@ -28,6 +28,8 @@ import { operatorHandlers } from './platform/operator.ts';
 import { pricingHandlers } from './platform/pricing.ts';
 import { usageHandlers } from './platform/usage.ts';
 import { repairsHandlers } from './repairs/index.ts';
+import { spaHandlers } from './spa/index.ts';
+import { spaInventoryHandlers } from './spa/inventory.ts';
 import { tasksHandlers } from './tasks/index.ts';
 
 export const defaultRegistry: Registry = {
@@ -69,4 +71,7 @@ export const defaultRegistry: Registry = {
   ...cashHandlers,
   // 0.12.0-stage6 (W6.00): «Ремонт и стройка».
   ...repairsHandlers,
+  // W5.21 (0.12.0-stage5): «Салон и SPA»; склад салона — временные хендлеры до W5.10 (его реестр ставить ниже).
+  ...spaInventoryHandlers,
+  ...spaHandlers,
 };

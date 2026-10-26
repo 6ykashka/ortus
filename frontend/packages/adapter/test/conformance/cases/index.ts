@@ -19,6 +19,7 @@ import { modulesCases } from './modules.ts';
 import { platformCases } from './platform.ts';
 import { poolCases } from './pool.ts';
 import { repairsCases } from './repairs.ts';
+import { spaCases } from './spa.ts';
 import { stage1bCases } from './stage1b.ts';
 import { stage2bCases } from './stage2b.ts';
 import { tasksCases } from './tasks.ts';
@@ -62,4 +63,6 @@ export const ALL_CASES: readonly ConformanceCase[] = [
   ...repairsCases,
   // W4.80 (0.11.1-stage4): наборы «Данных» этапа 4 — «Ответы на осмотр» и «Задачи».
   ...dataW480Cases,
+  // W5.21 (0.12.0-stage5): «Салон и SPA» и временный склад салона.
+  ...spaCases,
 ];
