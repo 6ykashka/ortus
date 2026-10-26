@@ -69,4 +69,12 @@ var Problems = map[string]Problem{
 	"duplicate_receipt":             {Status: 409, Title: "Чек с таким № ФД уже внесён"},
 	"self_approval":                 {Status: 403, Title: "Автор не принимает собственное решение"},
 	"insufficient_funds":            {Status: 409, Title: "В кассе недостаточно средств"},
+	"chat_ephemeral_disabled":       {Status: 403, Title: "Временные и одноразовые сообщения запрещены политикой вида чата (CHAT-04) или нет права chat.ephemeral.send"},
+	"document_locked":               {Status: 409, Title: "Документ закрыт для правки — на маршруте или подписан"},
+	"range_protected":               {Status: 403, Title: "Ячейки защищённого диапазона листа правит только тот, кому он выдан (DOC-03)"},
+	"formula_invalid":               {Status: 422, Title: "Формула таблицы не разобрана или ссылается на недоступный лист"},
+	"job_in_progress":               {Status: 409, Title: "Такое задание уже выполняется (тот же вид и те же документы)"},
+	"file_password_protected":       {Status: 422, Title: "Файл защищён паролем — задание не может его прочитать"},
+	"sign_code_invalid":             {Status: 422, Title: "Неверный код или подтверждение подписи ПЭП; после трёх попыток — rate_limited"},
+	"service_assignee_out_of_scope": {Status: 422, Title: "Исполнитель не видит направление обращения или не имеет права «Отвечать»"},
 }

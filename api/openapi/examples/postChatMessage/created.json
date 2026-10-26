@@ -1,0 +1,16 @@
+{
+  "id": "75a8eb84-7c5d-596c-9864-dec8c9d6a057",
+  "seq": 6,
+  "createdAt": "2026-10-01T08:06:00Z",
+  "authorDisplayName": "Илья Васильев",
+  "kind": "text",
+  "text": "Принял, выезжаю в 8:00.",
+  "masked": false,
+  "attachments": [],
+  "tasks": [],
+  "authorMemberId": "a560b4fe-78b7-585e-b960-f0ab3622570c",
+  "reads": {
+    "readCount": 0,
+    "totalCount": 3
+  }
+}

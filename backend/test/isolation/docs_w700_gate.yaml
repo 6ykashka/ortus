@@ -1,0 +1,441 @@
+# Матрица изоляции: тег Docs («Документы») контрактного PR этапа 7 (W7.00, 0.12.0-stage7) — отказы шлюза без pending.
+# «Администратор» фикстур не имеет ни одного действия chat.*, docs.*, service.*: шлюз cmd/api отвечает 403 forbidden_action
+# до хендлера (нет гранта с действием x-permissions в виде области x-scope), и это верно после него. Формат — README.md.
+# После правки: go -C backend generate ./test/isolation
+module: docs_w700_gate
+endpoints:
+  - op: listDocuments
+    method: GET
+    path: /api/v1/tenants/{tenantId}/docs
+    rows:
+      - actor: a.admin
+        params: { tenantId: tenant:a }
+        status: 403
+        code: forbidden_action
+        note: нет docs.read
+  - op: createDocument
+    method: POST
+    path: /api/v1/tenants/{tenantId}/docs
+    rows:
+      - actor: a.admin
+        params: { tenantId: tenant:a }
+        status: 403
+        code: forbidden_action
+        body: "{}"
+        note: нет docs.create
+  - op: getDocument
+    method: GET
+    path: /api/v1/tenants/{tenantId}/docs/{documentId}
+    rows:
+      - actor: a.admin
+        params: { tenantId: tenant:a, documentId: tenant:missing }
+        status: 403
+        code: forbidden_action
+        note: нет docs.read
+  - op: updateDocument
+    method: PATCH
+    path: /api/v1/tenants/{tenantId}/docs/{documentId}
+    rows:
+      - actor: a.admin
+        params: { tenantId: tenant:a, documentId: tenant:missing }
+        status: 403
+        code: forbidden_action
+        body: "{}"
+        note: нет docs.update
+  - op: moveDocument
+    method: POST
+    path: /api/v1/tenants/{tenantId}/docs/{documentId}/move
+    rows:
+      - actor: a.admin
+        params: { tenantId: tenant:a, documentId: tenant:missing }
+        status: 403
+        code: forbidden_action
+        body: "{}"
+        note: нет docs.update
+  - op: archiveDocument
+    method: POST
+    path: /api/v1/tenants/{tenantId}/docs/{documentId}/archive
+    rows:
+      - actor: a.admin
+        params: { tenantId: tenant:a, documentId: tenant:missing }
+        status: 403
+        code: forbidden_action
+        body: "{}"
+        note: нет docs.update
+  - op: restoreDocument
+    method: POST
+    path: /api/v1/tenants/{tenantId}/docs/{documentId}/restore
+    rows:
+      - actor: a.admin
+        params: { tenantId: tenant:a, documentId: tenant:missing }
+        status: 403
+        code: forbidden_action
+        body: "{}"
+        note: нет docs.update
+  - op: openDocumentSession
+    method: GET
+    path: /api/v1/tenants/{tenantId}/docs/{documentId}/open
+    rows:
+      - actor: a.admin
+        params: { tenantId: tenant:a, documentId: tenant:missing }
+        status: 403
+        code: forbidden_action
+        note: нет docs.read
+  - op: listDocVersions
+    method: GET
+    path: /api/v1/tenants/{tenantId}/docs/{documentId}/versions
+    rows:
+      - actor: a.admin
+        params: { tenantId: tenant:a, documentId: tenant:missing }
+        status: 403
+        code: forbidden_action
+        note: нет docs.read
+  - op: saveDocVersion
+    method: POST
+    path: /api/v1/tenants/{tenantId}/docs/{documentId}/versions
+    rows:
+      - actor: a.admin
+        params: { tenantId: tenant:a, documentId: tenant:missing }
+        status: 403
+        code: forbidden_action
+        body: "{}"
+        note: нет docs.update
+  - op: nameDocVersion
+    method: PUT
+    path: /api/v1/tenants/{tenantId}/docs/{documentId}/versions/{version}/name
+    rows:
+      - actor: a.admin
+        params: { tenantId: tenant:a, documentId: tenant:missing, version: tenant:missing }
+        status: 403
+        code: forbidden_action
+        body: "{}"
+        note: нет docs.update
+  - op: restoreDocVersion
+    method: POST
+    path: /api/v1/tenants/{tenantId}/docs/{documentId}/versions/{version}/restore
+    rows:
+      - actor: a.admin
+        params: { tenantId: tenant:a, documentId: tenant:missing, version: tenant:missing }
+        status: 403
+        code: forbidden_action
+        body: "{}"
+        note: нет docs.update
+  - op: listDocComments
+    method: GET
+    path: /api/v1/tenants/{tenantId}/docs/{documentId}/comments
+    rows:
+      - actor: a.admin
+        params: { tenantId: tenant:a, documentId: tenant:missing }
+        status: 403
+        code: forbidden_action
+        note: нет docs.read
+  - op: createDocComment
+    method: POST
+    path: /api/v1/tenants/{tenantId}/docs/{documentId}/comments
+    rows:
+      - actor: a.admin
+        params: { tenantId: tenant:a, documentId: tenant:missing }
+        status: 403
+        code: forbidden_action
+        body: "{}"
+        note: нет docs.comment
+  - op: replyDocComment
+    method: POST
+    path: /api/v1/tenants/{tenantId}/docs/{documentId}/comments/{commentId}/replies
+    rows:
+      - actor: a.admin
+        params: { tenantId: tenant:a, documentId: tenant:missing, commentId: tenant:missing }
+        status: 403
+        code: forbidden_action
+        body: "{}"
+        note: нет docs.comment
+  - op: resolveDocComment
+    method: POST
+    path: /api/v1/tenants/{tenantId}/docs/{documentId}/comments/{commentId}/resolve
+    rows:
+      - actor: a.admin
+        params: { tenantId: tenant:a, documentId: tenant:missing, commentId: tenant:missing }
+        status: 403
+        code: forbidden_action
+        body: "{}"
+        note: нет docs.comment
+  - op: skipDocMentionGrant
+    method: POST
+    path: /api/v1/tenants/{tenantId}/docs/{documentId}/comments/{commentId}/skip-grant
+    rows:
+      - actor: a.admin
+        params: { tenantId: tenant:a, documentId: tenant:missing, commentId: tenant:missing }
+        status: 403
+        code: forbidden_action
+        body: "{}"
+        note: нет docs.comment
+  - op: getDocShares
+    method: GET
+    path: /api/v1/tenants/{tenantId}/docs/{documentId}/shares
+    rows:
+      - actor: a.admin
+        params: { tenantId: tenant:a, documentId: tenant:missing }
+        status: 403
+        code: forbidden_action
+        note: нет docs.share
+  - op: setDocShares
+    method: PUT
+    path: /api/v1/tenants/{tenantId}/docs/{documentId}/shares
+    rows:
+      - actor: a.admin
+        params: { tenantId: tenant:a, documentId: tenant:missing }
+        status: 403
+        code: forbidden_action
+        body: "{}"
+        note: нет docs.share
+  - op: grantDocAccess
+    method: POST
+    path: /api/v1/tenants/{tenantId}/docs/{documentId}/grants
+    rows:
+      - actor: a.admin
+        params: { tenantId: tenant:a, documentId: tenant:missing }
+        status: 403
+        code: forbidden_action
+        body: "{}"
+        note: нет docs.share
+  - op: listDocLinks
+    method: GET
+    path: /api/v1/tenants/{tenantId}/docs/{documentId}/links
+    rows:
+      - actor: a.admin
+        params: { tenantId: tenant:a, documentId: tenant:missing }
+        status: 403
+        code: forbidden_action
+        note: нет docs.share_external
+  - op: createDocLink
+    method: POST
+    path: /api/v1/tenants/{tenantId}/docs/{documentId}/links
+    rows:
+      - actor: a.admin
+        params: { tenantId: tenant:a, documentId: tenant:missing }
+        status: 403
+        code: forbidden_action
+        body: "{}"
+        note: нет docs.share_external
+  - op: revokeDocLink
+    method: DELETE
+    path: /api/v1/tenants/{tenantId}/docs/{documentId}/links/{linkId}
+    rows:
+      - actor: a.admin
+        params: { tenantId: tenant:a, documentId: tenant:missing, linkId: tenant:missing }
+        status: 403
+        code: forbidden_action
+        note: нет docs.share_external
+  - op: syncDocDataset
+    method: POST
+    path: /api/v1/tenants/{tenantId}/docs/{documentId}/dataset-sync
+    rows:
+      - actor: a.admin
+        params: { tenantId: tenant:a, documentId: tenant:missing }
+        status: 403
+        code: forbidden_action
+        body: "{}"
+        note: нет docs.update
+  - op: createDocJob
+    method: POST
+    path: /api/v1/tenants/{tenantId}/doc-jobs
+    rows:
+      - actor: a.admin
+        params: { tenantId: tenant:a }
+        status: 403
+        code: forbidden_action
+        body: "{}"
+        note: нет docs.convert
+  - op: getDocJob
+    method: GET
+    path: /api/v1/tenants/{tenantId}/doc-jobs/{jobId}
+    rows:
+      - actor: a.admin
+        params: { tenantId: tenant:a, jobId: tenant:missing }
+        status: 403
+        code: forbidden_action
+        note: нет docs.read
+  - op: retryDocJob
+    method: POST
+    path: /api/v1/tenants/{tenantId}/doc-jobs/{jobId}/retry
+    rows:
+      - actor: a.admin
+        params: { tenantId: tenant:a, jobId: tenant:missing }
+        status: 403
+        code: forbidden_action
+        body: "{}"
+        note: нет docs.convert
+  - op: reviewOcrWord
+    method: POST
+    path: /api/v1/tenants/{tenantId}/docs/{documentId}/ocr/words/{wordId}
+    rows:
+      - actor: a.admin
+        params: { tenantId: tenant:a, documentId: tenant:missing, wordId: tenant:missing }
+        status: 403
+        code: forbidden_action
+        body: "{}"
+        note: нет docs.update
+  - op: getDocRoute
+    method: GET
+    path: /api/v1/tenants/{tenantId}/docs/{documentId}/route
+    rows:
+      - actor: a.admin
+        params: { tenantId: tenant:a, documentId: tenant:missing }
+        status: 403
+        code: forbidden_action
+        note: нет docs.read
+  - op: startDocRoute
+    method: POST
+    path: /api/v1/tenants/{tenantId}/docs/{documentId}/route
+    rows:
+      - actor: a.admin
+        params: { tenantId: tenant:a, documentId: tenant:missing }
+        status: 403
+        code: forbidden_action
+        body: "{}"
+        note: нет docs.update
+  - op: decideDocRoute
+    method: POST
+    path: /api/v1/tenants/{tenantId}/docs/{documentId}/route/decisions
+    rows:
+      - actor: a.admin
+        params: { tenantId: tenant:a, documentId: tenant:missing }
+        status: 403
+        code: forbidden_action
+        body: "{}"
+        note: нет docs.read
+  - op: requestDocSignCode
+    method: POST
+    path: /api/v1/tenants/{tenantId}/docs/{documentId}/route/sign/code
+    rows:
+      - actor: a.admin
+        params: { tenantId: tenant:a, documentId: tenant:missing }
+        status: 403
+        code: forbidden_action
+        body: "{}"
+        note: нет docs.sign
+  - op: confirmDocSign
+    method: POST
+    path: /api/v1/tenants/{tenantId}/docs/{documentId}/route/sign
+    rows:
+      - actor: a.admin
+        params: { tenantId: tenant:a, documentId: tenant:missing }
+        status: 403
+        code: forbidden_action
+        body: "{}"
+        note: нет docs.sign
+  - op: ackDocument
+    method: POST
+    path: /api/v1/tenants/{tenantId}/docs/{documentId}/ack
+    rows:
+      - actor: a.admin
+        params: { tenantId: tenant:a, documentId: tenant:missing }
+        status: 403
+        code: forbidden_action
+        body: "{}"
+        note: нет docs.read
+  - op: closeDocAck
+    method: POST
+    path: /api/v1/tenants/{tenantId}/docs/{documentId}/route/ack/close
+    rows:
+      - actor: a.admin
+        params: { tenantId: tenant:a, documentId: tenant:missing }
+        status: 403
+        code: forbidden_action
+        body: "{}"
+        note: нет docs.update
+  - op: resumeDocRoute
+    method: POST
+    path: /api/v1/tenants/{tenantId}/docs/{documentId}/route/resume
+    rows:
+      - actor: a.admin
+        params: { tenantId: tenant:a, documentId: tenant:missing }
+        status: 403
+        code: forbidden_action
+        body: "{}"
+        note: нет docs.update
+  - op: cancelDocRoute
+    method: POST
+    path: /api/v1/tenants/{tenantId}/docs/{documentId}/route/cancel
+    rows:
+      - actor: a.admin
+        params: { tenantId: tenant:a, documentId: tenant:missing }
+        status: 403
+        code: forbidden_action
+        body: "{}"
+        note: нет docs.update
+  - op: listDocActivity
+    method: GET
+    path: /api/v1/tenants/{tenantId}/docs/{documentId}/activity
+    rows:
+      - actor: a.admin
+        params: { tenantId: tenant:a, documentId: tenant:missing }
+        status: 403
+        code: forbidden_action
+        note: нет docs.read
+  - op: listDocFolders
+    method: GET
+    path: /api/v1/tenants/{tenantId}/doc-folders
+    rows:
+      - actor: a.admin
+        params: { tenantId: tenant:a }
+        status: 403
+        code: forbidden_action
+        note: нет docs.read
+  - op: createDocFolder
+    method: POST
+    path: /api/v1/tenants/{tenantId}/doc-folders
+    rows:
+      - actor: a.admin
+        params: { tenantId: tenant:a }
+        status: 403
+        code: forbidden_action
+        body: "{}"
+        note: нет docs.folders.manage
+  - op: deleteDocFolder
+    method: DELETE
+    path: /api/v1/tenants/{tenantId}/doc-folders/{folderId}
+    rows:
+      - actor: a.admin
+        params: { tenantId: tenant:a, folderId: tenant:missing }
+        status: 403
+        code: forbidden_action
+        note: нет docs.folders.manage
+  - op: updateDocFolder
+    method: PATCH
+    path: /api/v1/tenants/{tenantId}/doc-folders/{folderId}
+    rows:
+      - actor: a.admin
+        params: { tenantId: tenant:a, folderId: tenant:missing }
+        status: 403
+        code: forbidden_action
+        body: "{}"
+        note: нет docs.folders.manage
+  - op: setDocFolderShares
+    method: PUT
+    path: /api/v1/tenants/{tenantId}/doc-folders/{folderId}/shares
+    rows:
+      - actor: a.admin
+        params: { tenantId: tenant:a, folderId: tenant:missing }
+        status: 403
+        code: forbidden_action
+        body: "{}"
+        note: нет docs.share
+  - op: listDocTemplates
+    method: GET
+    path: /api/v1/tenants/{tenantId}/doc-templates
+    rows:
+      - actor: a.admin
+        params: { tenantId: tenant:a }
+        status: 403
+        code: forbidden_action
+        note: нет docs.read
+  - op: listDocRouteTemplates
+    method: GET
+    path: /api/v1/tenants/{tenantId}/doc-route-templates
+    rows:
+      - actor: a.admin
+        params: { tenantId: tenant:a }
+        status: 403
+        code: forbidden_action
+        note: нет docs.read

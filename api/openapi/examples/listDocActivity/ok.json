@@ -1,0 +1,15 @@
+{
+  "items": [
+    {
+      "id": "018a94cf-8f70-5fe4-996c-a823e0e518f4",
+      "at": "2026-09-29T07:30:00Z",
+      "by": {
+        "memberId": "ac41932c-dbd9-53b1-a84b-42cbc1d6629a",
+        "displayName": "Марина Котова"
+      },
+      "action": "docs.created",
+      "details": "Документ создан"
+    }
+  ],
+  "nextCursor": null
+}

@@ -25,6 +25,8 @@ UploadCreate:
         - form_attachment
         - repair_evidence
         - task_attachment
+        - chat_attachment
+        - document
     owner:
       $ref: ../common/schemas.yaml#/ObjectRef
   required:
@@ -34,7 +36,7 @@ UploadCreate:
     - sha256
     - purpose
     - owner
-  description: "Reject oversized or unsupported MIME; reserve bytes before issuing a URL. Owner belongs to same tenant and the actor can attach files to it. Before inspection creation, departure photos attach to the reservation and return photos to the trip; submitInspection binds them atomically to its evidence. Expense receipts likewise attach to the trip before expense creation. A repair report may attach photos to its project before the work log exists. These are explicit allowed owner transitions, never arbitrary reparenting. File display name is not an object storage path. Task attachments (0.7.0-stage4, W4.02): purpose task_attachment with owner tasks/task — the file is uploaded for an existing task the actor may update (tasks.create on creation, tasks.update later), then bound to it by the tasks module; it counts in the storage group «Вложения задач и форм». Until the tasks module registers this parent (W4.11), initiateUpload answers 422 validation_failed for it."
+  description: "Reject oversized or unsupported MIME; reserve bytes before issuing a URL. Owner belongs to same tenant and the actor can attach files to it. Before inspection creation, departure photos attach to the reservation and return photos to the trip; submitInspection binds them atomically to its evidence. Expense receipts likewise attach to the trip before expense creation. A repair report may attach photos to its project before the work log exists. These are explicit allowed owner transitions, never arbitrary reparenting. File display name is not an object storage path. Task attachments (0.7.0-stage4, W4.02): purpose task_attachment with owner tasks/task — the file is uploaded for an existing task the actor may update (tasks.create on creation, tasks.update later), then bound to it by the tasks module; it counts in the storage group «Вложения задач и форм». Until the tasks module registers this parent (W4.11), initiateUpload answers 422 validation_failed for it. Chat attachments and documents (0.12.0-stage7, W7.00): purpose chat_attachment with owner chat/chat (the chat the actor may write to with chat.files.send; the file goes with a message by postChatMessage; saveChatAttachmentsToRecord is the one allowed change of the owner — from the message to a record) and purpose document with owner docs/folder (a new document, docs.create) or docs/document (a new version, docs.update); both count in the storage groups of the chat and of the documents. Until the chats and documents modules register their parents (W7.11, W7.23), initiateUpload answers 422 validation_failed for them."
 UploadComplete:
   type: object
   additionalProperties: false
@@ -86,6 +88,8 @@ UploadSession:
         - form_attachment
         - repair_evidence
         - task_attachment
+        - chat_attachment
+        - document
       description: Same values as UploadCreate.purpose of initiateUpload (0.1). The value is stored verbatim in files.objects.purpose (tenant 0001), one to one, without dotted refinements; the dotted examples in the 0001 column comment (inspection.front, expense.receipt) predate the contract and are not used. The slot inside the owner (front, rear, receipt…) belongs to the owning object, not to purpose.
     owner:
       $ref: ../common/schemas.yaml#/ObjectRef
@@ -140,6 +144,8 @@ FileListItem:
         - form_attachment
         - repair_evidence
         - task_attachment
+        - chat_attachment
+        - document
       description: Same values as UploadCreate.purpose; stored in files.objects.purpose.
     owner:
       $ref: ../common/schemas.yaml#/ObjectRef

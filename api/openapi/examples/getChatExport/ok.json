@@ -1,0 +1,14 @@
+{
+  "id": "31a20221-515e-525b-a2af-570f389afe2e",
+  "status": "done",
+  "createdAt": "2026-10-01T07:30:00Z",
+  "file": {
+    "id": "fc1504c5-080d-590b-bd31-80e47e883b30",
+    "fileName": "chat-ch-drv.json",
+    "contentType": "application/json",
+    "sizeBytes": 2048,
+    "sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+    "status": "ready",
+    "createdAt": "2026-10-01T07:30:00Z"
+  }
+}

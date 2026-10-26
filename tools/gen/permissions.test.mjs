@@ -89,11 +89,44 @@ const FIELDS = [
 const CHANGED_SINCE_14_10 = {
   'fleet.reservations.manage': { label: 'Ставить и снимать брони' },
   'tasks.projects.manage': { scopes: ['tenant', 'unit', 'project'] },
+  // W7.00 (chats.md §5.4 п. 1): запятая в подписи внутри flow-mapping разрывала её (в 11 14.10 — «Объявления», «Видеть»,
+  // «Сроки хранения»); подписи взяты в кавычки и читаются целиком.
+  'chat.announce': { label: 'Объявления, важное и @все' },
+  'chat.receipts.read': { label: 'Видеть, кто и когда прочитал' },
+  'chat.retention.manage': { label: 'Сроки хранения, очистка, место' },
 };
 
 /** Ключи, добавленные контрактными дельтами этапов после W0.07: W2.71 — выбор из предложенных (D-35 комплекта). */
 // W2.71 (S2-20) — fleet.reservations.choose; W4.07 (0.8.0-stage4) — branding.manage.
 const ADDED_LATER = ['fleet.reservations.choose', 'branding.manage'];
+/** W7.00 (0.12.0-stage7): ключи core.docs (12) и core.service (9) — перенос из prototype_pending и четыре новых. */
+const W700_KEYS = {
+  'core.docs': [
+    'docs.read',
+    'docs.comment',
+    'docs.suggest',
+    'docs.create',
+    'docs.update',
+    'docs.convert',
+    'docs.export',
+    'docs.share',
+    'docs.share_external',
+    'docs.sign',
+    'docs.templates.manage',
+    'docs.folders.manage',
+  ],
+  'core.service': [
+    'service.directions.manage',
+    'service.requests.read',
+    'service.requests.create',
+    'service.requests.reply',
+    'service.requests.resolve',
+    'service.clients.contacts',
+    'service.compensation.manage',
+    'service.reports.read',
+    'service.reports.staff',
+  ],
+};
 
 describe('каталог прав api/permissions.yaml', () => {
   it('108 ключей 11 (14.10) сохранены дословно в своих модулях (кроме явных правок эталона)', () => {
@@ -123,7 +156,7 @@ describe('каталог прав api/permissions.yaml', () => {
     }
   });
 
-  it('14 ключей cash/inventory/spa из OpenAPI 0.1, forms.responses.assign и ключи этапов добавлены, итого 129 + 7 ключей repairs этапа 6', () => {
+  it('14 ключей cash/inventory/spa из OpenAPI 0.1, forms.responses.assign и ключи этапов добавлены, итого 129 + 7 ключей repairs этапа 6 + 21 ключ этапа 7', () => {
     for (const k of ADDED_LATER) assert.ok(actions.has(k), k);
     for (const [mod, keys] of Object.entries(ADDED)) {
       assert.equal(catalog.modules[mod]?.proposed, true, `модуль ${mod} помечен proposed`);
@@ -136,8 +169,14 @@ describe('каталог прав api/permissions.yaml', () => {
     assert.deepEqual(assign.scopes, ['tenant', 'unit', 'project']);
     assert.match(assign.note ?? '', /PROPOSED W0\.07/);
     for (const k of W404_KEYS) assert.equal(actions.get(k)?.module, 'core.knowledge', k);
-    // W5.00 — ещё 16 ключей этапа 5; W6.00 (0.12.0-stage6) — ещё 7 ключей repairs (NEW_PERMISSIONS).
-    assert.equal(actions.size, 123 + 16 + ADDED_LATER.length + W404_KEYS.length + 7);
+    // W5.00 — ещё 16 ключей этапа 5; W6.00 (0.12.0-stage6) — ещё 7 ключей repairs (NEW_PERMISSIONS); W7.00 — 21 ключ.
+    for (const [mod, keys] of Object.entries(W700_KEYS)) {
+      assert.deepEqual(Object.keys(catalog.modules[mod].actions), keys, mod);
+    }
+    assert.equal(
+      actions.size,
+      123 + 16 + ADDED_LATER.length + W404_KEYS.length + 7 + Object.values(W700_KEYS).flat().length,
+    );
   });
 
   it('каждый x-permissions бандла есть в каталоге', () => {
@@ -183,10 +222,10 @@ describe('каталог прав api/permissions.yaml', () => {
   it('каждый ключ прав прототипа 14.10 в каталоге, переименован или отложен до своего шага', () => {
     assert.equal(prototypeKeys.length, 85);
     const renamed = new Set(Object.keys(catalog.prototype_renames));
-    const pending = new Set(Object.keys(catalog.prototype_pending));
+    const pending = new Set(Object.keys(catalog.prototype_pending ?? {}));
     const lost = prototypeKeys.filter((k) => !actions.has(k) && !renamed.has(k) && !pending.has(k));
     assert.deepEqual(lost, []);
-    for (const [k, v] of Object.entries(catalog.prototype_pending)) {
+    for (const [k, v] of Object.entries(catalog.prototype_pending ?? {})) {
       assert.ok(!actions.has(k), `${k} отложен, но уже в каталоге`);
       assert.match(v, /^W\d\.\d\d /, `${k}: ${v}`);
     }

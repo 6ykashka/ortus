@@ -1,0 +1,52 @@
+{
+  "applied": true,
+  "policy": {
+    "kind": "group",
+    "policy": {
+      "textYears": 3,
+      "filesDays": 365,
+      "voiceDays": 90,
+      "receipts": "who",
+      "receiptsDays": 30,
+      "deletedDays": 30,
+      "edit": "48h",
+      "maxFileMb": 200,
+      "quotaMb": 5000,
+      "temp": "off",
+      "forward": "internal",
+      "pdnMask": true,
+      "onFull": "block"
+    },
+    "bounds": {
+      "textYears": {
+        "min": 1,
+        "max": 5
+      },
+      "filesDays": {
+        "min": 30,
+        "max": 1825
+      },
+      "voiceDays": {
+        "min": 30,
+        "max": 1095
+      },
+      "receiptsDays": {
+        "min": 7,
+        "max": 90
+      },
+      "deletedDays": {
+        "min": 30,
+        "max": 30
+      },
+      "maxFileMb": {
+        "min": 10,
+        "max": 2000
+      }
+    },
+    "revision": 2
+  },
+  "notes": [
+    "0 чатов вида «Рабочие группы», 0 сотрудников: новые значения — сразу",
+    "Прочтение: «Галочки» → «Кто и когда»"
+  ]
+}

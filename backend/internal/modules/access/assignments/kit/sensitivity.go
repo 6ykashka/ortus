@@ -26,6 +26,9 @@ var sensitivity = map[string]string{
 	"roles.assign": Sensitive, "roles.manage": Sensitive, "tasks.automation.manage": Sensitive,
 	"tasks.members.manage": Sensitive, "repairs.documents.send": Sensitive,
 	"repairs.subcontractors.manage": Sensitive, "repairs.client_link.manage": Sensitive,
+	// W7.00 (0.12.0-stage7): «Документы» и «Обращения».
+	"docs.export": Sensitive, "docs.share": Sensitive, "docs.share_external": Sensitive, "docs.sign": Sensitive,
+	"service.clients.contacts": Sensitive, "service.compensation.manage": Sensitive, "service.reports.staff": Sensitive,
 
 	"cash.payroll.post": Restricted, "cash.reports.finance": Restricted, "chat.audit.read": Restricted,
 	"chat.pdn.read": Restricted, "fleet.earnings.manage": Restricted,

@@ -1,0 +1,458 @@
+# Контракт Ортус · тег PublicService: пути и операции. Пишет только стюард контракта (план v2 §3.5).
+/api/v1/public/service/{slug}:
+  parameters:
+    - $ref: ../components/common/parameters.yaml#/servicePortalSlug
+  get:
+    operationId: getPublicServicePage
+    tags:
+      - PublicService
+    summary: Read the public page of a direction
+    x-permissions: []
+    x-scope: public-service-capability
+    description: "W7.00 (service.md §2.3) (1a). Public page: types, working hours, no client data; rate limits of a guest (FORM-07). The tenant is found by the slug in the global control registry public_service_slugs (control 0011); the direction is service.directions.public_slug of that tenant; an unknown slug is 404."
+    responses:
+      "200":
+        description: Successful result.
+        headers:
+          X-Request-Id:
+            $ref: ../components/common/headers.yaml#/RequestId
+          Cache-Control:
+            description: Never cache authenticated, confidential or capability-bearing API responses in shared caches.
+            schema:
+              type: string
+              const: private, no-store
+        content:
+          application/json:
+            schema:
+              $ref: ../components/service/schemas.yaml#/PublicServicePage
+      "400":
+        $ref: ../components/common/responses.yaml#/BadRequest
+      "403":
+        $ref: ../components/common/responses.yaml#/Forbidden
+      "404":
+        $ref: ../components/common/responses.yaml#/NotFound
+      "410":
+        $ref: ../components/common/responses.yaml#/Gone
+      "422":
+        $ref: ../components/common/responses.yaml#/Validation
+      "429":
+        $ref: ../components/common/responses.yaml#/RateLimited
+    security: []
+    x-public-capability: slug of a published direction
+    x-permissions-mode: all
+/api/v1/public/service/{slug}/requests:
+  parameters:
+    - $ref: ../components/common/parameters.yaml#/servicePortalSlug
+  post:
+    operationId: submitPublicServiceRequest
+    tags:
+      - PublicService
+    summary: Send a request from the client page
+    x-permissions: []
+    x-scope: public-service-capability
+    description: W7.00 (service.md §2.3). Creates a request of the channel cabinet or widget; the personal link is returned once. 422 validation_failed (consent, text); the request is the task of the service project. The tenant is found by the slug in the control registry public_service_slugs (control 0011). Emits service.request.created.v1.
+    responses:
+      "201":
+        description: Successful result.
+        headers:
+          X-Request-Id:
+            $ref: ../components/common/headers.yaml#/RequestId
+          Idempotency-Replayed:
+            $ref: ../components/common/headers.yaml#/IdempotencyReplayed
+          Cache-Control:
+            description: Never cache authenticated, confidential or capability-bearing API responses in shared caches.
+            schema:
+              type: string
+              const: private, no-store
+        content:
+          application/json:
+            schema:
+              $ref: ../components/service/schemas.yaml#/PublicServiceReceipt
+      "400":
+        $ref: ../components/common/responses.yaml#/BadRequest
+      "403":
+        $ref: ../components/common/responses.yaml#/Forbidden
+      "404":
+        $ref: ../components/common/responses.yaml#/NotFound
+      "409":
+        $ref: ../components/common/responses.yaml#/Conflict
+      "410":
+        $ref: ../components/common/responses.yaml#/Gone
+      "422":
+        $ref: ../components/common/responses.yaml#/Validation
+      "429":
+        $ref: ../components/common/responses.yaml#/RateLimited
+    parameters:
+      - $ref: ../components/common/parameters.yaml#/IdempotencyKey
+      - $ref: ../components/common/parameters.yaml#/Origin
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: ../components/service/schemas.yaml#/PublicServiceSubmit
+    security: []
+    x-public-capability: slug of a published direction; work token when known
+    x-permissions-mode: all
+/api/v1/public/service/requests/{token}:
+  parameters:
+    - $ref: ../components/common/parameters.yaml#/servicePortalToken
+  get:
+    operationId: getPublicServiceRequest
+    tags:
+      - PublicService
+    summary: Read a request by the personal link
+    x-permissions: []
+    x-scope: public-service-capability
+    description: W7.00 (service.md §2.3) (1a). The client sees only public messages and the client status labels; 410 public_token_expired for an expired link. The tenant is found by the digest of the token in the control index public_service_tokens (control 0011), then the token in service.portal_tokens of that tenant.
+    responses:
+      "200":
+        description: Successful result.
+        headers:
+          X-Request-Id:
+            $ref: ../components/common/headers.yaml#/RequestId
+          Cache-Control:
+            description: Never cache authenticated, confidential or capability-bearing API responses in shared caches.
+            schema:
+              type: string
+              const: private, no-store
+        content:
+          application/json:
+            schema:
+              $ref: ../components/service/schemas.yaml#/PublicServiceRequest
+      "400":
+        $ref: ../components/common/responses.yaml#/BadRequest
+      "403":
+        $ref: ../components/common/responses.yaml#/Forbidden
+      "404":
+        $ref: ../components/common/responses.yaml#/NotFound
+      "410":
+        $ref: ../components/common/responses.yaml#/Gone
+      "422":
+        $ref: ../components/common/responses.yaml#/Validation
+      "429":
+        $ref: ../components/common/responses.yaml#/RateLimited
+    security: []
+    x-public-capability: personal link token of a request
+    x-permissions-mode: all
+/api/v1/public/service/requests/{token}/messages:
+  parameters:
+    - $ref: ../components/common/parameters.yaml#/servicePortalToken
+  post:
+    operationId: postPublicServiceMessage
+    tags:
+      - PublicService
+    summary: Write to the request as the client
+    x-permissions: []
+    x-scope: public-service-capability
+    description: W7.00 (service.md §2.3). A message of the client; a reply of the client returns the request from «Ждёт клиента» to work (Q-W4.00-service-3). The tenant is found by the token digest in the control index public_service_tokens (control 0011).
+    responses:
+      "201":
+        description: Successful result.
+        headers:
+          X-Request-Id:
+            $ref: ../components/common/headers.yaml#/RequestId
+          Idempotency-Replayed:
+            $ref: ../components/common/headers.yaml#/IdempotencyReplayed
+          Cache-Control:
+            description: Never cache authenticated, confidential or capability-bearing API responses in shared caches.
+            schema:
+              type: string
+              const: private, no-store
+        content:
+          application/json:
+            schema:
+              $ref: ../components/service/schemas.yaml#/PublicServiceMessage
+      "400":
+        $ref: ../components/common/responses.yaml#/BadRequest
+      "403":
+        $ref: ../components/common/responses.yaml#/Forbidden
+      "404":
+        $ref: ../components/common/responses.yaml#/NotFound
+      "409":
+        $ref: ../components/common/responses.yaml#/Conflict
+      "410":
+        $ref: ../components/common/responses.yaml#/Gone
+      "422":
+        $ref: ../components/common/responses.yaml#/Validation
+      "429":
+        $ref: ../components/common/responses.yaml#/RateLimited
+    parameters:
+      - $ref: ../components/common/parameters.yaml#/IdempotencyKey
+      - $ref: ../components/common/parameters.yaml#/Origin
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: ../components/service/schemas.yaml#/PublicServiceMessageCreate
+    security: []
+    x-public-capability: personal link token of a request
+    x-permissions-mode: all
+/api/v1/public/service/requests/{token}/csat:
+  parameters:
+    - $ref: ../components/common/parameters.yaml#/servicePortalToken
+  post:
+    operationId: ratePublicServiceResolution
+    tags:
+      - PublicService
+    summary: Rate the resolution
+    x-permissions: []
+    x-scope: public-service-capability
+    description: W7.00 (service.md §2.3). Only for a resolved request (409 invalid_transition otherwise); once. Emits service.survey.answered.v1. The tenant is found by the token digest in the control index public_service_tokens (control 0011).
+    responses:
+      "200":
+        description: Successful result.
+        headers:
+          X-Request-Id:
+            $ref: ../components/common/headers.yaml#/RequestId
+          Idempotency-Replayed:
+            $ref: ../components/common/headers.yaml#/IdempotencyReplayed
+          Cache-Control:
+            description: Never cache authenticated, confidential or capability-bearing API responses in shared caches.
+            schema:
+              type: string
+              const: private, no-store
+        content:
+          application/json:
+            schema:
+              $ref: ../components/service/schemas.yaml#/PublicServiceRequest
+      "400":
+        $ref: ../components/common/responses.yaml#/BadRequest
+      "403":
+        $ref: ../components/common/responses.yaml#/Forbidden
+      "404":
+        $ref: ../components/common/responses.yaml#/NotFound
+      "409":
+        $ref: ../components/common/responses.yaml#/Conflict
+      "410":
+        $ref: ../components/common/responses.yaml#/Gone
+      "422":
+        $ref: ../components/common/responses.yaml#/Validation
+      "429":
+        $ref: ../components/common/responses.yaml#/RateLimited
+    parameters:
+      - $ref: ../components/common/parameters.yaml#/IdempotencyKey
+      - $ref: ../components/common/parameters.yaml#/Origin
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: ../components/service/schemas.yaml#/PublicServiceCsat
+    security: []
+    x-public-capability: personal link token of a request
+    x-permissions-mode: all
+/api/v1/public/service/requests/{token}/reopen:
+  parameters:
+    - $ref: ../components/common/parameters.yaml#/servicePortalToken
+  post:
+    operationId: reopenPublicServiceRequest
+    tags:
+      - PublicService
+    summary: "Reopen a request: the question is not solved"
+    x-permissions: []
+    x-scope: public-service-capability
+    description: W7.00 (service.md §2.3). Within 5 days after the resolution (409 invalid_transition later); the request returns to work. Emits service.request.reopened.v1. The tenant is found by the token digest in the control index public_service_tokens (control 0011).
+    responses:
+      "200":
+        description: Successful result.
+        headers:
+          X-Request-Id:
+            $ref: ../components/common/headers.yaml#/RequestId
+          Idempotency-Replayed:
+            $ref: ../components/common/headers.yaml#/IdempotencyReplayed
+          Cache-Control:
+            description: Never cache authenticated, confidential or capability-bearing API responses in shared caches.
+            schema:
+              type: string
+              const: private, no-store
+        content:
+          application/json:
+            schema:
+              $ref: ../components/service/schemas.yaml#/PublicServiceRequest
+      "400":
+        $ref: ../components/common/responses.yaml#/BadRequest
+      "403":
+        $ref: ../components/common/responses.yaml#/Forbidden
+      "404":
+        $ref: ../components/common/responses.yaml#/NotFound
+      "409":
+        $ref: ../components/common/responses.yaml#/Conflict
+      "410":
+        $ref: ../components/common/responses.yaml#/Gone
+      "422":
+        $ref: ../components/common/responses.yaml#/Validation
+      "429":
+        $ref: ../components/common/responses.yaml#/RateLimited
+    parameters:
+      - $ref: ../components/common/parameters.yaml#/IdempotencyKey
+      - $ref: ../components/common/parameters.yaml#/Origin
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: ../components/service/schemas.yaml#/PublicServiceReopen
+    security: []
+    x-public-capability: personal link token of a request
+    x-permissions-mode: all
+/api/v1/public/service/requests/{token}/opt-out:
+  parameters:
+    - $ref: ../components/common/parameters.yaml#/servicePortalToken
+  post:
+    operationId: optOutPublicSurveys
+    tags:
+      - PublicService
+    summary: Stop surveys («СТОП»)
+    x-permissions: []
+    x-scope: public-service-capability
+    description: W7.00 (service.md §2.3). The client no longer gets surveys (FB-01, Q-W4.00-service-15). The tenant is found by the token digest in the control index public_service_tokens (control 0011).
+    responses:
+      "200":
+        description: Successful result.
+        headers:
+          X-Request-Id:
+            $ref: ../components/common/headers.yaml#/RequestId
+          Idempotency-Replayed:
+            $ref: ../components/common/headers.yaml#/IdempotencyReplayed
+          Cache-Control:
+            description: Never cache authenticated, confidential or capability-bearing API responses in shared caches.
+            schema:
+              type: string
+              const: private, no-store
+        content:
+          application/json:
+            schema:
+              $ref: ../components/service/schemas.yaml#/PublicServiceOptOut
+      "400":
+        $ref: ../components/common/responses.yaml#/BadRequest
+      "403":
+        $ref: ../components/common/responses.yaml#/Forbidden
+      "404":
+        $ref: ../components/common/responses.yaml#/NotFound
+      "409":
+        $ref: ../components/common/responses.yaml#/Conflict
+      "410":
+        $ref: ../components/common/responses.yaml#/Gone
+      "422":
+        $ref: ../components/common/responses.yaml#/Validation
+      "429":
+        $ref: ../components/common/responses.yaml#/RateLimited
+    parameters:
+      - $ref: ../components/common/parameters.yaml#/IdempotencyKey
+      - $ref: ../components/common/parameters.yaml#/Origin
+    security: []
+    x-public-capability: personal link token of a request
+    x-permissions-mode: all
+/api/v1/public/service/requests/{token}/uploads:
+  parameters:
+    - $ref: ../components/common/parameters.yaml#/servicePortalToken
+  post:
+    operationId: initiatePublicServiceUpload
+    tags:
+      - PublicService
+    summary: Issue an upload ticket for a client file
+    x-permissions: []
+    x-scope: public-service-capability
+    description: "W7.00 (service.md §2.3). A quarantined upload (FILE-02): the file is shown to the staff only after the check. The tenant is found by the token digest in the control index public_service_tokens (control 0011)."
+    responses:
+      "201":
+        description: Successful result.
+        headers:
+          X-Request-Id:
+            $ref: ../components/common/headers.yaml#/RequestId
+          Idempotency-Replayed:
+            $ref: ../components/common/headers.yaml#/IdempotencyReplayed
+          Cache-Control:
+            description: Never cache authenticated, confidential or capability-bearing API responses in shared caches.
+            schema:
+              type: string
+              const: private, no-store
+        content:
+          application/json:
+            schema:
+              $ref: ../components/common/schemas.yaml#/UploadTicket
+      "400":
+        $ref: ../components/common/responses.yaml#/BadRequest
+      "403":
+        $ref: ../components/common/responses.yaml#/Forbidden
+      "404":
+        $ref: ../components/common/responses.yaml#/NotFound
+      "409":
+        $ref: ../components/common/responses.yaml#/Conflict
+      "410":
+        $ref: ../components/common/responses.yaml#/Gone
+      "413":
+        $ref: ../components/common/responses.yaml#/TooLarge
+      "422":
+        $ref: ../components/common/responses.yaml#/Validation
+      "429":
+        $ref: ../components/common/responses.yaml#/RateLimited
+    parameters:
+      - $ref: ../components/common/parameters.yaml#/IdempotencyKey
+      - $ref: ../components/common/parameters.yaml#/Origin
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: ../components/service/schemas.yaml#/PublicServiceUploadCreate
+    security: []
+    x-public-capability: personal link token of a request
+    x-permissions-mode: all
+/api/v1/public/service/requests/{token}/uploads/{uploadId}/complete:
+  parameters:
+    - $ref: ../components/common/parameters.yaml#/servicePortalToken
+    - $ref: ../components/common/parameters.yaml#/uploadId
+  post:
+    operationId: completePublicServiceUpload
+    tags:
+      - PublicService
+    summary: Complete the upload of a client file
+    x-permissions: []
+    x-scope: public-service-capability
+    description: W7.00 (service.md §2.3). The file goes to the scan; 202 does not mean safe. The tenant is found by the token digest in the control index public_service_tokens (control 0011).
+    responses:
+      "202":
+        description: Successful result.
+        headers:
+          X-Request-Id:
+            $ref: ../components/common/headers.yaml#/RequestId
+          Idempotency-Replayed:
+            $ref: ../components/common/headers.yaml#/IdempotencyReplayed
+          Cache-Control:
+            description: Never cache authenticated, confidential or capability-bearing API responses in shared caches.
+            schema:
+              type: string
+              const: private, no-store
+        content:
+          application/json:
+            schema:
+              $ref: ../components/common/schemas.yaml#/File
+      "400":
+        $ref: ../components/common/responses.yaml#/BadRequest
+      "403":
+        $ref: ../components/common/responses.yaml#/Forbidden
+      "404":
+        $ref: ../components/common/responses.yaml#/NotFound
+      "409":
+        $ref: ../components/common/responses.yaml#/Conflict
+      "410":
+        $ref: ../components/common/responses.yaml#/Gone
+      "422":
+        $ref: ../components/common/responses.yaml#/Validation
+      "429":
+        $ref: ../components/common/responses.yaml#/RateLimited
+    parameters:
+      - $ref: ../components/common/parameters.yaml#/IdempotencyKey
+      - $ref: ../components/common/parameters.yaml#/Origin
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: ../components/service/schemas.yaml#/PublicServiceUploadComplete
+    security: []
+    x-public-capability: personal link token of a request
+    x-permissions-mode: all

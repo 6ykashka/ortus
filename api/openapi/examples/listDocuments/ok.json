@@ -1,0 +1,311 @@
+{
+  "items": [
+    {
+      "id": "27e8039b-4399-5f72-90d1-bab599c4beb8",
+      "kind": "text",
+      "title": "Договор подряда № 42/26",
+      "folderId": "f2ca66d2-6d1c-5466-9f8d-ee414820825d",
+      "folderName": "ЖК Речной · квартира 42",
+      "owner": {
+        "memberId": "b8df06ec-317e-5f46-b54c-e76603e41b5b",
+        "displayName": "Дарья Зимина"
+      },
+      "status": "in_route",
+      "sensitivity": "normal",
+      "version": 3,
+      "updatedAt": "2026-09-30T07:30:00Z",
+      "updatedBy": {
+        "memberId": "b8df06ec-317e-5f46-b54c-e76603e41b5b",
+        "displayName": "Дарья Зимина"
+      },
+      "links": [
+        {
+          "object": {
+            "moduleKey": "repairs",
+            "entityType": "project",
+            "entityId": "73e23d56-2d9c-5a86-91d2-8969d90d1f5b"
+          },
+          "label": "ЖК Речной · квартира 42"
+        }
+      ],
+      "my": {
+        "level": "edit",
+        "can": {
+          "view": true,
+          "comment": true,
+          "suggest": false,
+          "edit": false,
+          "share": true,
+          "shareExternal": false,
+          "export": true,
+          "convert": true,
+          "sign": false,
+          "route": false,
+          "manage": false,
+          "locked": true
+        },
+        "maxGrant": "edit",
+        "wait": []
+      },
+      "route": {
+        "status": "active",
+        "currentStep": 0,
+        "stepName": "Согласовать",
+        "dueDate": "2026-10-02"
+      }
+    },
+    {
+      "id": "e259b6d4-e7d4-513a-9ae7-00eedcce9bb8",
+      "kind": "text",
+      "title": "Приказ № 14 · работа 4 ноября",
+      "folderId": "1eb38eae-0f75-5350-9c0c-add98451de67",
+      "folderName": "Приказы",
+      "owner": {
+        "memberId": "ac41932c-dbd9-53b1-a84b-42cbc1d6629a",
+        "displayName": "Марина Котова"
+      },
+      "status": "agreed",
+      "sensitivity": "normal",
+      "version": 2,
+      "updatedAt": "2026-09-30T07:30:00Z",
+      "updatedBy": {
+        "memberId": "ac41932c-dbd9-53b1-a84b-42cbc1d6629a",
+        "displayName": "Марина Котова"
+      },
+      "links": [],
+      "my": {
+        "level": "manage",
+        "can": {
+          "view": true,
+          "comment": true,
+          "suggest": true,
+          "edit": true,
+          "share": true,
+          "shareExternal": false,
+          "export": true,
+          "convert": true,
+          "sign": false,
+          "route": true,
+          "manage": true,
+          "locked": false
+        },
+        "maxGrant": "edit",
+        "wait": []
+      }
+    },
+    {
+      "id": "143cca4f-2c2d-540e-b0f9-ae8a60b1a09d",
+      "kind": "sheet",
+      "title": "Расход топлива · октябрь 2026",
+      "folderId": "41aefb3e-e2fe-5fa7-90b2-607dba7aad3b",
+      "folderName": "Север Логистик",
+      "owner": {
+        "memberId": "ac41932c-dbd9-53b1-a84b-42cbc1d6629a",
+        "displayName": "Марина Котова"
+      },
+      "status": "draft",
+      "sensitivity": "normal",
+      "version": 4,
+      "updatedAt": "2026-09-30T07:30:00Z",
+      "updatedBy": {
+        "memberId": "ac41932c-dbd9-53b1-a84b-42cbc1d6629a",
+        "displayName": "Марина Котова"
+      },
+      "links": [],
+      "my": {
+        "level": "manage",
+        "can": {
+          "view": true,
+          "comment": true,
+          "suggest": true,
+          "edit": true,
+          "share": true,
+          "shareExternal": false,
+          "export": true,
+          "convert": true,
+          "sign": false,
+          "route": true,
+          "manage": true,
+          "locked": false
+        },
+        "maxGrant": "edit",
+        "wait": []
+      }
+    },
+    {
+      "id": "074091d8-0dcc-5884-867e-debf465c1bae",
+      "kind": "pdf",
+      "title": "Накладная ТН-5581",
+      "folderId": "fae58a41-3ab2-59a7-a375-8da345f5869e",
+      "folderName": "Договоры",
+      "owner": {
+        "memberId": "ac41932c-dbd9-53b1-a84b-42cbc1d6629a",
+        "displayName": "Марина Котова"
+      },
+      "status": "draft",
+      "sensitivity": "normal",
+      "version": 2,
+      "updatedAt": "2026-09-30T07:30:00Z",
+      "updatedBy": {
+        "memberId": "ac41932c-dbd9-53b1-a84b-42cbc1d6629a",
+        "displayName": "Марина Котова"
+      },
+      "links": [],
+      "my": {
+        "level": "manage",
+        "can": {
+          "view": true,
+          "comment": true,
+          "suggest": true,
+          "edit": true,
+          "share": true,
+          "shareExternal": false,
+          "export": true,
+          "convert": true,
+          "sign": false,
+          "route": true,
+          "manage": true,
+          "locked": false
+        },
+        "maxGrant": "edit",
+        "wait": [
+          {
+            "kind": "ocr",
+            "count": 2
+          }
+        ]
+      },
+      "ocr": {
+        "status": "done",
+        "confidence": 0.93,
+        "at": "2026-10-01T04:10:00Z",
+        "lang": "rus",
+        "doubtful": 2
+      }
+    },
+    {
+      "id": "23853b21-b516-5e2b-8b3e-65fb87295176",
+      "kind": "text",
+      "title": "Регламент приёмки смены",
+      "folderId": "41aefb3e-e2fe-5fa7-90b2-607dba7aad3b",
+      "folderName": "Север Логистик",
+      "owner": {
+        "memberId": "ac41932c-dbd9-53b1-a84b-42cbc1d6629a",
+        "displayName": "Марина Котова"
+      },
+      "status": "draft",
+      "sensitivity": "normal",
+      "version": 1,
+      "updatedAt": "2026-09-30T07:30:00Z",
+      "updatedBy": {
+        "memberId": "ac41932c-dbd9-53b1-a84b-42cbc1d6629a",
+        "displayName": "Марина Котова"
+      },
+      "links": [],
+      "my": {
+        "level": "manage",
+        "can": {
+          "view": true,
+          "comment": true,
+          "suggest": true,
+          "edit": true,
+          "share": true,
+          "shareExternal": false,
+          "export": true,
+          "convert": true,
+          "sign": false,
+          "route": true,
+          "manage": true,
+          "locked": false
+        },
+        "maxGrant": "edit",
+        "wait": []
+      }
+    },
+    {
+      "id": "a90b415c-035d-5d91-9a79-e3555160ac19",
+      "kind": "pdf",
+      "title": "Договор аренды склада (защищён паролем)",
+      "folderId": "fae58a41-3ab2-59a7-a375-8da345f5869e",
+      "folderName": "Договоры",
+      "owner": {
+        "memberId": "ac41932c-dbd9-53b1-a84b-42cbc1d6629a",
+        "displayName": "Марина Котова"
+      },
+      "status": "draft",
+      "sensitivity": "normal",
+      "version": 1,
+      "updatedAt": "2026-09-30T07:30:00Z",
+      "updatedBy": {
+        "memberId": "ac41932c-dbd9-53b1-a84b-42cbc1d6629a",
+        "displayName": "Марина Котова"
+      },
+      "links": [],
+      "my": {
+        "level": "manage",
+        "can": {
+          "view": true,
+          "comment": true,
+          "suggest": true,
+          "edit": true,
+          "share": true,
+          "shareExternal": false,
+          "export": true,
+          "convert": true,
+          "sign": false,
+          "route": true,
+          "manage": true,
+          "locked": false
+        },
+        "maxGrant": "edit",
+        "wait": []
+      }
+    },
+    {
+      "id": "287defcf-dcc0-541a-ad92-bce1102664c9",
+      "kind": "sheet",
+      "title": "Начисления · октябрь",
+      "folderId": "5c5d8f1f-cf85-5629-a23e-6617228910d3",
+      "folderName": "Финансы",
+      "owner": {
+        "memberId": "ac41932c-dbd9-53b1-a84b-42cbc1d6629a",
+        "displayName": "Марина Котова"
+      },
+      "status": "draft",
+      "sensitivity": "finance",
+      "version": 1,
+      "updatedAt": "2026-09-30T07:30:00Z",
+      "updatedBy": {
+        "memberId": "ac41932c-dbd9-53b1-a84b-42cbc1d6629a",
+        "displayName": "Марина Котова"
+      },
+      "links": [],
+      "my": {
+        "level": "manage",
+        "can": {
+          "view": true,
+          "comment": true,
+          "suggest": true,
+          "edit": true,
+          "share": true,
+          "shareExternal": false,
+          "export": true,
+          "convert": true,
+          "sign": false,
+          "route": true,
+          "manage": true,
+          "locked": false
+        },
+        "maxGrant": "edit",
+        "wait": []
+      }
+    }
+  ],
+  "nextCursor": null,
+  "counts": {
+    "all": 7,
+    "mine": 6,
+    "shared": 1,
+    "route": 2
+  }
+}

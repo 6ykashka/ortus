@@ -10,6 +10,7 @@ import { bundle } from './lib/bundle.mjs';
 import { checkExamples, loadExamples } from './lib/examples.mjs';
 import { operationsById } from './lib/inventory.mjs';
 import { abs, ERRORS_PATH, SOURCE_0_1 } from './lib/paths.mjs';
+import { STAGE7_CODES } from './lib/stage7.mjs';
 import { flattenActions, loadCatalog } from './lib/permissions.mjs';
 import { parsePointer } from './lib/refs.mjs';
 import { checkAgainstSource, loadDeltas } from './lib/source-diff.mjs';
@@ -95,7 +96,7 @@ describe('контракт 0.6.3-stage2 (W2.71): права и коды', () => 
         k !== 'branding.manage' &&
         !W5_ADDED_KEYS.includes(k) &&
         !NEW_PERMISSIONS.includes(k) &&
-        x.module !== 'core.knowledge',
+        !['core.knowledge', 'core.docs', 'core.service'].includes(x.module),
     );
     // W5.00 (0.12.0-stage5): ключи и коды этапа 5 не считаются; cash.manage → cash.accounts.manage — на один ключ меньше.
     assert.equal(own.length, 119);
@@ -131,11 +132,11 @@ describe('контракт 0.6.3-stage2 (W2.71): права и коды', () => 
     assert.match(c.source, /D-35 комплекта/);
     assert.match(c.title, /срок выбора/);
     assert.equal(
-      Object.keys(codes).at(-1 - W5_CODES.length),
+      Object.keys(codes).at(-1 - W5_CODES.length - STAGE7_CODES.length),
       'offer_closed',
-      'только добавление — в конец реестра (после него — коды W5.00)',
+      'только добавление — в конец реестра (после него — коды W5.00 и W7.00)',
     );
-    assert.equal(Object.keys(codes).length - W5_CODES.length, 53);
+    assert.equal(Object.keys(codes).length - W5_CODES.length - STAGE7_CODES.length, 53);
     assert.equal(codes.vehicle_incompatible.status, 409);
     assert.equal(codes.reservation_overlap.status, 409);
     assert.ok(schemas.ProblemCode.enum.includes('offer_closed'));

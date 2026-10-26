@@ -135,7 +135,7 @@ Notification:
     kind:
       type: string
       pattern: ^[a-z][a-z0-9_]*(\.[a-z][a-z0-9_]*)+$
-      description: Source event type without the version suffix (fleet.trip.submitted, members.invitation.accepted).
+      description: Source event type without the version suffix (fleet.trip.submitted, members.invitation.accepted). W7.00 (0.12.0-stage7) adds chat.mention, chat.direct, chat.important, chat.added (chats), docs.access.granted, docs.route.step.done, docs.route.returned, docs.ack.requested, docs.comment.mentioned (documents) and service.request.created, service.request.assigned, service.request.sla_warning, service.request.sla_breached, service.conclusion.shared (requests); a client shows an unknown kind with the plain title.
     severity:
       type: string
       enum:

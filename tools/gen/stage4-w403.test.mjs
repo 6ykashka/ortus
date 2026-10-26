@@ -10,6 +10,7 @@ import { bundle } from './lib/bundle.mjs';
 import { checkExamples, loadExamples } from './lib/examples.mjs';
 import { operationsById } from './lib/inventory.mjs';
 import { abs, ERRORS_PATH, SCREENS_PATH, SOURCE_0_1 } from './lib/paths.mjs';
+import { STAGE7_CODES } from './lib/stage7.mjs';
 import { flattenActions, loadCatalog } from './lib/permissions.mjs';
 import { escapeToken, parsePointer } from './lib/refs.mjs';
 import { checkAgainstSource, loadDeltas } from './lib/source-diff.mjs';
@@ -319,9 +320,9 @@ describe('контракт 0.10.0-stage4 (W4.03): операции и права
   it('права: ключей не прибавилось, tasks.projects.manage получил область project (Q-W4.00-tasks-6)', () => {
     const actions = flattenActions(loadCatalog());
     // W4.03 своих ключей не добавляет: 125 — после W2.71 (fleet.reservations.choose) и W4.07 (branding.manage);
-    // W4.04 (влит раньше) — ещё 5 ключей «Базы знаний»: 130; W6.00 — ещё 7 ключей repairs.
+    // W4.04 (влит раньше) — ещё 5 ключей «Базы знаний»: 130; W6.00 — ещё 7 ключей repairs; W7.00 — ещё 21 ключ «Документов» (12) и «Обращений» (9).
     // W5.00 (0.12.0-stage5): ключи и коды этапа 5 не считаются; cash.manage → cash.accounts.manage — на один ключ меньше.
-    assert.equal(actions.size - W5_ADDED_KEYS.length - 7, 129);
+    assert.equal(actions.size - W5_ADDED_KEYS.length - 7 - 21, 129);
     assert.deepEqual(actions.get('tasks.projects.manage').scopes, ['tenant', 'unit', 'project']);
     for (const [k, scopes] of [
       ['tasks.read', ['tenant', 'unit', 'project', 'self']],
@@ -341,13 +342,14 @@ describe('контракт 0.10.0-stage4 (W4.03): операции и права
       name: 'tasks.projects.manage',
       access: 'tasks.members.manage',
     });
-    assert.equal(doc.tags.length, 21, 'тег Branding — W4.07; W4.03 тегов не добавляет');
+    // W7.00 добавил пять тегов этапа 7: 21 + 5.
+    assert.equal(doc.tags.length, 21 + 5, 'тег Branding — W4.07; W4.03 тегов не добавляет');
   });
 
   it('ошибки: кодов не прибавилось; причины invalid_transition — workflow_exists, funnel_fixed', () => {
     const reg = readYaml(ERRORS_PATH);
     // W4.03 кодов не добавляет: 53 — после W2.71 (offer_closed).
-    assert.equal(Object.keys(reg.codes).length - W5_CODES.length, 53);
+    assert.equal(Object.keys(reg.codes).length - W5_CODES.length - STAGE7_CODES.length, 53);
     const reasons = reg.codes.invalid_transition.reasons;
     for (const r of ['workflow_exists', 'funnel_fixed']) {
       assert.ok(reasons[r]?.title, r);

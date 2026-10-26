@@ -1,0 +1,25 @@
+{
+  "id": "e77e220d-b9ec-5901-aa41-538173e39ef0",
+  "seq": 3,
+  "createdAt": "2026-10-01T05:05:00Z",
+  "authorDisplayName": "Марина Котова",
+  "kind": "text",
+  "text": "Регламент приёмки смены обновлён: фото одометра при сдаче обязательно. Подтвердите до 03.10.",
+  "masked": false,
+  "attachments": [],
+  "tasks": [],
+  "authorMemberId": "ac41932c-dbd9-53b1-a84b-42cbc1d6629a",
+  "important": {
+    "dueDate": "2026-10-03",
+    "ackCount": 1,
+    "totalCount": 3,
+    "mine": {
+      "required": false,
+      "done": true
+    }
+  },
+  "reads": {
+    "readCount": 2,
+    "totalCount": 3
+  }
+}

@@ -61,3 +61,11 @@ ProblemCode:
     - duplicate_receipt
     - self_approval
     - insufficient_funds
+    - chat_ephemeral_disabled
+    - document_locked
+    - range_protected
+    - formula_invalid
+    - job_in_progress
+    - file_password_protected
+    - sign_code_invalid
+    - service_assignee_out_of_scope

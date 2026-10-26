@@ -1,0 +1,12 @@
+{
+  "id": "ee15ffec-b6a7-5b61-839d-8210836ad302",
+  "scope": "member",
+  "reason": "Проверка по рейсу Р-208",
+  "period": "до отмены",
+  "until": null,
+  "createdByDisplayName": "Дарья Зимина",
+  "createdAt": "2026-10-01T07:30:00Z",
+  "files": 0,
+  "status": "active",
+  "memberIds": ["a560b4fe-78b7-585e-b960-f0ab3622570c"]
+}

@@ -12,6 +12,7 @@ import { checkRegistry, loadRegistry } from './lib/errors.mjs';
 import { checkExamples, loadExamples } from './lib/examples.mjs';
 import { operationsById } from './lib/inventory.mjs';
 import { abs, SCREENS_PATH, SOURCE_0_1 } from './lib/paths.mjs';
+import { STAGE7_CODES } from './lib/stage7.mjs';
 import { flattenActions, loadCatalog, SCOPE_KINDS } from './lib/permissions.mjs';
 import { parsePointer } from './lib/refs.mjs';
 import { checkScreens } from './lib/screens.mjs';
@@ -155,7 +156,7 @@ describe('контракт 0.7.0-stage4 (W4.02): виды областей', () 
 
   // W2.71 (0.7.1-stage4, S2-20) влит позже и добавил fleet.reservations.choose и offer_closed: W4.02 своих не добавлял.
   it('новых ключей прав и кодов ошибок нет', () => {
-    // W4.07 (0.8.0-stage4) — branding.manage, W4.04 — ключи «Базы знаний» (core.knowledge): остальных ключей вне БЗ
+    // W4.07 (0.8.0-stage4) — branding.manage, W4.04 — ключи «Базы знаний» (core.knowledge): остальных ключей вне БЗ, «Документов» и «Обращений» (W7.00)
     // без choose — 119, как в 0.6.x/0.7.0.
     const actions = [...flattenActions(loadCatalog())].filter(
       ([k, a]) =>
@@ -163,12 +164,17 @@ describe('контракт 0.7.0-stage4 (W4.02): виды областей', () 
         k !== 'branding.manage' &&
         !W5_ADDED_KEYS.includes(k) &&
         !NEW_PERMISSIONS.includes(k) &&
-        a.module !== 'core.knowledge',
+        !['core.knowledge', 'core.docs', 'core.service'].includes(a.module),
     );
     // W5.00 (0.12.0-stage5): ключи и коды этапа 5 не считаются; cash.manage → cash.accounts.manage — на один ключ меньше.
     assert.equal(actions.length, 118);
     const codes = Object.keys(loadRegistry().codes);
-    assert.equal(codes.filter((c) => c !== 'offer_closed' && !W5_CODES.includes(c)).length, 52);
+    assert.equal(
+      codes.filter(
+        (c) => c !== 'offer_closed' && !W5_CODES.includes(c) && !STAGE7_CODES.includes(c),
+      ).length,
+      52,
+    );
   });
 });
 
@@ -209,7 +215,8 @@ describe('контракт 0.7.0-stage4 (W4.02): вложения задач', (
 
   it('purpose task_attachment — в загрузке, сессии, списке файлов и фильтре listFiles', () => {
     assert.deepEqual(purposes(src.UploadCreate.properties.purpose), OLD);
-    const want = [...OLD, 'task_attachment'];
+    // W7.00 (0.12.0-stage7) добавил chat_attachment и document в конец перечисления.
+    const want = [...OLD, 'task_attachment', 'chat_attachment', 'document'];
     assert.deepEqual(purposes(schemas.UploadCreate.properties.purpose), want);
     assert.deepEqual(purposes(schemas.UploadSession.properties.purpose), want);
     assert.deepEqual(purposes(schemas.FileListItem.properties.purpose), want);

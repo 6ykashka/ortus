@@ -856,6 +856,7 @@ const (
 	ProblemCodeChangeOrderClosed          ProblemCode = "change_order_closed"
 	ProblemCodeChatContentForbidden       ProblemCode = "chat_content_forbidden"
 	ProblemCodeChatEditWindowClosed       ProblemCode = "chat_edit_window_closed"
+	ProblemCodeChatEphemeralDisabled      ProblemCode = "chat_ephemeral_disabled"
 	ProblemCodeChatFileTooLarge           ProblemCode = "chat_file_too_large"
 	ProblemCodeChatMemberOutOfScope       ProblemCode = "chat_member_out_of_scope"
 	ProblemCodeChatOnHold                 ProblemCode = "chat_on_hold"
@@ -863,19 +864,23 @@ const (
 	ProblemCodeCsrfFailed                 ProblemCode = "csrf_failed"
 	ProblemCodeDelegationExceedsGrant     ProblemCode = "delegation_exceeds_grant"
 	ProblemCodeDependencyUnavailable      ProblemCode = "dependency_unavailable"
+	ProblemCodeDocumentLocked             ProblemCode = "document_locked"
 	ProblemCodeDowngradeBelowUsage        ProblemCode = "downgrade_below_usage"
 	ProblemCodeDuplicateReceipt           ProblemCode = "duplicate_receipt"
 	ProblemCodeDuplicateSource            ProblemCode = "duplicate_source"
 	ProblemCodeEstimateDraftExists        ProblemCode = "estimate_draft_exists"
 	ProblemCodeEstimateVersionLocked      ProblemCode = "estimate_version_locked"
 	ProblemCodeFeatureRequiresPlan        ProblemCode = "feature_requires_plan"
+	ProblemCodeFilePasswordProtected      ProblemCode = "file_password_protected"
 	ProblemCodeForbiddenAction            ProblemCode = "forbidden_action"
+	ProblemCodeFormulaInvalid             ProblemCode = "formula_invalid"
 	ProblemCodeFunctionBlocked            ProblemCode = "function_blocked"
 	ProblemCodeIdempotencyInProgress      ProblemCode = "idempotency_in_progress"
 	ProblemCodeIdempotencyKeyReused       ProblemCode = "idempotency_key_reused"
 	ProblemCodeInspectionIncomplete       ProblemCode = "inspection_incomplete"
 	ProblemCodeInsufficientFunds          ProblemCode = "insufficient_funds"
 	ProblemCodeInvalidTransition          ProblemCode = "invalid_transition"
+	ProblemCodeJobInProgress              ProblemCode = "job_in_progress"
 	ProblemCodeLastOwnerRequired          ProblemCode = "last_owner_required"
 	ProblemCodeMalformedRequest           ProblemCode = "malformed_request"
 	ProblemCodeModuleNotInstalled         ProblemCode = "module_not_installed"
@@ -890,6 +895,7 @@ const (
 	ProblemCodePhotoNotReady              ProblemCode = "photo_not_ready"
 	ProblemCodePublicTokenExpired         ProblemCode = "public_token_expired"
 	ProblemCodeQuotaExceeded              ProblemCode = "quota_exceeded"
+	ProblemCodeRangeProtected             ProblemCode = "range_protected"
 	ProblemCodeRateLimited                ProblemCode = "rate_limited"
 	ProblemCodeRequestPending             ProblemCode = "request_pending"
 	ProblemCodeReservationExpired         ProblemCode = "reservation_expired"
@@ -900,8 +906,10 @@ const (
 	ProblemCodeSeatsExhausted             ProblemCode = "seats_exhausted"
 	ProblemCodeSelfApproval               ProblemCode = "self_approval"
 	ProblemCodeSeparationOfDutiesConflict ProblemCode = "separation_of_duties_conflict"
+	ProblemCodeServiceAssigneeOutOfScope  ProblemCode = "service_assignee_out_of_scope"
 	ProblemCodeSessionExpired             ProblemCode = "session_expired"
 	ProblemCodeShiftClosed                ProblemCode = "shift_closed"
+	ProblemCodeSignCodeInvalid            ProblemCode = "sign_code_invalid"
 	ProblemCodeTenantReadOnly             ProblemCode = "tenant_read_only"
 	ProblemCodeTenantSuspended            ProblemCode = "tenant_suspended"
 	ProblemCodeTierBelowUsage             ProblemCode = "tier_below_usage"
@@ -925,6 +933,8 @@ func (e ProblemCode) Valid() bool {
 		return true
 	case ProblemCodeChatEditWindowClosed:
 		return true
+	case ProblemCodeChatEphemeralDisabled:
+		return true
 	case ProblemCodeChatFileTooLarge:
 		return true
 	case ProblemCodeChatMemberOutOfScope:
@@ -939,6 +949,8 @@ func (e ProblemCode) Valid() bool {
 		return true
 	case ProblemCodeDependencyUnavailable:
 		return true
+	case ProblemCodeDocumentLocked:
+		return true
 	case ProblemCodeDowngradeBelowUsage:
 		return true
 	case ProblemCodeDuplicateReceipt:
@@ -951,7 +963,11 @@ func (e ProblemCode) Valid() bool {
 		return true
 	case ProblemCodeFeatureRequiresPlan:
 		return true
+	case ProblemCodeFilePasswordProtected:
+		return true
 	case ProblemCodeForbiddenAction:
+		return true
+	case ProblemCodeFormulaInvalid:
 		return true
 	case ProblemCodeFunctionBlocked:
 		return true
@@ -964,6 +980,8 @@ func (e ProblemCode) Valid() bool {
 	case ProblemCodeInsufficientFunds:
 		return true
 	case ProblemCodeInvalidTransition:
+		return true
+	case ProblemCodeJobInProgress:
 		return true
 	case ProblemCodeLastOwnerRequired:
 		return true
@@ -993,6 +1011,8 @@ func (e ProblemCode) Valid() bool {
 		return true
 	case ProblemCodeQuotaExceeded:
 		return true
+	case ProblemCodeRangeProtected:
+		return true
 	case ProblemCodeRateLimited:
 		return true
 	case ProblemCodeRequestPending:
@@ -1013,9 +1033,13 @@ func (e ProblemCode) Valid() bool {
 		return true
 	case ProblemCodeSeparationOfDutiesConflict:
 		return true
+	case ProblemCodeServiceAssigneeOutOfScope:
+		return true
 	case ProblemCodeSessionExpired:
 		return true
 	case ProblemCodeShiftClosed:
+		return true
+	case ProblemCodeSignCodeInvalid:
 		return true
 	case ProblemCodeTenantReadOnly:
 		return true
@@ -1028,6 +1052,33 @@ func (e ProblemCode) Valid() bool {
 	case ProblemCodeValidationFailed:
 		return true
 	case ProblemCodeVehicleIncompatible:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for ChatKindParam.
+const (
+	Announce ChatKindParam = "announce"
+	Area     ChatKindParam = "area"
+	Direct   ChatKindParam = "direct"
+	Group    ChatKindParam = "group"
+	Record   ChatKindParam = "record"
+)
+
+// Valid indicates whether the value is a known member of the ChatKindParam enum.
+func (e ChatKindParam) Valid() bool {
+	switch e {
+	case Announce:
+		return true
+	case Area:
+		return true
+	case Direct:
+		return true
+	case Group:
+		return true
+	case Record:
 		return true
 	default:
 		return false
@@ -2170,6 +2221,9 @@ type AppointmentId = Id
 // AssignmentId Examples: 10000000-0000-4000-8000-000000000001
 type AssignmentId = Id
 
+// AttachmentId Examples: 10000000-0000-4000-8000-000000000001
+type AttachmentId = Id
+
 // AutomationId Examples: 10000000-0000-4000-8000-000000000001
 type AutomationId = Id
 
@@ -2206,6 +2260,18 @@ type ChangeOrderId = Id
 // ChangeRequestId Examples: 10000000-0000-4000-8000-000000000001
 type ChangeRequestId = Id
 
+// ChatExportId Examples: 10000000-0000-4000-8000-000000000001
+type ChatExportId = Id
+
+// ChatHoldId Examples: 10000000-0000-4000-8000-000000000001
+type ChatHoldId = Id
+
+// ChatId Examples: 10000000-0000-4000-8000-000000000001
+type ChatId = Id
+
+// ChatKindParam defines model for chatKindParam.
+type ChatKindParam string
+
 // ChecklistItemId defines model for checklistItemId.
 type ChecklistItemId = string
 
@@ -2217,6 +2283,30 @@ type DatasetId = string
 
 // DefectId Examples: 10000000-0000-4000-8000-000000000001
 type DefectId = Id
+
+// DirectionId Examples: 10000000-0000-4000-8000-000000000001
+type DirectionId = Id
+
+// DocCommentId Examples: 10000000-0000-4000-8000-000000000001
+type DocCommentId = Id
+
+// DocFolderId Examples: 10000000-0000-4000-8000-000000000001
+type DocFolderId = Id
+
+// DocJobId Examples: 10000000-0000-4000-8000-000000000001
+type DocJobId = Id
+
+// DocLinkId Examples: 10000000-0000-4000-8000-000000000001
+type DocLinkId = Id
+
+// DocLinkToken defines model for docLinkToken.
+type DocLinkToken = string
+
+// DocVersionNumber defines model for docVersionNumber.
+type DocVersionNumber = int
+
+// DocsDocumentId Examples: 10000000-0000-4000-8000-000000000001
+type DocsDocumentId = Id
 
 // DocumentId Examples: 10000000-0000-4000-8000-000000000001
 type DocumentId = Id
@@ -2263,6 +2353,9 @@ type InventoryReservationId = Id
 // MemberId Examples: 10000000-0000-4000-8000-000000000001
 type MemberId = Id
 
+// MessageId Examples: 10000000-0000-4000-8000-000000000001
+type MessageId = Id
+
 // ModuleKey defines model for moduleKey.
 type ModuleKey = string
 
@@ -2272,6 +2365,9 @@ type NodeId = Id
 // NodeVersion defines model for nodeVersion.
 type NodeVersion = int
 
+// OcrWordId defines model for ocrWordId.
+type OcrWordId = string
+
 // OperatorId Examples: 10000000-0000-4000-8000-000000000001
 type OperatorId = Id
 
@@ -2280,6 +2376,9 @@ type OrgUnitId = Id
 
 // PageId Examples: 10000000-0000-4000-8000-000000000001
 type PageId = Id
+
+// PollId Examples: 10000000-0000-4000-8000-000000000001
+type PollId = Id
 
 // PriceItemId Examples: 10000000-0000-4000-8000-000000000001
 type PriceItemId = Id
@@ -2316,6 +2415,18 @@ type RoleId = Id
 
 // RuleId Examples: 10000000-0000-4000-8000-000000000001
 type RuleId = Id
+
+// ServicePortalSlug defines model for servicePortalSlug.
+type ServicePortalSlug = string
+
+// ServicePortalToken defines model for servicePortalToken.
+type ServicePortalToken = string
+
+// ServiceRatingId Examples: 10000000-0000-4000-8000-000000000001
+type ServiceRatingId = Id
+
+// ServiceRequestId Examples: 10000000-0000-4000-8000-000000000001
+type ServiceRequestId = Id
 
 // SpaServiceId Examples: 10000000-0000-4000-8000-000000000001
 type SpaServiceId = Id

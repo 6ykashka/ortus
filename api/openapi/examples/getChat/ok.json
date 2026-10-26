@@ -1,0 +1,71 @@
+{
+  "id": "fa0478cf-91c7-5227-a915-a2ec3d508cc0",
+  "kind": "area",
+  "title": "Водители · Север Логистик",
+  "orgUnitId": "6de355d2-b019-5bb6-b66a-ddae6a13fb65",
+  "status": "active",
+  "sensitivity": "normal",
+  "record": null,
+  "topics": [],
+  "policy": {
+    "textYears": 3,
+    "filesDays": 365,
+    "voiceDays": 90,
+    "receipts": "ticks",
+    "receiptsDays": 30,
+    "deletedDays": 30,
+    "edit": "48h",
+    "maxFileMb": 100,
+    "quotaMb": null,
+    "temp": "off",
+    "forward": "internal",
+    "pdnMask": true,
+    "onFull": "block"
+  },
+  "overrides": {},
+  "history": "all",
+  "my": {
+    "role": "owner",
+    "unread": 0,
+    "ackWaitCount": 0,
+    "lastReadSeq": 5,
+    "can": {
+      "write": true,
+      "files": true,
+      "polls": true,
+      "moderate": true,
+      "pin": true,
+      "announce": true,
+      "receipts": false,
+      "pdn": false,
+      "ephemeral": false,
+      "viewOnce": false,
+      "members": true,
+      "settings": true,
+      "saveToRecord": false,
+      "task": true
+    },
+    "chain": [
+      {
+        "title": "Состав чата",
+        "detail": "Группа «Диспетчеры Север» · Владелец чата · по имени",
+        "ok": true
+      },
+      {
+        "title": "Модуль «Чаты» в ролях",
+        "detail": "Есть право «Чаты · Просматривать»",
+        "ok": true
+      },
+      {
+        "title": "Функция",
+        "detail": "Ограничений нет",
+        "ok": true
+      }
+    ]
+  },
+  "memberCount": 4,
+  "usedBytes": 880803840,
+  "revision": 1,
+  "pinned": null,
+  "hold": null
+}

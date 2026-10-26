@@ -1,0 +1,79 @@
+{
+  "id": "23853b21-b516-5e2b-8b3e-65fb87295176",
+  "kind": "text",
+  "title": "Регламент приёмки смены",
+  "folderId": "41aefb3e-e2fe-5fa7-90b2-607dba7aad3b",
+  "folderName": "Север Логистик",
+  "path": ["Север Логистик"],
+  "owner": {
+    "memberId": "ac41932c-dbd9-53b1-a84b-42cbc1d6629a",
+    "displayName": "Марина Котова"
+  },
+  "status": "draft",
+  "sensitivity": "normal",
+  "version": 1,
+  "mode": "inherit",
+  "shares": [],
+  "links": [],
+  "authors": [
+    {
+      "memberId": "ac41932c-dbd9-53b1-a84b-42cbc1d6629a",
+      "displayName": "Марина Котова"
+    }
+  ],
+  "fields": [],
+  "tempGrants": [],
+  "jobs": [],
+  "protectedRanges": [],
+  "commentCount": 1,
+  "openCommentCount": 1,
+  "createdAt": "2026-09-29T07:30:00Z",
+  "updatedAt": "2026-10-01T07:30:00Z",
+  "my": {
+    "level": "manage",
+    "can": {
+      "view": true,
+      "comment": true,
+      "suggest": true,
+      "edit": true,
+      "share": true,
+      "shareExternal": false,
+      "export": true,
+      "convert": true,
+      "sign": false,
+      "route": true,
+      "manage": true,
+      "locked": false
+    },
+    "maxGrant": "edit",
+    "wait": [],
+    "chain": [
+      {
+        "kind": "ok",
+        "title": "Папка «Север Логистик»",
+        "detail": "Как у родителя"
+      },
+      {
+        "kind": "ok",
+        "title": "Владелец документа",
+        "detail": "Управляет доступом"
+      },
+      {
+        "kind": "ok",
+        "title": "Итог",
+        "detail": "Уровень: manage"
+      }
+    ]
+  },
+  "revision": 3,
+  "file": {
+    "id": "4de3f162-ed8e-547b-ade9-8c9c89564976",
+    "fileName": "Регламент приёмки смены.docx",
+    "contentType": "application/vnd.openxmlformats-officedocument",
+    "sizeBytes": 48000,
+    "sha256": "bda6b9f6bda6b9f6bda6b9f6bda6b9f6bda6b9f6bda6b9f6bda6b9f6bda6b9f6",
+    "status": "ready",
+    "createdAt": "2026-10-01T07:30:00Z"
+  },
+  "size": 48000
+}

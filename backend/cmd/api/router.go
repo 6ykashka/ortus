@@ -12,8 +12,10 @@ import (
 	brandingapi "github.com/ortus/ortus-crm/backend/internal/api/branding"
 	calendarapi "github.com/ortus/ortus-crm/backend/internal/api/calendar"
 	cashapi "github.com/ortus/ortus-crm/backend/internal/api/cash"
+	chatsapi "github.com/ortus/ortus-crm/backend/internal/api/chats"
 	contextapi "github.com/ortus/ortus-crm/backend/internal/api/context"
 	dataapi "github.com/ortus/ortus-crm/backend/internal/api/data"
+	docsapi "github.com/ortus/ortus-crm/backend/internal/api/docs"
 	earningsapi "github.com/ortus/ortus-crm/backend/internal/api/earnings"
 	filesapi "github.com/ortus/ortus-crm/backend/internal/api/files"
 	fleetapi "github.com/ortus/ortus-crm/backend/internal/api/fleet"
@@ -23,8 +25,11 @@ import (
 	knowledgeapi "github.com/ortus/ortus-crm/backend/internal/api/knowledge"
 	modulesapi "github.com/ortus/ortus-crm/backend/internal/api/modules"
 	platformapi "github.com/ortus/ortus-crm/backend/internal/api/platform"
+	publicdocsapi "github.com/ortus/ortus-crm/backend/internal/api/publicdocs"
 	publicformsapi "github.com/ortus/ortus-crm/backend/internal/api/publicforms"
+	publicserviceapi "github.com/ortus/ortus-crm/backend/internal/api/publicservice"
 	repairsapi "github.com/ortus/ortus-crm/backend/internal/api/repairs"
+	serviceapi "github.com/ortus/ortus-crm/backend/internal/api/service"
 	spaapi "github.com/ortus/ortus-crm/backend/internal/api/spa"
 	tasksapi "github.com/ortus/ortus-crm/backend/internal/api/tasks"
 )
@@ -32,27 +37,32 @@ import (
 // Servers holds the strict-server implementation of every OpenAPI tag. A nil field mounts the tag
 // as 501 not_implemented (behind the same gateway).
 type Servers struct {
-	Context     contextapi.StrictServerInterface
-	Auth        authapi.StrictServerInterface
-	Home        homeapi.StrictServerInterface
-	Platform    platformapi.StrictServerInterface
-	Billing     billingapi.StrictServerInterface
-	Branding    brandingapi.StrictServerInterface
-	Access      accessapi.StrictServerInterface
-	Modules     modulesapi.StrictServerInterface
-	Data        dataapi.StrictServerInterface
-	Files       filesapi.StrictServerInterface
-	Tasks       tasksapi.StrictServerInterface
-	Knowledge   knowledgeapi.StrictServerInterface
-	Calendar    calendarapi.StrictServerInterface
-	Forms       formsapi.StrictServerInterface
-	PublicForms publicformsapi.StrictServerInterface
-	Fleet       fleetapi.StrictServerInterface
-	Earnings    earningsapi.StrictServerInterface
-	Spa         spaapi.StrictServerInterface
-	Inventory   inventoryapi.StrictServerInterface
-	Cash        cashapi.StrictServerInterface
-	Repairs     repairsapi.StrictServerInterface
+	Context       contextapi.StrictServerInterface
+	Auth          authapi.StrictServerInterface
+	Home          homeapi.StrictServerInterface
+	Platform      platformapi.StrictServerInterface
+	Billing       billingapi.StrictServerInterface
+	Branding      brandingapi.StrictServerInterface
+	Access        accessapi.StrictServerInterface
+	Modules       modulesapi.StrictServerInterface
+	Data          dataapi.StrictServerInterface
+	Files         filesapi.StrictServerInterface
+	Tasks         tasksapi.StrictServerInterface
+	Knowledge     knowledgeapi.StrictServerInterface
+	Calendar      calendarapi.StrictServerInterface
+	Forms         formsapi.StrictServerInterface
+	PublicForms   publicformsapi.StrictServerInterface
+	Fleet         fleetapi.StrictServerInterface
+	Earnings      earningsapi.StrictServerInterface
+	Spa           spaapi.StrictServerInterface
+	Inventory     inventoryapi.StrictServerInterface
+	Cash          cashapi.StrictServerInterface
+	Repairs       repairsapi.StrictServerInterface
+	Chats         chatsapi.StrictServerInterface
+	Docs          docsapi.StrictServerInterface
+	PublicDocs    publicdocsapi.StrictServerInterface
+	Service       serviceapi.StrictServerInterface
+	PublicService publicserviceapi.StrictServerInterface
 }
 
 // mountTags registers every operation of the contract on r.
@@ -224,5 +234,45 @@ func mountTags(r chi.Router, s Servers, o mountOptions) {
 		}), repairsapi.ChiServerOptions{BaseRouter: r, ErrorHandlerFunc: o.requestError})
 	} else {
 		o.notImplemented(r, "Repairs")
+	}
+	if s.Chats != nil {
+		chatsapi.HandlerWithOptions(chatsapi.NewStrictHandlerWithOptions(s.Chats, nil, chatsapi.StrictHTTPServerOptions{
+			RequestErrorHandlerFunc:  o.requestError,
+			ResponseErrorHandlerFunc: o.responseError,
+		}), chatsapi.ChiServerOptions{BaseRouter: r, ErrorHandlerFunc: o.requestError})
+	} else {
+		o.notImplemented(r, "Chats")
+	}
+	if s.Docs != nil {
+		docsapi.HandlerWithOptions(docsapi.NewStrictHandlerWithOptions(s.Docs, nil, docsapi.StrictHTTPServerOptions{
+			RequestErrorHandlerFunc:  o.requestError,
+			ResponseErrorHandlerFunc: o.responseError,
+		}), docsapi.ChiServerOptions{BaseRouter: r, ErrorHandlerFunc: o.requestError})
+	} else {
+		o.notImplemented(r, "Docs")
+	}
+	if s.PublicDocs != nil {
+		publicdocsapi.HandlerWithOptions(publicdocsapi.NewStrictHandlerWithOptions(s.PublicDocs, nil, publicdocsapi.StrictHTTPServerOptions{
+			RequestErrorHandlerFunc:  o.requestError,
+			ResponseErrorHandlerFunc: o.responseError,
+		}), publicdocsapi.ChiServerOptions{BaseRouter: r, ErrorHandlerFunc: o.requestError})
+	} else {
+		o.notImplemented(r, "PublicDocs")
+	}
+	if s.Service != nil {
+		serviceapi.HandlerWithOptions(serviceapi.NewStrictHandlerWithOptions(s.Service, nil, serviceapi.StrictHTTPServerOptions{
+			RequestErrorHandlerFunc:  o.requestError,
+			ResponseErrorHandlerFunc: o.responseError,
+		}), serviceapi.ChiServerOptions{BaseRouter: r, ErrorHandlerFunc: o.requestError})
+	} else {
+		o.notImplemented(r, "Service")
+	}
+	if s.PublicService != nil {
+		publicserviceapi.HandlerWithOptions(publicserviceapi.NewStrictHandlerWithOptions(s.PublicService, nil, publicserviceapi.StrictHTTPServerOptions{
+			RequestErrorHandlerFunc:  o.requestError,
+			ResponseErrorHandlerFunc: o.responseError,
+		}), publicserviceapi.ChiServerOptions{BaseRouter: r, ErrorHandlerFunc: o.requestError})
+	} else {
+		o.notImplemented(r, "PublicService")
 	}
 }

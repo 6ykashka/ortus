@@ -1,0 +1,8 @@
+{
+  "type": "https://docs.ortus.example/errors/chat_member_out_of_scope",
+  "title": "Добавляют сотрудника или роль вне области создателя; роль в чате выше своей",
+  "status": 422,
+  "code": "chat_member_out_of_scope",
+  "detail": "Кирилл Громов не входит в вашу область",
+  "requestId": "01J9Z4QK8M6T2V5X7Y9A1B3C5D"
+}

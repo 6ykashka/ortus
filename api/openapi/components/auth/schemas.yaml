@@ -142,9 +142,18 @@ RealtimeServerMessage:
         - notifications.changed
         - session.ended
         - ping
-      description: context.changed — re-read getMyContext (roles, assignments, modules, tenant state or policy version changed; S1-15 revocation within 5 s); notifications.changed — re-read getMyNotificationSummary and the open inbox list (S1-26); session.ended — the session is over, the socket closes next; ping — answer with pong.
+        - chat.changed
+      description: context.changed — re-read getMyContext (roles, assignments, modules, tenant state or policy version changed; S1-15 revocation within 5 s); notifications.changed — re-read getMyNotificationSummary and the open inbox list (S1-26); session.ended — the session is over, the socket closes next; ping — answer with pong; chat.changed (0.12.0-stage7, W7.00, ADR-0015 clarification, Q-W4.00-chats-7) — something changed in the chat chatId, read listChatMessages with afterSeq = the last seq the client has (and listChats for the counters); the hint carries no text, name or file, and is sent only to the connections of the members of the chat (the audience is checked when the hint is queued and again when it is delivered); there is no typing or presence frame and no subscribe frame in this version.
     tenantId:
       $ref: ../common/schemas.yaml#/Id
+    chatId:
+      $ref: ../common/schemas.yaml#/Id
+      description: Only for chat.changed — the chat that changed.
+    lastSeq:
+      type: integer
+      minimum: 0
+      format: int64
+      description: Only for chat.changed — seq of the newest message of the chat; the client skips the re-read when it already has it.
     permissionVersion:
       type: string
       maxLength: 100

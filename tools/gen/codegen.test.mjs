@@ -14,6 +14,7 @@ import {
 import { abs, BUNDLE_PATH, ERRORS_PATH, PERMISSIONS_PATH } from './lib/paths.mjs';
 import { readYaml } from './lib/yaml-io.mjs';
 import { W5_CODES } from './lib/stage5.mjs';
+import { STAGE7_CODES } from './lib/stage7.mjs';
 
 const bundle = readYaml(BUNDLE_PATH);
 const errors = readYaml(ERRORS_PATH);
@@ -30,7 +31,11 @@ describe('теги → пакеты Go (план v2 §3.5: backend/internal/api/
     );
     assert.ok(tags.length >= 18);
     assert.equal(tags[0].tag, 'Context');
-    assert.equal(tags.at(-1).tag, 'Repairs');
+    // W7.00: пять тегов этапа 7 — в конце списка после Repairs.
+    assert.deepEqual(
+      tags.slice(-6).map((t) => t.tag),
+      ['Repairs', 'Chats', 'Docs', 'PublicDocs', 'Service', 'PublicService'],
+    );
   });
 
   it('пакет — имя тега в нижнем регистре, псевдоним импорта <pkg>api', () => {
@@ -113,8 +118,8 @@ describe('каталог операций (шлюз cmd/api)', () => {
 describe('реестры для Go: коды ошибок и права', () => {
   it('52 кода errors.yaml со статусом и title, без client_states', () => {
     const p = problemsOf(errors);
-    // 52 кода W0.07 и offer_closed W2.71 (0.6.3-stage2, D-35 комплекта).
-    assert.equal(p.length, 53 + W5_CODES.length); // + 5 кодов кассы W5.00
+    // 52 кода W0.07, offer_closed W2.71 (0.6.3-stage2, D-35 комплекта), 5 кодов кассы W5.00 и 8 кодов W7.00 (0.12.0-stage7).
+    assert.equal(p.length, 53 + W5_CODES.length + STAGE7_CODES.length);
     assert.deepEqual(
       p.find((x) => x.code === 'session_expired'),
       {

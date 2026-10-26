@@ -1,0 +1,8 @@
+{
+  "type": "https://docs.ortus.example/errors/separation_of_duties_conflict",
+  "title": "Финансовое право + функция driver",
+  "status": 409,
+  "code": "separation_of_duties_conflict",
+  "detail": "Автор документа не согласует и не утверждает его",
+  "requestId": "01J9Z4QK8M6T2V5X7Y9A1B3C5D"
+}

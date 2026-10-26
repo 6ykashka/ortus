@@ -1,0 +1,129 @@
+{
+  "items": [
+    {
+      "id": "2a4aab0e-4457-5986-8ebd-eb5e87046687",
+      "seq": 1,
+      "createdAt": "2026-09-30T15:10:00Z",
+      "authorDisplayName": "Марина Котова",
+      "kind": "text",
+      "text": "Завтра с 8:00 мойка на Складе № 1 закрыта — заправляемся и моемся у МКАД.",
+      "masked": false,
+      "attachments": [],
+      "tasks": [],
+      "authorMemberId": "ac41932c-dbd9-53b1-a84b-42cbc1d6629a",
+      "reads": {
+        "readCount": 2,
+        "totalCount": 3
+      }
+    },
+    {
+      "id": "7355d141-9e45-511b-b27b-83aa4f38a398",
+      "seq": 2,
+      "createdAt": "2026-09-30T15:24:00Z",
+      "authorDisplayName": "Илья Васильев",
+      "kind": "text",
+      "text": "Понял. Документы на А 412 МР 77 забрал.",
+      "masked": false,
+      "attachments": [],
+      "tasks": [],
+      "authorMemberId": "a560b4fe-78b7-585e-b960-f0ab3622570c",
+      "reads": {
+        "readCount": 2,
+        "totalCount": 3
+      }
+    },
+    {
+      "id": "e77e220d-b9ec-5901-aa41-538173e39ef0",
+      "seq": 3,
+      "createdAt": "2026-10-01T05:05:00Z",
+      "authorDisplayName": "Марина Котова",
+      "kind": "text",
+      "text": "Регламент приёмки смены обновлён: фото одометра при сдаче обязательно. Подтвердите до 03.10.",
+      "masked": false,
+      "attachments": [],
+      "tasks": [],
+      "authorMemberId": "ac41932c-dbd9-53b1-a84b-42cbc1d6629a",
+      "important": {
+        "dueDate": "2026-10-03",
+        "ackCount": 0,
+        "totalCount": 3,
+        "mine": {
+          "required": false,
+          "done": false
+        }
+      },
+      "reads": {
+        "readCount": 1,
+        "totalCount": 3
+      }
+    },
+    {
+      "id": "335514ad-6167-51ab-845e-c7faf5fd0978",
+      "seq": 4,
+      "createdAt": "2026-10-01T05:30:00Z",
+      "authorDisplayName": "Марина Котова",
+      "kind": "poll",
+      "text": "",
+      "masked": false,
+      "attachments": [],
+      "tasks": [],
+      "authorMemberId": "ac41932c-dbd9-53b1-a84b-42cbc1d6629a",
+      "poll": {
+        "id": "3a815df4-99f0-5448-be73-8e61fe23b7e2",
+        "question": "Кто может выйти в субботу 04.10 на рейс Р-215?",
+        "options": [
+          {
+            "id": "d5bea579-f2fb-504c-81bd-4f52eed4cda9",
+            "text": "Могу утром",
+            "votes": 0,
+            "mine": false
+          },
+          {
+            "id": "b1ef5287-49bf-57c2-8ec2-8863634ea50f",
+            "text": "Могу после 14:00",
+            "votes": 0,
+            "mine": false
+          },
+          {
+            "id": "e01d8c24-78a9-5f38-9552-5f38f558f0c8",
+            "text": "Не могу",
+            "votes": 0,
+            "mine": false
+          }
+        ],
+        "anonymous": false,
+        "multiple": false,
+        "closesAt": "2026-10-03T15:00:00Z",
+        "closed": false,
+        "totalVoters": 0,
+        "myVotes": []
+      },
+      "reads": {
+        "readCount": 1,
+        "totalCount": 3
+      }
+    },
+    {
+      "id": "f790f33b-012e-5c3f-9f8d-a683c287ba97",
+      "seq": 5,
+      "createdAt": "2026-10-01T06:12:00Z",
+      "authorDisplayName": "Система",
+      "kind": "system",
+      "text": "",
+      "masked": false,
+      "attachments": [],
+      "tasks": [],
+      "system": {
+        "module": "Логистика",
+        "icon": "report",
+        "tone": "danger",
+        "title": "Критический дефект · М 608 КТ 77",
+        "text": "Выезд заблокирован до решения менеджера",
+        "label": "Открыть автопарк",
+        "nav": "fleet"
+      }
+    }
+  ],
+  "hasMore": false,
+  "lastSeq": 5
+}

@@ -14,6 +14,17 @@ const prototype = readJson(abs('tools/gen/fixtures/prototype-error-codes-14.10.j
 const PD34 = ['seats_exhausted', 'request_pending', 'tier_below_usage', 'not_implemented'];
 /** Коды контрактных дельт этапов (стюард, только добавление в конец): W2.71 — выбор машины закрыт (D-35 комплекта). */
 const LATER = ['offer_closed', ...W5_CODES]; // W5.00 — 5 кодов кассы (cash.md §2.4)
+/** W7.00 (0.12.0-stage7): «Чаты», «Документы», «Обращения» — коды в конец реестра (chats.md §2.2, documents.md §2.2, service.md §2.4). */
+const STAGE7 = [
+  'chat_ephemeral_disabled',
+  'document_locked',
+  'range_protected',
+  'formula_invalid',
+  'job_in_progress',
+  'file_password_protected',
+  'sign_code_invalid',
+  'service_assignee_out_of_scope',
+];
 const RETRYABLE = [
   'reservation_overlap',
   'resources_unavailable',
@@ -23,14 +34,15 @@ const RETRYABLE = [
 ];
 
 describe('реестр api/errors.yaml', () => {
-  it('реестр содержит 53 кода: 48 из 12 (14.10), 4 из PD-34 и коды дельт этапов', () => {
+  it('реестр содержит 61 код: 48 из 12 (14.10), 4 из PD-34 и коды дельт этапов', () => {
     assert.equal(rows.flatMap((r) => r.codes).length, 48);
-    assert.equal(Object.keys(codes).length, 52 + LATER.length);
+    assert.equal(Object.keys(codes).length, 52 + LATER.length + STAGE7.length);
     for (const c of PD34) assert.equal(codes[c]?.source, 'PD-34', c);
     for (const c of LATER.filter((x) => !W5_CODES.includes(x))) {
       assert.match(codes[c]?.source ?? '', /D-35 комплекта/, c);
     }
     for (const c of W5_CODES) assert.match(codes[c]?.source ?? '', /W5\.00/, c);
+    for (const c of STAGE7) assert.match(codes[c]?.source ?? '', /W7\.00/, c);
   });
 
   it('каждая строка реестра 12 представлена дословно с тем же статусом', () => {
@@ -47,7 +59,12 @@ describe('реестр api/errors.yaml', () => {
   });
 
   it('порядок кодов — порядок строк 12, затем PD-34, затем коды дельт этапов (только добавление)', () => {
-    assert.deepEqual(Object.keys(codes), [...rows.flatMap((r) => r.codes), ...PD34, ...LATER]);
+    assert.deepEqual(Object.keys(codes), [
+      ...rows.flatMap((r) => r.codes),
+      ...PD34,
+      ...LATER,
+      ...STAGE7,
+    ]);
   });
 
   it('retryable только у пяти кодов', () => {

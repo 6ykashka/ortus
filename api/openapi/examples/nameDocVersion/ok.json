@@ -1,0 +1,16 @@
+{
+  "version": 4,
+  "createdAt": "2026-09-30T21:30:00Z",
+  "authors": [
+    {
+      "memberId": "ac41932c-dbd9-53b1-a84b-42cbc1d6629a",
+      "displayName": "Марина Котова"
+    }
+  ],
+  "source": "edit",
+  "fileId": "e3ca86e1-d4bd-56e5-8d42-9681912b0824",
+  "sizeBytes": 48000,
+  "sha256": "e397a9a5e397a9a5e397a9a5e397a9a5e397a9a5e397a9a5e397a9a5e397a9a5",
+  "forcesave": true,
+  "name": "Утверждённая"
+}

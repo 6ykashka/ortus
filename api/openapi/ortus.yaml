@@ -29,11 +29,13 @@
 # услуги с техкартой, перенос и отмена визита.
 # 0.11.1-stage4 (W4.81, FollowUp выхода этапа 4): задачи на «Главной» — виды tasks.* «Требует решения» и сводка
 # задач getMyTaskSummary (карточка «Задачи», бейдж меню).
+# 0.12.0-stage7 (W7.00, контрактный PR этапа 7): «Чаты», «Документы», «Обращения» — теги Chats, Docs, PublicDocs,
+# Service, PublicService; подсказка chat.changed канала реального времени; callback сервера документов.
 openapi: 3.1.0
 jsonSchemaDialect: https://json-schema.org/draft/2020-12/schema
 info:
   title: ORTUS CRM Constructor — Design API
-  version: 0.12.0-stage6
+  version: 0.12.0-stage7
   summary: Reviewable starting contract for a tenant-isolated modular CRM on Go; not an implemented or exhaustive API.
   description: |-
     Design snapshot, 2026-10-01. A tenant is one business holding; regions/companies/branches are scoped organization units within it. Platform administration is a separate control plane and never implies business-data access.
@@ -98,6 +100,16 @@ tags:
     description: Internal non-fiscal cash ledger
   - name: Repairs
     description: Project work and non-login workers
+  - name: Chats
+    description: Chats of the organization with a roster from roles, messages, polls, storage policies and holds
+  - name: Docs
+    description: Documents, folders, versions, access, routes, jobs and the document server adapter
+  - name: PublicDocs
+    description: Capability-limited external document links and the service callback of the document server
+  - name: Service
+    description: Client requests with directions, queues, SLA timers, replies and low ratings
+  - name: PublicService
+    description: Capability-limited client portal of requests by a personal link
 paths:
   /api/v1/me/context:
     $ref: paths/context.yaml#/~1api~1v1~1me~1context
@@ -687,6 +699,196 @@ paths:
     $ref: paths/repairs.yaml#/~1api~1v1~1public~1client~1%7BclientToken%7D~1documents~1%7BdocumentId%7D~1sign
   /api/v1/me/task-summary:
     $ref: paths/home.yaml#/~1api~1v1~1me~1task-summary
+  /api/v1/tenants/{tenantId}/chats:
+    $ref: paths/chats.yaml#/~1api~1v1~1tenants~1%7BtenantId%7D~1chats
+  /api/v1/tenants/{tenantId}/chats/direct:
+    $ref: paths/chats.yaml#/~1api~1v1~1tenants~1%7BtenantId%7D~1chats~1direct
+  /api/v1/tenants/{tenantId}/chats/{chatId}:
+    $ref: paths/chats.yaml#/~1api~1v1~1tenants~1%7BtenantId%7D~1chats~1%7BchatId%7D
+  /api/v1/tenants/{tenantId}/chats/{chatId}/archive:
+    $ref: paths/chats.yaml#/~1api~1v1~1tenants~1%7BtenantId%7D~1chats~1%7BchatId%7D~1archive
+  /api/v1/tenants/{tenantId}/chats/{chatId}/messages:
+    $ref: paths/chats.yaml#/~1api~1v1~1tenants~1%7BtenantId%7D~1chats~1%7BchatId%7D~1messages
+  /api/v1/tenants/{tenantId}/chats/{chatId}/messages/{messageId}:
+    $ref: paths/chats.yaml#/~1api~1v1~1tenants~1%7BtenantId%7D~1chats~1%7BchatId%7D~1messages~1%7BmessageId%7D
+  /api/v1/tenants/{tenantId}/chats/{chatId}/messages/{messageId}/versions:
+    $ref: paths/chats.yaml#/~1api~1v1~1tenants~1%7BtenantId%7D~1chats~1%7BchatId%7D~1messages~1%7BmessageId%7D~1versions
+  /api/v1/tenants/{tenantId}/chats/{chatId}/read:
+    $ref: paths/chats.yaml#/~1api~1v1~1tenants~1%7BtenantId%7D~1chats~1%7BchatId%7D~1read
+  /api/v1/tenants/{tenantId}/chats/{chatId}/messages/{messageId}/ack:
+    $ref: paths/chats.yaml#/~1api~1v1~1tenants~1%7BtenantId%7D~1chats~1%7BchatId%7D~1messages~1%7BmessageId%7D~1ack
+  /api/v1/tenants/{tenantId}/chats/{chatId}/messages/{messageId}/receipts:
+    $ref: paths/chats.yaml#/~1api~1v1~1tenants~1%7BtenantId%7D~1chats~1%7BchatId%7D~1messages~1%7BmessageId%7D~1receipts
+  /api/v1/tenants/{tenantId}/chats/{chatId}/messages/{messageId}/pdn-reveal:
+    $ref: paths/chats.yaml#/~1api~1v1~1tenants~1%7BtenantId%7D~1chats~1%7BchatId%7D~1messages~1%7BmessageId%7D~1pdn-reveal
+  /api/v1/tenants/{tenantId}/chats/{chatId}/polls/{pollId}/vote:
+    $ref: paths/chats.yaml#/~1api~1v1~1tenants~1%7BtenantId%7D~1chats~1%7BchatId%7D~1polls~1%7BpollId%7D~1vote
+  /api/v1/tenants/{tenantId}/chats/{chatId}/polls/{pollId}/close:
+    $ref: paths/chats.yaml#/~1api~1v1~1tenants~1%7BtenantId%7D~1chats~1%7BchatId%7D~1polls~1%7BpollId%7D~1close
+  /api/v1/tenants/{tenantId}/chats/{chatId}/polls/{pollId}/remind:
+    $ref: paths/chats.yaml#/~1api~1v1~1tenants~1%7BtenantId%7D~1chats~1%7BchatId%7D~1polls~1%7BpollId%7D~1remind
+  /api/v1/tenants/{tenantId}/chats/{chatId}/pin:
+    $ref: paths/chats.yaml#/~1api~1v1~1tenants~1%7BtenantId%7D~1chats~1%7BchatId%7D~1pin
+  /api/v1/tenants/{tenantId}/chats/{chatId}/attachments/{attachmentId}/view-once:
+    $ref: paths/chats.yaml#/~1api~1v1~1tenants~1%7BtenantId%7D~1chats~1%7BchatId%7D~1attachments~1%7BattachmentId%7D~1view-once
+  /api/v1/tenants/{tenantId}/chats/{chatId}/messages/{messageId}/save-to-record:
+    $ref: paths/chats.yaml#/~1api~1v1~1tenants~1%7BtenantId%7D~1chats~1%7BchatId%7D~1messages~1%7BmessageId%7D~1save-to-record
+  /api/v1/tenants/{tenantId}/chats/{chatId}/messages/{messageId}/task:
+    $ref: paths/chats.yaml#/~1api~1v1~1tenants~1%7BtenantId%7D~1chats~1%7BchatId%7D~1messages~1%7BmessageId%7D~1task
+  /api/v1/tenants/{tenantId}/chats/{chatId}/members:
+    $ref: paths/chats.yaml#/~1api~1v1~1tenants~1%7BtenantId%7D~1chats~1%7BchatId%7D~1members
+  /api/v1/tenants/{tenantId}/chats/{chatId}/sources:
+    $ref: paths/chats.yaml#/~1api~1v1~1tenants~1%7BtenantId%7D~1chats~1%7BchatId%7D~1sources
+  /api/v1/tenants/{tenantId}/chats/{chatId}/access-explanation:
+    $ref: paths/chats.yaml#/~1api~1v1~1tenants~1%7BtenantId%7D~1chats~1%7BchatId%7D~1access-explanation
+  /api/v1/tenants/{tenantId}/chats/{chatId}/storage:
+    $ref: paths/chats.yaml#/~1api~1v1~1tenants~1%7BtenantId%7D~1chats~1%7BchatId%7D~1storage
+  /api/v1/tenants/{tenantId}/chats/{chatId}/cleanups:
+    $ref: paths/chats.yaml#/~1api~1v1~1tenants~1%7BtenantId%7D~1chats~1%7BchatId%7D~1cleanups
+  /api/v1/tenants/{tenantId}/chats/{chatId}/journal:
+    $ref: paths/chats.yaml#/~1api~1v1~1tenants~1%7BtenantId%7D~1chats~1%7BchatId%7D~1journal
+  /api/v1/tenants/{tenantId}/chats/{chatId}/exports:
+    $ref: paths/chats.yaml#/~1api~1v1~1tenants~1%7BtenantId%7D~1chats~1%7BchatId%7D~1exports
+  /api/v1/tenants/{tenantId}/chats/{chatId}/exports/{exportId}:
+    $ref: paths/chats.yaml#/~1api~1v1~1tenants~1%7BtenantId%7D~1chats~1%7BchatId%7D~1exports~1%7BexportId%7D
+  /api/v1/tenants/{tenantId}/chat-policies:
+    $ref: paths/chats.yaml#/~1api~1v1~1tenants~1%7BtenantId%7D~1chat-policies
+  /api/v1/tenants/{tenantId}/chat-policies/{kind}:
+    $ref: paths/chats.yaml#/~1api~1v1~1tenants~1%7BtenantId%7D~1chat-policies~1%7Bkind%7D
+  /api/v1/tenants/{tenantId}/chat-holds:
+    $ref: paths/chats.yaml#/~1api~1v1~1tenants~1%7BtenantId%7D~1chat-holds
+  /api/v1/tenants/{tenantId}/chat-holds/{holdId}:
+    $ref: paths/chats.yaml#/~1api~1v1~1tenants~1%7BtenantId%7D~1chat-holds~1%7BholdId%7D
+  /api/v1/tenants/{tenantId}/docs:
+    $ref: paths/docs.yaml#/~1api~1v1~1tenants~1%7BtenantId%7D~1docs
+  /api/v1/tenants/{tenantId}/docs/{documentId}:
+    $ref: paths/docs.yaml#/~1api~1v1~1tenants~1%7BtenantId%7D~1docs~1%7BdocumentId%7D
+  /api/v1/tenants/{tenantId}/docs/{documentId}/move:
+    $ref: paths/docs.yaml#/~1api~1v1~1tenants~1%7BtenantId%7D~1docs~1%7BdocumentId%7D~1move
+  /api/v1/tenants/{tenantId}/docs/{documentId}/archive:
+    $ref: paths/docs.yaml#/~1api~1v1~1tenants~1%7BtenantId%7D~1docs~1%7BdocumentId%7D~1archive
+  /api/v1/tenants/{tenantId}/docs/{documentId}/restore:
+    $ref: paths/docs.yaml#/~1api~1v1~1tenants~1%7BtenantId%7D~1docs~1%7BdocumentId%7D~1restore
+  /api/v1/tenants/{tenantId}/docs/{documentId}/open:
+    $ref: paths/docs.yaml#/~1api~1v1~1tenants~1%7BtenantId%7D~1docs~1%7BdocumentId%7D~1open
+  /api/v1/tenants/{tenantId}/docs/{documentId}/versions:
+    $ref: paths/docs.yaml#/~1api~1v1~1tenants~1%7BtenantId%7D~1docs~1%7BdocumentId%7D~1versions
+  /api/v1/tenants/{tenantId}/docs/{documentId}/versions/{version}/name:
+    $ref: paths/docs.yaml#/~1api~1v1~1tenants~1%7BtenantId%7D~1docs~1%7BdocumentId%7D~1versions~1%7Bversion%7D~1name
+  /api/v1/tenants/{tenantId}/docs/{documentId}/versions/{version}/restore:
+    $ref: paths/docs.yaml#/~1api~1v1~1tenants~1%7BtenantId%7D~1docs~1%7BdocumentId%7D~1versions~1%7Bversion%7D~1restore
+  /api/v1/tenants/{tenantId}/docs/{documentId}/comments:
+    $ref: paths/docs.yaml#/~1api~1v1~1tenants~1%7BtenantId%7D~1docs~1%7BdocumentId%7D~1comments
+  /api/v1/tenants/{tenantId}/docs/{documentId}/comments/{commentId}/replies:
+    $ref: paths/docs.yaml#/~1api~1v1~1tenants~1%7BtenantId%7D~1docs~1%7BdocumentId%7D~1comments~1%7BcommentId%7D~1replies
+  /api/v1/tenants/{tenantId}/docs/{documentId}/comments/{commentId}/resolve:
+    $ref: paths/docs.yaml#/~1api~1v1~1tenants~1%7BtenantId%7D~1docs~1%7BdocumentId%7D~1comments~1%7BcommentId%7D~1resolve
+  /api/v1/tenants/{tenantId}/docs/{documentId}/comments/{commentId}/skip-grant:
+    $ref: paths/docs.yaml#/~1api~1v1~1tenants~1%7BtenantId%7D~1docs~1%7BdocumentId%7D~1comments~1%7BcommentId%7D~1skip-grant
+  /api/v1/tenants/{tenantId}/docs/{documentId}/shares:
+    $ref: paths/docs.yaml#/~1api~1v1~1tenants~1%7BtenantId%7D~1docs~1%7BdocumentId%7D~1shares
+  /api/v1/tenants/{tenantId}/docs/{documentId}/grants:
+    $ref: paths/docs.yaml#/~1api~1v1~1tenants~1%7BtenantId%7D~1docs~1%7BdocumentId%7D~1grants
+  /api/v1/tenants/{tenantId}/docs/{documentId}/links:
+    $ref: paths/docs.yaml#/~1api~1v1~1tenants~1%7BtenantId%7D~1docs~1%7BdocumentId%7D~1links
+  /api/v1/tenants/{tenantId}/docs/{documentId}/links/{linkId}:
+    $ref: paths/docs.yaml#/~1api~1v1~1tenants~1%7BtenantId%7D~1docs~1%7BdocumentId%7D~1links~1%7BlinkId%7D
+  /api/v1/tenants/{tenantId}/docs/{documentId}/dataset-sync:
+    $ref: paths/docs.yaml#/~1api~1v1~1tenants~1%7BtenantId%7D~1docs~1%7BdocumentId%7D~1dataset-sync
+  /api/v1/tenants/{tenantId}/doc-jobs:
+    $ref: paths/docs.yaml#/~1api~1v1~1tenants~1%7BtenantId%7D~1doc-jobs
+  /api/v1/tenants/{tenantId}/doc-jobs/{jobId}:
+    $ref: paths/docs.yaml#/~1api~1v1~1tenants~1%7BtenantId%7D~1doc-jobs~1%7BjobId%7D
+  /api/v1/tenants/{tenantId}/doc-jobs/{jobId}/retry:
+    $ref: paths/docs.yaml#/~1api~1v1~1tenants~1%7BtenantId%7D~1doc-jobs~1%7BjobId%7D~1retry
+  /api/v1/tenants/{tenantId}/docs/{documentId}/ocr/words/{wordId}:
+    $ref: paths/docs.yaml#/~1api~1v1~1tenants~1%7BtenantId%7D~1docs~1%7BdocumentId%7D~1ocr~1words~1%7BwordId%7D
+  /api/v1/tenants/{tenantId}/docs/{documentId}/route:
+    $ref: paths/docs.yaml#/~1api~1v1~1tenants~1%7BtenantId%7D~1docs~1%7BdocumentId%7D~1route
+  /api/v1/tenants/{tenantId}/docs/{documentId}/route/decisions:
+    $ref: paths/docs.yaml#/~1api~1v1~1tenants~1%7BtenantId%7D~1docs~1%7BdocumentId%7D~1route~1decisions
+  /api/v1/tenants/{tenantId}/docs/{documentId}/route/sign/code:
+    $ref: paths/docs.yaml#/~1api~1v1~1tenants~1%7BtenantId%7D~1docs~1%7BdocumentId%7D~1route~1sign~1code
+  /api/v1/tenants/{tenantId}/docs/{documentId}/route/sign:
+    $ref: paths/docs.yaml#/~1api~1v1~1tenants~1%7BtenantId%7D~1docs~1%7BdocumentId%7D~1route~1sign
+  /api/v1/tenants/{tenantId}/docs/{documentId}/ack:
+    $ref: paths/docs.yaml#/~1api~1v1~1tenants~1%7BtenantId%7D~1docs~1%7BdocumentId%7D~1ack
+  /api/v1/tenants/{tenantId}/docs/{documentId}/route/ack/close:
+    $ref: paths/docs.yaml#/~1api~1v1~1tenants~1%7BtenantId%7D~1docs~1%7BdocumentId%7D~1route~1ack~1close
+  /api/v1/tenants/{tenantId}/docs/{documentId}/route/resume:
+    $ref: paths/docs.yaml#/~1api~1v1~1tenants~1%7BtenantId%7D~1docs~1%7BdocumentId%7D~1route~1resume
+  /api/v1/tenants/{tenantId}/docs/{documentId}/route/cancel:
+    $ref: paths/docs.yaml#/~1api~1v1~1tenants~1%7BtenantId%7D~1docs~1%7BdocumentId%7D~1route~1cancel
+  /api/v1/tenants/{tenantId}/docs/{documentId}/activity:
+    $ref: paths/docs.yaml#/~1api~1v1~1tenants~1%7BtenantId%7D~1docs~1%7BdocumentId%7D~1activity
+  /api/v1/tenants/{tenantId}/doc-folders:
+    $ref: paths/docs.yaml#/~1api~1v1~1tenants~1%7BtenantId%7D~1doc-folders
+  /api/v1/tenants/{tenantId}/doc-folders/{folderId}:
+    $ref: paths/docs.yaml#/~1api~1v1~1tenants~1%7BtenantId%7D~1doc-folders~1%7BfolderId%7D
+  /api/v1/tenants/{tenantId}/doc-folders/{folderId}/shares:
+    $ref: paths/docs.yaml#/~1api~1v1~1tenants~1%7BtenantId%7D~1doc-folders~1%7BfolderId%7D~1shares
+  /api/v1/tenants/{tenantId}/doc-templates:
+    $ref: paths/docs.yaml#/~1api~1v1~1tenants~1%7BtenantId%7D~1doc-templates
+  /api/v1/tenants/{tenantId}/doc-route-templates:
+    $ref: paths/docs.yaml#/~1api~1v1~1tenants~1%7BtenantId%7D~1doc-route-templates
+  /api/v1/public/doc-links/{token}/open:
+    $ref: paths/publicdocs.yaml#/~1api~1v1~1public~1doc-links~1%7Btoken%7D~1open
+  /api/v1/internal/docs/callback:
+    $ref: paths/publicdocs.yaml#/~1api~1v1~1internal~1docs~1callback
+  /api/v1/tenants/{tenantId}/service/directions:
+    $ref: paths/service.yaml#/~1api~1v1~1tenants~1%7BtenantId%7D~1service~1directions
+  /api/v1/tenants/{tenantId}/service/requests:
+    $ref: paths/service.yaml#/~1api~1v1~1tenants~1%7BtenantId%7D~1service~1requests
+  /api/v1/tenants/{tenantId}/service/queues:
+    $ref: paths/service.yaml#/~1api~1v1~1tenants~1%7BtenantId%7D~1service~1queues
+  /api/v1/tenants/{tenantId}/service/requests/{requestId}:
+    $ref: paths/service.yaml#/~1api~1v1~1tenants~1%7BtenantId%7D~1service~1requests~1%7BrequestId%7D
+  /api/v1/tenants/{tenantId}/service/requests/{requestId}/messages:
+    $ref: paths/service.yaml#/~1api~1v1~1tenants~1%7BtenantId%7D~1service~1requests~1%7BrequestId%7D~1messages
+  /api/v1/tenants/{tenantId}/service/requests/{requestId}/compensation:
+    $ref: paths/service.yaml#/~1api~1v1~1tenants~1%7BtenantId%7D~1service~1requests~1%7BrequestId%7D~1compensation
+  /api/v1/tenants/{tenantId}/service/requests/{requestId}/transitions:
+    $ref: paths/service.yaml#/~1api~1v1~1tenants~1%7BtenantId%7D~1service~1requests~1%7BrequestId%7D~1transitions
+  /api/v1/tenants/{tenantId}/service/requests/{requestId}/move:
+    $ref: paths/service.yaml#/~1api~1v1~1tenants~1%7BtenantId%7D~1service~1requests~1%7BrequestId%7D~1move
+  /api/v1/tenants/{tenantId}/service/requests/{requestId}/client-phone/reveal:
+    $ref: paths/service.yaml#/~1api~1v1~1tenants~1%7BtenantId%7D~1service~1requests~1%7BrequestId%7D~1client-phone~1reveal
+  /api/v1/tenants/{tenantId}/service/requests/{requestId}/conclusion:
+    $ref: paths/service.yaml#/~1api~1v1~1tenants~1%7BtenantId%7D~1service~1requests~1%7BrequestId%7D~1conclusion
+  /api/v1/tenants/{tenantId}/service/requests/{requestId}/tasks:
+    $ref: paths/service.yaml#/~1api~1v1~1tenants~1%7BtenantId%7D~1service~1requests~1%7BrequestId%7D~1tasks
+  /api/v1/tenants/{tenantId}/service/ratings:
+    $ref: paths/service.yaml#/~1api~1v1~1tenants~1%7BtenantId%7D~1service~1ratings
+  /api/v1/tenants/{tenantId}/service/ratings/{ratingId}/decision:
+    $ref: paths/service.yaml#/~1api~1v1~1tenants~1%7BtenantId%7D~1service~1ratings~1%7BratingId%7D~1decision
+  /api/v1/tenants/{tenantId}/service/directions/{directionId}/templates:
+    $ref: paths/service.yaml#/~1api~1v1~1tenants~1%7BtenantId%7D~1service~1directions~1%7BdirectionId%7D~1templates
+  /api/v1/tenants/{tenantId}/service/directions/{directionId}:
+    $ref: paths/service.yaml#/~1api~1v1~1tenants~1%7BtenantId%7D~1service~1directions~1%7BdirectionId%7D
+  /api/v1/tenants/{tenantId}/service/directions/{directionId}/draft:
+    $ref: paths/service.yaml#/~1api~1v1~1tenants~1%7BtenantId%7D~1service~1directions~1%7BdirectionId%7D~1draft
+  /api/v1/tenants/{tenantId}/service/directions/{directionId}/publish:
+    $ref: paths/service.yaml#/~1api~1v1~1tenants~1%7BtenantId%7D~1service~1directions~1%7BdirectionId%7D~1publish
+  /api/v1/tenants/{tenantId}/service/report:
+    $ref: paths/service.yaml#/~1api~1v1~1tenants~1%7BtenantId%7D~1service~1report
+  /api/v1/public/service/{slug}:
+    $ref: paths/publicservice.yaml#/~1api~1v1~1public~1service~1%7Bslug%7D
+  /api/v1/public/service/{slug}/requests:
+    $ref: paths/publicservice.yaml#/~1api~1v1~1public~1service~1%7Bslug%7D~1requests
+  /api/v1/public/service/requests/{token}:
+    $ref: paths/publicservice.yaml#/~1api~1v1~1public~1service~1requests~1%7Btoken%7D
+  /api/v1/public/service/requests/{token}/messages:
+    $ref: paths/publicservice.yaml#/~1api~1v1~1public~1service~1requests~1%7Btoken%7D~1messages
+  /api/v1/public/service/requests/{token}/csat:
+    $ref: paths/publicservice.yaml#/~1api~1v1~1public~1service~1requests~1%7Btoken%7D~1csat
+  /api/v1/public/service/requests/{token}/reopen:
+    $ref: paths/publicservice.yaml#/~1api~1v1~1public~1service~1requests~1%7Btoken%7D~1reopen
+  /api/v1/public/service/requests/{token}/opt-out:
+    $ref: paths/publicservice.yaml#/~1api~1v1~1public~1service~1requests~1%7Btoken%7D~1opt-out
+  /api/v1/public/service/requests/{token}/uploads:
+    $ref: paths/publicservice.yaml#/~1api~1v1~1public~1service~1requests~1%7Btoken%7D~1uploads
+  /api/v1/public/service/requests/{token}/uploads/{uploadId}/complete:
+    $ref: paths/publicservice.yaml#/~1api~1v1~1public~1service~1requests~1%7Btoken%7D~1uploads~1%7BuploadId%7D~1complete
 x-contract-status: design-proposal-not-implemented
 x-authorization-order:
   - authenticate

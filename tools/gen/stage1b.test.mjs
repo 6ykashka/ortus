@@ -368,6 +368,7 @@ describe('контракт этапа 1, второй PR (W1.00, 0.4.0-stage1)',
       'notifications.changed',
       'session.ended',
       'ping',
+      'chat.changed', // W7.00 (0.12.0-stage7, ADR-0015, ADR-0016): подсказка чата без данных
     ]);
     for (const f of ['title', 'body', 'payload', 'data']) {
       assert.ok(!(f in server.properties), `${f}: данные идут только обычными операциями`);

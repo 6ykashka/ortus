@@ -1,0 +1,46 @@
+{
+  "items": [
+    {
+      "key": "open",
+      "label": "Открытые",
+      "count": 7
+    },
+    {
+      "key": "noreply",
+      "label": "Без ответа",
+      "count": 4
+    },
+    {
+      "key": "mine",
+      "label": "Мои",
+      "count": 2
+    },
+    {
+      "key": "risk",
+      "label": "Срок под угрозой",
+      "count": 0
+    },
+    {
+      "key": "late",
+      "label": "Срок нарушен",
+      "count": 1,
+      "tone": "danger"
+    },
+    {
+      "key": "wait",
+      "label": "Ждут клиента",
+      "count": 1
+    },
+    {
+      "key": "low",
+      "label": "Низкие оценки",
+      "count": 2
+    },
+    {
+      "key": "done",
+      "label": "Решено и закрыто",
+      "count": 1
+    }
+  ],
+  "noReplyCount": 4
+}

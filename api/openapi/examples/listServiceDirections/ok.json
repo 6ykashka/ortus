@@ -1,0 +1,94 @@
+{
+  "items": [
+    {
+      "id": "9cc9b25b-8024-58f7-8db6-ba7379006810",
+      "key": "ГРЗ",
+      "name": "Грузоперевозки",
+      "color": "#2B5479",
+      "moduleKey": "fleet",
+      "areaLabel": "Москва, Самара",
+      "orgUnitId": null,
+      "projectId": "8cef71fc-ffc0-5fdb-9bee-c28ae33356e9",
+      "calendar": {
+        "days": [1, 2, 3, 4, 5, 6, 7],
+        "from": "08:00",
+        "to": "20:00",
+        "timeZone": "Europe/Moscow",
+        "label": "ежедневно 8:00–20:00"
+      },
+      "lead": {
+        "memberId": "b8df06ec-317e-5f46-b54c-e76603e41b5b",
+        "displayName": "Дарья Зимина"
+      },
+      "next": 58,
+      "team": [
+        {
+          "memberId": "b8df06ec-317e-5f46-b54c-e76603e41b5b",
+          "displayName": "Дарья Зимина"
+        },
+        {
+          "memberId": "ac41932c-dbd9-53b1-a84b-42cbc1d6629a",
+          "displayName": "Марина Котова"
+        },
+        {
+          "memberId": "ea845988-640e-5506-9303-1cbfc3dede0d",
+          "displayName": "Вера Котельникова"
+        }
+      ],
+      "canContacts": false,
+      "version": 1
+    }
+  ],
+  "types": [
+    {
+      "id": "d-grz:cargo",
+      "directionId": "9cc9b25b-8024-58f7-8db6-ba7379006810",
+      "kind": "cargo",
+      "name": "Повреждение или недостача груза",
+      "firstMinutes": 240,
+      "resolveMinutes": null,
+      "legalDays": 30,
+      "priority": "normal"
+    },
+    {
+      "id": "d-grz:complaint",
+      "directionId": "9cc9b25b-8024-58f7-8db6-ba7379006810",
+      "kind": "complaint",
+      "name": "Опоздание или жалоба",
+      "firstMinutes": 120,
+      "resolveMinutes": 1440,
+      "legalDays": null,
+      "priority": "high"
+    },
+    {
+      "id": "d-grz:question",
+      "directionId": "9cc9b25b-8024-58f7-8db6-ba7379006810",
+      "kind": "question",
+      "name": "Вопрос по доставке",
+      "firstMinutes": 120,
+      "resolveMinutes": 2160,
+      "legalDays": null,
+      "priority": "normal"
+    },
+    {
+      "id": "d-grz:idea",
+      "directionId": "9cc9b25b-8024-58f7-8db6-ba7379006810",
+      "kind": "idea",
+      "name": "Предложение",
+      "firstMinutes": 1440,
+      "resolveMinutes": null,
+      "legalDays": null,
+      "priority": "normal"
+    },
+    {
+      "id": "d-grz:thanks",
+      "directionId": "9cc9b25b-8024-58f7-8db6-ba7379006810",
+      "kind": "thanks",
+      "name": "Спасибо водителю",
+      "firstMinutes": null,
+      "resolveMinutes": null,
+      "legalDays": null,
+      "priority": "normal"
+    }
+  ]
+}

@@ -12,6 +12,7 @@ import { operationsById } from './lib/inventory.mjs';
 import { abs, ERRORS_PATH, SCREENS_PATH, SOURCE_0_1 } from './lib/paths.mjs';
 import { flattenActions, loadCatalog } from './lib/permissions.mjs';
 import { checkAgainstSource, loadDeltas } from './lib/source-diff.mjs';
+import { STAGE7_CODES } from './lib/stage7.mjs';
 import { readYaml } from './lib/yaml-io.mjs';
 
 const T = '/api/v1/tenants/{tenantId}';
@@ -691,7 +692,7 @@ describe('контракт 0.12.0-stage5 (W5.00): операции, права, 
       assert.match(reg[code].source, /W5\.00/, code);
       assert.ok(reg[code].ui, code);
     }
-    assert.equal(Object.keys(reg).length, 58);
+    assert.equal(Object.keys(reg).length, 58 + STAGE7_CODES.length); // + 8 кодов W7.00
     for (const code of ['over_limit', 'period_locked']) assert.ok(!(code in reg), code);
     for (const r of [
       'insufficient_stock',

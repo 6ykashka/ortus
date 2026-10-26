@@ -1,0 +1,1701 @@
+# Контракт Ортус · компоненты тегов service и publicservice (W7.00). Пишет только стюард контракта (план v2 §3.5).
+ServiceMemberRef:
+  type: object
+  additionalProperties: false
+  properties:
+    memberId:
+      $ref: ../common/schemas.yaml#/Id
+    displayName:
+      type: string
+      maxLength: 200
+  required:
+    - memberId
+    - displayName
+  description: Member shown by name; the assignee is an id, the name is for display (the prototype stored the name — service.md §5.2).
+ServiceWorkCalendar:
+  type: object
+  additionalProperties: false
+  properties:
+    days:
+      type: array
+      items:
+        type: integer
+        minimum: 1
+        maximum: 7
+        format: int64
+        description: ISO weekdays 1–7 that work.
+      maxItems: 7
+    from:
+      type: string
+      pattern: ^([01]\d|2[0-3]):[0-5]\d$
+    to:
+      type: string
+      pattern: ^([01]\d|2[0-3]):[0-5]\d$
+    timeZone:
+      type: string
+      maxLength: 64
+      description: IANA zone of the direction; one zone, Europe/Moscow by default (Q-W4.00-service-10).
+    label:
+      type: string
+      maxLength: 100
+  required:
+    - days
+    - from
+    - to
+    - timeZone
+  description: "Working time of a direction: SLA goals are counted in working minutes. Holidays — the production calendar of the organization."
+ServiceDirection:
+  type: object
+  additionalProperties: false
+  properties:
+    id:
+      $ref: ../common/schemas.yaml#/Id
+    key:
+      type: string
+      minLength: 2
+      maxLength: 6
+      description: "Key of the number: «МАС» → МАС-42 (2–6 letters)."
+    name:
+      type: string
+      maxLength: 120
+    color:
+      type: string
+      maxLength: 9
+    moduleKey:
+      type: string
+      maxLength: 50
+    areaLabel:
+      type: string
+      maxLength: 200
+    orgUnitId:
+      oneOf:
+        - $ref: ../common/schemas.yaml#/Id
+        - type: "null"
+    projectId:
+      $ref: ../common/schemas.yaml#/Id
+      description: Service project of «Задачи»; the role of the direction is an assignment with the scope project (D-27 комплекта, Q-W4.00-service-1).
+    calendar:
+      $ref: ./schemas.yaml#/ServiceWorkCalendar
+    lead:
+      oneOf:
+        - $ref: ./schemas.yaml#/ServiceMemberRef
+        - type: "null"
+    next:
+      type: integer
+      minimum: 1
+      format: int64
+      description: Next serial number.
+    team:
+      type: array
+      items:
+        $ref: ./schemas.yaml#/ServiceMemberRef
+      maxItems: 200
+      description: Active members who see the direction and have «Отвечать».
+    canContacts:
+      type: boolean
+      description: The member may reveal client phones (service.clients.contacts).
+    version:
+      type: integer
+      minimum: 1
+      format: int64
+  required:
+    - id
+    - key
+    - name
+    - color
+    - moduleKey
+    - areaLabel
+    - orgUnitId
+    - projectId
+    - calendar
+    - lead
+    - next
+    - team
+    - canContacts
+    - version
+  description: Direction of requests (МАС, КОС, ОТД, …) with the working calendar and the team.
+ServiceRequestType:
+  type: object
+  additionalProperties: false
+  properties:
+    id:
+      type: string
+      maxLength: 100
+    directionId:
+      $ref: ../common/schemas.yaml#/Id
+    kind:
+      type: string
+      enum:
+        - complaint
+        - claim
+        - question
+        - idea
+        - thanks
+        - warranty
+        - cargo
+    name:
+      type: string
+      maxLength: 200
+    firstMinutes:
+      type:
+        - integer
+        - "null"
+      minimum: 1
+      format: int64
+    resolveMinutes:
+      type:
+        - integer
+        - "null"
+      minimum: 1
+      format: int64
+    legalDays:
+      type:
+        - integer
+        - "null"
+      minimum: 1
+      format: int64
+      description: "Legal term in calendar days (claim: 10 and 30 — constants of the type, the lawyer confirms, Q-W4.00-service-19)."
+    priority:
+      type: string
+      enum:
+        - low
+        - normal
+        - high
+  required:
+    - id
+    - directionId
+    - kind
+    - name
+    - firstMinutes
+    - resolveMinutes
+    - legalDays
+    - priority
+  description: Type of a request of a direction with the SLA goals in working minutes of the direction.
+ServiceDirectionList:
+  type: object
+  additionalProperties: false
+  properties:
+    items:
+      type: array
+      items:
+        $ref: ./schemas.yaml#/ServiceDirection
+      maxItems: 100
+    types:
+      type: array
+      items:
+        $ref: ./schemas.yaml#/ServiceRequestType
+      maxItems: 500
+    notConfigured:
+      type: boolean
+      description: "true — the organization has no directions: the screen shows «Обращения не настроены»."
+  required:
+    - items
+    - types
+  description: Directions visible to the member with their types.
+ServiceClient:
+  type: object
+  additionalProperties: false
+  properties:
+    name:
+      type: string
+      maxLength: 200
+    company:
+      type:
+        - string
+        - "null"
+      maxLength: 200
+    phoneMasked:
+      type: string
+      maxLength: 30
+      description: The last two digits are shown; the full number is returned only by revealServiceClientPhone or to the author of a call request.
+    phone:
+      type: string
+      maxLength: 30
+      description: "Full number: only when shown to the member earlier (shown[])."
+    since:
+      type: string
+      maxLength: 100
+  required:
+    - name
+    - phoneMasked
+    - since
+  description: Client of a request; a phone number in any answer is a mask (FB-05).
+ServiceLink:
+  type: object
+  additionalProperties: false
+  properties:
+    kind:
+      type: string
+      enum:
+        - visit
+        - object
+        - trip
+        - act
+        - manual
+    object:
+      oneOf:
+        - $ref: ../common/schemas.yaml#/ObjectRef
+        - type: "null"
+    label:
+      type: string
+      maxLength: 200
+    lines:
+      type: array
+      items:
+        type: string
+        maxLength: 300
+      maxItems: 10
+  required:
+    - label
+    - lines
+  description: Work the request is about (service.md §5.1 п. 17).
+ServiceSlaTarget:
+  type: object
+  additionalProperties: false
+  properties:
+    goalMinutes:
+      type:
+        - integer
+        - "null"
+      minimum: 0
+      format: int64
+    dueAt:
+      $ref: ../common/schemas.yaml#/Instant
+    stoppedAt:
+      oneOf:
+        - $ref: ../common/schemas.yaml#/Instant
+        - type: "null"
+    state:
+      type: string
+      enum:
+        - done
+        - pause
+        - late
+        - risk
+        - norm
+        - legal
+        - none
+    label:
+      type: string
+      maxLength: 60
+    text:
+      type: string
+      maxLength: 100
+    until:
+      type: string
+      maxLength: 100
+    overMinutes:
+      type: integer
+      minimum: 0
+      format: int64
+    leftMinutes:
+      type: integer
+      minimum: 0
+      format: int64
+  required:
+    - goalMinutes
+    - dueAt
+    - stoppedAt
+    - state
+    - label
+    - text
+    - until
+  description: "State of one goal: done, pause, late, risk (left ≤ max(20 min, 25 % of the goal)), norm, legal."
+ServiceSla:
+  type: object
+  additionalProperties: false
+  properties:
+    first:
+      oneOf:
+        - $ref: ./schemas.yaml#/ServiceSlaTarget
+        - type: "null"
+    resolve:
+      oneOf:
+        - $ref: ./schemas.yaml#/ServiceSlaTarget
+        - type: "null"
+    legal:
+      oneOf:
+        - $ref: ./schemas.yaml#/ServiceSlaTarget
+        - type: "null"
+  description: Timers of a request (first reply, resolution, legal term); the pause does not act on the legal term.
+ServiceSlaHead:
+  type: object
+  additionalProperties: false
+  properties:
+    key:
+      type: string
+      enum:
+        - first
+        - resolve
+        - legal
+    state:
+      type: string
+      enum:
+        - done
+        - pause
+        - late
+        - risk
+        - norm
+        - legal
+        - none
+    label:
+      type: string
+      maxLength: 60
+    text:
+      type: string
+      maxLength: 100
+    until:
+      type: string
+      maxLength: 100
+    rank:
+      type: number
+      description: "Queue order: less — more urgent (may be negative or fractional)."
+  required:
+    - state
+    - label
+    - text
+    - until
+    - rank
+  description: Main term of a request for the queue and the chip.
+ServiceFile:
+  type: object
+  additionalProperties: false
+  properties:
+    id:
+      $ref: ../common/schemas.yaml#/Id
+    fileName:
+      type: string
+      maxLength: 255
+    sizeBytes:
+      type: integer
+      minimum: 0
+      format: int64
+    status:
+      type: string
+      enum:
+        - pending_upload
+        - quarantined
+        - ready
+        - rejected
+  required:
+    - id
+    - fileName
+    - sizeBytes
+    - status
+  description: File of a message; shown to the client only after the check (FILE-02).
+ServiceMessage:
+  type: object
+  additionalProperties: false
+  properties:
+    id:
+      $ref: ../common/schemas.yaml#/Id
+    kind:
+      type: string
+      enum:
+        - client
+        - public
+        - note
+        - system
+        - rating
+      description: client — from the client; public — reply to the client; note — internal; system; rating.
+    at:
+      $ref: ../common/schemas.yaml#/Instant
+    text:
+      type: string
+      maxLength: 4000
+    author:
+      oneOf:
+        - $ref: ./schemas.yaml#/ServiceMemberRef
+        - type: "null"
+    files:
+      type: array
+      items:
+        $ref: ./schemas.yaml#/ServiceFile
+      maxItems: 10
+    channel:
+      type:
+        - string
+        - "null"
+      enum:
+        - sms
+        - bot
+        - cabinet
+        - widget
+        - phone
+        - qr
+        - null
+    auto:
+      type: boolean
+    delivery:
+      type: string
+      enum:
+        - queued
+        - sent
+        - failed
+      description: queued — saved, the channel delivery is W7.37 (Q-W4.00-service-8); sent; failed.
+    score:
+      type: integer
+      minimum: 1
+      maximum: 5
+      format: int64
+    reasons:
+      type: array
+      items:
+        type: string
+        maxLength: 100
+      maxItems: 10
+    contact:
+      type: boolean
+  required:
+    - id
+    - kind
+    - at
+    - text
+    - files
+  description: "Message of a request (service.messages — not task comments: it has a channel and a delivery)."
+ServiceTaskRef:
+  type: object
+  additionalProperties: false
+  properties:
+    id:
+      $ref: ../common/schemas.yaml#/Id
+    key:
+      type: string
+      maxLength: 50
+    title:
+      type: string
+      maxLength: 200
+    status:
+      type: string
+      maxLength: 100
+  required:
+    - id
+    - key
+    - title
+    - status
+  description: Task of the request in «Задачи» (TaskPort, W4.10/W4.11).
+ServiceRequestSummary:
+  type: object
+  additionalProperties: false
+  properties:
+    id:
+      $ref: ../common/schemas.yaml#/Id
+    key:
+      type: string
+      maxLength: 50
+    directionId:
+      $ref: ../common/schemas.yaml#/Id
+    kind:
+      type: string
+      enum:
+        - complaint
+        - claim
+        - question
+        - idea
+        - thanks
+        - warranty
+        - cargo
+    title:
+      type: string
+      maxLength: 300
+    status:
+      type: string
+      enum:
+        - new
+        - work
+        - wait
+        - resolved
+        - closed
+    priority:
+      type: string
+      enum:
+        - low
+        - normal
+        - high
+    assignee:
+      oneOf:
+        - $ref: ./schemas.yaml#/ServiceMemberRef
+        - type: "null"
+    createdAt:
+      $ref: ../common/schemas.yaml#/Instant
+    channel:
+      type: string
+      enum:
+        - sms
+        - bot
+        - cabinet
+        - widget
+        - phone
+        - qr
+    client:
+      $ref: ./schemas.yaml#/ServiceClient
+    link:
+      oneOf:
+        - $ref: ./schemas.yaml#/ServiceLink
+        - type: "null"
+    sla:
+      $ref: ./schemas.yaml#/ServiceSla
+    head:
+      $ref: ./schemas.yaml#/ServiceSlaHead
+    labels:
+      type: array
+      items:
+        type: string
+        maxLength: 60
+      maxItems: 20
+    taskCount:
+      type: integer
+      minimum: 0
+      format: int64
+    oldKeys:
+      type: array
+      items:
+        type: string
+        maxLength: 50
+      maxItems: 20
+    fromRating:
+      type: integer
+      minimum: 1
+      maximum: 5
+      format: int64
+    outcome:
+      type:
+        - string
+        - "null"
+      maxLength: 100
+    resolvedAt:
+      oneOf:
+        - $ref: ../common/schemas.yaml#/Instant
+        - type: "null"
+  required:
+    - id
+    - key
+    - directionId
+    - kind
+    - title
+    - status
+    - priority
+    - assignee
+    - createdAt
+    - channel
+    - client
+    - link
+    - sla
+    - head
+    - labels
+    - taskCount
+  description: Row of the queue. A request about the member (about = me) is not listed for them.
+ServiceQueueCount:
+  type: object
+  additionalProperties: false
+  properties:
+    key:
+      type: string
+      enum:
+        - open
+        - noreply
+        - mine
+        - risk
+        - late
+        - wait
+        - low
+        - done
+    label:
+      type: string
+      maxLength: 60
+    count:
+      type: integer
+      minimum: 0
+      format: int64
+    tone:
+      type: string
+      enum:
+        - warn
+        - danger
+  required:
+    - key
+    - label
+    - count
+  description: Counter of a queue.
+ServiceQueueCounts:
+  type: object
+  additionalProperties: false
+  properties:
+    items:
+      type: array
+      items:
+        $ref: ./schemas.yaml#/ServiceQueueCount
+      maxItems: 8
+    noReplyCount:
+      type: integer
+      minimum: 0
+      format: int64
+      description: Counter «без первого ответа» of the menu badge.
+  required:
+    - items
+  description: Counters of the navigation (Открытые, Без ответа, Мои, Срок под угрозой, Срок нарушен, Ждут клиента, Низкие оценки, Решено и закрыто).
+ServiceRequestList:
+  type: object
+  additionalProperties: false
+  properties:
+    items:
+      type: array
+      items:
+        $ref: ./schemas.yaml#/ServiceRequestSummary
+      maxItems: 200
+    nextCursor:
+      type:
+        - string
+        - "null"
+      maxLength: 2048
+    counts:
+      $ref: ./schemas.yaml#/ServiceQueueCounts
+  required:
+    - items
+    - nextCursor
+    - counts
+  description: Requests of the queue ordered by the main term (rank), then by age.
+ServiceRequest:
+  type: object
+  additionalProperties: false
+  properties:
+    id:
+      $ref: ../common/schemas.yaml#/Id
+    key:
+      type: string
+      maxLength: 50
+    directionId:
+      $ref: ../common/schemas.yaml#/Id
+    kind:
+      type: string
+      enum:
+        - complaint
+        - claim
+        - question
+        - idea
+        - thanks
+        - warranty
+        - cargo
+    title:
+      type: string
+      maxLength: 300
+    status:
+      type: string
+      enum:
+        - new
+        - work
+        - wait
+        - resolved
+        - closed
+    priority:
+      type: string
+      enum:
+        - low
+        - normal
+        - high
+    assignee:
+      oneOf:
+        - $ref: ./schemas.yaml#/ServiceMemberRef
+        - type: "null"
+    createdAt:
+      $ref: ../common/schemas.yaml#/Instant
+    channel:
+      type: string
+      enum:
+        - sms
+        - bot
+        - cabinet
+        - widget
+        - phone
+        - qr
+    client:
+      $ref: ./schemas.yaml#/ServiceClient
+    link:
+      oneOf:
+        - $ref: ./schemas.yaml#/ServiceLink
+        - type: "null"
+    sla:
+      $ref: ./schemas.yaml#/ServiceSla
+    head:
+      $ref: ./schemas.yaml#/ServiceSlaHead
+    labels:
+      type: array
+      items:
+        type: string
+        maxLength: 60
+      maxItems: 20
+    taskCount:
+      type: integer
+      minimum: 0
+      format: int64
+    oldKeys:
+      type: array
+      items:
+        type: string
+        maxLength: 50
+      maxItems: 20
+    fromRating:
+      type: integer
+      minimum: 1
+      maximum: 5
+      format: int64
+    outcome:
+      type:
+        - string
+        - "null"
+      maxLength: 100
+    resolvedAt:
+      oneOf:
+        - $ref: ../common/schemas.yaml#/Instant
+        - type: "null"
+    messages:
+      type: array
+      items:
+        $ref: ./schemas.yaml#/ServiceMessage
+      maxItems: 500
+    tasks:
+      type: array
+      items:
+        $ref: ./schemas.yaml#/ServiceTaskRef
+      maxItems: 50
+    compensation:
+      type:
+        - string
+        - "null"
+      maxLength: 300
+    shared:
+      type:
+        - object
+        - "null"
+      additionalProperties: false
+      properties:
+        text:
+          type: string
+          maxLength: 2000
+        at:
+          $ref: ../common/schemas.yaml#/Instant
+        by:
+          $ref: ./schemas.yaml#/ServiceMemberRef
+      required:
+        - text
+        - at
+        - by
+    aboutMember:
+      oneOf:
+        - $ref: ./schemas.yaml#/ServiceMemberRef
+        - type: "null"
+      description: "Only for the lead of the direction and the owner: the employee the complaint is about (service.md §5.1 п. 6, Q-W4.00-service-12)."
+    allowedStatuses:
+      type: array
+      items:
+        type: string
+        enum:
+          - new
+          - work
+          - wait
+          - resolved
+          - closed
+      maxItems: 5
+      description: Statuses reachable by SVC_FLOW for the member.
+    revision:
+      type: integer
+      minimum: 1
+      format: int64
+  required:
+    - id
+    - key
+    - directionId
+    - kind
+    - title
+    - status
+    - priority
+    - assignee
+    - createdAt
+    - channel
+    - client
+    - link
+    - sla
+    - head
+    - labels
+    - taskCount
+    - messages
+    - tasks
+    - allowedStatuses
+    - revision
+  description: Request with the feed, tasks and timers (getServiceRequest). ETag — revision. The request is a task of the service project (task.kind = request) plus service.request_details.
+ServiceRequestCreate:
+  type: object
+  additionalProperties: false
+  properties:
+    directionId:
+      $ref: ../common/schemas.yaml#/Id
+    typeId:
+      type: string
+      maxLength: 100
+    clientName:
+      type: string
+      minLength: 2
+      maxLength: 200
+    company:
+      type: string
+      maxLength: 200
+    phone:
+      type: string
+      minLength: 10
+      maxLength: 30
+      description: At least 10 digits; the server joins the client by the phone (Q-W4.00-service-7).
+    title:
+      type: string
+      maxLength: 300
+    text:
+      type: string
+      minLength: 1
+      maxLength: 4000
+      description: «Опишите, что случилось».
+    link:
+      $ref: ./schemas.yaml#/ServiceLinkInput
+  required:
+    - directionId
+    - typeId
+    - clientName
+    - phone
+    - text
+  description: "Request by a call (svcCreate): channel phone, status work, the assignee is the author, the priority by the type."
+ServiceLinkInput:
+  type: object
+  additionalProperties: false
+  properties:
+    object:
+      $ref: ../common/schemas.yaml#/ObjectRef
+    label:
+      type: string
+      maxLength: 200
+  description: Work picked from the works of the client, or a free text.
+ServiceMessageCreate:
+  type: object
+  additionalProperties: false
+  properties:
+    kind:
+      type: string
+      enum:
+        - public
+        - note
+      description: public needs «Отвечать» (stops the timer first, new → work, assignee = author); note needs «Видеть» (Q-W4.00-service-5).
+    text:
+      type: string
+      minLength: 1
+      maxLength: 4000
+    fileIds:
+      type: array
+      items:
+        $ref: ../common/schemas.yaml#/Id
+      maxItems: 10
+  required:
+    - kind
+    - text
+  description: "Reply to the client or an internal note (svcReply): «Напишите текст ответа / заметки» — 422."
+ServiceCompensationSet:
+  type: object
+  additionalProperties: false
+  properties:
+    kind:
+      type: string
+      enum:
+        - discount20
+        - discount10
+        - repeat_visit
+        - refund
+    text:
+      type: string
+      maxLength: 300
+  required:
+    - kind
+  description: "Compensation (service.compensation.manage, sensitive): the discount is saved on the client card; «Возврат денег — через кассу» is a proposal of a cash operation with the basis {key} (cash.proposals.post, W5.31); without the cash — a record only (Q-W4.00-service-6)."
+ServiceTransition:
+  type: object
+  additionalProperties: false
+  properties:
+    to:
+      type: string
+      enum:
+        - new
+        - work
+        - wait
+        - resolved
+        - closed
+    outcome:
+      type: string
+      maxLength: 100
+      description: Required for resolved; for a complaint about an employee only «Подтвердилась» / «Не подтвердилась».
+  required:
+    - to
+  description: "Change of the status by SVC_FLOW (svcTransition): «Из статуса «…» в «…» перейти нельзя» — 409 invalid_transition."
+ServiceRequestPatch:
+  type: object
+  additionalProperties: false
+  properties:
+    assigneeId:
+      oneOf:
+        - $ref: ../common/schemas.yaml#/Id
+        - type: "null"
+      description: Only a member who sees the direction and has «Отвечать» (422 service_assignee_out_of_scope); null — unassign.
+    priority:
+      type: string
+      enum:
+        - low
+        - normal
+        - high
+  minProperties: 1
+  description: Assignee and priority (svcAssign, svcPriority).
+ServiceMove:
+  type: object
+  additionalProperties: false
+  properties:
+    directionId:
+      $ref: ../common/schemas.yaml#/Id
+  required:
+    - directionId
+  description: "Move to another direction (svcMove): a new number with a link from the old one (FB-09), the goals are recomputed from the creation time by the type of the new direction (Q-W4.00-service-11); no such kind — the type «Вопрос» with a system record."
+ServicePhoneReveal:
+  type: object
+  additionalProperties: false
+  properties:
+    phone:
+      type: string
+      maxLength: 30
+    shownAt:
+      $ref: ../common/schemas.yaml#/Instant
+  required:
+    - phone
+    - shownAt
+  description: "Full number; every reveal is audited and written to the feed («Телефон клиента показан: …»)."
+ServiceConclusion:
+  type: object
+  additionalProperties: false
+  properties:
+    text:
+      type: string
+      minLength: 1
+      maxLength: 2000
+  required:
+    - text
+  description: "Conclusion for the employee a complaint is about (svcShare): only after the resolution; the client contacts are not passed."
+ServiceTaskCreate:
+  type: object
+  additionalProperties: false
+  properties:
+    title:
+      type: string
+      minLength: 3
+      maxLength: 200
+    projectId:
+      $ref: ../common/schemas.yaml#/Id
+      description: Defaults to the project of the direction (Q-W4.00-service-13).
+  required:
+    - title
+  description: "Task of a request (svcAddTask): «Тема задачи — не короче 3 символов»."
+ServiceRating:
+  type: object
+  additionalProperties: false
+  properties:
+    id:
+      $ref: ../common/schemas.yaml#/Id
+    directionId:
+      $ref: ../common/schemas.yaml#/Id
+    clientName:
+      type: string
+      maxLength: 200
+    score:
+      type: integer
+      minimum: 1
+      maximum: 5
+      format: int64
+    reasons:
+      type: array
+      items:
+        type: string
+        maxLength: 100
+      maxItems: 10
+    comment:
+      type: string
+      maxLength: 1000
+    at:
+      $ref: ../common/schemas.yaml#/Instant
+    work:
+      type: string
+      maxLength: 300
+    status:
+      type: string
+      enum:
+        - open
+        - seen
+        - request
+    requestId:
+      oneOf:
+        - $ref: ../common/schemas.yaml#/Id
+        - type: "null"
+  required:
+    - id
+    - directionId
+    - clientName
+    - score
+    - reasons
+    - comment
+    - at
+    - work
+    - status
+  description: Low rating after a service (survey answer, D-25 комплекта, W4.21).
+ServiceRatingList:
+  type: object
+  additionalProperties: false
+  properties:
+    items:
+      type: array
+      items:
+        $ref: ./schemas.yaml#/ServiceRating
+      maxItems: 200
+    nextCursor:
+      type:
+        - string
+        - "null"
+      maxLength: 2048
+  required:
+    - items
+    - nextCursor
+  description: Low ratings of the visible directions.
+ServiceRatingDecision:
+  type: object
+  additionalProperties: false
+  properties:
+    action:
+      type: string
+      enum:
+        - seen
+        - complaint
+      description: seen — «Просмотрено» (needs «Отвечать»); complaint — «Открыть жалобу» (needs «Заводить»).
+  required:
+    - action
+  description: Decision on a low rating (svcRating).
+ServiceRatingDecisionResult:
+  type: object
+  additionalProperties: false
+  properties:
+    rating:
+      $ref: ./schemas.yaml#/ServiceRating
+    request:
+      oneOf:
+        - $ref: ./schemas.yaml#/ServiceRequestSummary
+        - type: "null"
+  required:
+    - rating
+  description: complaint creates a request in work, the author as the assignee, priority high for a score ≤ 2; emits service.request.created.v1.
+ServiceReplyTemplate:
+  type: object
+  additionalProperties: false
+  properties:
+    id:
+      type: string
+      maxLength: 100
+    name:
+      type: string
+      maxLength: 100
+    text:
+      type: string
+      maxLength: 2000
+  required:
+    - id
+    - name
+    - text
+  description: Template of a reply with the substitutions {имя}, {номер}, {срок}.
+ServiceReplyTemplateList:
+  type: object
+  additionalProperties: false
+  properties:
+    items:
+      type: array
+      items:
+        $ref: ./schemas.yaml#/ServiceReplyTemplate
+      maxItems: 100
+  required:
+    - items
+  description: Templates of the direction.
+ServiceDirectionBody:
+  type: object
+  additionalProperties: false
+  properties:
+    name:
+      type: string
+      minLength: 2
+      maxLength: 120
+    color:
+      type: string
+      maxLength: 9
+    calendar:
+      $ref: ./schemas.yaml#/ServiceWorkCalendar
+    types:
+      type: array
+      items:
+        type: object
+        additionalProperties: false
+        properties:
+          id:
+            type: string
+            maxLength: 100
+          kind:
+            type: string
+            enum:
+              - complaint
+              - claim
+              - question
+              - idea
+              - thanks
+              - warranty
+              - cargo
+          name:
+            type: string
+            minLength: 2
+            maxLength: 200
+          firstMinutes:
+            type:
+              - integer
+              - "null"
+            minimum: 1
+            format: int64
+          resolveMinutes:
+            type:
+              - integer
+              - "null"
+            minimum: 1
+            format: int64
+          legalDays:
+            type:
+              - integer
+              - "null"
+            minimum: 1
+            format: int64
+          priority:
+            type: string
+            enum:
+              - low
+              - normal
+              - high
+        required:
+          - id
+          - kind
+          - name
+          - priority
+      maxItems: 100
+    templates:
+      type: array
+      items:
+        type: object
+        additionalProperties: false
+        properties:
+          name:
+            type: string
+            maxLength: 100
+          text:
+            type: string
+            maxLength: 2000
+        required:
+          - name
+          - text
+      maxItems: 100
+  required:
+    - name
+    - color
+    - calendar
+    - types
+  description: "Body of a draft of a direction (1d, 2c): types, goals, calendar, reply templates. Open requests finish by their own version (docs/22 principle 8)."
+ServiceDirectionCreate:
+  type: object
+  additionalProperties: false
+  properties:
+    name:
+      type: string
+      minLength: 2
+      maxLength: 120
+    key:
+      type: string
+      minLength: 2
+      maxLength: 6
+    orgUnitId:
+      oneOf:
+        - $ref: ../common/schemas.yaml#/Id
+        - type: "null"
+    color:
+      type: string
+      maxLength: 9
+    calendar:
+      $ref: ./schemas.yaml#/ServiceWorkCalendar
+  required:
+    - name
+    - key
+  description: New direction; a service project of «Задачи» is created with it.
+ServiceDirectionDraft:
+  type: object
+  additionalProperties: false
+  properties:
+    directionId:
+      $ref: ../common/schemas.yaml#/Id
+    body:
+      $ref: ./schemas.yaml#/ServiceDirectionBody
+    revision:
+      type: integer
+      minimum: 1
+      format: int64
+    updatedAt:
+      $ref: ../common/schemas.yaml#/Instant
+  required:
+    - directionId
+    - body
+    - revision
+    - updatedAt
+  description: Draft of a direction.
+ServiceDirectionDraftSave:
+  type: object
+  additionalProperties: false
+  properties:
+    body:
+      $ref: ./schemas.yaml#/ServiceDirectionBody
+  required:
+    - body
+  description: Saving of a draft; revision — If-Match.
+ServiceDirectionConfig:
+  type: object
+  additionalProperties: false
+  properties:
+    direction:
+      $ref: ./schemas.yaml#/ServiceDirection
+    types:
+      type: array
+      items:
+        $ref: ./schemas.yaml#/ServiceRequestType
+      maxItems: 100
+    draft:
+      oneOf:
+        - $ref: ./schemas.yaml#/ServiceDirectionDraft
+        - type: "null"
+  required:
+    - direction
+    - types
+  description: Published version and the draft of a direction (service.directions.manage).
+ServiceReportRow:
+  type: object
+  additionalProperties: false
+  properties:
+    directionId:
+      $ref: ../common/schemas.yaml#/Id
+    requests:
+      type: integer
+      minimum: 0
+      format: int64
+    resolvedInTime:
+      type: integer
+      minimum: 0
+      format: int64
+    late:
+      type: integer
+      minimum: 0
+      format: int64
+    avgScore:
+      type:
+        - number
+        - "null"
+    ratings:
+      type: integer
+      minimum: 0
+      format: int64
+    fewAnswers:
+      type: boolean
+      description: "Fewer than 20 answers: «мало ответов», no comparison with the past period."
+  required:
+    - directionId
+    - requests
+    - resolvedInTime
+    - late
+    - ratings
+  description: Row of the report by a direction.
+ServiceReportStaff:
+  type: object
+  additionalProperties: false
+  properties:
+    member:
+      $ref: ./schemas.yaml#/ServiceMemberRef
+    ratings:
+      type: integer
+      minimum: 0
+      format: int64
+    avgScore:
+      type:
+        - number
+        - "null"
+    complaintsConfirmed:
+      type: integer
+      minimum: 0
+      format: int64
+    thanks:
+      type: integer
+      minimum: 0
+      format: int64
+  required:
+    - member
+    - ratings
+    - complaintsConfirmed
+    - thanks
+  description: Per employee; a complaint counts only with the outcome «Подтвердилась».
+ServiceReport:
+  type: object
+  additionalProperties: false
+  properties:
+    period:
+      type: object
+      additionalProperties: false
+      properties:
+        from:
+          type: string
+          format: date
+        to:
+          type: string
+          format: date
+      required:
+        - from
+        - to
+    rows:
+      type: array
+      items:
+        $ref: ./schemas.yaml#/ServiceReportRow
+      maxItems: 100
+    reasons:
+      type: array
+      items:
+        type: object
+        additionalProperties: false
+        properties:
+          reason:
+            type: string
+            maxLength: 100
+          count:
+            type: integer
+            minimum: 0
+            format: int64
+        required:
+          - reason
+          - count
+      maxItems: 50
+    weeks:
+      type: array
+      items:
+        type: object
+        additionalProperties: false
+        properties:
+          weekStart:
+            type: string
+            format: date
+          requests:
+            type: integer
+            minimum: 0
+            format: int64
+          late:
+            type: integer
+            minimum: 0
+            format: int64
+        required:
+          - weekStart
+          - requests
+          - late
+      maxItems: 60
+    staff:
+      type: array
+      items:
+        $ref: ./schemas.yaml#/ServiceReportStaff
+      maxItems: 500
+      description: Only with service.reports.staff.
+  required:
+    - period
+    - rows
+    - reasons
+    - weeks
+  description: "Report of the directions (1e): aggregates, reasons, weeks; staff separately."
+PublicServiceType:
+  type: object
+  additionalProperties: false
+  properties:
+    id:
+      type: string
+      maxLength: 100
+    name:
+      type: string
+      maxLength: 200
+    kind:
+      type: string
+      enum:
+        - complaint
+        - claim
+        - question
+        - idea
+        - thanks
+        - warranty
+        - cargo
+    hint:
+      type: string
+      maxLength: 300
+  required:
+    - id
+    - name
+    - kind
+  description: Type offered on the public page.
+PublicServicePage:
+  type: object
+  additionalProperties: false
+  properties:
+    slug:
+      type: string
+      maxLength: 60
+    directionName:
+      type: string
+      maxLength: 120
+    color:
+      type: string
+      maxLength: 9
+    brandName:
+      type: string
+      maxLength: 120
+    types:
+      type: array
+      items:
+        $ref: ./schemas.yaml#/PublicServiceType
+      maxItems: 100
+    workHours:
+      type: string
+      maxLength: 100
+    phoneHint:
+      type: string
+      maxLength: 100
+  required:
+    - slug
+    - directionName
+    - color
+    - brandName
+    - types
+    - workHours
+  description: "Public page of a direction (1a): no client data."
+PublicServiceSubmit:
+  type: object
+  additionalProperties: false
+  properties:
+    typeId:
+      type: string
+      maxLength: 100
+    text:
+      type: string
+      minLength: 1
+      maxLength: 4000
+    clientName:
+      type: string
+      maxLength: 200
+    phone:
+      type: string
+      maxLength: 30
+    workToken:
+      type: string
+      maxLength: 200
+      description: "Token of a work (visit, trip, act): the client and the work are known from it."
+    fileIds:
+      type: array
+      items:
+        $ref: ../common/schemas.yaml#/Id
+      maxItems: 5
+    consent:
+      type: boolean
+      description: Consent to the processing of the personal data (FB-05).
+    submissionNonce:
+      type: string
+      maxLength: 64
+  required:
+    - typeId
+    - text
+    - consent
+  description: Request from the client page. In the first version the entry is a personal link only (Q-W4.00-service-9).
+PublicServiceReceipt:
+  type: object
+  additionalProperties: false
+  properties:
+    key:
+      type: string
+      maxLength: 50
+    token:
+      type: string
+      maxLength: 200
+      description: Personal link token; shown once, only the digest is stored.
+    statusLabel:
+      type: string
+      maxLength: 60
+  required:
+    - key
+    - token
+    - statusLabel
+  description: Receipt of a public request.
+PublicServiceMessage:
+  type: object
+  additionalProperties: false
+  properties:
+    id:
+      $ref: ../common/schemas.yaml#/Id
+    at:
+      $ref: ../common/schemas.yaml#/Instant
+    text:
+      type: string
+      maxLength: 4000
+    fromClient:
+      type: boolean
+    files:
+      type: array
+      items:
+        $ref: ./schemas.yaml#/ServiceFile
+      maxItems: 10
+  required:
+    - id
+    - at
+    - text
+    - fromClient
+    - files
+  description: Public message of the client thread; notes and system records are never shown.
+PublicServiceRequest:
+  type: object
+  additionalProperties: false
+  properties:
+    key:
+      type: string
+      maxLength: 50
+    title:
+      type: string
+      maxLength: 300
+    status:
+      type: string
+      enum:
+        - new
+        - work
+        - wait
+        - resolved
+        - closed
+    statusLabel:
+      type: string
+      maxLength: 60
+      description: "Client labels: «Получили», «Отвечаем», «Ждём вашего ответа», «Решено», «Закрыто»."
+    dueText:
+      type:
+        - string
+        - "null"
+      maxLength: 100
+    messages:
+      type: array
+      items:
+        $ref: ./schemas.yaml#/PublicServiceMessage
+      maxItems: 200
+    canRate:
+      type: boolean
+    canReopen:
+      type: boolean
+    reopenUntil:
+      oneOf:
+        - $ref: ../common/schemas.yaml#/Instant
+        - type: "null"
+    rating:
+      type:
+        - integer
+        - "null"
+      minimum: 1
+      maximum: 5
+      format: int64
+  required:
+    - key
+    - title
+    - status
+    - statusLabel
+    - dueText
+    - messages
+    - canRate
+    - canReopen
+  description: "The request seen by the client by the personal link (1a): «Довольны ли решением?», «Вопрос не решён» within 5 days."
+PublicServiceMessageCreate:
+  type: object
+  additionalProperties: false
+  properties:
+    text:
+      type: string
+      minLength: 1
+      maxLength: 4000
+    fileIds:
+      type: array
+      items:
+        $ref: ../common/schemas.yaml#/Id
+      maxItems: 5
+  required:
+    - text
+  description: Message of the client; a reply of the client returns the request to work (Q-W4.00-service-3).
+PublicServiceCsat:
+  type: object
+  additionalProperties: false
+  properties:
+    score:
+      type: integer
+      minimum: 1
+      maximum: 5
+      format: int64
+    comment:
+      type: string
+      maxLength: 1000
+  required:
+    - score
+  description: Rating of the resolution (CSAT).
+PublicServiceReopen:
+  type: object
+  additionalProperties: false
+  properties:
+    text:
+      type: string
+      maxLength: 1000
+  description: "Reopen: «Вопрос не решён»; 409 invalid_transition after the window of 5 days."
+PublicServiceOptOut:
+  type: object
+  additionalProperties: false
+  properties:
+    optedOut:
+      type: boolean
+  required:
+    - optedOut
+  description: "Result of «СТОП»: no more surveys."
+PublicServiceUploadCreate:
+  type: object
+  additionalProperties: false
+  properties:
+    fileName:
+      type: string
+      maxLength: 255
+    contentType:
+      type: string
+      maxLength: 100
+    sizeBytes:
+      type: integer
+      minimum: 1
+      format: int64
+    sha256:
+      type: string
+      pattern: ^[a-f0-9]{64}$
+  required:
+    - fileName
+    - contentType
+    - sizeBytes
+    - sha256
+  description: Quarantined upload of a client file (FILE-02, like initiatePublicUpload).
+PublicServiceUploadComplete:
+  type: object
+  additionalProperties: false
+  properties:
+    sha256:
+      type: string
+      pattern: ^[a-f0-9]{64}$
+  required:
+    - sha256
+  description: Completion of the upload.

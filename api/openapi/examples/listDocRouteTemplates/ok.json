@@ -1,0 +1,67 @@
+{
+  "items": [
+    {
+      "id": "111ed3f5-37c4-5100-8331-bc7e74d9224b",
+      "folderId": "1eb38eae-0f75-5350-9c0c-add98451de67",
+      "name": "Приказ по фирме",
+      "projectId": null,
+      "steps": [
+        {
+          "kind": "approve",
+          "days": 2,
+          "mode": "all",
+          "whoMemberIds": ["ea845988-640e-5506-9303-1cbfc3dede0d"]
+        },
+        {
+          "kind": "sign",
+          "days": 1,
+          "whoMemberIds": ["b8df06ec-317e-5f46-b54c-e76603e41b5b"]
+        },
+        {
+          "kind": "ack",
+          "days": 3,
+          "audience": [
+            {
+              "who": "role",
+              "level": "view",
+              "refId": "2a857e38-2d94-51a0-81de-406de8b3c772",
+              "orgUnitId": "6de355d2-b019-5bb6-b66a-ddae6a13fb65",
+              "label": "Роль «Водитель»"
+            }
+          ]
+        }
+      ],
+      "rules": {
+        "lock": true,
+        "notAuthor": true,
+        "commentOnBack": true,
+        "escalate": false
+      }
+    },
+    {
+      "id": "1a5f9b9f-ef2a-50b4-b358-e22e4df0bae5",
+      "folderId": "f2ca66d2-6d1c-5466-9f8d-ee414820825d",
+      "name": "Договор с заказчиком",
+      "projectId": "0e1e030d-636b-5cd6-85a4-d61c7d9c8a5d",
+      "steps": [
+        {
+          "kind": "approve",
+          "days": 1,
+          "mode": "all",
+          "whoMemberIds": ["ebdf9767-327e-55cc-8c65-cb5fd313bdf4"]
+        },
+        {
+          "kind": "external",
+          "days": 3,
+          "externalName": "Ольга Смирнова"
+        }
+      ],
+      "rules": {
+        "lock": true,
+        "notAuthor": true,
+        "commentOnBack": true,
+        "escalate": false
+      }
+    }
+  ]
+}

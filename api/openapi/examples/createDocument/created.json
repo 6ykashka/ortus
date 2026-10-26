@@ -1,0 +1,85 @@
+{
+  "id": "86e2cac2-3492-50d3-b7f9-d123c9f94f0e",
+  "kind": "text",
+  "title": "Приказ № 15 · график на ноябрь",
+  "folderId": "1eb38eae-0f75-5350-9c0c-add98451de67",
+  "folderName": "Приказы",
+  "path": ["Север Логистик", "Приказы"],
+  "owner": {
+    "memberId": "ac41932c-dbd9-53b1-a84b-42cbc1d6629a",
+    "displayName": "Марина Котова"
+  },
+  "status": "draft",
+  "sensitivity": "normal",
+  "version": 1,
+  "mode": "inherit",
+  "shares": [],
+  "links": [],
+  "authors": [
+    {
+      "memberId": "ac41932c-dbd9-53b1-a84b-42cbc1d6629a",
+      "displayName": "Марина Котова"
+    }
+  ],
+  "fields": [
+    {
+      "key": "Фирма",
+      "src": "unit"
+    }
+  ],
+  "tempGrants": [],
+  "jobs": [],
+  "protectedRanges": [],
+  "commentCount": 0,
+  "openCommentCount": 0,
+  "createdAt": "2026-10-01T07:30:00Z",
+  "updatedAt": "2026-10-01T07:30:00Z",
+  "my": {
+    "level": "manage",
+    "can": {
+      "view": true,
+      "comment": true,
+      "suggest": true,
+      "edit": true,
+      "share": true,
+      "shareExternal": false,
+      "export": true,
+      "convert": true,
+      "sign": false,
+      "route": true,
+      "manage": true,
+      "locked": false
+    },
+    "maxGrant": "edit",
+    "wait": [],
+    "chain": [
+      {
+        "kind": "ok",
+        "title": "Папка «Приказы»",
+        "detail": "Как у родителя"
+      },
+      {
+        "kind": "ok",
+        "title": "Владелец документа",
+        "detail": "Управляет доступом"
+      },
+      {
+        "kind": "ok",
+        "title": "Итог",
+        "detail": "Уровень: manage"
+      }
+    ]
+  },
+  "revision": 1,
+  "template": "Приказ по фирме",
+  "file": {
+    "id": "b74777e6-12c0-514c-a1a9-fc06d20defe3",
+    "fileName": "Приказ № 15 · график на ноябрь.docx",
+    "contentType": "application/vnd.openxmlformats-officedocument",
+    "sizeBytes": 48000,
+    "sha256": "2f69f6c62f69f6c62f69f6c62f69f6c62f69f6c62f69f6c62f69f6c62f69f6c6",
+    "status": "ready",
+    "createdAt": "2026-10-01T07:30:00Z"
+  },
+  "size": 48000
+}

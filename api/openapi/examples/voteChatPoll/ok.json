@@ -1,0 +1,47 @@
+{
+  "id": "335514ad-6167-51ab-845e-c7faf5fd0978",
+  "seq": 4,
+  "createdAt": "2026-10-01T05:30:00Z",
+  "authorDisplayName": "Марина Котова",
+  "kind": "poll",
+  "text": "",
+  "masked": false,
+  "attachments": [],
+  "tasks": [],
+  "authorMemberId": "ac41932c-dbd9-53b1-a84b-42cbc1d6629a",
+  "poll": {
+    "id": "3a815df4-99f0-5448-be73-8e61fe23b7e2",
+    "question": "Кто может выйти в субботу 04.10 на рейс Р-215?",
+    "options": [
+      {
+        "id": "d5bea579-f2fb-504c-81bd-4f52eed4cda9",
+        "text": "Могу утром",
+        "votes": 1,
+        "mine": true,
+        "voters": ["Илья Васильев"]
+      },
+      {
+        "id": "b1ef5287-49bf-57c2-8ec2-8863634ea50f",
+        "text": "Могу после 14:00",
+        "votes": 0,
+        "mine": false
+      },
+      {
+        "id": "e01d8c24-78a9-5f38-9552-5f38f558f0c8",
+        "text": "Не могу",
+        "votes": 0,
+        "mine": false
+      }
+    ],
+    "anonymous": false,
+    "multiple": false,
+    "closesAt": "2026-10-03T15:00:00Z",
+    "closed": false,
+    "totalVoters": 1,
+    "myVotes": ["d5bea579-f2fb-504c-81bd-4f52eed4cda9"]
+  },
+  "reads": {
+    "readCount": 1,
+    "totalCount": 3
+  }
+}

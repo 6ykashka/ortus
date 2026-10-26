@@ -1,0 +1,96 @@
+{
+  "applied": true,
+  "chat": {
+    "id": "756f9f1b-f5d1-5ee8-b9eb-735e52be7f5b",
+    "kind": "group",
+    "title": "Смена на складе",
+    "orgUnitId": "6de355d2-b019-5bb6-b66a-ddae6a13fb65",
+    "status": "active",
+    "sensitivity": "normal",
+    "record": null,
+    "topics": [],
+    "policy": {
+      "textYears": 3,
+      "filesDays": 365,
+      "voiceDays": 90,
+      "receipts": "ticks",
+      "receiptsDays": 30,
+      "deletedDays": 30,
+      "edit": "48h",
+      "maxFileMb": 200,
+      "quotaMb": 5000,
+      "temp": "off",
+      "forward": "internal",
+      "pdnMask": true,
+      "onFull": "block"
+    },
+    "overrides": {},
+    "history": "all",
+    "my": {
+      "role": "owner",
+      "unread": 1,
+      "ackWaitCount": 0,
+      "lastReadSeq": 0,
+      "can": {
+        "write": true,
+        "files": true,
+        "polls": true,
+        "moderate": true,
+        "pin": true,
+        "announce": true,
+        "receipts": false,
+        "pdn": false,
+        "ephemeral": false,
+        "viewOnce": false,
+        "members": true,
+        "settings": true,
+        "saveToRecord": false,
+        "task": true
+      },
+      "chain": [
+        {
+          "title": "Состав чата",
+          "detail": "Владелец чата · по имени",
+          "ok": true
+        },
+        {
+          "title": "Модуль «Чаты» в ролях",
+          "detail": "Есть право «Чаты · Просматривать»",
+          "ok": true
+        },
+        {
+          "title": "Функция",
+          "detail": "Ограничений нет",
+          "ok": true
+        }
+      ]
+    },
+    "memberCount": 3,
+    "usedBytes": 0,
+    "revision": 1,
+    "pinned": null,
+    "hold": null
+  },
+  "impact": {
+    "joined": [
+      {
+        "memberId": "b8df06ec-317e-5f46-b54c-e76603e41b5b",
+        "displayName": "Дарья Зимина",
+        "title": "Владелец"
+      },
+      {
+        "memberId": "ac41932c-dbd9-53b1-a84b-42cbc1d6629a",
+        "displayName": "Марина Котова",
+        "title": "Логист"
+      },
+      {
+        "memberId": "a560b4fe-78b7-585e-b960-f0ab3622570c",
+        "displayName": "Илья Васильев",
+        "title": "Водитель"
+      }
+    ],
+    "pending": [],
+    "skipped": [],
+    "lose": []
+  }
+}

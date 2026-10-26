@@ -1,0 +1,34 @@
+{
+  "slug": "grz",
+  "directionName": "Грузоперевозки",
+  "color": "#2B5479",
+  "brandName": "Альта Групп",
+  "types": [
+    {
+      "id": "d-grz:cargo",
+      "name": "Повреждение или недостача груза",
+      "kind": "cargo"
+    },
+    {
+      "id": "d-grz:complaint",
+      "name": "Опоздание или жалоба",
+      "kind": "complaint"
+    },
+    {
+      "id": "d-grz:question",
+      "name": "Вопрос по доставке",
+      "kind": "question"
+    },
+    {
+      "id": "d-grz:idea",
+      "name": "Предложение",
+      "kind": "idea"
+    },
+    {
+      "id": "d-grz:thanks",
+      "name": "Спасибо водителю",
+      "kind": "thanks"
+    }
+  ],
+  "workHours": "ежедневно 8:00–20:00"
+}

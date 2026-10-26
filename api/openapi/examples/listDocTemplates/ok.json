@@ -1,0 +1,57 @@
+{
+  "items": [
+    {
+      "id": "6ad4a536-9a80-5e92-9bbb-c3e9628d9f7f",
+      "name": "Приказ по фирме",
+      "kind": "text",
+      "icon": "gavel",
+      "hint": "Номер, тема, пункты. Маршрут папки «Приказы»: согласовать → утвердить → ознакомить",
+      "link": null,
+      "folderId": "1eb38eae-0f75-5350-9c0c-add98451de67",
+      "fields": [
+        {
+          "key": "Фирма",
+          "src": "unit"
+        }
+      ]
+    },
+    {
+      "id": "af22823d-db8d-591f-81e5-ac192c554d60",
+      "name": "Доверенность на получение груза",
+      "kind": "text",
+      "icon": "badge",
+      "hint": "Поля из рейса: водитель, машина, рейс",
+      "link": "trip",
+      "folderId": "fae58a41-3ab2-59a7-a375-8da345f5869e",
+      "fields": [
+        {
+          "key": "Водитель",
+          "src": "trip.driver"
+        },
+        {
+          "key": "Рейс",
+          "src": "trip.number"
+        }
+      ]
+    },
+    {
+      "id": "2d8619dd-6faf-568e-b536-a6658b845e14",
+      "name": "Договор подряда",
+      "kind": "text",
+      "icon": "handshake",
+      "hint": "Поля из объекта: заказчик, адрес, площадь, цена по смете",
+      "link": "object",
+      "folderId": "f2ca66d2-6d1c-5466-9f8d-ee414820825d",
+      "fields": [
+        {
+          "key": "Заказчик",
+          "src": "obj.client"
+        },
+        {
+          "key": "Адрес объекта",
+          "src": "obj.address"
+        }
+      ]
+    }
+  ]
+}

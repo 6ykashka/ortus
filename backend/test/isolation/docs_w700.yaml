@@ -1,0 +1,653 @@
+# Матрица изоляции: тег Docs («Документы») контрактного PR этапа 7 (W7.00, 0.12.0-stage7) — строки до хендлера (pending W7.23).
+# Данные «Документы» — данные организации (tenant 0061): чужая организация — 404, как несуществующая (AC-01, AC-02), без сессии — 401.
+# Объектные id в пути — tenant:missing (такого объекта нет ни в одной базе): строки с содержимым фикстур добавит W7.23,
+# когда появится сид. Отказы шлюза по правам — docs_w700_gate.yaml. Публичные операции без тенанта (openDocLink, docServerCallback)
+# в матрицу не входят: у них нет организации в пути, строки добавит владелец публичного контура (W7.23b, W7.31b).
+# Формат — README.md. После правки: go -C backend generate ./test/isolation
+module: docs_w700
+endpoints:
+  - op: listDocuments
+    method: GET
+    path: /api/v1/tenants/{tenantId}/docs
+    pending: W7.23
+    rows:
+      - actor: b.owner
+        params: { tenantId: tenant:a }
+        status: 404
+        absent: [tenant:a]
+        note: чужая организация — как несуществующая
+      - actor: anonymous
+        params: { tenantId: tenant:a }
+        status: 401
+  - op: createDocument
+    method: POST
+    path: /api/v1/tenants/{tenantId}/docs
+    pending: W7.23
+    rows:
+      - actor: b.owner
+        params: { tenantId: tenant:a }
+        status: 404
+        absent: [tenant:a]
+        body: "{}"
+        note: чужая организация — как несуществующая
+      - actor: anonymous
+        params: { tenantId: tenant:a }
+        status: 401
+        body: "{}"
+  - op: getDocument
+    method: GET
+    path: /api/v1/tenants/{tenantId}/docs/{documentId}
+    pending: W7.23
+    rows:
+      - actor: b.owner
+        params: { tenantId: tenant:a, documentId: tenant:missing }
+        status: 404
+        absent: [tenant:a]
+        note: чужая организация — как несуществующая
+      - actor: anonymous
+        params: { tenantId: tenant:a, documentId: tenant:missing }
+        status: 401
+  - op: updateDocument
+    method: PATCH
+    path: /api/v1/tenants/{tenantId}/docs/{documentId}
+    pending: W7.23
+    rows:
+      - actor: b.owner
+        params: { tenantId: tenant:a, documentId: tenant:missing }
+        status: 404
+        absent: [tenant:a]
+        body: "{}"
+        note: чужая организация — как несуществующая
+      - actor: anonymous
+        params: { tenantId: tenant:a, documentId: tenant:missing }
+        status: 401
+        body: "{}"
+  - op: moveDocument
+    method: POST
+    path: /api/v1/tenants/{tenantId}/docs/{documentId}/move
+    pending: W7.23
+    rows:
+      - actor: b.owner
+        params: { tenantId: tenant:a, documentId: tenant:missing }
+        status: 404
+        absent: [tenant:a]
+        body: "{}"
+        note: чужая организация — как несуществующая
+      - actor: anonymous
+        params: { tenantId: tenant:a, documentId: tenant:missing }
+        status: 401
+        body: "{}"
+  - op: archiveDocument
+    method: POST
+    path: /api/v1/tenants/{tenantId}/docs/{documentId}/archive
+    pending: W7.23
+    rows:
+      - actor: b.owner
+        params: { tenantId: tenant:a, documentId: tenant:missing }
+        status: 404
+        absent: [tenant:a]
+        body: "{}"
+        note: чужая организация — как несуществующая
+      - actor: anonymous
+        params: { tenantId: tenant:a, documentId: tenant:missing }
+        status: 401
+        body: "{}"
+  - op: restoreDocument
+    method: POST
+    path: /api/v1/tenants/{tenantId}/docs/{documentId}/restore
+    pending: W7.23
+    rows:
+      - actor: b.owner
+        params: { tenantId: tenant:a, documentId: tenant:missing }
+        status: 404
+        absent: [tenant:a]
+        body: "{}"
+        note: чужая организация — как несуществующая
+      - actor: anonymous
+        params: { tenantId: tenant:a, documentId: tenant:missing }
+        status: 401
+        body: "{}"
+  - op: openDocumentSession
+    method: GET
+    path: /api/v1/tenants/{tenantId}/docs/{documentId}/open
+    pending: W7.23
+    rows:
+      - actor: b.owner
+        params: { tenantId: tenant:a, documentId: tenant:missing }
+        status: 404
+        absent: [tenant:a]
+        note: чужая организация — как несуществующая
+      - actor: anonymous
+        params: { tenantId: tenant:a, documentId: tenant:missing }
+        status: 401
+  - op: listDocVersions
+    method: GET
+    path: /api/v1/tenants/{tenantId}/docs/{documentId}/versions
+    pending: W7.23
+    rows:
+      - actor: b.owner
+        params: { tenantId: tenant:a, documentId: tenant:missing }
+        status: 404
+        absent: [tenant:a]
+        note: чужая организация — как несуществующая
+      - actor: anonymous
+        params: { tenantId: tenant:a, documentId: tenant:missing }
+        status: 401
+  - op: saveDocVersion
+    method: POST
+    path: /api/v1/tenants/{tenantId}/docs/{documentId}/versions
+    pending: W7.23
+    rows:
+      - actor: b.owner
+        params: { tenantId: tenant:a, documentId: tenant:missing }
+        status: 404
+        absent: [tenant:a]
+        body: "{}"
+        note: чужая организация — как несуществующая
+      - actor: anonymous
+        params: { tenantId: tenant:a, documentId: tenant:missing }
+        status: 401
+        body: "{}"
+  - op: nameDocVersion
+    method: PUT
+    path: /api/v1/tenants/{tenantId}/docs/{documentId}/versions/{version}/name
+    pending: W7.23
+    rows:
+      - actor: b.owner
+        params: { tenantId: tenant:a, documentId: tenant:missing, version: tenant:missing }
+        status: 404
+        absent: [tenant:a]
+        body: "{}"
+        note: чужая организация — как несуществующая
+      - actor: anonymous
+        params: { tenantId: tenant:a, documentId: tenant:missing, version: tenant:missing }
+        status: 401
+        body: "{}"
+  - op: restoreDocVersion
+    method: POST
+    path: /api/v1/tenants/{tenantId}/docs/{documentId}/versions/{version}/restore
+    pending: W7.23
+    rows:
+      - actor: b.owner
+        params: { tenantId: tenant:a, documentId: tenant:missing, version: tenant:missing }
+        status: 404
+        absent: [tenant:a]
+        body: "{}"
+        note: чужая организация — как несуществующая
+      - actor: anonymous
+        params: { tenantId: tenant:a, documentId: tenant:missing, version: tenant:missing }
+        status: 401
+        body: "{}"
+  - op: listDocComments
+    method: GET
+    path: /api/v1/tenants/{tenantId}/docs/{documentId}/comments
+    pending: W7.23
+    rows:
+      - actor: b.owner
+        params: { tenantId: tenant:a, documentId: tenant:missing }
+        status: 404
+        absent: [tenant:a]
+        note: чужая организация — как несуществующая
+      - actor: anonymous
+        params: { tenantId: tenant:a, documentId: tenant:missing }
+        status: 401
+  - op: createDocComment
+    method: POST
+    path: /api/v1/tenants/{tenantId}/docs/{documentId}/comments
+    pending: W7.23
+    rows:
+      - actor: b.owner
+        params: { tenantId: tenant:a, documentId: tenant:missing }
+        status: 404
+        absent: [tenant:a]
+        body: "{}"
+        note: чужая организация — как несуществующая
+      - actor: anonymous
+        params: { tenantId: tenant:a, documentId: tenant:missing }
+        status: 401
+        body: "{}"
+  - op: replyDocComment
+    method: POST
+    path: /api/v1/tenants/{tenantId}/docs/{documentId}/comments/{commentId}/replies
+    pending: W7.23
+    rows:
+      - actor: b.owner
+        params: { tenantId: tenant:a, documentId: tenant:missing, commentId: tenant:missing }
+        status: 404
+        absent: [tenant:a]
+        body: "{}"
+        note: чужая организация — как несуществующая
+      - actor: anonymous
+        params: { tenantId: tenant:a, documentId: tenant:missing, commentId: tenant:missing }
+        status: 401
+        body: "{}"
+  - op: resolveDocComment
+    method: POST
+    path: /api/v1/tenants/{tenantId}/docs/{documentId}/comments/{commentId}/resolve
+    pending: W7.23
+    rows:
+      - actor: b.owner
+        params: { tenantId: tenant:a, documentId: tenant:missing, commentId: tenant:missing }
+        status: 404
+        absent: [tenant:a]
+        body: "{}"
+        note: чужая организация — как несуществующая
+      - actor: anonymous
+        params: { tenantId: tenant:a, documentId: tenant:missing, commentId: tenant:missing }
+        status: 401
+        body: "{}"
+  - op: skipDocMentionGrant
+    method: POST
+    path: /api/v1/tenants/{tenantId}/docs/{documentId}/comments/{commentId}/skip-grant
+    pending: W7.23
+    rows:
+      - actor: b.owner
+        params: { tenantId: tenant:a, documentId: tenant:missing, commentId: tenant:missing }
+        status: 404
+        absent: [tenant:a]
+        body: "{}"
+        note: чужая организация — как несуществующая
+      - actor: anonymous
+        params: { tenantId: tenant:a, documentId: tenant:missing, commentId: tenant:missing }
+        status: 401
+        body: "{}"
+  - op: getDocShares
+    method: GET
+    path: /api/v1/tenants/{tenantId}/docs/{documentId}/shares
+    pending: W7.23
+    rows:
+      - actor: b.owner
+        params: { tenantId: tenant:a, documentId: tenant:missing }
+        status: 404
+        absent: [tenant:a]
+        note: чужая организация — как несуществующая
+      - actor: anonymous
+        params: { tenantId: tenant:a, documentId: tenant:missing }
+        status: 401
+  - op: setDocShares
+    method: PUT
+    path: /api/v1/tenants/{tenantId}/docs/{documentId}/shares
+    pending: W7.23
+    rows:
+      - actor: b.owner
+        params: { tenantId: tenant:a, documentId: tenant:missing }
+        status: 404
+        absent: [tenant:a]
+        body: "{}"
+        note: чужая организация — как несуществующая
+      - actor: anonymous
+        params: { tenantId: tenant:a, documentId: tenant:missing }
+        status: 401
+        body: "{}"
+  - op: grantDocAccess
+    method: POST
+    path: /api/v1/tenants/{tenantId}/docs/{documentId}/grants
+    pending: W7.23
+    rows:
+      - actor: b.owner
+        params: { tenantId: tenant:a, documentId: tenant:missing }
+        status: 404
+        absent: [tenant:a]
+        body: "{}"
+        note: чужая организация — как несуществующая
+      - actor: anonymous
+        params: { tenantId: tenant:a, documentId: tenant:missing }
+        status: 401
+        body: "{}"
+  - op: listDocLinks
+    method: GET
+    path: /api/v1/tenants/{tenantId}/docs/{documentId}/links
+    pending: W7.23
+    rows:
+      - actor: b.owner
+        params: { tenantId: tenant:a, documentId: tenant:missing }
+        status: 404
+        absent: [tenant:a]
+        note: чужая организация — как несуществующая
+      - actor: anonymous
+        params: { tenantId: tenant:a, documentId: tenant:missing }
+        status: 401
+  - op: createDocLink
+    method: POST
+    path: /api/v1/tenants/{tenantId}/docs/{documentId}/links
+    pending: W7.23
+    rows:
+      - actor: b.owner
+        params: { tenantId: tenant:a, documentId: tenant:missing }
+        status: 404
+        absent: [tenant:a]
+        body: "{}"
+        note: чужая организация — как несуществующая
+      - actor: anonymous
+        params: { tenantId: tenant:a, documentId: tenant:missing }
+        status: 401
+        body: "{}"
+  - op: revokeDocLink
+    method: DELETE
+    path: /api/v1/tenants/{tenantId}/docs/{documentId}/links/{linkId}
+    pending: W7.23
+    rows:
+      - actor: b.owner
+        params: { tenantId: tenant:a, documentId: tenant:missing, linkId: tenant:missing }
+        status: 404
+        absent: [tenant:a]
+        note: чужая организация — как несуществующая
+      - actor: anonymous
+        params: { tenantId: tenant:a, documentId: tenant:missing, linkId: tenant:missing }
+        status: 401
+  - op: syncDocDataset
+    method: POST
+    path: /api/v1/tenants/{tenantId}/docs/{documentId}/dataset-sync
+    pending: W7.23
+    rows:
+      - actor: b.owner
+        params: { tenantId: tenant:a, documentId: tenant:missing }
+        status: 404
+        absent: [tenant:a]
+        body: "{}"
+        note: чужая организация — как несуществующая
+      - actor: anonymous
+        params: { tenantId: tenant:a, documentId: tenant:missing }
+        status: 401
+        body: "{}"
+  - op: createDocJob
+    method: POST
+    path: /api/v1/tenants/{tenantId}/doc-jobs
+    pending: W7.23
+    rows:
+      - actor: b.owner
+        params: { tenantId: tenant:a }
+        status: 404
+        absent: [tenant:a]
+        body: "{}"
+        note: чужая организация — как несуществующая
+      - actor: anonymous
+        params: { tenantId: tenant:a }
+        status: 401
+        body: "{}"
+  - op: getDocJob
+    method: GET
+    path: /api/v1/tenants/{tenantId}/doc-jobs/{jobId}
+    pending: W7.23
+    rows:
+      - actor: b.owner
+        params: { tenantId: tenant:a, jobId: tenant:missing }
+        status: 404
+        absent: [tenant:a]
+        note: чужая организация — как несуществующая
+      - actor: anonymous
+        params: { tenantId: tenant:a, jobId: tenant:missing }
+        status: 401
+  - op: retryDocJob
+    method: POST
+    path: /api/v1/tenants/{tenantId}/doc-jobs/{jobId}/retry
+    pending: W7.23
+    rows:
+      - actor: b.owner
+        params: { tenantId: tenant:a, jobId: tenant:missing }
+        status: 404
+        absent: [tenant:a]
+        body: "{}"
+        note: чужая организация — как несуществующая
+      - actor: anonymous
+        params: { tenantId: tenant:a, jobId: tenant:missing }
+        status: 401
+        body: "{}"
+  - op: reviewOcrWord
+    method: POST
+    path: /api/v1/tenants/{tenantId}/docs/{documentId}/ocr/words/{wordId}
+    pending: W7.23
+    rows:
+      - actor: b.owner
+        params: { tenantId: tenant:a, documentId: tenant:missing, wordId: tenant:missing }
+        status: 404
+        absent: [tenant:a]
+        body: "{}"
+        note: чужая организация — как несуществующая
+      - actor: anonymous
+        params: { tenantId: tenant:a, documentId: tenant:missing, wordId: tenant:missing }
+        status: 401
+        body: "{}"
+  - op: getDocRoute
+    method: GET
+    path: /api/v1/tenants/{tenantId}/docs/{documentId}/route
+    pending: W7.23
+    rows:
+      - actor: b.owner
+        params: { tenantId: tenant:a, documentId: tenant:missing }
+        status: 404
+        absent: [tenant:a]
+        note: чужая организация — как несуществующая
+      - actor: anonymous
+        params: { tenantId: tenant:a, documentId: tenant:missing }
+        status: 401
+  - op: startDocRoute
+    method: POST
+    path: /api/v1/tenants/{tenantId}/docs/{documentId}/route
+    pending: W7.23
+    rows:
+      - actor: b.owner
+        params: { tenantId: tenant:a, documentId: tenant:missing }
+        status: 404
+        absent: [tenant:a]
+        body: "{}"
+        note: чужая организация — как несуществующая
+      - actor: anonymous
+        params: { tenantId: tenant:a, documentId: tenant:missing }
+        status: 401
+        body: "{}"
+  - op: decideDocRoute
+    method: POST
+    path: /api/v1/tenants/{tenantId}/docs/{documentId}/route/decisions
+    pending: W7.23
+    rows:
+      - actor: b.owner
+        params: { tenantId: tenant:a, documentId: tenant:missing }
+        status: 404
+        absent: [tenant:a]
+        body: "{}"
+        note: чужая организация — как несуществующая
+      - actor: anonymous
+        params: { tenantId: tenant:a, documentId: tenant:missing }
+        status: 401
+        body: "{}"
+  - op: requestDocSignCode
+    method: POST
+    path: /api/v1/tenants/{tenantId}/docs/{documentId}/route/sign/code
+    pending: W7.23
+    rows:
+      - actor: b.owner
+        params: { tenantId: tenant:a, documentId: tenant:missing }
+        status: 404
+        absent: [tenant:a]
+        body: "{}"
+        note: чужая организация — как несуществующая
+      - actor: anonymous
+        params: { tenantId: tenant:a, documentId: tenant:missing }
+        status: 401
+        body: "{}"
+  - op: confirmDocSign
+    method: POST
+    path: /api/v1/tenants/{tenantId}/docs/{documentId}/route/sign
+    pending: W7.23
+    rows:
+      - actor: b.owner
+        params: { tenantId: tenant:a, documentId: tenant:missing }
+        status: 404
+        absent: [tenant:a]
+        body: "{}"
+        note: чужая организация — как несуществующая
+      - actor: anonymous
+        params: { tenantId: tenant:a, documentId: tenant:missing }
+        status: 401
+        body: "{}"
+  - op: ackDocument
+    method: POST
+    path: /api/v1/tenants/{tenantId}/docs/{documentId}/ack
+    pending: W7.23
+    rows:
+      - actor: b.owner
+        params: { tenantId: tenant:a, documentId: tenant:missing }
+        status: 404
+        absent: [tenant:a]
+        body: "{}"
+        note: чужая организация — как несуществующая
+      - actor: anonymous
+        params: { tenantId: tenant:a, documentId: tenant:missing }
+        status: 401
+        body: "{}"
+  - op: closeDocAck
+    method: POST
+    path: /api/v1/tenants/{tenantId}/docs/{documentId}/route/ack/close
+    pending: W7.23
+    rows:
+      - actor: b.owner
+        params: { tenantId: tenant:a, documentId: tenant:missing }
+        status: 404
+        absent: [tenant:a]
+        body: "{}"
+        note: чужая организация — как несуществующая
+      - actor: anonymous
+        params: { tenantId: tenant:a, documentId: tenant:missing }
+        status: 401
+        body: "{}"
+  - op: resumeDocRoute
+    method: POST
+    path: /api/v1/tenants/{tenantId}/docs/{documentId}/route/resume
+    pending: W7.23
+    rows:
+      - actor: b.owner
+        params: { tenantId: tenant:a, documentId: tenant:missing }
+        status: 404
+        absent: [tenant:a]
+        body: "{}"
+        note: чужая организация — как несуществующая
+      - actor: anonymous
+        params: { tenantId: tenant:a, documentId: tenant:missing }
+        status: 401
+        body: "{}"
+  - op: cancelDocRoute
+    method: POST
+    path: /api/v1/tenants/{tenantId}/docs/{documentId}/route/cancel
+    pending: W7.23
+    rows:
+      - actor: b.owner
+        params: { tenantId: tenant:a, documentId: tenant:missing }
+        status: 404
+        absent: [tenant:a]
+        body: "{}"
+        note: чужая организация — как несуществующая
+      - actor: anonymous
+        params: { tenantId: tenant:a, documentId: tenant:missing }
+        status: 401
+        body: "{}"
+  - op: listDocActivity
+    method: GET
+    path: /api/v1/tenants/{tenantId}/docs/{documentId}/activity
+    pending: W7.23
+    rows:
+      - actor: b.owner
+        params: { tenantId: tenant:a, documentId: tenant:missing }
+        status: 404
+        absent: [tenant:a]
+        note: чужая организация — как несуществующая
+      - actor: anonymous
+        params: { tenantId: tenant:a, documentId: tenant:missing }
+        status: 401
+  - op: listDocFolders
+    method: GET
+    path: /api/v1/tenants/{tenantId}/doc-folders
+    pending: W7.23
+    rows:
+      - actor: b.owner
+        params: { tenantId: tenant:a }
+        status: 404
+        absent: [tenant:a]
+        note: чужая организация — как несуществующая
+      - actor: anonymous
+        params: { tenantId: tenant:a }
+        status: 401
+  - op: createDocFolder
+    method: POST
+    path: /api/v1/tenants/{tenantId}/doc-folders
+    pending: W7.23
+    rows:
+      - actor: b.owner
+        params: { tenantId: tenant:a }
+        status: 404
+        absent: [tenant:a]
+        body: "{}"
+        note: чужая организация — как несуществующая
+      - actor: anonymous
+        params: { tenantId: tenant:a }
+        status: 401
+        body: "{}"
+  - op: deleteDocFolder
+    method: DELETE
+    path: /api/v1/tenants/{tenantId}/doc-folders/{folderId}
+    pending: W7.23
+    rows:
+      - actor: b.owner
+        params: { tenantId: tenant:a, folderId: tenant:missing }
+        status: 404
+        absent: [tenant:a]
+        note: чужая организация — как несуществующая
+      - actor: anonymous
+        params: { tenantId: tenant:a, folderId: tenant:missing }
+        status: 401
+  - op: updateDocFolder
+    method: PATCH
+    path: /api/v1/tenants/{tenantId}/doc-folders/{folderId}
+    pending: W7.23
+    rows:
+      - actor: b.owner
+        params: { tenantId: tenant:a, folderId: tenant:missing }
+        status: 404
+        absent: [tenant:a]
+        body: "{}"
+        note: чужая организация — как несуществующая
+      - actor: anonymous
+        params: { tenantId: tenant:a, folderId: tenant:missing }
+        status: 401
+        body: "{}"
+  - op: setDocFolderShares
+    method: PUT
+    path: /api/v1/tenants/{tenantId}/doc-folders/{folderId}/shares
+    pending: W7.23
+    rows:
+      - actor: b.owner
+        params: { tenantId: tenant:a, folderId: tenant:missing }
+        status: 404
+        absent: [tenant:a]
+        body: "{}"
+        note: чужая организация — как несуществующая
+      - actor: anonymous
+        params: { tenantId: tenant:a, folderId: tenant:missing }
+        status: 401
+        body: "{}"
+  - op: listDocTemplates
+    method: GET
+    path: /api/v1/tenants/{tenantId}/doc-templates
+    pending: W7.23
+    rows:
+      - actor: b.owner
+        params: { tenantId: tenant:a }
+        status: 404
+        absent: [tenant:a]
+        note: чужая организация — как несуществующая
+      - actor: anonymous
+        params: { tenantId: tenant:a }
+        status: 401
+  - op: listDocRouteTemplates
+    method: GET
+    path: /api/v1/tenants/{tenantId}/doc-route-templates
+    pending: W7.23
+    rows:
+      - actor: b.owner
+        params: { tenantId: tenant:a }
+        status: 404
+        absent: [tenant:a]
+        note: чужая организация — как несуществующая
+      - actor: anonymous
+        params: { tenantId: tenant:a }
+        status: 401

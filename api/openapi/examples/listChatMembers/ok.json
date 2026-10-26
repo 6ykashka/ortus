@@ -1,0 +1,69 @@
+{
+  "items": [
+    {
+      "member": {
+        "memberId": "b8df06ec-317e-5f46-b54c-e76603e41b5b",
+        "displayName": "Дарья Зимина",
+        "title": "Владелец"
+      },
+      "state": "in",
+      "role": "owner",
+      "via": "Владелец бизнеса · видит все рабочие чаты"
+    },
+    {
+      "member": {
+        "memberId": "ac41932c-dbd9-53b1-a84b-42cbc1d6629a",
+        "displayName": "Марина Котова",
+        "title": "Логист"
+      },
+      "state": "in",
+      "role": "owner",
+      "via": "Группа «Диспетчеры Север» · Владелец чата · по имени"
+    },
+    {
+      "member": {
+        "memberId": "a560b4fe-78b7-585e-b960-f0ab3622570c",
+        "displayName": "Илья Васильев",
+        "title": "Водитель"
+      },
+      "state": "in",
+      "role": "member",
+      "via": "Роль «Водитель» · Север Логистик · Группа «Водители Север»"
+    },
+    {
+      "member": {
+        "memberId": "5f46d721-04b7-5e52-9f86-14c5bdfcf6aa",
+        "displayName": "Олеся Петрова",
+        "title": "Диспетчер"
+      },
+      "state": "out",
+      "role": "moderator",
+      "why": "У ролей сотрудника нет модуля «Чаты»: разрешите его в роли или добавьте по имени"
+    },
+    {
+      "member": {
+        "memberId": "e3e06740-e478-5398-a737-dd89c477cbd7",
+        "displayName": "Кирилл Громов",
+        "title": "Водитель"
+      },
+      "state": "out",
+      "role": null,
+      "why": "Заблокирован владельцем — не входит в чаты; вернётся сам, если разблокируют"
+    },
+    {
+      "member": {
+        "memberId": "ea845988-640e-5506-9303-1cbfc3dede0d",
+        "displayName": "Вера Котельникова",
+        "title": "Диспетчер · Самара"
+      },
+      "state": "in",
+      "role": "reader",
+      "via": "Читатель чата · по имени"
+    }
+  ],
+  "counts": {
+    "in": 4,
+    "pending": 0,
+    "out": 2
+  }
+}

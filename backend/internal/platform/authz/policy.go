@@ -18,6 +18,8 @@ const (
 	ModCalendar  = "core.calendar"
 	ModKnowledge = "core.knowledge"
 	ModChat      = "core.chat"
+	ModDocs      = "core.docs"
+	ModService   = "core.service"
 	ModLogistics = "logistics"
 	ModRepairs   = "repairs"
 	ModInventory = "inventory"
@@ -74,7 +76,7 @@ var modulePrefixes = map[string]string{
 	"members": ModMembers, "roles": ModMembers, "org_units": ModMembers,
 	"modules": ModModules, "billing": ModModules, "branding": ModModules,
 	"files": ModFiles, "data": ModData, "tasks": ModTasks, "forms": ModForms, "calendar": ModCalendar,
-	"knowledge": ModKnowledge, "chat": ModChat, "fleet": ModLogistics, "repairs": ModRepairs,
+	"knowledge": ModKnowledge, "chat": ModChat, "docs": ModDocs, "service": ModService, "fleet": ModLogistics, "repairs": ModRepairs,
 	"inventory": ModInventory, "spa": ModSpa, "cash": ModCash,
 }
 
@@ -90,6 +92,9 @@ var installKeys = map[string]string{
 	ModLogistics: ModLogistics, "fleet": ModLogistics,
 	ModSpa: ModSpa, ModRepairs: ModRepairs, "repair": ModRepairs,
 	"chat": ModChat, ModChat: ModChat,
+	// W7.00 (0.12.0-stage7): как чаты — действия владельца в mock без этих модулей (CORE_MODULES адаптера); подключение
+	// «Документов» и «Обращений» к организации — W7.21 и W7.31 (service.md §0 называет «Обращения» ядром).
+	"docs": ModDocs, ModDocs: ModDocs, "service": ModService, ModService: ModService,
 }
 
 // alwaysOn are the modules every tenant has: CORE_MODULES of the MSW adapter W0.13 plus the system modules of

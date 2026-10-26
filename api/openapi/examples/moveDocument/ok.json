@@ -1,0 +1,48 @@
+{
+  "applied": true,
+  "document": {
+    "id": "23853b21-b516-5e2b-8b3e-65fb87295176",
+    "kind": "text",
+    "title": "Регламент приёмки смены",
+    "folderId": "fae58a41-3ab2-59a7-a375-8da345f5869e",
+    "folderName": "Договоры",
+    "owner": {
+      "memberId": "ac41932c-dbd9-53b1-a84b-42cbc1d6629a",
+      "displayName": "Марина Котова"
+    },
+    "status": "draft",
+    "sensitivity": "normal",
+    "version": 1,
+    "updatedAt": "2026-10-01T07:30:00Z",
+    "updatedBy": {
+      "memberId": "ac41932c-dbd9-53b1-a84b-42cbc1d6629a",
+      "displayName": "Марина Котова"
+    },
+    "links": [],
+    "my": {
+      "level": "manage",
+      "can": {
+        "view": true,
+        "comment": true,
+        "suggest": true,
+        "edit": true,
+        "share": true,
+        "shareExternal": false,
+        "export": true,
+        "convert": true,
+        "sign": false,
+        "route": true,
+        "manage": true,
+        "locked": false
+      },
+      "maxGrant": "edit",
+      "wait": []
+    }
+  },
+  "impact": {
+    "gain": [],
+    "lose": [],
+    "up": [],
+    "down": []
+  }
+}

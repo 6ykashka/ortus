@@ -1,0 +1,108 @@
+# Контракт Ортус · тег PublicDocs: пути и операции. Пишет только стюард контракта (план v2 §3.5).
+/api/v1/public/doc-links/{token}/open:
+  parameters:
+    - $ref: ../components/common/parameters.yaml#/docLinkToken
+  post:
+    operationId: openDocLink
+    tags:
+      - PublicDocs
+    summary: Open a document by an external link
+    x-permissions: []
+    x-scope: public-doc-link-capability
+    description: W7.00 (documents.md §2.2) (docs/24). The link is checked (410 public_token_expired for a revoked or expired one, 403 forbidden_action for a wrong PIN, 429 rate_limited); the opening is journaled (docs.link.opened.v1). The session is view only with a watermark. The tenant is found by the digest of the token in the control index public_doc_links (control 0011), then the link in docs.links of that tenant. No screen yet (no-reference, Q-W4.00-documents-4).
+    responses:
+      "200":
+        description: Successful result.
+        headers:
+          X-Request-Id:
+            $ref: ../components/common/headers.yaml#/RequestId
+          Idempotency-Replayed:
+            $ref: ../components/common/headers.yaml#/IdempotencyReplayed
+          Cache-Control:
+            description: Never cache authenticated, confidential or capability-bearing API responses in shared caches.
+            schema:
+              type: string
+              const: private, no-store
+        content:
+          application/json:
+            schema:
+              $ref: ../components/docs/schemas.yaml#/DocPublicSession
+      "400":
+        $ref: ../components/common/responses.yaml#/BadRequest
+      "403":
+        $ref: ../components/common/responses.yaml#/Forbidden
+      "404":
+        $ref: ../components/common/responses.yaml#/NotFound
+      "409":
+        $ref: ../components/common/responses.yaml#/Conflict
+      "410":
+        $ref: ../components/common/responses.yaml#/Gone
+      "422":
+        $ref: ../components/common/responses.yaml#/Validation
+      "429":
+        $ref: ../components/common/responses.yaml#/RateLimited
+    parameters:
+      - $ref: ../components/common/parameters.yaml#/IdempotencyKey
+      - $ref: ../components/common/parameters.yaml#/Origin
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: ../components/docs/schemas.yaml#/DocPublicOpen
+    security: []
+    x-public-capability: docLinkToken; PIN when the link has one
+    x-permissions-mode: all
+/api/v1/internal/docs/callback:
+  parameters: []
+  post:
+    operationId: docServerCallback
+    tags:
+      - PublicDocs
+    summary: Callback of the document server
+    x-permissions: []
+    x-scope: docs-server-callback
+    description: "W7.00 (documents.md §2.2). Service-to-service call of the document server (decision 32 of the kit, ADR-0016): saves a new version from the url (statuses 2 and 6), records authors, closes the editing session. There is no session and no tenantId in the path: the Bearer JWT (HS256, secret DOCS_SERVER_JWT_SECRET) is verified before the body is read, a missing or bad signature is 401 session_expired. The key has the form t<tenantId>.d<documentId>.v<version> (DocSessionConfig.documentKey); only after the signature is verified the tenant is read from it, the tenant database is chosen by it (control tenants, tenant_routing) and the document and the version are looked up there, so a key cannot name a document of another tenant. Answers: 200 {error: 0} accepted (a repeat of an already saved key too); 404 not_found for an unknown tenant or document; 409 invalid_transition when the version in the key is not the current one of the document; 422 validation_failed for a key that does not match the format. Idempotency-Key — the key and the status. Emits docs.version.saved.v1."
+    responses:
+      "200":
+        description: Successful result.
+        headers:
+          X-Request-Id:
+            $ref: ../components/common/headers.yaml#/RequestId
+          Idempotency-Replayed:
+            $ref: ../components/common/headers.yaml#/IdempotencyReplayed
+          Cache-Control:
+            description: Never cache authenticated, confidential or capability-bearing API responses in shared caches.
+            schema:
+              type: string
+              const: private, no-store
+        content:
+          application/json:
+            schema:
+              $ref: ../components/docs/schemas.yaml#/DocServerCallbackAck
+      "400":
+        $ref: ../components/common/responses.yaml#/BadRequest
+      "401":
+        $ref: ../components/common/responses.yaml#/Unauthenticated
+      "404":
+        $ref: ../components/common/responses.yaml#/NotFound
+      "409":
+        $ref: ../components/common/responses.yaml#/Conflict
+      "422":
+        $ref: ../components/common/responses.yaml#/Validation
+      "429":
+        $ref: ../components/common/responses.yaml#/RateLimited
+      "503":
+        $ref: ../components/common/responses.yaml#/DependencyUnavailable
+    parameters:
+      - $ref: ../components/common/parameters.yaml#/IdempotencyKey
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: ../components/docs/schemas.yaml#/DocServerCallback
+    security:
+      - docServerJwt: []
+    x-public-capability: "JWT of the document server (Authorization: Bearer, HS256, shared secret of the adapter)"
+    x-permissions-mode: all

@@ -1,0 +1,52 @@
+{
+  "applied": true,
+  "route": {
+    "id": "b438f094-9f29-54ed-ad94-2ee73618e682",
+    "version": 3,
+    "startedBy": {
+      "memberId": "ac41932c-dbd9-53b1-a84b-42cbc1d6629a",
+      "displayName": "Марина Котова"
+    },
+    "startedAt": "2026-10-01T07:30:00Z",
+    "status": "active",
+    "currentStep": 0,
+    "rules": {
+      "lock": true,
+      "notAuthor": true,
+      "commentOnBack": true,
+      "escalate": false
+    },
+    "steps": [
+      {
+        "kind": "sign",
+        "name": "Утвердить",
+        "mode": "all",
+        "who": [
+          {
+            "memberId": "b8df06ec-317e-5f46-b54c-e76603e41b5b",
+            "displayName": "Дарья Зимина"
+          }
+        ],
+        "days": 1,
+        "status": "active",
+        "due": "2026-10-02",
+        "decisions": []
+      }
+    ],
+    "project": {
+      "moduleKey": "tasks",
+      "entityType": "project",
+      "entityId": "0e1e030d-636b-5cd6-85a4-d61c7d9c8a5d"
+    },
+    "task": {
+      "moduleKey": "tasks",
+      "entityType": "task",
+      "entityId": "bd934673-0c42-59ad-8522-88f56bc92292"
+    }
+  },
+  "consequences": [
+    "Версия 3 «На согласование» закроется для правки",
+    "Будет создана задача в проекте «ДОК · Документы · маршруты»",
+    "Утвердить: Дарья Зимина"
+  ]
+}

@@ -1,0 +1,78 @@
+{
+  "applied": true,
+  "impact": {
+    "joined": [
+      {
+        "memberId": "b8df06ec-317e-5f46-b54c-e76603e41b5b",
+        "displayName": "Дарья Зимина",
+        "title": "Владелец"
+      },
+      {
+        "memberId": "ac41932c-dbd9-53b1-a84b-42cbc1d6629a",
+        "displayName": "Марина Котова",
+        "title": "Логист"
+      },
+      {
+        "memberId": "a560b4fe-78b7-585e-b960-f0ab3622570c",
+        "displayName": "Илья Васильев",
+        "title": "Водитель"
+      },
+      {
+        "memberId": "ea845988-640e-5506-9303-1cbfc3dede0d",
+        "displayName": "Вера Котельникова",
+        "title": "Диспетчер · Самара"
+      }
+    ],
+    "pending": [],
+    "skipped": [
+      {
+        "member": {
+          "memberId": "5f46d721-04b7-5e52-9f86-14c5bdfcf6aa",
+          "displayName": "Олеся Петрова",
+          "title": "Диспетчер"
+        },
+        "reason": "У ролей сотрудника нет модуля «Чаты»: разрешите его в роли или добавьте по имени"
+      },
+      {
+        "member": {
+          "memberId": "e3e06740-e478-5398-a737-dd89c477cbd7",
+          "displayName": "Кирилл Громов",
+          "title": "Водитель"
+        },
+        "reason": "Заблокирован владельцем — не входит в чаты; вернётся сам, если разблокируют"
+      }
+    ],
+    "lose": []
+  },
+  "sources": {
+    "items": [
+      {
+        "who": "role",
+        "role": "member",
+        "refId": "2a857e38-2d94-51a0-81de-406de8b3c772",
+        "orgUnitId": "6de355d2-b019-5bb6-b66a-ddae6a13fb65"
+      },
+      {
+        "who": "group",
+        "role": "member",
+        "refId": "ce9dd6e5-dcb8-5d08-ad94-53c3155b3d14"
+      },
+      {
+        "who": "group",
+        "role": "moderator",
+        "refId": "ffdc7501-0a74-5af4-950b-894aeb64d658"
+      },
+      {
+        "who": "member",
+        "refId": "ea845988-640e-5506-9303-1cbfc3dede0d",
+        "role": "reader"
+      },
+      {
+        "who": "member",
+        "refId": "a560b4fe-78b7-585e-b960-f0ab3622570c",
+        "role": "moderator"
+      }
+    ],
+    "revision": 2
+  }
+}

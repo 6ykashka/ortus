@@ -11,6 +11,7 @@ import { abs, ERRORS_PATH, SCREENS_PATH, SOURCE_0_1 } from './lib/paths.mjs';
 import { flattenActions, loadCatalog } from './lib/permissions.mjs';
 import { checkAgainstSource, loadDeltas } from './lib/source-diff.mjs';
 import { W5_CODES } from './lib/stage5.mjs';
+import { STAGE7_CODES } from './lib/stage7.mjs';
 import { readYaml } from './lib/yaml-io.mjs';
 import {
   CHANGED_SCHEMAS,
@@ -47,8 +48,9 @@ const prop = (s, p) => schemas[s]?.properties?.[p];
 const commands = OPERATIONS.filter((o) => o.method !== 'get' && !o.public);
 
 describe('контракт 0.12.0-stage6 (W6.00): операции и права', () => {
-  it('версия контракта — 0.12.0-stage6', () => {
-    assert.equal(doc.info.version, VERSION);
+  it('версия контракта — 0.12.0-stage6 (после W7.00 — 0.12.0-stage7)', () => {
+    assert.equal(VERSION, '0.12.0-stage6');
+    assert.match(doc.info.version, /^0\.12\.0-stage[67]$/);
   });
 
   it('тег Repairs: 66 операций (4 из 0.1 переделаны, остальные — добавления): метод, путь, x-permissions, x-scope', () => {
@@ -211,7 +213,7 @@ describe('контракт 0.12.0-stage6 (W6.00): операции и права
     }
     assert.equal(
       Object.keys(reg).length,
-      53 + W5_CODES.length,
+      53 + W5_CODES.length + STAGE7_CODES.length,
       'новых кодов нет (причины внутри существующих; коды этапа 5 — W5_CODES)',
     );
     assert.equal(reg.invalid_transition.status, 409);

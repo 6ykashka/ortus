@@ -1,0 +1,76 @@
+{
+  "id": "671d74c7-ab03-5c26-883a-ba2cf9ab9273",
+  "kind": "direct",
+  "title": "Илья Васильев",
+  "orgUnitId": null,
+  "status": "active",
+  "sensitivity": "normal",
+  "record": null,
+  "topics": [],
+  "policy": {
+    "textYears": 3,
+    "filesDays": 365,
+    "voiceDays": 90,
+    "receipts": "ticks",
+    "receiptsDays": 30,
+    "deletedDays": 30,
+    "edit": "48h",
+    "maxFileMb": 200,
+    "quotaMb": null,
+    "temp": "allowed",
+    "forward": "internal",
+    "pdnMask": true,
+    "onFull": "block"
+  },
+  "overrides": {},
+  "history": "all",
+  "my": {
+    "role": "member",
+    "unread": 0,
+    "ackWaitCount": 0,
+    "lastReadSeq": 3,
+    "can": {
+      "write": true,
+      "files": true,
+      "polls": true,
+      "moderate": false,
+      "pin": false,
+      "announce": false,
+      "receipts": false,
+      "pdn": false,
+      "ephemeral": true,
+      "viewOnce": false,
+      "members": false,
+      "settings": false,
+      "saveToRecord": false,
+      "task": true
+    },
+    "chain": [
+      {
+        "title": "Состав чата",
+        "detail": "Участник личного чата",
+        "ok": true
+      },
+      {
+        "title": "Модуль «Чаты» в ролях",
+        "detail": "Есть право «Чаты · Просматривать»",
+        "ok": true
+      },
+      {
+        "title": "Функция",
+        "detail": "Ограничений нет",
+        "ok": true
+      }
+    ]
+  },
+  "memberCount": 2,
+  "usedBytes": 0,
+  "revision": 1,
+  "peer": {
+    "memberId": "a560b4fe-78b7-585e-b960-f0ab3622570c",
+    "displayName": "Илья Васильев",
+    "status": "active"
+  },
+  "pinned": null,
+  "hold": null
+}

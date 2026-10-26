@@ -34,6 +34,9 @@ export const CONTROL_BLOCKS = [
   { stage: '1+', from: 4, to: 9999 },
 ];
 
+/** Этапы, чьи блоки могут быть пусты ниже занятого: пусто — этапы 5 и 6 влиты (W5.00, W6.00). */
+export const RESERVE_STAGES = [];
+
 export const BLOCKS = { control: CONTROL_BLOCKS, tenant: TENANT_BLOCKS };
 
 const NAME_RE = /^(\d{4})_[a-z0-9][a-z0-9_]*\.sql$/;
@@ -72,6 +75,8 @@ export function checkDb(db, names, blocks = BLOCKS[db]) {
   const last = used.findLastIndex((u) => u.length > 0);
   blocks.forEach((b, i) => {
     if (i > last) return;
+    // Блоки с признаком reserve (этапы 5 и 6, пока не влиты в ветку этапа 7) могут быть пусты ниже занятого.
+    if (used[i].length === 0 && RESERVE_STAGES.includes(b.stage)) return;
     if (used[i].length === 0) {
       if (PENDING_STAGES.has(b.stage)) return;
       const l = blocks[last];

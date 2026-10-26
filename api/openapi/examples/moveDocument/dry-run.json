@@ -1,0 +1,19 @@
+{
+  "applied": false,
+  "impact": {
+    "gain": [],
+    "lose": [
+      {
+        "member": {
+          "memberId": "a560b4fe-78b7-585e-b960-f0ab3622570c",
+          "displayName": "Илья Васильев"
+        },
+        "from": "view",
+        "to": null,
+        "invited": false
+      }
+    ],
+    "up": [],
+    "down": []
+  }
+}

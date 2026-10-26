@@ -11,6 +11,7 @@ import { bundle } from './lib/bundle.mjs';
 import { checkExamples, loadExamples } from './lib/examples.mjs';
 import { operationsById } from './lib/inventory.mjs';
 import { abs, ERRORS_PATH, SOURCE_0_1 } from './lib/paths.mjs';
+import { STAGE7_CODES } from './lib/stage7.mjs';
 import { flattenActions, loadCatalog } from './lib/permissions.mjs';
 import { parsePointer } from './lib/refs.mjs';
 import { checkAgainstSource, loadDeltas } from './lib/source-diff.mjs';
@@ -117,20 +118,22 @@ describe('контракт 0.6.2-stage2 (W2.57): роль «Временный �
     assert.deepEqual(catalog.role_templates.driver.actions.filter(choose), DRIVER);
     assert.equal(catalog.role_templates.driver.default_scope, 'self');
     // W4.07 (0.8.0-stage4) добавил branding.manage — не в шаблоне «Водитель»; W4.04 — ключи «Базы знаний»
-    // (core.knowledge): остальных ключей вне БЗ без choose — 119, как в 0.6.x/0.7.0.
+    // (core.knowledge): остальных ключей вне БЗ, «Документов» и «Обращений» (W7.00) без choose — 119, как в 0.6.x/0.7.0.
     const own = [...flattenActions(catalog)].filter(
       ([k, a]) =>
         choose(k) &&
         k !== 'branding.manage' &&
         !W5_ADDED_KEYS.includes(k) &&
         !NEW_PERMISSIONS.includes(k) &&
-        a.module !== 'core.knowledge',
+        !['core.knowledge', 'core.docs', 'core.service'].includes(a.module),
     );
     // W5.00 (0.12.0-stage5): ключи и коды этапа 5 не считаются; cash.manage → cash.accounts.manage — на один ключ меньше.
     assert.equal(own.length, 118);
     const codes = readYaml(ERRORS_PATH).codes;
     assert.equal(
-      Object.keys(codes).filter((c) => c !== 'offer_closed' && !W5_CODES.includes(c)).length,
+      Object.keys(codes).filter(
+        (c) => c !== 'offer_closed' && !W5_CODES.includes(c) && !STAGE7_CODES.includes(c),
+      ).length,
       52,
     );
   });

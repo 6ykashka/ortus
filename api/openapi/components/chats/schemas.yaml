@@ -1,0 +1,2126 @@
+# Контракт Ортус · компоненты тега chats (W7.00). Пишет только стюард контракта (план v2 §3.5).
+ChatPolicy:
+  type: object
+  additionalProperties: false
+  properties:
+    textYears:
+      type: integer
+      minimum: 1
+      maximum: 5
+      format: int64
+      description: Text retention, years (1–5).
+    filesDays:
+      type: integer
+      minimum: 30
+      maximum: 1825
+      format: int64
+      description: Attachment retention, days (30–1825).
+    voiceDays:
+      type: integer
+      minimum: 30
+      maximum: 1095
+      format: int64
+      description: Voice retention, days (30–1095).
+    receipts:
+      type: string
+      enum:
+        - "off"
+        - ticks
+        - who
+      description: "Read receipts: off, ticks (N of M, no names), who (who and when). CHAT-02, Q-W4.00-chats-3: ticks by default, off for announce."
+    receiptsDays:
+      type: integer
+      minimum: 7
+      maximum: 90
+      format: int64
+      description: How long «who and when» is kept, days (7–90).
+    deletedDays:
+      type: integer
+      minimum: 30
+      maximum: 30
+      format: int64
+      description: "How long the content of a deleted message stays in the journal: exactly 30 days (CHAT-10, Q-W4.00-chats-17)."
+    edit:
+      type: string
+      enum:
+        - 15m
+        - 48h
+        - none
+      description: Edit and delete window of an own message (Q-W4.00-chats-22).
+    maxFileMb:
+      type: integer
+      minimum: 10
+      maximum: 2000
+      format: int64
+      description: Largest file, MB (10–2000).
+    quotaMb:
+      type:
+        - integer
+        - "null"
+      minimum: 1
+      format: int64
+      description: "Chat storage, MB; null — no limit of its own (CHAT-07: 5 GB inside the organization storage)."
+    temp:
+      type: string
+      enum:
+        - "off"
+        - allowed
+        - viewonce
+      description: Temporary and view-once messages; temporary ones are forbidden in work chats (CHAT-04, Q-W4.00-chats-4).
+    forward:
+      type: string
+      enum:
+        - free
+        - internal
+        - "off"
+      description: Forwarding policy (stored; no forwarding in the UI of the first version, Q-W4.00-chats-6).
+    pdnMask:
+      type: boolean
+      description: "Mask personal data in the feed (Q-W4.00-chats-14: always true)."
+    onFull:
+      type: string
+      enum:
+        - block
+        - ring
+        - compress
+        - archive
+      description: "What happens at 100 % of the chat storage (Q-W4.00-chats-16): block, ring, compress; archive is v2 and rejected with 422."
+    afterCloseDays:
+      type: integer
+      minimum: 0
+      maximum: 3650
+      format: int64
+      description: "Record chats: days to keep after the record is closed."
+  required:
+    - textYears
+    - filesDays
+    - voiceDays
+    - receipts
+    - receiptsDays
+    - deletedDays
+    - edit
+    - maxFileMb
+    - quotaMb
+    - temp
+    - forward
+    - pdnMask
+    - onFull
+  description: Effective policy of a chat kind or chat (docs/25, chats.js DEFAULT_POLICY, BOUNDS). The organization sets the bounds, the kind sets the values, a chat changes them inside the bounds.
+ChatPolicyPatch:
+  type: object
+  additionalProperties: false
+  properties:
+    textYears:
+      type: integer
+      minimum: 1
+      maximum: 5
+      format: int64
+    filesDays:
+      type: integer
+      minimum: 30
+      maximum: 1825
+      format: int64
+    voiceDays:
+      type: integer
+      minimum: 30
+      maximum: 1095
+      format: int64
+    receipts:
+      type: string
+      enum:
+        - "off"
+        - ticks
+        - who
+    receiptsDays:
+      type: integer
+      minimum: 7
+      maximum: 90
+      format: int64
+    deletedDays:
+      type: integer
+      minimum: 30
+      maximum: 30
+      format: int64
+    edit:
+      type: string
+      enum:
+        - 15m
+        - 48h
+        - none
+    maxFileMb:
+      type: integer
+      minimum: 10
+      maximum: 2000
+      format: int64
+    quotaMb:
+      type:
+        - integer
+        - "null"
+      minimum: 1
+      format: int64
+    temp:
+      type: string
+      enum:
+        - "off"
+        - allowed
+        - viewonce
+    forward:
+      type: string
+      enum:
+        - free
+        - internal
+        - "off"
+    pdnMask:
+      type: boolean
+    onFull:
+      type: string
+      enum:
+        - block
+        - ring
+        - compress
+        - archive
+    afterCloseDays:
+      type: integer
+      minimum: 0
+      maximum: 3650
+      format: int64
+  minProperties: 1
+  description: Partial policy; a value outside the bounds of the organization — 422 validation_failed. Only the fields present change.
+ChatRange:
+  type: object
+  additionalProperties: false
+  properties:
+    min:
+      type: integer
+      format: int64
+    max:
+      type: integer
+      format: int64
+  required:
+    - min
+    - max
+  description: Closed range of a policy value.
+ChatPolicyBounds:
+  type: object
+  additionalProperties: false
+  properties:
+    textYears:
+      $ref: ./schemas.yaml#/ChatRange
+    filesDays:
+      $ref: ./schemas.yaml#/ChatRange
+    voiceDays:
+      $ref: ./schemas.yaml#/ChatRange
+    receiptsDays:
+      $ref: ./schemas.yaml#/ChatRange
+    deletedDays:
+      $ref: ./schemas.yaml#/ChatRange
+    maxFileMb:
+      $ref: ./schemas.yaml#/ChatRange
+  required:
+    - textYears
+    - filesDays
+    - voiceDays
+    - receiptsDays
+    - deletedDays
+    - maxFileMb
+  description: Bounds of the organization (chats.js BOUNDS) a kind policy and a chat override stay inside.
+ChatKindPolicy:
+  type: object
+  additionalProperties: false
+  properties:
+    kind:
+      type: string
+      enum:
+        - direct
+        - group
+        - area
+        - record
+        - announce
+    policy:
+      $ref: ./schemas.yaml#/ChatPolicy
+    bounds:
+      $ref: ./schemas.yaml#/ChatPolicyBounds
+    revision:
+      type: integer
+      minimum: 1
+      format: int64
+  required:
+    - kind
+    - policy
+    - bounds
+    - revision
+  description: Policy of one kind of chats with its bounds; revision is the ETag of updateChatPolicy.
+ChatKindPolicyList:
+  type: object
+  additionalProperties: false
+  properties:
+    items:
+      type: array
+      items:
+        $ref: ./schemas.yaml#/ChatKindPolicy
+      maxItems: 5
+  required:
+    - items
+  description: Policies of the five kinds (direct, group, area, record, announce).
+ChatPolicyUpdate:
+  type: object
+  additionalProperties: false
+  properties:
+    patch:
+      $ref: ./schemas.yaml#/ChatPolicyPatch
+    dryRun:
+      type: boolean
+      description: true — nothing is saved, the answer lists the service messages that would appear.
+  required:
+    - patch
+  description: Change of the policy of a kind (chat.policy.manage, owner only).
+ChatPolicyUpdateResult:
+  type: object
+  additionalProperties: false
+  properties:
+    applied:
+      type: boolean
+    policy:
+      $ref: ./schemas.yaml#/ChatKindPolicy
+    notes:
+      type: array
+      items:
+        type: string
+        maxLength: 300
+      maxItems: 20
+      description: Texts of the service messages for the chats of the kind (chatPolicySet notes).
+  required:
+    - applied
+    - policy
+    - notes
+  description: Result of updateChatPolicy.
+ChatMemberRef:
+  type: object
+  additionalProperties: false
+  properties:
+    memberId:
+      $ref: ../common/schemas.yaml#/Id
+    displayName:
+      type: string
+      maxLength: 200
+    title:
+      type: string
+      maxLength: 200
+  required:
+    - memberId
+    - displayName
+  description: Member of the organization shown by name.
+ChatPeer:
+  type: object
+  additionalProperties: false
+  properties:
+    memberId:
+      $ref: ../common/schemas.yaml#/Id
+    displayName:
+      type: string
+      maxLength: 200
+    status:
+      type: string
+      enum:
+        - active
+        - blocked
+        - dismissed
+  required:
+    - memberId
+    - displayName
+  description: The other side of a direct chat (blocked or dismissed — «больше не работает», read only for the second member, Q-W4.00-chats-23).
+ChatRecordRef:
+  type: object
+  additionalProperties: false
+  properties:
+    object:
+      $ref: ../common/schemas.yaml#/ObjectRef
+    label:
+      type: string
+      maxLength: 200
+    nav:
+      type: string
+      maxLength: 512
+  required:
+    - object
+    - label
+  description: Record the chat belongs to (trip, repair object — Q-W4.00-chats-19); the right to the record is checked on top of the chat role (docs/25:170).
+ChatSource:
+  type: object
+  additionalProperties: false
+  properties:
+    who:
+      type: string
+      enum:
+        - all
+        - group
+        - role
+        - member
+        - relation
+        - trip_driver
+      description: all — all employees of the area; group; role (role in the area); member; relation (foreman of an object); trip_driver (driver of a trip).
+    refId:
+      oneOf:
+        - $ref: ../common/schemas.yaml#/Id
+        - type: "null"
+    orgUnitId:
+      oneOf:
+        - $ref: ../common/schemas.yaml#/Id
+        - type: "null"
+    object:
+      oneOf:
+        - $ref: ../common/schemas.yaml#/ObjectRef
+        - type: "null"
+    tripId:
+      oneOf:
+        - $ref: ../common/schemas.yaml#/Id
+        - type: "null"
+    role:
+      type: string
+      enum:
+        - owner
+        - moderator
+        - member
+        - reader
+      description: Role in the chat the source gives.
+  required:
+    - who
+    - role
+  description: "A source of the chat roster (chat_sources): owner and «all employees» may be set by the business owner only (chats.js 362–368)."
+ChatCan:
+  type: object
+  additionalProperties: false
+  properties:
+    write:
+      type: boolean
+    files:
+      type: boolean
+    polls:
+      type: boolean
+    moderate:
+      type: boolean
+    pin:
+      type: boolean
+    announce:
+      type: boolean
+    receipts:
+      type: boolean
+    pdn:
+      type: boolean
+    ephemeral:
+      type: boolean
+    viewOnce:
+      type: boolean
+    members:
+      type: boolean
+    settings:
+      type: boolean
+    saveToRecord:
+      type: boolean
+    task:
+      type: boolean
+  required:
+    - write
+    - files
+    - polls
+    - moderate
+    - pin
+    - announce
+    - receipts
+    - pdn
+    - ephemeral
+    - viewOnce
+    - members
+    - settings
+    - saveToRecord
+    - task
+  description: What the member may do in the chat (chatRights.can). Computed by the server; the client never recomputes it.
+ChatChainStep:
+  type: object
+  additionalProperties: false
+  properties:
+    title:
+      type: string
+      maxLength: 200
+    detail:
+      type: string
+      maxLength: 500
+    ok:
+      type: boolean
+  required:
+    - title
+    - detail
+    - ok
+  description: A step of the chain «roster → module → function → invitation» (chatAccess.chain).
+ChatMy:
+  type: object
+  additionalProperties: false
+  properties:
+    role:
+      type:
+        - string
+        - "null"
+      enum:
+        - owner
+        - moderator
+        - member
+        - reader
+        - null
+    unread:
+      type: integer
+      minimum: 0
+      format: int64
+    ackWaitCount:
+      type: integer
+      minimum: 0
+      format: int64
+      description: Important messages waiting for the member’s «Ознакомлен».
+    lastReadSeq:
+      type: integer
+      minimum: 0
+      format: int64
+    can:
+      $ref: ./schemas.yaml#/ChatCan
+    chain:
+      type: array
+      items:
+        $ref: ./schemas.yaml#/ChatChainStep
+      maxItems: 12
+  required:
+    - role
+    - unread
+    - ackWaitCount
+    - lastReadSeq
+  description: The member’s view of the chat; can and chain only in getChat.
+ChatMessagePreview:
+  type: object
+  additionalProperties: false
+  properties:
+    seq:
+      type: integer
+      minimum: 1
+      format: int64
+    at:
+      $ref: ../common/schemas.yaml#/Instant
+    authorDisplayName:
+      type: string
+      maxLength: 200
+    text:
+      type: string
+      maxLength: 300
+      description: Text after the PDn mask; a deleted message — a label.
+    kind:
+      type: string
+      enum:
+        - text
+        - poll
+        - system
+        - file
+        - document
+  required:
+    - seq
+    - at
+    - authorDisplayName
+    - text
+    - kind
+  description: Last message of a chat in the list.
+ChatSummary:
+  type: object
+  additionalProperties: false
+  properties:
+    id:
+      $ref: ../common/schemas.yaml#/Id
+    kind:
+      type: string
+      enum:
+        - direct
+        - group
+        - area
+        - record
+        - announce
+    title:
+      type: string
+      maxLength: 200
+    orgUnitId:
+      oneOf:
+        - $ref: ../common/schemas.yaml#/Id
+        - type: "null"
+    status:
+      type: string
+      enum:
+        - active
+        - archived
+    sensitivity:
+      type: string
+      enum:
+        - normal
+        - finance
+        - pdn
+    record:
+      oneOf:
+        - $ref: ./schemas.yaml#/ChatRecordRef
+        - type: "null"
+    peer:
+      oneOf:
+        - $ref: ./schemas.yaml#/ChatPeer
+        - type: "null"
+    lastMessage:
+      oneOf:
+        - $ref: ./schemas.yaml#/ChatMessagePreview
+        - type: "null"
+    pinnedMessageId:
+      oneOf:
+        - $ref: ../common/schemas.yaml#/Id
+        - type: "null"
+    my:
+      $ref: ./schemas.yaml#/ChatMy
+    usedBytes:
+      type: integer
+      minimum: 0
+      format: int64
+    revision:
+      type: integer
+      minimum: 1
+      format: int64
+  required:
+    - id
+    - kind
+    - title
+    - status
+    - sensitivity
+    - my
+    - revision
+  description: "Row of the chat list (listChats): title, last message after the PDn mask, my unread and role. A chat the member does not see is not listed."
+ChatFolderCounts:
+  type: object
+  additionalProperties: false
+  properties:
+    all:
+      type: integer
+      minimum: 0
+      format: int64
+    direct:
+      type: integer
+      minimum: 0
+      format: int64
+    work:
+      type: integer
+      minimum: 0
+      format: int64
+    record:
+      type: integer
+      minimum: 0
+      format: int64
+    announce:
+      type: integer
+      minimum: 0
+      format: int64
+  required:
+    - all
+    - direct
+    - work
+    - record
+    - announce
+  description: Counters of the folders «Все · Личные · Рабочие · Записи · Объявления» (Q-W4.00-chats-15).
+ChatList:
+  type: object
+  additionalProperties: false
+  properties:
+    items:
+      type: array
+      items:
+        $ref: ./schemas.yaml#/ChatSummary
+      maxItems: 200
+    nextCursor:
+      type:
+        - string
+        - "null"
+      maxLength: 2048
+    counts:
+      $ref: ./schemas.yaml#/ChatFolderCounts
+  required:
+    - items
+    - nextCursor
+    - counts
+  description: Chats visible to the member, newest activity first.
+ChatHoldRef:
+  type: object
+  additionalProperties: false
+  properties:
+    id:
+      $ref: ../common/schemas.yaml#/Id
+    reason:
+      type: string
+      maxLength: 500
+    period:
+      type: string
+      maxLength: 100
+    until:
+      type:
+        - string
+        - "null"
+      format: date
+    createdByDisplayName:
+      type: string
+      maxLength: 200
+  required:
+    - id
+    - reason
+    - period
+    - until
+    - createdByDisplayName
+  description: Hold that protects the chat from deletion and expiry.
+Chat:
+  type: object
+  additionalProperties: false
+  properties:
+    id:
+      $ref: ../common/schemas.yaml#/Id
+    kind:
+      type: string
+      enum:
+        - direct
+        - group
+        - area
+        - record
+        - announce
+    title:
+      type: string
+      maxLength: 200
+    orgUnitId:
+      oneOf:
+        - $ref: ../common/schemas.yaml#/Id
+        - type: "null"
+    status:
+      type: string
+      enum:
+        - active
+        - archived
+    sensitivity:
+      type: string
+      enum:
+        - normal
+        - finance
+        - pdn
+    record:
+      oneOf:
+        - $ref: ./schemas.yaml#/ChatRecordRef
+        - type: "null"
+    peer:
+      oneOf:
+        - $ref: ./schemas.yaml#/ChatPeer
+        - type: "null"
+    topics:
+      type: array
+      items:
+        type: string
+        maxLength: 60
+        description: Topic name.
+      maxItems: 20
+    pinned:
+      oneOf:
+        - $ref: ./schemas.yaml#/ChatMessage
+        - type: "null"
+    policy:
+      $ref: ./schemas.yaml#/ChatPolicy
+      description: "Effective policy P: the kind policy with the overrides of the chat."
+    overrides:
+      type: object
+      additionalProperties: false
+      properties:
+        onFull:
+          type: string
+          enum:
+            - block
+            - ring
+            - compress
+            - archive
+      description: Overrides of the chat inside the bounds (only onFull in the first version, Q-W4.00-chats-2).
+    history:
+      type: string
+      enum:
+        - all
+        - since_join
+        - none
+      description: "What a new member sees: all history, from joining, or nothing."
+    hold:
+      oneOf:
+        - $ref: ./schemas.yaml#/ChatHoldRef
+        - type: "null"
+    my:
+      $ref: ./schemas.yaml#/ChatMy
+    memberCount:
+      type: integer
+      minimum: 0
+      format: int64
+    usedBytes:
+      type: integer
+      minimum: 0
+      format: int64
+    revision:
+      type: integer
+      minimum: 1
+      format: int64
+  required:
+    - id
+    - kind
+    - title
+    - status
+    - sensitivity
+    - topics
+    - policy
+    - overrides
+    - history
+    - my
+    - memberCount
+    - usedBytes
+    - revision
+  description: Chat with the effective policy, my rights and chain (getChat). ETag — revision.
+ChatCreate:
+  type: object
+  additionalProperties: false
+  properties:
+    kind:
+      type: string
+      enum:
+        - group
+        - area
+        - announce
+      description: group, area or announce; record chats are created by the server from the record (Q-W4.00-chats-19); direct — createDirectChat.
+    title:
+      type: string
+      minLength: 2
+      maxLength: 120
+    orgUnitId:
+      oneOf:
+        - $ref: ../common/schemas.yaml#/Id
+        - type: "null"
+    label:
+      type: string
+      enum:
+        - normal
+        - finance
+      description: Label «Финансы» (finance) — business owner only (Q-W4.00-chats-21); the label «ПДн» is not offered (Q-W4.00-chats-14).
+    sources:
+      type: array
+      items:
+        $ref: ./schemas.yaml#/ChatSource
+        description: At least one source; the creator becomes the owner.
+      maxItems: 50
+    history:
+      type: string
+      enum:
+        - all
+        - since_join
+        - none
+    dryRun:
+      type: boolean
+      description: true — nothing is created, the answer lists who joins, who waits for an invitation and who is skipped.
+  required:
+    - kind
+    - title
+    - sources
+  description: Creation of a chat (chatCreate). The kind announce and the label finance — business owner only.
+ChatSkipped:
+  type: object
+  additionalProperties: false
+  properties:
+    member:
+      $ref: ./schemas.yaml#/ChatMemberRef
+    reason:
+      type: string
+      maxLength: 300
+  required:
+    - member
+    - reason
+  description: A member who cannot be added (outside the area of the author — chat_member_out_of_scope).
+ChatMembershipImpact:
+  type: object
+  additionalProperties: false
+  properties:
+    joined:
+      type: array
+      items:
+        $ref: ./schemas.yaml#/ChatMemberRef
+      maxItems: 500
+    pending:
+      type: array
+      items:
+        $ref: ./schemas.yaml#/ChatMemberRef
+      maxItems: 500
+      description: Invited, the invitation is waiting for their login.
+    skipped:
+      type: array
+      items:
+        $ref: ./schemas.yaml#/ChatSkipped
+      maxItems: 500
+    lose:
+      type: array
+      items:
+        $ref: ./schemas.yaml#/ChatMemberRef
+      maxItems: 500
+      description: Members who lose the chat (replaceChatSources).
+  required:
+    - joined
+    - pending
+    - skipped
+    - lose
+  description: Who gets, keeps or loses the chat (chatCreate dryRun, chatSources).
+ChatCreateResult:
+  type: object
+  additionalProperties: false
+  properties:
+    applied:
+      type: boolean
+      description: false for dryRun.
+    chat:
+      oneOf:
+        - $ref: ./schemas.yaml#/Chat
+        - type: "null"
+    impact:
+      $ref: ./schemas.yaml#/ChatMembershipImpact
+  required:
+    - applied
+    - impact
+  description: "Result of createChat: 201 with the chat, 200 with applied false for dryRun. Emits chat.chat.created.v1."
+ChatDirectCreate:
+  type: object
+  additionalProperties: false
+  properties:
+    memberId:
+      $ref: ../common/schemas.yaml#/Id
+  required:
+    - memberId
+  description: Direct chat with an employee of the area (chat.direct); the pair is one chat — a second call returns the existing one.
+ChatPatch:
+  type: object
+  additionalProperties: false
+  properties:
+    title:
+      type: string
+      minLength: 2
+      maxLength: 120
+    label:
+      type: string
+      enum:
+        - normal
+        - finance
+    history:
+      type: string
+      enum:
+        - all
+        - since_join
+        - none
+    overrides:
+      type: object
+      additionalProperties: false
+      properties:
+        onFull:
+          type: string
+          enum:
+            - block
+            - ring
+            - compress
+            - archive
+  minProperties: 1
+  description: Change of a chat inside its policy bounds (chatSetFull and rename); revision — If-Match.
+ChatAttachment:
+  type: object
+  additionalProperties: false
+  properties:
+    id:
+      $ref: ../common/schemas.yaml#/Id
+    fileId:
+      oneOf:
+        - $ref: ../common/schemas.yaml#/Id
+        - type: "null"
+    fileName:
+      type: string
+      maxLength: 255
+    sizeBytes:
+      type: integer
+      minimum: 0
+      format: int64
+    kind:
+      type: string
+      enum:
+        - photo
+        - video
+        - voice
+        - doc
+    viewOnce:
+      type: boolean
+    openedByMe:
+      type: boolean
+    gone:
+      type: boolean
+      description: The view-once file was opened and removed (24 h after the first opening — server job, chatTick of the prototype).
+    savedTo:
+      oneOf:
+        - $ref: ../common/schemas.yaml#/ObjectRef
+        - type: "null"
+  required:
+    - id
+    - fileName
+    - sizeBytes
+    - kind
+    - viewOnce
+    - gone
+  description: Attachment of a message (files, purpose chat_attachment).
+ChatDocRef:
+  type: object
+  additionalProperties: false
+  properties:
+    kind:
+      type: string
+      maxLength: 50
+    refId:
+      $ref: ../common/schemas.yaml#/Id
+    title:
+      type: string
+      maxLength: 200
+    sub:
+      type: string
+      maxLength: 200
+  required:
+    - kind
+    - refId
+    - title
+  description: Reference to a document or a page of the knowledge base in a message; a reference never grants access (ObjectRef rule).
+ChatImportant:
+  type: object
+  additionalProperties: false
+  properties:
+    dueDate:
+      type: string
+      format: date
+    ackCount:
+      type: integer
+      minimum: 0
+      format: int64
+    totalCount:
+      type: integer
+      minimum: 0
+      format: int64
+    mine:
+      type: object
+      additionalProperties: false
+      properties:
+        required:
+          type: boolean
+        done:
+          type: boolean
+      required:
+        - required
+        - done
+  required:
+    - dueDate
+    - ackCount
+    - totalCount
+  description: "Important message: acknowledgements N of M; «Требует решения» card chat.ack_pending while waiting (Q-W4.00-chats-11: due is fixed «+3 days»)."
+ChatPollOption:
+  type: object
+  additionalProperties: false
+  properties:
+    id:
+      $ref: ../common/schemas.yaml#/Id
+    text:
+      type: string
+      maxLength: 200
+    votes:
+      type: integer
+      minimum: 0
+      format: int64
+      description: Absent while results are hidden.
+    mine:
+      type: boolean
+    voters:
+      type: array
+      items:
+        type: string
+        maxLength: 200
+      maxItems: 500
+      description: Names; absent for anonymous polls (Q-W4.00-chats-12).
+  required:
+    - id
+    - text
+  description: Option of a poll.
+ChatPoll:
+  type: object
+  additionalProperties: false
+  properties:
+    id:
+      $ref: ../common/schemas.yaml#/Id
+    question:
+      type: string
+      maxLength: 300
+    options:
+      type: array
+      items:
+        $ref: ./schemas.yaml#/ChatPollOption
+      maxItems: 10
+    anonymous:
+      type: boolean
+    multiple:
+      type: boolean
+    closesAt:
+      $ref: ../common/schemas.yaml#/Instant
+    closed:
+      type: boolean
+    totalVoters:
+      type: integer
+      minimum: 0
+      format: int64
+    myVotes:
+      type: array
+      items:
+        $ref: ../common/schemas.yaml#/Id
+      maxItems: 10
+  required:
+    - id
+    - question
+    - options
+    - anonymous
+    - multiple
+    - closesAt
+    - closed
+    - totalVoters
+    - myVotes
+  description: "Poll in a message. Anonymous: only the fact of participation is stored (voter_hash)."
+ChatPollCreate:
+  type: object
+  additionalProperties: false
+  properties:
+    question:
+      type: string
+      minLength: 1
+      maxLength: 300
+    options:
+      type: array
+      items:
+        type: string
+        minLength: 1
+        maxLength: 200
+        description: 2–10 options.
+      maxItems: 10
+    anonymous:
+      type: boolean
+    multiple:
+      type: boolean
+    closesInHours:
+      type: integer
+      minimum: 1
+      maximum: 168
+      format: int64
+      description: 1–168; 24 by default.
+  required:
+    - question
+    - options
+  description: Poll of postChatMessage (chat.polls.create).
+ChatSystemCard:
+  type: object
+  additionalProperties: false
+  properties:
+    module:
+      type: string
+      maxLength: 50
+    icon:
+      type: string
+      maxLength: 50
+    tone:
+      type: string
+      enum:
+        - info
+        - ok
+        - warn
+        - danger
+        - neutral
+    title:
+      type: string
+      maxLength: 200
+    text:
+      type: string
+      maxLength: 500
+    label:
+      type: string
+      maxLength: 100
+    nav:
+      type: string
+      maxLength: 512
+    refId:
+      $ref: ../common/schemas.yaml#/Id
+  required:
+    - module
+    - icon
+    - tone
+    - title
+    - text
+  description: Service message of a module (trip assigned, defect found, …) with a button by the rights of the reader.
+ChatDeleted:
+  type: object
+  additionalProperties: false
+  properties:
+    byDisplayName:
+      type: string
+      maxLength: 200
+    at:
+      $ref: ../common/schemas.yaml#/Instant
+    moderator:
+      type: boolean
+    reason:
+      type: string
+      maxLength: 500
+  required:
+    - byDisplayName
+    - at
+    - moderator
+  description: "Only a label remains: who, when, why. The content stays in the journal for 30 days (chat.audit.read) — it never «resurrects» in the feed (PD-60, chats.md §5.2)."
+ChatTaskRef:
+  type: object
+  additionalProperties: false
+  properties:
+    taskId:
+      $ref: ../common/schemas.yaml#/Id
+    key:
+      type: string
+      maxLength: 50
+  required:
+    - taskId
+    - key
+  description: Task created from the message (TaskPort, W4.11).
+ChatMessage:
+  type: object
+  additionalProperties: false
+  properties:
+    id:
+      $ref: ../common/schemas.yaml#/Id
+    seq:
+      type: integer
+      minimum: 1
+      format: int64
+    createdAt:
+      $ref: ../common/schemas.yaml#/Instant
+    authorMemberId:
+      oneOf:
+        - $ref: ../common/schemas.yaml#/Id
+        - type: "null"
+    authorDisplayName:
+      type: string
+      maxLength: 200
+    kind:
+      type: string
+      enum:
+        - text
+        - poll
+        - system
+        - document
+    text:
+      type: string
+      maxLength: 4000
+      description: After the PDn mask when masked is true; empty for a deleted message.
+    masked:
+      type: boolean
+    topic:
+      type:
+        - string
+        - "null"
+      maxLength: 60
+    attachments:
+      type: array
+      items:
+        $ref: ./schemas.yaml#/ChatAttachment
+      maxItems: 10
+    document:
+      oneOf:
+        - $ref: ./schemas.yaml#/ChatDocRef
+        - type: "null"
+    important:
+      oneOf:
+        - $ref: ./schemas.yaml#/ChatImportant
+        - type: "null"
+    ephemeral:
+      type:
+        - object
+        - "null"
+      additionalProperties: false
+      properties:
+        expiresAt:
+          $ref: ../common/schemas.yaml#/Instant
+        ttlHours:
+          type: integer
+          minimum: 1
+          maximum: 168
+          format: int64
+      required:
+        - expiresAt
+        - ttlHours
+    spoiler:
+      type:
+        - string
+        - "null"
+      maxLength: 300
+    poll:
+      oneOf:
+        - $ref: ./schemas.yaml#/ChatPoll
+        - type: "null"
+    system:
+      oneOf:
+        - $ref: ./schemas.yaml#/ChatSystemCard
+        - type: "null"
+    deleted:
+      oneOf:
+        - $ref: ./schemas.yaml#/ChatDeleted
+        - type: "null"
+    editedAt:
+      oneOf:
+        - $ref: ../common/schemas.yaml#/Instant
+        - type: "null"
+    visibleOnlyToMe:
+      type: boolean
+      description: «Видно только вам».
+    reads:
+      type:
+        - object
+        - "null"
+      additionalProperties: false
+      properties:
+        readCount:
+          type: integer
+          minimum: 0
+          format: int64
+        totalCount:
+          type: integer
+          minimum: 0
+          format: int64
+      required:
+        - readCount
+        - totalCount
+    tasks:
+      type: array
+      items:
+        $ref: ./schemas.yaml#/ChatTaskRef
+      maxItems: 10
+  required:
+    - id
+    - seq
+    - createdAt
+    - authorDisplayName
+    - kind
+    - text
+    - masked
+    - attachments
+    - tasks
+  description: "Message of a chat. Server rules: the PDn mask is applied to text, the deleted content is not returned, receipts follow the mode of the policy."
+ChatMessageList:
+  type: object
+  additionalProperties: false
+  properties:
+    items:
+      type: array
+      items:
+        $ref: ./schemas.yaml#/ChatMessage
+      maxItems: 200
+    hasMore:
+      type: boolean
+    lastSeq:
+      type: integer
+      minimum: 0
+      format: int64
+  required:
+    - items
+    - hasMore
+  description: Messages ordered by seq; beforeSeq pages back, afterSeq reads new ones after the hint chat.changed (ADR-0015, Q-W4.00-chats-7).
+ChatDocRefInput:
+  type: object
+  additionalProperties: false
+  properties:
+    kind:
+      type: string
+      maxLength: 50
+    refId:
+      $ref: ../common/schemas.yaml#/Id
+  required:
+    - kind
+    - refId
+  description: "Reference to attach: the card is read from the module of the target by the rights of the reader."
+ChatMessageCreate:
+  type: object
+  additionalProperties: false
+  properties:
+    text:
+      type: string
+      maxLength: 4000
+    topic:
+      type: string
+      maxLength: 60
+    fileIds:
+      type: array
+      items:
+        $ref: ../common/schemas.yaml#/Id
+        description: Files of purpose chat_attachment uploaded with initiateUpload/completeUpload.
+      maxItems: 10
+    document:
+      $ref: ./schemas.yaml#/ChatDocRefInput
+    important:
+      type: object
+      additionalProperties: false
+      properties:
+        dueDate:
+          type: string
+          format: date
+          description: Fixed «+3 days» (Q-W4.00-chats-11); the server ignores another value.
+    ephemeral:
+      type: object
+      additionalProperties: false
+      properties:
+        ttlHours:
+          type: integer
+          minimum: 1
+          maximum: 168
+          format: int64
+      required:
+        - ttlHours
+    viewOnce:
+      type: boolean
+    spoiler:
+      type: string
+      maxLength: 300
+    poll:
+      $ref: ./schemas.yaml#/ChatPollCreate
+    mentions:
+      type: array
+      items:
+        $ref: ../common/schemas.yaml#/Id
+      maxItems: 50
+      description: Members mentioned by @; a member outside the chat is not notified — the server offers to add them.
+  description: "New message (chatSend): text up to 4000; important and @all — chat.announce and a role not lower than moderator; files — chat.files.send; poll — chat.polls.create; temporary — chat.ephemeral.send."
+ChatMessageEdit:
+  type: object
+  additionalProperties: false
+  properties:
+    text:
+      type: string
+      minLength: 1
+      maxLength: 4000
+  required:
+    - text
+  description: New text of an own message inside the edit window P.edit; the previous text goes to the versions.
+ChatMessageVersion:
+  type: object
+  additionalProperties: false
+  properties:
+    text:
+      type: string
+      maxLength: 4000
+    editedAt:
+      $ref: ../common/schemas.yaml#/Instant
+  required:
+    - text
+    - editedAt
+  description: Previous version of the text (author and moderator only).
+ChatMessageVersionList:
+  type: object
+  additionalProperties: false
+  properties:
+    items:
+      type: array
+      items:
+        $ref: ./schemas.yaml#/ChatMessageVersion
+      maxItems: 200
+  required:
+    - items
+  description: History of edits.
+ChatReadMark:
+  type: object
+  additionalProperties: false
+  properties:
+    uptoSeq:
+      type: integer
+      minimum: 0
+      format: int64
+  required:
+    - uptoSeq
+  description: Read up to this seq.
+ChatReadState:
+  type: object
+  additionalProperties: false
+  properties:
+    lastReadSeq:
+      type: integer
+      minimum: 0
+      format: int64
+    unread:
+      type: integer
+      minimum: 0
+      format: int64
+  required:
+    - lastReadSeq
+    - unread
+  description: Read state after markChatRead.
+ChatReceipt:
+  type: object
+  additionalProperties: false
+  properties:
+    member:
+      $ref: ./schemas.yaml#/ChatMemberRef
+    readAt:
+      oneOf:
+        - $ref: ../common/schemas.yaml#/Instant
+        - type: "null"
+  required:
+    - member
+    - readAt
+  description: Who has read and when (mode who).
+ChatReceipts:
+  type: object
+  additionalProperties: false
+  properties:
+    mode:
+      type: string
+      enum:
+        - "off"
+        - ticks
+        - who
+    readCount:
+      type: integer
+      minimum: 0
+      format: int64
+    totalCount:
+      type: integer
+      minimum: 0
+      format: int64
+    items:
+      type: array
+      items:
+        $ref: ./schemas.yaml#/ChatReceipt
+      maxItems: 500
+      description: Only in mode who; the author and moderators only (Q-W4.00-chats-8).
+  required:
+    - mode
+    - readCount
+    - totalCount
+  description: Receipts of a message.
+ChatPdnReveal:
+  type: object
+  additionalProperties: false
+  properties:
+    messageId:
+      $ref: ../common/schemas.yaml#/Id
+    text:
+      type: string
+      maxLength: 4000
+    revealedAt:
+      $ref: ../common/schemas.yaml#/Instant
+  required:
+    - messageId
+    - text
+    - revealedAt
+  description: Text without the mask for this member only; every reveal is written to the journal (chat.pdn.revealed.v1).
+ChatVote:
+  type: object
+  additionalProperties: false
+  properties:
+    optionIds:
+      type: array
+      items:
+        $ref: ../common/schemas.yaml#/Id
+      maxItems: 10
+      description: Empty — withdraw the vote.
+  required:
+    - optionIds
+  description: Vote; a repeated call replaces the previous vote while the poll is open.
+ChatPollReminder:
+  type: object
+  additionalProperties: false
+  properties:
+    notified:
+      type: integer
+      minimum: 0
+      format: int64
+  required:
+    - notified
+  description: Members who have not voted and were reminded.
+ChatPin:
+  type: object
+  additionalProperties: false
+  properties:
+    messageId:
+      $ref: ../common/schemas.yaml#/Id
+  required:
+    - messageId
+  description: Message to pin.
+ChatPinState:
+  type: object
+  additionalProperties: false
+  properties:
+    pinnedMessageId:
+      oneOf:
+        - $ref: ../common/schemas.yaml#/Id
+        - type: "null"
+  required:
+    - pinnedMessageId
+  description: Pinned message of the chat.
+ChatViewOnceLink:
+  type: object
+  additionalProperties: false
+  properties:
+    url:
+      type: string
+      maxLength: 2048
+    expiresAt:
+      $ref: ../common/schemas.yaml#/Instant
+    watermark:
+      type: string
+      maxLength: 200
+    noDownload:
+      type: boolean
+  required:
+    - url
+    - expiresAt
+    - watermark
+    - noDownload
+  description: Short-lived view link with a watermark, no download; the file is removed 24 h after the first opening (server job).
+ChatSaveToRecord:
+  type: object
+  additionalProperties: false
+  properties:
+    record:
+      $ref: ../common/schemas.yaml#/ObjectRef
+      description: Defaults to the record of the chat; another record must be visible to the member.
+  description: Save attachments of a message to a record.
+ChatSaveToRecordResult:
+  type: object
+  additionalProperties: false
+  properties:
+    saved:
+      type: array
+      items:
+        $ref: ./schemas.yaml#/ChatAttachment
+      maxItems: 10
+    record:
+      $ref: ../common/schemas.yaml#/ObjectRef
+    bytes:
+      type: integer
+      minimum: 0
+      format: int64
+  required:
+    - saved
+    - record
+    - bytes
+  description: Owner of the files changes from the message to the record (files.objects.owner); bytes are charged to the chat storage until saved (docs/25).
+ChatTaskCreate:
+  type: object
+  additionalProperties: false
+  properties:
+    projectId:
+      $ref: ../common/schemas.yaml#/Id
+      description: Project of the task; defaults to the project of the record or the first project the member may create in.
+    title:
+      type: string
+      minLength: 3
+      maxLength: 200
+  required:
+    - title
+  description: Task from a message (chatToTask).
+ChatMember:
+  type: object
+  additionalProperties: false
+  properties:
+    member:
+      $ref: ./schemas.yaml#/ChatMemberRef
+    state:
+      type: string
+      enum:
+        - in
+        - pending
+        - out
+    role:
+      type:
+        - string
+        - "null"
+      enum:
+        - owner
+        - moderator
+        - member
+        - reader
+        - null
+    via:
+      type: string
+      maxLength: 300
+    why:
+      type: string
+      maxLength: 500
+  required:
+    - member
+    - state
+    - role
+  description: "Computed participant of the chat: in, pending (invited), out; via — where the access comes from."
+ChatMemberList:
+  type: object
+  additionalProperties: false
+  properties:
+    items:
+      type: array
+      items:
+        $ref: ./schemas.yaml#/ChatMember
+      maxItems: 1000
+    counts:
+      type: object
+      additionalProperties: false
+      properties:
+        in:
+          type: integer
+          minimum: 0
+          format: int64
+        pending:
+          type: integer
+          minimum: 0
+          format: int64
+        out:
+          type: integer
+          minimum: 0
+          format: int64
+      required:
+        - in
+        - pending
+        - out
+  required:
+    - items
+    - counts
+  description: Participants of the chat (chat.members.manage; Q-W7.00-1).
+ChatSources:
+  type: object
+  additionalProperties: false
+  properties:
+    items:
+      type: array
+      items:
+        $ref: ./schemas.yaml#/ChatSource
+      maxItems: 50
+    revision:
+      type: integer
+      minimum: 1
+      format: int64
+  required:
+    - items
+    - revision
+  description: Sources of the roster; revision is the ETag of replaceChatSources.
+ChatSourcesReplace:
+  type: object
+  additionalProperties: false
+  properties:
+    sources:
+      type: array
+      items:
+        $ref: ./schemas.yaml#/ChatSource
+        description: At least one source with an owner.
+      maxItems: 50
+    dryRun:
+      type: boolean
+  required:
+    - sources
+  description: "Replacement of the sources (chatSources): the roster is recomputed, joined and left members get service messages."
+ChatSourcesResult:
+  type: object
+  additionalProperties: false
+  properties:
+    applied:
+      type: boolean
+    impact:
+      $ref: ./schemas.yaml#/ChatMembershipImpact
+    sources:
+      $ref: ./schemas.yaml#/ChatSources
+  required:
+    - applied
+    - impact
+  description: Result of replaceChatSources; chat.member.joined.v1 and chat.member.left.v1.
+ChatAccessExplanation:
+  type: object
+  additionalProperties: false
+  properties:
+    member:
+      $ref: ./schemas.yaml#/ChatMemberRef
+    ok:
+      type: boolean
+    role:
+      type:
+        - string
+        - "null"
+      enum:
+        - owner
+        - moderator
+        - member
+        - reader
+        - null
+    reason:
+      type: string
+      enum:
+        - none
+        - blocked
+        - module_off
+        - not_member
+        - no_module
+        - function
+        - invited
+    why:
+      type: string
+      maxLength: 500
+    chain:
+      type: array
+      items:
+        $ref: ./schemas.yaml#/ChatChainStep
+      maxItems: 12
+  required:
+    - member
+    - ok
+    - role
+    - chain
+  description: Why the member is (not) in the chat — «Проверить сотрудника» (1c).
+ChatBucket:
+  type: object
+  additionalProperties: false
+  properties:
+    id:
+      type: string
+      maxLength: 50
+    kind:
+      type: string
+      enum:
+        - photo
+        - video
+        - voice
+        - doc
+    label:
+      type: string
+      maxLength: 100
+    ageDays:
+      type: integer
+      minimum: 0
+      format: int64
+    files:
+      type: integer
+      minimum: 0
+      format: int64
+    bytes:
+      type: integer
+      minimum: 0
+      format: int64
+    hold:
+      type: boolean
+    compressed:
+      type: boolean
+  required:
+    - id
+    - kind
+    - label
+    - ageDays
+    - files
+    - bytes
+    - hold
+    - compressed
+  description: Attachments by kind and age.
+ChatStorage:
+  type: object
+  additionalProperties: false
+  properties:
+    usedBytes:
+      type: integer
+      minimum: 0
+      format: int64
+    quotaBytes:
+      type:
+        - integer
+        - "null"
+      minimum: 0
+      format: int64
+    savedBytes:
+      type: integer
+      minimum: 0
+      format: int64
+    archivedBytes:
+      type: integer
+      minimum: 0
+      format: int64
+    buckets:
+      type: array
+      items:
+        $ref: ./schemas.yaml#/ChatBucket
+      maxItems: 50
+    onFull:
+      type: string
+      enum:
+        - block
+        - ring
+        - compress
+        - archive
+    hold:
+      oneOf:
+        - $ref: ./schemas.yaml#/ChatHoldRef
+        - type: "null"
+  required:
+    - usedBytes
+    - quotaBytes
+    - savedBytes
+    - archivedBytes
+    - buckets
+    - onFull
+  description: "Storage of the chat: used, quota, saved to records, archived, buckets. Thresholds 75/90/100 % raise chat.quota.warning / chat.quota.full."
+ChatCleanupCreate:
+  type: object
+  additionalProperties: false
+  properties:
+    kinds:
+      type: array
+      items:
+        type: string
+        enum:
+          - photo
+          - video
+          - voice
+          - doc
+      maxItems: 4
+    olderThanDays:
+      type: integer
+      minimum: 0
+      maximum: 3650
+      format: int64
+    excludeSaved:
+      type: boolean
+    dryRun:
+      type: boolean
+  description: "Cleanup of attachments (chatCleanup): an empty filter — 422; held files are never removed (409 chat_on_hold when the whole chat is held)."
+ChatCleanupResult:
+  type: object
+  additionalProperties: false
+  properties:
+    applied:
+      type: boolean
+    files:
+      type: integer
+      minimum: 0
+      format: int64
+    bytes:
+      type: integer
+      minimum: 0
+      format: int64
+    afterBytes:
+      type: integer
+      minimum: 0
+      format: int64
+    kept:
+      type: object
+      additionalProperties: false
+      properties:
+        saved:
+          type: integer
+          minimum: 0
+          format: int64
+        held:
+          type: integer
+          minimum: 0
+          format: int64
+      required:
+        - saved
+        - held
+  required:
+    - applied
+    - files
+    - bytes
+    - afterBytes
+    - kept
+  description: Cleanup result; chat.cleanup.done.v1.
+ChatJournalEntry:
+  type: object
+  additionalProperties: false
+  properties:
+    id:
+      $ref: ../common/schemas.yaml#/Id
+    at:
+      $ref: ../common/schemas.yaml#/Instant
+    actorDisplayName:
+      type: string
+      maxLength: 200
+    text:
+      type: string
+      maxLength: 500
+    deletedContent:
+      type: string
+      maxLength: 4000
+      description: Content of a deleted message — only with chat.audit.read.
+  required:
+    - id
+    - at
+    - actorDisplayName
+    - text
+  description: Journal entry of the chat.
+ChatJournal:
+  type: object
+  additionalProperties: false
+  properties:
+    items:
+      type: array
+      items:
+        $ref: ./schemas.yaml#/ChatJournalEntry
+      maxItems: 200
+    nextCursor:
+      type:
+        - string
+        - "null"
+      maxLength: 2048
+  required:
+    - items
+    - nextCursor
+  description: Journal of the chat (settings, cleanup, deletion, reveal of the PDn).
+ChatExportCreate:
+  type: object
+  additionalProperties: false
+  properties:
+    format:
+      type: string
+      enum:
+        - csv
+        - json
+    from:
+      $ref: ../common/schemas.yaml#/Instant
+    to:
+      $ref: ../common/schemas.yaml#/Instant
+  required:
+    - format
+  description: Export of the chat history as a job (like datasets export).
+ChatExport:
+  type: object
+  additionalProperties: false
+  properties:
+    id:
+      $ref: ../common/schemas.yaml#/Id
+    status:
+      type: string
+      enum:
+        - queued
+        - running
+        - done
+        - failed
+    createdAt:
+      $ref: ../common/schemas.yaml#/Instant
+    file:
+      oneOf:
+        - $ref: ../common/schemas.yaml#/File
+        - type: "null"
+    error:
+      type: string
+      maxLength: 300
+  required:
+    - id
+    - status
+    - createdAt
+  description: Export job; the file appears when done.
+ChatHold:
+  type: object
+  additionalProperties: false
+  properties:
+    id:
+      $ref: ../common/schemas.yaml#/Id
+    scope:
+      type: string
+      enum:
+        - chat
+        - member
+        - period
+      description: chat, member (messages of members) or period.
+    chatId:
+      oneOf:
+        - $ref: ../common/schemas.yaml#/Id
+        - type: "null"
+    memberIds:
+      type: array
+      items:
+        $ref: ../common/schemas.yaml#/Id
+      maxItems: 100
+    from:
+      oneOf:
+        - $ref: ../common/schemas.yaml#/Instant
+        - type: "null"
+    to:
+      oneOf:
+        - $ref: ../common/schemas.yaml#/Instant
+        - type: "null"
+    reason:
+      type: string
+      maxLength: 500
+    period:
+      type: string
+      maxLength: 100
+    until:
+      type:
+        - string
+        - "null"
+      format: date
+    createdByDisplayName:
+      type: string
+      maxLength: 200
+    createdAt:
+      $ref: ../common/schemas.yaml#/Instant
+    files:
+      type: integer
+      minimum: 0
+      format: int64
+    status:
+      type: string
+      enum:
+        - active
+        - released
+  required:
+    - id
+    - scope
+    - reason
+    - period
+    - until
+    - createdByDisplayName
+    - createdAt
+    - files
+    - status
+  description: "Hold (legal hold, docs/25:243): protects messages from deletion and expiry; personal chats are readable only through a hold with a reason and a journal (CHAT-02)."
+ChatHoldCreate:
+  type: object
+  additionalProperties: false
+  properties:
+    scope:
+      type: string
+      enum:
+        - chat
+        - member
+        - period
+    chatId:
+      $ref: ../common/schemas.yaml#/Id
+    memberIds:
+      type: array
+      items:
+        $ref: ../common/schemas.yaml#/Id
+      maxItems: 100
+    from:
+      $ref: ../common/schemas.yaml#/Instant
+    to:
+      $ref: ../common/schemas.yaml#/Instant
+    reason:
+      type: string
+      minLength: 3
+      maxLength: 500
+    until:
+      type: string
+      format: date
+  required:
+    - scope
+    - reason
+  description: Creation of a hold (chat.hold.manage, owner only).
+ChatHoldList:
+  type: object
+  additionalProperties: false
+  properties:
+    items:
+      type: array
+      items:
+        $ref: ./schemas.yaml#/ChatHold
+      maxItems: 200
+  required:
+    - items
+  description: Holds of the organization.

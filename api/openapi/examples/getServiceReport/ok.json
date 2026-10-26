@@ -1,0 +1,83 @@
+{
+  "period": {
+    "from": "2026-09-01",
+    "to": "2026-10-01"
+  },
+  "rows": [
+    {
+      "directionId": "8adebc22-94d6-5024-b96b-cb535cd6838e",
+      "requests": 3,
+      "resolvedInTime": 1,
+      "late": 0,
+      "avgScore": 3,
+      "ratings": 1,
+      "fewAnswers": true
+    },
+    {
+      "directionId": "4918f530-b3c0-506d-bbf5-2cc15387f372",
+      "requests": 1,
+      "resolvedInTime": 0,
+      "late": 0,
+      "avgScore": null,
+      "ratings": 0,
+      "fewAnswers": true
+    },
+    {
+      "directionId": "5ad59b2d-298c-589f-af85-2401291e1257",
+      "requests": 2,
+      "resolvedInTime": 0,
+      "late": 0,
+      "avgScore": null,
+      "ratings": 0,
+      "fewAnswers": true
+    },
+    {
+      "directionId": "9cc9b25b-8024-58f7-8db6-ba7379006810",
+      "requests": 2,
+      "resolvedInTime": 0,
+      "late": 1,
+      "avgScore": 2,
+      "ratings": 1,
+      "fewAnswers": true
+    }
+  ],
+  "reasons": [
+    {
+      "reason": "Чистота",
+      "count": 1
+    },
+    {
+      "reason": "Опоздание к окну выгрузки",
+      "count": 1
+    }
+  ],
+  "weeks": [
+    {
+      "weekStart": "2026-09-28",
+      "requests": 8,
+      "late": 1
+    }
+  ],
+  "staff": [
+    {
+      "member": {
+        "memberId": "b8df06ec-317e-5f46-b54c-e76603e41b5b",
+        "displayName": "Дарья Зимина"
+      },
+      "ratings": 0,
+      "avgScore": null,
+      "complaintsConfirmed": 0,
+      "thanks": 0
+    },
+    {
+      "member": {
+        "memberId": "ea845988-640e-5506-9303-1cbfc3dede0d",
+        "displayName": "Вера Котельникова"
+      },
+      "ratings": 0,
+      "avgScore": null,
+      "complaintsConfirmed": 0,
+      "thanks": 0
+    }
+  ]
+}

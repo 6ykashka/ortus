@@ -143,7 +143,7 @@ func TestRolesConcurrent(t *testing.T) {
 // control: Up → Down → Up даёт ту же схему; контрольные числа v0.2 и этапа 1 (W1.00: control 0005 —
 // таблица idempotency_keys; W1.03: control 0006 — auth_sessions, auth_login_states; W4.07: control 0007 —
 // tenant_usage_daily, 0008 — branding_assets; W4.05: control 0009 — public_form_links; W6.00: control 0010 —
-// public_client_links). Версия — последняя
+// public_client_links; W7.00: control 0011 — public_doc_links, public_service_tokens, public_service_slugs). Версия — последняя
 // выданная стюардом (PD-59).
 func TestControlUpDownUp(t *testing.T) {
 	t.Parallel()
@@ -158,8 +158,8 @@ func TestControlUpDownUp(t *testing.T) {
 			where table_schema = 'public' and table_type = 'BASE TABLE' and table_name <> 'goose_db_version'`)
 		views := scalar[int](t, db, `select count(*) from information_schema.views where table_schema = 'public'`)
 		enums := scalar[int](t, db, `select count(*) from pg_type where typtype = 'e'`)
-		if tables != 23 || views != 2 || enums != 2 {
-			t.Errorf("tables=%d views=%d enums=%d; want 23, 2, 2", tables, views, enums)
+		if tables != 26 || views != 2 || enums != 2 {
+			t.Errorf("tables=%d views=%d enums=%d; want 26, 2, 2", tables, views, enums)
 		}
 		s1 := migratetest.Snapshot(t, db)
 		if !strings.Contains(s1, "extension btree_gist") {
@@ -204,9 +204,10 @@ func TestTenantUpDownUp(t *testing.T) {
 		// 61 и 14 схем — + схема kb «Базы знаний», 13 таблиц (W4.04, tenant 0024); 71 и 15 — + схема tasks с 10
 		// таблицами «Задач и проектов» (W4.03, tenant 0025); 79 и 16 — + схема forms с 8 таблицами «Форм и опросов» (W4.05,
 		// tenant 0026); 107 и 17 — + схема repairs с 28 таблицами «Ремонта и стройки» (W6.00, tenants 0050–0054);
-		// 133 и 20 — + схемы cash (13 таблиц), inventory (8) и spa (5) этапа 5 (W5.00, tenant 0040–0044).
-		if schemas != 20 || tables != 133 {
-			t.Errorf("schemas=%d tables=%d; want 20, 133", schemas, tables)
+		// 133 и 20 — + схемы cash (13 таблиц), inventory (8) и spa (5) этапа 5 (W5.00, tenant 0040–0044);
+		// 183 и 23 — + схемы chat (17 таблиц, tenant 0060), docs (17, tenant 0061) и service (16, tenant 0062; W7.00).
+		if schemas != 23 || tables != 183 {
+			t.Errorf("schemas=%d tables=%d; want 23, 183", schemas, tables)
 		}
 		s1 := migratetest.Snapshot(t, db)
 

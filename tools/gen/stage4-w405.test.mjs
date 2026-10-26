@@ -11,6 +11,7 @@ import { bundle } from './lib/bundle.mjs';
 import { checkExamples, loadExamples } from './lib/examples.mjs';
 import { operationsById } from './lib/inventory.mjs';
 import { abs, ERRORS_PATH, SCREENS_PATH, SOURCE_0_1 } from './lib/paths.mjs';
+import { STAGE7_CODES } from './lib/stage7.mjs';
 import { flattenActions, loadCatalog } from './lib/permissions.mjs';
 import { escapeToken, parsePointer } from './lib/refs.mjs';
 import { checkAgainstSource, loadDeltas } from './lib/source-diff.mjs';
@@ -271,7 +272,7 @@ describe('контракт 0.11.0-stage4 (W4.05): операции и права
       reg.invalid_transition.reasons.form_rule_disabled.ui,
       'Действие выключено — включите его, чтобы перенести ответы',
     );
-    assert.equal(Object.keys(reg).length - W5_CODES.length, 53);
+    assert.equal(Object.keys(reg).length - W5_CODES.length - STAGE7_CODES.length, 53);
   });
 });
 
@@ -773,7 +774,7 @@ describe('контракт 0.11.0-stage4 (W4.05, возврат 2): маршру
       readme,
       /\|\s*control\s*\|\s*0009\s*\|\s*`0009_public_form_links\.sql`[^|]*\|\s*W4\.05/,
     );
-    assert.match(readme, /\|\s*control\s*\|\s*0010\+\s*\|/);
+    assert.match(readme, /\|\s*control\s*\|\s*0012\+\s*\|/);
   });
 
   it('объект ответа и ответы-ссылки — только видимые отвечающему; иначе 422 «Объект не найден»', () => {

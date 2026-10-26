@@ -9,6 +9,7 @@ import { bundle } from './lib/bundle.mjs';
 import { checkExamples, loadExamples } from './lib/examples.mjs';
 import { operationsById } from './lib/inventory.mjs';
 import { abs, ERRORS_PATH, SCREENS_PATH, SOURCE_0_1 } from './lib/paths.mjs';
+import { STAGE7_CODES } from './lib/stage7.mjs';
 import { flattenActions, loadCatalog } from './lib/permissions.mjs';
 import { escapeToken, parsePointer } from './lib/refs.mjs';
 import { checkAgainstSource, loadDeltas } from './lib/source-diff.mjs';
@@ -157,20 +158,30 @@ describe('контракт 0.7.0-stage4 (W4.06): операции и права'
   it('новых ключей прав, кодов ошибок, тегов и x-scope нет; права набора — как у queryDataset', () => {
     // W2.71 (0.7.1-stage4, S2-20) влит позже и добавил fleet.reservations.choose и offer_closed, W4.04 — ключи «Базы
     // знаний» (core.knowledge), W4.07 (0.8.0-stage4) — право branding.manage и тег Branding: W4.06 своих не
-    // добавлял, остальных ключей вне БЗ без choose — 119, как в 0.7.0.
+    // добавлял, остальных ключей вне БЗ, «Документов» и «Обращений» (W7.00) без choose — 119, как в 0.7.0.
     const actions = [...flattenActions(loadCatalog())].filter(
       ([k, a]) =>
         k !== 'fleet.reservations.choose' &&
         k !== 'branding.manage' &&
         !W5_ADDED_KEYS.includes(k) &&
         !NEW_PERMISSIONS.includes(k) &&
-        a.module !== 'core.knowledge',
+        !['core.knowledge', 'core.docs', 'core.service'].includes(a.module),
     );
     // W5.00 (0.12.0-stage5): ключи и коды этапа 5 не считаются; cash.manage → cash.accounts.manage — на один ключ меньше.
     assert.equal(actions.length, 118);
     const codes = Object.keys(readYaml(ERRORS_PATH).codes);
-    assert.equal(codes.filter((c) => c !== 'offer_closed' && !W5_CODES.includes(c)).length, 52);
-    assert.equal(doc.tags.filter((t) => t.name !== 'Branding').length, 20);
+    assert.equal(
+      codes.filter(
+        (c) => c !== 'offer_closed' && !W5_CODES.includes(c) && !STAGE7_CODES.includes(c),
+      ).length,
+      52,
+    );
+    // W7.00 добавил пять тегов этапа 7 после Repairs.
+    const stage7Tags = ['Chats', 'Docs', 'PublicDocs', 'Service', 'PublicService'];
+    assert.equal(
+      doc.tags.filter((t) => t.name !== 'Branding' && !stage7Tags.includes(t.name)).length,
+      20,
+    );
     for (const id of ['createDatasetExportJob', 'getDatasetExportDownload', 'listDatasetViews']) {
       assert.match(op(id).description, /dataset (own )?permission/, id);
     }

@@ -1,0 +1,25 @@
+{
+  "directionId": "9cc9b25b-8024-58f7-8db6-ba7379006810",
+  "body": {
+    "name": "Грузоперевозки",
+    "color": "#2B5479",
+    "calendar": {
+      "days": [1, 2, 3, 4, 5, 6, 7],
+      "from": "08:00",
+      "to": "20:00",
+      "timeZone": "Europe/Moscow"
+    },
+    "types": [
+      {
+        "id": "d-grz:question",
+        "kind": "question",
+        "name": "Вопрос",
+        "firstMinutes": 90,
+        "resolveMinutes": 1440,
+        "priority": "normal"
+      }
+    ]
+  },
+  "revision": 2,
+  "updatedAt": "2026-10-01T07:30:00Z"
+}

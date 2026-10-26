@@ -1,0 +1,58 @@
+{
+  "id": "d8d165ab-02b9-556e-bb7a-3275cf719b66",
+  "version": 3,
+  "startedBy": {
+    "memberId": "b8df06ec-317e-5f46-b54c-e76603e41b5b",
+    "displayName": "Дарья Зимина"
+  },
+  "startedAt": "2026-10-01T06:30:00Z",
+  "status": "active",
+  "currentStep": 0,
+  "rules": {
+    "lock": true,
+    "notAuthor": true,
+    "commentOnBack": true,
+    "escalate": false
+  },
+  "steps": [
+    {
+      "kind": "approve",
+      "name": "Согласовать",
+      "mode": "all",
+      "who": [
+        {
+          "memberId": "ebdf9767-327e-55cc-8c65-cb5fd313bdf4",
+          "displayName": "Алексей Соколов"
+        }
+      ],
+      "days": 1,
+      "status": "active",
+      "due": "2026-10-02",
+      "decisions": []
+    },
+    {
+      "kind": "external",
+      "name": "Подпись заказчика",
+      "mode": "all",
+      "who": [],
+      "days": 3,
+      "status": "wait",
+      "due": null,
+      "decisions": [],
+      "external": {
+        "name": "Ольга Смирнова",
+        "phoneMasked": "+7 916 ••• ••-17"
+      }
+    }
+  ],
+  "project": {
+    "moduleKey": "tasks",
+    "entityType": "project",
+    "entityId": "0e1e030d-636b-5cd6-85a4-d61c7d9c8a5d"
+  },
+  "task": {
+    "moduleKey": "tasks",
+    "entityType": "task",
+    "entityId": "eadacd5b-73ee-585d-bd08-122056e45e35"
+  }
+}

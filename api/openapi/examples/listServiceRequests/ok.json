@@ -1,0 +1,426 @@
+{
+  "items": [
+    {
+      "id": "3c35b08e-b3c0-5a5c-a2b3-03753b3b272d",
+      "key": "ГРЗ-57",
+      "directionId": "9cc9b25b-8024-58f7-8db6-ba7379006810",
+      "kind": "cargo",
+      "title": "Две коробки помяты, внутри бой",
+      "status": "new",
+      "priority": "high",
+      "assignee": null,
+      "createdAt": "2026-10-01T08:14:00Z",
+      "channel": "bot",
+      "client": {
+        "name": "Наталья Гусева",
+        "phoneMasked": "+7 ••• •••-••-12",
+        "since": "Клиент с 2024 года · 23 доставки",
+        "company": "ООО «Фермерская лавка»"
+      },
+      "link": {
+        "label": "Рейс Р-196 · 27.09",
+        "lines": ["Доставлено 27 сентября, 14:40", "Водитель: Илья Васильев", "Фото выгрузки: 4"]
+      },
+      "sla": {
+        "first": {
+          "goalMinutes": 240,
+          "dueAt": "2026-10-01T12:14:00Z",
+          "stoppedAt": null,
+          "state": "late",
+          "label": "Первый ответ",
+          "text": "просрочен на 1 ч 10 мин",
+          "until": "был до 15:14",
+          "overMinutes": 70
+        },
+        "legal": {
+          "goalMinutes": null,
+          "dueAt": "2026-10-31T08:14:00Z",
+          "stoppedAt": null,
+          "state": "legal",
+          "label": "Ответ по закону",
+          "text": "осталось 30 дней",
+          "until": "до 31 октября",
+          "leftMinutes": 43200
+        }
+      },
+      "head": {
+        "state": "late",
+        "label": "Первый ответ",
+        "text": "просрочен на 1 ч 10 мин",
+        "until": "был до 15:14",
+        "rank": -70,
+        "key": "first"
+      },
+      "labels": ["бой"],
+      "taskCount": 0
+    },
+    {
+      "id": "e6ad8170-897d-515b-af4c-dc7bcc285c9a",
+      "key": "МАС-41",
+      "directionId": "8adebc22-94d6-5024-b96b-cb535cd6838e",
+      "kind": "complaint",
+      "title": "Начали на 15 минут позже, в кабинете холодно",
+      "status": "new",
+      "priority": "high",
+      "assignee": null,
+      "createdAt": "2026-10-01T12:12:00Z",
+      "channel": "sms",
+      "client": {
+        "name": "Ольга Романова",
+        "phoneMasked": "+7 ••• •••-••-18",
+        "since": "Клиент с марта 2025 · 7 визитов · прошлые оценки 5, 5, 4"
+      },
+      "link": {
+        "label": "Визит 1.10, 11:30 · SPA-ритуал",
+        "lines": [
+          "SPA-ритуал · 1 октября, 11:30–13:00",
+          "Кабинет № 2 · стол с подогревом",
+          "Мастер: Анна Морозова"
+        ]
+      },
+      "sla": {
+        "first": {
+          "goalMinutes": 120,
+          "dueAt": "2026-10-01T14:12:00Z",
+          "stoppedAt": null,
+          "state": "norm",
+          "label": "Первый ответ",
+          "text": "осталось 48 мин",
+          "until": "до 17:12",
+          "leftMinutes": 48
+        },
+        "resolve": {
+          "goalMinutes": 1320,
+          "dueAt": "2026-10-03T12:12:00Z",
+          "stoppedAt": null,
+          "state": "norm",
+          "label": "Решение",
+          "text": "осталось 1 день",
+          "until": "до 3 октября, 15:12",
+          "leftMinutes": 1248
+        }
+      },
+      "head": {
+        "state": "norm",
+        "label": "Первый ответ",
+        "text": "осталось 48 мин",
+        "until": "до 17:12",
+        "rank": 48,
+        "key": "first"
+      },
+      "labels": ["опоздание", "оборудование"],
+      "taskCount": 1,
+      "fromRating": 2
+    },
+    {
+      "id": "46ec36b5-009f-56d2-8882-06fa0c0e1368",
+      "key": "МАС-40",
+      "directionId": "8adebc22-94d6-5024-b96b-cb535cd6838e",
+      "kind": "question",
+      "title": "Можно ли SPA-ритуал во время беременности?",
+      "status": "new",
+      "priority": "normal",
+      "assignee": null,
+      "createdAt": "2026-10-01T13:04:00Z",
+      "channel": "widget",
+      "client": {
+        "name": "Екатерина Лаврова",
+        "phoneMasked": "+7 ••• •••-••-55",
+        "since": "Новый клиент"
+      },
+      "link": null,
+      "sla": {
+        "first": {
+          "goalMinutes": 240,
+          "dueAt": "2026-10-01T17:04:00Z",
+          "stoppedAt": null,
+          "state": "norm",
+          "label": "Первый ответ",
+          "text": "осталось 3 ч 40 мин",
+          "until": "до 20:04",
+          "leftMinutes": 220
+        },
+        "resolve": {
+          "goalMinutes": 1980,
+          "dueAt": "2026-10-04T13:04:00Z",
+          "stoppedAt": null,
+          "state": "norm",
+          "label": "Решение",
+          "text": "осталось 2 дня",
+          "until": "до 4 октября, 16:04",
+          "leftMinutes": 1960
+        }
+      },
+      "head": {
+        "state": "norm",
+        "label": "Первый ответ",
+        "text": "осталось 3 ч 40 мин",
+        "until": "до 20:04",
+        "rank": 220,
+        "key": "first"
+      },
+      "labels": [],
+      "taskCount": 0
+    },
+    {
+      "id": "3ea7a97f-973e-5647-9329-2ad60439c33f",
+      "key": "КОС-6",
+      "directionId": "4918f530-b3c0-506d-bbf5-2cc15387f372",
+      "kind": "idea",
+      "title": "Сделайте онлайн-запись на выходные",
+      "status": "new",
+      "priority": "low",
+      "assignee": null,
+      "createdAt": "2026-10-01T09:00:00Z",
+      "channel": "qr",
+      "client": {
+        "name": "Мария Киселёва",
+        "phoneMasked": "+7 ••• •••-••-73",
+        "since": "Клиент с 2024 года · 15 визитов"
+      },
+      "link": null,
+      "sla": {
+        "first": {
+          "goalMinutes": 1320,
+          "dueAt": "2026-10-03T09:00:00Z",
+          "stoppedAt": null,
+          "state": "norm",
+          "label": "Первый ответ",
+          "text": "осталось 1 день",
+          "until": "до 3 октября, 12:00",
+          "leftMinutes": 1056
+        }
+      },
+      "head": {
+        "state": "norm",
+        "label": "Первый ответ",
+        "text": "осталось 1 день",
+        "until": "до 3 октября, 12:00",
+        "rank": 1056,
+        "key": "first"
+      },
+      "labels": [],
+      "taskCount": 0
+    },
+    {
+      "id": "2c35ddea-b922-5576-bc42-321c705db2e0",
+      "key": "ОТД-12",
+      "directionId": "5ad59b2d-298c-589f-af85-2401291e1257",
+      "kind": "warranty",
+      "title": "Отошла плитка у душевого трапа",
+      "status": "work",
+      "priority": "normal",
+      "assignee": {
+        "memberId": "b8df06ec-317e-5f46-b54c-e76603e41b5b",
+        "displayName": "Дарья Зимина"
+      },
+      "createdAt": "2026-09-30T16:40:00Z",
+      "channel": "cabinet",
+      "client": {
+        "name": "Андрей Кузнецов",
+        "phoneMasked": "+7 ••• •••-••-40",
+        "since": "Заказчик · договор № 27"
+      },
+      "link": {
+        "label": "Дом на Лесной · Мытищи",
+        "lines": [
+          "Сдан 12 сентября · гарантия до 12.09.2027",
+          "Прораб: Алексей Соколов",
+          "Акт № 4 · плитка, санузел 2 этажа"
+        ]
+      },
+      "sla": {
+        "first": {
+          "goalMinutes": 240,
+          "dueAt": "2026-10-01T10:00:00Z",
+          "stoppedAt": "2026-10-01T06:35:00Z",
+          "state": "done",
+          "label": "Первый ответ",
+          "text": "ответ за 35 мин",
+          "until": "в срок"
+        },
+        "resolve": {
+          "goalMinutes": 6000,
+          "dueAt": "2026-10-14T16:00:00Z",
+          "stoppedAt": null,
+          "state": "norm",
+          "label": "Решение",
+          "text": "осталось 9 раб. дней",
+          "until": "до 14 октября",
+          "leftMinutes": 5556
+        }
+      },
+      "head": {
+        "state": "norm",
+        "label": "Решение",
+        "text": "осталось 9 раб. дней",
+        "until": "до 14 октября",
+        "rank": 5556,
+        "key": "resolve"
+      },
+      "labels": ["гарантия"],
+      "taskCount": 1
+    },
+    {
+      "id": "ca8589c3-5919-5fcf-baa8-03a6648b1057",
+      "key": "ОТД-11",
+      "directionId": "5ad59b2d-298c-589f-af85-2401291e1257",
+      "kind": "claim",
+      "title": "Прошу уменьшить цену: перепад ламината в коридоре",
+      "status": "work",
+      "priority": "normal",
+      "assignee": {
+        "memberId": "b8df06ec-317e-5f46-b54c-e76603e41b5b",
+        "displayName": "Дарья Зимина"
+      },
+      "createdAt": "2026-09-27T17:05:00Z",
+      "channel": "cabinet",
+      "client": {
+        "name": "Игорь Чернов",
+        "phoneMasked": "+7 ••• •••-••-07",
+        "since": "Заказчик · договор № 31"
+      },
+      "link": {
+        "label": "Профсоюзная, 64 · кв. 210",
+        "lines": ["Чистовая отделка · сдача 9 октября", "Прораб: Алексей Соколов", "Договор № 31"]
+      },
+      "sla": {
+        "first": {
+          "goalMinutes": 600,
+          "dueAt": "2026-09-28T16:00:00Z",
+          "stoppedAt": "2026-09-28T07:30:00Z",
+          "state": "done",
+          "label": "Первый ответ",
+          "text": "ответ за 1 ч 30 мин",
+          "until": "в срок"
+        },
+        "legal": {
+          "goalMinutes": null,
+          "dueAt": "2026-10-07T17:05:00Z",
+          "stoppedAt": null,
+          "state": "legal",
+          "label": "Ответ по закону",
+          "text": "осталось 7 дней",
+          "until": "до 7 октября",
+          "leftMinutes": 10080
+        }
+      },
+      "head": {
+        "state": "legal",
+        "label": "Ответ по закону",
+        "text": "осталось 7 дней",
+        "until": "до 7 октября",
+        "rank": 10080,
+        "key": "legal"
+      },
+      "labels": ["ламинат"],
+      "taskCount": 1
+    },
+    {
+      "id": "bcae1dc8-5c25-5c40-a55a-ffb87d97acd0",
+      "key": "ГРЗ-55",
+      "directionId": "9cc9b25b-8024-58f7-8db6-ba7379006810",
+      "kind": "cargo",
+      "title": "Привезли 5 паллет из 6",
+      "status": "wait",
+      "priority": "normal",
+      "assignee": {
+        "memberId": "ea845988-640e-5506-9303-1cbfc3dede0d",
+        "displayName": "Вера Котельникова"
+      },
+      "createdAt": "2026-09-26T11:20:00Z",
+      "channel": "phone",
+      "client": {
+        "name": "Олег Сафонов",
+        "phoneMasked": "+7 ••• •••-••-09",
+        "since": "Клиент с 2025 года · 8 доставок",
+        "company": "ИП Сафонов"
+      },
+      "link": {
+        "label": "Рейс Р-192 · 26.09",
+        "lines": [
+          "Доставлено 26 сентября, 13:10",
+          "Водитель: Тимур Ахмедов",
+          "Накладная № 4410: 6 паллет"
+        ]
+      },
+      "sla": {
+        "first": {
+          "goalMinutes": 240,
+          "dueAt": "2026-09-26T15:20:00Z",
+          "stoppedAt": "2026-09-26T11:25:00Z",
+          "state": "done",
+          "label": "Первый ответ",
+          "text": "ответ за 5 мин",
+          "until": "в срок"
+        },
+        "legal": {
+          "goalMinutes": null,
+          "dueAt": "2026-10-26T11:20:00Z",
+          "stoppedAt": null,
+          "state": "legal",
+          "label": "Ответ по закону",
+          "text": "осталось 25 дней",
+          "until": "до 26 октября",
+          "leftMinutes": 36000
+        }
+      },
+      "head": {
+        "state": "pause",
+        "label": "Пауза",
+        "text": "ждём клиента",
+        "until": "по закону до 26 октября",
+        "rank": 900000000000
+      },
+      "labels": ["недостача"],
+      "taskCount": 0
+    }
+  ],
+  "nextCursor": null,
+  "counts": {
+    "items": [
+      {
+        "key": "open",
+        "label": "Открытые",
+        "count": 7
+      },
+      {
+        "key": "noreply",
+        "label": "Без ответа",
+        "count": 4
+      },
+      {
+        "key": "mine",
+        "label": "Мои",
+        "count": 2
+      },
+      {
+        "key": "risk",
+        "label": "Срок под угрозой",
+        "count": 0
+      },
+      {
+        "key": "late",
+        "label": "Срок нарушен",
+        "count": 1,
+        "tone": "danger"
+      },
+      {
+        "key": "wait",
+        "label": "Ждут клиента",
+        "count": 1
+      },
+      {
+        "key": "low",
+        "label": "Низкие оценки",
+        "count": 2
+      },
+      {
+        "key": "done",
+        "label": "Решено и закрыто",
+        "count": 1
+      }
+    ],
+    "noReplyCount": 4
+  }
+}

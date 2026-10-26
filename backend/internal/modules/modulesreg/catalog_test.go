@@ -124,7 +124,7 @@ func TestModuleOfAction(t *testing.T) {
 func TestCatalog(t *testing.T) {
 	t.Parallel()
 	mods := Catalog()
-	if len(mods) != 14 {
+	if len(mods) != 16 { // + core.docs и core.service (W7.00)
 		t.Fatalf("Catalog: %d modules", len(mods))
 	}
 	seen := map[string]bool{}

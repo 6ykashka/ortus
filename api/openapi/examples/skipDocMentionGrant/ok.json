@@ -1,0 +1,19 @@
+{
+  "id": "8ab26e03-36dc-5eaf-964a-08d02ccb4600",
+  "author": {
+    "memberId": "ac41932c-dbd9-53b1-a84b-42cbc1d6629a",
+    "displayName": "Марина Котова"
+  },
+  "createdAt": "2026-10-01T05:30:00Z",
+  "text": "Илья, проверьте п. 3 — @Илья Васильев",
+  "anchor": {
+    "kind": "block",
+    "ref": "b-3"
+  },
+  "replies": [],
+  "resolved": false,
+  "mention": {
+    "memberId": "a560b4fe-78b7-585e-b960-f0ab3622570c",
+    "displayName": "Илья Васильев"
+  }
+}

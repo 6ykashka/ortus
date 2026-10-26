@@ -1,0 +1,10 @@
+{
+  "id": "f295914b-2433-520a-b1b2-96e0796015b3",
+  "op": "ocr",
+  "docIds": ["074091d8-0dcc-5884-867e-debf465c1bae"],
+  "name": "Распознавание",
+  "status": "queued",
+  "createdAt": "2026-10-01T07:30:00Z",
+  "finishedAt": null,
+  "resultDocumentId": null
+}

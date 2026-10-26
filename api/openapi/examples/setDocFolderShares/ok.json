@@ -1,0 +1,23 @@
+{
+  "applied": true,
+  "impact": {
+    "gain": [],
+    "lose": [],
+    "up": [],
+    "down": []
+  },
+  "shares": {
+    "mode": "inherit",
+    "entries": [
+      {
+        "who": "group",
+        "level": "edit",
+        "refId": "ffdc7501-0a74-5af4-950b-894aeb64d658",
+        "label": "Группа «Диспетчеры Север»",
+        "byDisplayName": "Дарья Зимина",
+        "at": "2026-10-01T07:30:00Z"
+      }
+    ],
+    "revision": 2
+  }
+}

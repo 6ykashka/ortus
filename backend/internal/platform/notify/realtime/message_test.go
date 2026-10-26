@@ -154,6 +154,9 @@ func TestHintValidate(t *testing.T) {
 		{"session.ended membership", Hint{Type: TypeSessionEnded, Reason: ReasonMembershipEnded, Accounts: acc}, true},
 		{"ping is not a hint", Hint{Type: TypePing, Accounts: acc}, false},
 		{"unknown type", Hint{Type: "chat.message", Accounts: acc}, false},
+		// W7.00: кадр chat.changed описан контрактом (0.12.0-stage7), но доставка подсказки чата — W7.12 (адресаты — участники
+		// чата, ADR-0016): до тех пор шлюз её не принимает.
+		{"chat.changed before W7.12", Hint{Type: TypeChatChanged, Accounts: acc}, false},
 		{"nobody", Hint{Type: TypeContextChanged}, false},
 		{"nil account", Hint{Type: TypeContextChanged, Accounts: []uuid.UUID{uuid.Nil}}, false},
 		{"empty session key", Hint{Type: TypeContextChanged, Sessions: []string{""}}, false},
@@ -181,5 +184,19 @@ func TestSessionKey(t *testing.T) {
 	}
 	if len(k) > 64 {
 		t.Fatalf("SessionKey too long: %d", len(k))
+	}
+}
+
+// Pending W7.12 (явный тест вместо молчаливого расхождения): контракт 0.12.0-stage7 и ADR-0016 описывают подсказку
+// chat.changed (chatId, lastSeq, адресат — участник чата), а Hint.Validate её пока отвергает (TestHintValidate,
+// «chat.changed before W7.12»). Владелец доставки (W7.12) снимает Skip, меняет строку TestHintValidate на ok = true и
+// добавляет проверку «chatId и lastSeq обязательны».
+func TestHintChatChangedAcceptedPendingW712(t *testing.T) {
+	t.Parallel()
+	t.Skip("pending W7.12: доставка подсказки chat.changed и адресаты — участники чата (ADR-0016)")
+	// У Hint пока нет полей chatId и lastSeq (они есть только в кадре): W7.12 добавляет их в Hint и тест дополняет.
+	h := Hint{Type: TypeChatChanged, Accounts: []uuid.UUID{uuid.New()}}
+	if err := h.Validate(); err != nil {
+		t.Fatalf("chat.changed to a chat member: %v", err)
 	}
 }

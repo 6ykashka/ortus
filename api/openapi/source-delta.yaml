@@ -5,8 +5,8 @@
 deltas:
   - pointer: /info/version
     kind: change
-    source: план v2 PD-56, W0.07, W0.08, W1.00, W2.00, W2.40, W2.51, W2.52, W2.57, W4.02, W4.06, W2.71, W4.07, W4.04, W4.03, W4.05, W5.00, W6.00, W4.80, W4.81
-    reason: 0.1.0-design → 0.2.0-stage0 (W0.07, шаг 0.2, разложен по тегам) → 0.3.0-stage1 (W0.08, шаг 0.3, контракт этапа 1) → 0.4.0-stage1 (W1.00, второй контрактный PR этапа 1) → 0.5.0-stage2 (W2.00, контракт этапа 2) → 0.5.1-stage2 (W2.40, аддитивный PR стюарда этапа 2 для показа 18.10) → 0.6.0-stage2 (W2.51, стюард этапа 2 — пул водителей, наборы «Данных») → 0.6.1-stage2 (W2.52, стюард этапа 2, часть 2 — ответы владельца 17.10 — справочник расходов, история машины, антифрод фото, чек-лист-форма, задача дефекта, заменители интеграций D-11 комплекта) → 0.6.2-stage2 (W2.57, контрактная дельта решения Q-W2.07-1 — временный водитель «только рейс», продление) → 0.7.0-stage4 (W4.02, контрактный PR 1 этапа 4 — виды областей этапов 4–7, объяснение доступа с объектом, вложения задач, Problem.reason, экраны этапа 4; W4.06, контрактный PR 5 этапа 4 — календарь ресурсов, сохранённые виды и выгрузка заданием «Данных») → 0.7.1-stage4 (W2.71, контрактная дельта S2-20 — машина для временного водителя, решение владельца 19.10 по Q-W2.32-1; в ветке 0.6.3-stage2, перенумерована интегратором при вливании после W4.02 и W4.06) → 0.8.0-stage4 (W4.07, контрактный PR 6 этапа 4 — места и тарифная сетка, заявки на тариф, «Использование», каталог аккаунтов и операторы платформы, оформление организации; номер версии согласован интегратором при вливании после W2.71) → 0.9.0-stage4 (W4.04, контрактный PR 3 этапа 4 — «База знаний» — пространства, дерево, версии, доступ узла, запросы, участники, автоматизация; влит интегратором после W4.07) → 0.10.0-stage4 (W4.03, контрактный PR 2 этапа 4 — «Задачи и проекты» — проекты, участники, процесс с версиями, задачи, история, автоматизация; в ветке 0.9.0-stage4, перенумерована интегратором при вливании после W4.04) → 0.11.0-stage4 (W4.05, контрактный PR 4 этапа 4 — «Формы и опросы» — черновик, FormDefinition v2, настройки, группы, правила, ответы v2, сводка, CSV). → 0.12.0-stage5 (W5.00, контракт этапа 5 — касса, склад, SPA) → 0.12.0-stage6 (W6.00, контракт этапа 6 «Ремонт и стройка» — объекты, отметки, допработы, замер, сметы, справочник и шаблоны, график, документы, снабжение, финансы, подрядчики, ссылка и публичный кабинет заказчика) → дельта W4.80 (в ветке 0.11.1-stage4; при вливании номер версии не менялся — остаётся 0.12.0-stage6) — наборы «Данных» «Ответы на осмотр» и «Задачи», только описание Dataset.id и примеры. → дельта W4.81 (в ветке 0.11.1-stage4; номер версии не менялся) — задачи на «Главной» — виды tasks.* «Требует решения» и сводка задач getMyTaskSummary для карточки «Задачи» и бейджа меню.
+    source: план v2 PD-56, W0.07, W0.08, W1.00, W2.00, W2.40, W2.51, W2.52, W2.57, W4.02, W4.06, W2.71, W4.07, W4.04, W4.03, W4.05, W5.00, W6.00, W4.80, W4.81, W7.00
+    reason: 0.1.0-design → 0.2.0-stage0 (W0.07, шаг 0.2, разложен по тегам) → 0.3.0-stage1 (W0.08, шаг 0.3, контракт этапа 1) → 0.4.0-stage1 (W1.00, второй контрактный PR этапа 1) → 0.5.0-stage2 (W2.00, контракт этапа 2) → 0.5.1-stage2 (W2.40, аддитивный PR стюарда этапа 2 для показа 18.10) → 0.6.0-stage2 (W2.51, стюард этапа 2 — пул водителей, наборы «Данных») → 0.6.1-stage2 (W2.52, стюард этапа 2, часть 2 — ответы владельца 17.10 — справочник расходов, история машины, антифрод фото, чек-лист-форма, задача дефекта, заменители интеграций D-11 комплекта) → 0.6.2-stage2 (W2.57, контрактная дельта решения Q-W2.07-1 — временный водитель «только рейс», продление) → 0.7.0-stage4 (W4.02, контрактный PR 1 этапа 4 — виды областей этапов 4–7, объяснение доступа с объектом, вложения задач, Problem.reason, экраны этапа 4; W4.06, контрактный PR 5 этапа 4 — календарь ресурсов, сохранённые виды и выгрузка заданием «Данных») → 0.7.1-stage4 (W2.71, контрактная дельта S2-20 — машина для временного водителя, решение владельца 19.10 по Q-W2.32-1; в ветке 0.6.3-stage2, перенумерована интегратором при вливании после W4.02 и W4.06) → 0.8.0-stage4 (W4.07, контрактный PR 6 этапа 4 — места и тарифная сетка, заявки на тариф, «Использование», каталог аккаунтов и операторы платформы, оформление организации; номер версии согласован интегратором при вливании после W2.71) → 0.9.0-stage4 (W4.04, контрактный PR 3 этапа 4 — «База знаний» — пространства, дерево, версии, доступ узла, запросы, участники, автоматизация; влит интегратором после W4.07) → 0.10.0-stage4 (W4.03, контрактный PR 2 этапа 4 — «Задачи и проекты» — проекты, участники, процесс с версиями, задачи, история, автоматизация; в ветке 0.9.0-stage4, перенумерована интегратором при вливании после W4.04) → 0.11.0-stage4 (W4.05, контрактный PR 4 этапа 4 — «Формы и опросы» — черновик, FormDefinition v2, настройки, группы, правила, ответы v2, сводка, CSV). → 0.12.0-stage5 (W5.00, контракт этапа 5 — касса, склад, SPA) → 0.12.0-stage6 (W6.00, контракт этапа 6 «Ремонт и стройка» — объекты, отметки, допработы, замер, сметы, справочник и шаблоны, график, документы, снабжение, финансы, подрядчики, ссылка и публичный кабинет заказчика) → дельта W4.80 (в ветке 0.11.1-stage4; при вливании номер версии не менялся — остаётся 0.12.0-stage6) — наборы «Данных» «Ответы на осмотр» и «Задачи», только описание Dataset.id и примеры. → дельта W4.81 (в ветке 0.11.1-stage4; номер версии не менялся) — задачи на «Главной» — виды tasks.* «Требует решения» и сводка задач getMyTaskSummary для карточки «Задачи» и бейджа меню → 0.12.0-stage7 (W7.00, контрактный PR этапа 7 — «Чаты», «Документы», «Обращения»; теги Chats, Docs, PublicDocs, Service, PublicService, callback сервера документов; влит интегратором после W6.00 и W5.00, control 0011).
   - pointer: /components/schemas/Tenant/properties/status/enum
     kind: change
     source: 01-technical-spec PLAT-02; 10-data-model «Тенант»; control_0001_init.sql tenant_state; PD-35
@@ -28,8 +28,8 @@ deltas:
   # W0.08 — контракт этапа 1 (шаг 0.3 плана 27): только добавления (kind: add) и новый тег.
   - pointer: /tags
     kind: change
-    source: W0.08; W2.00; W4.07; PD-56
-    reason: новые теги Auth (вход через BFF, W0.08) после Context, Home («Главная · Требует решения», W2.00) после Auth и Branding (оформление организации, W4.07) после Billing; 18 тегов 0.1 и их описания не меняются.
+    source: W0.08; W2.00; W4.07; W7.00; PD-56
+    reason: новые теги Chats, Docs, PublicDocs, Service, PublicService (W7.00) после Repairs; новые теги Auth (вход через BFF, W0.08) после Context, Home («Главная · Требует решения», W2.00) после Auth и Branding (оформление организации, W4.07) после Billing; 18 тегов 0.1 и их описания не меняются.
   - pointer: /paths/~1api~1v1~1auth~1login
     kind: add
     source: 03-api-guide «Что требуется допроектировать» — Auth; 03 «Вход и безопасность сессии»; S1-05; G-01
@@ -4441,3 +4441,1272 @@ deltas:
     kind: add
     source: "W6.00; repair.md §2.1–§2.4, §3; design/docs/19-construction.md; эталон «Ремонт и стройка.dc.html», «Ортус CRM.dc.html» (design-2026-10-19); Q-W4.00-repair-1…24"
     reason: "схема «Ремонта и стройки» (repair.md §2.1); у схем 0.1 — необязательные прораб и сумма, отметка по работе и объёму, единицы прототипа."
+  # W7.00 — контрактный PR этапа 7: только добавления.
+  - pointer: /components/schemas/ChatPolicy
+    kind: add
+    source: "W7.00; план v2 §4 «Этап 7»; разбор DoR (chats.md, documents.md, service.md); docs/22, 24, 25"
+    reason: "схема «Chats» (W7.00)."
+  - pointer: /components/schemas/ChatPolicyPatch
+    kind: add
+    source: "W7.00; план v2 §4 «Этап 7»; разбор DoR (chats.md, documents.md, service.md); docs/22, 24, 25"
+    reason: "схема «Chats» (W7.00)."
+  - pointer: /components/schemas/ChatRange
+    kind: add
+    source: "W7.00; план v2 §4 «Этап 7»; разбор DoR (chats.md, documents.md, service.md); docs/22, 24, 25"
+    reason: "схема «Chats» (W7.00)."
+  - pointer: /components/schemas/ChatPolicyBounds
+    kind: add
+    source: "W7.00; план v2 §4 «Этап 7»; разбор DoR (chats.md, documents.md, service.md); docs/22, 24, 25"
+    reason: "схема «Chats» (W7.00)."
+  - pointer: /components/schemas/ChatKindPolicy
+    kind: add
+    source: "W7.00; план v2 §4 «Этап 7»; разбор DoR (chats.md, documents.md, service.md); docs/22, 24, 25"
+    reason: "схема «Chats» (W7.00)."
+  - pointer: /components/schemas/ChatKindPolicyList
+    kind: add
+    source: "W7.00; план v2 §4 «Этап 7»; разбор DoR (chats.md, documents.md, service.md); docs/22, 24, 25"
+    reason: "схема «Chats» (W7.00)."
+  - pointer: /components/schemas/ChatPolicyUpdate
+    kind: add
+    source: "W7.00; план v2 §4 «Этап 7»; разбор DoR (chats.md, documents.md, service.md); docs/22, 24, 25"
+    reason: "схема «Chats» (W7.00)."
+  - pointer: /components/schemas/ChatPolicyUpdateResult
+    kind: add
+    source: "W7.00; план v2 §4 «Этап 7»; разбор DoR (chats.md, documents.md, service.md); docs/22, 24, 25"
+    reason: "схема «Chats» (W7.00)."
+  - pointer: /components/schemas/ChatMemberRef
+    kind: add
+    source: "W7.00; план v2 §4 «Этап 7»; разбор DoR (chats.md, documents.md, service.md); docs/22, 24, 25"
+    reason: "схема «Chats» (W7.00)."
+  - pointer: /components/schemas/ChatPeer
+    kind: add
+    source: "W7.00; план v2 §4 «Этап 7»; разбор DoR (chats.md, documents.md, service.md); docs/22, 24, 25"
+    reason: "схема «Chats» (W7.00)."
+  - pointer: /components/schemas/ChatRecordRef
+    kind: add
+    source: "W7.00; план v2 §4 «Этап 7»; разбор DoR (chats.md, documents.md, service.md); docs/22, 24, 25"
+    reason: "схема «Chats» (W7.00)."
+  - pointer: /components/schemas/ChatSource
+    kind: add
+    source: "W7.00; план v2 §4 «Этап 7»; разбор DoR (chats.md, documents.md, service.md); docs/22, 24, 25"
+    reason: "схема «Chats» (W7.00)."
+  - pointer: /components/schemas/ChatCan
+    kind: add
+    source: "W7.00; план v2 §4 «Этап 7»; разбор DoR (chats.md, documents.md, service.md); docs/22, 24, 25"
+    reason: "схема «Chats» (W7.00)."
+  - pointer: /components/schemas/ChatChainStep
+    kind: add
+    source: "W7.00; план v2 §4 «Этап 7»; разбор DoR (chats.md, documents.md, service.md); docs/22, 24, 25"
+    reason: "схема «Chats» (W7.00)."
+  - pointer: /components/schemas/ChatMy
+    kind: add
+    source: "W7.00; план v2 §4 «Этап 7»; разбор DoR (chats.md, documents.md, service.md); docs/22, 24, 25"
+    reason: "схема «Chats» (W7.00)."
+  - pointer: /components/schemas/ChatMessagePreview
+    kind: add
+    source: "W7.00; план v2 §4 «Этап 7»; разбор DoR (chats.md, documents.md, service.md); docs/22, 24, 25"
+    reason: "схема «Chats» (W7.00)."
+  - pointer: /components/schemas/ChatSummary
+    kind: add
+    source: "W7.00; план v2 §4 «Этап 7»; разбор DoR (chats.md, documents.md, service.md); docs/22, 24, 25"
+    reason: "схема «Chats» (W7.00)."
+  - pointer: /components/schemas/ChatFolderCounts
+    kind: add
+    source: "W7.00; план v2 §4 «Этап 7»; разбор DoR (chats.md, documents.md, service.md); docs/22, 24, 25"
+    reason: "схема «Chats» (W7.00)."
+  - pointer: /components/schemas/ChatList
+    kind: add
+    source: "W7.00; план v2 §4 «Этап 7»; разбор DoR (chats.md, documents.md, service.md); docs/22, 24, 25"
+    reason: "схема «Chats» (W7.00)."
+  - pointer: /components/schemas/ChatHoldRef
+    kind: add
+    source: "W7.00; план v2 §4 «Этап 7»; разбор DoR (chats.md, documents.md, service.md); docs/22, 24, 25"
+    reason: "схема «Chats» (W7.00)."
+  - pointer: /components/schemas/Chat
+    kind: add
+    source: "W7.00; план v2 §4 «Этап 7»; разбор DoR (chats.md, documents.md, service.md); docs/22, 24, 25"
+    reason: "схема «Chats» (W7.00)."
+  - pointer: /components/schemas/ChatCreate
+    kind: add
+    source: "W7.00; план v2 §4 «Этап 7»; разбор DoR (chats.md, documents.md, service.md); docs/22, 24, 25"
+    reason: "схема «Chats» (W7.00)."
+  - pointer: /components/schemas/ChatSkipped
+    kind: add
+    source: "W7.00; план v2 §4 «Этап 7»; разбор DoR (chats.md, documents.md, service.md); docs/22, 24, 25"
+    reason: "схема «Chats» (W7.00)."
+  - pointer: /components/schemas/ChatMembershipImpact
+    kind: add
+    source: "W7.00; план v2 §4 «Этап 7»; разбор DoR (chats.md, documents.md, service.md); docs/22, 24, 25"
+    reason: "схема «Chats» (W7.00)."
+  - pointer: /components/schemas/ChatCreateResult
+    kind: add
+    source: "W7.00; план v2 §4 «Этап 7»; разбор DoR (chats.md, documents.md, service.md); docs/22, 24, 25"
+    reason: "схема «Chats» (W7.00)."
+  - pointer: /components/schemas/ChatDirectCreate
+    kind: add
+    source: "W7.00; план v2 §4 «Этап 7»; разбор DoR (chats.md, documents.md, service.md); docs/22, 24, 25"
+    reason: "схема «Chats» (W7.00)."
+  - pointer: /components/schemas/ChatPatch
+    kind: add
+    source: "W7.00; план v2 §4 «Этап 7»; разбор DoR (chats.md, documents.md, service.md); docs/22, 24, 25"
+    reason: "схема «Chats» (W7.00)."
+  - pointer: /components/schemas/ChatAttachment
+    kind: add
+    source: "W7.00; план v2 §4 «Этап 7»; разбор DoR (chats.md, documents.md, service.md); docs/22, 24, 25"
+    reason: "схема «Chats» (W7.00)."
+  - pointer: /components/schemas/ChatDocRef
+    kind: add
+    source: "W7.00; план v2 §4 «Этап 7»; разбор DoR (chats.md, documents.md, service.md); docs/22, 24, 25"
+    reason: "схема «Chats» (W7.00)."
+  - pointer: /components/schemas/ChatImportant
+    kind: add
+    source: "W7.00; план v2 §4 «Этап 7»; разбор DoR (chats.md, documents.md, service.md); docs/22, 24, 25"
+    reason: "схема «Chats» (W7.00)."
+  - pointer: /components/schemas/ChatPollOption
+    kind: add
+    source: "W7.00; план v2 §4 «Этап 7»; разбор DoR (chats.md, documents.md, service.md); docs/22, 24, 25"
+    reason: "схема «Chats» (W7.00)."
+  - pointer: /components/schemas/ChatPoll
+    kind: add
+    source: "W7.00; план v2 §4 «Этап 7»; разбор DoR (chats.md, documents.md, service.md); docs/22, 24, 25"
+    reason: "схема «Chats» (W7.00)."
+  - pointer: /components/schemas/ChatPollCreate
+    kind: add
+    source: "W7.00; план v2 §4 «Этап 7»; разбор DoR (chats.md, documents.md, service.md); docs/22, 24, 25"
+    reason: "схема «Chats» (W7.00)."
+  - pointer: /components/schemas/ChatSystemCard
+    kind: add
+    source: "W7.00; план v2 §4 «Этап 7»; разбор DoR (chats.md, documents.md, service.md); docs/22, 24, 25"
+    reason: "схема «Chats» (W7.00)."
+  - pointer: /components/schemas/ChatDeleted
+    kind: add
+    source: "W7.00; план v2 §4 «Этап 7»; разбор DoR (chats.md, documents.md, service.md); docs/22, 24, 25"
+    reason: "схема «Chats» (W7.00)."
+  - pointer: /components/schemas/ChatTaskRef
+    kind: add
+    source: "W7.00; план v2 §4 «Этап 7»; разбор DoR (chats.md, documents.md, service.md); docs/22, 24, 25"
+    reason: "схема «Chats» (W7.00)."
+  - pointer: /components/schemas/ChatMessage
+    kind: add
+    source: "W7.00; план v2 §4 «Этап 7»; разбор DoR (chats.md, documents.md, service.md); docs/22, 24, 25"
+    reason: "схема «Chats» (W7.00)."
+  - pointer: /components/schemas/ChatMessageList
+    kind: add
+    source: "W7.00; план v2 §4 «Этап 7»; разбор DoR (chats.md, documents.md, service.md); docs/22, 24, 25"
+    reason: "схема «Chats» (W7.00)."
+  - pointer: /components/schemas/ChatDocRefInput
+    kind: add
+    source: "W7.00; план v2 §4 «Этап 7»; разбор DoR (chats.md, documents.md, service.md); docs/22, 24, 25"
+    reason: "схема «Chats» (W7.00)."
+  - pointer: /components/schemas/ChatMessageCreate
+    kind: add
+    source: "W7.00; план v2 §4 «Этап 7»; разбор DoR (chats.md, documents.md, service.md); docs/22, 24, 25"
+    reason: "схема «Chats» (W7.00)."
+  - pointer: /components/schemas/ChatMessageEdit
+    kind: add
+    source: "W7.00; план v2 §4 «Этап 7»; разбор DoR (chats.md, documents.md, service.md); docs/22, 24, 25"
+    reason: "схема «Chats» (W7.00)."
+  - pointer: /components/schemas/ChatMessageVersion
+    kind: add
+    source: "W7.00; план v2 §4 «Этап 7»; разбор DoR (chats.md, documents.md, service.md); docs/22, 24, 25"
+    reason: "схема «Chats» (W7.00)."
+  - pointer: /components/schemas/ChatMessageVersionList
+    kind: add
+    source: "W7.00; план v2 §4 «Этап 7»; разбор DoR (chats.md, documents.md, service.md); docs/22, 24, 25"
+    reason: "схема «Chats» (W7.00)."
+  - pointer: /components/schemas/ChatReadMark
+    kind: add
+    source: "W7.00; план v2 §4 «Этап 7»; разбор DoR (chats.md, documents.md, service.md); docs/22, 24, 25"
+    reason: "схема «Chats» (W7.00)."
+  - pointer: /components/schemas/ChatReadState
+    kind: add
+    source: "W7.00; план v2 §4 «Этап 7»; разбор DoR (chats.md, documents.md, service.md); docs/22, 24, 25"
+    reason: "схема «Chats» (W7.00)."
+  - pointer: /components/schemas/ChatReceipt
+    kind: add
+    source: "W7.00; план v2 §4 «Этап 7»; разбор DoR (chats.md, documents.md, service.md); docs/22, 24, 25"
+    reason: "схема «Chats» (W7.00)."
+  - pointer: /components/schemas/ChatReceipts
+    kind: add
+    source: "W7.00; план v2 §4 «Этап 7»; разбор DoR (chats.md, documents.md, service.md); docs/22, 24, 25"
+    reason: "схема «Chats» (W7.00)."
+  - pointer: /components/schemas/ChatPdnReveal
+    kind: add
+    source: "W7.00; план v2 §4 «Этап 7»; разбор DoR (chats.md, documents.md, service.md); docs/22, 24, 25"
+    reason: "схема «Chats» (W7.00)."
+  - pointer: /components/schemas/ChatVote
+    kind: add
+    source: "W7.00; план v2 §4 «Этап 7»; разбор DoR (chats.md, documents.md, service.md); docs/22, 24, 25"
+    reason: "схема «Chats» (W7.00)."
+  - pointer: /components/schemas/ChatPollReminder
+    kind: add
+    source: "W7.00; план v2 §4 «Этап 7»; разбор DoR (chats.md, documents.md, service.md); docs/22, 24, 25"
+    reason: "схема «Chats» (W7.00)."
+  - pointer: /components/schemas/ChatPin
+    kind: add
+    source: "W7.00; план v2 §4 «Этап 7»; разбор DoR (chats.md, documents.md, service.md); docs/22, 24, 25"
+    reason: "схема «Chats» (W7.00)."
+  - pointer: /components/schemas/ChatPinState
+    kind: add
+    source: "W7.00; план v2 §4 «Этап 7»; разбор DoR (chats.md, documents.md, service.md); docs/22, 24, 25"
+    reason: "схема «Chats» (W7.00)."
+  - pointer: /components/schemas/ChatViewOnceLink
+    kind: add
+    source: "W7.00; план v2 §4 «Этап 7»; разбор DoR (chats.md, documents.md, service.md); docs/22, 24, 25"
+    reason: "схема «Chats» (W7.00)."
+  - pointer: /components/schemas/ChatSaveToRecord
+    kind: add
+    source: "W7.00; план v2 §4 «Этап 7»; разбор DoR (chats.md, documents.md, service.md); docs/22, 24, 25"
+    reason: "схема «Chats» (W7.00)."
+  - pointer: /components/schemas/ChatSaveToRecordResult
+    kind: add
+    source: "W7.00; план v2 §4 «Этап 7»; разбор DoR (chats.md, documents.md, service.md); docs/22, 24, 25"
+    reason: "схема «Chats» (W7.00)."
+  - pointer: /components/schemas/ChatTaskCreate
+    kind: add
+    source: "W7.00; план v2 §4 «Этап 7»; разбор DoR (chats.md, documents.md, service.md); docs/22, 24, 25"
+    reason: "схема «Chats» (W7.00)."
+  - pointer: /components/schemas/ChatMember
+    kind: add
+    source: "W7.00; план v2 §4 «Этап 7»; разбор DoR (chats.md, documents.md, service.md); docs/22, 24, 25"
+    reason: "схема «Chats» (W7.00)."
+  - pointer: /components/schemas/ChatMemberList
+    kind: add
+    source: "W7.00; план v2 §4 «Этап 7»; разбор DoR (chats.md, documents.md, service.md); docs/22, 24, 25"
+    reason: "схема «Chats» (W7.00)."
+  - pointer: /components/schemas/ChatSources
+    kind: add
+    source: "W7.00; план v2 §4 «Этап 7»; разбор DoR (chats.md, documents.md, service.md); docs/22, 24, 25"
+    reason: "схема «Chats» (W7.00)."
+  - pointer: /components/schemas/ChatSourcesReplace
+    kind: add
+    source: "W7.00; план v2 §4 «Этап 7»; разбор DoR (chats.md, documents.md, service.md); docs/22, 24, 25"
+    reason: "схема «Chats» (W7.00)."
+  - pointer: /components/schemas/ChatSourcesResult
+    kind: add
+    source: "W7.00; план v2 §4 «Этап 7»; разбор DoR (chats.md, documents.md, service.md); docs/22, 24, 25"
+    reason: "схема «Chats» (W7.00)."
+  - pointer: /components/schemas/ChatAccessExplanation
+    kind: add
+    source: "W7.00; план v2 §4 «Этап 7»; разбор DoR (chats.md, documents.md, service.md); docs/22, 24, 25"
+    reason: "схема «Chats» (W7.00)."
+  - pointer: /components/schemas/ChatBucket
+    kind: add
+    source: "W7.00; план v2 §4 «Этап 7»; разбор DoR (chats.md, documents.md, service.md); docs/22, 24, 25"
+    reason: "схема «Chats» (W7.00)."
+  - pointer: /components/schemas/ChatStorage
+    kind: add
+    source: "W7.00; план v2 §4 «Этап 7»; разбор DoR (chats.md, documents.md, service.md); docs/22, 24, 25"
+    reason: "схема «Chats» (W7.00)."
+  - pointer: /components/schemas/ChatCleanupCreate
+    kind: add
+    source: "W7.00; план v2 §4 «Этап 7»; разбор DoR (chats.md, documents.md, service.md); docs/22, 24, 25"
+    reason: "схема «Chats» (W7.00)."
+  - pointer: /components/schemas/ChatCleanupResult
+    kind: add
+    source: "W7.00; план v2 §4 «Этап 7»; разбор DoR (chats.md, documents.md, service.md); docs/22, 24, 25"
+    reason: "схема «Chats» (W7.00)."
+  - pointer: /components/schemas/ChatJournalEntry
+    kind: add
+    source: "W7.00; план v2 §4 «Этап 7»; разбор DoR (chats.md, documents.md, service.md); docs/22, 24, 25"
+    reason: "схема «Chats» (W7.00)."
+  - pointer: /components/schemas/ChatJournal
+    kind: add
+    source: "W7.00; план v2 §4 «Этап 7»; разбор DoR (chats.md, documents.md, service.md); docs/22, 24, 25"
+    reason: "схема «Chats» (W7.00)."
+  - pointer: /components/schemas/ChatExportCreate
+    kind: add
+    source: "W7.00; план v2 §4 «Этап 7»; разбор DoR (chats.md, documents.md, service.md); docs/22, 24, 25"
+    reason: "схема «Chats» (W7.00)."
+  - pointer: /components/schemas/ChatExport
+    kind: add
+    source: "W7.00; план v2 §4 «Этап 7»; разбор DoR (chats.md, documents.md, service.md); docs/22, 24, 25"
+    reason: "схема «Chats» (W7.00)."
+  - pointer: /components/schemas/ChatHold
+    kind: add
+    source: "W7.00; план v2 §4 «Этап 7»; разбор DoR (chats.md, documents.md, service.md); docs/22, 24, 25"
+    reason: "схема «Chats» (W7.00)."
+  - pointer: /components/schemas/ChatHoldCreate
+    kind: add
+    source: "W7.00; план v2 §4 «Этап 7»; разбор DoR (chats.md, documents.md, service.md); docs/22, 24, 25"
+    reason: "схема «Chats» (W7.00)."
+  - pointer: /components/schemas/ChatHoldList
+    kind: add
+    source: "W7.00; план v2 §4 «Этап 7»; разбор DoR (chats.md, documents.md, service.md); docs/22, 24, 25"
+    reason: "схема «Chats» (W7.00)."
+  - pointer: /components/parameters/chatId
+    kind: add
+    source: "W7.00; план v2 §4 «Этап 7»; разбор DoR (chats.md, documents.md, service.md); docs/22, 24, 25"
+    reason: "параметр пути «Chats» (W7.00)."
+  - pointer: /components/parameters/messageId
+    kind: add
+    source: "W7.00; план v2 §4 «Этап 7»; разбор DoR (chats.md, documents.md, service.md); docs/22, 24, 25"
+    reason: "параметр пути «Chats» (W7.00)."
+  - pointer: /components/parameters/pollId
+    kind: add
+    source: "W7.00; план v2 §4 «Этап 7»; разбор DoR (chats.md, documents.md, service.md); docs/22, 24, 25"
+    reason: "параметр пути «Chats» (W7.00)."
+  - pointer: /components/parameters/attachmentId
+    kind: add
+    source: "W7.00; план v2 §4 «Этап 7»; разбор DoR (chats.md, documents.md, service.md); docs/22, 24, 25"
+    reason: "параметр пути «Chats» (W7.00)."
+  - pointer: /components/parameters/chatExportId
+    kind: add
+    source: "W7.00; план v2 §4 «Этап 7»; разбор DoR (chats.md, documents.md, service.md); docs/22, 24, 25"
+    reason: "параметр пути «Chats» (W7.00)."
+  - pointer: /components/parameters/chatHoldId
+    kind: add
+    source: "W7.00; план v2 §4 «Этап 7»; разбор DoR (chats.md, documents.md, service.md); docs/22, 24, 25"
+    reason: "параметр пути «Chats» (W7.00)."
+  - pointer: /components/parameters/chatKindParam
+    kind: add
+    source: "W7.00; план v2 §4 «Этап 7»; разбор DoR (chats.md, documents.md, service.md); docs/22, 24, 25"
+    reason: "параметр пути «Chats» (W7.00)."
+  - pointer: /paths/~1api~1v1~1tenants~1{tenantId}~1chats
+    kind: add
+    source: "W7.00; план v2 §4 «Этап 7»; разбор DoR (chats.md, documents.md, service.md); docs/22, 24, 25"
+    reason: "операции тега «Chats» (W7.00)."
+  - pointer: /paths/~1api~1v1~1tenants~1{tenantId}~1chats~1direct
+    kind: add
+    source: "W7.00; план v2 §4 «Этап 7»; разбор DoR (chats.md, documents.md, service.md); docs/22, 24, 25"
+    reason: "операции тега «Chats» (W7.00)."
+  - pointer: /paths/~1api~1v1~1tenants~1{tenantId}~1chats~1{chatId}
+    kind: add
+    source: "W7.00; план v2 §4 «Этап 7»; разбор DoR (chats.md, documents.md, service.md); docs/22, 24, 25"
+    reason: "операции тега «Chats» (W7.00)."
+  - pointer: /paths/~1api~1v1~1tenants~1{tenantId}~1chats~1{chatId}~1archive
+    kind: add
+    source: "W7.00; план v2 §4 «Этап 7»; разбор DoR (chats.md, documents.md, service.md); docs/22, 24, 25"
+    reason: "операции тега «Chats» (W7.00)."
+  - pointer: /paths/~1api~1v1~1tenants~1{tenantId}~1chats~1{chatId}~1messages
+    kind: add
+    source: "W7.00; план v2 §4 «Этап 7»; разбор DoR (chats.md, documents.md, service.md); docs/22, 24, 25"
+    reason: "операции тега «Chats» (W7.00)."
+  - pointer: /paths/~1api~1v1~1tenants~1{tenantId}~1chats~1{chatId}~1messages~1{messageId}
+    kind: add
+    source: "W7.00; план v2 §4 «Этап 7»; разбор DoR (chats.md, documents.md, service.md); docs/22, 24, 25"
+    reason: "операции тега «Chats» (W7.00)."
+  - pointer: /paths/~1api~1v1~1tenants~1{tenantId}~1chats~1{chatId}~1messages~1{messageId}~1versions
+    kind: add
+    source: "W7.00; план v2 §4 «Этап 7»; разбор DoR (chats.md, documents.md, service.md); docs/22, 24, 25"
+    reason: "операции тега «Chats» (W7.00)."
+  - pointer: /paths/~1api~1v1~1tenants~1{tenantId}~1chats~1{chatId}~1read
+    kind: add
+    source: "W7.00; план v2 §4 «Этап 7»; разбор DoR (chats.md, documents.md, service.md); docs/22, 24, 25"
+    reason: "операции тега «Chats» (W7.00)."
+  - pointer: /paths/~1api~1v1~1tenants~1{tenantId}~1chats~1{chatId}~1messages~1{messageId}~1ack
+    kind: add
+    source: "W7.00; план v2 §4 «Этап 7»; разбор DoR (chats.md, documents.md, service.md); docs/22, 24, 25"
+    reason: "операции тега «Chats» (W7.00)."
+  - pointer: /paths/~1api~1v1~1tenants~1{tenantId}~1chats~1{chatId}~1messages~1{messageId}~1receipts
+    kind: add
+    source: "W7.00; план v2 §4 «Этап 7»; разбор DoR (chats.md, documents.md, service.md); docs/22, 24, 25"
+    reason: "операции тега «Chats» (W7.00)."
+  - pointer: /paths/~1api~1v1~1tenants~1{tenantId}~1chats~1{chatId}~1messages~1{messageId}~1pdn-reveal
+    kind: add
+    source: "W7.00; план v2 §4 «Этап 7»; разбор DoR (chats.md, documents.md, service.md); docs/22, 24, 25"
+    reason: "операции тега «Chats» (W7.00)."
+  - pointer: /paths/~1api~1v1~1tenants~1{tenantId}~1chats~1{chatId}~1polls~1{pollId}~1vote
+    kind: add
+    source: "W7.00; план v2 §4 «Этап 7»; разбор DoR (chats.md, documents.md, service.md); docs/22, 24, 25"
+    reason: "операции тега «Chats» (W7.00)."
+  - pointer: /paths/~1api~1v1~1tenants~1{tenantId}~1chats~1{chatId}~1polls~1{pollId}~1close
+    kind: add
+    source: "W7.00; план v2 §4 «Этап 7»; разбор DoR (chats.md, documents.md, service.md); docs/22, 24, 25"
+    reason: "операции тега «Chats» (W7.00)."
+  - pointer: /paths/~1api~1v1~1tenants~1{tenantId}~1chats~1{chatId}~1polls~1{pollId}~1remind
+    kind: add
+    source: "W7.00; план v2 §4 «Этап 7»; разбор DoR (chats.md, documents.md, service.md); docs/22, 24, 25"
+    reason: "операции тега «Chats» (W7.00)."
+  - pointer: /paths/~1api~1v1~1tenants~1{tenantId}~1chats~1{chatId}~1pin
+    kind: add
+    source: "W7.00; план v2 §4 «Этап 7»; разбор DoR (chats.md, documents.md, service.md); docs/22, 24, 25"
+    reason: "операции тега «Chats» (W7.00)."
+  - pointer: /paths/~1api~1v1~1tenants~1{tenantId}~1chats~1{chatId}~1attachments~1{attachmentId}~1view-once
+    kind: add
+    source: "W7.00; план v2 §4 «Этап 7»; разбор DoR (chats.md, documents.md, service.md); docs/22, 24, 25"
+    reason: "операции тега «Chats» (W7.00)."
+  - pointer: /paths/~1api~1v1~1tenants~1{tenantId}~1chats~1{chatId}~1messages~1{messageId}~1save-to-record
+    kind: add
+    source: "W7.00; план v2 §4 «Этап 7»; разбор DoR (chats.md, documents.md, service.md); docs/22, 24, 25"
+    reason: "операции тега «Chats» (W7.00)."
+  - pointer: /paths/~1api~1v1~1tenants~1{tenantId}~1chats~1{chatId}~1messages~1{messageId}~1task
+    kind: add
+    source: "W7.00; план v2 §4 «Этап 7»; разбор DoR (chats.md, documents.md, service.md); docs/22, 24, 25"
+    reason: "операции тега «Chats» (W7.00)."
+  - pointer: /paths/~1api~1v1~1tenants~1{tenantId}~1chats~1{chatId}~1members
+    kind: add
+    source: "W7.00; план v2 §4 «Этап 7»; разбор DoR (chats.md, documents.md, service.md); docs/22, 24, 25"
+    reason: "операции тега «Chats» (W7.00)."
+  - pointer: /paths/~1api~1v1~1tenants~1{tenantId}~1chats~1{chatId}~1sources
+    kind: add
+    source: "W7.00; план v2 §4 «Этап 7»; разбор DoR (chats.md, documents.md, service.md); docs/22, 24, 25"
+    reason: "операции тега «Chats» (W7.00)."
+  - pointer: /paths/~1api~1v1~1tenants~1{tenantId}~1chats~1{chatId}~1access-explanation
+    kind: add
+    source: "W7.00; план v2 §4 «Этап 7»; разбор DoR (chats.md, documents.md, service.md); docs/22, 24, 25"
+    reason: "операции тега «Chats» (W7.00)."
+  - pointer: /paths/~1api~1v1~1tenants~1{tenantId}~1chats~1{chatId}~1storage
+    kind: add
+    source: "W7.00; план v2 §4 «Этап 7»; разбор DoR (chats.md, documents.md, service.md); docs/22, 24, 25"
+    reason: "операции тега «Chats» (W7.00)."
+  - pointer: /paths/~1api~1v1~1tenants~1{tenantId}~1chats~1{chatId}~1cleanups
+    kind: add
+    source: "W7.00; план v2 §4 «Этап 7»; разбор DoR (chats.md, documents.md, service.md); docs/22, 24, 25"
+    reason: "операции тега «Chats» (W7.00)."
+  - pointer: /paths/~1api~1v1~1tenants~1{tenantId}~1chats~1{chatId}~1journal
+    kind: add
+    source: "W7.00; план v2 §4 «Этап 7»; разбор DoR (chats.md, documents.md, service.md); docs/22, 24, 25"
+    reason: "операции тега «Chats» (W7.00)."
+  - pointer: /paths/~1api~1v1~1tenants~1{tenantId}~1chats~1{chatId}~1exports
+    kind: add
+    source: "W7.00; план v2 §4 «Этап 7»; разбор DoR (chats.md, documents.md, service.md); docs/22, 24, 25"
+    reason: "операции тега «Chats» (W7.00)."
+  - pointer: /paths/~1api~1v1~1tenants~1{tenantId}~1chats~1{chatId}~1exports~1{exportId}
+    kind: add
+    source: "W7.00; план v2 §4 «Этап 7»; разбор DoR (chats.md, documents.md, service.md); docs/22, 24, 25"
+    reason: "операции тега «Chats» (W7.00)."
+  - pointer: /paths/~1api~1v1~1tenants~1{tenantId}~1chat-policies
+    kind: add
+    source: "W7.00; план v2 §4 «Этап 7»; разбор DoR (chats.md, documents.md, service.md); docs/22, 24, 25"
+    reason: "операции тега «Chats» (W7.00)."
+  - pointer: /paths/~1api~1v1~1tenants~1{tenantId}~1chat-policies~1{kind}
+    kind: add
+    source: "W7.00; план v2 §4 «Этап 7»; разбор DoR (chats.md, documents.md, service.md); docs/22, 24, 25"
+    reason: "операции тега «Chats» (W7.00)."
+  - pointer: /paths/~1api~1v1~1tenants~1{tenantId}~1chat-holds
+    kind: add
+    source: "W7.00; план v2 §4 «Этап 7»; разбор DoR (chats.md, documents.md, service.md); docs/22, 24, 25"
+    reason: "операции тега «Chats» (W7.00)."
+  - pointer: /paths/~1api~1v1~1tenants~1{tenantId}~1chat-holds~1{holdId}
+    kind: add
+    source: "W7.00; план v2 §4 «Этап 7»; разбор DoR (chats.md, documents.md, service.md); docs/22, 24, 25"
+    reason: "операции тега «Chats» (W7.00)."
+  - pointer: /components/schemas/DocMemberRef
+    kind: add
+    source: "W7.00; план v2 §4 «Этап 7»; разбор DoR (chats.md, documents.md, service.md); docs/22, 24, 25"
+    reason: "схема «Docs» (W7.00)."
+  - pointer: /components/schemas/DocLink
+    kind: add
+    source: "W7.00; план v2 §4 «Этап 7»; разбор DoR (chats.md, documents.md, service.md); docs/22, 24, 25"
+    reason: "схема «Docs» (W7.00)."
+  - pointer: /components/schemas/DocShareEntry
+    kind: add
+    source: "W7.00; план v2 §4 «Этап 7»; разбор DoR (chats.md, documents.md, service.md); docs/22, 24, 25"
+    reason: "схема «Docs» (W7.00)."
+  - pointer: /components/schemas/DocChainStep
+    kind: add
+    source: "W7.00; план v2 §4 «Этап 7»; разбор DoR (chats.md, documents.md, service.md); docs/22, 24, 25"
+    reason: "схема «Docs» (W7.00)."
+  - pointer: /components/schemas/DocWait
+    kind: add
+    source: "W7.00; план v2 §4 «Этап 7»; разбор DoR (chats.md, documents.md, service.md); docs/22, 24, 25"
+    reason: "схема «Docs» (W7.00)."
+  - pointer: /components/schemas/DocCan
+    kind: add
+    source: "W7.00; план v2 §4 «Этап 7»; разбор DoR (chats.md, documents.md, service.md); docs/22, 24, 25"
+    reason: "схема «Docs» (W7.00)."
+  - pointer: /components/schemas/DocMy
+    kind: add
+    source: "W7.00; план v2 §4 «Этап 7»; разбор DoR (chats.md, documents.md, service.md); docs/22, 24, 25"
+    reason: "схема «Docs» (W7.00)."
+  - pointer: /components/schemas/DocRouteBrief
+    kind: add
+    source: "W7.00; план v2 §4 «Этап 7»; разбор DoR (chats.md, documents.md, service.md); docs/22, 24, 25"
+    reason: "схема «Docs» (W7.00)."
+  - pointer: /components/schemas/DocOcr
+    kind: add
+    source: "W7.00; план v2 §4 «Этап 7»; разбор DoR (chats.md, documents.md, service.md); docs/22, 24, 25"
+    reason: "схема «Docs» (W7.00)."
+  - pointer: /components/schemas/DocSummary
+    kind: add
+    source: "W7.00; план v2 §4 «Этап 7»; разбор DoR (chats.md, documents.md, service.md); docs/22, 24, 25"
+    reason: "схема «Docs» (W7.00)."
+  - pointer: /components/schemas/DocumentList
+    kind: add
+    source: "W7.00; план v2 §4 «Этап 7»; разбор DoR (chats.md, documents.md, service.md); docs/22, 24, 25"
+    reason: "схема «Docs» (W7.00)."
+  - pointer: /components/schemas/DocField
+    kind: add
+    source: "W7.00; план v2 §4 «Этап 7»; разбор DoR (chats.md, documents.md, service.md); docs/22, 24, 25"
+    reason: "схема «Docs» (W7.00)."
+  - pointer: /components/schemas/DocTempGrant
+    kind: add
+    source: "W7.00; план v2 §4 «Этап 7»; разбор DoR (chats.md, documents.md, service.md); docs/22, 24, 25"
+    reason: "схема «Docs» (W7.00)."
+  - pointer: /components/schemas/DocProtectedRange
+    kind: add
+    source: "W7.00; план v2 §4 «Этап 7»; разбор DoR (chats.md, documents.md, service.md); docs/22, 24, 25"
+    reason: "схема «Docs» (W7.00)."
+  - pointer: /components/schemas/DocJob
+    kind: add
+    source: "W7.00; план v2 §4 «Этап 7»; разбор DoR (chats.md, documents.md, service.md); docs/22, 24, 25"
+    reason: "схема «Docs» (W7.00)."
+  - pointer: /components/schemas/Document
+    kind: add
+    source: "W7.00; план v2 §4 «Этап 7»; разбор DoR (chats.md, documents.md, service.md); docs/22, 24, 25"
+    reason: "схема «Docs» (W7.00)."
+  - pointer: /components/schemas/DocFolder
+    kind: add
+    source: "W7.00; план v2 §4 «Этап 7»; разбор DoR (chats.md, documents.md, service.md); docs/22, 24, 25"
+    reason: "схема «Docs» (W7.00)."
+  - pointer: /components/schemas/DocFolderList
+    kind: add
+    source: "W7.00; план v2 §4 «Этап 7»; разбор DoR (chats.md, documents.md, service.md); docs/22, 24, 25"
+    reason: "схема «Docs» (W7.00)."
+  - pointer: /components/schemas/DocFolderCreate
+    kind: add
+    source: "W7.00; план v2 §4 «Этап 7»; разбор DoR (chats.md, documents.md, service.md); docs/22, 24, 25"
+    reason: "схема «Docs» (W7.00)."
+  - pointer: /components/schemas/DocFolderPatch
+    kind: add
+    source: "W7.00; план v2 §4 «Этап 7»; разбор DoR (chats.md, documents.md, service.md); docs/22, 24, 25"
+    reason: "схема «Docs» (W7.00)."
+  - pointer: /components/schemas/DocCreate
+    kind: add
+    source: "W7.00; план v2 §4 «Этап 7»; разбор DoR (chats.md, documents.md, service.md); docs/22, 24, 25"
+    reason: "схема «Docs» (W7.00)."
+  - pointer: /components/schemas/DocPatch
+    kind: add
+    source: "W7.00; план v2 §4 «Этап 7»; разбор DoR (chats.md, documents.md, service.md); docs/22, 24, 25"
+    reason: "схема «Docs» (W7.00)."
+  - pointer: /components/schemas/DocImpactPerson
+    kind: add
+    source: "W7.00; план v2 §4 «Этап 7»; разбор DoR (chats.md, documents.md, service.md); docs/22, 24, 25"
+    reason: "схема «Docs» (W7.00)."
+  - pointer: /components/schemas/DocAccessImpact
+    kind: add
+    source: "W7.00; план v2 §4 «Этап 7»; разбор DoR (chats.md, documents.md, service.md); docs/22, 24, 25"
+    reason: "схема «Docs» (W7.00)."
+  - pointer: /components/schemas/DocMove
+    kind: add
+    source: "W7.00; план v2 §4 «Этап 7»; разбор DoR (chats.md, documents.md, service.md); docs/22, 24, 25"
+    reason: "схема «Docs» (W7.00)."
+  - pointer: /components/schemas/DocMoveResult
+    kind: add
+    source: "W7.00; план v2 §4 «Этап 7»; разбор DoR (chats.md, documents.md, service.md); docs/22, 24, 25"
+    reason: "схема «Docs» (W7.00)."
+  - pointer: /components/schemas/DocSessionPermissions
+    kind: add
+    source: "W7.00; план v2 §4 «Этап 7»; разбор DoR (chats.md, documents.md, service.md); docs/22, 24, 25"
+    reason: "схема «Docs» (W7.00)."
+  - pointer: /components/schemas/DocSessionConfig
+    kind: add
+    source: "W7.00; план v2 §4 «Этап 7»; разбор DoR (chats.md, documents.md, service.md); docs/22, 24, 25"
+    reason: "схема «Docs» (W7.00)."
+  - pointer: /components/schemas/DocVersion
+    kind: add
+    source: "W7.00; план v2 §4 «Этап 7»; разбор DoR (chats.md, documents.md, service.md); docs/22, 24, 25"
+    reason: "схема «Docs» (W7.00)."
+  - pointer: /components/schemas/DocVersionList
+    kind: add
+    source: "W7.00; план v2 §4 «Этап 7»; разбор DoR (chats.md, documents.md, service.md); docs/22, 24, 25"
+    reason: "схема «Docs» (W7.00)."
+  - pointer: /components/schemas/DocVersionSave
+    kind: add
+    source: "W7.00; план v2 §4 «Этап 7»; разбор DoR (chats.md, documents.md, service.md); docs/22, 24, 25"
+    reason: "схема «Docs» (W7.00)."
+  - pointer: /components/schemas/DocVersionName
+    kind: add
+    source: "W7.00; план v2 §4 «Этап 7»; разбор DoR (chats.md, documents.md, service.md); docs/22, 24, 25"
+    reason: "схема «Docs» (W7.00)."
+  - pointer: /components/schemas/DocReply
+    kind: add
+    source: "W7.00; план v2 §4 «Этап 7»; разбор DoR (chats.md, documents.md, service.md); docs/22, 24, 25"
+    reason: "схема «Docs» (W7.00)."
+  - pointer: /components/schemas/DocComment
+    kind: add
+    source: "W7.00; план v2 §4 «Этап 7»; разбор DoR (chats.md, documents.md, service.md); docs/22, 24, 25"
+    reason: "схема «Docs» (W7.00)."
+  - pointer: /components/schemas/DocCommentList
+    kind: add
+    source: "W7.00; план v2 §4 «Этап 7»; разбор DoR (chats.md, documents.md, service.md); docs/22, 24, 25"
+    reason: "схема «Docs» (W7.00)."
+  - pointer: /components/schemas/DocCommentCreate
+    kind: add
+    source: "W7.00; план v2 §4 «Этап 7»; разбор DoR (chats.md, documents.md, service.md); docs/22, 24, 25"
+    reason: "схема «Docs» (W7.00)."
+  - pointer: /components/schemas/DocReplyCreate
+    kind: add
+    source: "W7.00; план v2 §4 «Этап 7»; разбор DoR (chats.md, documents.md, service.md); docs/22, 24, 25"
+    reason: "схема «Docs» (W7.00)."
+  - pointer: /components/schemas/DocShares
+    kind: add
+    source: "W7.00; план v2 §4 «Этап 7»; разбор DoR (chats.md, documents.md, service.md); docs/22, 24, 25"
+    reason: "схема «Docs» (W7.00)."
+  - pointer: /components/schemas/DocSharesSet
+    kind: add
+    source: "W7.00; план v2 §4 «Этап 7»; разбор DoR (chats.md, documents.md, service.md); docs/22, 24, 25"
+    reason: "схема «Docs» (W7.00)."
+  - pointer: /components/schemas/DocSharesResult
+    kind: add
+    source: "W7.00; план v2 §4 «Этап 7»; разбор DoR (chats.md, documents.md, service.md); docs/22, 24, 25"
+    reason: "схема «Docs» (W7.00)."
+  - pointer: /components/schemas/DocGrantCreate
+    kind: add
+    source: "W7.00; план v2 §4 «Этап 7»; разбор DoR (chats.md, documents.md, service.md); docs/22, 24, 25"
+    reason: "схема «Docs» (W7.00)."
+  - pointer: /components/schemas/DocExternalLink
+    kind: add
+    source: "W7.00; план v2 §4 «Этап 7»; разбор DoR (chats.md, documents.md, service.md); docs/22, 24, 25"
+    reason: "схема «Docs» (W7.00)."
+  - pointer: /components/schemas/DocExternalLinkCreated
+    kind: add
+    source: "W7.00; план v2 §4 «Этап 7»; разбор DoR (chats.md, documents.md, service.md); docs/22, 24, 25"
+    reason: "схема «Docs» (W7.00)."
+  - pointer: /components/schemas/DocExternalLinkCreate
+    kind: add
+    source: "W7.00; план v2 §4 «Этап 7»; разбор DoR (chats.md, documents.md, service.md); docs/22, 24, 25"
+    reason: "схема «Docs» (W7.00)."
+  - pointer: /components/schemas/DocExternalLinkList
+    kind: add
+    source: "W7.00; план v2 §4 «Этап 7»; разбор DoR (chats.md, documents.md, service.md); docs/22, 24, 25"
+    reason: "схема «Docs» (W7.00)."
+  - pointer: /components/schemas/DocDatasetSync
+    kind: add
+    source: "W7.00; план v2 §4 «Этап 7»; разбор DoR (chats.md, documents.md, service.md); docs/22, 24, 25"
+    reason: "схема «Docs» (W7.00)."
+  - pointer: /components/schemas/DocDatasetSyncResult
+    kind: add
+    source: "W7.00; план v2 §4 «Этап 7»; разбор DoR (chats.md, documents.md, service.md); docs/22, 24, 25"
+    reason: "схема «Docs» (W7.00)."
+  - pointer: /components/schemas/DocJobCreate
+    kind: add
+    source: "W7.00; план v2 §4 «Этап 7»; разбор DoR (chats.md, documents.md, service.md); docs/22, 24, 25"
+    reason: "схема «Docs» (W7.00)."
+  - pointer: /components/schemas/DocJobRetry
+    kind: add
+    source: "W7.00; план v2 §4 «Этап 7»; разбор DoR (chats.md, documents.md, service.md); docs/22, 24, 25"
+    reason: "схема «Docs» (W7.00)."
+  - pointer: /components/schemas/DocOcrWordReview
+    kind: add
+    source: "W7.00; план v2 §4 «Этап 7»; разбор DoR (chats.md, documents.md, service.md); docs/22, 24, 25"
+    reason: "схема «Docs» (W7.00)."
+  - pointer: /components/schemas/DocOcrWord
+    kind: add
+    source: "W7.00; план v2 §4 «Этап 7»; разбор DoR (chats.md, documents.md, service.md); docs/22, 24, 25"
+    reason: "схема «Docs» (W7.00)."
+  - pointer: /components/schemas/DocRouteDecisionRec
+    kind: add
+    source: "W7.00; план v2 §4 «Этап 7»; разбор DoR (chats.md, documents.md, service.md); docs/22, 24, 25"
+    reason: "схема «Docs» (W7.00)."
+  - pointer: /components/schemas/DocRouteStep
+    kind: add
+    source: "W7.00; план v2 §4 «Этап 7»; разбор DoR (chats.md, documents.md, service.md); docs/22, 24, 25"
+    reason: "схема «Docs» (W7.00)."
+  - pointer: /components/schemas/DocRoute
+    kind: add
+    source: "W7.00; план v2 §4 «Этап 7»; разбор DoR (chats.md, documents.md, service.md); docs/22, 24, 25"
+    reason: "схема «Docs» (W7.00)."
+  - pointer: /components/schemas/DocRouteStepInput
+    kind: add
+    source: "W7.00; план v2 §4 «Этап 7»; разбор DoR (chats.md, documents.md, service.md); docs/22, 24, 25"
+    reason: "схема «Docs» (W7.00)."
+  - pointer: /components/schemas/DocRouteStart
+    kind: add
+    source: "W7.00; план v2 §4 «Этап 7»; разбор DoR (chats.md, documents.md, service.md); docs/22, 24, 25"
+    reason: "схема «Docs» (W7.00)."
+  - pointer: /components/schemas/DocRouteStartResult
+    kind: add
+    source: "W7.00; план v2 §4 «Этап 7»; разбор DoR (chats.md, documents.md, service.md); docs/22, 24, 25"
+    reason: "схема «Docs» (W7.00)."
+  - pointer: /components/schemas/DocRouteDecide
+    kind: add
+    source: "W7.00; план v2 §4 «Этап 7»; разбор DoR (chats.md, documents.md, service.md); docs/22, 24, 25"
+    reason: "схема «Docs» (W7.00)."
+  - pointer: /components/schemas/DocSignCodeRequest
+    kind: add
+    source: "W7.00; план v2 §4 «Этап 7»; разбор DoR (chats.md, documents.md, service.md); docs/22, 24, 25"
+    reason: "схема «Docs» (W7.00)."
+  - pointer: /components/schemas/DocSignChallenge
+    kind: add
+    source: "W7.00; план v2 §4 «Этап 7»; разбор DoR (chats.md, documents.md, service.md); docs/22, 24, 25"
+    reason: "схема «Docs» (W7.00)."
+  - pointer: /components/schemas/DocSignConfirm
+    kind: add
+    source: "W7.00; план v2 §4 «Этап 7»; разбор DoR (chats.md, documents.md, service.md); docs/22, 24, 25"
+    reason: "схема «Docs» (W7.00)."
+  - pointer: /components/schemas/DocSignResult
+    kind: add
+    source: "W7.00; план v2 §4 «Этап 7»; разбор DoR (chats.md, documents.md, service.md); docs/22, 24, 25"
+    reason: "схема «Docs» (W7.00)."
+  - pointer: /components/schemas/DocAck
+    kind: add
+    source: "W7.00; план v2 §4 «Этап 7»; разбор DoR (chats.md, documents.md, service.md); docs/22, 24, 25"
+    reason: "схема «Docs» (W7.00)."
+  - pointer: /components/schemas/DocAckResult
+    kind: add
+    source: "W7.00; план v2 §4 «Этап 7»; разбор DoR (chats.md, documents.md, service.md); docs/22, 24, 25"
+    reason: "схема «Docs» (W7.00)."
+  - pointer: /components/schemas/DocTemplate
+    kind: add
+    source: "W7.00; план v2 §4 «Этап 7»; разбор DoR (chats.md, documents.md, service.md); docs/22, 24, 25"
+    reason: "схема «Docs» (W7.00)."
+  - pointer: /components/schemas/DocTemplateList
+    kind: add
+    source: "W7.00; план v2 §4 «Этап 7»; разбор DoR (chats.md, documents.md, service.md); docs/22, 24, 25"
+    reason: "схема «Docs» (W7.00)."
+  - pointer: /components/schemas/DocRouteTemplate
+    kind: add
+    source: "W7.00; план v2 §4 «Этап 7»; разбор DoR (chats.md, documents.md, service.md); docs/22, 24, 25"
+    reason: "схема «Docs» (W7.00)."
+  - pointer: /components/schemas/DocRouteTemplateList
+    kind: add
+    source: "W7.00; план v2 §4 «Этап 7»; разбор DoR (chats.md, documents.md, service.md); docs/22, 24, 25"
+    reason: "схема «Docs» (W7.00)."
+  - pointer: /components/schemas/DocActivity
+    kind: add
+    source: "W7.00; план v2 §4 «Этап 7»; разбор DoR (chats.md, documents.md, service.md); docs/22, 24, 25"
+    reason: "схема «Docs» (W7.00)."
+  - pointer: /components/schemas/DocActivityList
+    kind: add
+    source: "W7.00; план v2 §4 «Этап 7»; разбор DoR (chats.md, documents.md, service.md); docs/22, 24, 25"
+    reason: "схема «Docs» (W7.00)."
+  - pointer: /components/schemas/DocPublicSession
+    kind: add
+    source: "W7.00; план v2 §4 «Этап 7»; разбор DoR (chats.md, documents.md, service.md); docs/22, 24, 25"
+    reason: "схема «Docs» (W7.00)."
+  - pointer: /components/schemas/DocPublicOpen
+    kind: add
+    source: "W7.00; план v2 §4 «Этап 7»; разбор DoR (chats.md, documents.md, service.md); docs/22, 24, 25"
+    reason: "схема «Docs» (W7.00)."
+  - pointer: /components/schemas/DocServerCallback
+    kind: add
+    source: "W7.00; план v2 §4 «Этап 7»; разбор DoR (chats.md, documents.md, service.md); docs/22, 24, 25"
+    reason: "схема «Docs» (W7.00)."
+  - pointer: /components/schemas/DocServerCallbackAck
+    kind: add
+    source: "W7.00; план v2 §4 «Этап 7»; разбор DoR (chats.md, documents.md, service.md); docs/22, 24, 25"
+    reason: "схема «Docs» (W7.00)."
+  - pointer: /components/parameters/docsDocumentId
+    kind: add
+    source: "W7.00; план v2 §4 «Этап 7»; разбор DoR (chats.md, documents.md, service.md); docs/22, 24, 25"
+    reason: "параметр пути «Docs» (W7.00)."
+  - pointer: /components/parameters/docFolderId
+    kind: add
+    source: "W7.00; план v2 §4 «Этап 7»; разбор DoR (chats.md, documents.md, service.md); docs/22, 24, 25"
+    reason: "параметр пути «Docs» (W7.00)."
+  - pointer: /components/parameters/docVersionNumber
+    kind: add
+    source: "W7.00; план v2 §4 «Этап 7»; разбор DoR (chats.md, documents.md, service.md); docs/22, 24, 25"
+    reason: "параметр пути «Docs» (W7.00)."
+  - pointer: /components/parameters/docCommentId
+    kind: add
+    source: "W7.00; план v2 §4 «Этап 7»; разбор DoR (chats.md, documents.md, service.md); docs/22, 24, 25"
+    reason: "параметр пути «Docs» (W7.00)."
+  - pointer: /components/parameters/docLinkId
+    kind: add
+    source: "W7.00; план v2 §4 «Этап 7»; разбор DoR (chats.md, documents.md, service.md); docs/22, 24, 25"
+    reason: "параметр пути «Docs» (W7.00)."
+  - pointer: /components/parameters/docJobId
+    kind: add
+    source: "W7.00; план v2 §4 «Этап 7»; разбор DoR (chats.md, documents.md, service.md); docs/22, 24, 25"
+    reason: "параметр пути «Docs» (W7.00)."
+  - pointer: /components/parameters/ocrWordId
+    kind: add
+    source: "W7.00; план v2 §4 «Этап 7»; разбор DoR (chats.md, documents.md, service.md); docs/22, 24, 25"
+    reason: "параметр пути «Docs» (W7.00)."
+  - pointer: /components/parameters/docLinkToken
+    kind: add
+    source: "W7.00; план v2 §4 «Этап 7»; разбор DoR (chats.md, documents.md, service.md); docs/22, 24, 25"
+    reason: "параметр пути «Docs» (W7.00)."
+  - pointer: /paths/~1api~1v1~1tenants~1{tenantId}~1docs
+    kind: add
+    source: "W7.00; план v2 §4 «Этап 7»; разбор DoR (chats.md, documents.md, service.md); docs/22, 24, 25"
+    reason: "операции тега «Docs» (W7.00)."
+  - pointer: /paths/~1api~1v1~1tenants~1{tenantId}~1docs~1{documentId}
+    kind: add
+    source: "W7.00; план v2 §4 «Этап 7»; разбор DoR (chats.md, documents.md, service.md); docs/22, 24, 25"
+    reason: "операции тега «Docs» (W7.00)."
+  - pointer: /paths/~1api~1v1~1tenants~1{tenantId}~1docs~1{documentId}~1move
+    kind: add
+    source: "W7.00; план v2 §4 «Этап 7»; разбор DoR (chats.md, documents.md, service.md); docs/22, 24, 25"
+    reason: "операции тега «Docs» (W7.00)."
+  - pointer: /paths/~1api~1v1~1tenants~1{tenantId}~1docs~1{documentId}~1archive
+    kind: add
+    source: "W7.00; план v2 §4 «Этап 7»; разбор DoR (chats.md, documents.md, service.md); docs/22, 24, 25"
+    reason: "операции тега «Docs» (W7.00)."
+  - pointer: /paths/~1api~1v1~1tenants~1{tenantId}~1docs~1{documentId}~1restore
+    kind: add
+    source: "W7.00; план v2 §4 «Этап 7»; разбор DoR (chats.md, documents.md, service.md); docs/22, 24, 25"
+    reason: "операции тега «Docs» (W7.00)."
+  - pointer: /paths/~1api~1v1~1tenants~1{tenantId}~1docs~1{documentId}~1open
+    kind: add
+    source: "W7.00; план v2 §4 «Этап 7»; разбор DoR (chats.md, documents.md, service.md); docs/22, 24, 25"
+    reason: "операции тега «Docs» (W7.00)."
+  - pointer: /paths/~1api~1v1~1tenants~1{tenantId}~1docs~1{documentId}~1versions
+    kind: add
+    source: "W7.00; план v2 §4 «Этап 7»; разбор DoR (chats.md, documents.md, service.md); docs/22, 24, 25"
+    reason: "операции тега «Docs» (W7.00)."
+  - pointer: /paths/~1api~1v1~1tenants~1{tenantId}~1docs~1{documentId}~1versions~1{version}~1name
+    kind: add
+    source: "W7.00; план v2 §4 «Этап 7»; разбор DoR (chats.md, documents.md, service.md); docs/22, 24, 25"
+    reason: "операции тега «Docs» (W7.00)."
+  - pointer: /paths/~1api~1v1~1tenants~1{tenantId}~1docs~1{documentId}~1versions~1{version}~1restore
+    kind: add
+    source: "W7.00; план v2 §4 «Этап 7»; разбор DoR (chats.md, documents.md, service.md); docs/22, 24, 25"
+    reason: "операции тега «Docs» (W7.00)."
+  - pointer: /paths/~1api~1v1~1tenants~1{tenantId}~1docs~1{documentId}~1comments
+    kind: add
+    source: "W7.00; план v2 §4 «Этап 7»; разбор DoR (chats.md, documents.md, service.md); docs/22, 24, 25"
+    reason: "операции тега «Docs» (W7.00)."
+  - pointer: /paths/~1api~1v1~1tenants~1{tenantId}~1docs~1{documentId}~1comments~1{commentId}~1replies
+    kind: add
+    source: "W7.00; план v2 §4 «Этап 7»; разбор DoR (chats.md, documents.md, service.md); docs/22, 24, 25"
+    reason: "операции тега «Docs» (W7.00)."
+  - pointer: /paths/~1api~1v1~1tenants~1{tenantId}~1docs~1{documentId}~1comments~1{commentId}~1resolve
+    kind: add
+    source: "W7.00; план v2 §4 «Этап 7»; разбор DoR (chats.md, documents.md, service.md); docs/22, 24, 25"
+    reason: "операции тега «Docs» (W7.00)."
+  - pointer: /paths/~1api~1v1~1tenants~1{tenantId}~1docs~1{documentId}~1comments~1{commentId}~1skip-grant
+    kind: add
+    source: "W7.00; план v2 §4 «Этап 7»; разбор DoR (chats.md, documents.md, service.md); docs/22, 24, 25"
+    reason: "операции тега «Docs» (W7.00)."
+  - pointer: /paths/~1api~1v1~1tenants~1{tenantId}~1docs~1{documentId}~1shares
+    kind: add
+    source: "W7.00; план v2 §4 «Этап 7»; разбор DoR (chats.md, documents.md, service.md); docs/22, 24, 25"
+    reason: "операции тега «Docs» (W7.00)."
+  - pointer: /paths/~1api~1v1~1tenants~1{tenantId}~1docs~1{documentId}~1grants
+    kind: add
+    source: "W7.00; план v2 §4 «Этап 7»; разбор DoR (chats.md, documents.md, service.md); docs/22, 24, 25"
+    reason: "операции тега «Docs» (W7.00)."
+  - pointer: /paths/~1api~1v1~1tenants~1{tenantId}~1docs~1{documentId}~1links
+    kind: add
+    source: "W7.00; план v2 §4 «Этап 7»; разбор DoR (chats.md, documents.md, service.md); docs/22, 24, 25"
+    reason: "операции тега «Docs» (W7.00)."
+  - pointer: /paths/~1api~1v1~1tenants~1{tenantId}~1docs~1{documentId}~1links~1{linkId}
+    kind: add
+    source: "W7.00; план v2 §4 «Этап 7»; разбор DoR (chats.md, documents.md, service.md); docs/22, 24, 25"
+    reason: "операции тега «Docs» (W7.00)."
+  - pointer: /paths/~1api~1v1~1tenants~1{tenantId}~1docs~1{documentId}~1dataset-sync
+    kind: add
+    source: "W7.00; план v2 §4 «Этап 7»; разбор DoR (chats.md, documents.md, service.md); docs/22, 24, 25"
+    reason: "операции тега «Docs» (W7.00)."
+  - pointer: /paths/~1api~1v1~1tenants~1{tenantId}~1doc-jobs
+    kind: add
+    source: "W7.00; план v2 §4 «Этап 7»; разбор DoR (chats.md, documents.md, service.md); docs/22, 24, 25"
+    reason: "операции тега «Docs» (W7.00)."
+  - pointer: /paths/~1api~1v1~1tenants~1{tenantId}~1doc-jobs~1{jobId}
+    kind: add
+    source: "W7.00; план v2 §4 «Этап 7»; разбор DoR (chats.md, documents.md, service.md); docs/22, 24, 25"
+    reason: "операции тега «Docs» (W7.00)."
+  - pointer: /paths/~1api~1v1~1tenants~1{tenantId}~1doc-jobs~1{jobId}~1retry
+    kind: add
+    source: "W7.00; план v2 §4 «Этап 7»; разбор DoR (chats.md, documents.md, service.md); docs/22, 24, 25"
+    reason: "операции тега «Docs» (W7.00)."
+  - pointer: /paths/~1api~1v1~1tenants~1{tenantId}~1docs~1{documentId}~1ocr~1words~1{wordId}
+    kind: add
+    source: "W7.00; план v2 §4 «Этап 7»; разбор DoR (chats.md, documents.md, service.md); docs/22, 24, 25"
+    reason: "операции тега «Docs» (W7.00)."
+  - pointer: /paths/~1api~1v1~1tenants~1{tenantId}~1docs~1{documentId}~1route
+    kind: add
+    source: "W7.00; план v2 §4 «Этап 7»; разбор DoR (chats.md, documents.md, service.md); docs/22, 24, 25"
+    reason: "операции тега «Docs» (W7.00)."
+  - pointer: /paths/~1api~1v1~1tenants~1{tenantId}~1docs~1{documentId}~1route~1decisions
+    kind: add
+    source: "W7.00; план v2 §4 «Этап 7»; разбор DoR (chats.md, documents.md, service.md); docs/22, 24, 25"
+    reason: "операции тега «Docs» (W7.00)."
+  - pointer: /paths/~1api~1v1~1tenants~1{tenantId}~1docs~1{documentId}~1route~1sign~1code
+    kind: add
+    source: "W7.00; план v2 §4 «Этап 7»; разбор DoR (chats.md, documents.md, service.md); docs/22, 24, 25"
+    reason: "операции тега «Docs» (W7.00)."
+  - pointer: /paths/~1api~1v1~1tenants~1{tenantId}~1docs~1{documentId}~1route~1sign
+    kind: add
+    source: "W7.00; план v2 §4 «Этап 7»; разбор DoR (chats.md, documents.md, service.md); docs/22, 24, 25"
+    reason: "операции тега «Docs» (W7.00)."
+  - pointer: /paths/~1api~1v1~1tenants~1{tenantId}~1docs~1{documentId}~1ack
+    kind: add
+    source: "W7.00; план v2 §4 «Этап 7»; разбор DoR (chats.md, documents.md, service.md); docs/22, 24, 25"
+    reason: "операции тега «Docs» (W7.00)."
+  - pointer: /paths/~1api~1v1~1tenants~1{tenantId}~1docs~1{documentId}~1route~1ack~1close
+    kind: add
+    source: "W7.00; план v2 §4 «Этап 7»; разбор DoR (chats.md, documents.md, service.md); docs/22, 24, 25"
+    reason: "операции тега «Docs» (W7.00)."
+  - pointer: /paths/~1api~1v1~1tenants~1{tenantId}~1docs~1{documentId}~1route~1resume
+    kind: add
+    source: "W7.00; план v2 §4 «Этап 7»; разбор DoR (chats.md, documents.md, service.md); docs/22, 24, 25"
+    reason: "операции тега «Docs» (W7.00)."
+  - pointer: /paths/~1api~1v1~1tenants~1{tenantId}~1docs~1{documentId}~1route~1cancel
+    kind: add
+    source: "W7.00; план v2 §4 «Этап 7»; разбор DoR (chats.md, documents.md, service.md); docs/22, 24, 25"
+    reason: "операции тега «Docs» (W7.00)."
+  - pointer: /paths/~1api~1v1~1tenants~1{tenantId}~1docs~1{documentId}~1activity
+    kind: add
+    source: "W7.00; план v2 §4 «Этап 7»; разбор DoR (chats.md, documents.md, service.md); docs/22, 24, 25"
+    reason: "операции тега «Docs» (W7.00)."
+  - pointer: /paths/~1api~1v1~1tenants~1{tenantId}~1doc-folders
+    kind: add
+    source: "W7.00; план v2 §4 «Этап 7»; разбор DoR (chats.md, documents.md, service.md); docs/22, 24, 25"
+    reason: "операции тега «Docs» (W7.00)."
+  - pointer: /paths/~1api~1v1~1tenants~1{tenantId}~1doc-folders~1{folderId}
+    kind: add
+    source: "W7.00; план v2 §4 «Этап 7»; разбор DoR (chats.md, documents.md, service.md); docs/22, 24, 25"
+    reason: "операции тега «Docs» (W7.00)."
+  - pointer: /paths/~1api~1v1~1tenants~1{tenantId}~1doc-folders~1{folderId}~1shares
+    kind: add
+    source: "W7.00; план v2 §4 «Этап 7»; разбор DoR (chats.md, documents.md, service.md); docs/22, 24, 25"
+    reason: "операции тега «Docs» (W7.00)."
+  - pointer: /paths/~1api~1v1~1tenants~1{tenantId}~1doc-templates
+    kind: add
+    source: "W7.00; план v2 §4 «Этап 7»; разбор DoR (chats.md, documents.md, service.md); docs/22, 24, 25"
+    reason: "операции тега «Docs» (W7.00)."
+  - pointer: /paths/~1api~1v1~1tenants~1{tenantId}~1doc-route-templates
+    kind: add
+    source: "W7.00; план v2 §4 «Этап 7»; разбор DoR (chats.md, documents.md, service.md); docs/22, 24, 25"
+    reason: "операции тега «Docs» (W7.00)."
+  - pointer: /paths/~1api~1v1~1public~1doc-links~1{token}~1open
+    kind: add
+    source: "W7.00; план v2 §4 «Этап 7»; разбор DoR (chats.md, documents.md, service.md); docs/22, 24, 25"
+    reason: "операции тега «PublicDocs» (W7.00)."
+  - pointer: /paths/~1api~1v1~1internal~1docs~1callback
+    kind: add
+    source: "W7.00; план v2 §4 «Этап 7»; разбор DoR (chats.md, documents.md, service.md); docs/22, 24, 25"
+    reason: "операции тега «PublicDocs» (W7.00)."
+  - pointer: /components/schemas/ServiceMemberRef
+    kind: add
+    source: "W7.00; план v2 §4 «Этап 7»; разбор DoR (chats.md, documents.md, service.md); docs/22, 24, 25"
+    reason: "схема «Service» (W7.00)."
+  - pointer: /components/schemas/ServiceWorkCalendar
+    kind: add
+    source: "W7.00; план v2 §4 «Этап 7»; разбор DoR (chats.md, documents.md, service.md); docs/22, 24, 25"
+    reason: "схема «Service» (W7.00)."
+  - pointer: /components/schemas/ServiceDirection
+    kind: add
+    source: "W7.00; план v2 §4 «Этап 7»; разбор DoR (chats.md, documents.md, service.md); docs/22, 24, 25"
+    reason: "схема «Service» (W7.00)."
+  - pointer: /components/schemas/ServiceRequestType
+    kind: add
+    source: "W7.00; план v2 §4 «Этап 7»; разбор DoR (chats.md, documents.md, service.md); docs/22, 24, 25"
+    reason: "схема «Service» (W7.00)."
+  - pointer: /components/schemas/ServiceDirectionList
+    kind: add
+    source: "W7.00; план v2 §4 «Этап 7»; разбор DoR (chats.md, documents.md, service.md); docs/22, 24, 25"
+    reason: "схема «Service» (W7.00)."
+  - pointer: /components/schemas/ServiceClient
+    kind: add
+    source: "W7.00; план v2 §4 «Этап 7»; разбор DoR (chats.md, documents.md, service.md); docs/22, 24, 25"
+    reason: "схема «Service» (W7.00)."
+  - pointer: /components/schemas/ServiceLink
+    kind: add
+    source: "W7.00; план v2 §4 «Этап 7»; разбор DoR (chats.md, documents.md, service.md); docs/22, 24, 25"
+    reason: "схема «Service» (W7.00)."
+  - pointer: /components/schemas/ServiceSlaTarget
+    kind: add
+    source: "W7.00; план v2 §4 «Этап 7»; разбор DoR (chats.md, documents.md, service.md); docs/22, 24, 25"
+    reason: "схема «Service» (W7.00)."
+  - pointer: /components/schemas/ServiceSla
+    kind: add
+    source: "W7.00; план v2 §4 «Этап 7»; разбор DoR (chats.md, documents.md, service.md); docs/22, 24, 25"
+    reason: "схема «Service» (W7.00)."
+  - pointer: /components/schemas/ServiceSlaHead
+    kind: add
+    source: "W7.00; план v2 §4 «Этап 7»; разбор DoR (chats.md, documents.md, service.md); docs/22, 24, 25"
+    reason: "схема «Service» (W7.00)."
+  - pointer: /components/schemas/ServiceFile
+    kind: add
+    source: "W7.00; план v2 §4 «Этап 7»; разбор DoR (chats.md, documents.md, service.md); docs/22, 24, 25"
+    reason: "схема «Service» (W7.00)."
+  - pointer: /components/schemas/ServiceMessage
+    kind: add
+    source: "W7.00; план v2 §4 «Этап 7»; разбор DoR (chats.md, documents.md, service.md); docs/22, 24, 25"
+    reason: "схема «Service» (W7.00)."
+  - pointer: /components/schemas/ServiceTaskRef
+    kind: add
+    source: "W7.00; план v2 §4 «Этап 7»; разбор DoR (chats.md, documents.md, service.md); docs/22, 24, 25"
+    reason: "схема «Service» (W7.00)."
+  - pointer: /components/schemas/ServiceRequestSummary
+    kind: add
+    source: "W7.00; план v2 §4 «Этап 7»; разбор DoR (chats.md, documents.md, service.md); docs/22, 24, 25"
+    reason: "схема «Service» (W7.00)."
+  - pointer: /components/schemas/ServiceQueueCount
+    kind: add
+    source: "W7.00; план v2 §4 «Этап 7»; разбор DoR (chats.md, documents.md, service.md); docs/22, 24, 25"
+    reason: "схема «Service» (W7.00)."
+  - pointer: /components/schemas/ServiceQueueCounts
+    kind: add
+    source: "W7.00; план v2 §4 «Этап 7»; разбор DoR (chats.md, documents.md, service.md); docs/22, 24, 25"
+    reason: "схема «Service» (W7.00)."
+  - pointer: /components/schemas/ServiceRequestList
+    kind: add
+    source: "W7.00; план v2 §4 «Этап 7»; разбор DoR (chats.md, documents.md, service.md); docs/22, 24, 25"
+    reason: "схема «Service» (W7.00)."
+  - pointer: /components/schemas/ServiceRequest
+    kind: add
+    source: "W7.00; план v2 §4 «Этап 7»; разбор DoR (chats.md, documents.md, service.md); docs/22, 24, 25"
+    reason: "схема «Service» (W7.00)."
+  - pointer: /components/schemas/ServiceRequestCreate
+    kind: add
+    source: "W7.00; план v2 §4 «Этап 7»; разбор DoR (chats.md, documents.md, service.md); docs/22, 24, 25"
+    reason: "схема «Service» (W7.00)."
+  - pointer: /components/schemas/ServiceLinkInput
+    kind: add
+    source: "W7.00; план v2 §4 «Этап 7»; разбор DoR (chats.md, documents.md, service.md); docs/22, 24, 25"
+    reason: "схема «Service» (W7.00)."
+  - pointer: /components/schemas/ServiceMessageCreate
+    kind: add
+    source: "W7.00; план v2 §4 «Этап 7»; разбор DoR (chats.md, documents.md, service.md); docs/22, 24, 25"
+    reason: "схема «Service» (W7.00)."
+  - pointer: /components/schemas/ServiceCompensationSet
+    kind: add
+    source: "W7.00; план v2 §4 «Этап 7»; разбор DoR (chats.md, documents.md, service.md); docs/22, 24, 25"
+    reason: "схема «Service» (W7.00)."
+  - pointer: /components/schemas/ServiceTransition
+    kind: add
+    source: "W7.00; план v2 §4 «Этап 7»; разбор DoR (chats.md, documents.md, service.md); docs/22, 24, 25"
+    reason: "схема «Service» (W7.00)."
+  - pointer: /components/schemas/ServiceRequestPatch
+    kind: add
+    source: "W7.00; план v2 §4 «Этап 7»; разбор DoR (chats.md, documents.md, service.md); docs/22, 24, 25"
+    reason: "схема «Service» (W7.00)."
+  - pointer: /components/schemas/ServiceMove
+    kind: add
+    source: "W7.00; план v2 §4 «Этап 7»; разбор DoR (chats.md, documents.md, service.md); docs/22, 24, 25"
+    reason: "схема «Service» (W7.00)."
+  - pointer: /components/schemas/ServicePhoneReveal
+    kind: add
+    source: "W7.00; план v2 §4 «Этап 7»; разбор DoR (chats.md, documents.md, service.md); docs/22, 24, 25"
+    reason: "схема «Service» (W7.00)."
+  - pointer: /components/schemas/ServiceConclusion
+    kind: add
+    source: "W7.00; план v2 §4 «Этап 7»; разбор DoR (chats.md, documents.md, service.md); docs/22, 24, 25"
+    reason: "схема «Service» (W7.00)."
+  - pointer: /components/schemas/ServiceTaskCreate
+    kind: add
+    source: "W7.00; план v2 §4 «Этап 7»; разбор DoR (chats.md, documents.md, service.md); docs/22, 24, 25"
+    reason: "схема «Service» (W7.00)."
+  - pointer: /components/schemas/ServiceRating
+    kind: add
+    source: "W7.00; план v2 §4 «Этап 7»; разбор DoR (chats.md, documents.md, service.md); docs/22, 24, 25"
+    reason: "схема «Service» (W7.00)."
+  - pointer: /components/schemas/ServiceRatingList
+    kind: add
+    source: "W7.00; план v2 §4 «Этап 7»; разбор DoR (chats.md, documents.md, service.md); docs/22, 24, 25"
+    reason: "схема «Service» (W7.00)."
+  - pointer: /components/schemas/ServiceRatingDecision
+    kind: add
+    source: "W7.00; план v2 §4 «Этап 7»; разбор DoR (chats.md, documents.md, service.md); docs/22, 24, 25"
+    reason: "схема «Service» (W7.00)."
+  - pointer: /components/schemas/ServiceRatingDecisionResult
+    kind: add
+    source: "W7.00; план v2 §4 «Этап 7»; разбор DoR (chats.md, documents.md, service.md); docs/22, 24, 25"
+    reason: "схема «Service» (W7.00)."
+  - pointer: /components/schemas/ServiceReplyTemplate
+    kind: add
+    source: "W7.00; план v2 §4 «Этап 7»; разбор DoR (chats.md, documents.md, service.md); docs/22, 24, 25"
+    reason: "схема «Service» (W7.00)."
+  - pointer: /components/schemas/ServiceReplyTemplateList
+    kind: add
+    source: "W7.00; план v2 §4 «Этап 7»; разбор DoR (chats.md, documents.md, service.md); docs/22, 24, 25"
+    reason: "схема «Service» (W7.00)."
+  - pointer: /components/schemas/ServiceDirectionBody
+    kind: add
+    source: "W7.00; план v2 §4 «Этап 7»; разбор DoR (chats.md, documents.md, service.md); docs/22, 24, 25"
+    reason: "схема «Service» (W7.00)."
+  - pointer: /components/schemas/ServiceDirectionCreate
+    kind: add
+    source: "W7.00; план v2 §4 «Этап 7»; разбор DoR (chats.md, documents.md, service.md); docs/22, 24, 25"
+    reason: "схема «Service» (W7.00)."
+  - pointer: /components/schemas/ServiceDirectionDraft
+    kind: add
+    source: "W7.00; план v2 §4 «Этап 7»; разбор DoR (chats.md, documents.md, service.md); docs/22, 24, 25"
+    reason: "схема «Service» (W7.00)."
+  - pointer: /components/schemas/ServiceDirectionDraftSave
+    kind: add
+    source: "W7.00; план v2 §4 «Этап 7»; разбор DoR (chats.md, documents.md, service.md); docs/22, 24, 25"
+    reason: "схема «Service» (W7.00)."
+  - pointer: /components/schemas/ServiceDirectionConfig
+    kind: add
+    source: "W7.00; план v2 §4 «Этап 7»; разбор DoR (chats.md, documents.md, service.md); docs/22, 24, 25"
+    reason: "схема «Service» (W7.00)."
+  - pointer: /components/schemas/ServiceReportRow
+    kind: add
+    source: "W7.00; план v2 §4 «Этап 7»; разбор DoR (chats.md, documents.md, service.md); docs/22, 24, 25"
+    reason: "схема «Service» (W7.00)."
+  - pointer: /components/schemas/ServiceReportStaff
+    kind: add
+    source: "W7.00; план v2 §4 «Этап 7»; разбор DoR (chats.md, documents.md, service.md); docs/22, 24, 25"
+    reason: "схема «Service» (W7.00)."
+  - pointer: /components/schemas/ServiceReport
+    kind: add
+    source: "W7.00; план v2 §4 «Этап 7»; разбор DoR (chats.md, documents.md, service.md); docs/22, 24, 25"
+    reason: "схема «Service» (W7.00)."
+  - pointer: /components/schemas/PublicServiceType
+    kind: add
+    source: "W7.00; план v2 §4 «Этап 7»; разбор DoR (chats.md, documents.md, service.md); docs/22, 24, 25"
+    reason: "схема «Service» (W7.00)."
+  - pointer: /components/schemas/PublicServicePage
+    kind: add
+    source: "W7.00; план v2 §4 «Этап 7»; разбор DoR (chats.md, documents.md, service.md); docs/22, 24, 25"
+    reason: "схема «Service» (W7.00)."
+  - pointer: /components/schemas/PublicServiceSubmit
+    kind: add
+    source: "W7.00; план v2 §4 «Этап 7»; разбор DoR (chats.md, documents.md, service.md); docs/22, 24, 25"
+    reason: "схема «Service» (W7.00)."
+  - pointer: /components/schemas/PublicServiceReceipt
+    kind: add
+    source: "W7.00; план v2 §4 «Этап 7»; разбор DoR (chats.md, documents.md, service.md); docs/22, 24, 25"
+    reason: "схема «Service» (W7.00)."
+  - pointer: /components/schemas/PublicServiceMessage
+    kind: add
+    source: "W7.00; план v2 §4 «Этап 7»; разбор DoR (chats.md, documents.md, service.md); docs/22, 24, 25"
+    reason: "схема «Service» (W7.00)."
+  - pointer: /components/schemas/PublicServiceRequest
+    kind: add
+    source: "W7.00; план v2 §4 «Этап 7»; разбор DoR (chats.md, documents.md, service.md); docs/22, 24, 25"
+    reason: "схема «Service» (W7.00)."
+  - pointer: /components/schemas/PublicServiceMessageCreate
+    kind: add
+    source: "W7.00; план v2 §4 «Этап 7»; разбор DoR (chats.md, documents.md, service.md); docs/22, 24, 25"
+    reason: "схема «Service» (W7.00)."
+  - pointer: /components/schemas/PublicServiceCsat
+    kind: add
+    source: "W7.00; план v2 §4 «Этап 7»; разбор DoR (chats.md, documents.md, service.md); docs/22, 24, 25"
+    reason: "схема «Service» (W7.00)."
+  - pointer: /components/schemas/PublicServiceReopen
+    kind: add
+    source: "W7.00; план v2 §4 «Этап 7»; разбор DoR (chats.md, documents.md, service.md); docs/22, 24, 25"
+    reason: "схема «Service» (W7.00)."
+  - pointer: /components/schemas/PublicServiceOptOut
+    kind: add
+    source: "W7.00; план v2 §4 «Этап 7»; разбор DoR (chats.md, documents.md, service.md); docs/22, 24, 25"
+    reason: "схема «Service» (W7.00)."
+  - pointer: /components/schemas/PublicServiceUploadCreate
+    kind: add
+    source: "W7.00; план v2 §4 «Этап 7»; разбор DoR (chats.md, documents.md, service.md); docs/22, 24, 25"
+    reason: "схема «Service» (W7.00)."
+  - pointer: /components/schemas/PublicServiceUploadComplete
+    kind: add
+    source: "W7.00; план v2 §4 «Этап 7»; разбор DoR (chats.md, documents.md, service.md); docs/22, 24, 25"
+    reason: "схема «Service» (W7.00)."
+  - pointer: /components/parameters/directionId
+    kind: add
+    source: "W7.00; план v2 §4 «Этап 7»; разбор DoR (chats.md, documents.md, service.md); docs/22, 24, 25"
+    reason: "параметр пути «Service» (W7.00)."
+  - pointer: /components/parameters/serviceRequestId
+    kind: add
+    source: "W7.00; план v2 §4 «Этап 7»; разбор DoR (chats.md, documents.md, service.md); docs/22, 24, 25"
+    reason: "параметр пути «Service» (W7.00)."
+  - pointer: /components/parameters/serviceRatingId
+    kind: add
+    source: "W7.00; план v2 §4 «Этап 7»; разбор DoR (chats.md, documents.md, service.md); docs/22, 24, 25"
+    reason: "параметр пути «Service» (W7.00)."
+  - pointer: /components/parameters/servicePortalSlug
+    kind: add
+    source: "W7.00; план v2 §4 «Этап 7»; разбор DoR (chats.md, documents.md, service.md); docs/22, 24, 25"
+    reason: "параметр пути «Service» (W7.00)."
+  - pointer: /components/parameters/servicePortalToken
+    kind: add
+    source: "W7.00; план v2 §4 «Этап 7»; разбор DoR (chats.md, documents.md, service.md); docs/22, 24, 25"
+    reason: "параметр пути «Service» (W7.00)."
+  - pointer: /paths/~1api~1v1~1tenants~1{tenantId}~1service~1directions
+    kind: add
+    source: "W7.00; план v2 §4 «Этап 7»; разбор DoR (chats.md, documents.md, service.md); docs/22, 24, 25"
+    reason: "операции тега «Service» (W7.00)."
+  - pointer: /paths/~1api~1v1~1tenants~1{tenantId}~1service~1requests
+    kind: add
+    source: "W7.00; план v2 §4 «Этап 7»; разбор DoR (chats.md, documents.md, service.md); docs/22, 24, 25"
+    reason: "операции тега «Service» (W7.00)."
+  - pointer: /paths/~1api~1v1~1tenants~1{tenantId}~1service~1queues
+    kind: add
+    source: "W7.00; план v2 §4 «Этап 7»; разбор DoR (chats.md, documents.md, service.md); docs/22, 24, 25"
+    reason: "операции тега «Service» (W7.00)."
+  - pointer: /paths/~1api~1v1~1tenants~1{tenantId}~1service~1requests~1{requestId}
+    kind: add
+    source: "W7.00; план v2 §4 «Этап 7»; разбор DoR (chats.md, documents.md, service.md); docs/22, 24, 25"
+    reason: "операции тега «Service» (W7.00)."
+  - pointer: /paths/~1api~1v1~1tenants~1{tenantId}~1service~1requests~1{requestId}~1messages
+    kind: add
+    source: "W7.00; план v2 §4 «Этап 7»; разбор DoR (chats.md, documents.md, service.md); docs/22, 24, 25"
+    reason: "операции тега «Service» (W7.00)."
+  - pointer: /paths/~1api~1v1~1tenants~1{tenantId}~1service~1requests~1{requestId}~1compensation
+    kind: add
+    source: "W7.00; план v2 §4 «Этап 7»; разбор DoR (chats.md, documents.md, service.md); docs/22, 24, 25"
+    reason: "операции тега «Service» (W7.00)."
+  - pointer: /paths/~1api~1v1~1tenants~1{tenantId}~1service~1requests~1{requestId}~1transitions
+    kind: add
+    source: "W7.00; план v2 §4 «Этап 7»; разбор DoR (chats.md, documents.md, service.md); docs/22, 24, 25"
+    reason: "операции тега «Service» (W7.00)."
+  - pointer: /paths/~1api~1v1~1tenants~1{tenantId}~1service~1requests~1{requestId}~1move
+    kind: add
+    source: "W7.00; план v2 §4 «Этап 7»; разбор DoR (chats.md, documents.md, service.md); docs/22, 24, 25"
+    reason: "операции тега «Service» (W7.00)."
+  - pointer: /paths/~1api~1v1~1tenants~1{tenantId}~1service~1requests~1{requestId}~1client-phone~1reveal
+    kind: add
+    source: "W7.00; план v2 §4 «Этап 7»; разбор DoR (chats.md, documents.md, service.md); docs/22, 24, 25"
+    reason: "операции тега «Service» (W7.00)."
+  - pointer: /paths/~1api~1v1~1tenants~1{tenantId}~1service~1requests~1{requestId}~1conclusion
+    kind: add
+    source: "W7.00; план v2 §4 «Этап 7»; разбор DoR (chats.md, documents.md, service.md); docs/22, 24, 25"
+    reason: "операции тега «Service» (W7.00)."
+  - pointer: /paths/~1api~1v1~1tenants~1{tenantId}~1service~1requests~1{requestId}~1tasks
+    kind: add
+    source: "W7.00; план v2 §4 «Этап 7»; разбор DoR (chats.md, documents.md, service.md); docs/22, 24, 25"
+    reason: "операции тега «Service» (W7.00)."
+  - pointer: /paths/~1api~1v1~1tenants~1{tenantId}~1service~1ratings
+    kind: add
+    source: "W7.00; план v2 §4 «Этап 7»; разбор DoR (chats.md, documents.md, service.md); docs/22, 24, 25"
+    reason: "операции тега «Service» (W7.00)."
+  - pointer: /paths/~1api~1v1~1tenants~1{tenantId}~1service~1ratings~1{ratingId}~1decision
+    kind: add
+    source: "W7.00; план v2 §4 «Этап 7»; разбор DoR (chats.md, documents.md, service.md); docs/22, 24, 25"
+    reason: "операции тега «Service» (W7.00)."
+  - pointer: /paths/~1api~1v1~1tenants~1{tenantId}~1service~1directions~1{directionId}~1templates
+    kind: add
+    source: "W7.00; план v2 §4 «Этап 7»; разбор DoR (chats.md, documents.md, service.md); docs/22, 24, 25"
+    reason: "операции тега «Service» (W7.00)."
+  - pointer: /paths/~1api~1v1~1tenants~1{tenantId}~1service~1directions~1{directionId}
+    kind: add
+    source: "W7.00; план v2 §4 «Этап 7»; разбор DoR (chats.md, documents.md, service.md); docs/22, 24, 25"
+    reason: "операции тега «Service» (W7.00)."
+  - pointer: /paths/~1api~1v1~1tenants~1{tenantId}~1service~1directions~1{directionId}~1draft
+    kind: add
+    source: "W7.00; план v2 §4 «Этап 7»; разбор DoR (chats.md, documents.md, service.md); docs/22, 24, 25"
+    reason: "операции тега «Service» (W7.00)."
+  - pointer: /paths/~1api~1v1~1tenants~1{tenantId}~1service~1directions~1{directionId}~1publish
+    kind: add
+    source: "W7.00; план v2 §4 «Этап 7»; разбор DoR (chats.md, documents.md, service.md); docs/22, 24, 25"
+    reason: "операции тега «Service» (W7.00)."
+  - pointer: /paths/~1api~1v1~1tenants~1{tenantId}~1service~1report
+    kind: add
+    source: "W7.00; план v2 §4 «Этап 7»; разбор DoR (chats.md, documents.md, service.md); docs/22, 24, 25"
+    reason: "операции тега «Service» (W7.00)."
+  - pointer: /paths/~1api~1v1~1public~1service~1{slug}
+    kind: add
+    source: "W7.00; план v2 §4 «Этап 7»; разбор DoR (chats.md, documents.md, service.md); docs/22, 24, 25"
+    reason: "операции тега «PublicService» (W7.00)."
+  - pointer: /paths/~1api~1v1~1public~1service~1{slug}~1requests
+    kind: add
+    source: "W7.00; план v2 §4 «Этап 7»; разбор DoR (chats.md, documents.md, service.md); docs/22, 24, 25"
+    reason: "операции тега «PublicService» (W7.00)."
+  - pointer: /paths/~1api~1v1~1public~1service~1requests~1{token}
+    kind: add
+    source: "W7.00; план v2 §4 «Этап 7»; разбор DoR (chats.md, documents.md, service.md); docs/22, 24, 25"
+    reason: "операции тега «PublicService» (W7.00)."
+  - pointer: /paths/~1api~1v1~1public~1service~1requests~1{token}~1messages
+    kind: add
+    source: "W7.00; план v2 §4 «Этап 7»; разбор DoR (chats.md, documents.md, service.md); docs/22, 24, 25"
+    reason: "операции тега «PublicService» (W7.00)."
+  - pointer: /paths/~1api~1v1~1public~1service~1requests~1{token}~1csat
+    kind: add
+    source: "W7.00; план v2 §4 «Этап 7»; разбор DoR (chats.md, documents.md, service.md); docs/22, 24, 25"
+    reason: "операции тега «PublicService» (W7.00)."
+  - pointer: /paths/~1api~1v1~1public~1service~1requests~1{token}~1reopen
+    kind: add
+    source: "W7.00; план v2 §4 «Этап 7»; разбор DoR (chats.md, documents.md, service.md); docs/22, 24, 25"
+    reason: "операции тега «PublicService» (W7.00)."
+  - pointer: /paths/~1api~1v1~1public~1service~1requests~1{token}~1opt-out
+    kind: add
+    source: "W7.00; план v2 §4 «Этап 7»; разбор DoR (chats.md, documents.md, service.md); docs/22, 24, 25"
+    reason: "операции тега «PublicService» (W7.00)."
+  - pointer: /paths/~1api~1v1~1public~1service~1requests~1{token}~1uploads
+    kind: add
+    source: "W7.00; план v2 §4 «Этап 7»; разбор DoR (chats.md, documents.md, service.md); docs/22, 24, 25"
+    reason: "операции тега «PublicService» (W7.00)."
+  - pointer: /paths/~1api~1v1~1public~1service~1requests~1{token}~1uploads~1{uploadId}~1complete
+    kind: add
+    source: "W7.00; план v2 §4 «Этап 7»; разбор DoR (chats.md, documents.md, service.md); docs/22, 24, 25"
+    reason: "операции тега «PublicService» (W7.00)."
+  - pointer: /components/securitySchemes/docServerJwt
+    kind: add
+    source: "W7.00 (возврат 1 ревью); ADR-0016; плана v2 §4 «Этап 7»"
+    reason: "схема безопасности межсервисного callback сервера документов (docServerCallback): служебный JWT HS256 вместо security: [] (подпись описана схемой, а не только текстом)."

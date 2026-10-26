@@ -1,0 +1,8 @@
+{
+  "type": "https://docs.ortus.example/errors/chat_on_hold",
+  "title": "Удаление или очистка сообщений под удержанием",
+  "status": 409,
+  "code": "chat_on_hold",
+  "detail": "Нельзя удалить: удержание «Претензия по кв. 42» до —",
+  "requestId": "01J9Z4QK8M6T2V5X7Y9A1B3C5D"
+}

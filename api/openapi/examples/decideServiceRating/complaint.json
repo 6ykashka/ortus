@@ -1,0 +1,71 @@
+{
+  "rating": {
+    "id": "4ed0e756-955a-5eca-8c94-2582923c1dec",
+    "directionId": "9cc9b25b-8024-58f7-8db6-ba7379006810",
+    "clientName": "ООО «Вектор»",
+    "score": 2,
+    "reasons": ["Опоздание к окну выгрузки"],
+    "comment": "Опоздали на 40 минут, разгрузку перенесли на вечер",
+    "at": "2026-09-29T09:40:00Z",
+    "work": "Рейс Р-190 · 29.09",
+    "status": "request",
+    "requestId": "661c13b2-8578-53c1-b830-b5c1271e26f6"
+  },
+  "request": {
+    "id": "661c13b2-8578-53c1-b830-b5c1271e26f6",
+    "key": "ГРЗ-58",
+    "directionId": "9cc9b25b-8024-58f7-8db6-ba7379006810",
+    "kind": "complaint",
+    "title": "Опоздали на 40 минут, разгрузку перенесли на вечер",
+    "status": "work",
+    "priority": "high",
+    "assignee": {
+      "memberId": "ac41932c-dbd9-53b1-a84b-42cbc1d6629a",
+      "displayName": "Марина Котова"
+    },
+    "createdAt": "2026-10-01T13:24:00Z",
+    "channel": "sms",
+    "client": {
+      "name": "ООО «Вектор»",
+      "phoneMasked": "+7 ••• •••-••-00",
+      "since": "Клиент из опроса S-305"
+    },
+    "link": {
+      "label": "Рейс Р-190 · 29.09",
+      "lines": ["Оценка 2 из 5 · 29 сентября"]
+    },
+    "sla": {
+      "first": {
+        "goalMinutes": 120,
+        "dueAt": "2026-10-01T15:24:00Z",
+        "stoppedAt": null,
+        "state": "norm",
+        "label": "Первый ответ",
+        "text": "осталось 2 ч",
+        "until": "до 18:24",
+        "leftMinutes": 120
+      },
+      "resolve": {
+        "goalMinutes": 1440,
+        "dueAt": "2026-10-03T13:24:00Z",
+        "stoppedAt": null,
+        "state": "norm",
+        "label": "Решение",
+        "text": "осталось 2 дня",
+        "until": "до 3 октября, 16:24",
+        "leftMinutes": 1440
+      }
+    },
+    "head": {
+      "state": "norm",
+      "label": "Первый ответ",
+      "text": "осталось 2 ч",
+      "until": "до 18:24",
+      "rank": 120,
+      "key": "first"
+    },
+    "labels": [],
+    "taskCount": 0,
+    "fromRating": 2
+  }
+}

@@ -1,0 +1,531 @@
+# Матрица изоляции: тег Chats («Чаты») контрактного PR этапа 7 (W7.00, 0.12.0-stage7) — строки до хендлера (pending W7.11).
+# Данные «Чаты» — данные организации (tenant 0060): чужая организация — 404, как несуществующая (AC-01, AC-02), без сессии — 401.
+# Объектные id в пути — tenant:missing (такого объекта нет ни в одной базе): строки с содержимым фикстур добавит W7.11,
+# когда появится сид. Отказы шлюза по правам — chats_w700_gate.yaml. Публичные операции без тенанта (нет)
+# в матрицу не входят: у них нет организации в пути, строки добавит владелец публичного контура (W7.23b, W7.31b).
+# Формат — README.md. После правки: go -C backend generate ./test/isolation
+module: chats_w700
+endpoints:
+  - op: listChats
+    method: GET
+    path: /api/v1/tenants/{tenantId}/chats
+    pending: W7.11
+    rows:
+      - actor: b.owner
+        params: { tenantId: tenant:a }
+        status: 404
+        absent: [tenant:a]
+        note: чужая организация — как несуществующая
+      - actor: anonymous
+        params: { tenantId: tenant:a }
+        status: 401
+  - op: createChat
+    method: POST
+    path: /api/v1/tenants/{tenantId}/chats
+    pending: W7.11
+    rows:
+      - actor: b.owner
+        params: { tenantId: tenant:a }
+        status: 404
+        absent: [tenant:a]
+        body: "{}"
+        note: чужая организация — как несуществующая
+      - actor: anonymous
+        params: { tenantId: tenant:a }
+        status: 401
+        body: "{}"
+  - op: createDirectChat
+    method: POST
+    path: /api/v1/tenants/{tenantId}/chats/direct
+    pending: W7.11
+    rows:
+      - actor: b.owner
+        params: { tenantId: tenant:a }
+        status: 404
+        absent: [tenant:a]
+        body: "{}"
+        note: чужая организация — как несуществующая
+      - actor: anonymous
+        params: { tenantId: tenant:a }
+        status: 401
+        body: "{}"
+  - op: getChat
+    method: GET
+    path: /api/v1/tenants/{tenantId}/chats/{chatId}
+    pending: W7.11
+    rows:
+      - actor: b.owner
+        params: { tenantId: tenant:a, chatId: tenant:missing }
+        status: 404
+        absent: [tenant:a]
+        note: чужая организация — как несуществующая
+      - actor: anonymous
+        params: { tenantId: tenant:a, chatId: tenant:missing }
+        status: 401
+  - op: updateChat
+    method: PATCH
+    path: /api/v1/tenants/{tenantId}/chats/{chatId}
+    pending: W7.11
+    rows:
+      - actor: b.owner
+        params: { tenantId: tenant:a, chatId: tenant:missing }
+        status: 404
+        absent: [tenant:a]
+        body: "{}"
+        note: чужая организация — как несуществующая
+      - actor: anonymous
+        params: { tenantId: tenant:a, chatId: tenant:missing }
+        status: 401
+        body: "{}"
+  - op: archiveChat
+    method: POST
+    path: /api/v1/tenants/{tenantId}/chats/{chatId}/archive
+    pending: W7.11
+    rows:
+      - actor: b.owner
+        params: { tenantId: tenant:a, chatId: tenant:missing }
+        status: 404
+        absent: [tenant:a]
+        body: "{}"
+        note: чужая организация — как несуществующая
+      - actor: anonymous
+        params: { tenantId: tenant:a, chatId: tenant:missing }
+        status: 401
+        body: "{}"
+  - op: listChatMessages
+    method: GET
+    path: /api/v1/tenants/{tenantId}/chats/{chatId}/messages
+    pending: W7.11
+    rows:
+      - actor: b.owner
+        params: { tenantId: tenant:a, chatId: tenant:missing }
+        status: 404
+        absent: [tenant:a]
+        note: чужая организация — как несуществующая
+      - actor: anonymous
+        params: { tenantId: tenant:a, chatId: tenant:missing }
+        status: 401
+  - op: postChatMessage
+    method: POST
+    path: /api/v1/tenants/{tenantId}/chats/{chatId}/messages
+    pending: W7.11
+    rows:
+      - actor: b.owner
+        params: { tenantId: tenant:a, chatId: tenant:missing }
+        status: 404
+        absent: [tenant:a]
+        body: "{}"
+        note: чужая организация — как несуществующая
+      - actor: anonymous
+        params: { tenantId: tenant:a, chatId: tenant:missing }
+        status: 401
+        body: "{}"
+  - op: deleteChatMessage
+    method: DELETE
+    path: /api/v1/tenants/{tenantId}/chats/{chatId}/messages/{messageId}
+    pending: W7.11
+    rows:
+      - actor: b.owner
+        params: { tenantId: tenant:a, chatId: tenant:missing, messageId: tenant:missing }
+        status: 404
+        absent: [tenant:a]
+        note: чужая организация — как несуществующая
+      - actor: anonymous
+        params: { tenantId: tenant:a, chatId: tenant:missing, messageId: tenant:missing }
+        status: 401
+  - op: editChatMessage
+    method: PATCH
+    path: /api/v1/tenants/{tenantId}/chats/{chatId}/messages/{messageId}
+    pending: W7.11
+    rows:
+      - actor: b.owner
+        params: { tenantId: tenant:a, chatId: tenant:missing, messageId: tenant:missing }
+        status: 404
+        absent: [tenant:a]
+        body: "{}"
+        note: чужая организация — как несуществующая
+      - actor: anonymous
+        params: { tenantId: tenant:a, chatId: tenant:missing, messageId: tenant:missing }
+        status: 401
+        body: "{}"
+  - op: listChatMessageVersions
+    method: GET
+    path: /api/v1/tenants/{tenantId}/chats/{chatId}/messages/{messageId}/versions
+    pending: W7.11
+    rows:
+      - actor: b.owner
+        params: { tenantId: tenant:a, chatId: tenant:missing, messageId: tenant:missing }
+        status: 404
+        absent: [tenant:a]
+        note: чужая организация — как несуществующая
+      - actor: anonymous
+        params: { tenantId: tenant:a, chatId: tenant:missing, messageId: tenant:missing }
+        status: 401
+  - op: markChatRead
+    method: POST
+    path: /api/v1/tenants/{tenantId}/chats/{chatId}/read
+    pending: W7.11
+    rows:
+      - actor: b.owner
+        params: { tenantId: tenant:a, chatId: tenant:missing }
+        status: 404
+        absent: [tenant:a]
+        body: "{}"
+        note: чужая организация — как несуществующая
+      - actor: anonymous
+        params: { tenantId: tenant:a, chatId: tenant:missing }
+        status: 401
+        body: "{}"
+  - op: ackChatMessage
+    method: POST
+    path: /api/v1/tenants/{tenantId}/chats/{chatId}/messages/{messageId}/ack
+    pending: W7.11
+    rows:
+      - actor: b.owner
+        params: { tenantId: tenant:a, chatId: tenant:missing, messageId: tenant:missing }
+        status: 404
+        absent: [tenant:a]
+        body: "{}"
+        note: чужая организация — как несуществующая
+      - actor: anonymous
+        params: { tenantId: tenant:a, chatId: tenant:missing, messageId: tenant:missing }
+        status: 401
+        body: "{}"
+  - op: getChatMessageReceipts
+    method: GET
+    path: /api/v1/tenants/{tenantId}/chats/{chatId}/messages/{messageId}/receipts
+    pending: W7.11
+    rows:
+      - actor: b.owner
+        params: { tenantId: tenant:a, chatId: tenant:missing, messageId: tenant:missing }
+        status: 404
+        absent: [tenant:a]
+        note: чужая организация — как несуществующая
+      - actor: anonymous
+        params: { tenantId: tenant:a, chatId: tenant:missing, messageId: tenant:missing }
+        status: 401
+  - op: revealChatMessagePdn
+    method: POST
+    path: /api/v1/tenants/{tenantId}/chats/{chatId}/messages/{messageId}/pdn-reveal
+    pending: W7.11
+    rows:
+      - actor: b.owner
+        params: { tenantId: tenant:a, chatId: tenant:missing, messageId: tenant:missing }
+        status: 404
+        absent: [tenant:a]
+        body: "{}"
+        note: чужая организация — как несуществующая
+      - actor: anonymous
+        params: { tenantId: tenant:a, chatId: tenant:missing, messageId: tenant:missing }
+        status: 401
+        body: "{}"
+  - op: voteChatPoll
+    method: PUT
+    path: /api/v1/tenants/{tenantId}/chats/{chatId}/polls/{pollId}/vote
+    pending: W7.11
+    rows:
+      - actor: b.owner
+        params: { tenantId: tenant:a, chatId: tenant:missing, pollId: tenant:missing }
+        status: 404
+        absent: [tenant:a]
+        body: "{}"
+        note: чужая организация — как несуществующая
+      - actor: anonymous
+        params: { tenantId: tenant:a, chatId: tenant:missing, pollId: tenant:missing }
+        status: 401
+        body: "{}"
+  - op: closeChatPoll
+    method: POST
+    path: /api/v1/tenants/{tenantId}/chats/{chatId}/polls/{pollId}/close
+    pending: W7.11
+    rows:
+      - actor: b.owner
+        params: { tenantId: tenant:a, chatId: tenant:missing, pollId: tenant:missing }
+        status: 404
+        absent: [tenant:a]
+        body: "{}"
+        note: чужая организация — как несуществующая
+      - actor: anonymous
+        params: { tenantId: tenant:a, chatId: tenant:missing, pollId: tenant:missing }
+        status: 401
+        body: "{}"
+  - op: remindChatPoll
+    method: POST
+    path: /api/v1/tenants/{tenantId}/chats/{chatId}/polls/{pollId}/remind
+    pending: W7.11
+    rows:
+      - actor: b.owner
+        params: { tenantId: tenant:a, chatId: tenant:missing, pollId: tenant:missing }
+        status: 404
+        absent: [tenant:a]
+        body: "{}"
+        note: чужая организация — как несуществующая
+      - actor: anonymous
+        params: { tenantId: tenant:a, chatId: tenant:missing, pollId: tenant:missing }
+        status: 401
+        body: "{}"
+  - op: pinChatMessage
+    method: PUT
+    path: /api/v1/tenants/{tenantId}/chats/{chatId}/pin
+    pending: W7.11
+    rows:
+      - actor: b.owner
+        params: { tenantId: tenant:a, chatId: tenant:missing }
+        status: 404
+        absent: [tenant:a]
+        body: "{}"
+        note: чужая организация — как несуществующая
+      - actor: anonymous
+        params: { tenantId: tenant:a, chatId: tenant:missing }
+        status: 401
+        body: "{}"
+  - op: unpinChatMessage
+    method: DELETE
+    path: /api/v1/tenants/{tenantId}/chats/{chatId}/pin
+    pending: W7.11
+    rows:
+      - actor: b.owner
+        params: { tenantId: tenant:a, chatId: tenant:missing }
+        status: 404
+        absent: [tenant:a]
+        note: чужая организация — как несуществующая
+      - actor: anonymous
+        params: { tenantId: tenant:a, chatId: tenant:missing }
+        status: 401
+  - op: openViewOnceAttachment
+    method: POST
+    path: /api/v1/tenants/{tenantId}/chats/{chatId}/attachments/{attachmentId}/view-once
+    pending: W7.11
+    rows:
+      - actor: b.owner
+        params: { tenantId: tenant:a, chatId: tenant:missing, attachmentId: tenant:missing }
+        status: 404
+        absent: [tenant:a]
+        body: "{}"
+        note: чужая организация — как несуществующая
+      - actor: anonymous
+        params: { tenantId: tenant:a, chatId: tenant:missing, attachmentId: tenant:missing }
+        status: 401
+        body: "{}"
+  - op: saveChatAttachmentsToRecord
+    method: POST
+    path: /api/v1/tenants/{tenantId}/chats/{chatId}/messages/{messageId}/save-to-record
+    pending: W7.11
+    rows:
+      - actor: b.owner
+        params: { tenantId: tenant:a, chatId: tenant:missing, messageId: tenant:missing }
+        status: 404
+        absent: [tenant:a]
+        body: "{}"
+        note: чужая организация — как несуществующая
+      - actor: anonymous
+        params: { tenantId: tenant:a, chatId: tenant:missing, messageId: tenant:missing }
+        status: 401
+        body: "{}"
+  - op: createTaskFromChatMessage
+    method: POST
+    path: /api/v1/tenants/{tenantId}/chats/{chatId}/messages/{messageId}/task
+    pending: W7.11
+    rows:
+      - actor: b.owner
+        params: { tenantId: tenant:a, chatId: tenant:missing, messageId: tenant:missing }
+        status: 404
+        absent: [tenant:a]
+        body: "{}"
+        note: чужая организация — как несуществующая
+      - actor: anonymous
+        params: { tenantId: tenant:a, chatId: tenant:missing, messageId: tenant:missing }
+        status: 401
+        body: "{}"
+  - op: listChatMembers
+    method: GET
+    path: /api/v1/tenants/{tenantId}/chats/{chatId}/members
+    pending: W7.11
+    rows:
+      - actor: b.owner
+        params: { tenantId: tenant:a, chatId: tenant:missing }
+        status: 404
+        absent: [tenant:a]
+        note: чужая организация — как несуществующая
+      - actor: anonymous
+        params: { tenantId: tenant:a, chatId: tenant:missing }
+        status: 401
+  - op: getChatSources
+    method: GET
+    path: /api/v1/tenants/{tenantId}/chats/{chatId}/sources
+    pending: W7.11
+    rows:
+      - actor: b.owner
+        params: { tenantId: tenant:a, chatId: tenant:missing }
+        status: 404
+        absent: [tenant:a]
+        note: чужая организация — как несуществующая
+      - actor: anonymous
+        params: { tenantId: tenant:a, chatId: tenant:missing }
+        status: 401
+  - op: replaceChatSources
+    method: PUT
+    path: /api/v1/tenants/{tenantId}/chats/{chatId}/sources
+    pending: W7.11
+    rows:
+      - actor: b.owner
+        params: { tenantId: tenant:a, chatId: tenant:missing }
+        status: 404
+        absent: [tenant:a]
+        body: "{}"
+        note: чужая организация — как несуществующая
+      - actor: anonymous
+        params: { tenantId: tenant:a, chatId: tenant:missing }
+        status: 401
+        body: "{}"
+  - op: getChatAccessExplanation
+    method: GET
+    path: /api/v1/tenants/{tenantId}/chats/{chatId}/access-explanation
+    pending: W7.11
+    rows:
+      - actor: b.owner
+        params: { tenantId: tenant:a, chatId: tenant:missing }
+        status: 404
+        absent: [tenant:a]
+        note: чужая организация — как несуществующая
+      - actor: anonymous
+        params: { tenantId: tenant:a, chatId: tenant:missing }
+        status: 401
+  - op: getChatStorage
+    method: GET
+    path: /api/v1/tenants/{tenantId}/chats/{chatId}/storage
+    pending: W7.11
+    rows:
+      - actor: b.owner
+        params: { tenantId: tenant:a, chatId: tenant:missing }
+        status: 404
+        absent: [tenant:a]
+        note: чужая организация — как несуществующая
+      - actor: anonymous
+        params: { tenantId: tenant:a, chatId: tenant:missing }
+        status: 401
+  - op: createChatCleanup
+    method: POST
+    path: /api/v1/tenants/{tenantId}/chats/{chatId}/cleanups
+    pending: W7.11
+    rows:
+      - actor: b.owner
+        params: { tenantId: tenant:a, chatId: tenant:missing }
+        status: 404
+        absent: [tenant:a]
+        body: "{}"
+        note: чужая организация — как несуществующая
+      - actor: anonymous
+        params: { tenantId: tenant:a, chatId: tenant:missing }
+        status: 401
+        body: "{}"
+  - op: listChatJournal
+    method: GET
+    path: /api/v1/tenants/{tenantId}/chats/{chatId}/journal
+    pending: W7.11
+    rows:
+      - actor: b.owner
+        params: { tenantId: tenant:a, chatId: tenant:missing }
+        status: 404
+        absent: [tenant:a]
+        note: чужая организация — как несуществующая
+      - actor: anonymous
+        params: { tenantId: tenant:a, chatId: tenant:missing }
+        status: 401
+  - op: createChatExport
+    method: POST
+    path: /api/v1/tenants/{tenantId}/chats/{chatId}/exports
+    pending: W7.11
+    rows:
+      - actor: b.owner
+        params: { tenantId: tenant:a, chatId: tenant:missing }
+        status: 404
+        absent: [tenant:a]
+        body: "{}"
+        note: чужая организация — как несуществующая
+      - actor: anonymous
+        params: { tenantId: tenant:a, chatId: tenant:missing }
+        status: 401
+        body: "{}"
+  - op: getChatExport
+    method: GET
+    path: /api/v1/tenants/{tenantId}/chats/{chatId}/exports/{exportId}
+    pending: W7.11
+    rows:
+      - actor: b.owner
+        params: { tenantId: tenant:a, chatId: tenant:missing, exportId: tenant:missing }
+        status: 404
+        absent: [tenant:a]
+        note: чужая организация — как несуществующая
+      - actor: anonymous
+        params: { tenantId: tenant:a, chatId: tenant:missing, exportId: tenant:missing }
+        status: 401
+  - op: listChatPolicies
+    method: GET
+    path: /api/v1/tenants/{tenantId}/chat-policies
+    pending: W7.11
+    rows:
+      - actor: b.owner
+        params: { tenantId: tenant:a }
+        status: 404
+        absent: [tenant:a]
+        note: чужая организация — как несуществующая
+      - actor: anonymous
+        params: { tenantId: tenant:a }
+        status: 401
+  - op: updateChatPolicy
+    method: PUT
+    path: /api/v1/tenants/{tenantId}/chat-policies/{kind}
+    pending: W7.11
+    rows:
+      - actor: b.owner
+        params: { tenantId: tenant:a, kind: tenant:missing }
+        status: 404
+        absent: [tenant:a]
+        body: "{}"
+        note: чужая организация — как несуществующая
+      - actor: anonymous
+        params: { tenantId: tenant:a, kind: tenant:missing }
+        status: 401
+        body: "{}"
+  - op: listChatHolds
+    method: GET
+    path: /api/v1/tenants/{tenantId}/chat-holds
+    pending: W7.11
+    rows:
+      - actor: b.owner
+        params: { tenantId: tenant:a }
+        status: 404
+        absent: [tenant:a]
+        note: чужая организация — как несуществующая
+      - actor: anonymous
+        params: { tenantId: tenant:a }
+        status: 401
+  - op: createChatHold
+    method: POST
+    path: /api/v1/tenants/{tenantId}/chat-holds
+    pending: W7.11
+    rows:
+      - actor: b.owner
+        params: { tenantId: tenant:a }
+        status: 404
+        absent: [tenant:a]
+        body: "{}"
+        note: чужая организация — как несуществующая
+      - actor: anonymous
+        params: { tenantId: tenant:a }
+        status: 401
+        body: "{}"
+  - op: releaseChatHold
+    method: DELETE
+    path: /api/v1/tenants/{tenantId}/chat-holds/{holdId}
+    pending: W7.11
+    rows:
+      - actor: b.owner
+        params: { tenantId: tenant:a, holdId: tenant:missing }
+        status: 404
+        absent: [tenant:a]
+        note: чужая организация — как несуществующая
+      - actor: anonymous
+        params: { tenantId: tenant:a, holdId: tenant:missing }
+        status: 401

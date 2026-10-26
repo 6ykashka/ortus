@@ -1,0 +1,208 @@
+# Матрица изоляции: тег Service («Обращения») контрактного PR этапа 7 (W7.00, 0.12.0-stage7) — отказы шлюза без pending.
+# «Администратор» фикстур не имеет ни одного действия chat.*, docs.*, service.*: шлюз cmd/api отвечает 403 forbidden_action
+# до хендлера (нет гранта с действием x-permissions в виде области x-scope), и это верно после него. Формат — README.md.
+# После правки: go -C backend generate ./test/isolation
+module: service_w700_gate
+endpoints:
+  - op: listServiceDirections
+    method: GET
+    path: /api/v1/tenants/{tenantId}/service/directions
+    rows:
+      - actor: a.admin
+        params: { tenantId: tenant:a }
+        status: 403
+        code: forbidden_action
+        note: нет service.requests.read
+  - op: createServiceDirection
+    method: POST
+    path: /api/v1/tenants/{tenantId}/service/directions
+    rows:
+      - actor: a.admin
+        params: { tenantId: tenant:a }
+        status: 403
+        code: forbidden_action
+        body: "{}"
+        note: нет service.directions.manage
+  - op: listServiceRequests
+    method: GET
+    path: /api/v1/tenants/{tenantId}/service/requests
+    rows:
+      - actor: a.admin
+        params: { tenantId: tenant:a }
+        status: 403
+        code: forbidden_action
+        note: нет service.requests.read
+  - op: createServiceRequest
+    method: POST
+    path: /api/v1/tenants/{tenantId}/service/requests
+    rows:
+      - actor: a.admin
+        params: { tenantId: tenant:a }
+        status: 403
+        code: forbidden_action
+        body: "{}"
+        note: нет service.requests.create
+  - op: getServiceQueueCounts
+    method: GET
+    path: /api/v1/tenants/{tenantId}/service/queues
+    rows:
+      - actor: a.admin
+        params: { tenantId: tenant:a }
+        status: 403
+        code: forbidden_action
+        note: нет service.requests.read
+  - op: getServiceRequest
+    method: GET
+    path: /api/v1/tenants/{tenantId}/service/requests/{requestId}
+    rows:
+      - actor: a.admin
+        params: { tenantId: tenant:a, requestId: tenant:missing }
+        status: 403
+        code: forbidden_action
+        note: нет service.requests.read
+  - op: updateServiceRequest
+    method: PATCH
+    path: /api/v1/tenants/{tenantId}/service/requests/{requestId}
+    rows:
+      - actor: a.admin
+        params: { tenantId: tenant:a, requestId: tenant:missing }
+        status: 403
+        code: forbidden_action
+        body: "{}"
+        note: нет service.requests.reply
+  - op: postServiceMessage
+    method: POST
+    path: /api/v1/tenants/{tenantId}/service/requests/{requestId}/messages
+    rows:
+      - actor: a.admin
+        params: { tenantId: tenant:a, requestId: tenant:missing }
+        status: 403
+        code: forbidden_action
+        body: "{}"
+        note: нет service.requests.read
+  - op: setServiceCompensation
+    method: POST
+    path: /api/v1/tenants/{tenantId}/service/requests/{requestId}/compensation
+    rows:
+      - actor: a.admin
+        params: { tenantId: tenant:a, requestId: tenant:missing }
+        status: 403
+        code: forbidden_action
+        body: "{}"
+        note: нет service.compensation.manage
+  - op: transitionServiceRequest
+    method: POST
+    path: /api/v1/tenants/{tenantId}/service/requests/{requestId}/transitions
+    rows:
+      - actor: a.admin
+        params: { tenantId: tenant:a, requestId: tenant:missing }
+        status: 403
+        code: forbidden_action
+        body: "{}"
+        note: нет service.requests.reply или service.requests.resolve
+  - op: moveServiceRequest
+    method: POST
+    path: /api/v1/tenants/{tenantId}/service/requests/{requestId}/move
+    rows:
+      - actor: a.admin
+        params: { tenantId: tenant:a, requestId: tenant:missing }
+        status: 403
+        code: forbidden_action
+        body: "{}"
+        note: нет service.requests.reply
+  - op: revealServiceClientPhone
+    method: POST
+    path: /api/v1/tenants/{tenantId}/service/requests/{requestId}/client-phone/reveal
+    rows:
+      - actor: a.admin
+        params: { tenantId: tenant:a, requestId: tenant:missing }
+        status: 403
+        code: forbidden_action
+        body: "{}"
+        note: нет service.clients.contacts
+  - op: shareServiceConclusion
+    method: POST
+    path: /api/v1/tenants/{tenantId}/service/requests/{requestId}/conclusion
+    rows:
+      - actor: a.admin
+        params: { tenantId: tenant:a, requestId: tenant:missing }
+        status: 403
+        code: forbidden_action
+        body: "{}"
+        note: нет service.requests.resolve
+  - op: createServiceRequestTask
+    method: POST
+    path: /api/v1/tenants/{tenantId}/service/requests/{requestId}/tasks
+    rows:
+      - actor: a.admin
+        params: { tenantId: tenant:a, requestId: tenant:missing }
+        status: 403
+        code: forbidden_action
+        body: "{}"
+        note: нет service.requests.reply
+  - op: listServiceRatings
+    method: GET
+    path: /api/v1/tenants/{tenantId}/service/ratings
+    rows:
+      - actor: a.admin
+        params: { tenantId: tenant:a }
+        status: 403
+        code: forbidden_action
+        note: нет service.requests.read
+  - op: decideServiceRating
+    method: POST
+    path: /api/v1/tenants/{tenantId}/service/ratings/{ratingId}/decision
+    rows:
+      - actor: a.admin
+        params: { tenantId: tenant:a, ratingId: tenant:missing }
+        status: 403
+        code: forbidden_action
+        body: "{}"
+        note: нет service.requests.reply или service.requests.create
+  - op: listServiceReplyTemplates
+    method: GET
+    path: /api/v1/tenants/{tenantId}/service/directions/{directionId}/templates
+    rows:
+      - actor: a.admin
+        params: { tenantId: tenant:a, directionId: tenant:missing }
+        status: 403
+        code: forbidden_action
+        note: нет service.requests.read
+  - op: getServiceDirection
+    method: GET
+    path: /api/v1/tenants/{tenantId}/service/directions/{directionId}
+    rows:
+      - actor: a.admin
+        params: { tenantId: tenant:a, directionId: tenant:missing }
+        status: 403
+        code: forbidden_action
+        note: нет service.directions.manage
+  - op: updateServiceDirectionDraft
+    method: PUT
+    path: /api/v1/tenants/{tenantId}/service/directions/{directionId}/draft
+    rows:
+      - actor: a.admin
+        params: { tenantId: tenant:a, directionId: tenant:missing }
+        status: 403
+        code: forbidden_action
+        body: "{}"
+        note: нет service.directions.manage
+  - op: publishServiceDirection
+    method: POST
+    path: /api/v1/tenants/{tenantId}/service/directions/{directionId}/publish
+    rows:
+      - actor: a.admin
+        params: { tenantId: tenant:a, directionId: tenant:missing }
+        status: 403
+        code: forbidden_action
+        body: "{}"
+        note: нет service.directions.manage
+  - op: getServiceReport
+    method: GET
+    path: /api/v1/tenants/{tenantId}/service/report
+    rows:
+      - actor: a.admin
+        params: { tenantId: tenant:a }
+        status: 403
+        code: forbidden_action
+        note: нет service.reports.read

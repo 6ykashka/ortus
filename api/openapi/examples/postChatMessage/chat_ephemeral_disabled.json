@@ -1,0 +1,8 @@
+{
+  "type": "https://docs.ortus.example/errors/chat_ephemeral_disabled",
+  "title": "Временные и одноразовые сообщения запрещены политикой вида чата (CHAT-04) или нет права chat.ephemeral.send",
+  "status": 403,
+  "code": "chat_ephemeral_disabled",
+  "detail": "Временные сообщения в этом чате запрещены политикой вида «area»",
+  "requestId": "01J9Z4QK8M6T2V5X7Y9A1B3C5D"
+}

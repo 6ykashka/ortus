@@ -1,0 +1,13 @@
+{
+  "id": "db104876-cbf5-5212-bd6c-45deb739bc6a",
+  "kind": "public",
+  "at": "2026-10-01T13:24:00Z",
+  "text": "Здравствуйте! Приняли в работу, вернёмся с ответом до 11:00.",
+  "files": [],
+  "author": {
+    "memberId": "ac41932c-dbd9-53b1-a84b-42cbc1d6629a",
+    "displayName": "Марина Котова"
+  },
+  "channel": "bot",
+  "delivery": "queued"
+}

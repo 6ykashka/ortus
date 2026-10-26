@@ -1,0 +1,166 @@
+{
+  "items": [
+    {
+      "id": "41aefb3e-e2fe-5fa7-90b2-607dba7aad3b",
+      "name": "Север Логистик",
+      "parentId": null,
+      "orgUnitId": "6de355d2-b019-5bb6-b66a-ddae6a13fb65",
+      "mode": "inherit",
+      "owner": {
+        "memberId": "ac41932c-dbd9-53b1-a84b-42cbc1d6629a",
+        "displayName": "Марина Котова"
+      },
+      "icon": "local_shipping",
+      "sensitivity": "normal",
+      "hasRouteTemplate": false,
+      "shares": [
+        {
+          "who": "group",
+          "level": "edit",
+          "refId": "ffdc7501-0a74-5af4-950b-894aeb64d658",
+          "label": "Группа «Диспетчеры Север»"
+        }
+      ],
+      "documentCount": 2,
+      "my": {
+        "level": "manage",
+        "create": true,
+        "manage": true
+      },
+      "revision": 1
+    },
+    {
+      "id": "1eb38eae-0f75-5350-9c0c-add98451de67",
+      "name": "Приказы",
+      "parentId": "41aefb3e-e2fe-5fa7-90b2-607dba7aad3b",
+      "orgUnitId": "6de355d2-b019-5bb6-b66a-ddae6a13fb65",
+      "mode": "inherit",
+      "owner": {
+        "memberId": "ac41932c-dbd9-53b1-a84b-42cbc1d6629a",
+        "displayName": "Марина Котова"
+      },
+      "icon": "gavel",
+      "sensitivity": "normal",
+      "hasRouteTemplate": true,
+      "shares": [],
+      "documentCount": 1,
+      "my": {
+        "level": "manage",
+        "create": true,
+        "manage": true
+      },
+      "revision": 1
+    },
+    {
+      "id": "fae58a41-3ab2-59a7-a375-8da345f5869e",
+      "name": "Договоры",
+      "parentId": "41aefb3e-e2fe-5fa7-90b2-607dba7aad3b",
+      "orgUnitId": "6de355d2-b019-5bb6-b66a-ddae6a13fb65",
+      "mode": "inherit",
+      "owner": {
+        "memberId": "b8df06ec-317e-5f46-b54c-e76603e41b5b",
+        "displayName": "Дарья Зимина"
+      },
+      "icon": "handshake",
+      "sensitivity": "normal",
+      "hasRouteTemplate": false,
+      "shares": [],
+      "documentCount": 2,
+      "my": {
+        "level": "manage",
+        "create": true,
+        "manage": true
+      },
+      "revision": 1
+    },
+    {
+      "id": "5c5d8f1f-cf85-5629-a23e-6617228910d3",
+      "name": "Финансы",
+      "parentId": "41aefb3e-e2fe-5fa7-90b2-607dba7aad3b",
+      "orgUnitId": "6de355d2-b019-5bb6-b66a-ddae6a13fb65",
+      "mode": "listed",
+      "owner": {
+        "memberId": "b8df06ec-317e-5f46-b54c-e76603e41b5b",
+        "displayName": "Дарья Зимина"
+      },
+      "icon": "payments",
+      "sensitivity": "finance",
+      "hasRouteTemplate": false,
+      "shares": [
+        {
+          "who": "member",
+          "level": "edit",
+          "refId": "ac41932c-dbd9-53b1-a84b-42cbc1d6629a",
+          "label": "Марина Котова"
+        }
+      ],
+      "documentCount": 1,
+      "my": {
+        "level": "manage",
+        "create": true,
+        "manage": true
+      },
+      "revision": 1
+    },
+    {
+      "id": "12ef63da-7dd6-59f6-9f9f-403665533ede",
+      "name": "Ремонт и стройка",
+      "parentId": null,
+      "orgUnitId": null,
+      "mode": "inherit",
+      "owner": {
+        "memberId": "b8df06ec-317e-5f46-b54c-e76603e41b5b",
+        "displayName": "Дарья Зимина"
+      },
+      "icon": "construction",
+      "sensitivity": "normal",
+      "hasRouteTemplate": false,
+      "shares": [],
+      "documentCount": 0,
+      "my": {
+        "level": "edit",
+        "create": true,
+        "manage": false
+      },
+      "revision": 1
+    },
+    {
+      "id": "f2ca66d2-6d1c-5466-9f8d-ee414820825d",
+      "name": "ЖК Речной · квартира 42",
+      "parentId": "12ef63da-7dd6-59f6-9f9f-403665533ede",
+      "orgUnitId": null,
+      "mode": "inherit",
+      "owner": {
+        "memberId": "b8df06ec-317e-5f46-b54c-e76603e41b5b",
+        "displayName": "Дарья Зимина"
+      },
+      "icon": "home_work",
+      "sensitivity": "normal",
+      "hasRouteTemplate": true,
+      "shares": [
+        {
+          "who": "relation",
+          "level": "edit",
+          "object": {
+            "moduleKey": "repairs",
+            "entityType": "project",
+            "entityId": "73e23d56-2d9c-5a86-91d2-8969d90d1f5b"
+          },
+          "label": "Прораб объекта"
+        }
+      ],
+      "documentCount": 1,
+      "my": {
+        "level": "edit",
+        "create": true,
+        "manage": false
+      },
+      "revision": 1,
+      "link": {
+        "moduleKey": "repairs",
+        "entityType": "project",
+        "entityId": "73e23d56-2d9c-5a86-91d2-8969d90d1f5b"
+      }
+    }
+  ]
+}

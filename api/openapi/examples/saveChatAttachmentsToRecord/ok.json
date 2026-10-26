@@ -1,0 +1,49 @@
+{
+  "saved": [
+    {
+      "id": "8db3ecac-deeb-5a41-a58b-9ba658b09423",
+      "fileName": "Спальня · стена 1.jpg",
+      "sizeBytes": 4299162,
+      "kind": "photo",
+      "viewOnce": false,
+      "gone": false,
+      "savedTo": {
+        "moduleKey": "repairs",
+        "entityType": "project",
+        "entityId": "73e23d56-2d9c-5a86-91d2-8969d90d1f5b"
+      }
+    },
+    {
+      "id": "bca6ea0e-4e70-5803-98de-e3a794f484ab",
+      "fileName": "Спальня · стена 2.jpg",
+      "sizeBytes": 3984589,
+      "kind": "photo",
+      "viewOnce": false,
+      "gone": false,
+      "savedTo": {
+        "moduleKey": "repairs",
+        "entityType": "project",
+        "entityId": "73e23d56-2d9c-5a86-91d2-8969d90d1f5b"
+      }
+    },
+    {
+      "id": "fddbfa7f-0dda-5ef0-bece-60e56e45d743",
+      "fileName": "Откосы.jpg",
+      "sizeBytes": 3355443,
+      "kind": "photo",
+      "viewOnce": false,
+      "gone": false,
+      "savedTo": {
+        "moduleKey": "repairs",
+        "entityType": "project",
+        "entityId": "73e23d56-2d9c-5a86-91d2-8969d90d1f5b"
+      }
+    }
+  ],
+  "record": {
+    "moduleKey": "repairs",
+    "entityType": "project",
+    "entityId": "73e23d56-2d9c-5a86-91d2-8969d90d1f5b"
+  },
+  "bytes": 11639194
+}

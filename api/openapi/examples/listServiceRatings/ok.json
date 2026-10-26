@@ -1,0 +1,29 @@
+{
+  "items": [
+    {
+      "id": "8406432e-d69e-5971-abd7-9e621c90f1e9",
+      "directionId": "8adebc22-94d6-5024-b96b-cb535cd6838e",
+      "clientName": "Светлана Михеева",
+      "score": 3,
+      "reasons": ["Чистота"],
+      "comment": "Полотенце было влажным",
+      "at": "2026-09-30T15:10:00Z",
+      "work": "Визит 30.09 · массаж спины",
+      "status": "open",
+      "requestId": null
+    },
+    {
+      "id": "4ed0e756-955a-5eca-8c94-2582923c1dec",
+      "directionId": "9cc9b25b-8024-58f7-8db6-ba7379006810",
+      "clientName": "ООО «Вектор»",
+      "score": 2,
+      "reasons": ["Опоздание к окну выгрузки"],
+      "comment": "Опоздали на 40 минут, разгрузку перенесли на вечер",
+      "at": "2026-09-29T09:40:00Z",
+      "work": "Рейс Р-190 · 29.09",
+      "status": "open",
+      "requestId": null
+    }
+  ],
+  "nextCursor": null
+}

@@ -1,0 +1,10 @@
+{
+  "uploadId": "891fca6b-5edc-5a51-91a5-4cc793d46651",
+  "fileId": "e536589d-7feb-54b0-b27d-93039cfdc9ec",
+  "method": "PUT",
+  "uploadUrl": "https://storage.example.invalid/uploads/891fca6b-5edc-5a51-91a5-4cc793d46651",
+  "requiredContentType": "image/jpeg",
+  "requiredSha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+  "expiresAt": "2026-10-01T07:45:00Z",
+  "maxBytes": 20971520
+}

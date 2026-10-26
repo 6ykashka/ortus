@@ -1,0 +1,16 @@
+{
+  "items": [
+    {
+      "id": "d20317fc-c679-54d7-b3d9-a1bcdea000f7",
+      "scope": "chat",
+      "chatId": "c6b45310-c30e-59d7-9d8e-88183e0e25a4",
+      "reason": "Претензия по кв. 42",
+      "period": "01.09–15.09",
+      "until": "2026-12-01",
+      "createdByDisplayName": "Дарья Зимина",
+      "createdAt": "2026-10-01T07:55:00Z",
+      "files": 6,
+      "status": "active"
+    }
+  ]
+}

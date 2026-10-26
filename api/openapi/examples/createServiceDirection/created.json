@@ -1,0 +1,28 @@
+{
+  "direction": {
+    "id": "fb8cd4c3-e006-548c-8d78-46952e2fde2d",
+    "key": "ГАР",
+    "name": "Гарантийный сервис",
+    "color": "#2B5479",
+    "moduleKey": "spa",
+    "areaLabel": "Вся организация",
+    "orgUnitId": null,
+    "projectId": "764cd2d9-ad76-5310-a177-ba98c7e64d2a",
+    "calendar": {
+      "days": [1, 2, 3, 4, 5],
+      "from": "09:00",
+      "to": "19:00",
+      "timeZone": "Europe/Moscow",
+      "label": "пн–пт 9:00–19:00"
+    },
+    "lead": {
+      "memberId": "b8df06ec-317e-5f46-b54c-e76603e41b5b",
+      "displayName": "Дарья Зимина"
+    },
+    "next": 1,
+    "team": [],
+    "canContacts": true,
+    "version": 1
+  },
+  "types": []
+}

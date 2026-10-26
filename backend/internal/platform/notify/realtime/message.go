@@ -26,6 +26,9 @@ const (
 	TypeNotificationsChanged = "notifications.changed"
 	TypeSessionEnded         = "session.ended"
 	TypePing                 = "ping"
+	// TypeChatChanged is the chat hint of W7.00 (ADR-0015, ADR-0016): chatId and lastSeq, no text, names or files;
+	// the addressees are the members of the chat (W7.12 checks them when the hint is queued and when it is delivered).
+	TypeChatChanged = "chat.changed"
 )
 
 // Types of RealtimeClientMessage.
@@ -50,7 +53,7 @@ var ErrInvalidHint = errors.New("realtime: invalid hint")
 
 // ServerTypes lists the types of RealtimeServerMessage.
 func ServerTypes() []string {
-	return []string{TypeContextChanged, TypeNotificationsChanged, TypeSessionEnded, TypePing}
+	return []string{TypeContextChanged, TypeNotificationsChanged, TypeSessionEnded, TypePing, TypeChatChanged}
 }
 
 // ClientTypes lists the types of RealtimeClientMessage.
@@ -66,6 +69,8 @@ type ServerMessage struct {
 	Type              string     `json:"type"`
 	TenantID          *uuid.UUID `json:"tenantId,omitempty"`
 	PermissionVersion string     `json:"permissionVersion,omitempty"`
+	ChatID            *uuid.UUID `json:"chatId,omitempty"`
+	LastSeq           int64      `json:"lastSeq,omitempty"`
 	Reason            string     `json:"reason,omitempty"`
 	Seq               int64      `json:"seq"`
 	At                time.Time  `json:"at"`

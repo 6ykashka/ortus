@@ -1,0 +1,76 @@
+{
+  "id": "2df7cbe0-8e40-5a59-ba68-16ae4e6af8d9",
+  "kind": "direct",
+  "title": "Алексей Соколов",
+  "orgUnitId": null,
+  "status": "active",
+  "sensitivity": "normal",
+  "record": null,
+  "topics": [],
+  "policy": {
+    "textYears": 3,
+    "filesDays": 365,
+    "voiceDays": 90,
+    "receipts": "ticks",
+    "receiptsDays": 30,
+    "deletedDays": 30,
+    "edit": "48h",
+    "maxFileMb": 200,
+    "quotaMb": null,
+    "temp": "allowed",
+    "forward": "internal",
+    "pdnMask": true,
+    "onFull": "block"
+  },
+  "overrides": {},
+  "history": "all",
+  "my": {
+    "role": "member",
+    "unread": 0,
+    "ackWaitCount": 0,
+    "lastReadSeq": 0,
+    "can": {
+      "write": true,
+      "files": true,
+      "polls": true,
+      "moderate": false,
+      "pin": false,
+      "announce": false,
+      "receipts": false,
+      "pdn": false,
+      "ephemeral": true,
+      "viewOnce": false,
+      "members": false,
+      "settings": false,
+      "saveToRecord": false,
+      "task": true
+    },
+    "chain": [
+      {
+        "title": "Состав чата",
+        "detail": "Участник личного чата",
+        "ok": true
+      },
+      {
+        "title": "Модуль «Чаты» в ролях",
+        "detail": "Есть право «Чаты · Просматривать»",
+        "ok": true
+      },
+      {
+        "title": "Функция",
+        "detail": "Ограничений нет",
+        "ok": true
+      }
+    ]
+  },
+  "memberCount": 2,
+  "usedBytes": 0,
+  "revision": 1,
+  "peer": {
+    "memberId": "ebdf9767-327e-55cc-8c65-cb5fd313bdf4",
+    "displayName": "Алексей Соколов",
+    "status": "active"
+  },
+  "pinned": null,
+  "hold": null
+}

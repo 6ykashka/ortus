@@ -1,0 +1,47 @@
+{
+  "id": "b438f094-9f29-54ed-ad94-2ee73618e682",
+  "version": 3,
+  "startedBy": {
+    "memberId": "ac41932c-dbd9-53b1-a84b-42cbc1d6629a",
+    "displayName": "Марина Котова"
+  },
+  "startedAt": "2026-10-01T07:30:00Z",
+  "status": "done",
+  "currentStep": 0,
+  "rules": {
+    "lock": true,
+    "notAuthor": true,
+    "commentOnBack": true,
+    "escalate": false
+  },
+  "steps": [
+    {
+      "kind": "ack",
+      "name": "Ознакомить",
+      "mode": "all",
+      "who": [],
+      "days": 3,
+      "status": "done",
+      "due": "2026-10-04",
+      "decisions": [],
+      "audience": [
+        {
+          "who": "member",
+          "level": "view",
+          "refId": "a560b4fe-78b7-585e-b960-f0ab3622570c",
+          "label": "Илья Васильев"
+        }
+      ]
+    }
+  ],
+  "project": {
+    "moduleKey": "tasks",
+    "entityType": "project",
+    "entityId": "0e1e030d-636b-5cd6-85a4-d61c7d9c8a5d"
+  },
+  "task": {
+    "moduleKey": "tasks",
+    "entityType": "task",
+    "entityId": "bd934673-0c42-59ad-8522-88f56bc92292"
+  }
+}

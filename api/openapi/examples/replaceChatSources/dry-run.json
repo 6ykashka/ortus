@@ -1,0 +1,47 @@
+{
+  "applied": false,
+  "impact": {
+    "joined": [
+      {
+        "memberId": "b8df06ec-317e-5f46-b54c-e76603e41b5b",
+        "displayName": "Дарья Зимина",
+        "title": "Владелец"
+      },
+      {
+        "memberId": "ac41932c-dbd9-53b1-a84b-42cbc1d6629a",
+        "displayName": "Марина Котова",
+        "title": "Логист"
+      },
+      {
+        "memberId": "a560b4fe-78b7-585e-b960-f0ab3622570c",
+        "displayName": "Илья Васильев",
+        "title": "Водитель"
+      },
+      {
+        "memberId": "ea845988-640e-5506-9303-1cbfc3dede0d",
+        "displayName": "Вера Котельникова",
+        "title": "Диспетчер · Самара"
+      }
+    ],
+    "pending": [],
+    "skipped": [
+      {
+        "member": {
+          "memberId": "5f46d721-04b7-5e52-9f86-14c5bdfcf6aa",
+          "displayName": "Олеся Петрова",
+          "title": "Диспетчер"
+        },
+        "reason": "У ролей сотрудника нет модуля «Чаты»: разрешите его в роли или добавьте по имени"
+      },
+      {
+        "member": {
+          "memberId": "e3e06740-e478-5398-a737-dd89c477cbd7",
+          "displayName": "Кирилл Громов",
+          "title": "Водитель"
+        },
+        "reason": "Заблокирован владельцем — не входит в чаты; вернётся сам, если разблокируют"
+      }
+    ],
+    "lose": []
+  }
+}

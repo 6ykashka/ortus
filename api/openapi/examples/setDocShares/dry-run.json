@@ -1,0 +1,19 @@
+{
+  "applied": false,
+  "impact": {
+    "gain": [],
+    "lose": [
+      {
+        "member": {
+          "memberId": "5f46d721-04b7-5e52-9f86-14c5bdfcf6aa",
+          "displayName": "Олеся Петрова"
+        },
+        "from": "edit",
+        "to": null,
+        "invited": true
+      }
+    ],
+    "up": [],
+    "down": []
+  }
+}

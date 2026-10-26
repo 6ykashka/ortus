@@ -2241,5 +2241,13 @@
   "home.queue.actions.open",
   "home.work.tasks",
   "home.work.tasksNew",
-  "home.work.tasksProgress"
+  "home.work.tasksProgress",
+  "errors.problem.chat_ephemeral_disabled",
+  "errors.problem.document_locked",
+  "errors.problem.range_protected",
+  "errors.problem.formula_invalid",
+  "errors.problem.job_in_progress",
+  "errors.problem.file_password_protected",
+  "errors.problem.sign_code_invalid",
+  "errors.problem.service_assignee_out_of_scope"
 ]

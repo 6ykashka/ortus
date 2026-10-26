@@ -6,10 +6,12 @@ import { billingCases } from './billing.ts';
 import { billingW407Cases } from './billing-w407.ts';
 import { calendarCases } from './calendar.ts';
 import { cashCases } from './cash.ts';
+import { chatsCases } from './chats.ts';
 import { contextCases } from './context.ts';
 import { dataCases } from './data.ts';
 import { dataW406Cases } from './data-w406.ts';
 import { dataW480Cases } from './data-w480.ts';
+import { docsCases } from './docs.ts';
 import { filesCases } from './files.ts';
 import { fleetCases } from './fleet.ts';
 import { formsCases } from './forms.ts';
@@ -17,6 +19,7 @@ import { knowledgeCases } from './knowledge.ts';
 import { logisticsCases } from './logistics.ts';
 import { modulesCases } from './modules.ts';
 import { platformCases } from './platform.ts';
+import { serviceCases } from './service.ts';
 import { poolCases } from './pool.ts';
 import { repairsCases } from './repairs.ts';
 import { spaCases } from './spa.ts';
@@ -65,4 +68,10 @@ export const ALL_CASES: readonly ConformanceCase[] = [
   ...dataW480Cases,
   // W5.21 (0.12.0-stage5): «Салон и SPA» и временный склад салона.
   ...spaCases,
+  // W7.00 (0.12.0-stage7): «Чаты».
+  ...chatsCases,
+  // W7.00: «Обращения» и портал клиента.
+  ...serviceCases,
+  // W7.00: «Документы» и callback сервера документов.
+  ...docsCases,
 ];

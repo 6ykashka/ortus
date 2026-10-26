@@ -359,6 +359,8 @@
             - form_attachment
             - repair_evidence
             - task_attachment
+            - chat_attachment
+            - document
       - $ref: ../components/common/parameters.yaml#/Cursor
       - $ref: ../components/common/parameters.yaml#/Limit
     x-permissions-mode: all

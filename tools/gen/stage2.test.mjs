@@ -193,7 +193,15 @@ describe('контракт этапа 2 (W2.00, 0.5.0-stage2)', () => {
     assert.ok(tags.length >= 20, String(tags.length)); // W4.07 — тег Branding после Billing
     // Как Auth у W0.08: новый тег — после Auth, Repairs остаётся последним (тест кодогенерации W0.09).
     assert.deepEqual(tags.slice(0, 3), ['Context', 'Auth', 'Home']);
-    assert.equal(tags.at(-1), 'Repairs');
+    // W7.00: пять тегов этапа 7 — после Repairs.
+    assert.deepEqual(tags.slice(-6), [
+      'Repairs',
+      'Chats',
+      'Docs',
+      'PublicDocs',
+      'Service',
+      'PublicService',
+    ]);
     assert.match(loadDeltas().find((d) => d.pointer === '/tags').source, /W2\.00/);
   });
 

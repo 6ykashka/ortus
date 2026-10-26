@@ -525,6 +525,63 @@ stageId:
   description: W6.00. Opaque UUID of a schedule stage.
   schema:
     $ref: ./schemas.yaml#/Id
+
+# W7.00 (0.12.0-stage7): параметры пути «Чатов», «Документов» и «Обращений».
+chatId:
+  name: chatId
+  in: path
+  required: true
+  description: "Opaque UUID of a chat; a chat the member is not in — 404, as a missing one (docs/25: no access = 404)."
+  schema:
+    $ref: ./schemas.yaml#/Id
+messageId:
+  name: messageId
+  in: path
+  required: true
+  description: Opaque UUID of a chat message.
+  schema:
+    $ref: ./schemas.yaml#/Id
+pollId:
+  name: pollId
+  in: path
+  required: true
+  description: Opaque UUID of a poll of a chat message.
+  schema:
+    $ref: ./schemas.yaml#/Id
+attachmentId:
+  name: attachmentId
+  in: path
+  required: true
+  description: Opaque UUID of an attachment of a chat message.
+  schema:
+    $ref: ./schemas.yaml#/Id
+chatExportId:
+  name: exportId
+  in: path
+  required: true
+  description: Opaque UUID of a chat history export job.
+  schema:
+    $ref: ./schemas.yaml#/Id
+chatHoldId:
+  name: holdId
+  in: path
+  required: true
+  description: Opaque UUID of a chat hold.
+  schema:
+    $ref: ./schemas.yaml#/Id
+chatKindParam:
+  name: kind
+  in: path
+  required: true
+  description: Kind of chats whose policy is read or changed.
+  schema:
+    type: string
+    enum:
+      - direct
+      - group
+      - area
+      - record
+      - announce
 documentId:
   name: documentId
   in: path
@@ -632,3 +689,104 @@ EstimateDiffTo:
   schema:
     type: integer
     minimum: 1
+docsDocumentId:
+  name: documentId
+  in: path
+  required: true
+  description: Opaque UUID of a document; a document the member cannot open — 404 «Документ недоступен», as a missing one (Q-W4.00-documents-13).
+  schema:
+    $ref: ./schemas.yaml#/Id
+docFolderId:
+  name: folderId
+  in: path
+  required: true
+  description: Opaque UUID of a folder of «Документы».
+  schema:
+    $ref: ./schemas.yaml#/Id
+docVersionNumber:
+  name: version
+  in: path
+  required: true
+  description: Number of a version of the document (DocVersion.version).
+  schema:
+    type: integer
+    minimum: 1
+    maximum: 1000000
+docCommentId:
+  name: commentId
+  in: path
+  required: true
+  description: Opaque UUID of a comment of a document.
+  schema:
+    $ref: ./schemas.yaml#/Id
+docLinkId:
+  name: linkId
+  in: path
+  required: true
+  description: Opaque UUID of an external link of a document.
+  schema:
+    $ref: ./schemas.yaml#/Id
+docJobId:
+  name: jobId
+  in: path
+  required: true
+  description: Opaque UUID of a document job (convert, OCR, merge, compress, PDF/A).
+  schema:
+    $ref: ./schemas.yaml#/Id
+ocrWordId:
+  name: wordId
+  in: path
+  required: true
+  description: Opaque id of a doubtful word of the text layer.
+  schema:
+    type: string
+    minLength: 1
+    maxLength: 64
+docLinkToken:
+  name: token
+  in: path
+  required: true
+  description: Secret token of an external link of a document (only its digest is stored); a revoked or expired one — 410 public_token_expired.
+  schema:
+    type: string
+    minLength: 20
+    maxLength: 200
+directionId:
+  name: directionId
+  in: path
+  required: true
+  description: Opaque UUID of a direction (a service project of «Задачи»); a direction the member does not see — 404.
+  schema:
+    $ref: ./schemas.yaml#/Id
+serviceRequestId:
+  name: requestId
+  in: path
+  required: true
+  description: Opaque UUID of a client request; a request of a direction the member does not see and a complaint about the member — 404 (the complaint is not revealed, service.md §2.4).
+  schema:
+    $ref: ./schemas.yaml#/Id
+serviceRatingId:
+  name: ratingId
+  in: path
+  required: true
+  description: Opaque UUID of a low rating.
+  schema:
+    $ref: ./schemas.yaml#/Id
+servicePortalSlug:
+  name: slug
+  in: path
+  required: true
+  description: Slug of the public page of a direction.
+  schema:
+    type: string
+    pattern: ^[a-z0-9]+(-[a-z0-9]+)*$
+    maxLength: 60
+servicePortalToken:
+  name: token
+  in: path
+  required: true
+  description: Personal link token of a request (only its digest is stored); an expired one — 410 public_token_expired.
+  schema:
+    type: string
+    minLength: 20
+    maxLength: 200

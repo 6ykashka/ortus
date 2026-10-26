@@ -1,0 +1,10 @@
+{
+  "id": "f295914b-2433-520a-b1b2-96e0796015b3",
+  "op": "compress",
+  "docIds": ["a90b415c-035d-5d91-9a79-e3555160ac19"],
+  "name": "Сжатие",
+  "status": "queued",
+  "createdAt": "2026-10-01T07:30:00Z",
+  "finishedAt": null,
+  "resultDocumentId": null
+}

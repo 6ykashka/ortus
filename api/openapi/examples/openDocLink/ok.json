@@ -1,0 +1,31 @@
+{
+  "title": "Приказ № 14 · работа 4 ноября",
+  "kind": "text",
+  "version": 2,
+  "watermark": "Ортус · Приказ № 14 · работа 4 ноября · 2026-10-01",
+  "expiresAt": "2026-10-15T07:30:00Z",
+  "config": {
+    "engine": "none",
+    "editorAvailable": false,
+    "mode": "view",
+    "documentKey": "tf04f636e-b66d-509e-ae10-9c27a18e3baa.de259b6d4-e7d4-513a-9ae7-00eedcce9bb8.v2",
+    "version": 2,
+    "fileUrl": "https://files.ortus.invalid/public/dlk_a378ddea12245e68bb76a4fad9c03d40z",
+    "user": {
+      "memberId": "fedb083a-2c04-5c1e-a9f2-5fe6c02fd059",
+      "displayName": "Гость"
+    },
+    "permissions": {
+      "edit": false,
+      "review": false,
+      "comment": false,
+      "download": false,
+      "print": false,
+      "fillForms": false,
+      "protectedRanges": false
+    },
+    "protectedRanges": [],
+    "hint": "Редактор подключается",
+    "expiresAt": "2026-10-15T07:30:00Z"
+  }
+}

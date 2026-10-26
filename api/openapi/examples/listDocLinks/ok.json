@@ -1,0 +1,20 @@
+{
+  "items": [
+    {
+      "id": "a378ddea-1224-5e68-bb76-a4fad9c03d40",
+      "level": "view",
+      "expiresAt": "2026-10-15T07:30:00Z",
+      "pin": true,
+      "watermark": true,
+      "download": false,
+      "status": "active",
+      "createdBy": {
+        "memberId": "b8df06ec-317e-5f46-b54c-e76603e41b5b",
+        "displayName": "Дарья Зимина"
+      },
+      "createdAt": "2026-10-01T07:30:00Z",
+      "openCount": 0,
+      "lastOpenedAt": null
+    }
+  ]
+}

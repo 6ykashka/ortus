@@ -245,7 +245,7 @@ modules:
         { level: create, label: Создавать опросы, scopes: [tenant, unit, chat, relation] }
       chat.create: { level: edit, label: Создавать групповые чаты, scopes: [tenant, unit] }
       chat.announce:
-        { level: review, label: Объявления, важное и @все, scopes: [tenant, unit, chat] }
+        { level: review, label: "Объявления, важное и @все", scopes: [tenant, unit, chat] }
       chat.moderate:
         {
           level: review,
@@ -271,8 +271,7 @@ modules:
       chat.receipts.read:
         {
           level: view,
-          label: Видеть,
-          кто и когда прочитал,
+          label: "Видеть, кто и когда прочитал",
           scopes: [tenant, unit, chat],
           note: "если режим чата «Кто и когда»",
         }
@@ -309,9 +308,7 @@ modules:
       chat.retention.manage:
         {
           level: settings,
-          label: Сроки хранения,
-          очистка,
-          место,
+          label: "Сроки хранения, очистка, место",
           scopes: [tenant, unit],
           sensitivity: sensitive,
         }
@@ -326,6 +323,116 @@ modules:
         }
       chat.policy.manage:
         { level: settings, label: Политики чатов организации, scopes: [tenant], owner_only: true }
+
+  # W7.00 (0.12.0-stage7): «Документы» — docs/24-documents.md «Новые права»; ключи перенесены из prototype_pending.
+  # Области folder и doc — назначения ролей папок и документов (ADR-0014); relation — «прораб объекта».
+  core.docs:
+    label: Документы
+    note: "docs/24-documents.md. Согласование — существующее tasks.approve; ознакомление права не требует: подтверждает тот, кому адресован запрос."
+    actions:
+      docs.read:
+        { level: view, label: Открывать, scopes: [tenant, unit, folder, doc, relation, self] }
+      docs.comment:
+        { level: view, label: Комментировать, scopes: [tenant, unit, folder, doc, relation] }
+      docs.suggest:
+        { level: edit, label: Предлагать правки, scopes: [tenant, unit, folder, doc, relation] }
+      docs.create: { level: create, label: Создавать и загружать, scopes: [tenant, unit, folder] }
+      docs.update: { level: edit, label: Править, scopes: [tenant, unit, folder, doc, relation] }
+      docs.convert:
+        {
+          level: create,
+          label: Преобразовывать и распознавать,
+          scopes: [tenant, unit, folder],
+          note: "результат — новая версия или документ; считается в место",
+        }
+      docs.export:
+        {
+          level: export,
+          label: "Скачивать, печатать, копировать",
+          scopes: [tenant, unit, folder, doc],
+          sensitivity: sensitive,
+        }
+      docs.share:
+        {
+          level: settings,
+          label: Делиться внутри организации,
+          scopes: [tenant, unit, folder, doc],
+          sensitivity: sensitive,
+          note: "выдаёт не больше своего уровня",
+        }
+      docs.share_external:
+        {
+          level: settings,
+          label: Внешние ссылки,
+          scopes: [tenant, unit],
+          sensitivity: sensitive,
+          note: "срок не больше 30 дней (DOC-06), PIN, журнал открытий; в шаблонах — только у владельца (Q-W4.00-documents-4)",
+        }
+      docs.sign:
+        {
+          level: review,
+          label: Утверждать,
+          scopes: [tenant, unit, folder],
+          sensitivity: sensitive,
+          note: "подпись ПЭП; автор свой документ не утверждает",
+        }
+      docs.templates.manage:
+        { level: settings, label: Шаблоны документов и маршрутов, scopes: [tenant, unit] }
+      docs.folders.manage:
+        {
+          level: settings,
+          label: "Папки, корзина и сроки хранения",
+          scopes: [tenant, unit, folder],
+        }
+
+  # W7.00 (0.12.0-stage7): «Обращения» — docs/22-client-requests.md «Новые права»; пять ключей перенесены из
+  # prototype_pending, четыре новых (service.md §3.1). service.compensation переименован в
+  # service.compensation.manage (схема имён <модуль>.<ресурс>.<глагол>). Основная область — project (направление —
+  # сервисный проект «Задач», D-27 комплекта, PD-53).
+  core.service:
+    label: Обращения
+    note: "docs/22-client-requests.md. Направление — сервисный проект задач; роль в направлении — назначение с областью project. Функция «Водитель» ключи не блокирует (Q-W4.00-service-15)."
+    actions:
+      service.directions.manage:
+        {
+          level: settings,
+          label: Настраивать направления,
+          scopes: [tenant, unit],
+          note: "типы, сроки, страница, опросы",
+        }
+      service.requests.read:
+        { level: view, label: Видеть обращения, scopes: [tenant, unit, project] }
+      service.requests.create:
+        { level: create, label: Заводить по звонку, scopes: [tenant, unit, project] }
+      service.requests.reply:
+        { level: edit, label: Отвечать клиентам, scopes: [tenant, unit, project] }
+      service.requests.resolve:
+        { level: review, label: Решать и закрывать, scopes: [tenant, unit, project] }
+      service.clients.contacts:
+        {
+          level: view,
+          label: Контакты клиентов,
+          scopes: [tenant, unit, project],
+          sensitivity: sensitive,
+          note: "полный номер телефона; каждый показ — в журнал и в ленту",
+        }
+      service.compensation.manage:
+        {
+          level: review,
+          label: Назначать компенсацию,
+          scopes: [tenant, unit, project],
+          sensitivity: sensitive,
+          note: "возврат денег — только через кассу",
+        }
+      service.reports.read:
+        { level: view, label: Отчёты по обращениям, scopes: [tenant, unit, project] }
+      service.reports.staff:
+        {
+          level: view,
+          label: Оценки сотрудников,
+          scopes: [tenant, unit, project],
+          sensitivity: sensitive,
+        }
 
   logistics:
     label: Логистика
@@ -944,6 +1051,64 @@ role_templates:
     default_scope: unit
     actions: [chat.read, chat.write, chat.direct, chat.create]
 
+  # W7.00: роли папок «Документов» (docs/24 «Роли»: уровни 5 / 4 / 1) — назначения с областью folder или doc; вне
+  # своей папки и документа прав не дают (PD-53). Шаблоны ролей организации (логист, прораб, водитель) не меняются
+  # (AUTH-09: новые действия в существующие роли сами не добавляются, Q-W4.00-chats-18, Q-W7.00-2).
+  docs_folder_manager:
+    label: Документы · управляет доступом
+    default_scope: folder
+    actions:
+      [
+        docs.read,
+        docs.comment,
+        docs.suggest,
+        docs.create,
+        docs.update,
+        docs.convert,
+        docs.export,
+        docs.share,
+        docs.folders.manage,
+      ]
+  docs_folder_editor:
+    label: Документы · правит
+    default_scope: folder
+    actions: [docs.read, docs.comment, docs.suggest, docs.create, docs.update, docs.convert]
+  docs_folder_reader:
+    label: Документы · читает
+    default_scope: folder
+    actions: [docs.read]
+
+  # W7.00: шаблоны ролей направления «Обращений» (22 «Новые права»): назначения с областью project. Мастер, прораб
+  # и водитель роли в направлении не получают — обращения доходят до них задачами и благодарностями.
+  service_direction_lead:
+    label: Руководитель направления
+    default_scope: project
+    actions:
+      [
+        service.requests.read,
+        service.requests.create,
+        service.requests.reply,
+        service.requests.resolve,
+        service.clients.contacts,
+        service.compensation.manage,
+        service.reports.read,
+        service.reports.staff,
+      ]
+  service_specialist:
+    label: Специалист по обращениям
+    default_scope: project
+    actions:
+      [
+        service.requests.read,
+        service.requests.create,
+        service.requests.reply,
+        service.requests.resolve,
+      ]
+  service_observer:
+    label: Наблюдатель обращений
+    default_scope: project
+    actions: [service.requests.read]
+
   # W4.04: роли пространства «Базы знаний» (docs/23 «Роли пространства»; KB-02 — без «Автора»). Назначаются только
   # с областью space (scopes; читатель — и page: одобренный запрос доступа со сроком). В listRoles и listAssignments
   # access API их нет (Q-W4.00-knowledge-21, Q-W4.30-16 вариант б): участников пространства показывает и меняет API БЗ
@@ -1007,19 +1172,3 @@ prototype_renames:
 # W0.07: ключи прототипа 14.10, которых ещё нет в каталоге: вносит контрактный PR указанного шага.
 # До него сервер таких прав не знает; прототип показывает их в редакторе ролей (allowlist out-of-stage).
 prototype_pending:
-  docs.comment: "W7.00 · docs/24-documents.md"
-  docs.convert: "W7.00 · docs/24-documents.md"
-  docs.create: "W7.00 · docs/24-documents.md"
-  docs.export: "W7.00 · docs/24-documents.md"
-  docs.folders.manage: "W7.00 · docs/24-documents.md"
-  docs.read: "W7.00 · docs/24-documents.md"
-  docs.share: "W7.00 · docs/24-documents.md"
-  docs.sign: "W7.00 · docs/24-documents.md"
-  docs.suggest: "W7.00 · docs/24-documents.md"
-  docs.templates.manage: "W7.00 · docs/24-documents.md"
-  docs.update: "W7.00 · docs/24-documents.md"
-  service.directions.manage: "W7.00 · docs/22-client-requests.md"
-  service.requests.create: "W7.00 · docs/22-client-requests.md"
-  service.requests.read: "W7.00 · docs/22-client-requests.md"
-  service.requests.reply: "W7.00 · docs/22-client-requests.md"
-  service.requests.resolve: "W7.00 · docs/22-client-requests.md"

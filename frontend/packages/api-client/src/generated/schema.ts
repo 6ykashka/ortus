@@ -7461,6 +7461,2444 @@ export interface paths {
     patch?: never;
     trace?: never;
   };
+  '/api/v1/tenants/{tenantId}/chats': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+      };
+      cookie?: never;
+    };
+    /**
+     * List chats visible to the member
+     * @description W7.00 (chats.md §2.2). Summary of chats visible to the member: title, kind, last message (the PDn mask is applied on the server), my unread, my ack waiting count, my role, the peer of a direct chat. A chat the member is not in — not listed; a record chat whose module is off or without the right to the record is hidden. 403 module_not_installed when the module is off.
+     */
+    get: operations['listChats'];
+    put?: never;
+    /**
+     * Create a group, area or announcement chat
+     * @description W7.00 (chats.md §2.2) (chatCreate). Only the own area of the author; kind announce and the label «Финансы» — business owner only (Q-W4.00-chats-21). dryRun true returns 200 with applied false: who joins, who waits, who is skipped (422 chat_member_out_of_scope names the first member outside the area). Roles are Assignment with the scope chat; the creator becomes the owner. Emits chat.chat.created.v1 and chat.member.joined.v1.
+     */
+    post: operations['createChat'];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/v1/tenants/{tenantId}/chats/direct': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+      };
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /**
+     * Start or open a direct chat
+     * @description W7.00 (chats.md §2.2). Direct chat of two employees, the peer inside the area of chat.direct (422 chat_member_out_of_scope otherwise). Idempotent by the pair: 200 with the existing chat, 201 with a new one. Nobody else reads a direct chat, the business owner included (CHAT-02). No screen yet (no-reference, Q-W4.00-chats-5).
+     */
+    post: operations['createDirectChat'];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/v1/tenants/{tenantId}/chats/{chatId}': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+        /** @description Opaque UUID of a chat; a chat the member is not in — 404, as a missing one (docs/25: no access = 404). */
+        chatId: components['parameters']['chatId'];
+      };
+      cookie?: never;
+    };
+    /**
+     * Read a chat
+     * @description W7.00 (chats.md §2.2). Effective policy P, my rights (can) and the access chain, topics, pinned message, record, hold. A chat the member cannot see — 404 not_found, as a missing one; the function «Водитель» never sees finance chats.
+     */
+    get: operations['getChat'];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    /**
+     * Rename a chat or change its overrides
+     * @description W7.00 (chats.md §2.2) (chatSetFull). Overrides inside the bounds of the policy (422 validation_failed outside), title, label, history. Needs the chat role owner or the business owner (chats.js 132). If-Match — revision of the chat. A change adds a service message.
+     */
+    patch: operations['updateChat'];
+    trace?: never;
+  };
+  '/api/v1/tenants/{tenantId}/chats/{chatId}/archive': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+        /** @description Opaque UUID of a chat; a chat the member is not in — 404, as a missing one (docs/25: no access = 404). */
+        chatId: components['parameters']['chatId'];
+      };
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /**
+     * Archive a chat
+     * @description W7.00 (chats.md §2.2). status becomes archived: reading stays, writing is closed (409 invalid_transition for a repeated call). Emits chat.chat.archived.v1. The folder «Архив» is v2 (Q-W4.00-chats-15).
+     */
+    post: operations['archiveChat'];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/v1/tenants/{tenantId}/chats/{chatId}/messages': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+        /** @description Opaque UUID of a chat; a chat the member is not in — 404, as a missing one (docs/25: no access = 404). */
+        chatId: components['parameters']['chatId'];
+      };
+      cookie?: never;
+    };
+    /**
+     * Read messages of a chat
+     * @description W7.00 (chats.md §2.2). Messages with the PDn mask, a deleted message folded to a label (never the old text, files, poll or edit log — PD-60), results of reads, polls and important. «Видно только вам» messages only for their addressee.
+     */
+    get: operations['listChatMessages'];
+    put?: never;
+    /**
+     * Post a message
+     * @description W7.00 (chats.md §2.2) (chatSend). Role not lower than member (announce — moderator), archived chat is closed (409 invalid_transition). 422 validation_failed — empty message, text over 4000, 2–10 poll options; 403 chat_content_forbidden; 403 chat_ephemeral_disabled; 413 chat_file_too_large; 409 chat_quota_full (the text still goes, the file does not) and quota_exceeded (organization storage). @all and @role — chat.announce at any size (Q-W4.00-chats-13). Emits chat.message.posted.v1 (no text in the payload) and the hint chat.changed.
+     */
+    post: operations['postChatMessage'];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/v1/tenants/{tenantId}/chats/{chatId}/messages/{messageId}': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+        /** @description Opaque UUID of a chat; a chat the member is not in — 404, as a missing one (docs/25: no access = 404). */
+        chatId: components['parameters']['chatId'];
+        /** @description Opaque UUID of a chat message. */
+        messageId: components['parameters']['messageId'];
+      };
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    post?: never;
+    /**
+     * Delete a message
+     * @description W7.00 (chats.md §2.2) (chatDelete). Own message inside the window (Q-W4.00-chats-22), someone else’s — chat.moderate with a reason. The message becomes a label, the content goes to the journal for 30 days. 409 chat_on_hold under a hold, 409 chat_edit_window_closed. Emits chat.message.deleted.v1.
+     */
+    delete: operations['deleteChatMessage'];
+    options?: never;
+    head?: never;
+    /**
+     * Edit an own message
+     * @description W7.00 (chats.md §2.2) (chatEdit). Own message inside the window P.edit; 409 chat_edit_window_closed after it, 403 for someone else’s message. Emits chat.message.edited.v1.
+     */
+    patch: operations['editChatMessage'];
+    trace?: never;
+  };
+  '/api/v1/tenants/{tenantId}/chats/{chatId}/messages/{messageId}/versions': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+        /** @description Opaque UUID of a chat; a chat the member is not in — 404, as a missing one (docs/25: no access = 404). */
+        chatId: components['parameters']['chatId'];
+        /** @description Opaque UUID of a chat message. */
+        messageId: components['parameters']['messageId'];
+      };
+      cookie?: never;
+    };
+    /**
+     * Read the edit history of a message
+     * @description W7.00 (chats.md §2.2). Author and moderators only; 403 forbidden_action for the others.
+     */
+    get: operations['listChatMessageVersions'];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/v1/tenants/{tenantId}/chats/{chatId}/read': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+        /** @description Opaque UUID of a chat; a chat the member is not in — 404, as a missing one (docs/25: no access = 404). */
+        chatId: components['parameters']['chatId'];
+      };
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /**
+     * Mark a chat as read
+     * @description W7.00 (chats.md §2.2) (chatOpen). Sets last_read_seq and the read receipts allowed by the mode of the chat.
+     */
+    post: operations['markChatRead'];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/v1/tenants/{tenantId}/chats/{chatId}/messages/{messageId}/ack': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+        /** @description Opaque UUID of a chat; a chat the member is not in — 404, as a missing one (docs/25: no access = 404). */
+        chatId: components['parameters']['chatId'];
+        /** @description Opaque UUID of a chat message. */
+        messageId: components['parameters']['messageId'];
+      };
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /**
+     * Acknowledge an important message
+     * @description W7.00 (chats.md §2.2) (chatAck). 422 validation_failed when the message is not important or is the member’s own. Removes the card chat.ack_pending of «Требует решения»; emits chat.ack.done.v1.
+     */
+    post: operations['ackChatMessage'];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/v1/tenants/{tenantId}/chats/{chatId}/messages/{messageId}/receipts': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+        /** @description Opaque UUID of a chat; a chat the member is not in — 404, as a missing one (docs/25: no access = 404). */
+        chatId: components['parameters']['chatId'];
+        /** @description Opaque UUID of a chat message. */
+        messageId: components['parameters']['messageId'];
+      };
+      cookie?: never;
+    };
+    /**
+     * Read who has read a message
+     * @description W7.00 (chats.md §2.2). Mode who — the list «who and when»; ticks — N of M only. Author and moderators (Q-W4.00-chats-8); 403 otherwise.
+     */
+    get: operations['getChatMessageReceipts'];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/v1/tenants/{tenantId}/chats/{chatId}/messages/{messageId}/pdn-reveal': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+        /** @description Opaque UUID of a chat; a chat the member is not in — 404, as a missing one (docs/25: no access = 404). */
+        chatId: components['parameters']['chatId'];
+        /** @description Opaque UUID of a chat message. */
+        messageId: components['parameters']['messageId'];
+      };
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /**
+     * Show the text of a message without the PDn mask
+     * @description W7.00 (chats.md §2.2) (chatReveal). Only this member sees the text; 403 function_blocked for the function «Водитель». Every reveal is audited (chat.pdn.revealed.v1) and written to the journal.
+     */
+    post: operations['revealChatMessagePdn'];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/v1/tenants/{tenantId}/chats/{chatId}/polls/{pollId}/vote': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+        /** @description Opaque UUID of a chat; a chat the member is not in — 404, as a missing one (docs/25: no access = 404). */
+        chatId: components['parameters']['chatId'];
+        /** @description Opaque UUID of a poll of a chat message. */
+        pollId: components['parameters']['pollId'];
+      };
+      cookie?: never;
+    };
+    get?: never;
+    /**
+     * Vote in a poll
+     * @description W7.00 (chats.md §2.2) (chatVote). Revote allowed while the poll is open; 409 invalid_transition for a closed poll; 422 for options of another poll or several options of a single-choice poll. Anonymous polls store only voter_hash (Q-W4.00-chats-12).
+     */
+    put: operations['voteChatPoll'];
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/v1/tenants/{tenantId}/chats/{chatId}/polls/{pollId}/close': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+        /** @description Opaque UUID of a chat; a chat the member is not in — 404, as a missing one (docs/25: no access = 404). */
+        chatId: components['parameters']['chatId'];
+        /** @description Opaque UUID of a poll of a chat message. */
+        pollId: components['parameters']['pollId'];
+      };
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /**
+     * Close a poll
+     * @description W7.00 (chats.md §2.2) (chatPollClose). The author of the poll or a moderator; a service message with the result is posted. Emits chat.poll.closed.v1.
+     */
+    post: operations['closeChatPoll'];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/v1/tenants/{tenantId}/chats/{chatId}/polls/{pollId}/remind': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+        /** @description Opaque UUID of a chat; a chat the member is not in — 404, as a missing one (docs/25: no access = 404). */
+        chatId: components['parameters']['chatId'];
+        /** @description Opaque UUID of a poll of a chat message. */
+        pollId: components['parameters']['pollId'];
+      };
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /**
+     * Remind those who have not voted
+     * @description W7.00 (chats.md §2.2). Notifications to the members who have not voted (docs/25:213); 409 invalid_transition for a closed poll.
+     */
+    post: operations['remindChatPoll'];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/v1/tenants/{tenantId}/chats/{chatId}/pin': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+        /** @description Opaque UUID of a chat; a chat the member is not in — 404, as a missing one (docs/25: no access = 404). */
+        chatId: components['parameters']['chatId'];
+      };
+      cookie?: never;
+    };
+    get?: never;
+    /**
+     * Pin a message
+     * @description W7.00 (chats.md §2.2) (chatPin). One pinned message per chat; a moderator.
+     */
+    put: operations['pinChatMessage'];
+    post?: never;
+    /**
+     * Unpin the message
+     * @description W7.00 (chats.md §2.2). Removes the pinned message; a moderator.
+     */
+    delete: operations['unpinChatMessage'];
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/v1/tenants/{tenantId}/chats/{chatId}/attachments/{attachmentId}/view-once': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+        /** @description Opaque UUID of a chat; a chat the member is not in — 404, as a missing one (docs/25: no access = 404). */
+        chatId: components['parameters']['chatId'];
+        /** @description Opaque UUID of an attachment of a chat message. */
+        attachmentId: components['parameters']['attachmentId'];
+      };
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /**
+     * Open a view-once file
+     * @description W7.00 (chats.md §2.2) (chatOpenOnce). Short link with a watermark and no download; 409 invalid_transition when already opened by the member, 422 for the author. Every opening is journaled; the file is removed 24 h after the first opening (server job).
+     */
+    post: operations['openViewOnceAttachment'];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/v1/tenants/{tenantId}/chats/{chatId}/messages/{messageId}/save-to-record': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+        /** @description Opaque UUID of a chat; a chat the member is not in — 404, as a missing one (docs/25: no access = 404). */
+        chatId: components['parameters']['chatId'];
+        /** @description Opaque UUID of a chat message. */
+        messageId: components['parameters']['messageId'];
+      };
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /**
+     * Save the files of a message to a record
+     * @description W7.00 (chats.md §2.2) (chatSaveTo). Needs chat.write and the right to the files of the record (repairs or fleet); 403 forbidden_action otherwise. The owner of the files changes from the message to the record — the only allowed reparenting of chat_attachment (files.purpose).
+     */
+    post: operations['saveChatAttachmentsToRecord'];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/v1/tenants/{tenantId}/chats/{chatId}/messages/{messageId}/task': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+        /** @description Opaque UUID of a chat; a chat the member is not in — 404, as a missing one (docs/25: no access = 404). */
+        chatId: components['parameters']['chatId'];
+        /** @description Opaque UUID of a chat message. */
+        messageId: components['parameters']['messageId'];
+      };
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /**
+     * Create a task from a message
+     * @description W7.00 (chats.md §2.2) (chatToTask). The project is chosen by the member or taken from the record (the prototype’s hard-coded fleet project is not carried over); the id comes from the tasks module (TaskPort, W4.11). The handler checks the chat role and the visibility of the message.
+     */
+    post: operations['createTaskFromChatMessage'];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/v1/tenants/{tenantId}/chats/{chatId}/members': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+        /** @description Opaque UUID of a chat; a chat the member is not in — 404, as a missing one (docs/25: no access = 404). */
+        chatId: components['parameters']['chatId'];
+      };
+      cookie?: never;
+    };
+    /**
+     * List the participants of a chat
+     * @description W7.00 (chats.md §2.2) (chatPeople). in / pending / out with via and why. By the analysis the right is chat.members.manage (Q-W7.00-1).
+     */
+    get: operations['listChatMembers'];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/v1/tenants/{tenantId}/chats/{chatId}/sources': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+        /** @description Opaque UUID of a chat; a chat the member is not in — 404, as a missing one (docs/25: no access = 404). */
+        chatId: components['parameters']['chatId'];
+      };
+      cookie?: never;
+    };
+    /**
+     * Read the sources of the roster
+     * @description W7.00 (chats.md §2.2). Sources of the roster with their roles; ETag — revision of the sources.
+     */
+    get: operations['getChatSources'];
+    /**
+     * Replace the sources of the roster
+     * @description W7.00 (chats.md §2.2) (chatSources). Delegation: employees of the own area, a role not higher than the own; owner and «all employees» — business owner only. dryRun true returns the impact without saving. 422 chat_member_out_of_scope; 412 revision_mismatch. Emits chat.member.joined.v1 and chat.member.left.v1.
+     */
+    put: operations['replaceChatSources'];
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/v1/tenants/{tenantId}/chats/{chatId}/access-explanation': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+        /** @description Opaque UUID of a chat; a chat the member is not in — 404, as a missing one (docs/25: no access = 404). */
+        chatId: components['parameters']['chatId'];
+      };
+      cookie?: never;
+    };
+    /**
+     * Explain why a member is (not) in the chat
+     * @description W7.00 (chats.md §2.2). «Проверить сотрудника» (1c): the chain roster → module → function → invitation. Unlike explainAccess it needs no objects in the query.
+     */
+    get: operations['getChatAccessExplanation'];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/v1/tenants/{tenantId}/chats/{chatId}/storage': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+        /** @description Opaque UUID of a chat; a chat the member is not in — 404, as a missing one (docs/25: no access = 404). */
+        chatId: components['parameters']['chatId'];
+      };
+      cookie?: never;
+    };
+    /**
+     * Read the storage of a chat
+     * @description W7.00 (chats.md §2.2) (buckets, usedMb). Used, quota, saved, archived, buckets by kind and age, the hold.
+     */
+    get: operations['getChatStorage'];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/v1/tenants/{tenantId}/chats/{chatId}/cleanups': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+        /** @description Opaque UUID of a chat; a chat the member is not in — 404, as a missing one (docs/25: no access = 404). */
+        chatId: components['parameters']['chatId'];
+      };
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /**
+     * Clean attachments of a chat
+     * @description W7.00 (chats.md §2.2) (chatCleanup). dryRun true returns files, bytes, afterBytes and what is kept (saved to records, held). 409 chat_on_hold, 422 for an empty filter. The result is one transaction: buckets do not change before a failure. Emits chat.cleanup.done.v1.
+     */
+    post: operations['createChatCleanup'];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/v1/tenants/{tenantId}/chats/{chatId}/journal': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+        /** @description Opaque UUID of a chat; a chat the member is not in — 404, as a missing one (docs/25: no access = 404). */
+        chatId: components['parameters']['chatId'];
+      };
+      cookie?: never;
+    };
+    /**
+     * Read the journal of a chat
+     * @description W7.00 (chats.md §2.2). The content of a deleted message (deletedContent) is returned only with chat.audit.read; without it the field is absent.
+     */
+    get: operations['listChatJournal'];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/v1/tenants/{tenantId}/chats/{chatId}/exports': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+        /** @description Opaque UUID of a chat; a chat the member is not in — 404, as a missing one (docs/25: no access = 404). */
+        chatId: components['parameters']['chatId'];
+      };
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /**
+     * Export the history of a chat
+     * @description W7.00 (chats.md §2.2). A job like exportDataset; the file is a File owned by the chat export job. Every export is audited.
+     */
+    post: operations['createChatExport'];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/v1/tenants/{tenantId}/chats/{chatId}/exports/{exportId}': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+        /** @description Opaque UUID of a chat; a chat the member is not in — 404, as a missing one (docs/25: no access = 404). */
+        chatId: components['parameters']['chatId'];
+        /** @description Opaque UUID of a chat history export job. */
+        exportId: components['parameters']['chatExportId'];
+      };
+      cookie?: never;
+    };
+    /**
+     * Read an export job
+     * @description W7.00 (chats.md §2.2). Status of the export job of the member.
+     */
+    get: operations['getChatExport'];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/v1/tenants/{tenantId}/chat-policies': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+      };
+      cookie?: never;
+    };
+    /**
+     * List the policies of the chat kinds
+     * @description W7.00 (chats.md §2.2) (C-11). Five kinds with their bounds; owner only (owner_only).
+     */
+    get: operations['listChatPolicies'];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/v1/tenants/{tenantId}/chat-policies/{kind}': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+        /** @description Kind of chats whose policy is read or changed. */
+        kind: components['parameters']['chatKindParam'];
+      };
+      cookie?: never;
+    };
+    get?: never;
+    /**
+     * Change the policy of a chat kind
+     * @description W7.00 (chats.md §2.2) (chatPolicySet). dryRun true returns the notes (service messages) without saving. 422 validation_failed outside the bounds; in work kinds temp stays off (CHAT-04). Service messages are posted to the chats of the kind; emits chat.policy.changed.v1.
+     */
+    put: operations['updateChatPolicy'];
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/v1/tenants/{tenantId}/chat-holds': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+      };
+      cookie?: never;
+    };
+    /**
+     * List the chat holds
+     * @description W7.00 (chats.md §2.2). Active and released holds; owner only.
+     */
+    get: operations['listChatHolds'];
+    put?: never;
+    /**
+     * Create a chat hold
+     * @description W7.00 (chats.md §2.2). Hold of a chat, of members or of a period (docs/25:243), with a reason. Protects messages from deletion and the expiry job (PD-60: the prototype’s held() was always false). Emits chat.hold.set.v1.
+     */
+    post: operations['createChatHold'];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/v1/tenants/{tenantId}/chat-holds/{holdId}': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+        /** @description Opaque UUID of a chat hold. */
+        holdId: components['parameters']['chatHoldId'];
+      };
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    post?: never;
+    /**
+     * Release a chat hold
+     * @description W7.00 (chats.md §2.2). The hold is released, not deleted (journal); emits chat.hold.released.v1.
+     */
+    delete: operations['releaseChatHold'];
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/v1/tenants/{tenantId}/docs': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+      };
+      cookie?: never;
+    };
+    /**
+     * List documents visible to the member
+     * @description W7.00 (documents.md §2.2). Documents the access chain opens; a finance document is closed for the function «Водитель» always. «Ждут меня» — items with my.wait. 403 module_not_installed when the module is off.
+     */
+    get: operations['listDocuments'];
+    put?: never;
+    /**
+     * Create a document
+     * @description W7.00 (documents.md §2.2) (docCreate). Version 1; a scan queues the OCR job (not for pdn). 422 validation_failed, 403 forbidden_action (level 4 in the folder), 409 quota_exceeded (storage), 413 payload too large. The number of the document by the kind and the legal entity — core.counters, a later WS (DOC-12, Q-W4.00-documents-7). Emits docs.created.v1.
+     */
+    post: operations['createDocument'];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/v1/tenants/{tenantId}/docs/{documentId}': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+        /** @description Opaque UUID of a document; a document the member cannot open — 404 «Документ недоступен», as a missing one (Q-W4.00-documents-13). */
+        documentId: components['parameters']['docsDocumentId'];
+      };
+      cookie?: never;
+    };
+    /**
+     * Read a document
+     * @description W7.00 (documents.md §2.2). The card with my rights, the access chain, route, jobs, protected ranges. A document the member cannot open — 404 not_found «Документ недоступен»; the finance document for the function «Водитель» — 403 function_blocked; a hidden finance sheet is given without cells (the engine config carries the rule).
+     */
+    get: operations['getDocument'];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    /**
+     * Rename or relabel a document
+     * @description W7.00 (documents.md §2.2) (docRename). 409 document_locked while the document is on a route or signed; 412 revision_mismatch. The label pdn switches off recognition.
+     */
+    patch: operations['updateDocument'];
+    trace?: never;
+  };
+  '/api/v1/tenants/{tenantId}/docs/{documentId}/move': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+        /** @description Opaque UUID of a document; a document the member cannot open — 404 «Документ недоступен», as a missing one (Q-W4.00-documents-13). */
+        documentId: components['parameters']['docsDocumentId'];
+      };
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /**
+     * Move a document to another folder
+     * @description W7.00 (documents.md §2.2) (docMove). Needs the right to create in the target folder (403 forbidden_action); 422 «Документ уже в этой папке»; 409 document_locked. dryRun true returns who gains and loses access. Emits docs.moved.v1.
+     */
+    post: operations['moveDocument'];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/v1/tenants/{tenantId}/docs/{documentId}/archive': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+        /** @description Opaque UUID of a document; a document the member cannot open — 404 «Документ недоступен», as a missing one (Q-W4.00-documents-13). */
+        documentId: components['parameters']['docsDocumentId'];
+      };
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /**
+     * Archive a document
+     * @description W7.00 (documents.md §2.2). Status archived, filter «Архив» (Q-W4.00-documents-9); nothing is deleted. A document on a route is not archived (409 invalid_transition).
+     */
+    post: operations['archiveDocument'];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/v1/tenants/{tenantId}/docs/{documentId}/restore': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+        /** @description Opaque UUID of a document; a document the member cannot open — 404 «Документ недоступен», as a missing one (Q-W4.00-documents-13). */
+        documentId: components['parameters']['docsDocumentId'];
+      };
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /**
+     * Restore an archived document
+     * @description W7.00 (documents.md §2.2). Back from the archive to the status the document had before.
+     */
+    post: operations['restoreDocument'];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/v1/tenants/{tenantId}/docs/{documentId}/open': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+        /** @description Opaque UUID of a document; a document the member cannot open — 404 «Документ недоступен», as a missing one (Q-W4.00-documents-13). */
+        documentId: components['parameters']['docsDocumentId'];
+      };
+      cookie?: never;
+    };
+    /**
+     * Open a document in the editor
+     * @description W7.00 (documents.md §2.2). Signed configuration of the editor session (JWT) with the key of the version, the URL of the file, the user and the rights. Without the engine — editorAvailable false. 503 dependency_unavailable when the engine is chosen but not reachable. The access is revoked with the removal of the session on the engine (internal).
+     */
+    get: operations['openDocumentSession'];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/v1/tenants/{tenantId}/docs/{documentId}/versions': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+        /** @description Opaque UUID of a document; a document the member cannot open — 404 «Документ недоступен», as a missing one (Q-W4.00-documents-13). */
+        documentId: components['parameters']['docsDocumentId'];
+      };
+      cookie?: never;
+    };
+    /**
+     * List versions of a document
+     * @description W7.00 (documents.md §2.2). A temporary access of a route (acknowledgement) sees the approved version only.
+     */
+    get: operations['listDocVersions'];
+    put?: never;
+    /**
+     * Cut a version now
+     * @description W7.00 (documents.md §2.2) (docCut). A new version, or the name of the last one when nothing changed.
+     */
+    post: operations['saveDocVersion'];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/v1/tenants/{tenantId}/docs/{documentId}/versions/{version}/name': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+        /** @description Opaque UUID of a document; a document the member cannot open — 404 «Документ недоступен», as a missing one (Q-W4.00-documents-13). */
+        documentId: components['parameters']['docsDocumentId'];
+        /** @description Number of a version of the document (DocVersion.version). */
+        version: components['parameters']['docVersionNumber'];
+      };
+      cookie?: never;
+    };
+    get?: never;
+    /**
+     * Name a version
+     * @description W7.00 (documents.md §2.2). Sets the name of a version.
+     */
+    put: operations['nameDocVersion'];
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/v1/tenants/{tenantId}/docs/{documentId}/versions/{version}/restore': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+        /** @description Opaque UUID of a document; a document the member cannot open — 404 «Документ недоступен», as a missing one (Q-W4.00-documents-13). */
+        documentId: components['parameters']['docsDocumentId'];
+        /** @description Number of a version of the document (DocVersion.version). */
+        version: components['parameters']['docVersionNumber'];
+      };
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /**
+     * Restore a version
+     * @description W7.00 (documents.md §2.2) (docRestore). A new version v+1 with the source restore; 404 for an unknown version, 409 document_locked.
+     */
+    post: operations['restoreDocVersion'];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/v1/tenants/{tenantId}/docs/{documentId}/comments': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+        /** @description Opaque UUID of a document; a document the member cannot open — 404 «Документ недоступен», as a missing one (Q-W4.00-documents-13). */
+        documentId: components['parameters']['docsDocumentId'];
+      };
+      cookie?: never;
+    };
+    /**
+     * List comments of a document
+     * @description W7.00 (documents.md §2.2). A temporary access of a route sees no comments.
+     */
+    get: operations['listDocComments'];
+    put?: never;
+    /**
+     * Comment a document
+     * @description W7.00 (documents.md §2.2) (docComment). A mention of a member without access adds «wait.mention» to the author (grant or skip). Emits docs.comment.mentioned.v1.
+     */
+    post: operations['createDocComment'];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/v1/tenants/{tenantId}/docs/{documentId}/comments/{commentId}/replies': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+        /** @description Opaque UUID of a document; a document the member cannot open — 404 «Документ недоступен», as a missing one (Q-W4.00-documents-13). */
+        documentId: components['parameters']['docsDocumentId'];
+        /** @description Opaque UUID of a comment of a document. */
+        commentId: components['parameters']['docCommentId'];
+      };
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /**
+     * Reply to a comment
+     * @description W7.00 (documents.md §2.2) (docReply).
+     */
+    post: operations['replyDocComment'];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/v1/tenants/{tenantId}/docs/{documentId}/comments/{commentId}/resolve': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+        /** @description Opaque UUID of a document; a document the member cannot open — 404 «Документ недоступен», as a missing one (Q-W4.00-documents-13). */
+        documentId: components['parameters']['docsDocumentId'];
+        /** @description Opaque UUID of a comment of a document. */
+        commentId: components['parameters']['docCommentId'];
+      };
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /**
+     * Resolve a discussion
+     * @description W7.00 (documents.md §2.2) (docResolve). The author of the comment or the one who edits: 403 forbidden_action «Закрыть обсуждение может автор комментария или тот, кто правит».
+     */
+    post: operations['resolveDocComment'];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/v1/tenants/{tenantId}/docs/{documentId}/comments/{commentId}/skip-grant': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+        /** @description Opaque UUID of a document; a document the member cannot open — 404 «Документ недоступен», as a missing one (Q-W4.00-documents-13). */
+        documentId: components['parameters']['docsDocumentId'];
+        /** @description Opaque UUID of a comment of a document. */
+        commentId: components['parameters']['docCommentId'];
+      };
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /**
+     * Skip the access for a mentioned member
+     * @description W7.00 (documents.md §2.2) (docMentionSkip). Removes the waiting item mention of the author.
+     */
+    post: operations['skipDocMentionGrant'];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/v1/tenants/{tenantId}/docs/{documentId}/shares': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+        /** @description Opaque UUID of a document; a document the member cannot open — 404 «Документ недоступен», as a missing one (Q-W4.00-documents-13). */
+        documentId: components['parameters']['docsDocumentId'];
+      };
+      cookie?: never;
+    };
+    /**
+     * Read the access list of a document
+     * @description W7.00 (documents.md §2.2). Mode and entries; ETag — revision. A temporary access of a route does not see the list.
+     */
+    get: operations['getDocShares'];
+    /**
+     * Change the access of a document
+     * @description W7.00 (documents.md §2.2) (docShare). Gives not more than the own level (403/422 delegation_exceeds_grant «Нельзя выдать «…»: это выше вашего уровня»); dryRun returns the impact (gain, up, down, lose). Emits docs.shared.v1 and notifications «Вам открыт доступ».
+     */
+    put: operations['setDocShares'];
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/v1/tenants/{tenantId}/docs/{documentId}/grants': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+        /** @description Opaque UUID of a document; a document the member cannot open — 404 «Документ недоступен», as a missing one (Q-W4.00-documents-13). */
+        documentId: components['parameters']['docsDocumentId'];
+      };
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /**
+     * Give access from a mention
+     * @description W7.00 (documents.md §2.2) (docGrant). A member entry with the level comment (view); delegation_exceeds_grant above the own level. Emits docs.access.granted.v1.
+     */
+    post: operations['grantDocAccess'];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/v1/tenants/{tenantId}/docs/{documentId}/links': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+        /** @description Opaque UUID of a document; a document the member cannot open — 404 «Документ недоступен», as a missing one (Q-W4.00-documents-13). */
+        documentId: components['parameters']['docsDocumentId'];
+      };
+      cookie?: never;
+    };
+    /**
+     * List external links of a document
+     * @description W7.00 (documents.md §2.2). Links with their openings counts.
+     */
+    get: operations['listDocLinks'];
+    put?: never;
+    /**
+     * Create an external link
+     * @description W7.00 (documents.md §2.2). Term up to 30 days (422 validation_failed above), PIN, watermark, no download. The token and the PIN are returned once. Only the business owner by the default role templates (Q-W4.00-documents-4).
+     */
+    post: operations['createDocLink'];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/v1/tenants/{tenantId}/docs/{documentId}/links/{linkId}': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+        /** @description Opaque UUID of a document; a document the member cannot open — 404 «Документ недоступен», as a missing one (Q-W4.00-documents-13). */
+        documentId: components['parameters']['docsDocumentId'];
+        /** @description Opaque UUID of an external link of a document. */
+        linkId: components['parameters']['docLinkId'];
+      };
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    post?: never;
+    /**
+     * Revoke an external link
+     * @description W7.00 (documents.md §2.2). The link stops working at once (410 public_token_expired); the journal of openings stays.
+     */
+    delete: operations['revokeDocLink'];
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/v1/tenants/{tenantId}/docs/{documentId}/dataset-sync': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+        /** @description Opaque UUID of a document; a document the member cannot open — 404 «Документ недоступен», as a missing one (Q-W4.00-documents-13). */
+        documentId: components['parameters']['docsDocumentId'];
+      };
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /**
+     * Refresh the CRM columns of a sheet
+     * @description W7.00 (documents.md §2.2) (docCrmSync). Values by the rights of the member to the dataset (data.query); 503 dependency_unavailable.
+     */
+    post: operations['syncDocDataset'];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/v1/tenants/{tenantId}/doc-jobs': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+      };
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /**
+     * Queue a document job
+     * @description W7.00 (documents.md §2.2) (docJob). convert, ocr, merge, split, compress, pdfa; 422 «Сначала распознайте скан», «Это уже PDF»; 409 job_in_progress «Такое задание уже выполняется»; 409 quota_exceeded (the result counts into the storage). Emits docs.job.done.v1 or docs.job.failed.v1.
+     */
+    post: operations['createDocJob'];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/v1/tenants/{tenantId}/doc-jobs/{jobId}': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+        /** @description Opaque UUID of a document job (convert, OCR, merge, compress, PDF/A). */
+        jobId: components['parameters']['docJobId'];
+      };
+      cookie?: never;
+    };
+    /**
+     * Read a document job
+     * @description W7.00 (documents.md §2.2) (docJobPoll). Status, progress, error and the result.
+     */
+    get: operations['getDocJob'];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/v1/tenants/{tenantId}/doc-jobs/{jobId}/retry': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+        /** @description Opaque UUID of a document job (convert, OCR, merge, compress, PDF/A). */
+        jobId: components['parameters']['docJobId'];
+      };
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /**
+     * Retry a failed job
+     * @description W7.00 (documents.md §2.2) (docJobRetry). 422 file_password_protected asks for the password; dropLocked skips locked files of a merge.
+     */
+    post: operations['retryDocJob'];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/v1/tenants/{tenantId}/docs/{documentId}/ocr/words/{wordId}': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+        /** @description Opaque UUID of a document; a document the member cannot open — 404 «Документ недоступен», as a missing one (Q-W4.00-documents-13). */
+        documentId: components['parameters']['docsDocumentId'];
+        /** @description Opaque id of a doubtful word of the text layer. */
+        wordId: components['parameters']['ocrWordId'];
+      };
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /**
+     * Decide on a doubtful word
+     * @description W7.00 (documents.md §2.2) (docOcrWord). accept, keep or fix with a value; 409 document_locked.
+     */
+    post: operations['reviewOcrWord'];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/v1/tenants/{tenantId}/docs/{documentId}/route': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+        /** @description Opaque UUID of a document; a document the member cannot open — 404 «Документ недоступен», as a missing one (Q-W4.00-documents-13). */
+        documentId: components['parameters']['docsDocumentId'];
+      };
+      cookie?: never;
+    };
+    /**
+     * Read the route of a document
+     * @description W7.00 (documents.md §2.2). The current route (steps, decisions, due dates); 404 when the document has none.
+     */
+    get: operations['getDocRoute'];
+    put?: never;
+    /**
+     * Send a document to a route
+     * @description W7.00 (documents.md §2.2) (docRouteStart). Version «На согласование» is cut and closed for editing, the mirror task and the temporary accesses are created, notifications are sent. dryRun returns «Что произойдёт». Emits docs.route.started.v1.
+     */
+    post: operations['startDocRoute'];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/v1/tenants/{tenantId}/docs/{documentId}/route/decisions': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+        /** @description Opaque UUID of a document; a document the member cannot open — 404 «Документ недоступен», as a missing one (Q-W4.00-documents-13). */
+        documentId: components['parameters']['docsDocumentId'];
+      };
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /**
+     * Approve or return a document
+     * @description W7.00 (documents.md §2.2) (docRouteDecide). Only a participant of the current step (403 forbidden_action «Сейчас решение ждут: …»); «return» needs a comment (422 «Напишите, что доработать»); 409 invalid_transition. Emits docs.route.step.done.v1, docs.route.returned.v1, docs.approved.v1.
+     */
+    post: operations['decideDocRoute'];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/v1/tenants/{tenantId}/docs/{documentId}/route/sign/code': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+        /** @description Opaque UUID of a document; a document the member cannot open — 404 «Документ недоступен», as a missing one (Q-W4.00-documents-13). */
+        documentId: components['parameters']['docsDocumentId'];
+      };
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /**
+     * Request the confirmation of a signature
+     * @description W7.00 (documents.md §2.2) (docSignStart). The author does not sign the own document (409 separation_of_duties_conflict). pep_sms goes through the delivery port; without a provider — 503 dependency_unavailable (D-31 комплекта).
+     */
+    post: operations['requestDocSignCode'];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/v1/tenants/{tenantId}/docs/{documentId}/route/sign': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+        /** @description Opaque UUID of a document; a document the member cannot open — 404 «Документ недоступен», as a missing one (Q-W4.00-documents-13). */
+        documentId: components['parameters']['docsDocumentId'];
+      };
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /**
+     * Confirm the signature
+     * @description W7.00 (documents.md §2.2) (docSign). 422 sign_code_invalid; 429 rate_limited after 3 attempts. The status becomes approved or signed, the CRM fields freeze, the PDF/A copy with the approval sheet is queued. Emits docs.signed.v1.
+     */
+    post: operations['confirmDocSign'];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/v1/tenants/{tenantId}/docs/{documentId}/ack': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+        /** @description Opaque UUID of a document; a document the member cannot open — 404 «Документ недоступен», as a missing one (Q-W4.00-documents-13). */
+        documentId: components['parameters']['docsDocumentId'];
+      };
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /**
+     * Acknowledge a document
+     * @description W7.00 (documents.md §2.2) (docAck). Only the addressee (422 validation_failed «Ознакомление запрошено у других сотрудников»); version, time and device are stored. Emits docs.ack.done.v1.
+     */
+    post: operations['ackDocument'];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/v1/tenants/{tenantId}/docs/{documentId}/route/ack/close': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+        /** @description Opaque UUID of a document; a document the member cannot open — 404 «Документ недоступен», as a missing one (Q-W4.00-documents-13). */
+        documentId: components['parameters']['docsDocumentId'];
+      };
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /**
+     * Finish the acknowledgement early
+     * @description W7.00 (documents.md §2.2) (docAckClose). The author; those who have not acknowledged stay in the sheet as «не ознакомлен(а)» (Q-W4.00-documents-17). Emits docs.ack.closed.v1.
+     */
+    post: operations['closeDocAck'];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/v1/tenants/{tenantId}/docs/{documentId}/route/resume': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+        /** @description Opaque UUID of a document; a document the member cannot open — 404 «Документ недоступен», as a missing one (Q-W4.00-documents-13). */
+        documentId: components['parameters']['docsDocumentId'];
+      };
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /**
+     * Resume a returned route
+     * @description W7.00 (documents.md §2.2) (docRouteResume). 409 invalid_transition unless the route is returned.
+     */
+    post: operations['resumeDocRoute'];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/v1/tenants/{tenantId}/docs/{documentId}/route/cancel': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+        /** @description Opaque UUID of a document; a document the member cannot open — 404 «Документ недоступен», as a missing one (Q-W4.00-documents-13). */
+        documentId: components['parameters']['docsDocumentId'];
+      };
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /**
+     * Cancel a route
+     * @description W7.00 (documents.md §2.2) (docRouteCancel). Emits docs.route.cancelled.v1; the mirror task closes.
+     */
+    post: operations['cancelDocRoute'];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/v1/tenants/{tenantId}/docs/{documentId}/activity': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+        /** @description Opaque UUID of a document; a document the member cannot open — 404 «Документ недоступен», as a missing one (Q-W4.00-documents-13). */
+        documentId: components['parameters']['docsDocumentId'];
+      };
+      cookie?: never;
+    };
+    /**
+     * Read the audit of a document
+     * @description W7.00 (documents.md §2.2). Created, versions, shares, moves, route decisions, openings of external links.
+     */
+    get: operations['listDocActivity'];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/v1/tenants/{tenantId}/doc-folders': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+      };
+      cookie?: never;
+    };
+    /**
+     * List folders
+     * @description W7.00 (documents.md §2.2). Folders the member sees with my level and counts.
+     */
+    get: operations['listDocFolders'];
+    put?: never;
+    /**
+     * Create a folder
+     * @description W7.00 (documents.md §2.2) (Q-W4.00-documents-8, no-reference). Name, parent, firm, mode.
+     */
+    post: operations['createDocFolder'];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/v1/tenants/{tenantId}/doc-folders/{folderId}': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+        /** @description Opaque UUID of a folder of «Документы». */
+        folderId: components['parameters']['docFolderId'];
+      };
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    post?: never;
+    /**
+     * Delete an empty folder
+     * @description W7.00 (documents.md §2.2). Only an empty folder (409 invalid_transition otherwise); trash and terms are later (Q-W4.00-documents-8).
+     */
+    delete: operations['deleteDocFolder'];
+    options?: never;
+    head?: never;
+    /**
+     * Rename a folder or change its mode
+     * @description W7.00 (documents.md §2.2). Name, mode, icon, label; 412 revision_mismatch.
+     */
+    patch: operations['updateDocFolder'];
+    trace?: never;
+  };
+  '/api/v1/tenants/{tenantId}/doc-folders/{folderId}/shares': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+        /** @description Opaque UUID of a folder of «Документы». */
+        folderId: components['parameters']['docFolderId'];
+      };
+      cookie?: never;
+    };
+    get?: never;
+    /**
+     * Change the access of a folder
+     * @description W7.00 (documents.md §2.2). Same rules as setDocShares for a folder; the impact covers the documents of the folder that inherit.
+     */
+    put: operations['setDocFolderShares'];
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/v1/tenants/{tenantId}/doc-templates': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+      };
+      cookie?: never;
+    };
+    /**
+     * List document templates
+     * @description W7.00 (documents.md §2.2). Templates are data of the organization (seed — three templates of the prototype); management — docs.templates.manage later.
+     */
+    get: operations['listDocTemplates'];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/v1/tenants/{tenantId}/doc-route-templates': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+      };
+      cookie?: never;
+    };
+    /**
+     * List route templates of folders
+     * @description W7.00 (documents.md §2.2). «Приказ по фирме», «Договор с заказчиком», «Регламент для водителей»; saving needs docs.templates.manage.
+     */
+    get: operations['listDocRouteTemplates'];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/v1/public/doc-links/{token}/open': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        /** @description Secret token of an external link of a document (only its digest is stored); a revoked or expired one — 410 public_token_expired. */
+        token: components['parameters']['docLinkToken'];
+      };
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /**
+     * Open a document by an external link
+     * @description W7.00 (documents.md §2.2) (docs/24). The link is checked (410 public_token_expired for a revoked or expired one, 403 forbidden_action for a wrong PIN, 429 rate_limited); the opening is journaled (docs.link.opened.v1). The session is view only with a watermark. The tenant is found by the digest of the token in the control index public_doc_links (control 0011), then the link in docs.links of that tenant. No screen yet (no-reference, Q-W4.00-documents-4).
+     */
+    post: operations['openDocLink'];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/v1/internal/docs/callback': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /**
+     * Callback of the document server
+     * @description W7.00 (documents.md §2.2). Service-to-service call of the document server (decision 32 of the kit, ADR-0016): saves a new version from the url (statuses 2 and 6), records authors, closes the editing session. There is no session and no tenantId in the path: the Bearer JWT (HS256, secret DOCS_SERVER_JWT_SECRET) is verified before the body is read, a missing or bad signature is 401 session_expired. The key has the form t<tenantId>.d<documentId>.v<version> (DocSessionConfig.documentKey); only after the signature is verified the tenant is read from it, the tenant database is chosen by it (control tenants, tenant_routing) and the document and the version are looked up there, so a key cannot name a document of another tenant. Answers: 200 {error: 0} accepted (a repeat of an already saved key too); 404 not_found for an unknown tenant or document; 409 invalid_transition when the version in the key is not the current one of the document; 422 validation_failed for a key that does not match the format. Idempotency-Key — the key and the status. Emits docs.version.saved.v1.
+     */
+    post: operations['docServerCallback'];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/v1/tenants/{tenantId}/service/directions': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+      };
+      cookie?: never;
+    };
+    /**
+     * List directions of requests
+     * @description W7.00 (service.md §2.3). Directions the member sees (a direction is visible to the owner or by a grant with a service role over its project) with the team, canContacts and the request types. No directions — an empty list with notConfigured.
+     */
+    get: operations['listServiceDirections'];
+    put?: never;
+    /**
+     * Create a direction
+     * @description W7.00 (service.md §2.3) (1d, no screen yet — W7.34/W7.35). A service project of «Задачи» is created with the direction.
+     */
+    post: operations['createServiceDirection'];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/v1/tenants/{tenantId}/service/requests': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+      };
+      cookie?: never;
+    };
+    /**
+     * List requests of a queue
+     * @description W7.00 (service.md §2.3). The queue of the visible directions ordered by the main term, then by age; the phone is a mask; a request with about = me is not listed (PD-53 leak of the prototype is closed: every command is checked with the direction).
+     */
+    get: operations['listServiceRequests'];
+    put?: never;
+    /**
+     * Create a request by a call
+     * @description W7.00 (service.md §2.3) (svcCreate). Channel phone, status work, the assignee is the author, the priority by the type (complaint and claim — high). The record «Заведено по звонку», the client message and the timers are created. 422 validation_failed — «Выберите направление», «Выберите тип обращения», «Укажите имя клиента», «Телефон — не меньше 10 цифр», «Опишите, что случилось». Emits service.request.created.v1.
+     */
+    post: operations['createServiceRequest'];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/v1/tenants/{tenantId}/service/queues': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+      };
+      cookie?: never;
+    };
+    /**
+     * Read the counters of the queues
+     * @description W7.00 (service.md §2.3). Counters of the navigation and the badge of the menu («без первого ответа»).
+     */
+    get: operations['getServiceQueueCounts'];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/v1/tenants/{tenantId}/service/requests/{requestId}': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+        /** @description Opaque UUID of a client request; a request of a direction the member does not see and a complaint about the member — 404 (the complaint is not revealed, service.md §2.4). */
+        requestId: components['parameters']['serviceRequestId'];
+      };
+      cookie?: never;
+    };
+    /**
+     * Read a request
+     * @description W7.00 (service.md §2.3). The card with the feed, timers, link, tasks. A request of an invisible direction and a complaint about the member — 404 not_found «Обращение не найдено». The phone is a mask unless shown to the member.
+     */
+    get: operations['getServiceRequest'];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    /**
+     * Assign or change the priority
+     * @description W7.00 (service.md §2.3) (svcAssign, svcPriority). 422 service_assignee_out_of_scope «{имя} не видит направление «…» — назначить нельзя». Emits service.request.assigned.v1.
+     */
+    patch: operations['updateServiceRequest'];
+    trace?: never;
+  };
+  '/api/v1/tenants/{tenantId}/service/requests/{requestId}/messages': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+        /** @description Opaque UUID of a client request; a request of a direction the member does not see and a complaint about the member — 404 (the complaint is not revealed, service.md §2.4). */
+        requestId: components['parameters']['serviceRequestId'];
+      };
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /**
+     * Reply to the client or write a note
+     * @description W7.00 (service.md §2.3) (svcReply). The gateway admits a reader; the module checks «Отвечать» for kind public (403 forbidden_action «Нет права «Отвечать» в обращениях»), a note needs «Видеть» (Q-W4.00-service-5). A public reply stops the first-reply timer, new → work, the assignee is the author when empty; the delivery is queued. 409 invalid_transition for a closed request. Emits service.request.replied.v1 (first_response at the first).
+     */
+    post: operations['postServiceMessage'];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/v1/tenants/{tenantId}/service/requests/{requestId}/compensation': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+        /** @description Opaque UUID of a client request; a request of a direction the member does not see and a complaint about the member — 404 (the complaint is not revealed, service.md §2.4). */
+        requestId: components['parameters']['serviceRequestId'];
+      };
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /**
+     * Set the compensation
+     * @description W7.00 (service.md §2.3). The server checks the right (PD-60: the prototype did not). «Возврат денег» — a proposal of a cash operation (W5.31). Emits service.compensation.proposed.v1.
+     */
+    post: operations['setServiceCompensation'];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/v1/tenants/{tenantId}/service/requests/{requestId}/transitions': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+        /** @description Opaque UUID of a client request; a request of a direction the member does not see and a complaint about the member — 404 (the complaint is not revealed, service.md §2.4). */
+        requestId: components['parameters']['serviceRequestId'];
+      };
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /**
+     * Change the status of a request
+     * @description W7.00 (service.md §2.3) (svcTransition). work and wait need «Отвечать», resolved and closed — «Решать». The pause shifts the goals by the downtime in working minutes at the resume, resolved stops all timers, a return resets the outcome. 409 invalid_transition; 422 «Выберите итог решения». Emits service.request.resolved.v1, service.request.reopened.v1, service.request.closed.v1.
+     */
+    post: operations['transitionServiceRequest'];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/v1/tenants/{tenantId}/service/requests/{requestId}/move': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+        /** @description Opaque UUID of a client request; a request of a direction the member does not see and a complaint about the member — 404 (the complaint is not revealed, service.md §2.4). */
+        requestId: components['parameters']['serviceRequestId'];
+      };
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /**
+     * Move a request to another direction
+     * @description W7.00 (service.md §2.3) (svcMove). «Отвечать» in both directions (403 forbidden_action «Нет доступа к направлению «…»»). Emits service.request.moved.v1.
+     */
+    post: operations['moveServiceRequest'];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/v1/tenants/{tenantId}/service/requests/{requestId}/client-phone/reveal': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+        /** @description Opaque UUID of a client request; a request of a direction the member does not see and a complaint about the member — 404 (the complaint is not revealed, service.md §2.4). */
+        requestId: components['parameters']['serviceRequestId'];
+      };
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /**
+     * Show the phone of the client
+     * @description W7.00 (service.md §2.3) (svcShowPhone). The business owner and the lead hold the right; the author of a call request sees the number they typed. Every reveal is audited and written to the feed.
+     */
+    post: operations['revealServiceClientPhone'];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/v1/tenants/{tenantId}/service/requests/{requestId}/conclusion': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+        /** @description Opaque UUID of a client request; a request of a direction the member does not see and a complaint about the member — 404 (the complaint is not revealed, service.md §2.4). */
+        requestId: components['parameters']['serviceRequestId'];
+      };
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /**
+     * Share the conclusion with the employee
+     * @description W7.00 (service.md §2.3) (svcShare). Only for a complaint about an employee and after the resolution (422 «Поделиться выводом можно после решения»); a notification without the client contacts. Emits service.conclusion.shared.v1.
+     */
+    post: operations['shareServiceConclusion'];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/v1/tenants/{tenantId}/service/requests/{requestId}/tasks': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+        /** @description Opaque UUID of a client request; a request of a direction the member does not see and a complaint about the member — 404 (the complaint is not revealed, service.md §2.4). */
+        requestId: components['parameters']['serviceRequestId'];
+      };
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /**
+     * Create a task from a request
+     * @description W7.00 (service.md §2.3) (svcAddTask). Needs «Отвечать» and tasks.create in the project (TaskPort); the link is visible in both cards.
+     */
+    post: operations['createServiceRequestTask'];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/v1/tenants/{tenantId}/service/ratings': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+      };
+      cookie?: never;
+    };
+    /**
+     * List low ratings
+     * @description W7.00 (service.md §2.3). Low ratings of the visible directions.
+     */
+    get: operations['listServiceRatings'];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/v1/tenants/{tenantId}/service/ratings/{ratingId}/decision': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+        /** @description Opaque UUID of a low rating. */
+        ratingId: components['parameters']['serviceRatingId'];
+      };
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /**
+     * Mark a rating seen or open a complaint
+     * @description W7.00 (service.md §2.3) (svcRating). 404 «Оценка не найдена». The phone of the complaint is taken from the survey, never invented (the prototype’s +7 900 000-00-00 is not carried over).
+     */
+    post: operations['decideServiceRating'];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/v1/tenants/{tenantId}/service/directions/{directionId}/templates': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+        /** @description Opaque UUID of a direction (a service project of «Задачи»); a direction the member does not see — 404. */
+        directionId: components['parameters']['directionId'];
+      };
+      cookie?: never;
+    };
+    /**
+     * List reply templates of a direction
+     * @description W7.00 (service.md §2.3). Templates of the direction (seed — four common ones); later — from the knowledge base.
+     */
+    get: operations['listServiceReplyTemplates'];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/v1/tenants/{tenantId}/service/directions/{directionId}': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+        /** @description Opaque UUID of a direction (a service project of «Задачи»); a direction the member does not see — 404. */
+        directionId: components['parameters']['directionId'];
+      };
+      cookie?: never;
+    };
+    /**
+     * Read a direction with its draft
+     * @description W7.00 (service.md §2.3). The published version and the draft.
+     */
+    get: operations['getServiceDirection'];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/v1/tenants/{tenantId}/service/directions/{directionId}/draft': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+        /** @description Opaque UUID of a direction (a service project of «Задачи»); a direction the member does not see — 404. */
+        directionId: components['parameters']['directionId'];
+      };
+      cookie?: never;
+    };
+    get?: never;
+    /**
+     * Save the draft of a direction
+     * @description W7.00 (service.md §2.3). Types, goals, calendar, templates; 412 revision_mismatch.
+     */
+    put: operations['updateServiceDirectionDraft'];
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/v1/tenants/{tenantId}/service/directions/{directionId}/publish': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+        /** @description Opaque UUID of a direction (a service project of «Задачи»); a direction the member does not see — 404. */
+        directionId: components['parameters']['directionId'];
+      };
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /**
+     * Publish the draft of a direction
+     * @description W7.00 (service.md §2.3). New version of the direction; open requests finish by their own version.
+     */
+    post: operations['publishServiceDirection'];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/v1/tenants/{tenantId}/service/report': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+      };
+      cookie?: never;
+    };
+    /**
+     * Read the report of the directions
+     * @description W7.00 (service.md §2.3) (1e, no screen yet — W7.36). The block «staff» needs service.reports.staff; fewer than 20 answers are marked.
+     */
+    get: operations['getServiceReport'];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/v1/public/service/{slug}': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        /** @description Slug of the public page of a direction. */
+        slug: components['parameters']['servicePortalSlug'];
+      };
+      cookie?: never;
+    };
+    /**
+     * Read the public page of a direction
+     * @description W7.00 (service.md §2.3) (1a). Public page: types, working hours, no client data; rate limits of a guest (FORM-07). The tenant is found by the slug in the global control registry public_service_slugs (control 0011); the direction is service.directions.public_slug of that tenant; an unknown slug is 404.
+     */
+    get: operations['getPublicServicePage'];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/v1/public/service/{slug}/requests': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        /** @description Slug of the public page of a direction. */
+        slug: components['parameters']['servicePortalSlug'];
+      };
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /**
+     * Send a request from the client page
+     * @description W7.00 (service.md §2.3). Creates a request of the channel cabinet or widget; the personal link is returned once. 422 validation_failed (consent, text); the request is the task of the service project. The tenant is found by the slug in the control registry public_service_slugs (control 0011). Emits service.request.created.v1.
+     */
+    post: operations['submitPublicServiceRequest'];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/v1/public/service/requests/{token}': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        /** @description Personal link token of a request (only its digest is stored); an expired one — 410 public_token_expired. */
+        token: components['parameters']['servicePortalToken'];
+      };
+      cookie?: never;
+    };
+    /**
+     * Read a request by the personal link
+     * @description W7.00 (service.md §2.3) (1a). The client sees only public messages and the client status labels; 410 public_token_expired for an expired link. The tenant is found by the digest of the token in the control index public_service_tokens (control 0011), then the token in service.portal_tokens of that tenant.
+     */
+    get: operations['getPublicServiceRequest'];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/v1/public/service/requests/{token}/messages': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        /** @description Personal link token of a request (only its digest is stored); an expired one — 410 public_token_expired. */
+        token: components['parameters']['servicePortalToken'];
+      };
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /**
+     * Write to the request as the client
+     * @description W7.00 (service.md §2.3). A message of the client; a reply of the client returns the request from «Ждёт клиента» to work (Q-W4.00-service-3). The tenant is found by the token digest in the control index public_service_tokens (control 0011).
+     */
+    post: operations['postPublicServiceMessage'];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/v1/public/service/requests/{token}/csat': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        /** @description Personal link token of a request (only its digest is stored); an expired one — 410 public_token_expired. */
+        token: components['parameters']['servicePortalToken'];
+      };
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /**
+     * Rate the resolution
+     * @description W7.00 (service.md §2.3). Only for a resolved request (409 invalid_transition otherwise); once. Emits service.survey.answered.v1. The tenant is found by the token digest in the control index public_service_tokens (control 0011).
+     */
+    post: operations['ratePublicServiceResolution'];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/v1/public/service/requests/{token}/reopen': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        /** @description Personal link token of a request (only its digest is stored); an expired one — 410 public_token_expired. */
+        token: components['parameters']['servicePortalToken'];
+      };
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /**
+     * Reopen a request: the question is not solved
+     * @description W7.00 (service.md §2.3). Within 5 days after the resolution (409 invalid_transition later); the request returns to work. Emits service.request.reopened.v1. The tenant is found by the token digest in the control index public_service_tokens (control 0011).
+     */
+    post: operations['reopenPublicServiceRequest'];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/v1/public/service/requests/{token}/opt-out': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        /** @description Personal link token of a request (only its digest is stored); an expired one — 410 public_token_expired. */
+        token: components['parameters']['servicePortalToken'];
+      };
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /**
+     * Stop surveys («СТОП»)
+     * @description W7.00 (service.md §2.3). The client no longer gets surveys (FB-01, Q-W4.00-service-15). The tenant is found by the token digest in the control index public_service_tokens (control 0011).
+     */
+    post: operations['optOutPublicSurveys'];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/v1/public/service/requests/{token}/uploads': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        /** @description Personal link token of a request (only its digest is stored); an expired one — 410 public_token_expired. */
+        token: components['parameters']['servicePortalToken'];
+      };
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /**
+     * Issue an upload ticket for a client file
+     * @description W7.00 (service.md §2.3). A quarantined upload (FILE-02): the file is shown to the staff only after the check. The tenant is found by the token digest in the control index public_service_tokens (control 0011).
+     */
+    post: operations['initiatePublicServiceUpload'];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/v1/public/service/requests/{token}/uploads/{uploadId}/complete': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        /** @description Personal link token of a request (only its digest is stored); an expired one — 410 public_token_expired. */
+        token: components['parameters']['servicePortalToken'];
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        uploadId: components['parameters']['uploadId'];
+      };
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /**
+     * Complete the upload of a client file
+     * @description W7.00 (service.md §2.3). The file goes to the scan; 202 does not mean safe. The tenant is found by the token digest in the control index public_service_tokens (control 0011).
+     */
+    post: operations['completePublicServiceUpload'];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -8508,6 +10946,809 @@ export interface components {
     ChangeOrderReject: {
       reason: components['schemas']['RepairRejectReason'];
     };
+    /** @description Chat with the effective policy, my rights and chain (getChat). ETag — revision. */
+    Chat: {
+      id: components['schemas']['Id'];
+      /** @enum {string} */
+      kind: 'direct' | 'group' | 'area' | 'record' | 'announce';
+      title: string;
+      orgUnitId?: components['schemas']['Id'] | null;
+      /** @enum {string} */
+      status: 'active' | 'archived';
+      /** @enum {string} */
+      sensitivity: 'normal' | 'finance' | 'pdn';
+      record?: components['schemas']['ChatRecordRef'] | null;
+      peer?: components['schemas']['ChatPeer'] | null;
+      topics: string[];
+      pinned?: components['schemas']['ChatMessage'] | null;
+      /** @description Effective policy P: the kind policy with the overrides of the chat. */
+      policy: components['schemas']['ChatPolicy'];
+      /** @description Overrides of the chat inside the bounds (only onFull in the first version, Q-W4.00-chats-2). */
+      overrides: {
+        /** @enum {string} */
+        onFull?: 'block' | 'ring' | 'compress' | 'archive';
+      };
+      /**
+       * @description What a new member sees: all history, from joining, or nothing.
+       * @enum {string}
+       */
+      history: 'all' | 'since_join' | 'none';
+      hold?: components['schemas']['ChatHoldRef'] | null;
+      my: components['schemas']['ChatMy'];
+      /** Format: int64 */
+      memberCount: number;
+      /** Format: int64 */
+      usedBytes: number;
+      /** Format: int64 */
+      revision: number;
+    };
+    /** @description Why the member is (not) in the chat — «Проверить сотрудника» (1c). */
+    ChatAccessExplanation: {
+      member: components['schemas']['ChatMemberRef'];
+      ok: boolean;
+      /** @enum {string|null} */
+      role: 'owner' | 'moderator' | 'member' | 'reader' | null;
+      /** @enum {string} */
+      reason?:
+        'none' | 'blocked' | 'module_off' | 'not_member' | 'no_module' | 'function' | 'invited';
+      why?: string;
+      chain: components['schemas']['ChatChainStep'][];
+    };
+    /** @description Attachment of a message (files, purpose chat_attachment). */
+    ChatAttachment: {
+      id: components['schemas']['Id'];
+      fileId?: components['schemas']['Id'] | null;
+      fileName: string;
+      /** Format: int64 */
+      sizeBytes: number;
+      /** @enum {string} */
+      kind: 'photo' | 'video' | 'voice' | 'doc';
+      viewOnce: boolean;
+      openedByMe?: boolean;
+      /** @description The view-once file was opened and removed (24 h after the first opening — server job, chatTick of the prototype). */
+      gone: boolean;
+      savedTo?: components['schemas']['ObjectRef'] | null;
+    };
+    /** @description Attachments by kind and age. */
+    ChatBucket: {
+      id: string;
+      /** @enum {string} */
+      kind: 'photo' | 'video' | 'voice' | 'doc';
+      label: string;
+      /** Format: int64 */
+      ageDays: number;
+      /** Format: int64 */
+      files: number;
+      /** Format: int64 */
+      bytes: number;
+      hold: boolean;
+      compressed: boolean;
+    };
+    /** @description What the member may do in the chat (chatRights.can). Computed by the server; the client never recomputes it. */
+    ChatCan: {
+      write: boolean;
+      files: boolean;
+      polls: boolean;
+      moderate: boolean;
+      pin: boolean;
+      announce: boolean;
+      receipts: boolean;
+      pdn: boolean;
+      ephemeral: boolean;
+      viewOnce: boolean;
+      members: boolean;
+      settings: boolean;
+      saveToRecord: boolean;
+      task: boolean;
+    };
+    /** @description A step of the chain «roster → module → function → invitation» (chatAccess.chain). */
+    ChatChainStep: {
+      title: string;
+      detail: string;
+      ok: boolean;
+    };
+    /** @description Cleanup of attachments (chatCleanup): an empty filter — 422; held files are never removed (409 chat_on_hold when the whole chat is held). */
+    ChatCleanupCreate: {
+      kinds?: ('photo' | 'video' | 'voice' | 'doc')[];
+      /** Format: int64 */
+      olderThanDays?: number;
+      excludeSaved?: boolean;
+      dryRun?: boolean;
+    };
+    /** @description Cleanup result; chat.cleanup.done.v1. */
+    ChatCleanupResult: {
+      applied: boolean;
+      /** Format: int64 */
+      files: number;
+      /** Format: int64 */
+      bytes: number;
+      /** Format: int64 */
+      afterBytes: number;
+      kept: {
+        /** Format: int64 */
+        saved: number;
+        /** Format: int64 */
+        held: number;
+      };
+    };
+    /** @description Creation of a chat (chatCreate). The kind announce and the label finance — business owner only. */
+    ChatCreate: {
+      /**
+       * @description group, area or announce; record chats are created by the server from the record (Q-W4.00-chats-19); direct — createDirectChat.
+       * @enum {string}
+       */
+      kind: 'group' | 'area' | 'announce';
+      title: string;
+      orgUnitId?: components['schemas']['Id'] | null;
+      /**
+       * @description Label «Финансы» (finance) — business owner only (Q-W4.00-chats-21); the label «ПДн» is not offered (Q-W4.00-chats-14).
+       * @enum {string}
+       */
+      label?: 'normal' | 'finance';
+      sources: components['schemas']['ChatSource'][];
+      /** @enum {string} */
+      history?: 'all' | 'since_join' | 'none';
+      /** @description true — nothing is created, the answer lists who joins, who waits for an invitation and who is skipped. */
+      dryRun?: boolean;
+    };
+    /** @description Result of createChat: 201 with the chat, 200 with applied false for dryRun. Emits chat.chat.created.v1. */
+    ChatCreateResult: {
+      /** @description false for dryRun. */
+      applied: boolean;
+      chat?: components['schemas']['Chat'] | null;
+      impact: components['schemas']['ChatMembershipImpact'];
+    };
+    /** @description Only a label remains: who, when, why. The content stays in the journal for 30 days (chat.audit.read) — it never «resurrects» in the feed (PD-60, chats.md §5.2). */
+    ChatDeleted: {
+      byDisplayName: string;
+      at: components['schemas']['Instant'];
+      moderator: boolean;
+      reason?: string;
+    };
+    /** @description Direct chat with an employee of the area (chat.direct); the pair is one chat — a second call returns the existing one. */
+    ChatDirectCreate: {
+      memberId: components['schemas']['Id'];
+    };
+    /** @description Reference to a document or a page of the knowledge base in a message; a reference never grants access (ObjectRef rule). */
+    ChatDocRef: {
+      kind: string;
+      refId: components['schemas']['Id'];
+      title: string;
+      sub?: string;
+    };
+    /** @description Reference to attach: the card is read from the module of the target by the rights of the reader. */
+    ChatDocRefInput: {
+      kind: string;
+      refId: components['schemas']['Id'];
+    };
+    /** @description Export job; the file appears when done. */
+    ChatExport: {
+      id: components['schemas']['Id'];
+      /** @enum {string} */
+      status: 'queued' | 'running' | 'done' | 'failed';
+      createdAt: components['schemas']['Instant'];
+      file?: components['schemas']['File'] | null;
+      error?: string;
+    };
+    /** @description Export of the chat history as a job (like datasets export). */
+    ChatExportCreate: {
+      /** @enum {string} */
+      format: 'csv' | 'json';
+      from?: components['schemas']['Instant'];
+      to?: components['schemas']['Instant'];
+    };
+    /** @description Counters of the folders «Все · Личные · Рабочие · Записи · Объявления» (Q-W4.00-chats-15). */
+    ChatFolderCounts: {
+      /** Format: int64 */
+      all: number;
+      /** Format: int64 */
+      direct: number;
+      /** Format: int64 */
+      work: number;
+      /** Format: int64 */
+      record: number;
+      /** Format: int64 */
+      announce: number;
+    };
+    /** @description Hold (legal hold, docs/25:243): protects messages from deletion and expiry; personal chats are readable only through a hold with a reason and a journal (CHAT-02). */
+    ChatHold: {
+      id: components['schemas']['Id'];
+      /**
+       * @description chat, member (messages of members) or period.
+       * @enum {string}
+       */
+      scope: 'chat' | 'member' | 'period';
+      chatId?: components['schemas']['Id'] | null;
+      memberIds?: components['schemas']['Id'][];
+      from?: components['schemas']['Instant'] | null;
+      to?: components['schemas']['Instant'] | null;
+      reason: string;
+      period: string;
+      /** Format: date */
+      until: string | null;
+      createdByDisplayName: string;
+      createdAt: components['schemas']['Instant'];
+      /** Format: int64 */
+      files: number;
+      /** @enum {string} */
+      status: 'active' | 'released';
+    };
+    /** @description Creation of a hold (chat.hold.manage, owner only). */
+    ChatHoldCreate: {
+      /** @enum {string} */
+      scope: 'chat' | 'member' | 'period';
+      chatId?: components['schemas']['Id'];
+      memberIds?: components['schemas']['Id'][];
+      from?: components['schemas']['Instant'];
+      to?: components['schemas']['Instant'];
+      reason: string;
+      /** Format: date */
+      until?: string;
+    };
+    /** @description Holds of the organization. */
+    ChatHoldList: {
+      items: components['schemas']['ChatHold'][];
+    };
+    /** @description Hold that protects the chat from deletion and expiry. */
+    ChatHoldRef: {
+      id: components['schemas']['Id'];
+      reason: string;
+      period: string;
+      /** Format: date */
+      until: string | null;
+      createdByDisplayName: string;
+    };
+    /** @description Important message: acknowledgements N of M; «Требует решения» card chat.ack_pending while waiting (Q-W4.00-chats-11: due is fixed «+3 days»). */
+    ChatImportant: {
+      /** Format: date */
+      dueDate: string;
+      /** Format: int64 */
+      ackCount: number;
+      /** Format: int64 */
+      totalCount: number;
+      mine?: {
+        required: boolean;
+        done: boolean;
+      };
+    };
+    /** @description Journal of the chat (settings, cleanup, deletion, reveal of the PDn). */
+    ChatJournal: {
+      items: components['schemas']['ChatJournalEntry'][];
+      nextCursor: string | null;
+    };
+    /** @description Journal entry of the chat. */
+    ChatJournalEntry: {
+      id: components['schemas']['Id'];
+      at: components['schemas']['Instant'];
+      actorDisplayName: string;
+      text: string;
+      /** @description Content of a deleted message — only with chat.audit.read. */
+      deletedContent?: string;
+    };
+    /** @description Policy of one kind of chats with its bounds; revision is the ETag of updateChatPolicy. */
+    ChatKindPolicy: {
+      /** @enum {string} */
+      kind: 'direct' | 'group' | 'area' | 'record' | 'announce';
+      policy: components['schemas']['ChatPolicy'];
+      bounds: components['schemas']['ChatPolicyBounds'];
+      /** Format: int64 */
+      revision: number;
+    };
+    /** @description Policies of the five kinds (direct, group, area, record, announce). */
+    ChatKindPolicyList: {
+      items: components['schemas']['ChatKindPolicy'][];
+    };
+    /** @description Chats visible to the member, newest activity first. */
+    ChatList: {
+      items: components['schemas']['ChatSummary'][];
+      nextCursor: string | null;
+      counts: components['schemas']['ChatFolderCounts'];
+    };
+    /** @description Computed participant of the chat: in, pending (invited), out; via — where the access comes from. */
+    ChatMember: {
+      member: components['schemas']['ChatMemberRef'];
+      /** @enum {string} */
+      state: 'in' | 'pending' | 'out';
+      /** @enum {string|null} */
+      role: 'owner' | 'moderator' | 'member' | 'reader' | null;
+      via?: string;
+      why?: string;
+    };
+    /** @description Participants of the chat (chat.members.manage; Q-W7.00-1). */
+    ChatMemberList: {
+      items: components['schemas']['ChatMember'][];
+      counts: {
+        /** Format: int64 */
+        in: number;
+        /** Format: int64 */
+        pending: number;
+        /** Format: int64 */
+        out: number;
+      };
+    };
+    /** @description Member of the organization shown by name. */
+    ChatMemberRef: {
+      memberId: components['schemas']['Id'];
+      displayName: string;
+      title?: string;
+    };
+    /** @description Who gets, keeps or loses the chat (chatCreate dryRun, chatSources). */
+    ChatMembershipImpact: {
+      joined: components['schemas']['ChatMemberRef'][];
+      /** @description Invited, the invitation is waiting for their login. */
+      pending: components['schemas']['ChatMemberRef'][];
+      skipped: components['schemas']['ChatSkipped'][];
+      /** @description Members who lose the chat (replaceChatSources). */
+      lose: components['schemas']['ChatMemberRef'][];
+    };
+    /** @description Message of a chat. Server rules: the PDn mask is applied to text, the deleted content is not returned, receipts follow the mode of the policy. */
+    ChatMessage: {
+      id: components['schemas']['Id'];
+      /** Format: int64 */
+      seq: number;
+      createdAt: components['schemas']['Instant'];
+      authorMemberId?: components['schemas']['Id'] | null;
+      authorDisplayName: string;
+      /** @enum {string} */
+      kind: 'text' | 'poll' | 'system' | 'document';
+      /** @description After the PDn mask when masked is true; empty for a deleted message. */
+      text: string;
+      masked: boolean;
+      topic?: string | null;
+      attachments: components['schemas']['ChatAttachment'][];
+      document?: components['schemas']['ChatDocRef'] | null;
+      important?: components['schemas']['ChatImportant'] | null;
+      ephemeral?: {
+        expiresAt: components['schemas']['Instant'];
+        /** Format: int64 */
+        ttlHours: number;
+      } | null;
+      spoiler?: string | null;
+      poll?: components['schemas']['ChatPoll'] | null;
+      system?: components['schemas']['ChatSystemCard'] | null;
+      deleted?: components['schemas']['ChatDeleted'] | null;
+      editedAt?: components['schemas']['Instant'] | null;
+      /** @description «Видно только вам». */
+      visibleOnlyToMe?: boolean;
+      reads?: {
+        /** Format: int64 */
+        readCount: number;
+        /** Format: int64 */
+        totalCount: number;
+      } | null;
+      tasks: components['schemas']['ChatTaskRef'][];
+    };
+    /** @description New message (chatSend): text up to 4000; important and @all — chat.announce and a role not lower than moderator; files — chat.files.send; poll — chat.polls.create; temporary — chat.ephemeral.send. */
+    ChatMessageCreate: {
+      text?: string;
+      topic?: string;
+      fileIds?: components['schemas']['Id'][];
+      document?: components['schemas']['ChatDocRefInput'];
+      important?: {
+        /**
+         * Format: date
+         * @description Fixed «+3 days» (Q-W4.00-chats-11); the server ignores another value.
+         */
+        dueDate?: string;
+      };
+      ephemeral?: {
+        /** Format: int64 */
+        ttlHours: number;
+      };
+      viewOnce?: boolean;
+      spoiler?: string;
+      poll?: components['schemas']['ChatPollCreate'];
+      /** @description Members mentioned by @; a member outside the chat is not notified — the server offers to add them. */
+      mentions?: components['schemas']['Id'][];
+    };
+    /** @description New text of an own message inside the edit window P.edit; the previous text goes to the versions. */
+    ChatMessageEdit: {
+      text: string;
+    };
+    /** @description Messages ordered by seq; beforeSeq pages back, afterSeq reads new ones after the hint chat.changed (ADR-0015, Q-W4.00-chats-7). */
+    ChatMessageList: {
+      items: components['schemas']['ChatMessage'][];
+      hasMore: boolean;
+      /** Format: int64 */
+      lastSeq?: number;
+    };
+    /** @description Last message of a chat in the list. */
+    ChatMessagePreview: {
+      /** Format: int64 */
+      seq: number;
+      at: components['schemas']['Instant'];
+      authorDisplayName: string;
+      /** @description Text after the PDn mask; a deleted message — a label. */
+      text: string;
+      /** @enum {string} */
+      kind: 'text' | 'poll' | 'system' | 'file' | 'document';
+    };
+    /** @description Previous version of the text (author and moderator only). */
+    ChatMessageVersion: {
+      text: string;
+      editedAt: components['schemas']['Instant'];
+    };
+    /** @description History of edits. */
+    ChatMessageVersionList: {
+      items: components['schemas']['ChatMessageVersion'][];
+    };
+    /** @description The member’s view of the chat; can and chain only in getChat. */
+    ChatMy: {
+      /** @enum {string|null} */
+      role: 'owner' | 'moderator' | 'member' | 'reader' | null;
+      /** Format: int64 */
+      unread: number;
+      /**
+       * Format: int64
+       * @description Important messages waiting for the member’s «Ознакомлен».
+       */
+      ackWaitCount: number;
+      /** Format: int64 */
+      lastReadSeq: number;
+      can?: components['schemas']['ChatCan'];
+      chain?: components['schemas']['ChatChainStep'][];
+    };
+    /** @description Change of a chat inside its policy bounds (chatSetFull and rename); revision — If-Match. */
+    ChatPatch: {
+      title?: string;
+      /** @enum {string} */
+      label?: 'normal' | 'finance';
+      /** @enum {string} */
+      history?: 'all' | 'since_join' | 'none';
+      overrides?: {
+        /** @enum {string} */
+        onFull?: 'block' | 'ring' | 'compress' | 'archive';
+      };
+    };
+    /** @description Text without the mask for this member only; every reveal is written to the journal (chat.pdn.revealed.v1). */
+    ChatPdnReveal: {
+      messageId: components['schemas']['Id'];
+      text: string;
+      revealedAt: components['schemas']['Instant'];
+    };
+    /** @description The other side of a direct chat (blocked or dismissed — «больше не работает», read only for the second member, Q-W4.00-chats-23). */
+    ChatPeer: {
+      memberId: components['schemas']['Id'];
+      displayName: string;
+      /** @enum {string} */
+      status?: 'active' | 'blocked' | 'dismissed';
+    };
+    /** @description Message to pin. */
+    ChatPin: {
+      messageId: components['schemas']['Id'];
+    };
+    /** @description Pinned message of the chat. */
+    ChatPinState: {
+      pinnedMessageId: components['schemas']['Id'] | null;
+    };
+    /** @description Effective policy of a chat kind or chat (docs/25, chats.js DEFAULT_POLICY, BOUNDS). The organization sets the bounds, the kind sets the values, a chat changes them inside the bounds. */
+    ChatPolicy: {
+      /**
+       * Format: int64
+       * @description Text retention, years (1–5).
+       */
+      textYears: number;
+      /**
+       * Format: int64
+       * @description Attachment retention, days (30–1825).
+       */
+      filesDays: number;
+      /**
+       * Format: int64
+       * @description Voice retention, days (30–1095).
+       */
+      voiceDays: number;
+      /**
+       * @description Read receipts: off, ticks (N of M, no names), who (who and when). CHAT-02, Q-W4.00-chats-3: ticks by default, off for announce.
+       * @enum {string}
+       */
+      receipts: 'off' | 'ticks' | 'who';
+      /**
+       * Format: int64
+       * @description How long «who and when» is kept, days (7–90).
+       */
+      receiptsDays: number;
+      /**
+       * Format: int64
+       * @description How long the content of a deleted message stays in the journal: exactly 30 days (CHAT-10, Q-W4.00-chats-17).
+       */
+      deletedDays: number;
+      /**
+       * @description Edit and delete window of an own message (Q-W4.00-chats-22).
+       * @enum {string}
+       */
+      edit: '15m' | '48h' | 'none';
+      /**
+       * Format: int64
+       * @description Largest file, MB (10–2000).
+       */
+      maxFileMb: number;
+      /**
+       * Format: int64
+       * @description Chat storage, MB; null — no limit of its own (CHAT-07: 5 GB inside the organization storage).
+       */
+      quotaMb: number | null;
+      /**
+       * @description Temporary and view-once messages; temporary ones are forbidden in work chats (CHAT-04, Q-W4.00-chats-4).
+       * @enum {string}
+       */
+      temp: 'off' | 'allowed' | 'viewonce';
+      /**
+       * @description Forwarding policy (stored; no forwarding in the UI of the first version, Q-W4.00-chats-6).
+       * @enum {string}
+       */
+      forward: 'free' | 'internal' | 'off';
+      /** @description Mask personal data in the feed (Q-W4.00-chats-14: always true). */
+      pdnMask: boolean;
+      /**
+       * @description What happens at 100 % of the chat storage (Q-W4.00-chats-16): block, ring, compress; archive is v2 and rejected with 422.
+       * @enum {string}
+       */
+      onFull: 'block' | 'ring' | 'compress' | 'archive';
+      /**
+       * Format: int64
+       * @description Record chats: days to keep after the record is closed.
+       */
+      afterCloseDays?: number;
+    };
+    /** @description Bounds of the organization (chats.js BOUNDS) a kind policy and a chat override stay inside. */
+    ChatPolicyBounds: {
+      textYears: components['schemas']['ChatRange'];
+      filesDays: components['schemas']['ChatRange'];
+      voiceDays: components['schemas']['ChatRange'];
+      receiptsDays: components['schemas']['ChatRange'];
+      deletedDays: components['schemas']['ChatRange'];
+      maxFileMb: components['schemas']['ChatRange'];
+    };
+    /** @description Partial policy; a value outside the bounds of the organization — 422 validation_failed. Only the fields present change. */
+    ChatPolicyPatch: {
+      /** Format: int64 */
+      textYears?: number;
+      /** Format: int64 */
+      filesDays?: number;
+      /** Format: int64 */
+      voiceDays?: number;
+      /** @enum {string} */
+      receipts?: 'off' | 'ticks' | 'who';
+      /** Format: int64 */
+      receiptsDays?: number;
+      /** Format: int64 */
+      deletedDays?: number;
+      /** @enum {string} */
+      edit?: '15m' | '48h' | 'none';
+      /** Format: int64 */
+      maxFileMb?: number;
+      /** Format: int64 */
+      quotaMb?: number | null;
+      /** @enum {string} */
+      temp?: 'off' | 'allowed' | 'viewonce';
+      /** @enum {string} */
+      forward?: 'free' | 'internal' | 'off';
+      pdnMask?: boolean;
+      /** @enum {string} */
+      onFull?: 'block' | 'ring' | 'compress' | 'archive';
+      /** Format: int64 */
+      afterCloseDays?: number;
+    };
+    /** @description Change of the policy of a kind (chat.policy.manage, owner only). */
+    ChatPolicyUpdate: {
+      patch: components['schemas']['ChatPolicyPatch'];
+      /** @description true — nothing is saved, the answer lists the service messages that would appear. */
+      dryRun?: boolean;
+    };
+    /** @description Result of updateChatPolicy. */
+    ChatPolicyUpdateResult: {
+      applied: boolean;
+      policy: components['schemas']['ChatKindPolicy'];
+      /** @description Texts of the service messages for the chats of the kind (chatPolicySet notes). */
+      notes: string[];
+    };
+    /** @description Poll in a message. Anonymous: only the fact of participation is stored (voter_hash). */
+    ChatPoll: {
+      id: components['schemas']['Id'];
+      question: string;
+      options: components['schemas']['ChatPollOption'][];
+      anonymous: boolean;
+      multiple: boolean;
+      closesAt: components['schemas']['Instant'];
+      closed: boolean;
+      /** Format: int64 */
+      totalVoters: number;
+      myVotes: components['schemas']['Id'][];
+    };
+    /** @description Poll of postChatMessage (chat.polls.create). */
+    ChatPollCreate: {
+      question: string;
+      options: string[];
+      anonymous?: boolean;
+      multiple?: boolean;
+      /**
+       * Format: int64
+       * @description 1–168; 24 by default.
+       */
+      closesInHours?: number;
+    };
+    /** @description Option of a poll. */
+    ChatPollOption: {
+      id: components['schemas']['Id'];
+      text: string;
+      /**
+       * Format: int64
+       * @description Absent while results are hidden.
+       */
+      votes?: number;
+      mine?: boolean;
+      /** @description Names; absent for anonymous polls (Q-W4.00-chats-12). */
+      voters?: string[];
+    };
+    /** @description Members who have not voted and were reminded. */
+    ChatPollReminder: {
+      /** Format: int64 */
+      notified: number;
+    };
+    /** @description Closed range of a policy value. */
+    ChatRange: {
+      /** Format: int64 */
+      min: number;
+      /** Format: int64 */
+      max: number;
+    };
+    /** @description Read up to this seq. */
+    ChatReadMark: {
+      /** Format: int64 */
+      uptoSeq: number;
+    };
+    /** @description Read state after markChatRead. */
+    ChatReadState: {
+      /** Format: int64 */
+      lastReadSeq: number;
+      /** Format: int64 */
+      unread: number;
+    };
+    /** @description Who has read and when (mode who). */
+    ChatReceipt: {
+      member: components['schemas']['ChatMemberRef'];
+      readAt: components['schemas']['Instant'] | null;
+    };
+    /** @description Receipts of a message. */
+    ChatReceipts: {
+      /** @enum {string} */
+      mode: 'off' | 'ticks' | 'who';
+      /** Format: int64 */
+      readCount: number;
+      /** Format: int64 */
+      totalCount: number;
+      /** @description Only in mode who; the author and moderators only (Q-W4.00-chats-8). */
+      items?: components['schemas']['ChatReceipt'][];
+    };
+    /** @description Record the chat belongs to (trip, repair object — Q-W4.00-chats-19); the right to the record is checked on top of the chat role (docs/25:170). */
+    ChatRecordRef: {
+      object: components['schemas']['ObjectRef'];
+      label: string;
+      nav?: string;
+    };
+    /** @description Save attachments of a message to a record. */
+    ChatSaveToRecord: {
+      /** @description Defaults to the record of the chat; another record must be visible to the member. */
+      record?: components['schemas']['ObjectRef'];
+    };
+    /** @description Owner of the files changes from the message to the record (files.objects.owner); bytes are charged to the chat storage until saved (docs/25). */
+    ChatSaveToRecordResult: {
+      saved: components['schemas']['ChatAttachment'][];
+      record: components['schemas']['ObjectRef'];
+      /** Format: int64 */
+      bytes: number;
+    };
+    /** @description A member who cannot be added (outside the area of the author — chat_member_out_of_scope). */
+    ChatSkipped: {
+      member: components['schemas']['ChatMemberRef'];
+      reason: string;
+    };
+    /** @description A source of the chat roster (chat_sources): owner and «all employees» may be set by the business owner only (chats.js 362–368). */
+    ChatSource: {
+      /**
+       * @description all — all employees of the area; group; role (role in the area); member; relation (foreman of an object); trip_driver (driver of a trip).
+       * @enum {string}
+       */
+      who: 'all' | 'group' | 'role' | 'member' | 'relation' | 'trip_driver';
+      refId?: components['schemas']['Id'] | null;
+      orgUnitId?: components['schemas']['Id'] | null;
+      object?: components['schemas']['ObjectRef'] | null;
+      tripId?: components['schemas']['Id'] | null;
+      /**
+       * @description Role in the chat the source gives.
+       * @enum {string}
+       */
+      role: 'owner' | 'moderator' | 'member' | 'reader';
+    };
+    /** @description Sources of the roster; revision is the ETag of replaceChatSources. */
+    ChatSources: {
+      items: components['schemas']['ChatSource'][];
+      /** Format: int64 */
+      revision: number;
+    };
+    /** @description Replacement of the sources (chatSources): the roster is recomputed, joined and left members get service messages. */
+    ChatSourcesReplace: {
+      sources: components['schemas']['ChatSource'][];
+      dryRun?: boolean;
+    };
+    /** @description Result of replaceChatSources; chat.member.joined.v1 and chat.member.left.v1. */
+    ChatSourcesResult: {
+      applied: boolean;
+      impact: components['schemas']['ChatMembershipImpact'];
+      sources?: components['schemas']['ChatSources'];
+    };
+    /** @description Storage of the chat: used, quota, saved to records, archived, buckets. Thresholds 75/90/100 % raise chat.quota.warning / chat.quota.full. */
+    ChatStorage: {
+      /** Format: int64 */
+      usedBytes: number;
+      /** Format: int64 */
+      quotaBytes: number | null;
+      /** Format: int64 */
+      savedBytes: number;
+      /** Format: int64 */
+      archivedBytes: number;
+      buckets: components['schemas']['ChatBucket'][];
+      /** @enum {string} */
+      onFull: 'block' | 'ring' | 'compress' | 'archive';
+      hold?: components['schemas']['ChatHoldRef'] | null;
+    };
+    /** @description Row of the chat list (listChats): title, last message after the PDn mask, my unread and role. A chat the member does not see is not listed. */
+    ChatSummary: {
+      id: components['schemas']['Id'];
+      /** @enum {string} */
+      kind: 'direct' | 'group' | 'area' | 'record' | 'announce';
+      title: string;
+      orgUnitId?: components['schemas']['Id'] | null;
+      /** @enum {string} */
+      status: 'active' | 'archived';
+      /** @enum {string} */
+      sensitivity: 'normal' | 'finance' | 'pdn';
+      record?: components['schemas']['ChatRecordRef'] | null;
+      peer?: components['schemas']['ChatPeer'] | null;
+      lastMessage?: components['schemas']['ChatMessagePreview'] | null;
+      pinnedMessageId?: components['schemas']['Id'] | null;
+      my: components['schemas']['ChatMy'];
+      /** Format: int64 */
+      usedBytes?: number;
+      /** Format: int64 */
+      revision: number;
+    };
+    /** @description Service message of a module (trip assigned, defect found, …) with a button by the rights of the reader. */
+    ChatSystemCard: {
+      module: string;
+      icon: string;
+      /** @enum {string} */
+      tone: 'info' | 'ok' | 'warn' | 'danger' | 'neutral';
+      title: string;
+      text: string;
+      label?: string;
+      nav?: string;
+      refId?: components['schemas']['Id'];
+    };
+    /** @description Task from a message (chatToTask). */
+    ChatTaskCreate: {
+      /** @description Project of the task; defaults to the project of the record or the first project the member may create in. */
+      projectId?: components['schemas']['Id'];
+      title: string;
+    };
+    /** @description Task created from the message (TaskPort, W4.11). */
+    ChatTaskRef: {
+      taskId: components['schemas']['Id'];
+      key: string;
+    };
+    /** @description Short-lived view link with a watermark, no download; the file is removed 24 h after the first opening (server job). */
+    ChatViewOnceLink: {
+      url: string;
+      expiresAt: components['schemas']['Instant'];
+      watermark: string;
+      noDownload: boolean;
+    };
+    /** @description Vote; a repeated call replaces the previous vote while the poll is open. */
+    ChatVote: {
+      /** @description Empty — withdraw the vote. */
+      optionIds: components['schemas']['Id'][];
+    };
     ChoiceOption: {
       key: string;
       label: string;
@@ -8845,7 +12086,7 @@ export interface components {
     DecisionItem: {
       /** @description Stable key of the card within the queue (<kind>:<object id>); the same situation keeps its key between reads. */
       key: string;
-      /** @description Source and situation, <module>.<event>. Stage 2 sources: fleet.blocking_defect, fleet.trip_review, fleet.trip_without_driver (logistics); tenant.trial_ended, tenant.trial_ending, tenant.storage_high, access.members_without_role (organization, owner only). Sources of later stages add kinds additively; a client shows an unknown kind as a neutral card without action. W2.71 (0.6.3-stage2, S2-20, 1g) — two kinds of the logistics source for the logist of the trip company (fleet.routes.manage over the unit of the trip), never together for one trip: fleet.vehicle_choice_pending (warn) — from 15 minutes before chooseUntil until the choice or the deadline, the temporary driver has not chosen between the offered vehicles; params tripNumber, driverName, homeOrgUnitName, chooseUntil, hostVehicle and homeVehicle (model · plate), reservationId — the reservation of the vehicle of the trip company («Оставить …» = chooseReservation); fleet.trip_without_vehicle (danger) — a trip of a temporary driver of the pool not started yet has no vehicle (the home company approved the driver only, or the vehicle was released); params tripNumber, driverName, homeOrgUnitName, startsAt («Поставить машину» = assignTripVehicle). object — the trip. W4.81 (0.11.1-stage4, homeVM :4081–4084) — the source of tasks (moduleKey tasks, a core source) for the tasks assigned to the member that it sees (tasks.read, as listTasks): tasks.task_new — a status of the category todo (the first stage «Новая» of a funnel too); tasks.task_review — a status of review of a workflow (the category progress, not the first status of this category, with its own transition into the category done, as getMyTaskSummary counts it). At most three cards, newest task first; tone danger for priority urgent, otherwise neutral. params taskKey («LOG-101», «T-64»), title, projectId, dueAt (optional, RFC3339), fromForm ("true" — made by a rule of a form), funnel ("true" — a request of a funnel, opened on its board). object — the task (tasks/task). */
+      /** @description Source and situation, <module>.<event>. Stage 2 sources: fleet.blocking_defect, fleet.trip_review, fleet.trip_without_driver (logistics); tenant.trial_ended, tenant.trial_ending, tenant.storage_high, access.members_without_role (organization, owner only). Sources of later stages add kinds additively; a client shows an unknown kind as a neutral card without action. W2.71 (0.6.3-stage2, S2-20, 1g) — two kinds of the logistics source for the logist of the trip company (fleet.routes.manage over the unit of the trip), never together for one trip: fleet.vehicle_choice_pending (warn) — from 15 minutes before chooseUntil until the choice or the deadline, the temporary driver has not chosen between the offered vehicles; params tripNumber, driverName, homeOrgUnitName, chooseUntil, hostVehicle and homeVehicle (model · plate), reservationId — the reservation of the vehicle of the trip company («Оставить …» = chooseReservation); fleet.trip_without_vehicle (danger) — a trip of a temporary driver of the pool not started yet has no vehicle (the home company approved the driver only, or the vehicle was released); params tripNumber, driverName, homeOrgUnitName, startsAt («Поставить машину» = assignTripVehicle). object — the trip. W4.81 (0.11.1-stage4, homeVM :4081–4084) — the source of tasks (moduleKey tasks, a core source) for the tasks assigned to the member that it sees (tasks.read, as listTasks): tasks.task_new — a status of the category todo (the first stage «Новая» of a funnel too); tasks.task_review — a status of review of a workflow (the category progress, not the first status of this category, with its own transition into the category done, as getMyTaskSummary counts it). At most three cards, newest task first; tone danger for priority urgent, otherwise neutral. params taskKey («LOG-101», «T-64»), title, projectId, dueAt (optional, RFC3339), fromForm ("true" — made by a rule of a form), funnel ("true" — a request of a funnel, opened on its board). object — the task (tasks/task). W7.00 (0.12.0-stage7) — kinds of the stage 7 sources: chats — chat.ack_pending (info; an important message waits for «Ознакомлен»; params chatTitle, dueDate; object — the chat message; chat.mention and chat.storage_high are candidates, Q-W4.00-chats-11); documents — docs.approve, docs.sign, docs.ack, docs.returned, docs.mention, docs.ocr (the items of docWaits; params documentTitle, dueDate, byName; object — the document); requests — service.sla_breached (danger), service.sla_risk (warn), service.unassigned (warn) (params requestKey, directionName, clientName; object — the request). */
       kind: string;
       /** @description Module of the source (fleet, billing, members); a disabled module contributes no cards. */
       moduleKey: string;
@@ -8883,6 +12124,829 @@ export interface components {
        */
       decision: 'allow_departure' | 'confirm_out_of_service';
       comment?: string;
+    };
+    /** @description Who gets, loses, raises or lowers the access (diffAccess); shown before saving. */
+    DocAccessImpact: {
+      gain: components['schemas']['DocImpactPerson'][];
+      lose: components['schemas']['DocImpactPerson'][];
+      up: components['schemas']['DocImpactPerson'][];
+      down: components['schemas']['DocImpactPerson'][];
+    };
+    /** @description Acknowledgement (docAck): version, time and device are stored. «Ознакомление без кадрового значения» (DOC-04). */
+    DocAck: {
+      device?: string;
+    };
+    /** @description Result of ackDocument. */
+    DocAckResult: {
+      acked: boolean;
+      at: components['schemas']['Instant'];
+      /** Format: int64 */
+      version: number;
+    };
+    /** @description Audit entry of a document. */
+    DocActivity: {
+      id: components['schemas']['Id'];
+      at: components['schemas']['Instant'];
+      by: components['schemas']['DocMemberRef'];
+      action: string;
+      details: string;
+    };
+    /** @description Audit of a document. */
+    DocActivityList: {
+      items: components['schemas']['DocActivity'][];
+      nextCursor: string | null;
+    };
+    /** @description What the member may do with the document (docRights). Computed by the server; the client never recomputes it. */
+    DocCan: {
+      view: boolean;
+      comment: boolean;
+      suggest: boolean;
+      edit: boolean;
+      share: boolean;
+      shareExternal: boolean;
+      export: boolean;
+      convert: boolean;
+      sign: boolean;
+      route: boolean;
+      manage: boolean;
+      /** @description Closed for editing (on a route or signed): edit is false. */
+      locked: boolean;
+    };
+    /** @description A step of the chain «Откуда доступ» (docAccess.chain): folder, document, role, relation, function «Водитель», invitation, block. */
+    DocChainStep: {
+      /**
+       * @description ok — grants, no — denies, wait — after login, up — raises, inh — inherited.
+       * @enum {string}
+       */
+      kind: 'ok' | 'no' | 'wait' | 'up' | 'inh';
+      title: string;
+      detail: string;
+    };
+    /** @description Comment of a document (block, cell or page anchor). */
+    DocComment: {
+      id: components['schemas']['Id'];
+      author: components['schemas']['DocMemberRef'];
+      createdAt: components['schemas']['Instant'];
+      text: string;
+      anchor: {
+        /** @enum {string} */
+        kind: 'block' | 'cell' | 'page';
+        ref: string;
+        quote?: string;
+      };
+      mention?: components['schemas']['DocMemberRef'] | null;
+      replies: components['schemas']['DocReply'][];
+      resolved: boolean;
+      resolvedBy?: components['schemas']['DocMemberRef'] | null;
+    };
+    /** @description New comment (validation: «Напишите комментарий», 2000 characters). */
+    DocCommentCreate: {
+      text: string;
+      anchor: {
+        /** @enum {string} */
+        kind: 'block' | 'cell' | 'page';
+        ref: string;
+        quote?: string;
+      };
+      mention?: components['schemas']['Id'];
+    };
+    /** @description Comments of a document. */
+    DocCommentList: {
+      items: components['schemas']['DocComment'][];
+    };
+    /** @description Creation of a document (docCreate): 422 validation_failed — «Название — не короче 2 символов», «Выберите папку», «Добавьте файлы или фото», «Выберите рейс / объект для полей шаблона». */
+    DocCreate: {
+      /** @enum {string} */
+      kind: 'text' | 'sheet' | 'pdf';
+      title: string;
+      folderId: components['schemas']['Id'];
+      templateId?: components['schemas']['Id'];
+      link?: components['schemas']['ObjectRef'];
+      /** @description Initial table for a sheet (docCreate csv). */
+      csv?: string;
+      fileIds?: components['schemas']['Id'][];
+      /** @description The file is a scan: a job OCR is queued unless sensitivity is pdn. */
+      scan?: boolean;
+      /**
+       * @description pdn — «Содержит паспорт или водительское удостоверение»: no recognition, access by an explicit list (DOC-07).
+       * @enum {string}
+       */
+      sensitivity?: 'normal' | 'finance' | 'pdn';
+    };
+    /** @description Refresh the CRM columns of a sheet (docCrmSync). */
+    DocDatasetSync: {
+      sheetId?: string;
+    };
+    /** @description Result of syncDocDataset. */
+    DocDatasetSyncResult: {
+      /** Format: int64 */
+      updatedCells: number;
+      /** Format: int64 */
+      version?: number;
+    };
+    /** @description External link (docs.share_external): term up to 30 days (DOC-06), PIN, watermark, no download; every opening is journaled (docs.link.opened.v1). */
+    DocExternalLink: {
+      id: components['schemas']['Id'];
+      /**
+       * @description view only in the first version; comment and fill — later.
+       * @enum {string}
+       */
+      level: 'view' | 'comment' | 'fill';
+      expiresAt: components['schemas']['Instant'];
+      pin: boolean;
+      watermark: boolean;
+      download: boolean;
+      /** @enum {string} */
+      status: 'active' | 'revoked' | 'expired';
+      createdBy: components['schemas']['DocMemberRef'];
+      createdAt: components['schemas']['Instant'];
+      /** Format: int64 */
+      openCount: number;
+      lastOpenedAt?: components['schemas']['Instant'] | null;
+    };
+    /** @description New external link. */
+    DocExternalLinkCreate: {
+      /** @enum {string} */
+      level: 'view';
+      /** @description Not later than 30 days from now (default +14 days, Q-W4.00-documents-4). */
+      expiresAt: components['schemas']['Instant'];
+      /** @description Default true. */
+      pin?: boolean;
+      /** @description Default true. */
+      watermark?: boolean;
+      /** @description Default false. */
+      download?: boolean;
+    };
+    /** @description Created link with the one-time secret. */
+    DocExternalLinkCreated: {
+      link: components['schemas']['DocExternalLink'];
+      /** @description Shown once; only the digest is stored. */
+      token: string;
+      /** @description Shown once. */
+      pin?: string;
+      url: string;
+    };
+    /** @description Links of a document with opening counts. */
+    DocExternalLinkList: {
+      items: components['schemas']['DocExternalLink'][];
+    };
+    /** @description Field of a template filled from the record (CRM fields); frozen at the signature. */
+    DocField: {
+      key: string;
+      src?: string;
+      value?: string;
+      from?: string;
+    };
+    /** @description Folder of «Документы»; mode listed breaks the inheritance (like «Только выбранные» of the knowledge base). */
+    DocFolder: {
+      id: components['schemas']['Id'];
+      name: string;
+      parentId: components['schemas']['Id'] | null;
+      orgUnitId: components['schemas']['Id'] | null;
+      /** @enum {string} */
+      mode: 'inherit' | 'listed';
+      owner: components['schemas']['DocMemberRef'];
+      icon: string;
+      /** @enum {string} */
+      sensitivity: 'normal' | 'finance' | 'pdn';
+      link?: components['schemas']['ObjectRef'] | null;
+      hasRouteTemplate: boolean;
+      shares: components['schemas']['DocShareEntry'][];
+      /** Format: int64 */
+      documentCount: number;
+      my: {
+        /** @enum {string|null} */
+        level: 'view' | 'comment' | 'suggest' | 'edit' | 'manage' | null;
+        create: boolean;
+        manage: boolean;
+      };
+      /** Format: int64 */
+      revision: number;
+    };
+    /** @description New folder (Q-W4.00-documents-8): name, parent, firm, «Как у родителя» / «Только выбранные». */
+    DocFolderCreate: {
+      name: string;
+      parentId?: components['schemas']['Id'] | null;
+      orgUnitId?: components['schemas']['Id'] | null;
+      /** @enum {string} */
+      mode?: 'inherit' | 'listed';
+      icon?: string;
+      /** @enum {string} */
+      sensitivity?: 'normal' | 'finance';
+    };
+    /** @description Folders visible to the member. */
+    DocFolderList: {
+      items: components['schemas']['DocFolder'][];
+    };
+    /** @description Change of a folder; revision — If-Match. */
+    DocFolderPatch: {
+      name?: string;
+      /** @enum {string} */
+      mode?: 'inherit' | 'listed';
+      icon?: string;
+      /** @enum {string} */
+      sensitivity?: 'normal' | 'finance';
+    };
+    /** @description Grant from a mention (docGrant): a member entry with the level comment. */
+    DocGrantCreate: {
+      memberId: components['schemas']['Id'];
+      /** @enum {string} */
+      level: 'view' | 'comment';
+    };
+    /** @description Change of the level of a member. */
+    DocImpactPerson: {
+      member: components['schemas']['DocMemberRef'];
+      /** @enum {string|null} */
+      from: 'view' | 'comment' | 'suggest' | 'edit' | 'manage' | null;
+      /** @enum {string|null} */
+      to: 'view' | 'comment' | 'suggest' | 'edit' | 'manage' | null;
+      invited: boolean;
+    };
+    /** @description Job of the documents worker (OCRmyPDF + Tesseract, qpdf, converter). Result — a new version or a new document; counted into the storage. */
+    DocJob: {
+      id: components['schemas']['Id'];
+      /** @enum {string} */
+      op:
+        | 'convert'
+        | 'ocr'
+        | 'merge'
+        | 'split'
+        | 'compress'
+        | 'pdfa'
+        | 'to_docx'
+        | 'to_xlsx'
+        | 'to_pdf';
+      docIds: components['schemas']['Id'][];
+      name: string;
+      /** @enum {string} */
+      status: 'queued' | 'running' | 'done' | 'failed';
+      /** Format: int64 */
+      progress?: number;
+      params?: {
+        [key: string]: unknown;
+      };
+      error?: string;
+      resultDocumentId?: components['schemas']['Id'] | null;
+      createdAt: components['schemas']['Instant'];
+      finishedAt?: components['schemas']['Instant'] | null;
+    };
+    /** @description New job (docJob): 422 «Сначала распознайте скан», «Это уже PDF»; 409 job_in_progress. */
+    DocJobCreate: {
+      /** @enum {string} */
+      op:
+        | 'convert'
+        | 'ocr'
+        | 'merge'
+        | 'split'
+        | 'compress'
+        | 'pdfa'
+        | 'to_docx'
+        | 'to_xlsx'
+        | 'to_pdf';
+      docIds: components['schemas']['Id'][];
+      params?: {
+        [key: string]: unknown;
+      };
+    };
+    /** @description Retry of a failed job. */
+    DocJobRetry: {
+      /** @description Password of a protected file (file_password_protected). */
+      password?: string;
+      dropLocked?: boolean;
+    };
+    /** @description Link of a document with a record (object, trip, set, supply, client, vehicle, task); a reference never grants access. */
+    DocLink: {
+      object: components['schemas']['ObjectRef'];
+      label?: string;
+    };
+    /** @description Member of the organization shown by name. */
+    DocMemberRef: {
+      memberId: components['schemas']['Id'];
+      displayName: string;
+    };
+    /** @description Move to another folder (docMove). */
+    DocMove: {
+      folderId: components['schemas']['Id'];
+      /** @description true — nothing moves, the answer is the impact. */
+      dryRun?: boolean;
+    };
+    /** @description Result of moveDocument: «Документ уже в этой папке» — 422; locked — 409 document_locked. */
+    DocMoveResult: {
+      applied: boolean;
+      document?: components['schemas']['DocSummary'] | null;
+      impact: components['schemas']['DocAccessImpact'];
+    };
+    /** @description The member’s view of the document; chain only in getDocument. */
+    DocMy: {
+      /** @enum {string|null} */
+      level: 'view' | 'comment' | 'suggest' | 'edit' | 'manage' | null;
+      can: components['schemas']['DocCan'];
+      /**
+       * @description The highest level the member may give: min(own level, edit).
+       * @enum {string|null}
+       */
+      maxGrant: 'view' | 'comment' | 'suggest' | 'edit' | 'manage' | null;
+      wait: components['schemas']['DocWait'][];
+      chain?: components['schemas']['DocChainStep'][];
+      /**
+       * Format: int64
+       * @description A temporary access of a route (acknowledgement) is limited to this version: no comments, suggestions, journal or access list.
+       */
+      onlyVersion?: number | null;
+    };
+    /** @description State of the text layer of a scan (documents.md §1.6). Scans marked pdn are not recognized (DOC-07, Q-W4.00-documents-16). */
+    DocOcr: {
+      /** @enum {string} */
+      status: 'none' | 'queued' | 'running' | 'done' | 'failed';
+      confidence?: number;
+      at?: components['schemas']['Instant'];
+      lang?: string;
+      /** Format: int64 */
+      doubtful: number;
+    };
+    /** @description Word of the text layer. */
+    DocOcrWord: {
+      id: string;
+      text: string;
+      suggestion: string;
+      confidence: number;
+      why: string;
+      /** @enum {string} */
+      state: 'doubtful' | 'accepted' | 'kept' | 'fixed';
+      /** Format: int64 */
+      row?: number;
+    };
+    /** @description Decision on a doubtful word (docOcrWord). */
+    DocOcrWordReview: {
+      /** @enum {string} */
+      action: 'accept' | 'keep' | 'fix';
+      value?: string;
+    };
+    /** @description Rename or relabel (docRename); revision — If-Match. */
+    DocPatch: {
+      title?: string;
+      /** @enum {string} */
+      sensitivity?: 'normal' | 'finance' | 'pdn';
+    };
+    /** @description Protected range of a sheet; Ortus checks it itself when the engine has no API (DOC-03, Q-W4.00-documents-12). */
+    DocProtectedRange: {
+      id: string;
+      sheet: string;
+      range: string;
+      name: string;
+      who: components['schemas']['DocShareEntry'][];
+    };
+    /** @description PIN of the link when the link has one; 403 forbidden_action for a wrong PIN, 429 rate_limited after a few attempts. */
+    DocPublicOpen: {
+      pin?: string;
+    };
+    /** @description Document opened by an external link: view only, watermark, no download unless the link allows it. */
+    DocPublicSession: {
+      title: string;
+      /** @enum {string} */
+      kind: 'text' | 'sheet' | 'pdf';
+      /** Format: int64 */
+      version: number;
+      watermark: string;
+      expiresAt: components['schemas']['Instant'];
+      config: components['schemas']['DocSessionConfig'];
+    };
+    /** @description Reply to a comment. */
+    DocReply: {
+      id: components['schemas']['Id'];
+      author: components['schemas']['DocMemberRef'];
+      at: components['schemas']['Instant'];
+      text: string;
+      mention?: components['schemas']['DocMemberRef'] | null;
+    };
+    /** @description Reply. */
+    DocReplyCreate: {
+      text: string;
+      mention?: components['schemas']['Id'];
+    };
+    /** @description Route of a document (up to 6 steps). The version is closed for editing while the route is active (Q-W4.00-documents-5); the task of the route is a mirror (Q-W4.00-documents-3). */
+    DocRoute: {
+      id: components['schemas']['Id'];
+      /** Format: int64 */
+      version: number;
+      startedBy: components['schemas']['DocMemberRef'];
+      startedAt: components['schemas']['Instant'];
+      /** @enum {string} */
+      status: 'active' | 'returned' | 'done' | 'cancelled';
+      /** Format: int64 */
+      currentStep: number;
+      project?: components['schemas']['ObjectRef'] | null;
+      task?: components['schemas']['ObjectRef'] | null;
+      rules: {
+        lock: boolean;
+        notAuthor: boolean;
+        commentOnBack: boolean;
+        escalate: boolean;
+      };
+      steps: components['schemas']['DocRouteStep'][];
+      back?: {
+        name: string;
+        comment?: string;
+      } | null;
+    };
+    /** @description Route status for the list and the card header. */
+    DocRouteBrief: {
+      /** @enum {string} */
+      status: 'active' | 'returned' | 'done' | 'cancelled';
+      /** Format: int64 */
+      currentStep: number;
+      stepName: string | null;
+      /** Format: date */
+      dueDate?: string | null;
+    };
+    /** @description Decision of the current step (docRouteDecide): «Напишите, что доработать» for a return without a comment. */
+    DocRouteDecide: {
+      /** @enum {string} */
+      decision: 'approve' | 'return';
+      comment?: string;
+    };
+    /** @description Decision of a step; the method is written to the approval sheet. */
+    DocRouteDecisionRec: {
+      member: components['schemas']['DocMemberRef'];
+      /** @enum {string} */
+      decision: 'ok' | 'back';
+      at: components['schemas']['Instant'];
+      comment?: string;
+      /** @enum {string} */
+      method: 'click' | 'pep_login' | 'pep_sms' | 'sms_link';
+    };
+    /** @description Start of a route (docRouteStart): 422 validation_failed, 409 separation_of_duties_conflict (the author approves or signs), 409 invalid_transition «Документ уже на маршруте», 403 forbidden_action (no tasks.create in the project). */
+    DocRouteStart: {
+      steps: components['schemas']['DocRouteStepInput'][];
+      rules?: {
+        /** @description Always true: the version is closed (Q-W4.00-documents-5). */
+        lock?: boolean;
+        notAuthor?: boolean;
+        commentOnBack?: boolean;
+        escalate?: boolean;
+      };
+      /** @description Project of the mirror task; defaults to the system project «ДОК · Документы · маршруты» (Q-W4.00-documents-18). */
+      projectId?: components['schemas']['Id'];
+      /** @description Needs docs.templates.manage; otherwise the flag is hidden. */
+      saveAsFolderTemplate?: boolean;
+      /** @description true — «Что произойдёт»: nothing starts. */
+      dryRun?: boolean;
+    };
+    /** @description Result of startDocRoute; emits docs.route.started.v1, the task and temporary accesses are created. */
+    DocRouteStartResult: {
+      applied: boolean;
+      route?: components['schemas']['DocRoute'] | null;
+      consequences: string[];
+      impact?: components['schemas']['DocAccessImpact'];
+    };
+    /** @description Step of a route: approve, sign, acknowledge or external signature (customer; the SMS code — through the delivery port, D-31 комплекта). */
+    DocRouteStep: {
+      /** @enum {string} */
+      kind: 'approve' | 'sign' | 'ack' | 'external';
+      name: string;
+      /** @enum {string} */
+      mode: 'all' | 'seq' | 'any';
+      who: components['schemas']['DocMemberRef'][];
+      audience?: components['schemas']['DocShareEntry'][];
+      /** Format: int64 */
+      days: number;
+      /** @enum {string} */
+      status: 'wait' | 'active' | 'done';
+      /** Format: date */
+      due?: string | null;
+      decisions: components['schemas']['DocRouteDecisionRec'][];
+      done?: {
+        member: components['schemas']['DocMemberRef'];
+        at: components['schemas']['Instant'];
+        device: string;
+      }[];
+      external?: {
+        name: string;
+        phoneMasked?: string;
+      } | null;
+    };
+    /** @description Step of a route to start. */
+    DocRouteStepInput: {
+      /** @enum {string} */
+      kind: 'approve' | 'sign' | 'ack' | 'external';
+      name?: string;
+      /** @enum {string} */
+      mode?: 'all' | 'seq' | 'any';
+      whoMemberIds?: components['schemas']['Id'][];
+      audience?: components['schemas']['DocShareEntry'][];
+      /** Format: int64 */
+      days: number;
+      externalName?: string;
+      externalPhone?: string;
+    };
+    /** @description Route template of a folder. */
+    DocRouteTemplate: {
+      id: components['schemas']['Id'];
+      folderId: components['schemas']['Id'];
+      name: string;
+      projectId?: components['schemas']['Id'] | null;
+      steps: components['schemas']['DocRouteStepInput'][];
+      rules: {
+        lock: boolean;
+        notAuthor: boolean;
+        commentOnBack: boolean;
+        escalate: boolean;
+      };
+    };
+    /** @description Route templates. */
+    DocRouteTemplateList: {
+      items: components['schemas']['DocRouteTemplate'][];
+    };
+    /** @description Callback of the document server (D-32 комплекта, ADR-0016). Authenticated by the JWT of the server (Authorization: Bearer, HS256, shared secret of the adapter); no session, no tenant in the path — the key carries the tenant, the document and the version (t<tenantId>.d<documentId>.v<version>). */
+    DocServerCallback: {
+      /** @description Key of the document version (DocSessionConfig.documentKey): t<tenantId>.d<documentId>.v<version>. It names the tenant, the document and the version the engine edited. */
+      key: string;
+      /**
+       * Format: int64
+       * @description Status of the document server: 1 editing, 2 ready to save, 3 save error, 4 closed without changes, 6 force save, 7 force save error.
+       */
+      status: number;
+      /** @description URL of the saved file on the document server (statuses 2 and 6). */
+      url?: string;
+      users?: string[];
+      /** Format: int64 */
+      forcesavetype?: number;
+      lastsave?: components['schemas']['Instant'];
+    };
+    /** @description Answer of the callback in the protocol of the document server. */
+    DocServerCallbackAck: {
+      /**
+       * Format: int64
+       * @description 0 — accepted; 1 — the document server repeats the call (ONLYOFFICE protocol).
+       */
+      error: number;
+    };
+    /** @description Signed configuration of an editor session (openDocumentSession). The adapter hides the engine; the contract carries no block-editing operations (Q-W4.00-documents-1). */
+    DocSessionConfig: {
+      /**
+       * @description Chosen document server (D-32 комплекта): none until chosen, then r7 or onlyoffice — behind the adapter.
+       * @enum {string}
+       */
+      engine: 'none' | 'r7' | 'onlyoffice';
+      /** @description false on a stand without the engine: the document opens for viewing (PDF.js) and downloads, editing is off with the hint «Редактор подключается» (Q-W4.00-documents-1). */
+      editorAvailable: boolean;
+      /** @enum {string} */
+      mode: 'view' | 'edit' | 'review' | 'comment';
+      /** @description Key of the version for the engine: t<tenantId>.d<documentId>.v<version> (lowercase UUIDs); changes with every saved version. The tenant is part of the key because the callback of the document server has no session and no tenantId in the path: the tenant database is chosen by the key after the signature is verified. */
+      documentKey: string;
+      /** Format: int64 */
+      version: number;
+      /** @description Short-lived signed URL of the file for the engine or the viewer. */
+      fileUrl?: string;
+      editorUrl?: string;
+      /** @description Signed JWT config (HS256, shared secret of the adapter); absent without the engine. */
+      token?: string;
+      /** @description URL of docServerCallback the engine calls on save. */
+      callbackUrl?: string;
+      user: components['schemas']['DocMemberRef'];
+      permissions: components['schemas']['DocSessionPermissions'];
+      protectedRanges: components['schemas']['DocProtectedRange'][];
+      hint?: string;
+      expiresAt: components['schemas']['Instant'];
+    };
+    /** @description Rights of the member in the engine (the claims of the signed config). */
+    DocSessionPermissions: {
+      edit: boolean;
+      review: boolean;
+      comment: boolean;
+      download: boolean;
+      print: boolean;
+      fillForms: boolean;
+      protectedRanges: boolean;
+    };
+    /** @description Entry of the access list of a folder or a document (docs/24 share). */
+    DocShareEntry: {
+      /**
+       * @description all — everybody of the area; member; group; role (role in the area); relation (foreman of the object — the only relation of the first version).
+       * @enum {string}
+       */
+      who: 'all' | 'member' | 'group' | 'role' | 'relation';
+      refId?: components['schemas']['Id'] | null;
+      orgUnitId?: components['schemas']['Id'] | null;
+      object?: components['schemas']['ObjectRef'] | null;
+      /** @enum {string} */
+      level: 'view' | 'comment' | 'suggest' | 'edit' | 'manage';
+      /** Format: date */
+      until?: string | null;
+      /** @description Display name of the target. */
+      label?: string;
+      byDisplayName?: string;
+      at?: components['schemas']['Instant'];
+    };
+    /** @description Access list of a document or a folder; revision is the ETag of setDocShares. */
+    DocShares: {
+      /** @enum {string} */
+      mode: 'inherit' | 'listed';
+      entries: components['schemas']['DocShareEntry'][];
+      /** Format: int64 */
+      revision: number;
+    };
+    /** @description Result of setDocShares / setDocFolderShares; emits docs.shared.v1 and notifications «Вам открыт доступ». */
+    DocSharesResult: {
+      applied: boolean;
+      impact: components['schemas']['DocAccessImpact'];
+      shares?: components['schemas']['DocShares'];
+    };
+    /** @description Access of a document or a folder (docShare): the member gives not more than the own level (422/403 delegation_exceeds_grant). */
+    DocSharesSet: {
+      /** @enum {string} */
+      mode: 'inherit' | 'listed';
+      entries: components['schemas']['DocShareEntry'][];
+      /** @description true — nothing is saved, the answer is the impact. */
+      dryRun?: boolean;
+    };
+    /** @description Challenge of the signature; 503 dependency_unavailable while the delivery port is a stub without a provider. */
+    DocSignChallenge: {
+      /** @enum {string} */
+      method: 'pep_login' | 'pep_sms';
+      sentTo?: string;
+      expiresAt: components['schemas']['Instant'];
+      /** Format: int64 */
+      attemptsLeft: number;
+    };
+    /** @description Request of a confirmation challenge. */
+    DocSignCodeRequest: {
+      /**
+       * @description pep_login — repeated sign-in to Ortus (Q-W4.00-documents-2); pep_sms — a code through the delivery port, only for the customer (D-31 комплекта).
+       * @enum {string}
+       */
+      method: 'pep_login' | 'pep_sms';
+    };
+    /** @description Confirmation of the signature; 422 sign_code_invalid, 429 rate_limited after 3 attempts. */
+    DocSignConfirm: {
+      /** @enum {string} */
+      method: 'pep_login' | 'pep_sms';
+      password?: string;
+      totp?: string;
+      code?: string;
+    };
+    /** @description Signed: status signed or approved, CRM fields frozen, a PDF/A copy with the approval sheet is queued. */
+    DocSignResult: {
+      /** @enum {string} */
+      status: 'draft' | 'in_route' | 'returned' | 'agreed' | 'approved' | 'signed' | 'archived';
+      signedAt: components['schemas']['Instant'];
+      pdfaCopyId?: components['schemas']['Id'] | null;
+    };
+    /** @description Row of the document list (listDocuments). */
+    DocSummary: {
+      id: components['schemas']['Id'];
+      /** @enum {string} */
+      kind: 'text' | 'sheet' | 'pdf';
+      title: string;
+      folderId: components['schemas']['Id'];
+      folderName: string;
+      owner: components['schemas']['DocMemberRef'];
+      /** @enum {string} */
+      status: 'draft' | 'in_route' | 'returned' | 'agreed' | 'approved' | 'signed' | 'archived';
+      /** @enum {string} */
+      sensitivity: 'normal' | 'finance' | 'pdn';
+      /** Format: int64 */
+      version: number;
+      updatedAt: components['schemas']['Instant'];
+      updatedBy: components['schemas']['DocMemberRef'] | null;
+      links: components['schemas']['DocLink'][];
+      my: components['schemas']['DocMy'];
+      route?: components['schemas']['DocRouteBrief'] | null;
+      ocr?: components['schemas']['DocOcr'] | null;
+      pdfaCopy?: boolean;
+    };
+    /** @description Temporary access of a route (approver — comment for the time of the step; acknowledging — read of the approved version, kept). */
+    DocTempGrant: {
+      member: components['schemas']['DocMemberRef'];
+      /** @enum {string} */
+      level: 'view' | 'comment' | 'suggest' | 'edit' | 'manage';
+      why: string;
+      /** Format: int64 */
+      onlyVersion?: number;
+      keep?: boolean;
+    };
+    /** @description Template of a document (data of the organization, seed — three templates of the prototype). */
+    DocTemplate: {
+      id: components['schemas']['Id'];
+      name: string;
+      /** @enum {string} */
+      kind: 'text' | 'sheet' | 'pdf';
+      icon: string;
+      hint: string;
+      /** @enum {string|null} */
+      link: 'trip' | 'object' | null;
+      folderId: components['schemas']['Id'];
+      fields: components['schemas']['DocField'][];
+    };
+    /** @description Templates. */
+    DocTemplateList: {
+      items: components['schemas']['DocTemplate'][];
+    };
+    /** @description Version of a document. */
+    DocVersion: {
+      /** Format: int64 */
+      version: number;
+      createdAt: components['schemas']['Instant'];
+      authors: components['schemas']['DocMemberRef'][];
+      name?: string | null;
+      /** @enum {string} */
+      source: 'edit' | 'upload' | 'convert' | 'ocr' | 'restore' | 'merge' | 'route';
+      fileId?: components['schemas']['Id'] | null;
+      /** Format: int64 */
+      sizeBytes: number;
+      sha256?: string;
+      /** @description A version saved by the engine on every save (DOC-08: texts without a term, files 1 year, counted once by sha256). */
+      forcesave: boolean;
+      /** Format: int64 */
+      base?: number | null;
+    };
+    /** @description Versions, newest first. */
+    DocVersionList: {
+      items: components['schemas']['DocVersion'][];
+    };
+    /** @description Name of a version. */
+    DocVersionName: {
+      name: string;
+    };
+    /** @description Cut a version now or name the last one (docCut). */
+    DocVersionSave: {
+      name?: string;
+    };
+    /** @description Waiting item of «Ждут меня» and of the «Требует решения» queue. */
+    DocWait: {
+      /**
+       * @description What waits for the member (docWaits): approve, sign, ack, returned, mention, ocr.
+       * @enum {string}
+       */
+      kind: 'approve' | 'sign' | 'ack' | 'returned' | 'mention' | 'ocr';
+      /** Format: date */
+      due?: string;
+      by?: string;
+      comment?: string;
+      commentId?: components['schemas']['Id'];
+      /** Format: int64 */
+      count?: number;
+    };
+    /** @description Document with its access, route, jobs and protected ranges (getDocument). The body is the file of the engine (core.files, D-32 комплекта); versions — listDocVersions. A hidden or finance document for the function «Водитель» — 404 / function_blocked. ETag — revision. */
+    Document: {
+      id: components['schemas']['Id'];
+      /** @enum {string} */
+      kind: 'text' | 'sheet' | 'pdf';
+      title: string;
+      folderId: components['schemas']['Id'];
+      folderName: string;
+      path: string[];
+      owner: components['schemas']['DocMemberRef'];
+      /** @enum {string} */
+      status: 'draft' | 'in_route' | 'returned' | 'agreed' | 'approved' | 'signed' | 'archived';
+      /** @enum {string} */
+      sensitivity: 'normal' | 'finance' | 'pdn';
+      /** Format: int64 */
+      version: number;
+      /** @enum {string} */
+      mode: 'inherit' | 'listed';
+      shares: components['schemas']['DocShareEntry'][];
+      links: components['schemas']['DocLink'][];
+      authors: components['schemas']['DocMemberRef'][];
+      template?: string | null;
+      fields: components['schemas']['DocField'][];
+      frozen?: {
+        [key: string]: unknown;
+      } | null;
+      file?: components['schemas']['File'] | null;
+      pdfaCopy?: boolean;
+      scan?: boolean;
+      /** Format: int64 */
+      size?: number;
+      ocr?: components['schemas']['DocOcr'] | null;
+      tempGrants: components['schemas']['DocTempGrant'][];
+      jobs: components['schemas']['DocJob'][];
+      route?: components['schemas']['DocRoute'] | null;
+      protectedRanges: components['schemas']['DocProtectedRange'][];
+      /** Format: int64 */
+      commentCount: number;
+      /** Format: int64 */
+      openCommentCount: number;
+      createdAt: components['schemas']['Instant'];
+      updatedAt: components['schemas']['Instant'];
+      my: components['schemas']['DocMy'];
+      /** Format: int64 */
+      revision: number;
+    };
+    /** @description Documents visible to the member; counters of the filters «Все · Мои · Мне открыли · На маршруте». */
+    DocumentList: {
+      items: components['schemas']['DocSummary'][];
+      nextCursor: string | null;
+      counts: {
+        /** Format: int64 */
+        all: number;
+        /** Format: int64 */
+        mine: number;
+        /** Format: int64 */
+        shared: number;
+        /** Format: int64 */
+        route: number;
+      };
     };
     /** @description Short-lived URL only after current object+field permission and ready state checks. Private-by-default storage; direct object keys never form part of this API. */
     DownloadTicket: {
@@ -9298,7 +13362,9 @@ export interface components {
         | 'knowledge_attachment'
         | 'form_attachment'
         | 'repair_evidence'
-        | 'task_attachment';
+        | 'task_attachment'
+        | 'chat_attachment'
+        | 'document';
       owner: components['schemas']['ObjectRef'];
       /** @description Short title of the parent object provided by its module (trip number, task key, vehicle plate); absent when the module gives none. Never shown for a parent the actor cannot read — such files are not listed at all. */
       ownerTitle?: string;
@@ -11380,7 +15446,7 @@ export interface components {
     Notification: {
       id: components['schemas']['Id'];
       tenantId: components['schemas']['Id'];
-      /** @description Source event type without the version suffix (fleet.trip.submitted, members.invitation.accepted). */
+      /** @description Source event type without the version suffix (fleet.trip.submitted, members.invitation.accepted). W7.00 (0.12.0-stage7) adds chat.mention, chat.direct, chat.important, chat.added (chats), docs.access.granted, docs.route.step.done, docs.route.returned, docs.ack.requested, docs.comment.mentioned (documents) and service.request.created, service.request.assigned, service.request.sla_warning, service.request.sla_breached, service.conclusion.shared (requests); a client shows an unknown kind with the plain title. */
       kind: string;
       /** @enum {string} */
       severity: 'info' | 'warning' | 'critical';
@@ -12085,7 +16151,15 @@ export interface components {
       | 'duplicate_source'
       | 'duplicate_receipt'
       | 'self_approval'
-      | 'insufficient_funds';
+      | 'insufficient_funds'
+      | 'chat_ephemeral_disabled'
+      | 'document_locked'
+      | 'range_protected'
+      | 'formula_invalid'
+      | 'job_in_progress'
+      | 'file_password_protected'
+      | 'sign_code_invalid'
+      | 'service_assignee_out_of_scope';
     ProblemViolation: {
       field: string;
       code: string;
@@ -12213,6 +16287,99 @@ export interface components {
       submittedAt: components['schemas']['Instant'];
       message: string;
     };
+    /** @description Rating of the resolution (CSAT). */
+    PublicServiceCsat: {
+      /** Format: int64 */
+      score: number;
+      comment?: string;
+    };
+    /** @description Public message of the client thread; notes and system records are never shown. */
+    PublicServiceMessage: {
+      id: components['schemas']['Id'];
+      at: components['schemas']['Instant'];
+      text: string;
+      fromClient: boolean;
+      files: components['schemas']['ServiceFile'][];
+    };
+    /** @description Message of the client; a reply of the client returns the request to work (Q-W4.00-service-3). */
+    PublicServiceMessageCreate: {
+      text: string;
+      fileIds?: components['schemas']['Id'][];
+    };
+    /** @description Result of «СТОП»: no more surveys. */
+    PublicServiceOptOut: {
+      optedOut: boolean;
+    };
+    /** @description Public page of a direction (1a): no client data. */
+    PublicServicePage: {
+      slug: string;
+      directionName: string;
+      color: string;
+      brandName: string;
+      types: components['schemas']['PublicServiceType'][];
+      workHours: string;
+      phoneHint?: string;
+    };
+    /** @description Receipt of a public request. */
+    PublicServiceReceipt: {
+      key: string;
+      /** @description Personal link token; shown once, only the digest is stored. */
+      token: string;
+      statusLabel: string;
+    };
+    /** @description Reopen: «Вопрос не решён»; 409 invalid_transition after the window of 5 days. */
+    PublicServiceReopen: {
+      text?: string;
+    };
+    /** @description The request seen by the client by the personal link (1a): «Довольны ли решением?», «Вопрос не решён» within 5 days. */
+    PublicServiceRequest: {
+      key: string;
+      title: string;
+      /** @enum {string} */
+      status: 'new' | 'work' | 'wait' | 'resolved' | 'closed';
+      /** @description Client labels: «Получили», «Отвечаем», «Ждём вашего ответа», «Решено», «Закрыто». */
+      statusLabel: string;
+      dueText: string | null;
+      messages: components['schemas']['PublicServiceMessage'][];
+      canRate: boolean;
+      canReopen: boolean;
+      reopenUntil?: components['schemas']['Instant'] | null;
+      /** Format: int64 */
+      rating?: number | null;
+    };
+    /** @description Request from the client page. In the first version the entry is a personal link only (Q-W4.00-service-9). */
+    PublicServiceSubmit: {
+      typeId: string;
+      text: string;
+      clientName?: string;
+      phone?: string;
+      /** @description Token of a work (visit, trip, act): the client and the work are known from it. */
+      workToken?: string;
+      fileIds?: components['schemas']['Id'][];
+      /** @description Consent to the processing of the personal data (FB-05). */
+      consent: boolean;
+      submissionNonce?: string;
+    };
+    /** @description Type offered on the public page. */
+    PublicServiceType: {
+      id: string;
+      name: string;
+      /** @enum {string} */
+      kind: 'complaint' | 'claim' | 'question' | 'idea' | 'thanks' | 'warranty' | 'cargo';
+      hint?: string;
+    };
+    /** @description Completion of the upload. */
+    PublicServiceUploadComplete: {
+      sha256: string;
+    };
+    /** @description Quarantined upload of a client file (FILE-02, like initiatePublicUpload). */
+    PublicServiceUploadCreate: {
+      fileName: string;
+      contentType: string;
+      /** Format: int64 */
+      sizeBytes: number;
+      sha256: string;
+    };
     PublicUploadComplete: {
       submissionNonce: string;
       sha256: string;
@@ -12309,11 +16476,18 @@ export interface components {
     /** @description Hints only (ADR-0015). No titles, bodies, amounts or personal data travel over the socket; the audience is checked when the hint is queued and again when it is delivered. */
     RealtimeServerMessage: {
       /**
-       * @description context.changed — re-read getMyContext (roles, assignments, modules, tenant state or policy version changed; S1-15 revocation within 5 s); notifications.changed — re-read getMyNotificationSummary and the open inbox list (S1-26); session.ended — the session is over, the socket closes next; ping — answer with pong.
+       * @description context.changed — re-read getMyContext (roles, assignments, modules, tenant state or policy version changed; S1-15 revocation within 5 s); notifications.changed — re-read getMyNotificationSummary and the open inbox list (S1-26); session.ended — the session is over, the socket closes next; ping — answer with pong; chat.changed (0.12.0-stage7, W7.00, ADR-0015 clarification, Q-W4.00-chats-7) — something changed in the chat chatId, read listChatMessages with afterSeq = the last seq the client has (and listChats for the counters); the hint carries no text, name or file, and is sent only to the connections of the members of the chat (the audience is checked when the hint is queued and again when it is delivered); there is no typing or presence frame and no subscribe frame in this version.
        * @enum {string}
        */
-      type: 'context.changed' | 'notifications.changed' | 'session.ended' | 'ping';
+      type: 'context.changed' | 'notifications.changed' | 'session.ended' | 'ping' | 'chat.changed';
       tenantId?: components['schemas']['Id'];
+      /** @description Only for chat.changed — the chat that changed. */
+      chatId?: components['schemas']['Id'];
+      /**
+       * Format: int64
+       * @description Only for chat.changed — seq of the newest message of the chat; the client skips the re-read when it already has it.
+       */
+      lastSeq?: number;
       /** @description New MeContext.permissionVersion for context.changed; the client may skip the re-read when it already has this version. */
       permissionVersion?: string;
       /**
@@ -12878,6 +17052,473 @@ export interface components {
       invited: number;
       /** @description max(0, limit − used); null without a limit. */
       available: number | null;
+    };
+    /** @description Client of a request; a phone number in any answer is a mask (FB-05). */
+    ServiceClient: {
+      name: string;
+      company?: string | null;
+      /** @description The last two digits are shown; the full number is returned only by revealServiceClientPhone or to the author of a call request. */
+      phoneMasked: string;
+      /** @description Full number: only when shown to the member earlier (shown[]). */
+      phone?: string;
+      since: string;
+    };
+    /** @description Compensation (service.compensation.manage, sensitive): the discount is saved on the client card; «Возврат денег — через кассу» is a proposal of a cash operation with the basis {key} (cash.proposals.post, W5.31); without the cash — a record only (Q-W4.00-service-6). */
+    ServiceCompensationSet: {
+      /** @enum {string} */
+      kind: 'discount20' | 'discount10' | 'repeat_visit' | 'refund';
+      text?: string;
+    };
+    /** @description Conclusion for the employee a complaint is about (svcShare): only after the resolution; the client contacts are not passed. */
+    ServiceConclusion: {
+      text: string;
+    };
+    /** @description Direction of requests (МАС, КОС, ОТД, …) with the working calendar and the team. */
+    ServiceDirection: {
+      id: components['schemas']['Id'];
+      /** @description Key of the number: «МАС» → МАС-42 (2–6 letters). */
+      key: string;
+      name: string;
+      color: string;
+      moduleKey: string;
+      areaLabel: string;
+      orgUnitId: components['schemas']['Id'] | null;
+      /** @description Service project of «Задачи»; the role of the direction is an assignment with the scope project (D-27 комплекта, Q-W4.00-service-1). */
+      projectId: components['schemas']['Id'];
+      calendar: components['schemas']['ServiceWorkCalendar'];
+      lead: components['schemas']['ServiceMemberRef'] | null;
+      /**
+       * Format: int64
+       * @description Next serial number.
+       */
+      next: number;
+      /** @description Active members who see the direction and have «Отвечать». */
+      team: components['schemas']['ServiceMemberRef'][];
+      /** @description The member may reveal client phones (service.clients.contacts). */
+      canContacts: boolean;
+      /** Format: int64 */
+      version: number;
+    };
+    /** @description Body of a draft of a direction (1d, 2c): types, goals, calendar, reply templates. Open requests finish by their own version (docs/22 principle 8). */
+    ServiceDirectionBody: {
+      name: string;
+      color: string;
+      calendar: components['schemas']['ServiceWorkCalendar'];
+      types: {
+        id: string;
+        /** @enum {string} */
+        kind: 'complaint' | 'claim' | 'question' | 'idea' | 'thanks' | 'warranty' | 'cargo';
+        name: string;
+        /** Format: int64 */
+        firstMinutes?: number | null;
+        /** Format: int64 */
+        resolveMinutes?: number | null;
+        /** Format: int64 */
+        legalDays?: number | null;
+        /** @enum {string} */
+        priority: 'low' | 'normal' | 'high';
+      }[];
+      templates?: {
+        name: string;
+        text: string;
+      }[];
+    };
+    /** @description Published version and the draft of a direction (service.directions.manage). */
+    ServiceDirectionConfig: {
+      direction: components['schemas']['ServiceDirection'];
+      types: components['schemas']['ServiceRequestType'][];
+      draft?: components['schemas']['ServiceDirectionDraft'] | null;
+    };
+    /** @description New direction; a service project of «Задачи» is created with it. */
+    ServiceDirectionCreate: {
+      name: string;
+      key: string;
+      orgUnitId?: components['schemas']['Id'] | null;
+      color?: string;
+      calendar?: components['schemas']['ServiceWorkCalendar'];
+    };
+    /** @description Draft of a direction. */
+    ServiceDirectionDraft: {
+      directionId: components['schemas']['Id'];
+      body: components['schemas']['ServiceDirectionBody'];
+      /** Format: int64 */
+      revision: number;
+      updatedAt: components['schemas']['Instant'];
+    };
+    /** @description Saving of a draft; revision — If-Match. */
+    ServiceDirectionDraftSave: {
+      body: components['schemas']['ServiceDirectionBody'];
+    };
+    /** @description Directions visible to the member with their types. */
+    ServiceDirectionList: {
+      items: components['schemas']['ServiceDirection'][];
+      types: components['schemas']['ServiceRequestType'][];
+      /** @description true — the organization has no directions: the screen shows «Обращения не настроены». */
+      notConfigured?: boolean;
+    };
+    /** @description File of a message; shown to the client only after the check (FILE-02). */
+    ServiceFile: {
+      id: components['schemas']['Id'];
+      fileName: string;
+      /** Format: int64 */
+      sizeBytes: number;
+      /** @enum {string} */
+      status: 'pending_upload' | 'quarantined' | 'ready' | 'rejected';
+    };
+    /** @description Work the request is about (service.md §5.1 п. 17). */
+    ServiceLink: {
+      /** @enum {string} */
+      kind?: 'visit' | 'object' | 'trip' | 'act' | 'manual';
+      object?: components['schemas']['ObjectRef'] | null;
+      label: string;
+      lines: string[];
+    };
+    /** @description Work picked from the works of the client, or a free text. */
+    ServiceLinkInput: {
+      object?: components['schemas']['ObjectRef'];
+      label?: string;
+    };
+    /** @description Member shown by name; the assignee is an id, the name is for display (the prototype stored the name — service.md §5.2). */
+    ServiceMemberRef: {
+      memberId: components['schemas']['Id'];
+      displayName: string;
+    };
+    /** @description Message of a request (service.messages — not task comments: it has a channel and a delivery). */
+    ServiceMessage: {
+      id: components['schemas']['Id'];
+      /**
+       * @description client — from the client; public — reply to the client; note — internal; system; rating.
+       * @enum {string}
+       */
+      kind: 'client' | 'public' | 'note' | 'system' | 'rating';
+      at: components['schemas']['Instant'];
+      text: string;
+      author?: components['schemas']['ServiceMemberRef'] | null;
+      files: components['schemas']['ServiceFile'][];
+      /** @enum {string|null} */
+      channel?: 'sms' | 'bot' | 'cabinet' | 'widget' | 'phone' | 'qr' | null;
+      auto?: boolean;
+      /**
+       * @description queued — saved, the channel delivery is W7.37 (Q-W4.00-service-8); sent; failed.
+       * @enum {string}
+       */
+      delivery?: 'queued' | 'sent' | 'failed';
+      /** Format: int64 */
+      score?: number;
+      reasons?: string[];
+      contact?: boolean;
+    };
+    /** @description Reply to the client or an internal note (svcReply): «Напишите текст ответа / заметки» — 422. */
+    ServiceMessageCreate: {
+      /**
+       * @description public needs «Отвечать» (stops the timer first, new → work, assignee = author); note needs «Видеть» (Q-W4.00-service-5).
+       * @enum {string}
+       */
+      kind: 'public' | 'note';
+      text: string;
+      fileIds?: components['schemas']['Id'][];
+    };
+    /** @description Move to another direction (svcMove): a new number with a link from the old one (FB-09), the goals are recomputed from the creation time by the type of the new direction (Q-W4.00-service-11); no such kind — the type «Вопрос» with a system record. */
+    ServiceMove: {
+      directionId: components['schemas']['Id'];
+    };
+    /** @description Full number; every reveal is audited and written to the feed («Телефон клиента показан: …»). */
+    ServicePhoneReveal: {
+      phone: string;
+      shownAt: components['schemas']['Instant'];
+    };
+    /** @description Counter of a queue. */
+    ServiceQueueCount: {
+      /** @enum {string} */
+      key: 'open' | 'noreply' | 'mine' | 'risk' | 'late' | 'wait' | 'low' | 'done';
+      label: string;
+      /** Format: int64 */
+      count: number;
+      /** @enum {string} */
+      tone?: 'warn' | 'danger';
+    };
+    /** @description Counters of the navigation (Открытые, Без ответа, Мои, Срок под угрозой, Срок нарушен, Ждут клиента, Низкие оценки, Решено и закрыто). */
+    ServiceQueueCounts: {
+      items: components['schemas']['ServiceQueueCount'][];
+      /**
+       * Format: int64
+       * @description Counter «без первого ответа» of the menu badge.
+       */
+      noReplyCount?: number;
+    };
+    /** @description Low rating after a service (survey answer, D-25 комплекта, W4.21). */
+    ServiceRating: {
+      id: components['schemas']['Id'];
+      directionId: components['schemas']['Id'];
+      clientName: string;
+      /** Format: int64 */
+      score: number;
+      reasons: string[];
+      comment: string;
+      at: components['schemas']['Instant'];
+      work: string;
+      /** @enum {string} */
+      status: 'open' | 'seen' | 'request';
+      requestId?: components['schemas']['Id'] | null;
+    };
+    /** @description Decision on a low rating (svcRating). */
+    ServiceRatingDecision: {
+      /**
+       * @description seen — «Просмотрено» (needs «Отвечать»); complaint — «Открыть жалобу» (needs «Заводить»).
+       * @enum {string}
+       */
+      action: 'seen' | 'complaint';
+    };
+    /** @description complaint creates a request in work, the author as the assignee, priority high for a score ≤ 2; emits service.request.created.v1. */
+    ServiceRatingDecisionResult: {
+      rating: components['schemas']['ServiceRating'];
+      request?: components['schemas']['ServiceRequestSummary'] | null;
+    };
+    /** @description Low ratings of the visible directions. */
+    ServiceRatingList: {
+      items: components['schemas']['ServiceRating'][];
+      nextCursor: string | null;
+    };
+    /** @description Template of a reply with the substitutions {имя}, {номер}, {срок}. */
+    ServiceReplyTemplate: {
+      id: string;
+      name: string;
+      text: string;
+    };
+    /** @description Templates of the direction. */
+    ServiceReplyTemplateList: {
+      items: components['schemas']['ServiceReplyTemplate'][];
+    };
+    /** @description Report of the directions (1e): aggregates, reasons, weeks; staff separately. */
+    ServiceReport: {
+      period: {
+        /** Format: date */
+        from: string;
+        /** Format: date */
+        to: string;
+      };
+      rows: components['schemas']['ServiceReportRow'][];
+      reasons: {
+        reason: string;
+        /** Format: int64 */
+        count: number;
+      }[];
+      weeks: {
+        /** Format: date */
+        weekStart: string;
+        /** Format: int64 */
+        requests: number;
+        /** Format: int64 */
+        late: number;
+      }[];
+      /** @description Only with service.reports.staff. */
+      staff?: components['schemas']['ServiceReportStaff'][];
+    };
+    /** @description Row of the report by a direction. */
+    ServiceReportRow: {
+      directionId: components['schemas']['Id'];
+      /** Format: int64 */
+      requests: number;
+      /** Format: int64 */
+      resolvedInTime: number;
+      /** Format: int64 */
+      late: number;
+      avgScore?: number | null;
+      /** Format: int64 */
+      ratings: number;
+      /** @description Fewer than 20 answers: «мало ответов», no comparison with the past period. */
+      fewAnswers?: boolean;
+    };
+    /** @description Per employee; a complaint counts only with the outcome «Подтвердилась». */
+    ServiceReportStaff: {
+      member: components['schemas']['ServiceMemberRef'];
+      /** Format: int64 */
+      ratings: number;
+      avgScore?: number | null;
+      /** Format: int64 */
+      complaintsConfirmed: number;
+      /** Format: int64 */
+      thanks: number;
+    };
+    /** @description Request with the feed, tasks and timers (getServiceRequest). ETag — revision. The request is a task of the service project (task.kind = request) plus service.request_details. */
+    ServiceRequest: {
+      id: components['schemas']['Id'];
+      key: string;
+      directionId: components['schemas']['Id'];
+      /** @enum {string} */
+      kind: 'complaint' | 'claim' | 'question' | 'idea' | 'thanks' | 'warranty' | 'cargo';
+      title: string;
+      /** @enum {string} */
+      status: 'new' | 'work' | 'wait' | 'resolved' | 'closed';
+      /** @enum {string} */
+      priority: 'low' | 'normal' | 'high';
+      assignee: components['schemas']['ServiceMemberRef'] | null;
+      createdAt: components['schemas']['Instant'];
+      /** @enum {string} */
+      channel: 'sms' | 'bot' | 'cabinet' | 'widget' | 'phone' | 'qr';
+      client: components['schemas']['ServiceClient'];
+      link: components['schemas']['ServiceLink'] | null;
+      sla: components['schemas']['ServiceSla'];
+      head: components['schemas']['ServiceSlaHead'];
+      labels: string[];
+      /** Format: int64 */
+      taskCount: number;
+      oldKeys?: string[];
+      /** Format: int64 */
+      fromRating?: number;
+      outcome?: string | null;
+      resolvedAt?: components['schemas']['Instant'] | null;
+      messages: components['schemas']['ServiceMessage'][];
+      tasks: components['schemas']['ServiceTaskRef'][];
+      compensation?: string | null;
+      shared?: {
+        text: string;
+        at: components['schemas']['Instant'];
+        by: components['schemas']['ServiceMemberRef'];
+      } | null;
+      /** @description Only for the lead of the direction and the owner: the employee the complaint is about (service.md §5.1 п. 6, Q-W4.00-service-12). */
+      aboutMember?: components['schemas']['ServiceMemberRef'] | null;
+      /** @description Statuses reachable by SVC_FLOW for the member. */
+      allowedStatuses: ('new' | 'work' | 'wait' | 'resolved' | 'closed')[];
+      /** Format: int64 */
+      revision: number;
+    };
+    /** @description Request by a call (svcCreate): channel phone, status work, the assignee is the author, the priority by the type. */
+    ServiceRequestCreate: {
+      directionId: components['schemas']['Id'];
+      typeId: string;
+      clientName: string;
+      company?: string;
+      /** @description At least 10 digits; the server joins the client by the phone (Q-W4.00-service-7). */
+      phone: string;
+      title?: string;
+      /** @description «Опишите, что случилось». */
+      text: string;
+      link?: components['schemas']['ServiceLinkInput'];
+    };
+    /** @description Requests of the queue ordered by the main term (rank), then by age. */
+    ServiceRequestList: {
+      items: components['schemas']['ServiceRequestSummary'][];
+      nextCursor: string | null;
+      counts: components['schemas']['ServiceQueueCounts'];
+    };
+    /** @description Assignee and priority (svcAssign, svcPriority). */
+    ServiceRequestPatch: {
+      /** @description Only a member who sees the direction and has «Отвечать» (422 service_assignee_out_of_scope); null — unassign. */
+      assigneeId?: components['schemas']['Id'] | null;
+      /** @enum {string} */
+      priority?: 'low' | 'normal' | 'high';
+    };
+    /** @description Row of the queue. A request about the member (about = me) is not listed for them. */
+    ServiceRequestSummary: {
+      id: components['schemas']['Id'];
+      key: string;
+      directionId: components['schemas']['Id'];
+      /** @enum {string} */
+      kind: 'complaint' | 'claim' | 'question' | 'idea' | 'thanks' | 'warranty' | 'cargo';
+      title: string;
+      /** @enum {string} */
+      status: 'new' | 'work' | 'wait' | 'resolved' | 'closed';
+      /** @enum {string} */
+      priority: 'low' | 'normal' | 'high';
+      assignee: components['schemas']['ServiceMemberRef'] | null;
+      createdAt: components['schemas']['Instant'];
+      /** @enum {string} */
+      channel: 'sms' | 'bot' | 'cabinet' | 'widget' | 'phone' | 'qr';
+      client: components['schemas']['ServiceClient'];
+      link: components['schemas']['ServiceLink'] | null;
+      sla: components['schemas']['ServiceSla'];
+      head: components['schemas']['ServiceSlaHead'];
+      labels: string[];
+      /** Format: int64 */
+      taskCount: number;
+      oldKeys?: string[];
+      /** Format: int64 */
+      fromRating?: number;
+      outcome?: string | null;
+      resolvedAt?: components['schemas']['Instant'] | null;
+    };
+    /** @description Type of a request of a direction with the SLA goals in working minutes of the direction. */
+    ServiceRequestType: {
+      id: string;
+      directionId: components['schemas']['Id'];
+      /** @enum {string} */
+      kind: 'complaint' | 'claim' | 'question' | 'idea' | 'thanks' | 'warranty' | 'cargo';
+      name: string;
+      /** Format: int64 */
+      firstMinutes: number | null;
+      /** Format: int64 */
+      resolveMinutes: number | null;
+      /**
+       * Format: int64
+       * @description Legal term in calendar days (claim: 10 and 30 — constants of the type, the lawyer confirms, Q-W4.00-service-19).
+       */
+      legalDays: number | null;
+      /** @enum {string} */
+      priority: 'low' | 'normal' | 'high';
+    };
+    /** @description Timers of a request (first reply, resolution, legal term); the pause does not act on the legal term. */
+    ServiceSla: {
+      first?: components['schemas']['ServiceSlaTarget'] | null;
+      resolve?: components['schemas']['ServiceSlaTarget'] | null;
+      legal?: components['schemas']['ServiceSlaTarget'] | null;
+    };
+    /** @description Main term of a request for the queue and the chip. */
+    ServiceSlaHead: {
+      /** @enum {string} */
+      key?: 'first' | 'resolve' | 'legal';
+      /** @enum {string} */
+      state: 'done' | 'pause' | 'late' | 'risk' | 'norm' | 'legal' | 'none';
+      label: string;
+      text: string;
+      until: string;
+      /** @description Queue order: less — more urgent (may be negative or fractional). */
+      rank: number;
+    };
+    /** @description State of one goal: done, pause, late, risk (left ≤ max(20 min, 25 % of the goal)), norm, legal. */
+    ServiceSlaTarget: {
+      /** Format: int64 */
+      goalMinutes: number | null;
+      dueAt: components['schemas']['Instant'];
+      stoppedAt: components['schemas']['Instant'] | null;
+      /** @enum {string} */
+      state: 'done' | 'pause' | 'late' | 'risk' | 'norm' | 'legal' | 'none';
+      label: string;
+      text: string;
+      until: string;
+      /** Format: int64 */
+      overMinutes?: number;
+      /** Format: int64 */
+      leftMinutes?: number;
+    };
+    /** @description Task of a request (svcAddTask): «Тема задачи — не короче 3 символов». */
+    ServiceTaskCreate: {
+      title: string;
+      /** @description Defaults to the project of the direction (Q-W4.00-service-13). */
+      projectId?: components['schemas']['Id'];
+    };
+    /** @description Task of the request in «Задачи» (TaskPort, W4.10/W4.11). */
+    ServiceTaskRef: {
+      id: components['schemas']['Id'];
+      key: string;
+      title: string;
+      status: string;
+    };
+    /** @description Change of the status by SVC_FLOW (svcTransition): «Из статуса «…» в «…» перейти нельзя» — 409 invalid_transition. */
+    ServiceTransition: {
+      /** @enum {string} */
+      to: 'new' | 'work' | 'wait' | 'resolved' | 'closed';
+      /** @description Required for resolved; for a complaint about an employee only «Подтвердилась» / «Не подтвердилась». */
+      outcome?: string;
+    };
+    /** @description Working time of a direction: SLA goals are counted in working minutes. Holidays — the production calendar of the organization. */
+    ServiceWorkCalendar: {
+      days: number[];
+      from: string;
+      to: string;
+      /** @description IANA zone of the direction; one zone, Europe/Moscow by default (Q-W4.00-service-10). */
+      timeZone: string;
+      label?: string;
     };
     SignedMoney: {
       amountMinor: number;
@@ -14099,7 +18740,7 @@ export interface components {
     UploadComplete: {
       sha256: string;
     };
-    /** @description Reject oversized or unsupported MIME; reserve bytes before issuing a URL. Owner belongs to same tenant and the actor can attach files to it. Before inspection creation, departure photos attach to the reservation and return photos to the trip; submitInspection binds them atomically to its evidence. Expense receipts likewise attach to the trip before expense creation. A repair report may attach photos to its project before the work log exists. These are explicit allowed owner transitions, never arbitrary reparenting. File display name is not an object storage path. Task attachments (0.7.0-stage4, W4.02): purpose task_attachment with owner tasks/task — the file is uploaded for an existing task the actor may update (tasks.create on creation, tasks.update later), then bound to it by the tasks module; it counts in the storage group «Вложения задач и форм». Until the tasks module registers this parent (W4.11), initiateUpload answers 422 validation_failed for it. */
+    /** @description Reject oversized or unsupported MIME; reserve bytes before issuing a URL. Owner belongs to same tenant and the actor can attach files to it. Before inspection creation, departure photos attach to the reservation and return photos to the trip; submitInspection binds them atomically to its evidence. Expense receipts likewise attach to the trip before expense creation. A repair report may attach photos to its project before the work log exists. These are explicit allowed owner transitions, never arbitrary reparenting. File display name is not an object storage path. Task attachments (0.7.0-stage4, W4.02): purpose task_attachment with owner tasks/task — the file is uploaded for an existing task the actor may update (tasks.create on creation, tasks.update later), then bound to it by the tasks module; it counts in the storage group «Вложения задач и форм». Until the tasks module registers this parent (W4.11), initiateUpload answers 422 validation_failed for it. Chat attachments and documents (0.12.0-stage7, W7.00): purpose chat_attachment with owner chat/chat (the chat the actor may write to with chat.files.send; the file goes with a message by postChatMessage; saveChatAttachmentsToRecord is the one allowed change of the owner — from the message to a record) and purpose document with owner docs/folder (a new document, docs.create) or docs/document (a new version, docs.update); both count in the storage groups of the chat and of the documents. Until the chats and documents modules register their parents (W7.11, W7.23), initiateUpload answers 422 validation_failed for them. */
     UploadCreate: {
       fileName: string;
       contentType: string;
@@ -14113,7 +18754,9 @@ export interface components {
         | 'knowledge_attachment'
         | 'form_attachment'
         | 'repair_evidence'
-        | 'task_attachment';
+        | 'task_attachment'
+        | 'chat_attachment'
+        | 'document';
       owner: components['schemas']['ObjectRef'];
     };
     /** @description Upload session (S1-20) — quota reservation, private PUT ticket, completion and scan. A session never grants list, read or delete rights on other files. */
@@ -14135,7 +18778,9 @@ export interface components {
         | 'knowledge_attachment'
         | 'form_attachment'
         | 'repair_evidence'
-        | 'task_attachment';
+        | 'task_attachment'
+        | 'chat_attachment'
+        | 'document';
       owner: components['schemas']['ObjectRef'];
       /** Format: int64 */
       sizeBytes: number;
@@ -14595,6 +19240,8 @@ export interface components {
     appointmentId: components['schemas']['Id'];
     /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
     assignmentId: components['schemas']['Id'];
+    /** @description Opaque UUID of an attachment of a chat message. */
+    attachmentId: components['schemas']['Id'];
     /** @description W4.03 (0.10.0-stage4). Opaque UUID of a rule of automation of the project. */
     automationId: components['schemas']['Id'];
     /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
@@ -14619,6 +19266,14 @@ export interface components {
     changeOrderId: components['schemas']['Id'];
     /** @description W4.07. Opaque UUID of a subscription change request (SubscriptionChangeRequest.id). A request of another tenant answers 404, as a missing one. */
     changeRequestId: components['schemas']['Id'];
+    /** @description Opaque UUID of a chat history export job. */
+    chatExportId: components['schemas']['Id'];
+    /** @description Opaque UUID of a chat hold. */
+    chatHoldId: components['schemas']['Id'];
+    /** @description Opaque UUID of a chat; a chat the member is not in — 404, as a missing one (docs/25: no access = 404). */
+    chatId: components['schemas']['Id'];
+    /** @description Kind of chats whose policy is read or changed. */
+    chatKindParam: 'direct' | 'group' | 'area' | 'record' | 'announce';
     /** @description W4.03 (0.10.0-stage4). TaskChecklistItem.id — the id of an item of the checklist within the task. */
     checklistItemId: string;
     /** @description W6.00. Unpredictable revocable capability of the client cabinet (Q-W4.00-repair-10): the tenant is resolved by the token digest; only the hash is stored; the link lives until the object is handed over. Avoid logs and referrer leakage. */
@@ -14627,6 +19282,22 @@ export interface components {
     datasetId: string;
     /** @description W2.00 (0.5.0-stage2). Opaque UUID of a fleet.defects row; same-tenant and visibility checks are mandatory. */
     defectId: components['schemas']['Id'];
+    /** @description Opaque UUID of a direction (a service project of «Задачи»); a direction the member does not see — 404. */
+    directionId: components['schemas']['Id'];
+    /** @description Opaque UUID of a comment of a document. */
+    docCommentId: components['schemas']['Id'];
+    /** @description Opaque UUID of a folder of «Документы». */
+    docFolderId: components['schemas']['Id'];
+    /** @description Opaque UUID of a document job (convert, OCR, merge, compress, PDF/A). */
+    docJobId: components['schemas']['Id'];
+    /** @description Opaque UUID of an external link of a document. */
+    docLinkId: components['schemas']['Id'];
+    /** @description Secret token of an external link of a document (only its digest is stored); a revoked or expired one — 410 public_token_expired. */
+    docLinkToken: string;
+    /** @description Number of a version of the document (DocVersion.version). */
+    docVersionNumber: number;
+    /** @description Opaque UUID of a document; a document the member cannot open — 404 «Документ недоступен», as a missing one (Q-W4.00-documents-13). */
+    docsDocumentId: components['schemas']['Id'];
     /** @description W6.00. Opaque UUID of a document of an object (contract, act, invoice). */
     documentId: components['schemas']['Id'];
     /** @description W6.00. Number of an estimate version of the object (1, 2, …). */
@@ -14657,18 +19328,24 @@ export interface components {
     inventoryReservationId: components['schemas']['Id'];
     /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
     memberId: components['schemas']['Id'];
+    /** @description Opaque UUID of a chat message. */
+    messageId: components['schemas']['Id'];
     /** @description Module key from the trusted registry. */
     moduleKey: string;
     /** @description W4.04. Opaque UUID of a node of the knowledge tree (page, folder, table, diagram, file, CRM record); a node the member does not see — 404 «Страница не найдена или недоступна», as a missing one. */
     nodeId: components['schemas']['Id'];
     /** @description W4.04. Number of a version of the node (KnowledgeVersion.version). */
     nodeVersion: number;
+    /** @description Opaque id of a doubtful word of the text layer. */
+    ocrWordId: string;
     /** @description W4.07. Opaque UUID of a platform operator (PlatformOperator.id, platform_operators.id). */
     operatorId: components['schemas']['Id'];
     /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
     orgUnitId: components['schemas']['Id'];
     /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
     pageId: components['schemas']['Id'];
+    /** @description Opaque UUID of a poll of a chat message. */
+    pollId: components['schemas']['Id'];
     /** @description W6.00. Opaque UUID of a price list item. */
     priceItemId: components['schemas']['Id'];
     /** @description W4.07. Number of a price book version (PriceBookVersion.version). */
@@ -14693,6 +19370,14 @@ export interface components {
     roleId: components['schemas']['Id'];
     /** @description W4.04. Opaque UUID of an automation rule of a knowledge space; visible to the lead of the space only. */
     ruleId: components['schemas']['Id'];
+    /** @description Slug of the public page of a direction. */
+    servicePortalSlug: string;
+    /** @description Personal link token of a request (only its digest is stored); an expired one — 410 public_token_expired. */
+    servicePortalToken: string;
+    /** @description Opaque UUID of a low rating. */
+    serviceRatingId: components['schemas']['Id'];
+    /** @description Opaque UUID of a client request; a request of a direction the member does not see and a complaint about the member — 404 (the complaint is not revealed, service.md §2.4). */
+    serviceRequestId: components['schemas']['Id'];
     /** @description W5.00 (0.12.0-stage5). Opaque UUID of a SPA service (SpaService.id). */
     spaServiceId: components['schemas']['Id'];
     /** @description W4.04. Opaque UUID of a knowledge space; a space the member does not see — 404, as a missing one. */
@@ -21361,7 +26046,9 @@ export interface operations {
           | 'knowledge_attachment'
           | 'form_attachment'
           | 'repair_evidence'
-          | 'task_attachment';
+          | 'task_attachment'
+          | 'chat_attachment'
+          | 'document';
         /** @description Opaque cursor from the preceding response; no offset pagination. */
         cursor?: components['parameters']['Cursor'];
         limit?: components['parameters']['Limit'];
@@ -31427,6 +36114,4943 @@ export interface operations {
       401: components['responses']['Unauthenticated'];
       403: components['responses']['Forbidden'];
       404: components['responses']['NotFound'];
+      422: components['responses']['Validation'];
+      429: components['responses']['RateLimited'];
+    };
+  };
+  listChats: {
+    parameters: {
+      query?: {
+        /** @description Opaque cursor from the preceding response; no offset pagination. */
+        cursor?: components['parameters']['Cursor'];
+        limit?: components['parameters']['Limit'];
+        /** @description Folder of the list (Q-W4.00-chats-15). */
+        folder?: 'all' | 'direct' | 'work' | 'record' | 'announce';
+        /** @description Search in titles and in last messages after the PDn mask. */
+        q?: string;
+      };
+      header?: never;
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Successful result. */
+      200: {
+        headers: {
+          'X-Request-Id': components['headers']['RequestId'];
+          /** @description Never cache authenticated, confidential or capability-bearing API responses in shared caches. */
+          'Cache-Control'?: 'private, no-store';
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['ChatList'];
+        };
+      };
+      400: components['responses']['BadRequest'];
+      401: components['responses']['Unauthenticated'];
+      403: components['responses']['Forbidden'];
+      404: components['responses']['NotFound'];
+      422: components['responses']['Validation'];
+      429: components['responses']['RateLimited'];
+    };
+  };
+  createChat: {
+    parameters: {
+      query?: never;
+      header: {
+        /** @description Stable per intended command. Retain record at least 7 days; financial deduplication also retains a durable tenant+actor+operation+key digest receipt. Key is scoped to tenant+actor+operation. Reuse only for an identical request. */
+        'Idempotency-Key': components['parameters']['IdempotencyKey'];
+        /** @description Required for cookie-authenticated state changes; not required with bearer-only authentication. Invalid/missing token or Origin yields 403. Conditional requirement cannot be represented by OpenAPI required=true. */
+        'X-CSRF-Token'?: components['parameters']['Csrf'];
+        /** @description Required and checked against the deployment allowlist for cookie-authenticated state changes and browser public-form submissions/uploads. Never accept wildcard with credentialed requests. */
+        Origin?: components['parameters']['Origin'];
+      };
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+      };
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['ChatCreate'];
+      };
+    };
+    responses: {
+      /** @description Successful result. */
+      200: {
+        headers: {
+          'X-Request-Id': components['headers']['RequestId'];
+          'Idempotency-Replayed': components['headers']['IdempotencyReplayed'];
+          /** @description Never cache authenticated, confidential or capability-bearing API responses in shared caches. */
+          'Cache-Control'?: 'private, no-store';
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['ChatCreateResult'];
+        };
+      };
+      /** @description Successful result. */
+      201: {
+        headers: {
+          'X-Request-Id': components['headers']['RequestId'];
+          'Idempotency-Replayed': components['headers']['IdempotencyReplayed'];
+          /** @description Never cache authenticated, confidential or capability-bearing API responses in shared caches. */
+          'Cache-Control'?: 'private, no-store';
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['ChatCreateResult'];
+        };
+      };
+      400: components['responses']['BadRequest'];
+      401: components['responses']['Unauthenticated'];
+      403: components['responses']['Forbidden'];
+      404: components['responses']['NotFound'];
+      409: components['responses']['Conflict'];
+      422: components['responses']['Validation'];
+      429: components['responses']['RateLimited'];
+    };
+  };
+  createDirectChat: {
+    parameters: {
+      query?: never;
+      header: {
+        /** @description Stable per intended command. Retain record at least 7 days; financial deduplication also retains a durable tenant+actor+operation+key digest receipt. Key is scoped to tenant+actor+operation. Reuse only for an identical request. */
+        'Idempotency-Key': components['parameters']['IdempotencyKey'];
+        /** @description Required for cookie-authenticated state changes; not required with bearer-only authentication. Invalid/missing token or Origin yields 403. Conditional requirement cannot be represented by OpenAPI required=true. */
+        'X-CSRF-Token'?: components['parameters']['Csrf'];
+        /** @description Required and checked against the deployment allowlist for cookie-authenticated state changes and browser public-form submissions/uploads. Never accept wildcard with credentialed requests. */
+        Origin?: components['parameters']['Origin'];
+      };
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+      };
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['ChatDirectCreate'];
+      };
+    };
+    responses: {
+      /** @description Successful result. */
+      200: {
+        headers: {
+          'X-Request-Id': components['headers']['RequestId'];
+          'Idempotency-Replayed': components['headers']['IdempotencyReplayed'];
+          /** @description Never cache authenticated, confidential or capability-bearing API responses in shared caches. */
+          'Cache-Control'?: 'private, no-store';
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['Chat'];
+        };
+      };
+      /** @description Successful result. */
+      201: {
+        headers: {
+          'X-Request-Id': components['headers']['RequestId'];
+          'Idempotency-Replayed': components['headers']['IdempotencyReplayed'];
+          /** @description Never cache authenticated, confidential or capability-bearing API responses in shared caches. */
+          'Cache-Control'?: 'private, no-store';
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['Chat'];
+        };
+      };
+      400: components['responses']['BadRequest'];
+      401: components['responses']['Unauthenticated'];
+      403: components['responses']['Forbidden'];
+      404: components['responses']['NotFound'];
+      409: components['responses']['Conflict'];
+      422: components['responses']['Validation'];
+      429: components['responses']['RateLimited'];
+    };
+  };
+  getChat: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+        /** @description Opaque UUID of a chat; a chat the member is not in — 404, as a missing one (docs/25: no access = 404). */
+        chatId: components['parameters']['chatId'];
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Successful result. */
+      200: {
+        headers: {
+          'X-Request-Id': components['headers']['RequestId'];
+          ETag: components['headers']['ETag'];
+          /** @description Never cache authenticated, confidential or capability-bearing API responses in shared caches. */
+          'Cache-Control'?: 'private, no-store';
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['Chat'];
+        };
+      };
+      400: components['responses']['BadRequest'];
+      401: components['responses']['Unauthenticated'];
+      403: components['responses']['Forbidden'];
+      404: components['responses']['NotFound'];
+      422: components['responses']['Validation'];
+      429: components['responses']['RateLimited'];
+    };
+  };
+  updateChat: {
+    parameters: {
+      query?: never;
+      header: {
+        /** @description Stable per intended command. Retain record at least 7 days; financial deduplication also retains a durable tenant+actor+operation+key digest receipt. Key is scoped to tenant+actor+operation. Reuse only for an identical request. */
+        'Idempotency-Key': components['parameters']['IdempotencyKey'];
+        /** @description Required for cookie-authenticated state changes; not required with bearer-only authentication. Invalid/missing token or Origin yields 403. Conditional requirement cannot be represented by OpenAPI required=true. */
+        'X-CSRF-Token'?: components['parameters']['Csrf'];
+        /** @description Required and checked against the deployment allowlist for cookie-authenticated state changes and browser public-form submissions/uploads. Never accept wildcard with credentialed requests. */
+        Origin?: components['parameters']['Origin'];
+        /** @description Strong ETag obtained from latest GET or mutation response. * is not accepted. Missing=428; stale=412. Idempotent replay is checked before current revision precondition. */
+        'If-Match': components['parameters']['IfMatch'];
+      };
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+        /** @description Opaque UUID of a chat; a chat the member is not in — 404, as a missing one (docs/25: no access = 404). */
+        chatId: components['parameters']['chatId'];
+      };
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['ChatPatch'];
+      };
+    };
+    responses: {
+      /** @description Successful result. */
+      200: {
+        headers: {
+          'X-Request-Id': components['headers']['RequestId'];
+          ETag: components['headers']['ETag'];
+          'Idempotency-Replayed': components['headers']['IdempotencyReplayed'];
+          /** @description Never cache authenticated, confidential or capability-bearing API responses in shared caches. */
+          'Cache-Control'?: 'private, no-store';
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['Chat'];
+        };
+      };
+      400: components['responses']['BadRequest'];
+      401: components['responses']['Unauthenticated'];
+      403: components['responses']['Forbidden'];
+      404: components['responses']['NotFound'];
+      409: components['responses']['Conflict'];
+      412: components['responses']['PreconditionFailed'];
+      422: components['responses']['Validation'];
+      428: components['responses']['PreconditionRequired'];
+      429: components['responses']['RateLimited'];
+    };
+  };
+  archiveChat: {
+    parameters: {
+      query?: never;
+      header: {
+        /** @description Stable per intended command. Retain record at least 7 days; financial deduplication also retains a durable tenant+actor+operation+key digest receipt. Key is scoped to tenant+actor+operation. Reuse only for an identical request. */
+        'Idempotency-Key': components['parameters']['IdempotencyKey'];
+        /** @description Required for cookie-authenticated state changes; not required with bearer-only authentication. Invalid/missing token or Origin yields 403. Conditional requirement cannot be represented by OpenAPI required=true. */
+        'X-CSRF-Token'?: components['parameters']['Csrf'];
+        /** @description Required and checked against the deployment allowlist for cookie-authenticated state changes and browser public-form submissions/uploads. Never accept wildcard with credentialed requests. */
+        Origin?: components['parameters']['Origin'];
+      };
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+        /** @description Opaque UUID of a chat; a chat the member is not in — 404, as a missing one (docs/25: no access = 404). */
+        chatId: components['parameters']['chatId'];
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Successful result. */
+      200: {
+        headers: {
+          'X-Request-Id': components['headers']['RequestId'];
+          'Idempotency-Replayed': components['headers']['IdempotencyReplayed'];
+          /** @description Never cache authenticated, confidential or capability-bearing API responses in shared caches. */
+          'Cache-Control'?: 'private, no-store';
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['Chat'];
+        };
+      };
+      400: components['responses']['BadRequest'];
+      401: components['responses']['Unauthenticated'];
+      403: components['responses']['Forbidden'];
+      404: components['responses']['NotFound'];
+      409: components['responses']['Conflict'];
+      422: components['responses']['Validation'];
+      429: components['responses']['RateLimited'];
+    };
+  };
+  listChatMessages: {
+    parameters: {
+      query?: {
+        limit?: components['parameters']['Limit'];
+        /** @description Only the messages of the topic. */
+        topic?: string;
+        /** @description Page back from this seq. */
+        beforeSeq?: number;
+        /** @description Messages after this seq (after the hint chat.changed). */
+        afterSeq?: number;
+      };
+      header?: never;
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+        /** @description Opaque UUID of a chat; a chat the member is not in — 404, as a missing one (docs/25: no access = 404). */
+        chatId: components['parameters']['chatId'];
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Successful result. */
+      200: {
+        headers: {
+          'X-Request-Id': components['headers']['RequestId'];
+          /** @description Never cache authenticated, confidential or capability-bearing API responses in shared caches. */
+          'Cache-Control'?: 'private, no-store';
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['ChatMessageList'];
+        };
+      };
+      400: components['responses']['BadRequest'];
+      401: components['responses']['Unauthenticated'];
+      403: components['responses']['Forbidden'];
+      404: components['responses']['NotFound'];
+      422: components['responses']['Validation'];
+      429: components['responses']['RateLimited'];
+    };
+  };
+  postChatMessage: {
+    parameters: {
+      query?: never;
+      header: {
+        /** @description Stable per intended command. Retain record at least 7 days; financial deduplication also retains a durable tenant+actor+operation+key digest receipt. Key is scoped to tenant+actor+operation. Reuse only for an identical request. */
+        'Idempotency-Key': components['parameters']['IdempotencyKey'];
+        /** @description Required for cookie-authenticated state changes; not required with bearer-only authentication. Invalid/missing token or Origin yields 403. Conditional requirement cannot be represented by OpenAPI required=true. */
+        'X-CSRF-Token'?: components['parameters']['Csrf'];
+        /** @description Required and checked against the deployment allowlist for cookie-authenticated state changes and browser public-form submissions/uploads. Never accept wildcard with credentialed requests. */
+        Origin?: components['parameters']['Origin'];
+      };
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+        /** @description Opaque UUID of a chat; a chat the member is not in — 404, as a missing one (docs/25: no access = 404). */
+        chatId: components['parameters']['chatId'];
+      };
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['ChatMessageCreate'];
+      };
+    };
+    responses: {
+      /** @description Successful result. */
+      201: {
+        headers: {
+          'X-Request-Id': components['headers']['RequestId'];
+          'Idempotency-Replayed': components['headers']['IdempotencyReplayed'];
+          /** @description Never cache authenticated, confidential or capability-bearing API responses in shared caches. */
+          'Cache-Control'?: 'private, no-store';
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['ChatMessage'];
+        };
+      };
+      400: components['responses']['BadRequest'];
+      401: components['responses']['Unauthenticated'];
+      403: components['responses']['Forbidden'];
+      404: components['responses']['NotFound'];
+      409: components['responses']['Conflict'];
+      413: components['responses']['TooLarge'];
+      422: components['responses']['Validation'];
+      429: components['responses']['RateLimited'];
+    };
+  };
+  deleteChatMessage: {
+    parameters: {
+      query?: {
+        /** @description Delete for everyone (the only mode of the first version; «Очистить историю у себя» is v2). */
+        for?: 'all';
+        /** @description Reason; mandatory for a moderator deleting someone else’s message (422 validation_failed). */
+        reason?: string;
+      };
+      header: {
+        /** @description Stable per intended command. Retain record at least 7 days; financial deduplication also retains a durable tenant+actor+operation+key digest receipt. Key is scoped to tenant+actor+operation. Reuse only for an identical request. */
+        'Idempotency-Key': components['parameters']['IdempotencyKey'];
+        /** @description Required for cookie-authenticated state changes; not required with bearer-only authentication. Invalid/missing token or Origin yields 403. Conditional requirement cannot be represented by OpenAPI required=true. */
+        'X-CSRF-Token'?: components['parameters']['Csrf'];
+        /** @description Required and checked against the deployment allowlist for cookie-authenticated state changes and browser public-form submissions/uploads. Never accept wildcard with credentialed requests. */
+        Origin?: components['parameters']['Origin'];
+      };
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+        /** @description Opaque UUID of a chat; a chat the member is not in — 404, as a missing one (docs/25: no access = 404). */
+        chatId: components['parameters']['chatId'];
+        /** @description Opaque UUID of a chat message. */
+        messageId: components['parameters']['messageId'];
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Successful result. */
+      200: {
+        headers: {
+          'X-Request-Id': components['headers']['RequestId'];
+          'Idempotency-Replayed': components['headers']['IdempotencyReplayed'];
+          /** @description Never cache authenticated, confidential or capability-bearing API responses in shared caches. */
+          'Cache-Control'?: 'private, no-store';
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['ChatMessage'];
+        };
+      };
+      400: components['responses']['BadRequest'];
+      401: components['responses']['Unauthenticated'];
+      403: components['responses']['Forbidden'];
+      404: components['responses']['NotFound'];
+      409: components['responses']['Conflict'];
+      422: components['responses']['Validation'];
+      429: components['responses']['RateLimited'];
+    };
+  };
+  editChatMessage: {
+    parameters: {
+      query?: never;
+      header: {
+        /** @description Stable per intended command. Retain record at least 7 days; financial deduplication also retains a durable tenant+actor+operation+key digest receipt. Key is scoped to tenant+actor+operation. Reuse only for an identical request. */
+        'Idempotency-Key': components['parameters']['IdempotencyKey'];
+        /** @description Required for cookie-authenticated state changes; not required with bearer-only authentication. Invalid/missing token or Origin yields 403. Conditional requirement cannot be represented by OpenAPI required=true. */
+        'X-CSRF-Token'?: components['parameters']['Csrf'];
+        /** @description Required and checked against the deployment allowlist for cookie-authenticated state changes and browser public-form submissions/uploads. Never accept wildcard with credentialed requests. */
+        Origin?: components['parameters']['Origin'];
+      };
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+        /** @description Opaque UUID of a chat; a chat the member is not in — 404, as a missing one (docs/25: no access = 404). */
+        chatId: components['parameters']['chatId'];
+        /** @description Opaque UUID of a chat message. */
+        messageId: components['parameters']['messageId'];
+      };
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['ChatMessageEdit'];
+      };
+    };
+    responses: {
+      /** @description Successful result. */
+      200: {
+        headers: {
+          'X-Request-Id': components['headers']['RequestId'];
+          'Idempotency-Replayed': components['headers']['IdempotencyReplayed'];
+          /** @description Never cache authenticated, confidential or capability-bearing API responses in shared caches. */
+          'Cache-Control'?: 'private, no-store';
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['ChatMessage'];
+        };
+      };
+      400: components['responses']['BadRequest'];
+      401: components['responses']['Unauthenticated'];
+      403: components['responses']['Forbidden'];
+      404: components['responses']['NotFound'];
+      409: components['responses']['Conflict'];
+      422: components['responses']['Validation'];
+      429: components['responses']['RateLimited'];
+    };
+  };
+  listChatMessageVersions: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+        /** @description Opaque UUID of a chat; a chat the member is not in — 404, as a missing one (docs/25: no access = 404). */
+        chatId: components['parameters']['chatId'];
+        /** @description Opaque UUID of a chat message. */
+        messageId: components['parameters']['messageId'];
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Successful result. */
+      200: {
+        headers: {
+          'X-Request-Id': components['headers']['RequestId'];
+          /** @description Never cache authenticated, confidential or capability-bearing API responses in shared caches. */
+          'Cache-Control'?: 'private, no-store';
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['ChatMessageVersionList'];
+        };
+      };
+      400: components['responses']['BadRequest'];
+      401: components['responses']['Unauthenticated'];
+      403: components['responses']['Forbidden'];
+      404: components['responses']['NotFound'];
+      422: components['responses']['Validation'];
+      429: components['responses']['RateLimited'];
+    };
+  };
+  markChatRead: {
+    parameters: {
+      query?: never;
+      header: {
+        /** @description Stable per intended command. Retain record at least 7 days; financial deduplication also retains a durable tenant+actor+operation+key digest receipt. Key is scoped to tenant+actor+operation. Reuse only for an identical request. */
+        'Idempotency-Key': components['parameters']['IdempotencyKey'];
+        /** @description Required for cookie-authenticated state changes; not required with bearer-only authentication. Invalid/missing token or Origin yields 403. Conditional requirement cannot be represented by OpenAPI required=true. */
+        'X-CSRF-Token'?: components['parameters']['Csrf'];
+        /** @description Required and checked against the deployment allowlist for cookie-authenticated state changes and browser public-form submissions/uploads. Never accept wildcard with credentialed requests. */
+        Origin?: components['parameters']['Origin'];
+      };
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+        /** @description Opaque UUID of a chat; a chat the member is not in — 404, as a missing one (docs/25: no access = 404). */
+        chatId: components['parameters']['chatId'];
+      };
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['ChatReadMark'];
+      };
+    };
+    responses: {
+      /** @description Successful result. */
+      200: {
+        headers: {
+          'X-Request-Id': components['headers']['RequestId'];
+          'Idempotency-Replayed': components['headers']['IdempotencyReplayed'];
+          /** @description Never cache authenticated, confidential or capability-bearing API responses in shared caches. */
+          'Cache-Control'?: 'private, no-store';
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['ChatReadState'];
+        };
+      };
+      400: components['responses']['BadRequest'];
+      401: components['responses']['Unauthenticated'];
+      403: components['responses']['Forbidden'];
+      404: components['responses']['NotFound'];
+      409: components['responses']['Conflict'];
+      422: components['responses']['Validation'];
+      429: components['responses']['RateLimited'];
+    };
+  };
+  ackChatMessage: {
+    parameters: {
+      query?: never;
+      header: {
+        /** @description Stable per intended command. Retain record at least 7 days; financial deduplication also retains a durable tenant+actor+operation+key digest receipt. Key is scoped to tenant+actor+operation. Reuse only for an identical request. */
+        'Idempotency-Key': components['parameters']['IdempotencyKey'];
+        /** @description Required for cookie-authenticated state changes; not required with bearer-only authentication. Invalid/missing token or Origin yields 403. Conditional requirement cannot be represented by OpenAPI required=true. */
+        'X-CSRF-Token'?: components['parameters']['Csrf'];
+        /** @description Required and checked against the deployment allowlist for cookie-authenticated state changes and browser public-form submissions/uploads. Never accept wildcard with credentialed requests. */
+        Origin?: components['parameters']['Origin'];
+      };
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+        /** @description Opaque UUID of a chat; a chat the member is not in — 404, as a missing one (docs/25: no access = 404). */
+        chatId: components['parameters']['chatId'];
+        /** @description Opaque UUID of a chat message. */
+        messageId: components['parameters']['messageId'];
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Successful result. */
+      200: {
+        headers: {
+          'X-Request-Id': components['headers']['RequestId'];
+          'Idempotency-Replayed': components['headers']['IdempotencyReplayed'];
+          /** @description Never cache authenticated, confidential or capability-bearing API responses in shared caches. */
+          'Cache-Control'?: 'private, no-store';
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['ChatMessage'];
+        };
+      };
+      400: components['responses']['BadRequest'];
+      401: components['responses']['Unauthenticated'];
+      403: components['responses']['Forbidden'];
+      404: components['responses']['NotFound'];
+      409: components['responses']['Conflict'];
+      422: components['responses']['Validation'];
+      429: components['responses']['RateLimited'];
+    };
+  };
+  getChatMessageReceipts: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+        /** @description Opaque UUID of a chat; a chat the member is not in — 404, as a missing one (docs/25: no access = 404). */
+        chatId: components['parameters']['chatId'];
+        /** @description Opaque UUID of a chat message. */
+        messageId: components['parameters']['messageId'];
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Successful result. */
+      200: {
+        headers: {
+          'X-Request-Id': components['headers']['RequestId'];
+          /** @description Never cache authenticated, confidential or capability-bearing API responses in shared caches. */
+          'Cache-Control'?: 'private, no-store';
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['ChatReceipts'];
+        };
+      };
+      400: components['responses']['BadRequest'];
+      401: components['responses']['Unauthenticated'];
+      403: components['responses']['Forbidden'];
+      404: components['responses']['NotFound'];
+      422: components['responses']['Validation'];
+      429: components['responses']['RateLimited'];
+    };
+  };
+  revealChatMessagePdn: {
+    parameters: {
+      query?: never;
+      header: {
+        /** @description Stable per intended command. Retain record at least 7 days; financial deduplication also retains a durable tenant+actor+operation+key digest receipt. Key is scoped to tenant+actor+operation. Reuse only for an identical request. */
+        'Idempotency-Key': components['parameters']['IdempotencyKey'];
+        /** @description Required for cookie-authenticated state changes; not required with bearer-only authentication. Invalid/missing token or Origin yields 403. Conditional requirement cannot be represented by OpenAPI required=true. */
+        'X-CSRF-Token'?: components['parameters']['Csrf'];
+        /** @description Required and checked against the deployment allowlist for cookie-authenticated state changes and browser public-form submissions/uploads. Never accept wildcard with credentialed requests. */
+        Origin?: components['parameters']['Origin'];
+      };
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+        /** @description Opaque UUID of a chat; a chat the member is not in — 404, as a missing one (docs/25: no access = 404). */
+        chatId: components['parameters']['chatId'];
+        /** @description Opaque UUID of a chat message. */
+        messageId: components['parameters']['messageId'];
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Successful result. */
+      200: {
+        headers: {
+          'X-Request-Id': components['headers']['RequestId'];
+          'Idempotency-Replayed': components['headers']['IdempotencyReplayed'];
+          /** @description Never cache authenticated, confidential or capability-bearing API responses in shared caches. */
+          'Cache-Control'?: 'private, no-store';
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['ChatPdnReveal'];
+        };
+      };
+      400: components['responses']['BadRequest'];
+      401: components['responses']['Unauthenticated'];
+      403: components['responses']['Forbidden'];
+      404: components['responses']['NotFound'];
+      409: components['responses']['Conflict'];
+      422: components['responses']['Validation'];
+      429: components['responses']['RateLimited'];
+    };
+  };
+  voteChatPoll: {
+    parameters: {
+      query?: never;
+      header: {
+        /** @description Stable per intended command. Retain record at least 7 days; financial deduplication also retains a durable tenant+actor+operation+key digest receipt. Key is scoped to tenant+actor+operation. Reuse only for an identical request. */
+        'Idempotency-Key': components['parameters']['IdempotencyKey'];
+        /** @description Required for cookie-authenticated state changes; not required with bearer-only authentication. Invalid/missing token or Origin yields 403. Conditional requirement cannot be represented by OpenAPI required=true. */
+        'X-CSRF-Token'?: components['parameters']['Csrf'];
+        /** @description Required and checked against the deployment allowlist for cookie-authenticated state changes and browser public-form submissions/uploads. Never accept wildcard with credentialed requests. */
+        Origin?: components['parameters']['Origin'];
+      };
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+        /** @description Opaque UUID of a chat; a chat the member is not in — 404, as a missing one (docs/25: no access = 404). */
+        chatId: components['parameters']['chatId'];
+        /** @description Opaque UUID of a poll of a chat message. */
+        pollId: components['parameters']['pollId'];
+      };
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['ChatVote'];
+      };
+    };
+    responses: {
+      /** @description Successful result. */
+      200: {
+        headers: {
+          'X-Request-Id': components['headers']['RequestId'];
+          'Idempotency-Replayed': components['headers']['IdempotencyReplayed'];
+          /** @description Never cache authenticated, confidential or capability-bearing API responses in shared caches. */
+          'Cache-Control'?: 'private, no-store';
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['ChatMessage'];
+        };
+      };
+      400: components['responses']['BadRequest'];
+      401: components['responses']['Unauthenticated'];
+      403: components['responses']['Forbidden'];
+      404: components['responses']['NotFound'];
+      409: components['responses']['Conflict'];
+      422: components['responses']['Validation'];
+      429: components['responses']['RateLimited'];
+    };
+  };
+  closeChatPoll: {
+    parameters: {
+      query?: never;
+      header: {
+        /** @description Stable per intended command. Retain record at least 7 days; financial deduplication also retains a durable tenant+actor+operation+key digest receipt. Key is scoped to tenant+actor+operation. Reuse only for an identical request. */
+        'Idempotency-Key': components['parameters']['IdempotencyKey'];
+        /** @description Required for cookie-authenticated state changes; not required with bearer-only authentication. Invalid/missing token or Origin yields 403. Conditional requirement cannot be represented by OpenAPI required=true. */
+        'X-CSRF-Token'?: components['parameters']['Csrf'];
+        /** @description Required and checked against the deployment allowlist for cookie-authenticated state changes and browser public-form submissions/uploads. Never accept wildcard with credentialed requests. */
+        Origin?: components['parameters']['Origin'];
+      };
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+        /** @description Opaque UUID of a chat; a chat the member is not in — 404, as a missing one (docs/25: no access = 404). */
+        chatId: components['parameters']['chatId'];
+        /** @description Opaque UUID of a poll of a chat message. */
+        pollId: components['parameters']['pollId'];
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Successful result. */
+      200: {
+        headers: {
+          'X-Request-Id': components['headers']['RequestId'];
+          'Idempotency-Replayed': components['headers']['IdempotencyReplayed'];
+          /** @description Never cache authenticated, confidential or capability-bearing API responses in shared caches. */
+          'Cache-Control'?: 'private, no-store';
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['ChatMessage'];
+        };
+      };
+      400: components['responses']['BadRequest'];
+      401: components['responses']['Unauthenticated'];
+      403: components['responses']['Forbidden'];
+      404: components['responses']['NotFound'];
+      409: components['responses']['Conflict'];
+      422: components['responses']['Validation'];
+      429: components['responses']['RateLimited'];
+    };
+  };
+  remindChatPoll: {
+    parameters: {
+      query?: never;
+      header: {
+        /** @description Stable per intended command. Retain record at least 7 days; financial deduplication also retains a durable tenant+actor+operation+key digest receipt. Key is scoped to tenant+actor+operation. Reuse only for an identical request. */
+        'Idempotency-Key': components['parameters']['IdempotencyKey'];
+        /** @description Required for cookie-authenticated state changes; not required with bearer-only authentication. Invalid/missing token or Origin yields 403. Conditional requirement cannot be represented by OpenAPI required=true. */
+        'X-CSRF-Token'?: components['parameters']['Csrf'];
+        /** @description Required and checked against the deployment allowlist for cookie-authenticated state changes and browser public-form submissions/uploads. Never accept wildcard with credentialed requests. */
+        Origin?: components['parameters']['Origin'];
+      };
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+        /** @description Opaque UUID of a chat; a chat the member is not in — 404, as a missing one (docs/25: no access = 404). */
+        chatId: components['parameters']['chatId'];
+        /** @description Opaque UUID of a poll of a chat message. */
+        pollId: components['parameters']['pollId'];
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Successful result. */
+      200: {
+        headers: {
+          'X-Request-Id': components['headers']['RequestId'];
+          'Idempotency-Replayed': components['headers']['IdempotencyReplayed'];
+          /** @description Never cache authenticated, confidential or capability-bearing API responses in shared caches. */
+          'Cache-Control'?: 'private, no-store';
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['ChatPollReminder'];
+        };
+      };
+      400: components['responses']['BadRequest'];
+      401: components['responses']['Unauthenticated'];
+      403: components['responses']['Forbidden'];
+      404: components['responses']['NotFound'];
+      409: components['responses']['Conflict'];
+      422: components['responses']['Validation'];
+      429: components['responses']['RateLimited'];
+    };
+  };
+  pinChatMessage: {
+    parameters: {
+      query?: never;
+      header: {
+        /** @description Stable per intended command. Retain record at least 7 days; financial deduplication also retains a durable tenant+actor+operation+key digest receipt. Key is scoped to tenant+actor+operation. Reuse only for an identical request. */
+        'Idempotency-Key': components['parameters']['IdempotencyKey'];
+        /** @description Required for cookie-authenticated state changes; not required with bearer-only authentication. Invalid/missing token or Origin yields 403. Conditional requirement cannot be represented by OpenAPI required=true. */
+        'X-CSRF-Token'?: components['parameters']['Csrf'];
+        /** @description Required and checked against the deployment allowlist for cookie-authenticated state changes and browser public-form submissions/uploads. Never accept wildcard with credentialed requests. */
+        Origin?: components['parameters']['Origin'];
+      };
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+        /** @description Opaque UUID of a chat; a chat the member is not in — 404, as a missing one (docs/25: no access = 404). */
+        chatId: components['parameters']['chatId'];
+      };
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['ChatPin'];
+      };
+    };
+    responses: {
+      /** @description Successful result. */
+      200: {
+        headers: {
+          'X-Request-Id': components['headers']['RequestId'];
+          'Idempotency-Replayed': components['headers']['IdempotencyReplayed'];
+          /** @description Never cache authenticated, confidential or capability-bearing API responses in shared caches. */
+          'Cache-Control'?: 'private, no-store';
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['ChatPinState'];
+        };
+      };
+      400: components['responses']['BadRequest'];
+      401: components['responses']['Unauthenticated'];
+      403: components['responses']['Forbidden'];
+      404: components['responses']['NotFound'];
+      409: components['responses']['Conflict'];
+      422: components['responses']['Validation'];
+      429: components['responses']['RateLimited'];
+    };
+  };
+  unpinChatMessage: {
+    parameters: {
+      query?: never;
+      header: {
+        /** @description Stable per intended command. Retain record at least 7 days; financial deduplication also retains a durable tenant+actor+operation+key digest receipt. Key is scoped to tenant+actor+operation. Reuse only for an identical request. */
+        'Idempotency-Key': components['parameters']['IdempotencyKey'];
+        /** @description Required for cookie-authenticated state changes; not required with bearer-only authentication. Invalid/missing token or Origin yields 403. Conditional requirement cannot be represented by OpenAPI required=true. */
+        'X-CSRF-Token'?: components['parameters']['Csrf'];
+        /** @description Required and checked against the deployment allowlist for cookie-authenticated state changes and browser public-form submissions/uploads. Never accept wildcard with credentialed requests. */
+        Origin?: components['parameters']['Origin'];
+      };
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+        /** @description Opaque UUID of a chat; a chat the member is not in — 404, as a missing one (docs/25: no access = 404). */
+        chatId: components['parameters']['chatId'];
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Successful result. */
+      200: {
+        headers: {
+          'X-Request-Id': components['headers']['RequestId'];
+          'Idempotency-Replayed': components['headers']['IdempotencyReplayed'];
+          /** @description Never cache authenticated, confidential or capability-bearing API responses in shared caches. */
+          'Cache-Control'?: 'private, no-store';
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['ChatPinState'];
+        };
+      };
+      400: components['responses']['BadRequest'];
+      401: components['responses']['Unauthenticated'];
+      403: components['responses']['Forbidden'];
+      404: components['responses']['NotFound'];
+      409: components['responses']['Conflict'];
+      422: components['responses']['Validation'];
+      429: components['responses']['RateLimited'];
+    };
+  };
+  openViewOnceAttachment: {
+    parameters: {
+      query?: never;
+      header: {
+        /** @description Stable per intended command. Retain record at least 7 days; financial deduplication also retains a durable tenant+actor+operation+key digest receipt. Key is scoped to tenant+actor+operation. Reuse only for an identical request. */
+        'Idempotency-Key': components['parameters']['IdempotencyKey'];
+        /** @description Required for cookie-authenticated state changes; not required with bearer-only authentication. Invalid/missing token or Origin yields 403. Conditional requirement cannot be represented by OpenAPI required=true. */
+        'X-CSRF-Token'?: components['parameters']['Csrf'];
+        /** @description Required and checked against the deployment allowlist for cookie-authenticated state changes and browser public-form submissions/uploads. Never accept wildcard with credentialed requests. */
+        Origin?: components['parameters']['Origin'];
+      };
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+        /** @description Opaque UUID of a chat; a chat the member is not in — 404, as a missing one (docs/25: no access = 404). */
+        chatId: components['parameters']['chatId'];
+        /** @description Opaque UUID of an attachment of a chat message. */
+        attachmentId: components['parameters']['attachmentId'];
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Successful result. */
+      200: {
+        headers: {
+          'X-Request-Id': components['headers']['RequestId'];
+          'Idempotency-Replayed': components['headers']['IdempotencyReplayed'];
+          /** @description Never cache authenticated, confidential or capability-bearing API responses in shared caches. */
+          'Cache-Control'?: 'private, no-store';
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['ChatViewOnceLink'];
+        };
+      };
+      400: components['responses']['BadRequest'];
+      401: components['responses']['Unauthenticated'];
+      403: components['responses']['Forbidden'];
+      404: components['responses']['NotFound'];
+      409: components['responses']['Conflict'];
+      422: components['responses']['Validation'];
+      429: components['responses']['RateLimited'];
+    };
+  };
+  saveChatAttachmentsToRecord: {
+    parameters: {
+      query?: never;
+      header: {
+        /** @description Stable per intended command. Retain record at least 7 days; financial deduplication also retains a durable tenant+actor+operation+key digest receipt. Key is scoped to tenant+actor+operation. Reuse only for an identical request. */
+        'Idempotency-Key': components['parameters']['IdempotencyKey'];
+        /** @description Required for cookie-authenticated state changes; not required with bearer-only authentication. Invalid/missing token or Origin yields 403. Conditional requirement cannot be represented by OpenAPI required=true. */
+        'X-CSRF-Token'?: components['parameters']['Csrf'];
+        /** @description Required and checked against the deployment allowlist for cookie-authenticated state changes and browser public-form submissions/uploads. Never accept wildcard with credentialed requests. */
+        Origin?: components['parameters']['Origin'];
+      };
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+        /** @description Opaque UUID of a chat; a chat the member is not in — 404, as a missing one (docs/25: no access = 404). */
+        chatId: components['parameters']['chatId'];
+        /** @description Opaque UUID of a chat message. */
+        messageId: components['parameters']['messageId'];
+      };
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['ChatSaveToRecord'];
+      };
+    };
+    responses: {
+      /** @description Successful result. */
+      200: {
+        headers: {
+          'X-Request-Id': components['headers']['RequestId'];
+          'Idempotency-Replayed': components['headers']['IdempotencyReplayed'];
+          /** @description Never cache authenticated, confidential or capability-bearing API responses in shared caches. */
+          'Cache-Control'?: 'private, no-store';
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['ChatSaveToRecordResult'];
+        };
+      };
+      400: components['responses']['BadRequest'];
+      401: components['responses']['Unauthenticated'];
+      403: components['responses']['Forbidden'];
+      404: components['responses']['NotFound'];
+      409: components['responses']['Conflict'];
+      422: components['responses']['Validation'];
+      429: components['responses']['RateLimited'];
+    };
+  };
+  createTaskFromChatMessage: {
+    parameters: {
+      query?: never;
+      header: {
+        /** @description Stable per intended command. Retain record at least 7 days; financial deduplication also retains a durable tenant+actor+operation+key digest receipt. Key is scoped to tenant+actor+operation. Reuse only for an identical request. */
+        'Idempotency-Key': components['parameters']['IdempotencyKey'];
+        /** @description Required for cookie-authenticated state changes; not required with bearer-only authentication. Invalid/missing token or Origin yields 403. Conditional requirement cannot be represented by OpenAPI required=true. */
+        'X-CSRF-Token'?: components['parameters']['Csrf'];
+        /** @description Required and checked against the deployment allowlist for cookie-authenticated state changes and browser public-form submissions/uploads. Never accept wildcard with credentialed requests. */
+        Origin?: components['parameters']['Origin'];
+      };
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+        /** @description Opaque UUID of a chat; a chat the member is not in — 404, as a missing one (docs/25: no access = 404). */
+        chatId: components['parameters']['chatId'];
+        /** @description Opaque UUID of a chat message. */
+        messageId: components['parameters']['messageId'];
+      };
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['ChatTaskCreate'];
+      };
+    };
+    responses: {
+      /** @description Successful result. */
+      201: {
+        headers: {
+          'X-Request-Id': components['headers']['RequestId'];
+          'Idempotency-Replayed': components['headers']['IdempotencyReplayed'];
+          /** @description Never cache authenticated, confidential or capability-bearing API responses in shared caches. */
+          'Cache-Control'?: 'private, no-store';
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['ChatTaskRef'];
+        };
+      };
+      400: components['responses']['BadRequest'];
+      401: components['responses']['Unauthenticated'];
+      403: components['responses']['Forbidden'];
+      404: components['responses']['NotFound'];
+      409: components['responses']['Conflict'];
+      422: components['responses']['Validation'];
+      429: components['responses']['RateLimited'];
+    };
+  };
+  listChatMembers: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+        /** @description Opaque UUID of a chat; a chat the member is not in — 404, as a missing one (docs/25: no access = 404). */
+        chatId: components['parameters']['chatId'];
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Successful result. */
+      200: {
+        headers: {
+          'X-Request-Id': components['headers']['RequestId'];
+          /** @description Never cache authenticated, confidential or capability-bearing API responses in shared caches. */
+          'Cache-Control'?: 'private, no-store';
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['ChatMemberList'];
+        };
+      };
+      400: components['responses']['BadRequest'];
+      401: components['responses']['Unauthenticated'];
+      403: components['responses']['Forbidden'];
+      404: components['responses']['NotFound'];
+      422: components['responses']['Validation'];
+      429: components['responses']['RateLimited'];
+    };
+  };
+  getChatSources: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+        /** @description Opaque UUID of a chat; a chat the member is not in — 404, as a missing one (docs/25: no access = 404). */
+        chatId: components['parameters']['chatId'];
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Successful result. */
+      200: {
+        headers: {
+          'X-Request-Id': components['headers']['RequestId'];
+          ETag: components['headers']['ETag'];
+          /** @description Never cache authenticated, confidential or capability-bearing API responses in shared caches. */
+          'Cache-Control'?: 'private, no-store';
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['ChatSources'];
+        };
+      };
+      400: components['responses']['BadRequest'];
+      401: components['responses']['Unauthenticated'];
+      403: components['responses']['Forbidden'];
+      404: components['responses']['NotFound'];
+      422: components['responses']['Validation'];
+      429: components['responses']['RateLimited'];
+    };
+  };
+  replaceChatSources: {
+    parameters: {
+      query?: never;
+      header: {
+        /** @description Stable per intended command. Retain record at least 7 days; financial deduplication also retains a durable tenant+actor+operation+key digest receipt. Key is scoped to tenant+actor+operation. Reuse only for an identical request. */
+        'Idempotency-Key': components['parameters']['IdempotencyKey'];
+        /** @description Required for cookie-authenticated state changes; not required with bearer-only authentication. Invalid/missing token or Origin yields 403. Conditional requirement cannot be represented by OpenAPI required=true. */
+        'X-CSRF-Token'?: components['parameters']['Csrf'];
+        /** @description Required and checked against the deployment allowlist for cookie-authenticated state changes and browser public-form submissions/uploads. Never accept wildcard with credentialed requests. */
+        Origin?: components['parameters']['Origin'];
+        /** @description Strong ETag obtained from latest GET or mutation response. * is not accepted. Missing=428; stale=412. Idempotent replay is checked before current revision precondition. */
+        'If-Match': components['parameters']['IfMatch'];
+      };
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+        /** @description Opaque UUID of a chat; a chat the member is not in — 404, as a missing one (docs/25: no access = 404). */
+        chatId: components['parameters']['chatId'];
+      };
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['ChatSourcesReplace'];
+      };
+    };
+    responses: {
+      /** @description Successful result. */
+      200: {
+        headers: {
+          'X-Request-Id': components['headers']['RequestId'];
+          ETag: components['headers']['ETag'];
+          'Idempotency-Replayed': components['headers']['IdempotencyReplayed'];
+          /** @description Never cache authenticated, confidential or capability-bearing API responses in shared caches. */
+          'Cache-Control'?: 'private, no-store';
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['ChatSourcesResult'];
+        };
+      };
+      400: components['responses']['BadRequest'];
+      401: components['responses']['Unauthenticated'];
+      403: components['responses']['Forbidden'];
+      404: components['responses']['NotFound'];
+      409: components['responses']['Conflict'];
+      412: components['responses']['PreconditionFailed'];
+      422: components['responses']['Validation'];
+      428: components['responses']['PreconditionRequired'];
+      429: components['responses']['RateLimited'];
+    };
+  };
+  getChatAccessExplanation: {
+    parameters: {
+      query: {
+        /** @description The member to check. */
+        memberId: string;
+      };
+      header?: never;
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+        /** @description Opaque UUID of a chat; a chat the member is not in — 404, as a missing one (docs/25: no access = 404). */
+        chatId: components['parameters']['chatId'];
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Successful result. */
+      200: {
+        headers: {
+          'X-Request-Id': components['headers']['RequestId'];
+          /** @description Never cache authenticated, confidential or capability-bearing API responses in shared caches. */
+          'Cache-Control'?: 'private, no-store';
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['ChatAccessExplanation'];
+        };
+      };
+      400: components['responses']['BadRequest'];
+      401: components['responses']['Unauthenticated'];
+      403: components['responses']['Forbidden'];
+      404: components['responses']['NotFound'];
+      422: components['responses']['Validation'];
+      429: components['responses']['RateLimited'];
+    };
+  };
+  getChatStorage: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+        /** @description Opaque UUID of a chat; a chat the member is not in — 404, as a missing one (docs/25: no access = 404). */
+        chatId: components['parameters']['chatId'];
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Successful result. */
+      200: {
+        headers: {
+          'X-Request-Id': components['headers']['RequestId'];
+          /** @description Never cache authenticated, confidential or capability-bearing API responses in shared caches. */
+          'Cache-Control'?: 'private, no-store';
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['ChatStorage'];
+        };
+      };
+      400: components['responses']['BadRequest'];
+      401: components['responses']['Unauthenticated'];
+      403: components['responses']['Forbidden'];
+      404: components['responses']['NotFound'];
+      422: components['responses']['Validation'];
+      429: components['responses']['RateLimited'];
+    };
+  };
+  createChatCleanup: {
+    parameters: {
+      query?: never;
+      header: {
+        /** @description Stable per intended command. Retain record at least 7 days; financial deduplication also retains a durable tenant+actor+operation+key digest receipt. Key is scoped to tenant+actor+operation. Reuse only for an identical request. */
+        'Idempotency-Key': components['parameters']['IdempotencyKey'];
+        /** @description Required for cookie-authenticated state changes; not required with bearer-only authentication. Invalid/missing token or Origin yields 403. Conditional requirement cannot be represented by OpenAPI required=true. */
+        'X-CSRF-Token'?: components['parameters']['Csrf'];
+        /** @description Required and checked against the deployment allowlist for cookie-authenticated state changes and browser public-form submissions/uploads. Never accept wildcard with credentialed requests. */
+        Origin?: components['parameters']['Origin'];
+      };
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+        /** @description Opaque UUID of a chat; a chat the member is not in — 404, as a missing one (docs/25: no access = 404). */
+        chatId: components['parameters']['chatId'];
+      };
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['ChatCleanupCreate'];
+      };
+    };
+    responses: {
+      /** @description Successful result. */
+      200: {
+        headers: {
+          'X-Request-Id': components['headers']['RequestId'];
+          'Idempotency-Replayed': components['headers']['IdempotencyReplayed'];
+          /** @description Never cache authenticated, confidential or capability-bearing API responses in shared caches. */
+          'Cache-Control'?: 'private, no-store';
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['ChatCleanupResult'];
+        };
+      };
+      400: components['responses']['BadRequest'];
+      401: components['responses']['Unauthenticated'];
+      403: components['responses']['Forbidden'];
+      404: components['responses']['NotFound'];
+      409: components['responses']['Conflict'];
+      422: components['responses']['Validation'];
+      429: components['responses']['RateLimited'];
+    };
+  };
+  listChatJournal: {
+    parameters: {
+      query?: {
+        /** @description Opaque cursor from the preceding response; no offset pagination. */
+        cursor?: components['parameters']['Cursor'];
+        limit?: components['parameters']['Limit'];
+      };
+      header?: never;
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+        /** @description Opaque UUID of a chat; a chat the member is not in — 404, as a missing one (docs/25: no access = 404). */
+        chatId: components['parameters']['chatId'];
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Successful result. */
+      200: {
+        headers: {
+          'X-Request-Id': components['headers']['RequestId'];
+          /** @description Never cache authenticated, confidential or capability-bearing API responses in shared caches. */
+          'Cache-Control'?: 'private, no-store';
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['ChatJournal'];
+        };
+      };
+      400: components['responses']['BadRequest'];
+      401: components['responses']['Unauthenticated'];
+      403: components['responses']['Forbidden'];
+      404: components['responses']['NotFound'];
+      422: components['responses']['Validation'];
+      429: components['responses']['RateLimited'];
+    };
+  };
+  createChatExport: {
+    parameters: {
+      query?: never;
+      header: {
+        /** @description Stable per intended command. Retain record at least 7 days; financial deduplication also retains a durable tenant+actor+operation+key digest receipt. Key is scoped to tenant+actor+operation. Reuse only for an identical request. */
+        'Idempotency-Key': components['parameters']['IdempotencyKey'];
+        /** @description Required for cookie-authenticated state changes; not required with bearer-only authentication. Invalid/missing token or Origin yields 403. Conditional requirement cannot be represented by OpenAPI required=true. */
+        'X-CSRF-Token'?: components['parameters']['Csrf'];
+        /** @description Required and checked against the deployment allowlist for cookie-authenticated state changes and browser public-form submissions/uploads. Never accept wildcard with credentialed requests. */
+        Origin?: components['parameters']['Origin'];
+      };
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+        /** @description Opaque UUID of a chat; a chat the member is not in — 404, as a missing one (docs/25: no access = 404). */
+        chatId: components['parameters']['chatId'];
+      };
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['ChatExportCreate'];
+      };
+    };
+    responses: {
+      /** @description Successful result. */
+      202: {
+        headers: {
+          'X-Request-Id': components['headers']['RequestId'];
+          'Idempotency-Replayed': components['headers']['IdempotencyReplayed'];
+          /** @description Never cache authenticated, confidential or capability-bearing API responses in shared caches. */
+          'Cache-Control'?: 'private, no-store';
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['ChatExport'];
+        };
+      };
+      400: components['responses']['BadRequest'];
+      401: components['responses']['Unauthenticated'];
+      403: components['responses']['Forbidden'];
+      404: components['responses']['NotFound'];
+      409: components['responses']['Conflict'];
+      422: components['responses']['Validation'];
+      429: components['responses']['RateLimited'];
+    };
+  };
+  getChatExport: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+        /** @description Opaque UUID of a chat; a chat the member is not in — 404, as a missing one (docs/25: no access = 404). */
+        chatId: components['parameters']['chatId'];
+        /** @description Opaque UUID of a chat history export job. */
+        exportId: components['parameters']['chatExportId'];
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Successful result. */
+      200: {
+        headers: {
+          'X-Request-Id': components['headers']['RequestId'];
+          /** @description Never cache authenticated, confidential or capability-bearing API responses in shared caches. */
+          'Cache-Control'?: 'private, no-store';
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['ChatExport'];
+        };
+      };
+      400: components['responses']['BadRequest'];
+      401: components['responses']['Unauthenticated'];
+      403: components['responses']['Forbidden'];
+      404: components['responses']['NotFound'];
+      422: components['responses']['Validation'];
+      429: components['responses']['RateLimited'];
+    };
+  };
+  listChatPolicies: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Successful result. */
+      200: {
+        headers: {
+          'X-Request-Id': components['headers']['RequestId'];
+          /** @description Never cache authenticated, confidential or capability-bearing API responses in shared caches. */
+          'Cache-Control'?: 'private, no-store';
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['ChatKindPolicyList'];
+        };
+      };
+      400: components['responses']['BadRequest'];
+      401: components['responses']['Unauthenticated'];
+      403: components['responses']['Forbidden'];
+      404: components['responses']['NotFound'];
+      422: components['responses']['Validation'];
+      429: components['responses']['RateLimited'];
+    };
+  };
+  updateChatPolicy: {
+    parameters: {
+      query?: never;
+      header: {
+        /** @description Stable per intended command. Retain record at least 7 days; financial deduplication also retains a durable tenant+actor+operation+key digest receipt. Key is scoped to tenant+actor+operation. Reuse only for an identical request. */
+        'Idempotency-Key': components['parameters']['IdempotencyKey'];
+        /** @description Required for cookie-authenticated state changes; not required with bearer-only authentication. Invalid/missing token or Origin yields 403. Conditional requirement cannot be represented by OpenAPI required=true. */
+        'X-CSRF-Token'?: components['parameters']['Csrf'];
+        /** @description Required and checked against the deployment allowlist for cookie-authenticated state changes and browser public-form submissions/uploads. Never accept wildcard with credentialed requests. */
+        Origin?: components['parameters']['Origin'];
+      };
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+        /** @description Kind of chats whose policy is read or changed. */
+        kind: components['parameters']['chatKindParam'];
+      };
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['ChatPolicyUpdate'];
+      };
+    };
+    responses: {
+      /** @description Successful result. */
+      200: {
+        headers: {
+          'X-Request-Id': components['headers']['RequestId'];
+          'Idempotency-Replayed': components['headers']['IdempotencyReplayed'];
+          /** @description Never cache authenticated, confidential or capability-bearing API responses in shared caches. */
+          'Cache-Control'?: 'private, no-store';
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['ChatPolicyUpdateResult'];
+        };
+      };
+      400: components['responses']['BadRequest'];
+      401: components['responses']['Unauthenticated'];
+      403: components['responses']['Forbidden'];
+      404: components['responses']['NotFound'];
+      409: components['responses']['Conflict'];
+      422: components['responses']['Validation'];
+      429: components['responses']['RateLimited'];
+    };
+  };
+  listChatHolds: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Successful result. */
+      200: {
+        headers: {
+          'X-Request-Id': components['headers']['RequestId'];
+          /** @description Never cache authenticated, confidential or capability-bearing API responses in shared caches. */
+          'Cache-Control'?: 'private, no-store';
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['ChatHoldList'];
+        };
+      };
+      400: components['responses']['BadRequest'];
+      401: components['responses']['Unauthenticated'];
+      403: components['responses']['Forbidden'];
+      404: components['responses']['NotFound'];
+      422: components['responses']['Validation'];
+      429: components['responses']['RateLimited'];
+    };
+  };
+  createChatHold: {
+    parameters: {
+      query?: never;
+      header: {
+        /** @description Stable per intended command. Retain record at least 7 days; financial deduplication also retains a durable tenant+actor+operation+key digest receipt. Key is scoped to tenant+actor+operation. Reuse only for an identical request. */
+        'Idempotency-Key': components['parameters']['IdempotencyKey'];
+        /** @description Required for cookie-authenticated state changes; not required with bearer-only authentication. Invalid/missing token or Origin yields 403. Conditional requirement cannot be represented by OpenAPI required=true. */
+        'X-CSRF-Token'?: components['parameters']['Csrf'];
+        /** @description Required and checked against the deployment allowlist for cookie-authenticated state changes and browser public-form submissions/uploads. Never accept wildcard with credentialed requests. */
+        Origin?: components['parameters']['Origin'];
+      };
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+      };
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['ChatHoldCreate'];
+      };
+    };
+    responses: {
+      /** @description Successful result. */
+      201: {
+        headers: {
+          'X-Request-Id': components['headers']['RequestId'];
+          'Idempotency-Replayed': components['headers']['IdempotencyReplayed'];
+          /** @description Never cache authenticated, confidential or capability-bearing API responses in shared caches. */
+          'Cache-Control'?: 'private, no-store';
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['ChatHold'];
+        };
+      };
+      400: components['responses']['BadRequest'];
+      401: components['responses']['Unauthenticated'];
+      403: components['responses']['Forbidden'];
+      404: components['responses']['NotFound'];
+      409: components['responses']['Conflict'];
+      422: components['responses']['Validation'];
+      429: components['responses']['RateLimited'];
+    };
+  };
+  releaseChatHold: {
+    parameters: {
+      query?: never;
+      header: {
+        /** @description Stable per intended command. Retain record at least 7 days; financial deduplication also retains a durable tenant+actor+operation+key digest receipt. Key is scoped to tenant+actor+operation. Reuse only for an identical request. */
+        'Idempotency-Key': components['parameters']['IdempotencyKey'];
+        /** @description Required for cookie-authenticated state changes; not required with bearer-only authentication. Invalid/missing token or Origin yields 403. Conditional requirement cannot be represented by OpenAPI required=true. */
+        'X-CSRF-Token'?: components['parameters']['Csrf'];
+        /** @description Required and checked against the deployment allowlist for cookie-authenticated state changes and browser public-form submissions/uploads. Never accept wildcard with credentialed requests. */
+        Origin?: components['parameters']['Origin'];
+      };
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+        /** @description Opaque UUID of a chat hold. */
+        holdId: components['parameters']['chatHoldId'];
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Successful result. */
+      200: {
+        headers: {
+          'X-Request-Id': components['headers']['RequestId'];
+          'Idempotency-Replayed': components['headers']['IdempotencyReplayed'];
+          /** @description Never cache authenticated, confidential or capability-bearing API responses in shared caches. */
+          'Cache-Control'?: 'private, no-store';
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['ChatHold'];
+        };
+      };
+      400: components['responses']['BadRequest'];
+      401: components['responses']['Unauthenticated'];
+      403: components['responses']['Forbidden'];
+      404: components['responses']['NotFound'];
+      409: components['responses']['Conflict'];
+      422: components['responses']['Validation'];
+      429: components['responses']['RateLimited'];
+    };
+  };
+  listDocuments: {
+    parameters: {
+      query?: {
+        /** @description Opaque cursor from the preceding response; no offset pagination. */
+        cursor?: components['parameters']['Cursor'];
+        limit?: components['parameters']['Limit'];
+        /** @description Search in titles and in the text layer of scans (full-text index, Q-W4.00-documents-1). */
+        q?: string;
+        /** @description Only the documents of this folder and its subfolders. */
+        folderId?: string;
+        /** @description Filter of the list (docsView); archive — Q-W4.00-documents-9. */
+        filter?: 'all' | 'mine' | 'shared' | 'route' | 'archive';
+      };
+      header?: never;
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Successful result. */
+      200: {
+        headers: {
+          'X-Request-Id': components['headers']['RequestId'];
+          /** @description Never cache authenticated, confidential or capability-bearing API responses in shared caches. */
+          'Cache-Control'?: 'private, no-store';
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['DocumentList'];
+        };
+      };
+      400: components['responses']['BadRequest'];
+      401: components['responses']['Unauthenticated'];
+      403: components['responses']['Forbidden'];
+      404: components['responses']['NotFound'];
+      422: components['responses']['Validation'];
+      429: components['responses']['RateLimited'];
+    };
+  };
+  createDocument: {
+    parameters: {
+      query?: never;
+      header: {
+        /** @description Stable per intended command. Retain record at least 7 days; financial deduplication also retains a durable tenant+actor+operation+key digest receipt. Key is scoped to tenant+actor+operation. Reuse only for an identical request. */
+        'Idempotency-Key': components['parameters']['IdempotencyKey'];
+        /** @description Required for cookie-authenticated state changes; not required with bearer-only authentication. Invalid/missing token or Origin yields 403. Conditional requirement cannot be represented by OpenAPI required=true. */
+        'X-CSRF-Token'?: components['parameters']['Csrf'];
+        /** @description Required and checked against the deployment allowlist for cookie-authenticated state changes and browser public-form submissions/uploads. Never accept wildcard with credentialed requests. */
+        Origin?: components['parameters']['Origin'];
+      };
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+      };
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['DocCreate'];
+      };
+    };
+    responses: {
+      /** @description Successful result. */
+      201: {
+        headers: {
+          'X-Request-Id': components['headers']['RequestId'];
+          'Idempotency-Replayed': components['headers']['IdempotencyReplayed'];
+          /** @description Never cache authenticated, confidential or capability-bearing API responses in shared caches. */
+          'Cache-Control'?: 'private, no-store';
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['Document'];
+        };
+      };
+      400: components['responses']['BadRequest'];
+      401: components['responses']['Unauthenticated'];
+      403: components['responses']['Forbidden'];
+      404: components['responses']['NotFound'];
+      409: components['responses']['Conflict'];
+      413: components['responses']['TooLarge'];
+      422: components['responses']['Validation'];
+      429: components['responses']['RateLimited'];
+    };
+  };
+  getDocument: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+        /** @description Opaque UUID of a document; a document the member cannot open — 404 «Документ недоступен», as a missing one (Q-W4.00-documents-13). */
+        documentId: components['parameters']['docsDocumentId'];
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Successful result. */
+      200: {
+        headers: {
+          'X-Request-Id': components['headers']['RequestId'];
+          ETag: components['headers']['ETag'];
+          /** @description Never cache authenticated, confidential or capability-bearing API responses in shared caches. */
+          'Cache-Control'?: 'private, no-store';
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['Document'];
+        };
+      };
+      400: components['responses']['BadRequest'];
+      401: components['responses']['Unauthenticated'];
+      403: components['responses']['Forbidden'];
+      404: components['responses']['NotFound'];
+      422: components['responses']['Validation'];
+      429: components['responses']['RateLimited'];
+    };
+  };
+  updateDocument: {
+    parameters: {
+      query?: never;
+      header: {
+        /** @description Stable per intended command. Retain record at least 7 days; financial deduplication also retains a durable tenant+actor+operation+key digest receipt. Key is scoped to tenant+actor+operation. Reuse only for an identical request. */
+        'Idempotency-Key': components['parameters']['IdempotencyKey'];
+        /** @description Required for cookie-authenticated state changes; not required with bearer-only authentication. Invalid/missing token or Origin yields 403. Conditional requirement cannot be represented by OpenAPI required=true. */
+        'X-CSRF-Token'?: components['parameters']['Csrf'];
+        /** @description Required and checked against the deployment allowlist for cookie-authenticated state changes and browser public-form submissions/uploads. Never accept wildcard with credentialed requests. */
+        Origin?: components['parameters']['Origin'];
+        /** @description Strong ETag obtained from latest GET or mutation response. * is not accepted. Missing=428; stale=412. Idempotent replay is checked before current revision precondition. */
+        'If-Match': components['parameters']['IfMatch'];
+      };
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+        /** @description Opaque UUID of a document; a document the member cannot open — 404 «Документ недоступен», as a missing one (Q-W4.00-documents-13). */
+        documentId: components['parameters']['docsDocumentId'];
+      };
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['DocPatch'];
+      };
+    };
+    responses: {
+      /** @description Successful result. */
+      200: {
+        headers: {
+          'X-Request-Id': components['headers']['RequestId'];
+          ETag: components['headers']['ETag'];
+          'Idempotency-Replayed': components['headers']['IdempotencyReplayed'];
+          /** @description Never cache authenticated, confidential or capability-bearing API responses in shared caches. */
+          'Cache-Control'?: 'private, no-store';
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['Document'];
+        };
+      };
+      400: components['responses']['BadRequest'];
+      401: components['responses']['Unauthenticated'];
+      403: components['responses']['Forbidden'];
+      404: components['responses']['NotFound'];
+      409: components['responses']['Conflict'];
+      412: components['responses']['PreconditionFailed'];
+      422: components['responses']['Validation'];
+      428: components['responses']['PreconditionRequired'];
+      429: components['responses']['RateLimited'];
+    };
+  };
+  moveDocument: {
+    parameters: {
+      query?: never;
+      header: {
+        /** @description Stable per intended command. Retain record at least 7 days; financial deduplication also retains a durable tenant+actor+operation+key digest receipt. Key is scoped to tenant+actor+operation. Reuse only for an identical request. */
+        'Idempotency-Key': components['parameters']['IdempotencyKey'];
+        /** @description Required for cookie-authenticated state changes; not required with bearer-only authentication. Invalid/missing token or Origin yields 403. Conditional requirement cannot be represented by OpenAPI required=true. */
+        'X-CSRF-Token'?: components['parameters']['Csrf'];
+        /** @description Required and checked against the deployment allowlist for cookie-authenticated state changes and browser public-form submissions/uploads. Never accept wildcard with credentialed requests. */
+        Origin?: components['parameters']['Origin'];
+      };
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+        /** @description Opaque UUID of a document; a document the member cannot open — 404 «Документ недоступен», as a missing one (Q-W4.00-documents-13). */
+        documentId: components['parameters']['docsDocumentId'];
+      };
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['DocMove'];
+      };
+    };
+    responses: {
+      /** @description Successful result. */
+      200: {
+        headers: {
+          'X-Request-Id': components['headers']['RequestId'];
+          'Idempotency-Replayed': components['headers']['IdempotencyReplayed'];
+          /** @description Never cache authenticated, confidential or capability-bearing API responses in shared caches. */
+          'Cache-Control'?: 'private, no-store';
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['DocMoveResult'];
+        };
+      };
+      400: components['responses']['BadRequest'];
+      401: components['responses']['Unauthenticated'];
+      403: components['responses']['Forbidden'];
+      404: components['responses']['NotFound'];
+      409: components['responses']['Conflict'];
+      422: components['responses']['Validation'];
+      429: components['responses']['RateLimited'];
+    };
+  };
+  archiveDocument: {
+    parameters: {
+      query?: never;
+      header: {
+        /** @description Stable per intended command. Retain record at least 7 days; financial deduplication also retains a durable tenant+actor+operation+key digest receipt. Key is scoped to tenant+actor+operation. Reuse only for an identical request. */
+        'Idempotency-Key': components['parameters']['IdempotencyKey'];
+        /** @description Required for cookie-authenticated state changes; not required with bearer-only authentication. Invalid/missing token or Origin yields 403. Conditional requirement cannot be represented by OpenAPI required=true. */
+        'X-CSRF-Token'?: components['parameters']['Csrf'];
+        /** @description Required and checked against the deployment allowlist for cookie-authenticated state changes and browser public-form submissions/uploads. Never accept wildcard with credentialed requests. */
+        Origin?: components['parameters']['Origin'];
+      };
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+        /** @description Opaque UUID of a document; a document the member cannot open — 404 «Документ недоступен», as a missing one (Q-W4.00-documents-13). */
+        documentId: components['parameters']['docsDocumentId'];
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Successful result. */
+      200: {
+        headers: {
+          'X-Request-Id': components['headers']['RequestId'];
+          'Idempotency-Replayed': components['headers']['IdempotencyReplayed'];
+          /** @description Never cache authenticated, confidential or capability-bearing API responses in shared caches. */
+          'Cache-Control'?: 'private, no-store';
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['Document'];
+        };
+      };
+      400: components['responses']['BadRequest'];
+      401: components['responses']['Unauthenticated'];
+      403: components['responses']['Forbidden'];
+      404: components['responses']['NotFound'];
+      409: components['responses']['Conflict'];
+      422: components['responses']['Validation'];
+      429: components['responses']['RateLimited'];
+    };
+  };
+  restoreDocument: {
+    parameters: {
+      query?: never;
+      header: {
+        /** @description Stable per intended command. Retain record at least 7 days; financial deduplication also retains a durable tenant+actor+operation+key digest receipt. Key is scoped to tenant+actor+operation. Reuse only for an identical request. */
+        'Idempotency-Key': components['parameters']['IdempotencyKey'];
+        /** @description Required for cookie-authenticated state changes; not required with bearer-only authentication. Invalid/missing token or Origin yields 403. Conditional requirement cannot be represented by OpenAPI required=true. */
+        'X-CSRF-Token'?: components['parameters']['Csrf'];
+        /** @description Required and checked against the deployment allowlist for cookie-authenticated state changes and browser public-form submissions/uploads. Never accept wildcard with credentialed requests. */
+        Origin?: components['parameters']['Origin'];
+      };
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+        /** @description Opaque UUID of a document; a document the member cannot open — 404 «Документ недоступен», as a missing one (Q-W4.00-documents-13). */
+        documentId: components['parameters']['docsDocumentId'];
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Successful result. */
+      200: {
+        headers: {
+          'X-Request-Id': components['headers']['RequestId'];
+          'Idempotency-Replayed': components['headers']['IdempotencyReplayed'];
+          /** @description Never cache authenticated, confidential or capability-bearing API responses in shared caches. */
+          'Cache-Control'?: 'private, no-store';
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['Document'];
+        };
+      };
+      400: components['responses']['BadRequest'];
+      401: components['responses']['Unauthenticated'];
+      403: components['responses']['Forbidden'];
+      404: components['responses']['NotFound'];
+      409: components['responses']['Conflict'];
+      422: components['responses']['Validation'];
+      429: components['responses']['RateLimited'];
+    };
+  };
+  openDocumentSession: {
+    parameters: {
+      query?: {
+        /** @description Requested mode; the server lowers it to the level of the member. */
+        mode?: 'view' | 'edit' | 'review' | 'comment';
+      };
+      header?: never;
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+        /** @description Opaque UUID of a document; a document the member cannot open — 404 «Документ недоступен», as a missing one (Q-W4.00-documents-13). */
+        documentId: components['parameters']['docsDocumentId'];
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Successful result. */
+      200: {
+        headers: {
+          'X-Request-Id': components['headers']['RequestId'];
+          /** @description Never cache authenticated, confidential or capability-bearing API responses in shared caches. */
+          'Cache-Control'?: 'private, no-store';
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['DocSessionConfig'];
+        };
+      };
+      400: components['responses']['BadRequest'];
+      401: components['responses']['Unauthenticated'];
+      403: components['responses']['Forbidden'];
+      404: components['responses']['NotFound'];
+      422: components['responses']['Validation'];
+      429: components['responses']['RateLimited'];
+      503: components['responses']['DependencyUnavailable'];
+    };
+  };
+  listDocVersions: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+        /** @description Opaque UUID of a document; a document the member cannot open — 404 «Документ недоступен», as a missing one (Q-W4.00-documents-13). */
+        documentId: components['parameters']['docsDocumentId'];
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Successful result. */
+      200: {
+        headers: {
+          'X-Request-Id': components['headers']['RequestId'];
+          /** @description Never cache authenticated, confidential or capability-bearing API responses in shared caches. */
+          'Cache-Control'?: 'private, no-store';
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['DocVersionList'];
+        };
+      };
+      400: components['responses']['BadRequest'];
+      401: components['responses']['Unauthenticated'];
+      403: components['responses']['Forbidden'];
+      404: components['responses']['NotFound'];
+      422: components['responses']['Validation'];
+      429: components['responses']['RateLimited'];
+    };
+  };
+  saveDocVersion: {
+    parameters: {
+      query?: never;
+      header: {
+        /** @description Stable per intended command. Retain record at least 7 days; financial deduplication also retains a durable tenant+actor+operation+key digest receipt. Key is scoped to tenant+actor+operation. Reuse only for an identical request. */
+        'Idempotency-Key': components['parameters']['IdempotencyKey'];
+        /** @description Required for cookie-authenticated state changes; not required with bearer-only authentication. Invalid/missing token or Origin yields 403. Conditional requirement cannot be represented by OpenAPI required=true. */
+        'X-CSRF-Token'?: components['parameters']['Csrf'];
+        /** @description Required and checked against the deployment allowlist for cookie-authenticated state changes and browser public-form submissions/uploads. Never accept wildcard with credentialed requests. */
+        Origin?: components['parameters']['Origin'];
+      };
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+        /** @description Opaque UUID of a document; a document the member cannot open — 404 «Документ недоступен», as a missing one (Q-W4.00-documents-13). */
+        documentId: components['parameters']['docsDocumentId'];
+      };
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['DocVersionSave'];
+      };
+    };
+    responses: {
+      /** @description Successful result. */
+      201: {
+        headers: {
+          'X-Request-Id': components['headers']['RequestId'];
+          'Idempotency-Replayed': components['headers']['IdempotencyReplayed'];
+          /** @description Never cache authenticated, confidential or capability-bearing API responses in shared caches. */
+          'Cache-Control'?: 'private, no-store';
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['DocVersion'];
+        };
+      };
+      400: components['responses']['BadRequest'];
+      401: components['responses']['Unauthenticated'];
+      403: components['responses']['Forbidden'];
+      404: components['responses']['NotFound'];
+      409: components['responses']['Conflict'];
+      422: components['responses']['Validation'];
+      429: components['responses']['RateLimited'];
+    };
+  };
+  nameDocVersion: {
+    parameters: {
+      query?: never;
+      header: {
+        /** @description Stable per intended command. Retain record at least 7 days; financial deduplication also retains a durable tenant+actor+operation+key digest receipt. Key is scoped to tenant+actor+operation. Reuse only for an identical request. */
+        'Idempotency-Key': components['parameters']['IdempotencyKey'];
+        /** @description Required for cookie-authenticated state changes; not required with bearer-only authentication. Invalid/missing token or Origin yields 403. Conditional requirement cannot be represented by OpenAPI required=true. */
+        'X-CSRF-Token'?: components['parameters']['Csrf'];
+        /** @description Required and checked against the deployment allowlist for cookie-authenticated state changes and browser public-form submissions/uploads. Never accept wildcard with credentialed requests. */
+        Origin?: components['parameters']['Origin'];
+      };
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+        /** @description Opaque UUID of a document; a document the member cannot open — 404 «Документ недоступен», as a missing one (Q-W4.00-documents-13). */
+        documentId: components['parameters']['docsDocumentId'];
+        /** @description Number of a version of the document (DocVersion.version). */
+        version: components['parameters']['docVersionNumber'];
+      };
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['DocVersionName'];
+      };
+    };
+    responses: {
+      /** @description Successful result. */
+      200: {
+        headers: {
+          'X-Request-Id': components['headers']['RequestId'];
+          'Idempotency-Replayed': components['headers']['IdempotencyReplayed'];
+          /** @description Never cache authenticated, confidential or capability-bearing API responses in shared caches. */
+          'Cache-Control'?: 'private, no-store';
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['DocVersion'];
+        };
+      };
+      400: components['responses']['BadRequest'];
+      401: components['responses']['Unauthenticated'];
+      403: components['responses']['Forbidden'];
+      404: components['responses']['NotFound'];
+      409: components['responses']['Conflict'];
+      422: components['responses']['Validation'];
+      429: components['responses']['RateLimited'];
+    };
+  };
+  restoreDocVersion: {
+    parameters: {
+      query?: never;
+      header: {
+        /** @description Stable per intended command. Retain record at least 7 days; financial deduplication also retains a durable tenant+actor+operation+key digest receipt. Key is scoped to tenant+actor+operation. Reuse only for an identical request. */
+        'Idempotency-Key': components['parameters']['IdempotencyKey'];
+        /** @description Required for cookie-authenticated state changes; not required with bearer-only authentication. Invalid/missing token or Origin yields 403. Conditional requirement cannot be represented by OpenAPI required=true. */
+        'X-CSRF-Token'?: components['parameters']['Csrf'];
+        /** @description Required and checked against the deployment allowlist for cookie-authenticated state changes and browser public-form submissions/uploads. Never accept wildcard with credentialed requests. */
+        Origin?: components['parameters']['Origin'];
+      };
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+        /** @description Opaque UUID of a document; a document the member cannot open — 404 «Документ недоступен», as a missing one (Q-W4.00-documents-13). */
+        documentId: components['parameters']['docsDocumentId'];
+        /** @description Number of a version of the document (DocVersion.version). */
+        version: components['parameters']['docVersionNumber'];
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Successful result. */
+      201: {
+        headers: {
+          'X-Request-Id': components['headers']['RequestId'];
+          'Idempotency-Replayed': components['headers']['IdempotencyReplayed'];
+          /** @description Never cache authenticated, confidential or capability-bearing API responses in shared caches. */
+          'Cache-Control'?: 'private, no-store';
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['DocVersion'];
+        };
+      };
+      400: components['responses']['BadRequest'];
+      401: components['responses']['Unauthenticated'];
+      403: components['responses']['Forbidden'];
+      404: components['responses']['NotFound'];
+      409: components['responses']['Conflict'];
+      422: components['responses']['Validation'];
+      429: components['responses']['RateLimited'];
+    };
+  };
+  listDocComments: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+        /** @description Opaque UUID of a document; a document the member cannot open — 404 «Документ недоступен», as a missing one (Q-W4.00-documents-13). */
+        documentId: components['parameters']['docsDocumentId'];
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Successful result. */
+      200: {
+        headers: {
+          'X-Request-Id': components['headers']['RequestId'];
+          /** @description Never cache authenticated, confidential or capability-bearing API responses in shared caches. */
+          'Cache-Control'?: 'private, no-store';
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['DocCommentList'];
+        };
+      };
+      400: components['responses']['BadRequest'];
+      401: components['responses']['Unauthenticated'];
+      403: components['responses']['Forbidden'];
+      404: components['responses']['NotFound'];
+      422: components['responses']['Validation'];
+      429: components['responses']['RateLimited'];
+    };
+  };
+  createDocComment: {
+    parameters: {
+      query?: never;
+      header: {
+        /** @description Stable per intended command. Retain record at least 7 days; financial deduplication also retains a durable tenant+actor+operation+key digest receipt. Key is scoped to tenant+actor+operation. Reuse only for an identical request. */
+        'Idempotency-Key': components['parameters']['IdempotencyKey'];
+        /** @description Required for cookie-authenticated state changes; not required with bearer-only authentication. Invalid/missing token or Origin yields 403. Conditional requirement cannot be represented by OpenAPI required=true. */
+        'X-CSRF-Token'?: components['parameters']['Csrf'];
+        /** @description Required and checked against the deployment allowlist for cookie-authenticated state changes and browser public-form submissions/uploads. Never accept wildcard with credentialed requests. */
+        Origin?: components['parameters']['Origin'];
+      };
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+        /** @description Opaque UUID of a document; a document the member cannot open — 404 «Документ недоступен», as a missing one (Q-W4.00-documents-13). */
+        documentId: components['parameters']['docsDocumentId'];
+      };
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['DocCommentCreate'];
+      };
+    };
+    responses: {
+      /** @description Successful result. */
+      201: {
+        headers: {
+          'X-Request-Id': components['headers']['RequestId'];
+          'Idempotency-Replayed': components['headers']['IdempotencyReplayed'];
+          /** @description Never cache authenticated, confidential or capability-bearing API responses in shared caches. */
+          'Cache-Control'?: 'private, no-store';
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['DocComment'];
+        };
+      };
+      400: components['responses']['BadRequest'];
+      401: components['responses']['Unauthenticated'];
+      403: components['responses']['Forbidden'];
+      404: components['responses']['NotFound'];
+      409: components['responses']['Conflict'];
+      422: components['responses']['Validation'];
+      429: components['responses']['RateLimited'];
+    };
+  };
+  replyDocComment: {
+    parameters: {
+      query?: never;
+      header: {
+        /** @description Stable per intended command. Retain record at least 7 days; financial deduplication also retains a durable tenant+actor+operation+key digest receipt. Key is scoped to tenant+actor+operation. Reuse only for an identical request. */
+        'Idempotency-Key': components['parameters']['IdempotencyKey'];
+        /** @description Required for cookie-authenticated state changes; not required with bearer-only authentication. Invalid/missing token or Origin yields 403. Conditional requirement cannot be represented by OpenAPI required=true. */
+        'X-CSRF-Token'?: components['parameters']['Csrf'];
+        /** @description Required and checked against the deployment allowlist for cookie-authenticated state changes and browser public-form submissions/uploads. Never accept wildcard with credentialed requests. */
+        Origin?: components['parameters']['Origin'];
+      };
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+        /** @description Opaque UUID of a document; a document the member cannot open — 404 «Документ недоступен», as a missing one (Q-W4.00-documents-13). */
+        documentId: components['parameters']['docsDocumentId'];
+        /** @description Opaque UUID of a comment of a document. */
+        commentId: components['parameters']['docCommentId'];
+      };
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['DocReplyCreate'];
+      };
+    };
+    responses: {
+      /** @description Successful result. */
+      201: {
+        headers: {
+          'X-Request-Id': components['headers']['RequestId'];
+          'Idempotency-Replayed': components['headers']['IdempotencyReplayed'];
+          /** @description Never cache authenticated, confidential or capability-bearing API responses in shared caches. */
+          'Cache-Control'?: 'private, no-store';
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['DocComment'];
+        };
+      };
+      400: components['responses']['BadRequest'];
+      401: components['responses']['Unauthenticated'];
+      403: components['responses']['Forbidden'];
+      404: components['responses']['NotFound'];
+      409: components['responses']['Conflict'];
+      422: components['responses']['Validation'];
+      429: components['responses']['RateLimited'];
+    };
+  };
+  resolveDocComment: {
+    parameters: {
+      query?: never;
+      header: {
+        /** @description Stable per intended command. Retain record at least 7 days; financial deduplication also retains a durable tenant+actor+operation+key digest receipt. Key is scoped to tenant+actor+operation. Reuse only for an identical request. */
+        'Idempotency-Key': components['parameters']['IdempotencyKey'];
+        /** @description Required for cookie-authenticated state changes; not required with bearer-only authentication. Invalid/missing token or Origin yields 403. Conditional requirement cannot be represented by OpenAPI required=true. */
+        'X-CSRF-Token'?: components['parameters']['Csrf'];
+        /** @description Required and checked against the deployment allowlist for cookie-authenticated state changes and browser public-form submissions/uploads. Never accept wildcard with credentialed requests. */
+        Origin?: components['parameters']['Origin'];
+      };
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+        /** @description Opaque UUID of a document; a document the member cannot open — 404 «Документ недоступен», as a missing one (Q-W4.00-documents-13). */
+        documentId: components['parameters']['docsDocumentId'];
+        /** @description Opaque UUID of a comment of a document. */
+        commentId: components['parameters']['docCommentId'];
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Successful result. */
+      200: {
+        headers: {
+          'X-Request-Id': components['headers']['RequestId'];
+          'Idempotency-Replayed': components['headers']['IdempotencyReplayed'];
+          /** @description Never cache authenticated, confidential or capability-bearing API responses in shared caches. */
+          'Cache-Control'?: 'private, no-store';
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['DocComment'];
+        };
+      };
+      400: components['responses']['BadRequest'];
+      401: components['responses']['Unauthenticated'];
+      403: components['responses']['Forbidden'];
+      404: components['responses']['NotFound'];
+      409: components['responses']['Conflict'];
+      422: components['responses']['Validation'];
+      429: components['responses']['RateLimited'];
+    };
+  };
+  skipDocMentionGrant: {
+    parameters: {
+      query?: never;
+      header: {
+        /** @description Stable per intended command. Retain record at least 7 days; financial deduplication also retains a durable tenant+actor+operation+key digest receipt. Key is scoped to tenant+actor+operation. Reuse only for an identical request. */
+        'Idempotency-Key': components['parameters']['IdempotencyKey'];
+        /** @description Required for cookie-authenticated state changes; not required with bearer-only authentication. Invalid/missing token or Origin yields 403. Conditional requirement cannot be represented by OpenAPI required=true. */
+        'X-CSRF-Token'?: components['parameters']['Csrf'];
+        /** @description Required and checked against the deployment allowlist for cookie-authenticated state changes and browser public-form submissions/uploads. Never accept wildcard with credentialed requests. */
+        Origin?: components['parameters']['Origin'];
+      };
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+        /** @description Opaque UUID of a document; a document the member cannot open — 404 «Документ недоступен», as a missing one (Q-W4.00-documents-13). */
+        documentId: components['parameters']['docsDocumentId'];
+        /** @description Opaque UUID of a comment of a document. */
+        commentId: components['parameters']['docCommentId'];
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Successful result. */
+      200: {
+        headers: {
+          'X-Request-Id': components['headers']['RequestId'];
+          'Idempotency-Replayed': components['headers']['IdempotencyReplayed'];
+          /** @description Never cache authenticated, confidential or capability-bearing API responses in shared caches. */
+          'Cache-Control'?: 'private, no-store';
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['DocComment'];
+        };
+      };
+      400: components['responses']['BadRequest'];
+      401: components['responses']['Unauthenticated'];
+      403: components['responses']['Forbidden'];
+      404: components['responses']['NotFound'];
+      409: components['responses']['Conflict'];
+      422: components['responses']['Validation'];
+      429: components['responses']['RateLimited'];
+    };
+  };
+  getDocShares: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+        /** @description Opaque UUID of a document; a document the member cannot open — 404 «Документ недоступен», as a missing one (Q-W4.00-documents-13). */
+        documentId: components['parameters']['docsDocumentId'];
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Successful result. */
+      200: {
+        headers: {
+          'X-Request-Id': components['headers']['RequestId'];
+          ETag: components['headers']['ETag'];
+          /** @description Never cache authenticated, confidential or capability-bearing API responses in shared caches. */
+          'Cache-Control'?: 'private, no-store';
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['DocShares'];
+        };
+      };
+      400: components['responses']['BadRequest'];
+      401: components['responses']['Unauthenticated'];
+      403: components['responses']['Forbidden'];
+      404: components['responses']['NotFound'];
+      422: components['responses']['Validation'];
+      429: components['responses']['RateLimited'];
+    };
+  };
+  setDocShares: {
+    parameters: {
+      query?: never;
+      header: {
+        /** @description Stable per intended command. Retain record at least 7 days; financial deduplication also retains a durable tenant+actor+operation+key digest receipt. Key is scoped to tenant+actor+operation. Reuse only for an identical request. */
+        'Idempotency-Key': components['parameters']['IdempotencyKey'];
+        /** @description Required for cookie-authenticated state changes; not required with bearer-only authentication. Invalid/missing token or Origin yields 403. Conditional requirement cannot be represented by OpenAPI required=true. */
+        'X-CSRF-Token'?: components['parameters']['Csrf'];
+        /** @description Required and checked against the deployment allowlist for cookie-authenticated state changes and browser public-form submissions/uploads. Never accept wildcard with credentialed requests. */
+        Origin?: components['parameters']['Origin'];
+        /** @description Strong ETag obtained from latest GET or mutation response. * is not accepted. Missing=428; stale=412. Idempotent replay is checked before current revision precondition. */
+        'If-Match': components['parameters']['IfMatch'];
+      };
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+        /** @description Opaque UUID of a document; a document the member cannot open — 404 «Документ недоступен», as a missing one (Q-W4.00-documents-13). */
+        documentId: components['parameters']['docsDocumentId'];
+      };
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['DocSharesSet'];
+      };
+    };
+    responses: {
+      /** @description Successful result. */
+      200: {
+        headers: {
+          'X-Request-Id': components['headers']['RequestId'];
+          ETag: components['headers']['ETag'];
+          'Idempotency-Replayed': components['headers']['IdempotencyReplayed'];
+          /** @description Never cache authenticated, confidential or capability-bearing API responses in shared caches. */
+          'Cache-Control'?: 'private, no-store';
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['DocSharesResult'];
+        };
+      };
+      400: components['responses']['BadRequest'];
+      401: components['responses']['Unauthenticated'];
+      403: components['responses']['Forbidden'];
+      404: components['responses']['NotFound'];
+      409: components['responses']['Conflict'];
+      412: components['responses']['PreconditionFailed'];
+      422: components['responses']['Validation'];
+      428: components['responses']['PreconditionRequired'];
+      429: components['responses']['RateLimited'];
+    };
+  };
+  grantDocAccess: {
+    parameters: {
+      query?: never;
+      header: {
+        /** @description Stable per intended command. Retain record at least 7 days; financial deduplication also retains a durable tenant+actor+operation+key digest receipt. Key is scoped to tenant+actor+operation. Reuse only for an identical request. */
+        'Idempotency-Key': components['parameters']['IdempotencyKey'];
+        /** @description Required for cookie-authenticated state changes; not required with bearer-only authentication. Invalid/missing token or Origin yields 403. Conditional requirement cannot be represented by OpenAPI required=true. */
+        'X-CSRF-Token'?: components['parameters']['Csrf'];
+        /** @description Required and checked against the deployment allowlist for cookie-authenticated state changes and browser public-form submissions/uploads. Never accept wildcard with credentialed requests. */
+        Origin?: components['parameters']['Origin'];
+      };
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+        /** @description Opaque UUID of a document; a document the member cannot open — 404 «Документ недоступен», as a missing one (Q-W4.00-documents-13). */
+        documentId: components['parameters']['docsDocumentId'];
+      };
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['DocGrantCreate'];
+      };
+    };
+    responses: {
+      /** @description Successful result. */
+      200: {
+        headers: {
+          'X-Request-Id': components['headers']['RequestId'];
+          'Idempotency-Replayed': components['headers']['IdempotencyReplayed'];
+          /** @description Never cache authenticated, confidential or capability-bearing API responses in shared caches. */
+          'Cache-Control'?: 'private, no-store';
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['DocShares'];
+        };
+      };
+      400: components['responses']['BadRequest'];
+      401: components['responses']['Unauthenticated'];
+      403: components['responses']['Forbidden'];
+      404: components['responses']['NotFound'];
+      409: components['responses']['Conflict'];
+      422: components['responses']['Validation'];
+      429: components['responses']['RateLimited'];
+    };
+  };
+  listDocLinks: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+        /** @description Opaque UUID of a document; a document the member cannot open — 404 «Документ недоступен», as a missing one (Q-W4.00-documents-13). */
+        documentId: components['parameters']['docsDocumentId'];
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Successful result. */
+      200: {
+        headers: {
+          'X-Request-Id': components['headers']['RequestId'];
+          /** @description Never cache authenticated, confidential or capability-bearing API responses in shared caches. */
+          'Cache-Control'?: 'private, no-store';
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['DocExternalLinkList'];
+        };
+      };
+      400: components['responses']['BadRequest'];
+      401: components['responses']['Unauthenticated'];
+      403: components['responses']['Forbidden'];
+      404: components['responses']['NotFound'];
+      422: components['responses']['Validation'];
+      429: components['responses']['RateLimited'];
+    };
+  };
+  createDocLink: {
+    parameters: {
+      query?: never;
+      header: {
+        /** @description Stable per intended command. Retain record at least 7 days; financial deduplication also retains a durable tenant+actor+operation+key digest receipt. Key is scoped to tenant+actor+operation. Reuse only for an identical request. */
+        'Idempotency-Key': components['parameters']['IdempotencyKey'];
+        /** @description Required for cookie-authenticated state changes; not required with bearer-only authentication. Invalid/missing token or Origin yields 403. Conditional requirement cannot be represented by OpenAPI required=true. */
+        'X-CSRF-Token'?: components['parameters']['Csrf'];
+        /** @description Required and checked against the deployment allowlist for cookie-authenticated state changes and browser public-form submissions/uploads. Never accept wildcard with credentialed requests. */
+        Origin?: components['parameters']['Origin'];
+      };
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+        /** @description Opaque UUID of a document; a document the member cannot open — 404 «Документ недоступен», as a missing one (Q-W4.00-documents-13). */
+        documentId: components['parameters']['docsDocumentId'];
+      };
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['DocExternalLinkCreate'];
+      };
+    };
+    responses: {
+      /** @description Successful result. */
+      201: {
+        headers: {
+          'X-Request-Id': components['headers']['RequestId'];
+          'Idempotency-Replayed': components['headers']['IdempotencyReplayed'];
+          /** @description Never cache authenticated, confidential or capability-bearing API responses in shared caches. */
+          'Cache-Control'?: 'private, no-store';
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['DocExternalLinkCreated'];
+        };
+      };
+      400: components['responses']['BadRequest'];
+      401: components['responses']['Unauthenticated'];
+      403: components['responses']['Forbidden'];
+      404: components['responses']['NotFound'];
+      409: components['responses']['Conflict'];
+      422: components['responses']['Validation'];
+      429: components['responses']['RateLimited'];
+    };
+  };
+  revokeDocLink: {
+    parameters: {
+      query?: never;
+      header: {
+        /** @description Stable per intended command. Retain record at least 7 days; financial deduplication also retains a durable tenant+actor+operation+key digest receipt. Key is scoped to tenant+actor+operation. Reuse only for an identical request. */
+        'Idempotency-Key': components['parameters']['IdempotencyKey'];
+        /** @description Required for cookie-authenticated state changes; not required with bearer-only authentication. Invalid/missing token or Origin yields 403. Conditional requirement cannot be represented by OpenAPI required=true. */
+        'X-CSRF-Token'?: components['parameters']['Csrf'];
+        /** @description Required and checked against the deployment allowlist for cookie-authenticated state changes and browser public-form submissions/uploads. Never accept wildcard with credentialed requests. */
+        Origin?: components['parameters']['Origin'];
+      };
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+        /** @description Opaque UUID of a document; a document the member cannot open — 404 «Документ недоступен», as a missing one (Q-W4.00-documents-13). */
+        documentId: components['parameters']['docsDocumentId'];
+        /** @description Opaque UUID of an external link of a document. */
+        linkId: components['parameters']['docLinkId'];
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Successful result. */
+      200: {
+        headers: {
+          'X-Request-Id': components['headers']['RequestId'];
+          'Idempotency-Replayed': components['headers']['IdempotencyReplayed'];
+          /** @description Never cache authenticated, confidential or capability-bearing API responses in shared caches. */
+          'Cache-Control'?: 'private, no-store';
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['DocExternalLink'];
+        };
+      };
+      400: components['responses']['BadRequest'];
+      401: components['responses']['Unauthenticated'];
+      403: components['responses']['Forbidden'];
+      404: components['responses']['NotFound'];
+      409: components['responses']['Conflict'];
+      422: components['responses']['Validation'];
+      429: components['responses']['RateLimited'];
+    };
+  };
+  syncDocDataset: {
+    parameters: {
+      query?: never;
+      header: {
+        /** @description Stable per intended command. Retain record at least 7 days; financial deduplication also retains a durable tenant+actor+operation+key digest receipt. Key is scoped to tenant+actor+operation. Reuse only for an identical request. */
+        'Idempotency-Key': components['parameters']['IdempotencyKey'];
+        /** @description Required for cookie-authenticated state changes; not required with bearer-only authentication. Invalid/missing token or Origin yields 403. Conditional requirement cannot be represented by OpenAPI required=true. */
+        'X-CSRF-Token'?: components['parameters']['Csrf'];
+        /** @description Required and checked against the deployment allowlist for cookie-authenticated state changes and browser public-form submissions/uploads. Never accept wildcard with credentialed requests. */
+        Origin?: components['parameters']['Origin'];
+      };
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+        /** @description Opaque UUID of a document; a document the member cannot open — 404 «Документ недоступен», as a missing one (Q-W4.00-documents-13). */
+        documentId: components['parameters']['docsDocumentId'];
+      };
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['DocDatasetSync'];
+      };
+    };
+    responses: {
+      /** @description Successful result. */
+      200: {
+        headers: {
+          'X-Request-Id': components['headers']['RequestId'];
+          'Idempotency-Replayed': components['headers']['IdempotencyReplayed'];
+          /** @description Never cache authenticated, confidential or capability-bearing API responses in shared caches. */
+          'Cache-Control'?: 'private, no-store';
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['DocDatasetSyncResult'];
+        };
+      };
+      400: components['responses']['BadRequest'];
+      401: components['responses']['Unauthenticated'];
+      403: components['responses']['Forbidden'];
+      404: components['responses']['NotFound'];
+      409: components['responses']['Conflict'];
+      422: components['responses']['Validation'];
+      429: components['responses']['RateLimited'];
+      503: components['responses']['DependencyUnavailable'];
+    };
+  };
+  createDocJob: {
+    parameters: {
+      query?: never;
+      header: {
+        /** @description Stable per intended command. Retain record at least 7 days; financial deduplication also retains a durable tenant+actor+operation+key digest receipt. Key is scoped to tenant+actor+operation. Reuse only for an identical request. */
+        'Idempotency-Key': components['parameters']['IdempotencyKey'];
+        /** @description Required for cookie-authenticated state changes; not required with bearer-only authentication. Invalid/missing token or Origin yields 403. Conditional requirement cannot be represented by OpenAPI required=true. */
+        'X-CSRF-Token'?: components['parameters']['Csrf'];
+        /** @description Required and checked against the deployment allowlist for cookie-authenticated state changes and browser public-form submissions/uploads. Never accept wildcard with credentialed requests. */
+        Origin?: components['parameters']['Origin'];
+      };
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+      };
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['DocJobCreate'];
+      };
+    };
+    responses: {
+      /** @description Successful result. */
+      202: {
+        headers: {
+          'X-Request-Id': components['headers']['RequestId'];
+          'Idempotency-Replayed': components['headers']['IdempotencyReplayed'];
+          /** @description Never cache authenticated, confidential or capability-bearing API responses in shared caches. */
+          'Cache-Control'?: 'private, no-store';
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['DocJob'];
+        };
+      };
+      400: components['responses']['BadRequest'];
+      401: components['responses']['Unauthenticated'];
+      403: components['responses']['Forbidden'];
+      404: components['responses']['NotFound'];
+      409: components['responses']['Conflict'];
+      422: components['responses']['Validation'];
+      429: components['responses']['RateLimited'];
+    };
+  };
+  getDocJob: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+        /** @description Opaque UUID of a document job (convert, OCR, merge, compress, PDF/A). */
+        jobId: components['parameters']['docJobId'];
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Successful result. */
+      200: {
+        headers: {
+          'X-Request-Id': components['headers']['RequestId'];
+          /** @description Never cache authenticated, confidential or capability-bearing API responses in shared caches. */
+          'Cache-Control'?: 'private, no-store';
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['DocJob'];
+        };
+      };
+      400: components['responses']['BadRequest'];
+      401: components['responses']['Unauthenticated'];
+      403: components['responses']['Forbidden'];
+      404: components['responses']['NotFound'];
+      422: components['responses']['Validation'];
+      429: components['responses']['RateLimited'];
+    };
+  };
+  retryDocJob: {
+    parameters: {
+      query?: never;
+      header: {
+        /** @description Stable per intended command. Retain record at least 7 days; financial deduplication also retains a durable tenant+actor+operation+key digest receipt. Key is scoped to tenant+actor+operation. Reuse only for an identical request. */
+        'Idempotency-Key': components['parameters']['IdempotencyKey'];
+        /** @description Required for cookie-authenticated state changes; not required with bearer-only authentication. Invalid/missing token or Origin yields 403. Conditional requirement cannot be represented by OpenAPI required=true. */
+        'X-CSRF-Token'?: components['parameters']['Csrf'];
+        /** @description Required and checked against the deployment allowlist for cookie-authenticated state changes and browser public-form submissions/uploads. Never accept wildcard with credentialed requests. */
+        Origin?: components['parameters']['Origin'];
+      };
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+        /** @description Opaque UUID of a document job (convert, OCR, merge, compress, PDF/A). */
+        jobId: components['parameters']['docJobId'];
+      };
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['DocJobRetry'];
+      };
+    };
+    responses: {
+      /** @description Successful result. */
+      202: {
+        headers: {
+          'X-Request-Id': components['headers']['RequestId'];
+          'Idempotency-Replayed': components['headers']['IdempotencyReplayed'];
+          /** @description Never cache authenticated, confidential or capability-bearing API responses in shared caches. */
+          'Cache-Control'?: 'private, no-store';
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['DocJob'];
+        };
+      };
+      400: components['responses']['BadRequest'];
+      401: components['responses']['Unauthenticated'];
+      403: components['responses']['Forbidden'];
+      404: components['responses']['NotFound'];
+      409: components['responses']['Conflict'];
+      422: components['responses']['Validation'];
+      429: components['responses']['RateLimited'];
+    };
+  };
+  reviewOcrWord: {
+    parameters: {
+      query?: never;
+      header: {
+        /** @description Stable per intended command. Retain record at least 7 days; financial deduplication also retains a durable tenant+actor+operation+key digest receipt. Key is scoped to tenant+actor+operation. Reuse only for an identical request. */
+        'Idempotency-Key': components['parameters']['IdempotencyKey'];
+        /** @description Required for cookie-authenticated state changes; not required with bearer-only authentication. Invalid/missing token or Origin yields 403. Conditional requirement cannot be represented by OpenAPI required=true. */
+        'X-CSRF-Token'?: components['parameters']['Csrf'];
+        /** @description Required and checked against the deployment allowlist for cookie-authenticated state changes and browser public-form submissions/uploads. Never accept wildcard with credentialed requests. */
+        Origin?: components['parameters']['Origin'];
+      };
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+        /** @description Opaque UUID of a document; a document the member cannot open — 404 «Документ недоступен», as a missing one (Q-W4.00-documents-13). */
+        documentId: components['parameters']['docsDocumentId'];
+        /** @description Opaque id of a doubtful word of the text layer. */
+        wordId: components['parameters']['ocrWordId'];
+      };
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['DocOcrWordReview'];
+      };
+    };
+    responses: {
+      /** @description Successful result. */
+      200: {
+        headers: {
+          'X-Request-Id': components['headers']['RequestId'];
+          'Idempotency-Replayed': components['headers']['IdempotencyReplayed'];
+          /** @description Never cache authenticated, confidential or capability-bearing API responses in shared caches. */
+          'Cache-Control'?: 'private, no-store';
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['DocOcrWord'];
+        };
+      };
+      400: components['responses']['BadRequest'];
+      401: components['responses']['Unauthenticated'];
+      403: components['responses']['Forbidden'];
+      404: components['responses']['NotFound'];
+      409: components['responses']['Conflict'];
+      422: components['responses']['Validation'];
+      429: components['responses']['RateLimited'];
+    };
+  };
+  getDocRoute: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+        /** @description Opaque UUID of a document; a document the member cannot open — 404 «Документ недоступен», as a missing one (Q-W4.00-documents-13). */
+        documentId: components['parameters']['docsDocumentId'];
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Successful result. */
+      200: {
+        headers: {
+          'X-Request-Id': components['headers']['RequestId'];
+          /** @description Never cache authenticated, confidential or capability-bearing API responses in shared caches. */
+          'Cache-Control'?: 'private, no-store';
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['DocRoute'];
+        };
+      };
+      400: components['responses']['BadRequest'];
+      401: components['responses']['Unauthenticated'];
+      403: components['responses']['Forbidden'];
+      404: components['responses']['NotFound'];
+      422: components['responses']['Validation'];
+      429: components['responses']['RateLimited'];
+    };
+  };
+  startDocRoute: {
+    parameters: {
+      query?: never;
+      header: {
+        /** @description Stable per intended command. Retain record at least 7 days; financial deduplication also retains a durable tenant+actor+operation+key digest receipt. Key is scoped to tenant+actor+operation. Reuse only for an identical request. */
+        'Idempotency-Key': components['parameters']['IdempotencyKey'];
+        /** @description Required for cookie-authenticated state changes; not required with bearer-only authentication. Invalid/missing token or Origin yields 403. Conditional requirement cannot be represented by OpenAPI required=true. */
+        'X-CSRF-Token'?: components['parameters']['Csrf'];
+        /** @description Required and checked against the deployment allowlist for cookie-authenticated state changes and browser public-form submissions/uploads. Never accept wildcard with credentialed requests. */
+        Origin?: components['parameters']['Origin'];
+      };
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+        /** @description Opaque UUID of a document; a document the member cannot open — 404 «Документ недоступен», as a missing one (Q-W4.00-documents-13). */
+        documentId: components['parameters']['docsDocumentId'];
+      };
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['DocRouteStart'];
+      };
+    };
+    responses: {
+      /** @description Successful result. */
+      200: {
+        headers: {
+          'X-Request-Id': components['headers']['RequestId'];
+          'Idempotency-Replayed': components['headers']['IdempotencyReplayed'];
+          /** @description Never cache authenticated, confidential or capability-bearing API responses in shared caches. */
+          'Cache-Control'?: 'private, no-store';
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['DocRouteStartResult'];
+        };
+      };
+      /** @description Successful result. */
+      201: {
+        headers: {
+          'X-Request-Id': components['headers']['RequestId'];
+          'Idempotency-Replayed': components['headers']['IdempotencyReplayed'];
+          /** @description Never cache authenticated, confidential or capability-bearing API responses in shared caches. */
+          'Cache-Control'?: 'private, no-store';
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['DocRouteStartResult'];
+        };
+      };
+      400: components['responses']['BadRequest'];
+      401: components['responses']['Unauthenticated'];
+      403: components['responses']['Forbidden'];
+      404: components['responses']['NotFound'];
+      409: components['responses']['Conflict'];
+      422: components['responses']['Validation'];
+      429: components['responses']['RateLimited'];
+    };
+  };
+  decideDocRoute: {
+    parameters: {
+      query?: never;
+      header: {
+        /** @description Stable per intended command. Retain record at least 7 days; financial deduplication also retains a durable tenant+actor+operation+key digest receipt. Key is scoped to tenant+actor+operation. Reuse only for an identical request. */
+        'Idempotency-Key': components['parameters']['IdempotencyKey'];
+        /** @description Required for cookie-authenticated state changes; not required with bearer-only authentication. Invalid/missing token or Origin yields 403. Conditional requirement cannot be represented by OpenAPI required=true. */
+        'X-CSRF-Token'?: components['parameters']['Csrf'];
+        /** @description Required and checked against the deployment allowlist for cookie-authenticated state changes and browser public-form submissions/uploads. Never accept wildcard with credentialed requests. */
+        Origin?: components['parameters']['Origin'];
+      };
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+        /** @description Opaque UUID of a document; a document the member cannot open — 404 «Документ недоступен», as a missing one (Q-W4.00-documents-13). */
+        documentId: components['parameters']['docsDocumentId'];
+      };
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['DocRouteDecide'];
+      };
+    };
+    responses: {
+      /** @description Successful result. */
+      200: {
+        headers: {
+          'X-Request-Id': components['headers']['RequestId'];
+          'Idempotency-Replayed': components['headers']['IdempotencyReplayed'];
+          /** @description Never cache authenticated, confidential or capability-bearing API responses in shared caches. */
+          'Cache-Control'?: 'private, no-store';
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['DocRoute'];
+        };
+      };
+      400: components['responses']['BadRequest'];
+      401: components['responses']['Unauthenticated'];
+      403: components['responses']['Forbidden'];
+      404: components['responses']['NotFound'];
+      409: components['responses']['Conflict'];
+      422: components['responses']['Validation'];
+      429: components['responses']['RateLimited'];
+    };
+  };
+  requestDocSignCode: {
+    parameters: {
+      query?: never;
+      header: {
+        /** @description Stable per intended command. Retain record at least 7 days; financial deduplication also retains a durable tenant+actor+operation+key digest receipt. Key is scoped to tenant+actor+operation. Reuse only for an identical request. */
+        'Idempotency-Key': components['parameters']['IdempotencyKey'];
+        /** @description Required for cookie-authenticated state changes; not required with bearer-only authentication. Invalid/missing token or Origin yields 403. Conditional requirement cannot be represented by OpenAPI required=true. */
+        'X-CSRF-Token'?: components['parameters']['Csrf'];
+        /** @description Required and checked against the deployment allowlist for cookie-authenticated state changes and browser public-form submissions/uploads. Never accept wildcard with credentialed requests. */
+        Origin?: components['parameters']['Origin'];
+      };
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+        /** @description Opaque UUID of a document; a document the member cannot open — 404 «Документ недоступен», as a missing one (Q-W4.00-documents-13). */
+        documentId: components['parameters']['docsDocumentId'];
+      };
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['DocSignCodeRequest'];
+      };
+    };
+    responses: {
+      /** @description Successful result. */
+      200: {
+        headers: {
+          'X-Request-Id': components['headers']['RequestId'];
+          'Idempotency-Replayed': components['headers']['IdempotencyReplayed'];
+          /** @description Never cache authenticated, confidential or capability-bearing API responses in shared caches. */
+          'Cache-Control'?: 'private, no-store';
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['DocSignChallenge'];
+        };
+      };
+      400: components['responses']['BadRequest'];
+      401: components['responses']['Unauthenticated'];
+      403: components['responses']['Forbidden'];
+      404: components['responses']['NotFound'];
+      409: components['responses']['Conflict'];
+      422: components['responses']['Validation'];
+      429: components['responses']['RateLimited'];
+      503: components['responses']['DependencyUnavailable'];
+    };
+  };
+  confirmDocSign: {
+    parameters: {
+      query?: never;
+      header: {
+        /** @description Stable per intended command. Retain record at least 7 days; financial deduplication also retains a durable tenant+actor+operation+key digest receipt. Key is scoped to tenant+actor+operation. Reuse only for an identical request. */
+        'Idempotency-Key': components['parameters']['IdempotencyKey'];
+        /** @description Required for cookie-authenticated state changes; not required with bearer-only authentication. Invalid/missing token or Origin yields 403. Conditional requirement cannot be represented by OpenAPI required=true. */
+        'X-CSRF-Token'?: components['parameters']['Csrf'];
+        /** @description Required and checked against the deployment allowlist for cookie-authenticated state changes and browser public-form submissions/uploads. Never accept wildcard with credentialed requests. */
+        Origin?: components['parameters']['Origin'];
+      };
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+        /** @description Opaque UUID of a document; a document the member cannot open — 404 «Документ недоступен», as a missing one (Q-W4.00-documents-13). */
+        documentId: components['parameters']['docsDocumentId'];
+      };
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['DocSignConfirm'];
+      };
+    };
+    responses: {
+      /** @description Successful result. */
+      200: {
+        headers: {
+          'X-Request-Id': components['headers']['RequestId'];
+          'Idempotency-Replayed': components['headers']['IdempotencyReplayed'];
+          /** @description Never cache authenticated, confidential or capability-bearing API responses in shared caches. */
+          'Cache-Control'?: 'private, no-store';
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['DocSignResult'];
+        };
+      };
+      400: components['responses']['BadRequest'];
+      401: components['responses']['Unauthenticated'];
+      403: components['responses']['Forbidden'];
+      404: components['responses']['NotFound'];
+      409: components['responses']['Conflict'];
+      422: components['responses']['Validation'];
+      429: components['responses']['RateLimited'];
+    };
+  };
+  ackDocument: {
+    parameters: {
+      query?: never;
+      header: {
+        /** @description Stable per intended command. Retain record at least 7 days; financial deduplication also retains a durable tenant+actor+operation+key digest receipt. Key is scoped to tenant+actor+operation. Reuse only for an identical request. */
+        'Idempotency-Key': components['parameters']['IdempotencyKey'];
+        /** @description Required for cookie-authenticated state changes; not required with bearer-only authentication. Invalid/missing token or Origin yields 403. Conditional requirement cannot be represented by OpenAPI required=true. */
+        'X-CSRF-Token'?: components['parameters']['Csrf'];
+        /** @description Required and checked against the deployment allowlist for cookie-authenticated state changes and browser public-form submissions/uploads. Never accept wildcard with credentialed requests. */
+        Origin?: components['parameters']['Origin'];
+      };
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+        /** @description Opaque UUID of a document; a document the member cannot open — 404 «Документ недоступен», as a missing one (Q-W4.00-documents-13). */
+        documentId: components['parameters']['docsDocumentId'];
+      };
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['DocAck'];
+      };
+    };
+    responses: {
+      /** @description Successful result. */
+      200: {
+        headers: {
+          'X-Request-Id': components['headers']['RequestId'];
+          'Idempotency-Replayed': components['headers']['IdempotencyReplayed'];
+          /** @description Never cache authenticated, confidential or capability-bearing API responses in shared caches. */
+          'Cache-Control'?: 'private, no-store';
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['DocAckResult'];
+        };
+      };
+      400: components['responses']['BadRequest'];
+      401: components['responses']['Unauthenticated'];
+      403: components['responses']['Forbidden'];
+      404: components['responses']['NotFound'];
+      409: components['responses']['Conflict'];
+      422: components['responses']['Validation'];
+      429: components['responses']['RateLimited'];
+    };
+  };
+  closeDocAck: {
+    parameters: {
+      query?: never;
+      header: {
+        /** @description Stable per intended command. Retain record at least 7 days; financial deduplication also retains a durable tenant+actor+operation+key digest receipt. Key is scoped to tenant+actor+operation. Reuse only for an identical request. */
+        'Idempotency-Key': components['parameters']['IdempotencyKey'];
+        /** @description Required for cookie-authenticated state changes; not required with bearer-only authentication. Invalid/missing token or Origin yields 403. Conditional requirement cannot be represented by OpenAPI required=true. */
+        'X-CSRF-Token'?: components['parameters']['Csrf'];
+        /** @description Required and checked against the deployment allowlist for cookie-authenticated state changes and browser public-form submissions/uploads. Never accept wildcard with credentialed requests. */
+        Origin?: components['parameters']['Origin'];
+      };
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+        /** @description Opaque UUID of a document; a document the member cannot open — 404 «Документ недоступен», as a missing one (Q-W4.00-documents-13). */
+        documentId: components['parameters']['docsDocumentId'];
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Successful result. */
+      200: {
+        headers: {
+          'X-Request-Id': components['headers']['RequestId'];
+          'Idempotency-Replayed': components['headers']['IdempotencyReplayed'];
+          /** @description Never cache authenticated, confidential or capability-bearing API responses in shared caches. */
+          'Cache-Control'?: 'private, no-store';
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['DocRoute'];
+        };
+      };
+      400: components['responses']['BadRequest'];
+      401: components['responses']['Unauthenticated'];
+      403: components['responses']['Forbidden'];
+      404: components['responses']['NotFound'];
+      409: components['responses']['Conflict'];
+      422: components['responses']['Validation'];
+      429: components['responses']['RateLimited'];
+    };
+  };
+  resumeDocRoute: {
+    parameters: {
+      query?: never;
+      header: {
+        /** @description Stable per intended command. Retain record at least 7 days; financial deduplication also retains a durable tenant+actor+operation+key digest receipt. Key is scoped to tenant+actor+operation. Reuse only for an identical request. */
+        'Idempotency-Key': components['parameters']['IdempotencyKey'];
+        /** @description Required for cookie-authenticated state changes; not required with bearer-only authentication. Invalid/missing token or Origin yields 403. Conditional requirement cannot be represented by OpenAPI required=true. */
+        'X-CSRF-Token'?: components['parameters']['Csrf'];
+        /** @description Required and checked against the deployment allowlist for cookie-authenticated state changes and browser public-form submissions/uploads. Never accept wildcard with credentialed requests. */
+        Origin?: components['parameters']['Origin'];
+      };
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+        /** @description Opaque UUID of a document; a document the member cannot open — 404 «Документ недоступен», as a missing one (Q-W4.00-documents-13). */
+        documentId: components['parameters']['docsDocumentId'];
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Successful result. */
+      200: {
+        headers: {
+          'X-Request-Id': components['headers']['RequestId'];
+          'Idempotency-Replayed': components['headers']['IdempotencyReplayed'];
+          /** @description Never cache authenticated, confidential or capability-bearing API responses in shared caches. */
+          'Cache-Control'?: 'private, no-store';
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['DocRoute'];
+        };
+      };
+      400: components['responses']['BadRequest'];
+      401: components['responses']['Unauthenticated'];
+      403: components['responses']['Forbidden'];
+      404: components['responses']['NotFound'];
+      409: components['responses']['Conflict'];
+      422: components['responses']['Validation'];
+      429: components['responses']['RateLimited'];
+    };
+  };
+  cancelDocRoute: {
+    parameters: {
+      query?: never;
+      header: {
+        /** @description Stable per intended command. Retain record at least 7 days; financial deduplication also retains a durable tenant+actor+operation+key digest receipt. Key is scoped to tenant+actor+operation. Reuse only for an identical request. */
+        'Idempotency-Key': components['parameters']['IdempotencyKey'];
+        /** @description Required for cookie-authenticated state changes; not required with bearer-only authentication. Invalid/missing token or Origin yields 403. Conditional requirement cannot be represented by OpenAPI required=true. */
+        'X-CSRF-Token'?: components['parameters']['Csrf'];
+        /** @description Required and checked against the deployment allowlist for cookie-authenticated state changes and browser public-form submissions/uploads. Never accept wildcard with credentialed requests. */
+        Origin?: components['parameters']['Origin'];
+      };
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+        /** @description Opaque UUID of a document; a document the member cannot open — 404 «Документ недоступен», as a missing one (Q-W4.00-documents-13). */
+        documentId: components['parameters']['docsDocumentId'];
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Successful result. */
+      200: {
+        headers: {
+          'X-Request-Id': components['headers']['RequestId'];
+          'Idempotency-Replayed': components['headers']['IdempotencyReplayed'];
+          /** @description Never cache authenticated, confidential or capability-bearing API responses in shared caches. */
+          'Cache-Control'?: 'private, no-store';
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['DocRoute'];
+        };
+      };
+      400: components['responses']['BadRequest'];
+      401: components['responses']['Unauthenticated'];
+      403: components['responses']['Forbidden'];
+      404: components['responses']['NotFound'];
+      409: components['responses']['Conflict'];
+      422: components['responses']['Validation'];
+      429: components['responses']['RateLimited'];
+    };
+  };
+  listDocActivity: {
+    parameters: {
+      query?: {
+        /** @description Opaque cursor from the preceding response; no offset pagination. */
+        cursor?: components['parameters']['Cursor'];
+        limit?: components['parameters']['Limit'];
+      };
+      header?: never;
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+        /** @description Opaque UUID of a document; a document the member cannot open — 404 «Документ недоступен», as a missing one (Q-W4.00-documents-13). */
+        documentId: components['parameters']['docsDocumentId'];
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Successful result. */
+      200: {
+        headers: {
+          'X-Request-Id': components['headers']['RequestId'];
+          /** @description Never cache authenticated, confidential or capability-bearing API responses in shared caches. */
+          'Cache-Control'?: 'private, no-store';
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['DocActivityList'];
+        };
+      };
+      400: components['responses']['BadRequest'];
+      401: components['responses']['Unauthenticated'];
+      403: components['responses']['Forbidden'];
+      404: components['responses']['NotFound'];
+      422: components['responses']['Validation'];
+      429: components['responses']['RateLimited'];
+    };
+  };
+  listDocFolders: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Successful result. */
+      200: {
+        headers: {
+          'X-Request-Id': components['headers']['RequestId'];
+          /** @description Never cache authenticated, confidential or capability-bearing API responses in shared caches. */
+          'Cache-Control'?: 'private, no-store';
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['DocFolderList'];
+        };
+      };
+      400: components['responses']['BadRequest'];
+      401: components['responses']['Unauthenticated'];
+      403: components['responses']['Forbidden'];
+      404: components['responses']['NotFound'];
+      422: components['responses']['Validation'];
+      429: components['responses']['RateLimited'];
+    };
+  };
+  createDocFolder: {
+    parameters: {
+      query?: never;
+      header: {
+        /** @description Stable per intended command. Retain record at least 7 days; financial deduplication also retains a durable tenant+actor+operation+key digest receipt. Key is scoped to tenant+actor+operation. Reuse only for an identical request. */
+        'Idempotency-Key': components['parameters']['IdempotencyKey'];
+        /** @description Required for cookie-authenticated state changes; not required with bearer-only authentication. Invalid/missing token or Origin yields 403. Conditional requirement cannot be represented by OpenAPI required=true. */
+        'X-CSRF-Token'?: components['parameters']['Csrf'];
+        /** @description Required and checked against the deployment allowlist for cookie-authenticated state changes and browser public-form submissions/uploads. Never accept wildcard with credentialed requests. */
+        Origin?: components['parameters']['Origin'];
+      };
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+      };
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['DocFolderCreate'];
+      };
+    };
+    responses: {
+      /** @description Successful result. */
+      201: {
+        headers: {
+          'X-Request-Id': components['headers']['RequestId'];
+          'Idempotency-Replayed': components['headers']['IdempotencyReplayed'];
+          /** @description Never cache authenticated, confidential or capability-bearing API responses in shared caches. */
+          'Cache-Control'?: 'private, no-store';
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['DocFolder'];
+        };
+      };
+      400: components['responses']['BadRequest'];
+      401: components['responses']['Unauthenticated'];
+      403: components['responses']['Forbidden'];
+      404: components['responses']['NotFound'];
+      409: components['responses']['Conflict'];
+      422: components['responses']['Validation'];
+      429: components['responses']['RateLimited'];
+    };
+  };
+  deleteDocFolder: {
+    parameters: {
+      query?: never;
+      header: {
+        /** @description Stable per intended command. Retain record at least 7 days; financial deduplication also retains a durable tenant+actor+operation+key digest receipt. Key is scoped to tenant+actor+operation. Reuse only for an identical request. */
+        'Idempotency-Key': components['parameters']['IdempotencyKey'];
+        /** @description Required for cookie-authenticated state changes; not required with bearer-only authentication. Invalid/missing token or Origin yields 403. Conditional requirement cannot be represented by OpenAPI required=true. */
+        'X-CSRF-Token'?: components['parameters']['Csrf'];
+        /** @description Required and checked against the deployment allowlist for cookie-authenticated state changes and browser public-form submissions/uploads. Never accept wildcard with credentialed requests. */
+        Origin?: components['parameters']['Origin'];
+      };
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+        /** @description Opaque UUID of a folder of «Документы». */
+        folderId: components['parameters']['docFolderId'];
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Successful result. */
+      204: {
+        headers: {
+          'X-Request-Id': components['headers']['RequestId'];
+          'Idempotency-Replayed': components['headers']['IdempotencyReplayed'];
+          /** @description Never cache authenticated, confidential or capability-bearing API responses in shared caches. */
+          'Cache-Control'?: 'private, no-store';
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
+      400: components['responses']['BadRequest'];
+      401: components['responses']['Unauthenticated'];
+      403: components['responses']['Forbidden'];
+      404: components['responses']['NotFound'];
+      409: components['responses']['Conflict'];
+      422: components['responses']['Validation'];
+      429: components['responses']['RateLimited'];
+    };
+  };
+  updateDocFolder: {
+    parameters: {
+      query?: never;
+      header: {
+        /** @description Stable per intended command. Retain record at least 7 days; financial deduplication also retains a durable tenant+actor+operation+key digest receipt. Key is scoped to tenant+actor+operation. Reuse only for an identical request. */
+        'Idempotency-Key': components['parameters']['IdempotencyKey'];
+        /** @description Required for cookie-authenticated state changes; not required with bearer-only authentication. Invalid/missing token or Origin yields 403. Conditional requirement cannot be represented by OpenAPI required=true. */
+        'X-CSRF-Token'?: components['parameters']['Csrf'];
+        /** @description Required and checked against the deployment allowlist for cookie-authenticated state changes and browser public-form submissions/uploads. Never accept wildcard with credentialed requests. */
+        Origin?: components['parameters']['Origin'];
+        /** @description Strong ETag obtained from latest GET or mutation response. * is not accepted. Missing=428; stale=412. Idempotent replay is checked before current revision precondition. */
+        'If-Match': components['parameters']['IfMatch'];
+      };
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+        /** @description Opaque UUID of a folder of «Документы». */
+        folderId: components['parameters']['docFolderId'];
+      };
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['DocFolderPatch'];
+      };
+    };
+    responses: {
+      /** @description Successful result. */
+      200: {
+        headers: {
+          'X-Request-Id': components['headers']['RequestId'];
+          ETag: components['headers']['ETag'];
+          'Idempotency-Replayed': components['headers']['IdempotencyReplayed'];
+          /** @description Never cache authenticated, confidential or capability-bearing API responses in shared caches. */
+          'Cache-Control'?: 'private, no-store';
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['DocFolder'];
+        };
+      };
+      400: components['responses']['BadRequest'];
+      401: components['responses']['Unauthenticated'];
+      403: components['responses']['Forbidden'];
+      404: components['responses']['NotFound'];
+      409: components['responses']['Conflict'];
+      412: components['responses']['PreconditionFailed'];
+      422: components['responses']['Validation'];
+      428: components['responses']['PreconditionRequired'];
+      429: components['responses']['RateLimited'];
+    };
+  };
+  setDocFolderShares: {
+    parameters: {
+      query?: never;
+      header: {
+        /** @description Stable per intended command. Retain record at least 7 days; financial deduplication also retains a durable tenant+actor+operation+key digest receipt. Key is scoped to tenant+actor+operation. Reuse only for an identical request. */
+        'Idempotency-Key': components['parameters']['IdempotencyKey'];
+        /** @description Required for cookie-authenticated state changes; not required with bearer-only authentication. Invalid/missing token or Origin yields 403. Conditional requirement cannot be represented by OpenAPI required=true. */
+        'X-CSRF-Token'?: components['parameters']['Csrf'];
+        /** @description Required and checked against the deployment allowlist for cookie-authenticated state changes and browser public-form submissions/uploads. Never accept wildcard with credentialed requests. */
+        Origin?: components['parameters']['Origin'];
+      };
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+        /** @description Opaque UUID of a folder of «Документы». */
+        folderId: components['parameters']['docFolderId'];
+      };
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['DocSharesSet'];
+      };
+    };
+    responses: {
+      /** @description Successful result. */
+      200: {
+        headers: {
+          'X-Request-Id': components['headers']['RequestId'];
+          'Idempotency-Replayed': components['headers']['IdempotencyReplayed'];
+          /** @description Never cache authenticated, confidential or capability-bearing API responses in shared caches. */
+          'Cache-Control'?: 'private, no-store';
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['DocSharesResult'];
+        };
+      };
+      400: components['responses']['BadRequest'];
+      401: components['responses']['Unauthenticated'];
+      403: components['responses']['Forbidden'];
+      404: components['responses']['NotFound'];
+      409: components['responses']['Conflict'];
+      422: components['responses']['Validation'];
+      429: components['responses']['RateLimited'];
+    };
+  };
+  listDocTemplates: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Successful result. */
+      200: {
+        headers: {
+          'X-Request-Id': components['headers']['RequestId'];
+          /** @description Never cache authenticated, confidential or capability-bearing API responses in shared caches. */
+          'Cache-Control'?: 'private, no-store';
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['DocTemplateList'];
+        };
+      };
+      400: components['responses']['BadRequest'];
+      401: components['responses']['Unauthenticated'];
+      403: components['responses']['Forbidden'];
+      404: components['responses']['NotFound'];
+      422: components['responses']['Validation'];
+      429: components['responses']['RateLimited'];
+    };
+  };
+  listDocRouteTemplates: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Successful result. */
+      200: {
+        headers: {
+          'X-Request-Id': components['headers']['RequestId'];
+          /** @description Never cache authenticated, confidential or capability-bearing API responses in shared caches. */
+          'Cache-Control'?: 'private, no-store';
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['DocRouteTemplateList'];
+        };
+      };
+      400: components['responses']['BadRequest'];
+      401: components['responses']['Unauthenticated'];
+      403: components['responses']['Forbidden'];
+      404: components['responses']['NotFound'];
+      422: components['responses']['Validation'];
+      429: components['responses']['RateLimited'];
+    };
+  };
+  openDocLink: {
+    parameters: {
+      query?: never;
+      header: {
+        /** @description Stable per intended command. Retain record at least 7 days; financial deduplication also retains a durable tenant+actor+operation+key digest receipt. Key is scoped to tenant+actor+operation. Reuse only for an identical request. */
+        'Idempotency-Key': components['parameters']['IdempotencyKey'];
+        /** @description Required and checked against the deployment allowlist for cookie-authenticated state changes and browser public-form submissions/uploads. Never accept wildcard with credentialed requests. */
+        Origin?: components['parameters']['Origin'];
+      };
+      path: {
+        /** @description Secret token of an external link of a document (only its digest is stored); a revoked or expired one — 410 public_token_expired. */
+        token: components['parameters']['docLinkToken'];
+      };
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['DocPublicOpen'];
+      };
+    };
+    responses: {
+      /** @description Successful result. */
+      200: {
+        headers: {
+          'X-Request-Id': components['headers']['RequestId'];
+          'Idempotency-Replayed': components['headers']['IdempotencyReplayed'];
+          /** @description Never cache authenticated, confidential or capability-bearing API responses in shared caches. */
+          'Cache-Control'?: 'private, no-store';
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['DocPublicSession'];
+        };
+      };
+      400: components['responses']['BadRequest'];
+      403: components['responses']['Forbidden'];
+      404: components['responses']['NotFound'];
+      409: components['responses']['Conflict'];
+      410: components['responses']['Gone'];
+      422: components['responses']['Validation'];
+      429: components['responses']['RateLimited'];
+    };
+  };
+  docServerCallback: {
+    parameters: {
+      query?: never;
+      header: {
+        /** @description Stable per intended command. Retain record at least 7 days; financial deduplication also retains a durable tenant+actor+operation+key digest receipt. Key is scoped to tenant+actor+operation. Reuse only for an identical request. */
+        'Idempotency-Key': components['parameters']['IdempotencyKey'];
+      };
+      path?: never;
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['DocServerCallback'];
+      };
+    };
+    responses: {
+      /** @description Successful result. */
+      200: {
+        headers: {
+          'X-Request-Id': components['headers']['RequestId'];
+          'Idempotency-Replayed': components['headers']['IdempotencyReplayed'];
+          /** @description Never cache authenticated, confidential or capability-bearing API responses in shared caches. */
+          'Cache-Control'?: 'private, no-store';
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['DocServerCallbackAck'];
+        };
+      };
+      400: components['responses']['BadRequest'];
+      401: components['responses']['Unauthenticated'];
+      404: components['responses']['NotFound'];
+      409: components['responses']['Conflict'];
+      422: components['responses']['Validation'];
+      429: components['responses']['RateLimited'];
+      503: components['responses']['DependencyUnavailable'];
+    };
+  };
+  listServiceDirections: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Successful result. */
+      200: {
+        headers: {
+          'X-Request-Id': components['headers']['RequestId'];
+          /** @description Never cache authenticated, confidential or capability-bearing API responses in shared caches. */
+          'Cache-Control'?: 'private, no-store';
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['ServiceDirectionList'];
+        };
+      };
+      400: components['responses']['BadRequest'];
+      401: components['responses']['Unauthenticated'];
+      403: components['responses']['Forbidden'];
+      404: components['responses']['NotFound'];
+      422: components['responses']['Validation'];
+      429: components['responses']['RateLimited'];
+    };
+  };
+  createServiceDirection: {
+    parameters: {
+      query?: never;
+      header: {
+        /** @description Stable per intended command. Retain record at least 7 days; financial deduplication also retains a durable tenant+actor+operation+key digest receipt. Key is scoped to tenant+actor+operation. Reuse only for an identical request. */
+        'Idempotency-Key': components['parameters']['IdempotencyKey'];
+        /** @description Required for cookie-authenticated state changes; not required with bearer-only authentication. Invalid/missing token or Origin yields 403. Conditional requirement cannot be represented by OpenAPI required=true. */
+        'X-CSRF-Token'?: components['parameters']['Csrf'];
+        /** @description Required and checked against the deployment allowlist for cookie-authenticated state changes and browser public-form submissions/uploads. Never accept wildcard with credentialed requests. */
+        Origin?: components['parameters']['Origin'];
+      };
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+      };
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['ServiceDirectionCreate'];
+      };
+    };
+    responses: {
+      /** @description Successful result. */
+      201: {
+        headers: {
+          'X-Request-Id': components['headers']['RequestId'];
+          'Idempotency-Replayed': components['headers']['IdempotencyReplayed'];
+          /** @description Never cache authenticated, confidential or capability-bearing API responses in shared caches. */
+          'Cache-Control'?: 'private, no-store';
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['ServiceDirectionConfig'];
+        };
+      };
+      400: components['responses']['BadRequest'];
+      401: components['responses']['Unauthenticated'];
+      403: components['responses']['Forbidden'];
+      404: components['responses']['NotFound'];
+      409: components['responses']['Conflict'];
+      422: components['responses']['Validation'];
+      429: components['responses']['RateLimited'];
+    };
+  };
+  listServiceRequests: {
+    parameters: {
+      query?: {
+        /** @description Opaque cursor from the preceding response; no offset pagination. */
+        cursor?: components['parameters']['Cursor'];
+        limit?: components['parameters']['Limit'];
+        /** @description One direction; absent — all visible. */
+        directionId?: string;
+        /** @description Queue; an unknown one — as open. */
+        queue?: 'open' | 'noreply' | 'mine' | 'risk' | 'late' | 'wait' | 'low' | 'done';
+        /** @description Kind. */
+        kind?: 'complaint' | 'claim' | 'question' | 'idea' | 'thanks' | 'warranty' | 'cargo';
+        /** @description Channel. */
+        channel?: 'sms' | 'bot' | 'cabinet' | 'widget' | 'phone' | 'qr';
+        /** @description Search: key, title, client name, company, old keys. Not by the phone in the first version (Q-W4.00-service-14). */
+        q?: string;
+      };
+      header?: never;
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Successful result. */
+      200: {
+        headers: {
+          'X-Request-Id': components['headers']['RequestId'];
+          /** @description Never cache authenticated, confidential or capability-bearing API responses in shared caches. */
+          'Cache-Control'?: 'private, no-store';
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['ServiceRequestList'];
+        };
+      };
+      400: components['responses']['BadRequest'];
+      401: components['responses']['Unauthenticated'];
+      403: components['responses']['Forbidden'];
+      404: components['responses']['NotFound'];
+      422: components['responses']['Validation'];
+      429: components['responses']['RateLimited'];
+    };
+  };
+  createServiceRequest: {
+    parameters: {
+      query?: never;
+      header: {
+        /** @description Stable per intended command. Retain record at least 7 days; financial deduplication also retains a durable tenant+actor+operation+key digest receipt. Key is scoped to tenant+actor+operation. Reuse only for an identical request. */
+        'Idempotency-Key': components['parameters']['IdempotencyKey'];
+        /** @description Required for cookie-authenticated state changes; not required with bearer-only authentication. Invalid/missing token or Origin yields 403. Conditional requirement cannot be represented by OpenAPI required=true. */
+        'X-CSRF-Token'?: components['parameters']['Csrf'];
+        /** @description Required and checked against the deployment allowlist for cookie-authenticated state changes and browser public-form submissions/uploads. Never accept wildcard with credentialed requests. */
+        Origin?: components['parameters']['Origin'];
+      };
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+      };
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['ServiceRequestCreate'];
+      };
+    };
+    responses: {
+      /** @description Successful result. */
+      201: {
+        headers: {
+          'X-Request-Id': components['headers']['RequestId'];
+          'Idempotency-Replayed': components['headers']['IdempotencyReplayed'];
+          /** @description Never cache authenticated, confidential or capability-bearing API responses in shared caches. */
+          'Cache-Control'?: 'private, no-store';
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['ServiceRequest'];
+        };
+      };
+      400: components['responses']['BadRequest'];
+      401: components['responses']['Unauthenticated'];
+      403: components['responses']['Forbidden'];
+      404: components['responses']['NotFound'];
+      409: components['responses']['Conflict'];
+      422: components['responses']['Validation'];
+      429: components['responses']['RateLimited'];
+    };
+  };
+  getServiceQueueCounts: {
+    parameters: {
+      query?: {
+        /** @description One direction; absent — all visible. */
+        directionId?: string;
+      };
+      header?: never;
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Successful result. */
+      200: {
+        headers: {
+          'X-Request-Id': components['headers']['RequestId'];
+          /** @description Never cache authenticated, confidential or capability-bearing API responses in shared caches. */
+          'Cache-Control'?: 'private, no-store';
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['ServiceQueueCounts'];
+        };
+      };
+      400: components['responses']['BadRequest'];
+      401: components['responses']['Unauthenticated'];
+      403: components['responses']['Forbidden'];
+      404: components['responses']['NotFound'];
+      422: components['responses']['Validation'];
+      429: components['responses']['RateLimited'];
+    };
+  };
+  getServiceRequest: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+        /** @description Opaque UUID of a client request; a request of a direction the member does not see and a complaint about the member — 404 (the complaint is not revealed, service.md §2.4). */
+        requestId: components['parameters']['serviceRequestId'];
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Successful result. */
+      200: {
+        headers: {
+          'X-Request-Id': components['headers']['RequestId'];
+          ETag: components['headers']['ETag'];
+          /** @description Never cache authenticated, confidential or capability-bearing API responses in shared caches. */
+          'Cache-Control'?: 'private, no-store';
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['ServiceRequest'];
+        };
+      };
+      400: components['responses']['BadRequest'];
+      401: components['responses']['Unauthenticated'];
+      403: components['responses']['Forbidden'];
+      404: components['responses']['NotFound'];
+      422: components['responses']['Validation'];
+      429: components['responses']['RateLimited'];
+    };
+  };
+  updateServiceRequest: {
+    parameters: {
+      query?: never;
+      header: {
+        /** @description Stable per intended command. Retain record at least 7 days; financial deduplication also retains a durable tenant+actor+operation+key digest receipt. Key is scoped to tenant+actor+operation. Reuse only for an identical request. */
+        'Idempotency-Key': components['parameters']['IdempotencyKey'];
+        /** @description Required for cookie-authenticated state changes; not required with bearer-only authentication. Invalid/missing token or Origin yields 403. Conditional requirement cannot be represented by OpenAPI required=true. */
+        'X-CSRF-Token'?: components['parameters']['Csrf'];
+        /** @description Required and checked against the deployment allowlist for cookie-authenticated state changes and browser public-form submissions/uploads. Never accept wildcard with credentialed requests. */
+        Origin?: components['parameters']['Origin'];
+        /** @description Strong ETag obtained from latest GET or mutation response. * is not accepted. Missing=428; stale=412. Idempotent replay is checked before current revision precondition. */
+        'If-Match': components['parameters']['IfMatch'];
+      };
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+        /** @description Opaque UUID of a client request; a request of a direction the member does not see and a complaint about the member — 404 (the complaint is not revealed, service.md §2.4). */
+        requestId: components['parameters']['serviceRequestId'];
+      };
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['ServiceRequestPatch'];
+      };
+    };
+    responses: {
+      /** @description Successful result. */
+      200: {
+        headers: {
+          'X-Request-Id': components['headers']['RequestId'];
+          ETag: components['headers']['ETag'];
+          'Idempotency-Replayed': components['headers']['IdempotencyReplayed'];
+          /** @description Never cache authenticated, confidential or capability-bearing API responses in shared caches. */
+          'Cache-Control'?: 'private, no-store';
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['ServiceRequest'];
+        };
+      };
+      400: components['responses']['BadRequest'];
+      401: components['responses']['Unauthenticated'];
+      403: components['responses']['Forbidden'];
+      404: components['responses']['NotFound'];
+      409: components['responses']['Conflict'];
+      412: components['responses']['PreconditionFailed'];
+      422: components['responses']['Validation'];
+      428: components['responses']['PreconditionRequired'];
+      429: components['responses']['RateLimited'];
+    };
+  };
+  postServiceMessage: {
+    parameters: {
+      query?: never;
+      header: {
+        /** @description Stable per intended command. Retain record at least 7 days; financial deduplication also retains a durable tenant+actor+operation+key digest receipt. Key is scoped to tenant+actor+operation. Reuse only for an identical request. */
+        'Idempotency-Key': components['parameters']['IdempotencyKey'];
+        /** @description Required for cookie-authenticated state changes; not required with bearer-only authentication. Invalid/missing token or Origin yields 403. Conditional requirement cannot be represented by OpenAPI required=true. */
+        'X-CSRF-Token'?: components['parameters']['Csrf'];
+        /** @description Required and checked against the deployment allowlist for cookie-authenticated state changes and browser public-form submissions/uploads. Never accept wildcard with credentialed requests. */
+        Origin?: components['parameters']['Origin'];
+      };
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+        /** @description Opaque UUID of a client request; a request of a direction the member does not see and a complaint about the member — 404 (the complaint is not revealed, service.md §2.4). */
+        requestId: components['parameters']['serviceRequestId'];
+      };
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['ServiceMessageCreate'];
+      };
+    };
+    responses: {
+      /** @description Successful result. */
+      201: {
+        headers: {
+          'X-Request-Id': components['headers']['RequestId'];
+          'Idempotency-Replayed': components['headers']['IdempotencyReplayed'];
+          /** @description Never cache authenticated, confidential or capability-bearing API responses in shared caches. */
+          'Cache-Control'?: 'private, no-store';
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['ServiceMessage'];
+        };
+      };
+      400: components['responses']['BadRequest'];
+      401: components['responses']['Unauthenticated'];
+      403: components['responses']['Forbidden'];
+      404: components['responses']['NotFound'];
+      409: components['responses']['Conflict'];
+      422: components['responses']['Validation'];
+      429: components['responses']['RateLimited'];
+    };
+  };
+  setServiceCompensation: {
+    parameters: {
+      query?: never;
+      header: {
+        /** @description Stable per intended command. Retain record at least 7 days; financial deduplication also retains a durable tenant+actor+operation+key digest receipt. Key is scoped to tenant+actor+operation. Reuse only for an identical request. */
+        'Idempotency-Key': components['parameters']['IdempotencyKey'];
+        /** @description Required for cookie-authenticated state changes; not required with bearer-only authentication. Invalid/missing token or Origin yields 403. Conditional requirement cannot be represented by OpenAPI required=true. */
+        'X-CSRF-Token'?: components['parameters']['Csrf'];
+        /** @description Required and checked against the deployment allowlist for cookie-authenticated state changes and browser public-form submissions/uploads. Never accept wildcard with credentialed requests. */
+        Origin?: components['parameters']['Origin'];
+        /** @description Strong ETag obtained from latest GET or mutation response. * is not accepted. Missing=428; stale=412. Idempotent replay is checked before current revision precondition. */
+        'If-Match': components['parameters']['IfMatch'];
+      };
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+        /** @description Opaque UUID of a client request; a request of a direction the member does not see and a complaint about the member — 404 (the complaint is not revealed, service.md §2.4). */
+        requestId: components['parameters']['serviceRequestId'];
+      };
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['ServiceCompensationSet'];
+      };
+    };
+    responses: {
+      /** @description Successful result. */
+      200: {
+        headers: {
+          'X-Request-Id': components['headers']['RequestId'];
+          ETag: components['headers']['ETag'];
+          'Idempotency-Replayed': components['headers']['IdempotencyReplayed'];
+          /** @description Never cache authenticated, confidential or capability-bearing API responses in shared caches. */
+          'Cache-Control'?: 'private, no-store';
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['ServiceRequest'];
+        };
+      };
+      400: components['responses']['BadRequest'];
+      401: components['responses']['Unauthenticated'];
+      403: components['responses']['Forbidden'];
+      404: components['responses']['NotFound'];
+      409: components['responses']['Conflict'];
+      412: components['responses']['PreconditionFailed'];
+      422: components['responses']['Validation'];
+      428: components['responses']['PreconditionRequired'];
+      429: components['responses']['RateLimited'];
+    };
+  };
+  transitionServiceRequest: {
+    parameters: {
+      query?: never;
+      header: {
+        /** @description Stable per intended command. Retain record at least 7 days; financial deduplication also retains a durable tenant+actor+operation+key digest receipt. Key is scoped to tenant+actor+operation. Reuse only for an identical request. */
+        'Idempotency-Key': components['parameters']['IdempotencyKey'];
+        /** @description Required for cookie-authenticated state changes; not required with bearer-only authentication. Invalid/missing token or Origin yields 403. Conditional requirement cannot be represented by OpenAPI required=true. */
+        'X-CSRF-Token'?: components['parameters']['Csrf'];
+        /** @description Required and checked against the deployment allowlist for cookie-authenticated state changes and browser public-form submissions/uploads. Never accept wildcard with credentialed requests. */
+        Origin?: components['parameters']['Origin'];
+        /** @description Strong ETag obtained from latest GET or mutation response. * is not accepted. Missing=428; stale=412. Idempotent replay is checked before current revision precondition. */
+        'If-Match': components['parameters']['IfMatch'];
+      };
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+        /** @description Opaque UUID of a client request; a request of a direction the member does not see and a complaint about the member — 404 (the complaint is not revealed, service.md §2.4). */
+        requestId: components['parameters']['serviceRequestId'];
+      };
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['ServiceTransition'];
+      };
+    };
+    responses: {
+      /** @description Successful result. */
+      200: {
+        headers: {
+          'X-Request-Id': components['headers']['RequestId'];
+          ETag: components['headers']['ETag'];
+          'Idempotency-Replayed': components['headers']['IdempotencyReplayed'];
+          /** @description Never cache authenticated, confidential or capability-bearing API responses in shared caches. */
+          'Cache-Control'?: 'private, no-store';
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['ServiceRequest'];
+        };
+      };
+      400: components['responses']['BadRequest'];
+      401: components['responses']['Unauthenticated'];
+      403: components['responses']['Forbidden'];
+      404: components['responses']['NotFound'];
+      409: components['responses']['Conflict'];
+      412: components['responses']['PreconditionFailed'];
+      422: components['responses']['Validation'];
+      428: components['responses']['PreconditionRequired'];
+      429: components['responses']['RateLimited'];
+    };
+  };
+  moveServiceRequest: {
+    parameters: {
+      query?: never;
+      header: {
+        /** @description Stable per intended command. Retain record at least 7 days; financial deduplication also retains a durable tenant+actor+operation+key digest receipt. Key is scoped to tenant+actor+operation. Reuse only for an identical request. */
+        'Idempotency-Key': components['parameters']['IdempotencyKey'];
+        /** @description Required for cookie-authenticated state changes; not required with bearer-only authentication. Invalid/missing token or Origin yields 403. Conditional requirement cannot be represented by OpenAPI required=true. */
+        'X-CSRF-Token'?: components['parameters']['Csrf'];
+        /** @description Required and checked against the deployment allowlist for cookie-authenticated state changes and browser public-form submissions/uploads. Never accept wildcard with credentialed requests. */
+        Origin?: components['parameters']['Origin'];
+        /** @description Strong ETag obtained from latest GET or mutation response. * is not accepted. Missing=428; stale=412. Idempotent replay is checked before current revision precondition. */
+        'If-Match': components['parameters']['IfMatch'];
+      };
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+        /** @description Opaque UUID of a client request; a request of a direction the member does not see and a complaint about the member — 404 (the complaint is not revealed, service.md §2.4). */
+        requestId: components['parameters']['serviceRequestId'];
+      };
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['ServiceMove'];
+      };
+    };
+    responses: {
+      /** @description Successful result. */
+      200: {
+        headers: {
+          'X-Request-Id': components['headers']['RequestId'];
+          ETag: components['headers']['ETag'];
+          'Idempotency-Replayed': components['headers']['IdempotencyReplayed'];
+          /** @description Never cache authenticated, confidential or capability-bearing API responses in shared caches. */
+          'Cache-Control'?: 'private, no-store';
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['ServiceRequest'];
+        };
+      };
+      400: components['responses']['BadRequest'];
+      401: components['responses']['Unauthenticated'];
+      403: components['responses']['Forbidden'];
+      404: components['responses']['NotFound'];
+      409: components['responses']['Conflict'];
+      412: components['responses']['PreconditionFailed'];
+      422: components['responses']['Validation'];
+      428: components['responses']['PreconditionRequired'];
+      429: components['responses']['RateLimited'];
+    };
+  };
+  revealServiceClientPhone: {
+    parameters: {
+      query?: never;
+      header: {
+        /** @description Stable per intended command. Retain record at least 7 days; financial deduplication also retains a durable tenant+actor+operation+key digest receipt. Key is scoped to tenant+actor+operation. Reuse only for an identical request. */
+        'Idempotency-Key': components['parameters']['IdempotencyKey'];
+        /** @description Required for cookie-authenticated state changes; not required with bearer-only authentication. Invalid/missing token or Origin yields 403. Conditional requirement cannot be represented by OpenAPI required=true. */
+        'X-CSRF-Token'?: components['parameters']['Csrf'];
+        /** @description Required and checked against the deployment allowlist for cookie-authenticated state changes and browser public-form submissions/uploads. Never accept wildcard with credentialed requests. */
+        Origin?: components['parameters']['Origin'];
+      };
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+        /** @description Opaque UUID of a client request; a request of a direction the member does not see and a complaint about the member — 404 (the complaint is not revealed, service.md §2.4). */
+        requestId: components['parameters']['serviceRequestId'];
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Successful result. */
+      200: {
+        headers: {
+          'X-Request-Id': components['headers']['RequestId'];
+          'Idempotency-Replayed': components['headers']['IdempotencyReplayed'];
+          /** @description Never cache authenticated, confidential or capability-bearing API responses in shared caches. */
+          'Cache-Control'?: 'private, no-store';
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['ServicePhoneReveal'];
+        };
+      };
+      400: components['responses']['BadRequest'];
+      401: components['responses']['Unauthenticated'];
+      403: components['responses']['Forbidden'];
+      404: components['responses']['NotFound'];
+      409: components['responses']['Conflict'];
+      422: components['responses']['Validation'];
+      429: components['responses']['RateLimited'];
+    };
+  };
+  shareServiceConclusion: {
+    parameters: {
+      query?: never;
+      header: {
+        /** @description Stable per intended command. Retain record at least 7 days; financial deduplication also retains a durable tenant+actor+operation+key digest receipt. Key is scoped to tenant+actor+operation. Reuse only for an identical request. */
+        'Idempotency-Key': components['parameters']['IdempotencyKey'];
+        /** @description Required for cookie-authenticated state changes; not required with bearer-only authentication. Invalid/missing token or Origin yields 403. Conditional requirement cannot be represented by OpenAPI required=true. */
+        'X-CSRF-Token'?: components['parameters']['Csrf'];
+        /** @description Required and checked against the deployment allowlist for cookie-authenticated state changes and browser public-form submissions/uploads. Never accept wildcard with credentialed requests. */
+        Origin?: components['parameters']['Origin'];
+        /** @description Strong ETag obtained from latest GET or mutation response. * is not accepted. Missing=428; stale=412. Idempotent replay is checked before current revision precondition. */
+        'If-Match': components['parameters']['IfMatch'];
+      };
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+        /** @description Opaque UUID of a client request; a request of a direction the member does not see and a complaint about the member — 404 (the complaint is not revealed, service.md §2.4). */
+        requestId: components['parameters']['serviceRequestId'];
+      };
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['ServiceConclusion'];
+      };
+    };
+    responses: {
+      /** @description Successful result. */
+      200: {
+        headers: {
+          'X-Request-Id': components['headers']['RequestId'];
+          ETag: components['headers']['ETag'];
+          'Idempotency-Replayed': components['headers']['IdempotencyReplayed'];
+          /** @description Never cache authenticated, confidential or capability-bearing API responses in shared caches. */
+          'Cache-Control'?: 'private, no-store';
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['ServiceRequest'];
+        };
+      };
+      400: components['responses']['BadRequest'];
+      401: components['responses']['Unauthenticated'];
+      403: components['responses']['Forbidden'];
+      404: components['responses']['NotFound'];
+      409: components['responses']['Conflict'];
+      412: components['responses']['PreconditionFailed'];
+      422: components['responses']['Validation'];
+      428: components['responses']['PreconditionRequired'];
+      429: components['responses']['RateLimited'];
+    };
+  };
+  createServiceRequestTask: {
+    parameters: {
+      query?: never;
+      header: {
+        /** @description Stable per intended command. Retain record at least 7 days; financial deduplication also retains a durable tenant+actor+operation+key digest receipt. Key is scoped to tenant+actor+operation. Reuse only for an identical request. */
+        'Idempotency-Key': components['parameters']['IdempotencyKey'];
+        /** @description Required for cookie-authenticated state changes; not required with bearer-only authentication. Invalid/missing token or Origin yields 403. Conditional requirement cannot be represented by OpenAPI required=true. */
+        'X-CSRF-Token'?: components['parameters']['Csrf'];
+        /** @description Required and checked against the deployment allowlist for cookie-authenticated state changes and browser public-form submissions/uploads. Never accept wildcard with credentialed requests. */
+        Origin?: components['parameters']['Origin'];
+      };
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+        /** @description Opaque UUID of a client request; a request of a direction the member does not see and a complaint about the member — 404 (the complaint is not revealed, service.md §2.4). */
+        requestId: components['parameters']['serviceRequestId'];
+      };
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['ServiceTaskCreate'];
+      };
+    };
+    responses: {
+      /** @description Successful result. */
+      201: {
+        headers: {
+          'X-Request-Id': components['headers']['RequestId'];
+          'Idempotency-Replayed': components['headers']['IdempotencyReplayed'];
+          /** @description Never cache authenticated, confidential or capability-bearing API responses in shared caches. */
+          'Cache-Control'?: 'private, no-store';
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['ServiceTaskRef'];
+        };
+      };
+      400: components['responses']['BadRequest'];
+      401: components['responses']['Unauthenticated'];
+      403: components['responses']['Forbidden'];
+      404: components['responses']['NotFound'];
+      409: components['responses']['Conflict'];
+      422: components['responses']['Validation'];
+      429: components['responses']['RateLimited'];
+    };
+  };
+  listServiceRatings: {
+    parameters: {
+      query?: {
+        /** @description Opaque cursor from the preceding response; no offset pagination. */
+        cursor?: components['parameters']['Cursor'];
+        limit?: components['parameters']['Limit'];
+        /** @description Status of the rating; open by default. */
+        status?: 'open' | 'seen' | 'request';
+      };
+      header?: never;
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Successful result. */
+      200: {
+        headers: {
+          'X-Request-Id': components['headers']['RequestId'];
+          /** @description Never cache authenticated, confidential or capability-bearing API responses in shared caches. */
+          'Cache-Control'?: 'private, no-store';
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['ServiceRatingList'];
+        };
+      };
+      400: components['responses']['BadRequest'];
+      401: components['responses']['Unauthenticated'];
+      403: components['responses']['Forbidden'];
+      404: components['responses']['NotFound'];
+      422: components['responses']['Validation'];
+      429: components['responses']['RateLimited'];
+    };
+  };
+  decideServiceRating: {
+    parameters: {
+      query?: never;
+      header: {
+        /** @description Stable per intended command. Retain record at least 7 days; financial deduplication also retains a durable tenant+actor+operation+key digest receipt. Key is scoped to tenant+actor+operation. Reuse only for an identical request. */
+        'Idempotency-Key': components['parameters']['IdempotencyKey'];
+        /** @description Required for cookie-authenticated state changes; not required with bearer-only authentication. Invalid/missing token or Origin yields 403. Conditional requirement cannot be represented by OpenAPI required=true. */
+        'X-CSRF-Token'?: components['parameters']['Csrf'];
+        /** @description Required and checked against the deployment allowlist for cookie-authenticated state changes and browser public-form submissions/uploads. Never accept wildcard with credentialed requests. */
+        Origin?: components['parameters']['Origin'];
+      };
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+        /** @description Opaque UUID of a low rating. */
+        ratingId: components['parameters']['serviceRatingId'];
+      };
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['ServiceRatingDecision'];
+      };
+    };
+    responses: {
+      /** @description Successful result. */
+      200: {
+        headers: {
+          'X-Request-Id': components['headers']['RequestId'];
+          'Idempotency-Replayed': components['headers']['IdempotencyReplayed'];
+          /** @description Never cache authenticated, confidential or capability-bearing API responses in shared caches. */
+          'Cache-Control'?: 'private, no-store';
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['ServiceRatingDecisionResult'];
+        };
+      };
+      400: components['responses']['BadRequest'];
+      401: components['responses']['Unauthenticated'];
+      403: components['responses']['Forbidden'];
+      404: components['responses']['NotFound'];
+      409: components['responses']['Conflict'];
+      422: components['responses']['Validation'];
+      429: components['responses']['RateLimited'];
+    };
+  };
+  listServiceReplyTemplates: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+        /** @description Opaque UUID of a direction (a service project of «Задачи»); a direction the member does not see — 404. */
+        directionId: components['parameters']['directionId'];
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Successful result. */
+      200: {
+        headers: {
+          'X-Request-Id': components['headers']['RequestId'];
+          /** @description Never cache authenticated, confidential or capability-bearing API responses in shared caches. */
+          'Cache-Control'?: 'private, no-store';
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['ServiceReplyTemplateList'];
+        };
+      };
+      400: components['responses']['BadRequest'];
+      401: components['responses']['Unauthenticated'];
+      403: components['responses']['Forbidden'];
+      404: components['responses']['NotFound'];
+      422: components['responses']['Validation'];
+      429: components['responses']['RateLimited'];
+    };
+  };
+  getServiceDirection: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+        /** @description Opaque UUID of a direction (a service project of «Задачи»); a direction the member does not see — 404. */
+        directionId: components['parameters']['directionId'];
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Successful result. */
+      200: {
+        headers: {
+          'X-Request-Id': components['headers']['RequestId'];
+          /** @description Never cache authenticated, confidential or capability-bearing API responses in shared caches. */
+          'Cache-Control'?: 'private, no-store';
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['ServiceDirectionConfig'];
+        };
+      };
+      400: components['responses']['BadRequest'];
+      401: components['responses']['Unauthenticated'];
+      403: components['responses']['Forbidden'];
+      404: components['responses']['NotFound'];
+      422: components['responses']['Validation'];
+      429: components['responses']['RateLimited'];
+    };
+  };
+  updateServiceDirectionDraft: {
+    parameters: {
+      query?: never;
+      header: {
+        /** @description Stable per intended command. Retain record at least 7 days; financial deduplication also retains a durable tenant+actor+operation+key digest receipt. Key is scoped to tenant+actor+operation. Reuse only for an identical request. */
+        'Idempotency-Key': components['parameters']['IdempotencyKey'];
+        /** @description Required for cookie-authenticated state changes; not required with bearer-only authentication. Invalid/missing token or Origin yields 403. Conditional requirement cannot be represented by OpenAPI required=true. */
+        'X-CSRF-Token'?: components['parameters']['Csrf'];
+        /** @description Required and checked against the deployment allowlist for cookie-authenticated state changes and browser public-form submissions/uploads. Never accept wildcard with credentialed requests. */
+        Origin?: components['parameters']['Origin'];
+        /** @description Strong ETag obtained from latest GET or mutation response. * is not accepted. Missing=428; stale=412. Idempotent replay is checked before current revision precondition. */
+        'If-Match': components['parameters']['IfMatch'];
+      };
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+        /** @description Opaque UUID of a direction (a service project of «Задачи»); a direction the member does not see — 404. */
+        directionId: components['parameters']['directionId'];
+      };
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['ServiceDirectionDraftSave'];
+      };
+    };
+    responses: {
+      /** @description Successful result. */
+      200: {
+        headers: {
+          'X-Request-Id': components['headers']['RequestId'];
+          ETag: components['headers']['ETag'];
+          'Idempotency-Replayed': components['headers']['IdempotencyReplayed'];
+          /** @description Never cache authenticated, confidential or capability-bearing API responses in shared caches. */
+          'Cache-Control'?: 'private, no-store';
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['ServiceDirectionDraft'];
+        };
+      };
+      400: components['responses']['BadRequest'];
+      401: components['responses']['Unauthenticated'];
+      403: components['responses']['Forbidden'];
+      404: components['responses']['NotFound'];
+      409: components['responses']['Conflict'];
+      412: components['responses']['PreconditionFailed'];
+      422: components['responses']['Validation'];
+      428: components['responses']['PreconditionRequired'];
+      429: components['responses']['RateLimited'];
+    };
+  };
+  publishServiceDirection: {
+    parameters: {
+      query?: never;
+      header: {
+        /** @description Stable per intended command. Retain record at least 7 days; financial deduplication also retains a durable tenant+actor+operation+key digest receipt. Key is scoped to tenant+actor+operation. Reuse only for an identical request. */
+        'Idempotency-Key': components['parameters']['IdempotencyKey'];
+        /** @description Required for cookie-authenticated state changes; not required with bearer-only authentication. Invalid/missing token or Origin yields 403. Conditional requirement cannot be represented by OpenAPI required=true. */
+        'X-CSRF-Token'?: components['parameters']['Csrf'];
+        /** @description Required and checked against the deployment allowlist for cookie-authenticated state changes and browser public-form submissions/uploads. Never accept wildcard with credentialed requests. */
+        Origin?: components['parameters']['Origin'];
+      };
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+        /** @description Opaque UUID of a direction (a service project of «Задачи»); a direction the member does not see — 404. */
+        directionId: components['parameters']['directionId'];
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Successful result. */
+      200: {
+        headers: {
+          'X-Request-Id': components['headers']['RequestId'];
+          'Idempotency-Replayed': components['headers']['IdempotencyReplayed'];
+          /** @description Never cache authenticated, confidential or capability-bearing API responses in shared caches. */
+          'Cache-Control'?: 'private, no-store';
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['ServiceDirectionConfig'];
+        };
+      };
+      400: components['responses']['BadRequest'];
+      401: components['responses']['Unauthenticated'];
+      403: components['responses']['Forbidden'];
+      404: components['responses']['NotFound'];
+      409: components['responses']['Conflict'];
+      422: components['responses']['Validation'];
+      429: components['responses']['RateLimited'];
+    };
+  };
+  getServiceReport: {
+    parameters: {
+      query?: {
+        /** @description Start of the period. */
+        from?: string;
+        /** @description End of the period. */
+        to?: string;
+        /** @description One direction. */
+        directionId?: string;
+      };
+      header?: never;
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Successful result. */
+      200: {
+        headers: {
+          'X-Request-Id': components['headers']['RequestId'];
+          /** @description Never cache authenticated, confidential or capability-bearing API responses in shared caches. */
+          'Cache-Control'?: 'private, no-store';
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['ServiceReport'];
+        };
+      };
+      400: components['responses']['BadRequest'];
+      401: components['responses']['Unauthenticated'];
+      403: components['responses']['Forbidden'];
+      404: components['responses']['NotFound'];
+      422: components['responses']['Validation'];
+      429: components['responses']['RateLimited'];
+    };
+  };
+  getPublicServicePage: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        /** @description Slug of the public page of a direction. */
+        slug: components['parameters']['servicePortalSlug'];
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Successful result. */
+      200: {
+        headers: {
+          'X-Request-Id': components['headers']['RequestId'];
+          /** @description Never cache authenticated, confidential or capability-bearing API responses in shared caches. */
+          'Cache-Control'?: 'private, no-store';
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['PublicServicePage'];
+        };
+      };
+      400: components['responses']['BadRequest'];
+      403: components['responses']['Forbidden'];
+      404: components['responses']['NotFound'];
+      410: components['responses']['Gone'];
+      422: components['responses']['Validation'];
+      429: components['responses']['RateLimited'];
+    };
+  };
+  submitPublicServiceRequest: {
+    parameters: {
+      query?: never;
+      header: {
+        /** @description Stable per intended command. Retain record at least 7 days; financial deduplication also retains a durable tenant+actor+operation+key digest receipt. Key is scoped to tenant+actor+operation. Reuse only for an identical request. */
+        'Idempotency-Key': components['parameters']['IdempotencyKey'];
+        /** @description Required and checked against the deployment allowlist for cookie-authenticated state changes and browser public-form submissions/uploads. Never accept wildcard with credentialed requests. */
+        Origin?: components['parameters']['Origin'];
+      };
+      path: {
+        /** @description Slug of the public page of a direction. */
+        slug: components['parameters']['servicePortalSlug'];
+      };
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['PublicServiceSubmit'];
+      };
+    };
+    responses: {
+      /** @description Successful result. */
+      201: {
+        headers: {
+          'X-Request-Id': components['headers']['RequestId'];
+          'Idempotency-Replayed': components['headers']['IdempotencyReplayed'];
+          /** @description Never cache authenticated, confidential or capability-bearing API responses in shared caches. */
+          'Cache-Control'?: 'private, no-store';
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['PublicServiceReceipt'];
+        };
+      };
+      400: components['responses']['BadRequest'];
+      403: components['responses']['Forbidden'];
+      404: components['responses']['NotFound'];
+      409: components['responses']['Conflict'];
+      410: components['responses']['Gone'];
+      422: components['responses']['Validation'];
+      429: components['responses']['RateLimited'];
+    };
+  };
+  getPublicServiceRequest: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        /** @description Personal link token of a request (only its digest is stored); an expired one — 410 public_token_expired. */
+        token: components['parameters']['servicePortalToken'];
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Successful result. */
+      200: {
+        headers: {
+          'X-Request-Id': components['headers']['RequestId'];
+          /** @description Never cache authenticated, confidential or capability-bearing API responses in shared caches. */
+          'Cache-Control'?: 'private, no-store';
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['PublicServiceRequest'];
+        };
+      };
+      400: components['responses']['BadRequest'];
+      403: components['responses']['Forbidden'];
+      404: components['responses']['NotFound'];
+      410: components['responses']['Gone'];
+      422: components['responses']['Validation'];
+      429: components['responses']['RateLimited'];
+    };
+  };
+  postPublicServiceMessage: {
+    parameters: {
+      query?: never;
+      header: {
+        /** @description Stable per intended command. Retain record at least 7 days; financial deduplication also retains a durable tenant+actor+operation+key digest receipt. Key is scoped to tenant+actor+operation. Reuse only for an identical request. */
+        'Idempotency-Key': components['parameters']['IdempotencyKey'];
+        /** @description Required and checked against the deployment allowlist for cookie-authenticated state changes and browser public-form submissions/uploads. Never accept wildcard with credentialed requests. */
+        Origin?: components['parameters']['Origin'];
+      };
+      path: {
+        /** @description Personal link token of a request (only its digest is stored); an expired one — 410 public_token_expired. */
+        token: components['parameters']['servicePortalToken'];
+      };
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['PublicServiceMessageCreate'];
+      };
+    };
+    responses: {
+      /** @description Successful result. */
+      201: {
+        headers: {
+          'X-Request-Id': components['headers']['RequestId'];
+          'Idempotency-Replayed': components['headers']['IdempotencyReplayed'];
+          /** @description Never cache authenticated, confidential or capability-bearing API responses in shared caches. */
+          'Cache-Control'?: 'private, no-store';
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['PublicServiceMessage'];
+        };
+      };
+      400: components['responses']['BadRequest'];
+      403: components['responses']['Forbidden'];
+      404: components['responses']['NotFound'];
+      409: components['responses']['Conflict'];
+      410: components['responses']['Gone'];
+      422: components['responses']['Validation'];
+      429: components['responses']['RateLimited'];
+    };
+  };
+  ratePublicServiceResolution: {
+    parameters: {
+      query?: never;
+      header: {
+        /** @description Stable per intended command. Retain record at least 7 days; financial deduplication also retains a durable tenant+actor+operation+key digest receipt. Key is scoped to tenant+actor+operation. Reuse only for an identical request. */
+        'Idempotency-Key': components['parameters']['IdempotencyKey'];
+        /** @description Required and checked against the deployment allowlist for cookie-authenticated state changes and browser public-form submissions/uploads. Never accept wildcard with credentialed requests. */
+        Origin?: components['parameters']['Origin'];
+      };
+      path: {
+        /** @description Personal link token of a request (only its digest is stored); an expired one — 410 public_token_expired. */
+        token: components['parameters']['servicePortalToken'];
+      };
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['PublicServiceCsat'];
+      };
+    };
+    responses: {
+      /** @description Successful result. */
+      200: {
+        headers: {
+          'X-Request-Id': components['headers']['RequestId'];
+          'Idempotency-Replayed': components['headers']['IdempotencyReplayed'];
+          /** @description Never cache authenticated, confidential or capability-bearing API responses in shared caches. */
+          'Cache-Control'?: 'private, no-store';
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['PublicServiceRequest'];
+        };
+      };
+      400: components['responses']['BadRequest'];
+      403: components['responses']['Forbidden'];
+      404: components['responses']['NotFound'];
+      409: components['responses']['Conflict'];
+      410: components['responses']['Gone'];
+      422: components['responses']['Validation'];
+      429: components['responses']['RateLimited'];
+    };
+  };
+  reopenPublicServiceRequest: {
+    parameters: {
+      query?: never;
+      header: {
+        /** @description Stable per intended command. Retain record at least 7 days; financial deduplication also retains a durable tenant+actor+operation+key digest receipt. Key is scoped to tenant+actor+operation. Reuse only for an identical request. */
+        'Idempotency-Key': components['parameters']['IdempotencyKey'];
+        /** @description Required and checked against the deployment allowlist for cookie-authenticated state changes and browser public-form submissions/uploads. Never accept wildcard with credentialed requests. */
+        Origin?: components['parameters']['Origin'];
+      };
+      path: {
+        /** @description Personal link token of a request (only its digest is stored); an expired one — 410 public_token_expired. */
+        token: components['parameters']['servicePortalToken'];
+      };
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['PublicServiceReopen'];
+      };
+    };
+    responses: {
+      /** @description Successful result. */
+      200: {
+        headers: {
+          'X-Request-Id': components['headers']['RequestId'];
+          'Idempotency-Replayed': components['headers']['IdempotencyReplayed'];
+          /** @description Never cache authenticated, confidential or capability-bearing API responses in shared caches. */
+          'Cache-Control'?: 'private, no-store';
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['PublicServiceRequest'];
+        };
+      };
+      400: components['responses']['BadRequest'];
+      403: components['responses']['Forbidden'];
+      404: components['responses']['NotFound'];
+      409: components['responses']['Conflict'];
+      410: components['responses']['Gone'];
+      422: components['responses']['Validation'];
+      429: components['responses']['RateLimited'];
+    };
+  };
+  optOutPublicSurveys: {
+    parameters: {
+      query?: never;
+      header: {
+        /** @description Stable per intended command. Retain record at least 7 days; financial deduplication also retains a durable tenant+actor+operation+key digest receipt. Key is scoped to tenant+actor+operation. Reuse only for an identical request. */
+        'Idempotency-Key': components['parameters']['IdempotencyKey'];
+        /** @description Required and checked against the deployment allowlist for cookie-authenticated state changes and browser public-form submissions/uploads. Never accept wildcard with credentialed requests. */
+        Origin?: components['parameters']['Origin'];
+      };
+      path: {
+        /** @description Personal link token of a request (only its digest is stored); an expired one — 410 public_token_expired. */
+        token: components['parameters']['servicePortalToken'];
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Successful result. */
+      200: {
+        headers: {
+          'X-Request-Id': components['headers']['RequestId'];
+          'Idempotency-Replayed': components['headers']['IdempotencyReplayed'];
+          /** @description Never cache authenticated, confidential or capability-bearing API responses in shared caches. */
+          'Cache-Control'?: 'private, no-store';
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['PublicServiceOptOut'];
+        };
+      };
+      400: components['responses']['BadRequest'];
+      403: components['responses']['Forbidden'];
+      404: components['responses']['NotFound'];
+      409: components['responses']['Conflict'];
+      410: components['responses']['Gone'];
+      422: components['responses']['Validation'];
+      429: components['responses']['RateLimited'];
+    };
+  };
+  initiatePublicServiceUpload: {
+    parameters: {
+      query?: never;
+      header: {
+        /** @description Stable per intended command. Retain record at least 7 days; financial deduplication also retains a durable tenant+actor+operation+key digest receipt. Key is scoped to tenant+actor+operation. Reuse only for an identical request. */
+        'Idempotency-Key': components['parameters']['IdempotencyKey'];
+        /** @description Required and checked against the deployment allowlist for cookie-authenticated state changes and browser public-form submissions/uploads. Never accept wildcard with credentialed requests. */
+        Origin?: components['parameters']['Origin'];
+      };
+      path: {
+        /** @description Personal link token of a request (only its digest is stored); an expired one — 410 public_token_expired. */
+        token: components['parameters']['servicePortalToken'];
+      };
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['PublicServiceUploadCreate'];
+      };
+    };
+    responses: {
+      /** @description Successful result. */
+      201: {
+        headers: {
+          'X-Request-Id': components['headers']['RequestId'];
+          'Idempotency-Replayed': components['headers']['IdempotencyReplayed'];
+          /** @description Never cache authenticated, confidential or capability-bearing API responses in shared caches. */
+          'Cache-Control'?: 'private, no-store';
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['UploadTicket'];
+        };
+      };
+      400: components['responses']['BadRequest'];
+      403: components['responses']['Forbidden'];
+      404: components['responses']['NotFound'];
+      409: components['responses']['Conflict'];
+      410: components['responses']['Gone'];
+      413: components['responses']['TooLarge'];
+      422: components['responses']['Validation'];
+      429: components['responses']['RateLimited'];
+    };
+  };
+  completePublicServiceUpload: {
+    parameters: {
+      query?: never;
+      header: {
+        /** @description Stable per intended command. Retain record at least 7 days; financial deduplication also retains a durable tenant+actor+operation+key digest receipt. Key is scoped to tenant+actor+operation. Reuse only for an identical request. */
+        'Idempotency-Key': components['parameters']['IdempotencyKey'];
+        /** @description Required and checked against the deployment allowlist for cookie-authenticated state changes and browser public-form submissions/uploads. Never accept wildcard with credentialed requests. */
+        Origin?: components['parameters']['Origin'];
+      };
+      path: {
+        /** @description Personal link token of a request (only its digest is stored); an expired one — 410 public_token_expired. */
+        token: components['parameters']['servicePortalToken'];
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        uploadId: components['parameters']['uploadId'];
+      };
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['PublicServiceUploadComplete'];
+      };
+    };
+    responses: {
+      /** @description Successful result. */
+      202: {
+        headers: {
+          'X-Request-Id': components['headers']['RequestId'];
+          'Idempotency-Replayed': components['headers']['IdempotencyReplayed'];
+          /** @description Never cache authenticated, confidential or capability-bearing API responses in shared caches. */
+          'Cache-Control'?: 'private, no-store';
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['File'];
+        };
+      };
+      400: components['responses']['BadRequest'];
+      403: components['responses']['Forbidden'];
+      404: components['responses']['NotFound'];
+      409: components['responses']['Conflict'];
+      410: components['responses']['Gone'];
       422: components['responses']['Validation'];
       429: components['responses']['RateLimited'];
     };

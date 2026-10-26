@@ -1,0 +1,360 @@
+# Матрица изоляции: тег Chats («Чаты») контрактного PR этапа 7 (W7.00, 0.12.0-stage7) — отказы шлюза без pending.
+# «Администратор» фикстур не имеет ни одного действия chat.*, docs.*, service.*: шлюз cmd/api отвечает 403 forbidden_action
+# до хендлера (нет гранта с действием x-permissions в виде области x-scope), и это верно после него. Формат — README.md.
+# После правки: go -C backend generate ./test/isolation
+module: chats_w700_gate
+endpoints:
+  - op: listChats
+    method: GET
+    path: /api/v1/tenants/{tenantId}/chats
+    rows:
+      - actor: a.admin
+        params: { tenantId: tenant:a }
+        status: 403
+        code: forbidden_action
+        note: нет chat.read
+  - op: createChat
+    method: POST
+    path: /api/v1/tenants/{tenantId}/chats
+    rows:
+      - actor: a.admin
+        params: { tenantId: tenant:a }
+        status: 403
+        code: forbidden_action
+        body: "{}"
+        note: нет chat.create
+  - op: createDirectChat
+    method: POST
+    path: /api/v1/tenants/{tenantId}/chats/direct
+    rows:
+      - actor: a.admin
+        params: { tenantId: tenant:a }
+        status: 403
+        code: forbidden_action
+        body: "{}"
+        note: нет chat.direct
+  - op: getChat
+    method: GET
+    path: /api/v1/tenants/{tenantId}/chats/{chatId}
+    rows:
+      - actor: a.admin
+        params: { tenantId: tenant:a, chatId: tenant:missing }
+        status: 403
+        code: forbidden_action
+        note: нет chat.read
+  - op: updateChat
+    method: PATCH
+    path: /api/v1/tenants/{tenantId}/chats/{chatId}
+    rows:
+      - actor: a.admin
+        params: { tenantId: tenant:a, chatId: tenant:missing }
+        status: 403
+        code: forbidden_action
+        body: "{}"
+        note: нет chat.settings.manage
+  - op: archiveChat
+    method: POST
+    path: /api/v1/tenants/{tenantId}/chats/{chatId}/archive
+    rows:
+      - actor: a.admin
+        params: { tenantId: tenant:a, chatId: tenant:missing }
+        status: 403
+        code: forbidden_action
+        body: "{}"
+        note: нет chat.settings.manage
+  - op: listChatMessages
+    method: GET
+    path: /api/v1/tenants/{tenantId}/chats/{chatId}/messages
+    rows:
+      - actor: a.admin
+        params: { tenantId: tenant:a, chatId: tenant:missing }
+        status: 403
+        code: forbidden_action
+        note: нет chat.read
+  - op: postChatMessage
+    method: POST
+    path: /api/v1/tenants/{tenantId}/chats/{chatId}/messages
+    rows:
+      - actor: a.admin
+        params: { tenantId: tenant:a, chatId: tenant:missing }
+        status: 403
+        code: forbidden_action
+        body: "{}"
+        note: нет chat.write
+  - op: deleteChatMessage
+    method: DELETE
+    path: /api/v1/tenants/{tenantId}/chats/{chatId}/messages/{messageId}
+    rows:
+      - actor: a.admin
+        params: { tenantId: tenant:a, chatId: tenant:missing, messageId: tenant:missing }
+        status: 403
+        code: forbidden_action
+        note: нет chat.write или chat.moderate
+  - op: editChatMessage
+    method: PATCH
+    path: /api/v1/tenants/{tenantId}/chats/{chatId}/messages/{messageId}
+    rows:
+      - actor: a.admin
+        params: { tenantId: tenant:a, chatId: tenant:missing, messageId: tenant:missing }
+        status: 403
+        code: forbidden_action
+        body: "{}"
+        note: нет chat.write
+  - op: listChatMessageVersions
+    method: GET
+    path: /api/v1/tenants/{tenantId}/chats/{chatId}/messages/{messageId}/versions
+    rows:
+      - actor: a.admin
+        params: { tenantId: tenant:a, chatId: tenant:missing, messageId: tenant:missing }
+        status: 403
+        code: forbidden_action
+        note: нет chat.read
+  - op: markChatRead
+    method: POST
+    path: /api/v1/tenants/{tenantId}/chats/{chatId}/read
+    rows:
+      - actor: a.admin
+        params: { tenantId: tenant:a, chatId: tenant:missing }
+        status: 403
+        code: forbidden_action
+        body: "{}"
+        note: нет chat.read
+  - op: ackChatMessage
+    method: POST
+    path: /api/v1/tenants/{tenantId}/chats/{chatId}/messages/{messageId}/ack
+    rows:
+      - actor: a.admin
+        params: { tenantId: tenant:a, chatId: tenant:missing, messageId: tenant:missing }
+        status: 403
+        code: forbidden_action
+        body: "{}"
+        note: нет chat.read
+  - op: getChatMessageReceipts
+    method: GET
+    path: /api/v1/tenants/{tenantId}/chats/{chatId}/messages/{messageId}/receipts
+    rows:
+      - actor: a.admin
+        params: { tenantId: tenant:a, chatId: tenant:missing, messageId: tenant:missing }
+        status: 403
+        code: forbidden_action
+        note: нет chat.receipts.read
+  - op: revealChatMessagePdn
+    method: POST
+    path: /api/v1/tenants/{tenantId}/chats/{chatId}/messages/{messageId}/pdn-reveal
+    rows:
+      - actor: a.admin
+        params: { tenantId: tenant:a, chatId: tenant:missing, messageId: tenant:missing }
+        status: 403
+        code: forbidden_action
+        body: "{}"
+        note: нет chat.pdn.read
+  - op: voteChatPoll
+    method: PUT
+    path: /api/v1/tenants/{tenantId}/chats/{chatId}/polls/{pollId}/vote
+    rows:
+      - actor: a.admin
+        params: { tenantId: tenant:a, chatId: tenant:missing, pollId: tenant:missing }
+        status: 403
+        code: forbidden_action
+        body: "{}"
+        note: нет chat.read
+  - op: closeChatPoll
+    method: POST
+    path: /api/v1/tenants/{tenantId}/chats/{chatId}/polls/{pollId}/close
+    rows:
+      - actor: a.admin
+        params: { tenantId: tenant:a, chatId: tenant:missing, pollId: tenant:missing }
+        status: 403
+        code: forbidden_action
+        body: "{}"
+        note: нет chat.polls.create или chat.moderate
+  - op: remindChatPoll
+    method: POST
+    path: /api/v1/tenants/{tenantId}/chats/{chatId}/polls/{pollId}/remind
+    rows:
+      - actor: a.admin
+        params: { tenantId: tenant:a, chatId: tenant:missing, pollId: tenant:missing }
+        status: 403
+        code: forbidden_action
+        body: "{}"
+        note: нет chat.polls.create или chat.moderate
+  - op: pinChatMessage
+    method: PUT
+    path: /api/v1/tenants/{tenantId}/chats/{chatId}/pin
+    rows:
+      - actor: a.admin
+        params: { tenantId: tenant:a, chatId: tenant:missing }
+        status: 403
+        code: forbidden_action
+        body: "{}"
+        note: нет chat.moderate
+  - op: unpinChatMessage
+    method: DELETE
+    path: /api/v1/tenants/{tenantId}/chats/{chatId}/pin
+    rows:
+      - actor: a.admin
+        params: { tenantId: tenant:a, chatId: tenant:missing }
+        status: 403
+        code: forbidden_action
+        note: нет chat.moderate
+  - op: openViewOnceAttachment
+    method: POST
+    path: /api/v1/tenants/{tenantId}/chats/{chatId}/attachments/{attachmentId}/view-once
+    rows:
+      - actor: a.admin
+        params: { tenantId: tenant:a, chatId: tenant:missing, attachmentId: tenant:missing }
+        status: 403
+        code: forbidden_action
+        body: "{}"
+        note: нет chat.read
+  - op: saveChatAttachmentsToRecord
+    method: POST
+    path: /api/v1/tenants/{tenantId}/chats/{chatId}/messages/{messageId}/save-to-record
+    rows:
+      - actor: a.admin
+        params: { tenantId: tenant:a, chatId: tenant:missing, messageId: tenant:missing }
+        status: 403
+        code: forbidden_action
+        body: "{}"
+        note: нет chat.write
+  - op: createTaskFromChatMessage
+    method: POST
+    path: /api/v1/tenants/{tenantId}/chats/{chatId}/messages/{messageId}/task
+    rows:
+      - actor: a.admin
+        params: { tenantId: tenant:a, chatId: tenant:missing, messageId: tenant:missing }
+        status: 403
+        code: forbidden_action
+        body: "{}"
+        note: нет tasks.create
+  - op: listChatMembers
+    method: GET
+    path: /api/v1/tenants/{tenantId}/chats/{chatId}/members
+    rows:
+      - actor: a.admin
+        params: { tenantId: tenant:a, chatId: tenant:missing }
+        status: 403
+        code: forbidden_action
+        note: нет chat.members.manage
+  - op: getChatSources
+    method: GET
+    path: /api/v1/tenants/{tenantId}/chats/{chatId}/sources
+    rows:
+      - actor: a.admin
+        params: { tenantId: tenant:a, chatId: tenant:missing }
+        status: 403
+        code: forbidden_action
+        note: нет chat.members.manage
+  - op: replaceChatSources
+    method: PUT
+    path: /api/v1/tenants/{tenantId}/chats/{chatId}/sources
+    rows:
+      - actor: a.admin
+        params: { tenantId: tenant:a, chatId: tenant:missing }
+        status: 403
+        code: forbidden_action
+        body: "{}"
+        note: нет chat.members.manage
+  - op: getChatAccessExplanation
+    method: GET
+    path: /api/v1/tenants/{tenantId}/chats/{chatId}/access-explanation
+    rows:
+      - actor: a.admin
+        params: { tenantId: tenant:a, chatId: tenant:missing }
+        status: 403
+        code: forbidden_action
+        note: нет chat.members.manage
+  - op: getChatStorage
+    method: GET
+    path: /api/v1/tenants/{tenantId}/chats/{chatId}/storage
+    rows:
+      - actor: a.admin
+        params: { tenantId: tenant:a, chatId: tenant:missing }
+        status: 403
+        code: forbidden_action
+        note: нет chat.settings.manage
+  - op: createChatCleanup
+    method: POST
+    path: /api/v1/tenants/{tenantId}/chats/{chatId}/cleanups
+    rows:
+      - actor: a.admin
+        params: { tenantId: tenant:a, chatId: tenant:missing }
+        status: 403
+        code: forbidden_action
+        body: "{}"
+        note: нет chat.settings.manage
+  - op: listChatJournal
+    method: GET
+    path: /api/v1/tenants/{tenantId}/chats/{chatId}/journal
+    rows:
+      - actor: a.admin
+        params: { tenantId: tenant:a, chatId: tenant:missing }
+        status: 403
+        code: forbidden_action
+        note: нет chat.settings.manage
+  - op: createChatExport
+    method: POST
+    path: /api/v1/tenants/{tenantId}/chats/{chatId}/exports
+    rows:
+      - actor: a.admin
+        params: { tenantId: tenant:a, chatId: tenant:missing }
+        status: 403
+        code: forbidden_action
+        body: "{}"
+        note: нет chat.export
+  - op: getChatExport
+    method: GET
+    path: /api/v1/tenants/{tenantId}/chats/{chatId}/exports/{exportId}
+    rows:
+      - actor: a.admin
+        params: { tenantId: tenant:a, chatId: tenant:missing, exportId: tenant:missing }
+        status: 403
+        code: forbidden_action
+        note: нет chat.export
+  - op: listChatPolicies
+    method: GET
+    path: /api/v1/tenants/{tenantId}/chat-policies
+    rows:
+      - actor: a.admin
+        params: { tenantId: tenant:a }
+        status: 403
+        code: forbidden_action
+        note: нет chat.policy.manage
+  - op: updateChatPolicy
+    method: PUT
+    path: /api/v1/tenants/{tenantId}/chat-policies/{kind}
+    rows:
+      - actor: a.admin
+        params: { tenantId: tenant:a, kind: tenant:missing }
+        status: 403
+        code: forbidden_action
+        body: "{}"
+        note: нет chat.policy.manage
+  - op: listChatHolds
+    method: GET
+    path: /api/v1/tenants/{tenantId}/chat-holds
+    rows:
+      - actor: a.admin
+        params: { tenantId: tenant:a }
+        status: 403
+        code: forbidden_action
+        note: нет chat.hold.manage
+  - op: createChatHold
+    method: POST
+    path: /api/v1/tenants/{tenantId}/chat-holds
+    rows:
+      - actor: a.admin
+        params: { tenantId: tenant:a }
+        status: 403
+        code: forbidden_action
+        body: "{}"
+        note: нет chat.hold.manage
+  - op: releaseChatHold
+    method: DELETE
+    path: /api/v1/tenants/{tenantId}/chat-holds/{holdId}
+    rows:
+      - actor: a.admin
+        params: { tenantId: tenant:a, holdId: tenant:missing }
+        status: 403
+        code: forbidden_action
+        note: нет chat.hold.manage

@@ -83,7 +83,7 @@ rules:
       function: publicSecurity
 
   ortus-x-scope-known:
-    description: x-scope из словаря областей контракта (27 значений 0.1; расширяет стюард; W4.04 — два значения «Базы знаний»; W6.00 — два значения «Ремонта и стройки» — tenant-org-unit-repair-project, public-client-capability).
+    description: x-scope из словаря областей контракта (27 значений 0.1; расширяет стюард; W4.04 — два значения «Базы знаний»; W6.00 — два значения «Ремонта и стройки» — tenant-org-unit-repair-project, public-client-capability; W7.00 — шесть значений этапа 7).
     severity: error
     given: "#Operation"
     then:
@@ -91,6 +91,9 @@ rules:
       function: enumeration
       functionOptions:
         values:
+          - chat
+          - docs-folder-doc
+          - docs-server-callback
           - effective-module-and-field-scopes
           - form-version-field-and-nonce
           - identity
@@ -100,10 +103,13 @@ rules:
           - owning-object-scope
           - platform
           - public-client-capability
+          - public-doc-link-capability
           - public-form-capability
           - public-form-capability-and-nonce
+          - public-service-capability
           - responsible-manager-or-owner
           - responsible-manager-or-owner-only
+          - service-direction
           - source-manager-or-owner
           - source-or-target-manager-owner
           - target-manager-or-owner

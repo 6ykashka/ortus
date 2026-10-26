@@ -1,0 +1,2311 @@
+# Контракт Ортус · компоненты тегов docs и publicdocs (W7.00). Пишет только стюард контракта (план v2 §3.5).
+DocMemberRef:
+  type: object
+  additionalProperties: false
+  properties:
+    memberId:
+      $ref: ../common/schemas.yaml#/Id
+    displayName:
+      type: string
+      maxLength: 200
+  required:
+    - memberId
+    - displayName
+  description: Member of the organization shown by name.
+DocLink:
+  type: object
+  additionalProperties: false
+  properties:
+    object:
+      $ref: ../common/schemas.yaml#/ObjectRef
+    label:
+      type: string
+      maxLength: 200
+  required:
+    - object
+  description: Link of a document with a record (object, trip, set, supply, client, vehicle, task); a reference never grants access.
+DocShareEntry:
+  type: object
+  additionalProperties: false
+  properties:
+    who:
+      type: string
+      enum:
+        - all
+        - member
+        - group
+        - role
+        - relation
+      description: all — everybody of the area; member; group; role (role in the area); relation (foreman of the object — the only relation of the first version).
+    refId:
+      oneOf:
+        - $ref: ../common/schemas.yaml#/Id
+        - type: "null"
+    orgUnitId:
+      oneOf:
+        - $ref: ../common/schemas.yaml#/Id
+        - type: "null"
+    object:
+      oneOf:
+        - $ref: ../common/schemas.yaml#/ObjectRef
+        - type: "null"
+    level:
+      type: string
+      enum:
+        - view
+        - comment
+        - suggest
+        - edit
+        - manage
+    until:
+      type:
+        - string
+        - "null"
+      format: date
+    label:
+      type: string
+      maxLength: 200
+      description: Display name of the target.
+    byDisplayName:
+      type: string
+      maxLength: 200
+    at:
+      $ref: ../common/schemas.yaml#/Instant
+  required:
+    - who
+    - level
+  description: Entry of the access list of a folder or a document (docs/24 share).
+DocChainStep:
+  type: object
+  additionalProperties: false
+  properties:
+    kind:
+      type: string
+      enum:
+        - ok
+        - "no"
+        - wait
+        - up
+        - inh
+      description: ok — grants, no — denies, wait — after login, up — raises, inh — inherited.
+    title:
+      type: string
+      maxLength: 200
+    detail:
+      type: string
+      maxLength: 500
+  required:
+    - kind
+    - title
+    - detail
+  description: "A step of the chain «Откуда доступ» (docAccess.chain): folder, document, role, relation, function «Водитель», invitation, block."
+DocWait:
+  type: object
+  additionalProperties: false
+  properties:
+    kind:
+      type: string
+      enum:
+        - approve
+        - sign
+        - ack
+        - returned
+        - mention
+        - ocr
+      description: "What waits for the member (docWaits): approve, sign, ack, returned, mention, ocr."
+    due:
+      type: string
+      format: date
+    by:
+      type: string
+      maxLength: 200
+    comment:
+      type: string
+      maxLength: 1000
+    commentId:
+      $ref: ../common/schemas.yaml#/Id
+    count:
+      type: integer
+      minimum: 0
+      format: int64
+  required:
+    - kind
+  description: Waiting item of «Ждут меня» and of the «Требует решения» queue.
+DocCan:
+  type: object
+  additionalProperties: false
+  properties:
+    view:
+      type: boolean
+    comment:
+      type: boolean
+    suggest:
+      type: boolean
+    edit:
+      type: boolean
+    share:
+      type: boolean
+    shareExternal:
+      type: boolean
+    export:
+      type: boolean
+    convert:
+      type: boolean
+    sign:
+      type: boolean
+    route:
+      type: boolean
+    manage:
+      type: boolean
+    locked:
+      type: boolean
+      description: "Closed for editing (on a route or signed): edit is false."
+  required:
+    - view
+    - comment
+    - suggest
+    - edit
+    - share
+    - shareExternal
+    - export
+    - convert
+    - sign
+    - route
+    - manage
+    - locked
+  description: What the member may do with the document (docRights). Computed by the server; the client never recomputes it.
+DocMy:
+  type: object
+  additionalProperties: false
+  properties:
+    level:
+      type:
+        - string
+        - "null"
+      enum:
+        - view
+        - comment
+        - suggest
+        - edit
+        - manage
+        - null
+    can:
+      $ref: ./schemas.yaml#/DocCan
+    maxGrant:
+      type:
+        - string
+        - "null"
+      enum:
+        - view
+        - comment
+        - suggest
+        - edit
+        - manage
+        - null
+      description: "The highest level the member may give: min(own level, edit)."
+    wait:
+      type: array
+      items:
+        $ref: ./schemas.yaml#/DocWait
+      maxItems: 10
+    chain:
+      type: array
+      items:
+        $ref: ./schemas.yaml#/DocChainStep
+      maxItems: 12
+    onlyVersion:
+      type:
+        - integer
+        - "null"
+      minimum: 1
+      format: int64
+      description: "A temporary access of a route (acknowledgement) is limited to this version: no comments, suggestions, journal or access list."
+  required:
+    - level
+    - can
+    - maxGrant
+    - wait
+  description: The member’s view of the document; chain only in getDocument.
+DocRouteBrief:
+  type: object
+  additionalProperties: false
+  properties:
+    status:
+      type: string
+      enum:
+        - active
+        - returned
+        - done
+        - cancelled
+    currentStep:
+      type: integer
+      minimum: 0
+      format: int64
+    stepName:
+      type:
+        - string
+        - "null"
+      maxLength: 200
+    dueDate:
+      type:
+        - string
+        - "null"
+      format: date
+  required:
+    - status
+    - currentStep
+    - stepName
+  description: Route status for the list and the card header.
+DocOcr:
+  type: object
+  additionalProperties: false
+  properties:
+    status:
+      type: string
+      enum:
+        - none
+        - queued
+        - running
+        - done
+        - failed
+    confidence:
+      type: number
+    at:
+      $ref: ../common/schemas.yaml#/Instant
+    lang:
+      type: string
+      maxLength: 20
+    doubtful:
+      type: integer
+      minimum: 0
+      format: int64
+  required:
+    - status
+    - doubtful
+  description: State of the text layer of a scan (documents.md §1.6). Scans marked pdn are not recognized (DOC-07, Q-W4.00-documents-16).
+DocSummary:
+  type: object
+  additionalProperties: false
+  properties:
+    id:
+      $ref: ../common/schemas.yaml#/Id
+    kind:
+      type: string
+      enum:
+        - text
+        - sheet
+        - pdf
+    title:
+      type: string
+      maxLength: 200
+    folderId:
+      $ref: ../common/schemas.yaml#/Id
+    folderName:
+      type: string
+      maxLength: 200
+    owner:
+      $ref: ./schemas.yaml#/DocMemberRef
+    status:
+      type: string
+      enum:
+        - draft
+        - in_route
+        - returned
+        - agreed
+        - approved
+        - signed
+        - archived
+    sensitivity:
+      type: string
+      enum:
+        - normal
+        - finance
+        - pdn
+    version:
+      type: integer
+      minimum: 1
+      format: int64
+    updatedAt:
+      $ref: ../common/schemas.yaml#/Instant
+    updatedBy:
+      oneOf:
+        - $ref: ./schemas.yaml#/DocMemberRef
+        - type: "null"
+    links:
+      type: array
+      items:
+        $ref: ./schemas.yaml#/DocLink
+      maxItems: 20
+    my:
+      $ref: ./schemas.yaml#/DocMy
+    route:
+      oneOf:
+        - $ref: ./schemas.yaml#/DocRouteBrief
+        - type: "null"
+    ocr:
+      oneOf:
+        - $ref: ./schemas.yaml#/DocOcr
+        - type: "null"
+    pdfaCopy:
+      type: boolean
+  required:
+    - id
+    - kind
+    - title
+    - folderId
+    - folderName
+    - owner
+    - status
+    - sensitivity
+    - version
+    - updatedAt
+    - updatedBy
+    - links
+    - my
+  description: Row of the document list (listDocuments).
+DocumentList:
+  type: object
+  additionalProperties: false
+  properties:
+    items:
+      type: array
+      items:
+        $ref: ./schemas.yaml#/DocSummary
+      maxItems: 200
+    nextCursor:
+      type:
+        - string
+        - "null"
+      maxLength: 2048
+    counts:
+      type: object
+      additionalProperties: false
+      properties:
+        all:
+          type: integer
+          minimum: 0
+          format: int64
+        mine:
+          type: integer
+          minimum: 0
+          format: int64
+        shared:
+          type: integer
+          minimum: 0
+          format: int64
+        route:
+          type: integer
+          minimum: 0
+          format: int64
+      required:
+        - all
+        - mine
+        - shared
+        - route
+  required:
+    - items
+    - nextCursor
+    - counts
+  description: Documents visible to the member; counters of the filters «Все · Мои · Мне открыли · На маршруте».
+DocField:
+  type: object
+  additionalProperties: false
+  properties:
+    key:
+      type: string
+      maxLength: 60
+    src:
+      type: string
+      maxLength: 60
+    value:
+      type: string
+      maxLength: 500
+    from:
+      type: string
+      maxLength: 200
+  required:
+    - key
+  description: Field of a template filled from the record (CRM fields); frozen at the signature.
+DocTempGrant:
+  type: object
+  additionalProperties: false
+  properties:
+    member:
+      $ref: ./schemas.yaml#/DocMemberRef
+    level:
+      type: string
+      enum:
+        - view
+        - comment
+        - suggest
+        - edit
+        - manage
+    why:
+      type: string
+      maxLength: 300
+    onlyVersion:
+      type: integer
+      minimum: 1
+      format: int64
+    keep:
+      type: boolean
+  required:
+    - member
+    - level
+    - why
+  description: Temporary access of a route (approver — comment for the time of the step; acknowledging — read of the approved version, kept).
+DocProtectedRange:
+  type: object
+  additionalProperties: false
+  properties:
+    id:
+      type: string
+      maxLength: 64
+    sheet:
+      type: string
+      maxLength: 100
+    range:
+      type: string
+      maxLength: 40
+    name:
+      type: string
+      maxLength: 100
+    who:
+      type: array
+      items:
+        $ref: ./schemas.yaml#/DocShareEntry
+      maxItems: 50
+  required:
+    - id
+    - sheet
+    - range
+    - name
+    - who
+  description: Protected range of a sheet; Ortus checks it itself when the engine has no API (DOC-03, Q-W4.00-documents-12).
+DocJob:
+  type: object
+  additionalProperties: false
+  properties:
+    id:
+      $ref: ../common/schemas.yaml#/Id
+    op:
+      type: string
+      enum:
+        - convert
+        - ocr
+        - merge
+        - split
+        - compress
+        - pdfa
+        - to_docx
+        - to_xlsx
+        - to_pdf
+    docIds:
+      type: array
+      items:
+        $ref: ../common/schemas.yaml#/Id
+      maxItems: 20
+    name:
+      type: string
+      maxLength: 200
+    status:
+      type: string
+      enum:
+        - queued
+        - running
+        - done
+        - failed
+    progress:
+      type: integer
+      minimum: 0
+      maximum: 100
+      format: int64
+    params:
+      type: object
+      additionalProperties: true
+    error:
+      type: string
+      maxLength: 300
+    resultDocumentId:
+      oneOf:
+        - $ref: ../common/schemas.yaml#/Id
+        - type: "null"
+    createdAt:
+      $ref: ../common/schemas.yaml#/Instant
+    finishedAt:
+      oneOf:
+        - $ref: ../common/schemas.yaml#/Instant
+        - type: "null"
+  required:
+    - id
+    - op
+    - docIds
+    - name
+    - status
+    - createdAt
+  description: Job of the documents worker (OCRmyPDF + Tesseract, qpdf, converter). Result — a new version or a new document; counted into the storage.
+Document:
+  type: object
+  additionalProperties: false
+  properties:
+    id:
+      $ref: ../common/schemas.yaml#/Id
+    kind:
+      type: string
+      enum:
+        - text
+        - sheet
+        - pdf
+    title:
+      type: string
+      maxLength: 200
+    folderId:
+      $ref: ../common/schemas.yaml#/Id
+    folderName:
+      type: string
+      maxLength: 200
+    path:
+      type: array
+      items:
+        type: string
+        maxLength: 200
+        description: Folders from the root.
+      maxItems: 12
+    owner:
+      $ref: ./schemas.yaml#/DocMemberRef
+    status:
+      type: string
+      enum:
+        - draft
+        - in_route
+        - returned
+        - agreed
+        - approved
+        - signed
+        - archived
+    sensitivity:
+      type: string
+      enum:
+        - normal
+        - finance
+        - pdn
+    version:
+      type: integer
+      minimum: 1
+      format: int64
+    mode:
+      type: string
+      enum:
+        - inherit
+        - listed
+    shares:
+      type: array
+      items:
+        $ref: ./schemas.yaml#/DocShareEntry
+      maxItems: 200
+    links:
+      type: array
+      items:
+        $ref: ./schemas.yaml#/DocLink
+      maxItems: 20
+    authors:
+      type: array
+      items:
+        $ref: ./schemas.yaml#/DocMemberRef
+      maxItems: 20
+    template:
+      type:
+        - string
+        - "null"
+      maxLength: 100
+    fields:
+      type: array
+      items:
+        $ref: ./schemas.yaml#/DocField
+      maxItems: 50
+    frozen:
+      type:
+        - object
+        - "null"
+      additionalProperties: true
+    file:
+      oneOf:
+        - $ref: ../common/schemas.yaml#/File
+        - type: "null"
+    pdfaCopy:
+      type: boolean
+    scan:
+      type: boolean
+    size:
+      type: integer
+      minimum: 0
+      format: int64
+    ocr:
+      oneOf:
+        - $ref: ./schemas.yaml#/DocOcr
+        - type: "null"
+    tempGrants:
+      type: array
+      items:
+        $ref: ./schemas.yaml#/DocTempGrant
+      maxItems: 50
+    jobs:
+      type: array
+      items:
+        $ref: ./schemas.yaml#/DocJob
+      maxItems: 20
+    route:
+      oneOf:
+        - $ref: ./schemas.yaml#/DocRoute
+        - type: "null"
+    protectedRanges:
+      type: array
+      items:
+        $ref: ./schemas.yaml#/DocProtectedRange
+      maxItems: 100
+    commentCount:
+      type: integer
+      minimum: 0
+      format: int64
+    openCommentCount:
+      type: integer
+      minimum: 0
+      format: int64
+    createdAt:
+      $ref: ../common/schemas.yaml#/Instant
+    updatedAt:
+      $ref: ../common/schemas.yaml#/Instant
+    my:
+      $ref: ./schemas.yaml#/DocMy
+    revision:
+      type: integer
+      minimum: 1
+      format: int64
+  required:
+    - id
+    - kind
+    - title
+    - folderId
+    - folderName
+    - path
+    - owner
+    - status
+    - sensitivity
+    - version
+    - mode
+    - shares
+    - links
+    - authors
+    - fields
+    - tempGrants
+    - jobs
+    - protectedRanges
+    - commentCount
+    - openCommentCount
+    - createdAt
+    - updatedAt
+    - my
+    - revision
+  description: Document with its access, route, jobs and protected ranges (getDocument). The body is the file of the engine (core.files, D-32 комплекта); versions — listDocVersions. A hidden or finance document for the function «Водитель» — 404 / function_blocked. ETag — revision.
+DocFolder:
+  type: object
+  additionalProperties: false
+  properties:
+    id:
+      $ref: ../common/schemas.yaml#/Id
+    name:
+      type: string
+      maxLength: 200
+    parentId:
+      oneOf:
+        - $ref: ../common/schemas.yaml#/Id
+        - type: "null"
+    orgUnitId:
+      oneOf:
+        - $ref: ../common/schemas.yaml#/Id
+        - type: "null"
+    mode:
+      type: string
+      enum:
+        - inherit
+        - listed
+    owner:
+      $ref: ./schemas.yaml#/DocMemberRef
+    icon:
+      type: string
+      maxLength: 40
+    sensitivity:
+      type: string
+      enum:
+        - normal
+        - finance
+        - pdn
+    link:
+      oneOf:
+        - $ref: ../common/schemas.yaml#/ObjectRef
+        - type: "null"
+    hasRouteTemplate:
+      type: boolean
+    shares:
+      type: array
+      items:
+        $ref: ./schemas.yaml#/DocShareEntry
+      maxItems: 200
+    documentCount:
+      type: integer
+      minimum: 0
+      format: int64
+    my:
+      type: object
+      additionalProperties: false
+      properties:
+        level:
+          type:
+            - string
+            - "null"
+          enum:
+            - view
+            - comment
+            - suggest
+            - edit
+            - manage
+            - null
+        create:
+          type: boolean
+        manage:
+          type: boolean
+      required:
+        - level
+        - create
+        - manage
+    revision:
+      type: integer
+      minimum: 1
+      format: int64
+  required:
+    - id
+    - name
+    - parentId
+    - orgUnitId
+    - mode
+    - owner
+    - icon
+    - sensitivity
+    - hasRouteTemplate
+    - shares
+    - documentCount
+    - my
+    - revision
+  description: Folder of «Документы»; mode listed breaks the inheritance (like «Только выбранные» of the knowledge base).
+DocFolderList:
+  type: object
+  additionalProperties: false
+  properties:
+    items:
+      type: array
+      items:
+        $ref: ./schemas.yaml#/DocFolder
+      maxItems: 500
+  required:
+    - items
+  description: Folders visible to the member.
+DocFolderCreate:
+  type: object
+  additionalProperties: false
+  properties:
+    name:
+      type: string
+      minLength: 2
+      maxLength: 200
+    parentId:
+      oneOf:
+        - $ref: ../common/schemas.yaml#/Id
+        - type: "null"
+    orgUnitId:
+      oneOf:
+        - $ref: ../common/schemas.yaml#/Id
+        - type: "null"
+    mode:
+      type: string
+      enum:
+        - inherit
+        - listed
+    icon:
+      type: string
+      maxLength: 40
+    sensitivity:
+      type: string
+      enum:
+        - normal
+        - finance
+  required:
+    - name
+  description: "New folder (Q-W4.00-documents-8): name, parent, firm, «Как у родителя» / «Только выбранные»."
+DocFolderPatch:
+  type: object
+  additionalProperties: false
+  properties:
+    name:
+      type: string
+      minLength: 2
+      maxLength: 200
+    mode:
+      type: string
+      enum:
+        - inherit
+        - listed
+    icon:
+      type: string
+      maxLength: 40
+    sensitivity:
+      type: string
+      enum:
+        - normal
+        - finance
+  minProperties: 1
+  description: Change of a folder; revision — If-Match.
+DocCreate:
+  type: object
+  additionalProperties: false
+  properties:
+    kind:
+      type: string
+      enum:
+        - text
+        - sheet
+        - pdf
+    title:
+      type: string
+      minLength: 2
+      maxLength: 200
+    folderId:
+      $ref: ../common/schemas.yaml#/Id
+    templateId:
+      $ref: ../common/schemas.yaml#/Id
+    link:
+      $ref: ../common/schemas.yaml#/ObjectRef
+    csv:
+      type: string
+      maxLength: 200000
+      description: Initial table for a sheet (docCreate csv).
+    fileIds:
+      type: array
+      items:
+        $ref: ../common/schemas.yaml#/Id
+        description: Uploaded files of purpose document (a PDF from files or photos).
+      maxItems: 20
+    scan:
+      type: boolean
+      description: "The file is a scan: a job OCR is queued unless sensitivity is pdn."
+    sensitivity:
+      type: string
+      enum:
+        - normal
+        - finance
+        - pdn
+      description: "pdn — «Содержит паспорт или водительское удостоверение»: no recognition, access by an explicit list (DOC-07)."
+  required:
+    - kind
+    - title
+    - folderId
+  description: "Creation of a document (docCreate): 422 validation_failed — «Название — не короче 2 символов», «Выберите папку», «Добавьте файлы или фото», «Выберите рейс / объект для полей шаблона»."
+DocPatch:
+  type: object
+  additionalProperties: false
+  properties:
+    title:
+      type: string
+      minLength: 2
+      maxLength: 200
+    sensitivity:
+      type: string
+      enum:
+        - normal
+        - finance
+        - pdn
+  minProperties: 1
+  description: Rename or relabel (docRename); revision — If-Match.
+DocImpactPerson:
+  type: object
+  additionalProperties: false
+  properties:
+    member:
+      $ref: ./schemas.yaml#/DocMemberRef
+    from:
+      type:
+        - string
+        - "null"
+      enum:
+        - view
+        - comment
+        - suggest
+        - edit
+        - manage
+        - null
+    to:
+      type:
+        - string
+        - "null"
+      enum:
+        - view
+        - comment
+        - suggest
+        - edit
+        - manage
+        - null
+    invited:
+      type: boolean
+  required:
+    - member
+    - from
+    - to
+    - invited
+  description: Change of the level of a member.
+DocAccessImpact:
+  type: object
+  additionalProperties: false
+  properties:
+    gain:
+      type: array
+      items:
+        $ref: ./schemas.yaml#/DocImpactPerson
+      maxItems: 500
+    lose:
+      type: array
+      items:
+        $ref: ./schemas.yaml#/DocImpactPerson
+      maxItems: 500
+    up:
+      type: array
+      items:
+        $ref: ./schemas.yaml#/DocImpactPerson
+      maxItems: 500
+    down:
+      type: array
+      items:
+        $ref: ./schemas.yaml#/DocImpactPerson
+      maxItems: 500
+  required:
+    - gain
+    - lose
+    - up
+    - down
+  description: Who gets, loses, raises or lowers the access (diffAccess); shown before saving.
+DocMove:
+  type: object
+  additionalProperties: false
+  properties:
+    folderId:
+      $ref: ../common/schemas.yaml#/Id
+    dryRun:
+      type: boolean
+      description: true — nothing moves, the answer is the impact.
+  required:
+    - folderId
+  description: Move to another folder (docMove).
+DocMoveResult:
+  type: object
+  additionalProperties: false
+  properties:
+    applied:
+      type: boolean
+    document:
+      oneOf:
+        - $ref: ./schemas.yaml#/DocSummary
+        - type: "null"
+    impact:
+      $ref: ./schemas.yaml#/DocAccessImpact
+  required:
+    - applied
+    - impact
+  description: "Result of moveDocument: «Документ уже в этой папке» — 422; locked — 409 document_locked."
+DocSessionPermissions:
+  type: object
+  additionalProperties: false
+  properties:
+    edit:
+      type: boolean
+    review:
+      type: boolean
+    comment:
+      type: boolean
+    download:
+      type: boolean
+    print:
+      type: boolean
+    fillForms:
+      type: boolean
+    protectedRanges:
+      type: boolean
+  required:
+    - edit
+    - review
+    - comment
+    - download
+    - print
+    - fillForms
+    - protectedRanges
+  description: Rights of the member in the engine (the claims of the signed config).
+DocSessionConfig:
+  type: object
+  additionalProperties: false
+  properties:
+    engine:
+      type: string
+      enum:
+        - none
+        - r7
+        - onlyoffice
+      description: "Chosen document server (D-32 комплекта): none until chosen, then r7 or onlyoffice — behind the adapter."
+    editorAvailable:
+      type: boolean
+      description: "false on a stand without the engine: the document opens for viewing (PDF.js) and downloads, editing is off with the hint «Редактор подключается» (Q-W4.00-documents-1)."
+    mode:
+      type: string
+      enum:
+        - view
+        - edit
+        - review
+        - comment
+    documentKey:
+      type: string
+      maxLength: 128
+      pattern: '^t[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}\.d[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}\.v[1-9][0-9]{0,9}$'
+      description: 'Key of the version for the engine: t<tenantId>.d<documentId>.v<version> (lowercase UUIDs); changes with every saved version. The tenant is part of the key because the callback of the document server has no session and no tenantId in the path: the tenant database is chosen by the key after the signature is verified.'
+    version:
+      type: integer
+      minimum: 1
+      format: int64
+    fileUrl:
+      type: string
+      maxLength: 2048
+      description: Short-lived signed URL of the file for the engine or the viewer.
+    editorUrl:
+      type: string
+      maxLength: 2048
+    token:
+      type: string
+      maxLength: 4096
+      description: Signed JWT config (HS256, shared secret of the adapter); absent without the engine.
+    callbackUrl:
+      type: string
+      maxLength: 2048
+      description: URL of docServerCallback the engine calls on save.
+    user:
+      $ref: ./schemas.yaml#/DocMemberRef
+    permissions:
+      $ref: ./schemas.yaml#/DocSessionPermissions
+    protectedRanges:
+      type: array
+      items:
+        $ref: ./schemas.yaml#/DocProtectedRange
+      maxItems: 100
+    hint:
+      type: string
+      maxLength: 200
+    expiresAt:
+      $ref: ../common/schemas.yaml#/Instant
+  required:
+    - engine
+    - editorAvailable
+    - mode
+    - documentKey
+    - version
+    - user
+    - permissions
+    - protectedRanges
+    - expiresAt
+  description: Signed configuration of an editor session (openDocumentSession). The adapter hides the engine; the contract carries no block-editing operations (Q-W4.00-documents-1).
+DocVersion:
+  type: object
+  additionalProperties: false
+  properties:
+    version:
+      type: integer
+      minimum: 1
+      format: int64
+    createdAt:
+      $ref: ../common/schemas.yaml#/Instant
+    authors:
+      type: array
+      items:
+        $ref: ./schemas.yaml#/DocMemberRef
+      maxItems: 20
+    name:
+      type:
+        - string
+        - "null"
+      maxLength: 200
+    source:
+      type: string
+      enum:
+        - edit
+        - upload
+        - convert
+        - ocr
+        - restore
+        - merge
+        - route
+    fileId:
+      oneOf:
+        - $ref: ../common/schemas.yaml#/Id
+        - type: "null"
+    sizeBytes:
+      type: integer
+      minimum: 0
+      format: int64
+    sha256:
+      type: string
+      maxLength: 64
+    forcesave:
+      type: boolean
+      description: "A version saved by the engine on every save (DOC-08: texts without a term, files 1 year, counted once by sha256)."
+    base:
+      type:
+        - integer
+        - "null"
+      minimum: 1
+      format: int64
+  required:
+    - version
+    - createdAt
+    - authors
+    - source
+    - sizeBytes
+    - forcesave
+  description: Version of a document.
+DocVersionList:
+  type: object
+  additionalProperties: false
+  properties:
+    items:
+      type: array
+      items:
+        $ref: ./schemas.yaml#/DocVersion
+      maxItems: 500
+  required:
+    - items
+  description: Versions, newest first.
+DocVersionSave:
+  type: object
+  additionalProperties: false
+  properties:
+    name:
+      type: string
+      maxLength: 200
+  description: Cut a version now or name the last one (docCut).
+DocVersionName:
+  type: object
+  additionalProperties: false
+  properties:
+    name:
+      type: string
+      minLength: 1
+      maxLength: 200
+  required:
+    - name
+  description: Name of a version.
+DocReply:
+  type: object
+  additionalProperties: false
+  properties:
+    id:
+      $ref: ../common/schemas.yaml#/Id
+    author:
+      $ref: ./schemas.yaml#/DocMemberRef
+    at:
+      $ref: ../common/schemas.yaml#/Instant
+    text:
+      type: string
+      maxLength: 2000
+    mention:
+      oneOf:
+        - $ref: ./schemas.yaml#/DocMemberRef
+        - type: "null"
+  required:
+    - id
+    - author
+    - at
+    - text
+  description: Reply to a comment.
+DocComment:
+  type: object
+  additionalProperties: false
+  properties:
+    id:
+      $ref: ../common/schemas.yaml#/Id
+    author:
+      $ref: ./schemas.yaml#/DocMemberRef
+    createdAt:
+      $ref: ../common/schemas.yaml#/Instant
+    text:
+      type: string
+      maxLength: 2000
+    anchor:
+      type: object
+      additionalProperties: false
+      properties:
+        kind:
+          type: string
+          enum:
+            - block
+            - cell
+            - page
+        ref:
+          type: string
+          maxLength: 100
+        quote:
+          type: string
+          maxLength: 500
+      required:
+        - kind
+        - ref
+    mention:
+      oneOf:
+        - $ref: ./schemas.yaml#/DocMemberRef
+        - type: "null"
+    replies:
+      type: array
+      items:
+        $ref: ./schemas.yaml#/DocReply
+      maxItems: 200
+    resolved:
+      type: boolean
+    resolvedBy:
+      oneOf:
+        - $ref: ./schemas.yaml#/DocMemberRef
+        - type: "null"
+  required:
+    - id
+    - author
+    - createdAt
+    - text
+    - anchor
+    - replies
+    - resolved
+  description: Comment of a document (block, cell or page anchor).
+DocCommentList:
+  type: object
+  additionalProperties: false
+  properties:
+    items:
+      type: array
+      items:
+        $ref: ./schemas.yaml#/DocComment
+      maxItems: 500
+  required:
+    - items
+  description: Comments of a document.
+DocCommentCreate:
+  type: object
+  additionalProperties: false
+  properties:
+    text:
+      type: string
+      minLength: 1
+      maxLength: 2000
+    anchor:
+      type: object
+      additionalProperties: false
+      properties:
+        kind:
+          type: string
+          enum:
+            - block
+            - cell
+            - page
+        ref:
+          type: string
+          maxLength: 100
+        quote:
+          type: string
+          maxLength: 500
+      required:
+        - kind
+        - ref
+    mention:
+      $ref: ../common/schemas.yaml#/Id
+  required:
+    - text
+    - anchor
+  description: "New comment (validation: «Напишите комментарий», 2000 characters)."
+DocReplyCreate:
+  type: object
+  additionalProperties: false
+  properties:
+    text:
+      type: string
+      minLength: 1
+      maxLength: 2000
+    mention:
+      $ref: ../common/schemas.yaml#/Id
+  required:
+    - text
+  description: Reply.
+DocShares:
+  type: object
+  additionalProperties: false
+  properties:
+    mode:
+      type: string
+      enum:
+        - inherit
+        - listed
+    entries:
+      type: array
+      items:
+        $ref: ./schemas.yaml#/DocShareEntry
+      maxItems: 200
+    revision:
+      type: integer
+      minimum: 1
+      format: int64
+  required:
+    - mode
+    - entries
+    - revision
+  description: Access list of a document or a folder; revision is the ETag of setDocShares.
+DocSharesSet:
+  type: object
+  additionalProperties: false
+  properties:
+    mode:
+      type: string
+      enum:
+        - inherit
+        - listed
+    entries:
+      type: array
+      items:
+        $ref: ./schemas.yaml#/DocShareEntry
+      maxItems: 200
+    dryRun:
+      type: boolean
+      description: true — nothing is saved, the answer is the impact.
+  required:
+    - mode
+    - entries
+  description: "Access of a document or a folder (docShare): the member gives not more than the own level (422/403 delegation_exceeds_grant)."
+DocSharesResult:
+  type: object
+  additionalProperties: false
+  properties:
+    applied:
+      type: boolean
+    impact:
+      $ref: ./schemas.yaml#/DocAccessImpact
+    shares:
+      $ref: ./schemas.yaml#/DocShares
+  required:
+    - applied
+    - impact
+  description: Result of setDocShares / setDocFolderShares; emits docs.shared.v1 and notifications «Вам открыт доступ».
+DocGrantCreate:
+  type: object
+  additionalProperties: false
+  properties:
+    memberId:
+      $ref: ../common/schemas.yaml#/Id
+    level:
+      type: string
+      enum:
+        - view
+        - comment
+  required:
+    - memberId
+    - level
+  description: "Grant from a mention (docGrant): a member entry with the level comment."
+DocExternalLink:
+  type: object
+  additionalProperties: false
+  properties:
+    id:
+      $ref: ../common/schemas.yaml#/Id
+    level:
+      type: string
+      enum:
+        - view
+        - comment
+        - fill
+      description: view only in the first version; comment and fill — later.
+    expiresAt:
+      $ref: ../common/schemas.yaml#/Instant
+    pin:
+      type: boolean
+    watermark:
+      type: boolean
+    download:
+      type: boolean
+    status:
+      type: string
+      enum:
+        - active
+        - revoked
+        - expired
+    createdBy:
+      $ref: ./schemas.yaml#/DocMemberRef
+    createdAt:
+      $ref: ../common/schemas.yaml#/Instant
+    openCount:
+      type: integer
+      minimum: 0
+      format: int64
+    lastOpenedAt:
+      oneOf:
+        - $ref: ../common/schemas.yaml#/Instant
+        - type: "null"
+  required:
+    - id
+    - level
+    - expiresAt
+    - pin
+    - watermark
+    - download
+    - status
+    - createdBy
+    - createdAt
+    - openCount
+  description: "External link (docs.share_external): term up to 30 days (DOC-06), PIN, watermark, no download; every opening is journaled (docs.link.opened.v1)."
+DocExternalLinkCreated:
+  type: object
+  additionalProperties: false
+  properties:
+    link:
+      $ref: ./schemas.yaml#/DocExternalLink
+    token:
+      type: string
+      maxLength: 200
+      description: Shown once; only the digest is stored.
+    pin:
+      type: string
+      maxLength: 12
+      description: Shown once.
+    url:
+      type: string
+      maxLength: 2048
+  required:
+    - link
+    - token
+    - url
+  description: Created link with the one-time secret.
+DocExternalLinkCreate:
+  type: object
+  additionalProperties: false
+  properties:
+    level:
+      type: string
+      enum:
+        - view
+    expiresAt:
+      $ref: ../common/schemas.yaml#/Instant
+      description: Not later than 30 days from now (default +14 days, Q-W4.00-documents-4).
+    pin:
+      type: boolean
+      description: Default true.
+    watermark:
+      type: boolean
+      description: Default true.
+    download:
+      type: boolean
+      description: Default false.
+  required:
+    - level
+    - expiresAt
+  description: New external link.
+DocExternalLinkList:
+  type: object
+  additionalProperties: false
+  properties:
+    items:
+      type: array
+      items:
+        $ref: ./schemas.yaml#/DocExternalLink
+      maxItems: 100
+  required:
+    - items
+  description: Links of a document with opening counts.
+DocDatasetSync:
+  type: object
+  additionalProperties: false
+  properties:
+    sheetId:
+      type: string
+      maxLength: 64
+  description: Refresh the CRM columns of a sheet (docCrmSync).
+DocDatasetSyncResult:
+  type: object
+  additionalProperties: false
+  properties:
+    updatedCells:
+      type: integer
+      minimum: 0
+      format: int64
+    version:
+      type: integer
+      minimum: 1
+      format: int64
+  required:
+    - updatedCells
+  description: Result of syncDocDataset.
+DocJobCreate:
+  type: object
+  additionalProperties: false
+  properties:
+    op:
+      type: string
+      enum:
+        - convert
+        - ocr
+        - merge
+        - split
+        - compress
+        - pdfa
+        - to_docx
+        - to_xlsx
+        - to_pdf
+    docIds:
+      type: array
+      items:
+        $ref: ../common/schemas.yaml#/Id
+        description: 1–20 documents (merge — several).
+      maxItems: 20
+    params:
+      type: object
+      additionalProperties: true
+  required:
+    - op
+    - docIds
+  description: "New job (docJob): 422 «Сначала распознайте скан», «Это уже PDF»; 409 job_in_progress."
+DocJobRetry:
+  type: object
+  additionalProperties: false
+  properties:
+    password:
+      type: string
+      maxLength: 200
+      description: Password of a protected file (file_password_protected).
+    dropLocked:
+      type: boolean
+  description: Retry of a failed job.
+DocOcrWordReview:
+  type: object
+  additionalProperties: false
+  properties:
+    action:
+      type: string
+      enum:
+        - accept
+        - keep
+        - fix
+    value:
+      type: string
+      maxLength: 200
+  required:
+    - action
+  description: Decision on a doubtful word (docOcrWord).
+DocOcrWord:
+  type: object
+  additionalProperties: false
+  properties:
+    id:
+      type: string
+      maxLength: 64
+    text:
+      type: string
+      maxLength: 200
+    suggestion:
+      type: string
+      maxLength: 200
+    confidence:
+      type: number
+    why:
+      type: string
+      maxLength: 200
+    state:
+      type: string
+      enum:
+        - doubtful
+        - accepted
+        - kept
+        - fixed
+    row:
+      type: integer
+      minimum: 0
+      format: int64
+  required:
+    - id
+    - text
+    - suggestion
+    - confidence
+    - why
+    - state
+  description: Word of the text layer.
+DocRouteDecisionRec:
+  type: object
+  additionalProperties: false
+  properties:
+    member:
+      $ref: ./schemas.yaml#/DocMemberRef
+    decision:
+      type: string
+      enum:
+        - ok
+        - back
+    at:
+      $ref: ../common/schemas.yaml#/Instant
+    comment:
+      type: string
+      maxLength: 1000
+    method:
+      type: string
+      enum:
+        - click
+        - pep_login
+        - pep_sms
+        - sms_link
+  required:
+    - member
+    - decision
+    - at
+    - method
+  description: Decision of a step; the method is written to the approval sheet.
+DocRouteStep:
+  type: object
+  additionalProperties: false
+  properties:
+    kind:
+      type: string
+      enum:
+        - approve
+        - sign
+        - ack
+        - external
+    name:
+      type: string
+      maxLength: 200
+    mode:
+      type: string
+      enum:
+        - all
+        - seq
+        - any
+    who:
+      type: array
+      items:
+        $ref: ./schemas.yaml#/DocMemberRef
+      maxItems: 50
+    audience:
+      type: array
+      items:
+        $ref: ./schemas.yaml#/DocShareEntry
+      maxItems: 50
+    days:
+      type: integer
+      minimum: 0
+      maximum: 90
+      format: int64
+    status:
+      type: string
+      enum:
+        - wait
+        - active
+        - done
+    due:
+      type:
+        - string
+        - "null"
+      format: date
+    decisions:
+      type: array
+      items:
+        $ref: ./schemas.yaml#/DocRouteDecisionRec
+      maxItems: 100
+    done:
+      type: array
+      items:
+        type: object
+        additionalProperties: false
+        properties:
+          member:
+            $ref: ./schemas.yaml#/DocMemberRef
+          at:
+            $ref: ../common/schemas.yaml#/Instant
+          device:
+            type: string
+            maxLength: 100
+        required:
+          - member
+          - at
+          - device
+      maxItems: 500
+    external:
+      type:
+        - object
+        - "null"
+      additionalProperties: false
+      properties:
+        name:
+          type: string
+          maxLength: 200
+        phoneMasked:
+          type: string
+          maxLength: 20
+      required:
+        - name
+  required:
+    - kind
+    - name
+    - mode
+    - who
+    - days
+    - status
+    - decisions
+  description: "Step of a route: approve, sign, acknowledge or external signature (customer; the SMS code — through the delivery port, D-31 комплекта)."
+DocRoute:
+  type: object
+  additionalProperties: false
+  properties:
+    id:
+      $ref: ../common/schemas.yaml#/Id
+    version:
+      type: integer
+      minimum: 1
+      format: int64
+    startedBy:
+      $ref: ./schemas.yaml#/DocMemberRef
+    startedAt:
+      $ref: ../common/schemas.yaml#/Instant
+    status:
+      type: string
+      enum:
+        - active
+        - returned
+        - done
+        - cancelled
+    currentStep:
+      type: integer
+      minimum: 0
+      format: int64
+    project:
+      oneOf:
+        - $ref: ../common/schemas.yaml#/ObjectRef
+        - type: "null"
+    task:
+      oneOf:
+        - $ref: ../common/schemas.yaml#/ObjectRef
+        - type: "null"
+    rules:
+      type: object
+      additionalProperties: false
+      properties:
+        lock:
+          type: boolean
+        notAuthor:
+          type: boolean
+        commentOnBack:
+          type: boolean
+        escalate:
+          type: boolean
+      required:
+        - lock
+        - notAuthor
+        - commentOnBack
+        - escalate
+    steps:
+      type: array
+      items:
+        $ref: ./schemas.yaml#/DocRouteStep
+      maxItems: 6
+    back:
+      type:
+        - object
+        - "null"
+      additionalProperties: false
+      properties:
+        name:
+          type: string
+          maxLength: 200
+        comment:
+          type: string
+          maxLength: 1000
+      required:
+        - name
+  required:
+    - id
+    - version
+    - startedBy
+    - startedAt
+    - status
+    - currentStep
+    - rules
+    - steps
+  description: Route of a document (up to 6 steps). The version is closed for editing while the route is active (Q-W4.00-documents-5); the task of the route is a mirror (Q-W4.00-documents-3).
+DocRouteStepInput:
+  type: object
+  additionalProperties: false
+  properties:
+    kind:
+      type: string
+      enum:
+        - approve
+        - sign
+        - ack
+        - external
+    name:
+      type: string
+      maxLength: 200
+    mode:
+      type: string
+      enum:
+        - all
+        - seq
+        - any
+    whoMemberIds:
+      type: array
+      items:
+        $ref: ../common/schemas.yaml#/Id
+      maxItems: 50
+    audience:
+      type: array
+      items:
+        $ref: ./schemas.yaml#/DocShareEntry
+      maxItems: 50
+    days:
+      type: integer
+      minimum: 0
+      maximum: 90
+      format: int64
+    externalName:
+      type: string
+      maxLength: 200
+    externalPhone:
+      type: string
+      maxLength: 30
+  required:
+    - kind
+    - days
+  description: Step of a route to start.
+DocRouteStart:
+  type: object
+  additionalProperties: false
+  properties:
+    steps:
+      type: array
+      items:
+        $ref: ./schemas.yaml#/DocRouteStepInput
+        description: 1–6 steps.
+      maxItems: 6
+    rules:
+      type: object
+      additionalProperties: false
+      properties:
+        lock:
+          type: boolean
+          description: "Always true: the version is closed (Q-W4.00-documents-5)."
+        notAuthor:
+          type: boolean
+        commentOnBack:
+          type: boolean
+        escalate:
+          type: boolean
+    projectId:
+      $ref: ../common/schemas.yaml#/Id
+      description: Project of the mirror task; defaults to the system project «ДОК · Документы · маршруты» (Q-W4.00-documents-18).
+    saveAsFolderTemplate:
+      type: boolean
+      description: Needs docs.templates.manage; otherwise the flag is hidden.
+    dryRun:
+      type: boolean
+      description: "true — «Что произойдёт»: nothing starts."
+  required:
+    - steps
+  description: "Start of a route (docRouteStart): 422 validation_failed, 409 separation_of_duties_conflict (the author approves or signs), 409 invalid_transition «Документ уже на маршруте», 403 forbidden_action (no tasks.create in the project)."
+DocRouteStartResult:
+  type: object
+  additionalProperties: false
+  properties:
+    applied:
+      type: boolean
+    route:
+      oneOf:
+        - $ref: ./schemas.yaml#/DocRoute
+        - type: "null"
+    consequences:
+      type: array
+      items:
+        type: string
+        maxLength: 300
+        description: Texts of «Что произойдёт».
+      maxItems: 20
+    impact:
+      $ref: ./schemas.yaml#/DocAccessImpact
+  required:
+    - applied
+    - consequences
+  description: Result of startDocRoute; emits docs.route.started.v1, the task and temporary accesses are created.
+DocRouteDecide:
+  type: object
+  additionalProperties: false
+  properties:
+    decision:
+      type: string
+      enum:
+        - approve
+        - return
+    comment:
+      type: string
+      maxLength: 1000
+  required:
+    - decision
+  description: "Decision of the current step (docRouteDecide): «Напишите, что доработать» for a return without a comment."
+DocSignCodeRequest:
+  type: object
+  additionalProperties: false
+  properties:
+    method:
+      type: string
+      enum:
+        - pep_login
+        - pep_sms
+      description: pep_login — repeated sign-in to Ortus (Q-W4.00-documents-2); pep_sms — a code through the delivery port, only for the customer (D-31 комплекта).
+  required:
+    - method
+  description: Request of a confirmation challenge.
+DocSignChallenge:
+  type: object
+  additionalProperties: false
+  properties:
+    method:
+      type: string
+      enum:
+        - pep_login
+        - pep_sms
+    sentTo:
+      type: string
+      maxLength: 20
+    expiresAt:
+      $ref: ../common/schemas.yaml#/Instant
+    attemptsLeft:
+      type: integer
+      minimum: 0
+      maximum: 3
+      format: int64
+  required:
+    - method
+    - expiresAt
+    - attemptsLeft
+  description: Challenge of the signature; 503 dependency_unavailable while the delivery port is a stub without a provider.
+DocSignConfirm:
+  type: object
+  additionalProperties: false
+  properties:
+    method:
+      type: string
+      enum:
+        - pep_login
+        - pep_sms
+    password:
+      type: string
+      maxLength: 200
+    totp:
+      type: string
+      maxLength: 10
+    code:
+      type: string
+      maxLength: 10
+  required:
+    - method
+  description: Confirmation of the signature; 422 sign_code_invalid, 429 rate_limited after 3 attempts.
+DocSignResult:
+  type: object
+  additionalProperties: false
+  properties:
+    status:
+      type: string
+      enum:
+        - draft
+        - in_route
+        - returned
+        - agreed
+        - approved
+        - signed
+        - archived
+    signedAt:
+      $ref: ../common/schemas.yaml#/Instant
+    pdfaCopyId:
+      oneOf:
+        - $ref: ../common/schemas.yaml#/Id
+        - type: "null"
+  required:
+    - status
+    - signedAt
+  description: "Signed: status signed or approved, CRM fields frozen, a PDF/A copy with the approval sheet is queued."
+DocAck:
+  type: object
+  additionalProperties: false
+  properties:
+    device:
+      type: string
+      maxLength: 100
+  description: "Acknowledgement (docAck): version, time and device are stored. «Ознакомление без кадрового значения» (DOC-04)."
+DocAckResult:
+  type: object
+  additionalProperties: false
+  properties:
+    acked:
+      type: boolean
+    at:
+      $ref: ../common/schemas.yaml#/Instant
+    version:
+      type: integer
+      minimum: 1
+      format: int64
+  required:
+    - acked
+    - at
+    - version
+  description: Result of ackDocument.
+DocTemplate:
+  type: object
+  additionalProperties: false
+  properties:
+    id:
+      $ref: ../common/schemas.yaml#/Id
+    name:
+      type: string
+      maxLength: 200
+    kind:
+      type: string
+      enum:
+        - text
+        - sheet
+        - pdf
+    icon:
+      type: string
+      maxLength: 40
+    hint:
+      type: string
+      maxLength: 300
+    link:
+      type:
+        - string
+        - "null"
+      enum:
+        - trip
+        - object
+        - null
+    folderId:
+      $ref: ../common/schemas.yaml#/Id
+    fields:
+      type: array
+      items:
+        $ref: ./schemas.yaml#/DocField
+      maxItems: 50
+  required:
+    - id
+    - name
+    - kind
+    - icon
+    - hint
+    - link
+    - folderId
+    - fields
+  description: Template of a document (data of the organization, seed — three templates of the prototype).
+DocTemplateList:
+  type: object
+  additionalProperties: false
+  properties:
+    items:
+      type: array
+      items:
+        $ref: ./schemas.yaml#/DocTemplate
+      maxItems: 100
+  required:
+    - items
+  description: Templates.
+DocRouteTemplate:
+  type: object
+  additionalProperties: false
+  properties:
+    id:
+      $ref: ../common/schemas.yaml#/Id
+    folderId:
+      $ref: ../common/schemas.yaml#/Id
+    name:
+      type: string
+      maxLength: 200
+    projectId:
+      oneOf:
+        - $ref: ../common/schemas.yaml#/Id
+        - type: "null"
+    steps:
+      type: array
+      items:
+        $ref: ./schemas.yaml#/DocRouteStepInput
+      maxItems: 6
+    rules:
+      type: object
+      additionalProperties: false
+      properties:
+        lock:
+          type: boolean
+        notAuthor:
+          type: boolean
+        commentOnBack:
+          type: boolean
+        escalate:
+          type: boolean
+      required:
+        - lock
+        - notAuthor
+        - commentOnBack
+        - escalate
+  required:
+    - id
+    - folderId
+    - name
+    - steps
+    - rules
+  description: Route template of a folder.
+DocRouteTemplateList:
+  type: object
+  additionalProperties: false
+  properties:
+    items:
+      type: array
+      items:
+        $ref: ./schemas.yaml#/DocRouteTemplate
+      maxItems: 100
+  required:
+    - items
+  description: Route templates.
+DocActivity:
+  type: object
+  additionalProperties: false
+  properties:
+    id:
+      $ref: ../common/schemas.yaml#/Id
+    at:
+      $ref: ../common/schemas.yaml#/Instant
+    by:
+      $ref: ./schemas.yaml#/DocMemberRef
+    action:
+      type: string
+      maxLength: 60
+    details:
+      type: string
+      maxLength: 500
+  required:
+    - id
+    - at
+    - by
+    - action
+    - details
+  description: Audit entry of a document.
+DocActivityList:
+  type: object
+  additionalProperties: false
+  properties:
+    items:
+      type: array
+      items:
+        $ref: ./schemas.yaml#/DocActivity
+      maxItems: 200
+    nextCursor:
+      type:
+        - string
+        - "null"
+      maxLength: 2048
+  required:
+    - items
+    - nextCursor
+  description: Audit of a document.
+DocPublicSession:
+  type: object
+  additionalProperties: false
+  properties:
+    title:
+      type: string
+      maxLength: 200
+    kind:
+      type: string
+      enum:
+        - text
+        - sheet
+        - pdf
+    version:
+      type: integer
+      minimum: 1
+      format: int64
+    watermark:
+      type: string
+      maxLength: 200
+    expiresAt:
+      $ref: ../common/schemas.yaml#/Instant
+    config:
+      $ref: ./schemas.yaml#/DocSessionConfig
+  required:
+    - title
+    - kind
+    - version
+    - watermark
+    - expiresAt
+    - config
+  description: "Document opened by an external link: view only, watermark, no download unless the link allows it."
+DocPublicOpen:
+  type: object
+  additionalProperties: false
+  properties:
+    pin:
+      type: string
+      maxLength: 12
+  description: PIN of the link when the link has one; 403 forbidden_action for a wrong PIN, 429 rate_limited after a few attempts.
+DocServerCallback:
+  type: object
+  additionalProperties: false
+  properties:
+    key:
+      type: string
+      maxLength: 128
+      pattern: '^t[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}\.d[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}\.v[1-9][0-9]{0,9}$'
+      description: 'Key of the document version (DocSessionConfig.documentKey): t<tenantId>.d<documentId>.v<version>. It names the tenant, the document and the version the engine edited.'
+    status:
+      type: integer
+      minimum: 0
+      maximum: 7
+      format: int64
+      description: "Status of the document server: 1 editing, 2 ready to save, 3 save error, 4 closed without changes, 6 force save, 7 force save error."
+    url:
+      type: string
+      maxLength: 2048
+      description: URL of the saved file on the document server (statuses 2 and 6).
+    users:
+      type: array
+      items:
+        type: string
+        maxLength: 200
+      maxItems: 50
+    forcesavetype:
+      type: integer
+      minimum: 0
+      maximum: 3
+      format: int64
+    lastsave:
+      $ref: ../common/schemas.yaml#/Instant
+  required:
+    - key
+    - status
+  description: "Callback of the document server (D-32 комплекта, ADR-0016). Authenticated by the JWT of the server (Authorization: Bearer, HS256, shared secret of the adapter); no session, no tenant in the path — the key carries the tenant, the document and the version (t<tenantId>.d<documentId>.v<version>)."
+DocServerCallbackAck:
+  type: object
+  additionalProperties: false
+  properties:
+    error:
+      type: integer
+      minimum: 0
+      maximum: 1
+      format: int64
+      description: 0 — accepted; 1 — the document server repeats the call (ONLYOFFICE protocol).
+  required:
+    - error
+  description: Answer of the callback in the protocol of the document server.

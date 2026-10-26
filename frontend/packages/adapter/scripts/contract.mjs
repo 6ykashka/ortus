@@ -30,7 +30,19 @@ export const STAGE2_TAGS = ['Fleet', 'Earnings', 'Home', 'Data'];
  * хендлер src/msw/<модуль>/, примеры и кейсы conformance — «Календарь» (W4.06, calendar/), «Оформление» (W4.07,
  * branding/), «База знаний» (W4.04, knowledge/), «Задачи и проекты» (W4.03, tasks/), «Формы и опросы» (W4.05, forms/).
  */
-export const STAGE4_TAGS = ['Calendar', 'Branding', 'Knowledge', 'Tasks', 'Forms'];
+export const STAGE4_TAGS = [
+  'Calendar',
+  'Branding',
+  'Knowledge',
+  'Tasks',
+  'Forms',
+  // W7.00 (0.12.0-stage7): экраны этапа 7 учитываются в том же признаке (хендлер, примеры, кейсы conformance).
+  'Chats',
+  'Docs',
+  'PublicDocs',
+  'Service',
+  'PublicService',
+];
 
 /**
  * Операции этапа 4 без экрана в screens.yaml, у которых тоже есть хендлер, примеры и кейсы (W4.04): правка
@@ -42,7 +54,17 @@ export const STAGE4_TAGS = ['Calendar', 'Branding', 'Knowledge', 'Tasks', 'Forms
  */
 export const STAGE6_TAGS = ['Repairs'];
 
-export const STAGE4_OFFSCREEN = ['updateKnowledgeSpace', 'createKnowledgeTable'];
+export const STAGE4_OFFSCREEN = [
+  'updateKnowledgeSpace',
+  'createKnowledgeTable',
+  // W7.00: операции этапа 7 без экрана в screens.yaml (удержания и выгрузка чатов, callback сервера документов).
+  'listChatHolds',
+  'createChatHold',
+  'releaseChatHold',
+  'createChatExport',
+  'getChatExport',
+  'docServerCallback',
+];
 
 /**
  * Теги экранов этапа 5: у операций этих тегов, которые вызывают экраны этапа 5 (screens.yaml, stage: 5), есть хендлер
@@ -153,7 +175,10 @@ function operations(
         permissions: op['x-permissions'] ?? [],
         mode: op['x-permissions-mode'] ?? 'all',
         scope: op['x-scope'] ?? '',
-        public: Array.isArray(op.security) && op.security.length === 0,
+        // Без сессии: `security: []` или только служебная схема (docServerJwt — callback сервера документов).
+        public:
+          Array.isArray(op.security) &&
+          op.security.every((req) => Object.keys(req).every((n) => n === 'docServerJwt')),
         mutating: !SAFE.has(method),
         ifMatch: names.includes('If-Match'),
         idempotent: names.includes('Idempotency-Key'),
@@ -249,7 +274,7 @@ export function buildContract(root = ROOT) {
   const ops = operations(
     doc,
     stageScreens(screens, 2),
-    stageScreens(screens, 4),
+    new Set([...stageScreens(screens, 4), ...stageScreens(screens, 7)]),
     stageScreens(screens, 5),
     stageScreens(screens, 6),
   );

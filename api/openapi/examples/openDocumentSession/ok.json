@@ -1,0 +1,39 @@
+{
+  "engine": "none",
+  "editorAvailable": false,
+  "mode": "edit",
+  "documentKey": "tf04f636e-b66d-509e-ae10-9c27a18e3baa.d143cca4f-2c2d-540e-b0f9-ae8a60b1a09d.v4",
+  "version": 4,
+  "fileUrl": "https://files.ortus.invalid/docs/143cca4f-2c2d-540e-b0f9-ae8a60b1a09d/v4",
+  "user": {
+    "memberId": "ac41932c-dbd9-53b1-a84b-42cbc1d6629a",
+    "displayName": "Марина Котова"
+  },
+  "permissions": {
+    "edit": false,
+    "review": false,
+    "comment": true,
+    "download": true,
+    "print": true,
+    "fillForms": false,
+    "protectedRanges": true
+  },
+  "protectedRanges": [
+    {
+      "id": "pr-1",
+      "sheet": "Октябрь",
+      "range": "G3:G6",
+      "name": "Норма",
+      "who": [
+        {
+          "who": "role",
+          "level": "edit",
+          "refId": "ec7feec1-6f4d-54fb-9a58-63ab98c54aca",
+          "label": "Роль «Менеджер логистики»"
+        }
+      ]
+    }
+  ],
+  "hint": "Редактор подключается",
+  "expiresAt": "2026-10-01T08:30:00Z"
+}

@@ -7,12 +7,14 @@ import { realtimeHandlers } from './auth/realtime.ts';
 import { storageBreakdownHandlers } from './billing/breakdown.ts';
 import { calendarHandlers } from './calendar/index.ts';
 import { cashHandlers } from './cash/index.ts';
+import { chatsHandlers } from './chats/index.ts';
 import { billingHandlers } from './billing/index.ts';
 import { plansHandlers } from './billing/plans.ts';
 import { brandingHandlers } from './branding/index.ts';
 import { contextHandlers } from './context/index.ts';
 import type { Registry } from './core/registry.ts';
 import { dataExportHandlers } from './data/exports.ts';
+import { docsHandlers } from './docs/index.ts';
 import { dataHandlers } from './data/index.ts';
 import { dataViewHandlers } from './data/views.ts';
 import { filesHandlers } from './files/index.ts';
@@ -30,6 +32,7 @@ import { usageHandlers } from './platform/usage.ts';
 import { repairsHandlers } from './repairs/index.ts';
 import { spaHandlers } from './spa/index.ts';
 import { spaInventoryHandlers } from './spa/inventory.ts';
+import { serviceHandlers } from './service/index.ts';
 import { tasksHandlers } from './tasks/index.ts';
 
 export const defaultRegistry: Registry = {
@@ -74,4 +77,10 @@ export const defaultRegistry: Registry = {
   // W5.21 (0.12.0-stage5): «Салон и SPA»; склад салона — временные хендлеры до W5.10 (его реестр ставить ниже).
   ...spaInventoryHandlers,
   ...spaHandlers,
+  // 0.12.0-stage7 (W7.00): «Чаты».
+  ...chatsHandlers,
+  // 0.12.0-stage7 (W7.00): «Обращения» и портал клиента.
+  ...serviceHandlers,
+  // 0.12.0-stage7 (W7.00): «Документы» и callback сервера документов.
+  ...docsHandlers,
 };

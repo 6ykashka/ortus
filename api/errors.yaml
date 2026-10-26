@@ -502,6 +502,55 @@ codes:
     ui: В кассе недостаточно средств для операции
     retryable: false
     source: "W5.00 · analysis/dor/cash.md §2.4"
+  # W7.00 (0.12.0-stage7): «Чаты», «Документы», «Обращения» (chats.md §2.2, documents.md §2.2, service.md §2.4).
+  chat_ephemeral_disabled:
+    status: 403
+    title: "Временные и одноразовые сообщения запрещены политикой вида чата (CHAT-04) или нет права chat.ephemeral.send"
+    ui: "Поле «Исчезает через» скрыто; текст ошибки — «В этом чате временные сообщения запрещены»"
+    retryable: false
+    source: "25:356; chats.md §2.2, §5.4 п. 2; W7.00"
+  document_locked:
+    status: 409
+    title: "Документ закрыт для правки — на маршруте или подписан"
+    ui: "«Документ на согласовании — править нельзя»; после возврата правка открывается автору"
+    retryable: false
+    source: "documents.md §2.2 (docRename, docMove, docRestore); Q-W4.00-documents-5; W7.00"
+  range_protected:
+    status: 403
+    title: "Ячейки защищённого диапазона листа правит только тот, кому он выдан (DOC-03)"
+    ui: "«Диапазон «{имя}» защищён — правят: {роли}»"
+    retryable: false
+    source: "documents.md §2.2, §3; Q-W4.00-documents-12; W7.00"
+  formula_invalid:
+    status: 422
+    title: "Формула таблицы не разобрана или ссылается на недоступный лист"
+    ui: "Подсветка ячейки и подсказка строки формул"
+    retryable: false
+    source: "documents.md §2.2; Q-W4.00-documents-11; W7.00"
+  job_in_progress:
+    status: 409
+    title: "Такое задание уже выполняется (тот же вид и те же документы)"
+    ui: "«Такое задание уже выполняется»"
+    retryable: false
+    source: "documents.md §2.2 (docJob); W7.00"
+  file_password_protected:
+    status: 422
+    title: "Файл защищён паролем — задание не может его прочитать"
+    ui: "Запрос пароля и «Повторить»"
+    retryable: false
+    source: "documents.md §2.2 (docJobRetry); W7.00"
+  sign_code_invalid:
+    status: 422
+    title: "Неверный код или подтверждение подписи ПЭП; после трёх попыток — rate_limited"
+    ui: "«Неверный код. Осталось попыток: {n}»"
+    retryable: false
+    source: "documents.md §2.2 (docSign); D-31 комплекта; Q-W4.00-documents-2; W7.00"
+  service_assignee_out_of_scope:
+    status: 422
+    title: "Исполнитель не видит направление обращения или не имеет права «Отвечать»"
+    ui: "«{имя} не видит направление «{направление}» — назначить нельзя»"
+    retryable: false
+    source: "service.md §2.4 (svcAssign, S:293); W7.00"
 client_states:
   offline:
     title: Нет сети, черновик на устройстве

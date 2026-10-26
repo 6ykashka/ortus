@@ -9,3 +9,8 @@ sessionCookie:
   in: cookie
   name: __Host-ortus_session
   description: Secure HttpOnly SameSite=Lax host-only browser session issued after OIDC + PKCE. Mutations also require X-CSRF-Token and exact allowed Origin. Do not send this cookie with a bearer token.
+docServerJwt:
+  type: http
+  scheme: bearer
+  bearerFormat: JWT
+  description: Service JWT of the document server (HS256, shared secret DOCS_SERVER_JWT_SECRET of the adapter). Used only by the internal callback docServerCallback; no session cookie and no user bearer token. A missing or invalid signature is 401 session_expired before the body is read.

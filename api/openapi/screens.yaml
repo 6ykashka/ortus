@@ -1360,6 +1360,243 @@ screens:
       - createSupplyRequest
     note: "Нет в эталоне (B-6): форма заявки прораба во вкладке «Снабжение» объекта; дорисовка в design-requests."
 
+  # Этап 7 (W7.00, контрактный PR этапа 7): «Чаты» (chats.md §6), «Документы» (documents.md §6), «Обращения»
+  # (service.md §6). Эталон — снимок 19.10 (тег design-2026-10-19). Без экрана: createChatHold, releaseChatHold,
+  # listChatHolds (UI удержания нет — chats.md §5.1 п. 1), createChatExport, getChatExport, createDocFolder и
+  # остальные операции папок (no-reference, W7.28), docServerCallback (межсервисный), операции настройки направления
+  # и отчёта — экраны только в макетах вариантов (W7.34, W7.36).
+  chats:
+    title: Чаты
+    stage: 7
+    ws: W7.13
+    reference: design-2026-10-19 · Чаты.dc.html · список, лента, поле ввода, действия с сообщением, панель «Сведения» (chats.md §1.3)
+    operations:
+      [
+        listChats,
+        getChat,
+        listChatMessages,
+        postChatMessage,
+        editChatMessage,
+        deleteChatMessage,
+        listChatMessageVersions,
+        markChatRead,
+        ackChatMessage,
+        getChatMessageReceipts,
+        revealChatMessagePdn,
+        voteChatPoll,
+        closeChatPoll,
+        remindChatPoll,
+        pinChatMessage,
+        unpinChatMessage,
+        openViewOnceAttachment,
+        saveChatAttachmentsToRecord,
+        createTaskFromChatMessage,
+        listChatMembers,
+        getChatSources,
+        replaceChatSources,
+        getChatAccessExplanation,
+        getChatStorage,
+        createChatCleanup,
+        listChatJournal,
+        updateChat,
+        archiveChat,
+        initiateUpload,
+        completeUpload,
+      ]
+    note: Подсказка chat.changed канала реального времени (ADR-0015, W7.12) — клиент перечитывает listChatMessages с afterSeq. Состояния панели — параметр ?side=info|msg|rights|store.
+
+  chats-policies:
+    title: Политики чатов
+    stage: 7
+    ws: W7.13
+    reference: design-2026-10-19 · Чаты.dc.html · вкладка «Политики» (C-11, chats.md §1.3; Q-W4.00-chats-1)
+    operations: [listChatPolicies, updateChatPolicy]
+    note: Только владелец бизнеса (chat.policy.manage, owner_only).
+
+  modal-chat-new:
+    title: Новый чат
+    stage: 7
+    ws: W7.13
+    reference: design-2026-10-19 · Чаты.dc.html · диалог «Новый чат» (D-1, chats.md §1.3)
+    operations: [createChat, createDirectChat]
+    note: Личный чат «с нуля» — no-reference (Q-W4.00-chats-5); метка «ПДн» не предлагается (Q-W4.00-chats-14).
+
+  docs-list:
+    title: Документы
+    stage: 7
+    ws: W7.25
+    reference: design-2026-10-19 · Документы.dc.html · список, «Новый документ», «Перенести» (documents.md §1.2)
+    operations:
+      [
+        listDocuments,
+        listDocFolders,
+        listDocTemplates,
+        createDocument,
+        moveDocument,
+        archiveDocument,
+        restoreDocument,
+        initiateUpload,
+        completeUpload,
+      ]
+
+  docs-doc:
+    title: Карточка документа
+    stage: 7
+    ws: W7.25
+    reference: design-2026-10-19 · Документы.dc.html · оболочка карточки, текст, таблица, PDF, «Обсуждение», «Версии» (documents.md §1.3–§1.7)
+    operations:
+      [
+        getDocument,
+        updateDocument,
+        openDocumentSession,
+        listDocVersions,
+        saveDocVersion,
+        nameDocVersion,
+        restoreDocVersion,
+        listDocComments,
+        createDocComment,
+        replyDocComment,
+        resolveDocComment,
+        skipDocMentionGrant,
+        syncDocDataset,
+        createDocJob,
+        getDocJob,
+        retryDocJob,
+        reviewOcrWord,
+        listDocActivity,
+      ]
+    note: Правка блоков — в движке (D-32 комплекта); без движка документ открывается на просмотр (Q-W4.00-documents-1).
+
+  modal-doc-share:
+    title: Поделиться
+    stage: 7
+    ws: W7.25
+    reference: design-2026-10-19 · Документы.dc.html · диалог «Поделиться», доступ, внешняя ссылка (documents.md §1.9)
+    operations:
+      [getDocShares, setDocShares, grantDocAccess, listDocLinks, createDocLink, revokeDocLink]
+
+  docs-route:
+    title: Маршрут документа
+    stage: 7
+    ws: W7.26
+    reference: design-2026-10-19 · Документы.dc.html · полоса маршрута, «На согласование», подпись, ознакомление (documents.md §1.8)
+    operations:
+      [
+        startDocRoute,
+        getDocRoute,
+        decideDocRoute,
+        requestDocSignCode,
+        confirmDocSign,
+        ackDocument,
+        closeDocAck,
+        resumeDocRoute,
+        cancelDocRoute,
+        listDocRouteTemplates,
+      ]
+
+  docs-folders:
+    title: Папки документов
+    stage: 7
+    ws: W7.25
+    reference: no-reference (B-6; documents.md §6 W7.28 — диалог «Новая папка», переименование и удаление папки не нарисованы)
+    operations:
+      [listDocFolders, createDocFolder, updateDocFolder, deleteDocFolder, setDocFolderShares]
+
+  public-doc-link:
+    title: Документ по внешней ссылке
+    stage: 7
+    ws: W7.23
+    reference: no-reference (B-6; documents.md §6 W7.28 — публичная страница ссылки с PIN не нарисована)
+    operations: [openDocLink]
+
+  service-queue:
+    title: Обращения
+    stage: 7
+    ws: W7.32
+    reference: design-2026-10-19 · Обращения.dc.html · очередь, счётчики, фильтры (1b, service.md §1.1)
+    operations: [listServiceDirections, listServiceRequests, getServiceQueueCounts]
+
+  service-request:
+    title: Карточка обращения
+    stage: 7
+    ws: W7.32
+    reference: design-2026-10-19 · Обращения.dc.html · карточка, лента, ответ и заметка, итог, перенос, сроки (1c, service.md §1.1)
+    operations:
+      [
+        getServiceRequest,
+        postServiceMessage,
+        setServiceCompensation,
+        transitionServiceRequest,
+        updateServiceRequest,
+        moveServiceRequest,
+        revealServiceClientPhone,
+        shareServiceConclusion,
+        createServiceRequestTask,
+        listServiceReplyTemplates,
+      ]
+
+  service-call:
+    title: Обращение по звонку
+    stage: 7
+    ws: W7.32
+    reference: design-2026-10-19 · Обращения.dc.html · панель «Обращение по звонку» (service.md §1.1)
+    operations: [createServiceRequest, listServiceDirections]
+
+  service-ratings:
+    title: Низкие оценки
+    stage: 7
+    ws: W7.32
+    reference: design-2026-10-19 · Обращения.dc.html · «Низкие оценки» (service.md §1.1)
+    operations: [listServiceRatings, decideServiceRating]
+
+  service-settings:
+    title: Настройка направления
+    stage: 7
+    ws: W7.34
+    reference: design-2026-10-19 · Обращения - варианты.dc.html · 1d «Настройка направления» (service.md §1.2, кандидат W7.34)
+    operations:
+      [
+        createServiceDirection,
+        getServiceDirection,
+        updateServiceDirectionDraft,
+        publishServiceDirection,
+      ]
+
+  service-report:
+    title: Отчёт по обращениям
+    stage: 7
+    ws: W7.36
+    reference: design-2026-10-19 · Обращения - варианты.dc.html · 1e «Отчёт» (service.md §1.2, кандидат W7.36)
+    operations: [getServiceReport]
+
+  public-service-page:
+    title: Страница направления для клиента
+    stage: 7
+    ws: W7.33
+    reference: design-2026-10-19 · Обращения - варианты.dc.html · 1a «Портал клиента» (service.md §1.2)
+    operations:
+      [
+        getPublicServicePage,
+        submitPublicServiceRequest,
+        initiatePublicServiceUpload,
+        completePublicServiceUpload,
+      ]
+    note: Вход — личная ссылка (Q-W4.00-service-9); «телефон + код» — после SMS-провайдера.
+
+  public-service-request:
+    title: Моё обращение (клиент)
+    stage: 7
+    ws: W7.33
+    reference: design-2026-10-19 · Обращения - варианты.dc.html · 1a «Статус обращения», «Довольны ли решением?» (service.md §1.2)
+    operations:
+      [
+        getPublicServiceRequest,
+        postPublicServiceMessage,
+        ratePublicServiceResolution,
+        reopenPublicServiceRequest,
+        optOutPublicSurveys,
+      ]
+
 # Истории без своего экрана (DoR W1.00, W2.00): серверные механизмы и проверки, видимые только тестами и изоляцией.
 storiesWithoutScreen:
   S1-02: Resolver «сессия → членство → состояние → TenantContext» без запасной главной БД — серверная история (W1.02); видна только через ошибки шлюза и строки изоляции.

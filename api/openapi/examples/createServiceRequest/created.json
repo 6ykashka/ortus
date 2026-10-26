@@ -1,0 +1,74 @@
+{
+  "id": "661c13b2-8578-53c1-b830-b5c1271e26f6",
+  "key": "ГРЗ-58",
+  "directionId": "9cc9b25b-8024-58f7-8db6-ba7379006810",
+  "kind": "question",
+  "title": "Где накладная по рейсу Р-196",
+  "status": "work",
+  "priority": "normal",
+  "assignee": {
+    "memberId": "ac41932c-dbd9-53b1-a84b-42cbc1d6629a",
+    "displayName": "Марина Котова"
+  },
+  "createdAt": "2026-10-01T13:24:00Z",
+  "channel": "phone",
+  "client": {
+    "name": "Павел Ершов",
+    "phoneMasked": "+7 ••• •••-••-33",
+    "since": "Новый клиент",
+    "phone": "+7 916 111-22-33"
+  },
+  "link": null,
+  "sla": {
+    "first": {
+      "goalMinutes": 120,
+      "dueAt": "2026-10-01T15:24:00Z",
+      "stoppedAt": null,
+      "state": "norm",
+      "label": "Первый ответ",
+      "text": "осталось 2 ч",
+      "until": "до 18:24",
+      "leftMinutes": 120
+    },
+    "resolve": {
+      "goalMinutes": 2160,
+      "dueAt": "2026-10-04T13:24:00Z",
+      "stoppedAt": null,
+      "state": "norm",
+      "label": "Решение",
+      "text": "осталось 3 дня",
+      "until": "до 4 октября",
+      "leftMinutes": 2160
+    }
+  },
+  "head": {
+    "state": "norm",
+    "label": "Первый ответ",
+    "text": "осталось 2 ч",
+    "until": "до 18:24",
+    "rank": 120,
+    "key": "first"
+  },
+  "labels": [],
+  "taskCount": 0,
+  "messages": [
+    {
+      "id": "db140186-ae4d-5eca-a697-dfdf26c6a37a",
+      "kind": "system",
+      "at": "2026-10-01T13:24:00Z",
+      "text": "Заведено по звонку · Марина Котова",
+      "files": []
+    },
+    {
+      "id": "494593a3-2c04-5374-aa83-30d47680c7a9",
+      "kind": "client",
+      "at": "2026-10-01T13:24:00Z",
+      "text": "Где накладная по рейсу Р-196? Водитель сказал, что документы оформлены.",
+      "files": [],
+      "channel": "phone"
+    }
+  ],
+  "tasks": [],
+  "allowedStatuses": ["wait", "resolved"],
+  "revision": 1
+}

@@ -9,6 +9,7 @@ import { bundle } from './lib/bundle.mjs';
 import { checkExamples, loadExamples } from './lib/examples.mjs';
 import { operationsById } from './lib/inventory.mjs';
 import { abs, ERRORS_PATH, PERMISSIONS_PATH, SCREENS_PATH, SOURCE_0_1 } from './lib/paths.mjs';
+import { STAGE7_CODES } from './lib/stage7.mjs';
 import { flattenActions, loadCatalog } from './lib/permissions.mjs';
 import { escapeToken, parsePointer } from './lib/refs.mjs';
 import { checkAgainstSource, loadDeltas } from './lib/source-diff.mjs';
@@ -242,20 +243,23 @@ describe('контракт 0.6.0-stage2 (W2.51): пул водителей', () 
   it('права и коды — существующие: новых ключей и кодов ошибок нет; источник отпускает водителя', () => {
     const actions = flattenActions(loadCatalog());
     // W2.71 (0.6.3-stage2, D-35 комплекта) добавил fleet.reservations.choose и offer_closed, W4.07 — branding.manage,
-    // W4.04 — ключи «Базы знаний» (core.knowledge): W2.51 своих не добавлял, остальных ключей вне БЗ — 119.
+    // W4.04 — ключи «Базы знаний» (core.knowledge): W2.51 своих не добавлял, остальных ключей вне БЗ, «Документов» и «Обращений» (W7.00) — 119.
     const own = [...actions].filter(
       ([k, a]) =>
         k !== 'fleet.reservations.choose' &&
         k !== 'branding.manage' &&
         !W5_ADDED_KEYS.includes(k) &&
         !NEW_PERMISSIONS.includes(k) &&
-        a.module !== 'core.knowledge',
+        !['core.knowledge', 'core.docs', 'core.service'].includes(a.module),
     );
     // W5.00 (0.12.0-stage5): ключи и коды этапа 5 не считаются; cash.manage → cash.accounts.manage — на один ключ меньше.
     assert.equal(own.length, 118);
     const codes = readYaml(ERRORS_PATH).codes;
     assert.equal(
-      Object.keys(codes).length - ('offer_closed' in codes ? 1 : 0) - W5_CODES.length,
+      Object.keys(codes).length -
+        ('offer_closed' in codes ? 1 : 0) -
+        W5_CODES.length -
+        STAGE7_CODES.length,
       52,
     );
     // Ключи 11 сохраняются дословно (permissions.test.mjs W0.07) — пояснение W2.51 только комментарием каталога.

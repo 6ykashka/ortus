@@ -1,0 +1,26 @@
+{
+  "id": "e98d66c3-70eb-5f46-ac01-9c3a72be433c",
+  "author": {
+    "memberId": "ebdf9767-327e-55cc-8c65-cb5fd313bdf4",
+    "displayName": "Алексей Соколов"
+  },
+  "createdAt": "2026-10-01T07:00:00Z",
+  "text": "Срок окончания — 27 ноября, не 20-го. Проверьте п. 2.1.",
+  "anchor": {
+    "kind": "block",
+    "ref": "b-21",
+    "quote": "Окончание — 27 ноября 2026 г."
+  },
+  "replies": [
+    {
+      "id": "dac4214a-86c3-54ef-a79a-350e334169c9",
+      "author": {
+        "memberId": "ebdf9767-327e-55cc-8c65-cb5fd313bdf4",
+        "displayName": "Алексей Соколов"
+      },
+      "at": "2026-10-01T07:30:00Z",
+      "text": "Исправил: 27 ноября."
+    }
+  ],
+  "resolved": false
+}

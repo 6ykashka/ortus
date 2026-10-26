@@ -1,0 +1,87 @@
+{
+  "id": "e259b6d4-e7d4-513a-9ae7-00eedcce9bb8",
+  "kind": "text",
+  "title": "Приказ № 14 · выходной 4 ноября",
+  "folderId": "1eb38eae-0f75-5350-9c0c-add98451de67",
+  "folderName": "Приказы",
+  "path": ["Север Логистик", "Приказы"],
+  "owner": {
+    "memberId": "ac41932c-dbd9-53b1-a84b-42cbc1d6629a",
+    "displayName": "Марина Котова"
+  },
+  "status": "agreed",
+  "sensitivity": "normal",
+  "version": 2,
+  "mode": "inherit",
+  "shares": [
+    {
+      "who": "role",
+      "level": "view",
+      "refId": "2a857e38-2d94-51a0-81de-406de8b3c772",
+      "orgUnitId": "6de355d2-b019-5bb6-b66a-ddae6a13fb65",
+      "label": "Роль «Водитель»"
+    }
+  ],
+  "links": [],
+  "authors": [
+    {
+      "memberId": "ac41932c-dbd9-53b1-a84b-42cbc1d6629a",
+      "displayName": "Марина Котова"
+    }
+  ],
+  "fields": [],
+  "tempGrants": [],
+  "jobs": [],
+  "protectedRanges": [],
+  "commentCount": 0,
+  "openCommentCount": 0,
+  "createdAt": "2026-09-29T07:30:00Z",
+  "updatedAt": "2026-10-01T07:30:00Z",
+  "my": {
+    "level": "manage",
+    "can": {
+      "view": true,
+      "comment": true,
+      "suggest": true,
+      "edit": true,
+      "share": true,
+      "shareExternal": false,
+      "export": true,
+      "convert": true,
+      "sign": false,
+      "route": true,
+      "manage": true,
+      "locked": false
+    },
+    "maxGrant": "edit",
+    "wait": [],
+    "chain": [
+      {
+        "kind": "ok",
+        "title": "Папка «Приказы»",
+        "detail": "Как у родителя"
+      },
+      {
+        "kind": "ok",
+        "title": "Владелец документа",
+        "detail": "Управляет доступом"
+      },
+      {
+        "kind": "ok",
+        "title": "Итог",
+        "detail": "Уровень: manage"
+      }
+    ]
+  },
+  "revision": 2,
+  "file": {
+    "id": "33b3b28e-2cfc-5f26-babe-9d9fcf23e466",
+    "fileName": "Приказ № 14 · выходной 4 ноября.docx",
+    "contentType": "application/vnd.openxmlformats-officedocument",
+    "sizeBytes": 48000,
+    "sha256": "bd825104bd825104bd825104bd825104bd825104bd825104bd825104bd825104",
+    "status": "ready",
+    "createdAt": "2026-10-01T07:30:00Z"
+  },
+  "size": 48000
+}

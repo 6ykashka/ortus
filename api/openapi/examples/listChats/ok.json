@@ -1,0 +1,37 @@
+{
+  "items": [
+    {
+      "id": "fa0478cf-91c7-5227-a915-a2ec3d508cc0",
+      "kind": "area",
+      "title": "Водители · Север Логистик",
+      "orgUnitId": "6de355d2-b019-5bb6-b66a-ddae6a13fb65",
+      "status": "active",
+      "sensitivity": "normal",
+      "record": null,
+      "my": {
+        "role": "owner",
+        "unread": 0,
+        "ackWaitCount": 0,
+        "lastReadSeq": 5
+      },
+      "usedBytes": 880803840,
+      "revision": 1,
+      "lastMessage": {
+        "seq": 5,
+        "at": "2026-10-01T06:12:00Z",
+        "authorDisplayName": "Система",
+        "text": "Критический дефект · М 608 КТ 77",
+        "kind": "system"
+      },
+      "pinnedMessageId": null
+    }
+  ],
+  "nextCursor": null,
+  "counts": {
+    "all": 4,
+    "direct": 1,
+    "work": 1,
+    "record": 1,
+    "announce": 1
+  }
+}

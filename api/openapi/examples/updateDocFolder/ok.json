@@ -1,0 +1,22 @@
+{
+  "id": "fae58a41-3ab2-59a7-a375-8da345f5869e",
+  "name": "Договоры 2026",
+  "parentId": "41aefb3e-e2fe-5fa7-90b2-607dba7aad3b",
+  "orgUnitId": "6de355d2-b019-5bb6-b66a-ddae6a13fb65",
+  "mode": "inherit",
+  "owner": {
+    "memberId": "b8df06ec-317e-5f46-b54c-e76603e41b5b",
+    "displayName": "Дарья Зимина"
+  },
+  "icon": "handshake",
+  "sensitivity": "normal",
+  "hasRouteTemplate": false,
+  "shares": [],
+  "documentCount": 2,
+  "my": {
+    "level": "manage",
+    "create": true,
+    "manage": true
+  },
+  "revision": 2
+}

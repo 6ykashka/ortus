@@ -1,0 +1,64 @@
+{
+  "items": [
+    {
+      "version": 4,
+      "createdAt": "2026-09-30T21:30:00Z",
+      "authors": [
+        {
+          "memberId": "ac41932c-dbd9-53b1-a84b-42cbc1d6629a",
+          "displayName": "Марина Котова"
+        }
+      ],
+      "source": "edit",
+      "fileId": "e3ca86e1-d4bd-56e5-8d42-9681912b0824",
+      "sizeBytes": 48000,
+      "sha256": "e397a9a5e397a9a5e397a9a5e397a9a5e397a9a5e397a9a5e397a9a5e397a9a5",
+      "forcesave": true
+    },
+    {
+      "version": 3,
+      "createdAt": "2026-09-29T05:30:00Z",
+      "authors": [
+        {
+          "memberId": "ac41932c-dbd9-53b1-a84b-42cbc1d6629a",
+          "displayName": "Марина Котова"
+        }
+      ],
+      "source": "edit",
+      "fileId": "63b36cca-86b2-5d7d-946f-38455a595d48",
+      "sizeBytes": 48000,
+      "sha256": "e397a9a4e397a9a4e397a9a4e397a9a4e397a9a4e397a9a4e397a9a4e397a9a4",
+      "forcesave": true
+    },
+    {
+      "version": 2,
+      "createdAt": "2026-09-27T20:10:00Z",
+      "authors": [
+        {
+          "memberId": "ac41932c-dbd9-53b1-a84b-42cbc1d6629a",
+          "displayName": "Марина Котова"
+        }
+      ],
+      "source": "edit",
+      "fileId": "11986a36-5d7c-5453-ab46-8dbebba0181d",
+      "sizeBytes": 48000,
+      "sha256": "e397a9a3e397a9a3e397a9a3e397a9a3e397a9a3e397a9a3e397a9a3e397a9a3",
+      "forcesave": true
+    },
+    {
+      "version": 1,
+      "createdAt": "2026-09-27T03:30:00Z",
+      "authors": [
+        {
+          "memberId": "ac41932c-dbd9-53b1-a84b-42cbc1d6629a",
+          "displayName": "Марина Котова"
+        }
+      ],
+      "source": "edit",
+      "fileId": "f20b2630-2915-5d70-aef6-965b1e0580b4",
+      "sizeBytes": 48000,
+      "sha256": "e397a9a2e397a9a2e397a9a2e397a9a2e397a9a2e397a9a2e397a9a2e397a9a2",
+      "forcesave": true
+    }
+  ]
+}

@@ -43,8 +43,17 @@ var xScopes = map[string]admission{
 	// W4.04: «База знаний» — узел и пространство: роли области (и «своё» — открытые пространства всей организации,
 	// Q-W4.00-knowledge-15), роли пространства и страницы, связь; управление пространством — роли области и
 	// пространства.
-	"knowledge-space-node":              {kinds: []string{KindTenant, KindUnit, KindSelf, KindProject, KindSpace, KindPage, KindRelation}},
-	"knowledge-space":                   {kinds: []string{KindTenant, KindUnit, KindSpace}},
+	"knowledge-space-node": {kinds: []string{KindTenant, KindUnit, KindSelf, KindProject, KindSpace, KindPage, KindRelation}},
+	"knowledge-space":      {kinds: []string{KindTenant, KindUnit, KindSpace}},
+	// W7.00: «Чаты» — роли области, чата и связь с записью; «Документы» — роли области, папки, документа и связь;
+	// «Обращения» — направление есть служебный проект задач (RS-08): роли области и проекта. Публичный контур и
+	// межсервисный callback идут без сессии (security: []), в шлюз ролей не попадают: записи для полноты каталога.
+	"chat":                              {kinds: []string{KindTenant, KindUnit, KindChat, KindRelation, KindSelf}},
+	"docs-folder-doc":                   {kinds: []string{KindTenant, KindUnit, KindFolder, KindDoc, KindRelation, KindSelf}},
+	"docs-server-callback":              {kinds: tenantOnly},
+	"service-direction":                 {kinds: withProject},
+	"public-service-capability":         {kinds: tenantOnly},
+	"public-doc-link-capability":        {kinds: tenantOnly},
 	"responsible-manager-or-owner":      {kinds: territorial},
 	"responsible-manager-or-owner-only": {kinds: territorial},
 	"source-manager-or-owner":           {kinds: territorial},

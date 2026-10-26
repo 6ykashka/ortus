@@ -1,0 +1,184 @@
+{
+  "id": "27e8039b-4399-5f72-90d1-bab599c4beb8",
+  "kind": "text",
+  "title": "Договор подряда № 42/26",
+  "folderId": "f2ca66d2-6d1c-5466-9f8d-ee414820825d",
+  "folderName": "ЖК Речной · квартира 42",
+  "path": ["Ремонт и стройка", "ЖК Речной · квартира 42"],
+  "owner": {
+    "memberId": "b8df06ec-317e-5f46-b54c-e76603e41b5b",
+    "displayName": "Дарья Зимина"
+  },
+  "status": "in_route",
+  "sensitivity": "normal",
+  "version": 3,
+  "mode": "inherit",
+  "shares": [],
+  "links": [
+    {
+      "object": {
+        "moduleKey": "repairs",
+        "entityType": "project",
+        "entityId": "73e23d56-2d9c-5a86-91d2-8969d90d1f5b"
+      },
+      "label": "ЖК Речной · квартира 42"
+    }
+  ],
+  "authors": [
+    {
+      "memberId": "b8df06ec-317e-5f46-b54c-e76603e41b5b",
+      "displayName": "Дарья Зимина"
+    },
+    {
+      "memberId": "ebdf9767-327e-55cc-8c65-cb5fd313bdf4",
+      "displayName": "Алексей Соколов"
+    }
+  ],
+  "fields": [
+    {
+      "key": "Заказчик",
+      "src": "obj.client",
+      "value": "Ольга Смирнова",
+      "from": "Объект"
+    },
+    {
+      "key": "Адрес объекта",
+      "src": "obj.address",
+      "value": "Москва, ул. Речная, 5, кв. 42",
+      "from": "Объект"
+    },
+    {
+      "key": "Цена",
+      "src": "snap",
+      "value": "1 248 300 ₽",
+      "from": "Смета"
+    }
+  ],
+  "tempGrants": [
+    {
+      "member": {
+        "memberId": "ebdf9767-327e-55cc-8c65-cb5fd313bdf4",
+        "displayName": "Алексей Соколов"
+      },
+      "level": "comment",
+      "why": "Согласование договора",
+      "onlyVersion": 3
+    }
+  ],
+  "jobs": [],
+  "protectedRanges": [],
+  "commentCount": 1,
+  "openCommentCount": 1,
+  "createdAt": "2026-09-29T07:30:00Z",
+  "updatedAt": "2026-09-30T07:30:00Z",
+  "my": {
+    "level": "edit",
+    "can": {
+      "view": true,
+      "comment": true,
+      "suggest": false,
+      "edit": false,
+      "share": true,
+      "shareExternal": false,
+      "export": true,
+      "convert": true,
+      "sign": false,
+      "route": false,
+      "manage": false,
+      "locked": true
+    },
+    "maxGrant": "edit",
+    "wait": [
+      {
+        "kind": "approve",
+        "due": "2026-10-02"
+      }
+    ],
+    "chain": [
+      {
+        "kind": "ok",
+        "title": "Папка «ЖК Речной · квартира 42»",
+        "detail": "Как у родителя"
+      },
+      {
+        "kind": "wait",
+        "title": "Временный доступ маршрута",
+        "detail": "На время шага"
+      },
+      {
+        "kind": "ok",
+        "title": "Итог",
+        "detail": "Уровень: edit"
+      }
+    ]
+  },
+  "revision": 1,
+  "file": {
+    "id": "d5a5fdda-bf4d-5581-8fcd-a3bc772f861c",
+    "fileName": "Договор подряда № 42/26.docx",
+    "contentType": "application/vnd.openxmlformats-officedocument",
+    "sizeBytes": 48000,
+    "sha256": "2f4b85ac2f4b85ac2f4b85ac2f4b85ac2f4b85ac2f4b85ac2f4b85ac2f4b85ac",
+    "status": "ready",
+    "createdAt": "2026-09-30T07:30:00Z"
+  },
+  "size": 48000,
+  "route": {
+    "id": "d8d165ab-02b9-556e-bb7a-3275cf719b66",
+    "version": 3,
+    "startedBy": {
+      "memberId": "b8df06ec-317e-5f46-b54c-e76603e41b5b",
+      "displayName": "Дарья Зимина"
+    },
+    "startedAt": "2026-10-01T06:30:00Z",
+    "status": "active",
+    "currentStep": 0,
+    "rules": {
+      "lock": true,
+      "notAuthor": true,
+      "commentOnBack": true,
+      "escalate": false
+    },
+    "steps": [
+      {
+        "kind": "approve",
+        "name": "Согласовать",
+        "mode": "all",
+        "who": [
+          {
+            "memberId": "ebdf9767-327e-55cc-8c65-cb5fd313bdf4",
+            "displayName": "Алексей Соколов"
+          }
+        ],
+        "days": 1,
+        "status": "active",
+        "due": "2026-10-02",
+        "decisions": []
+      },
+      {
+        "kind": "external",
+        "name": "Подпись заказчика",
+        "mode": "all",
+        "who": [],
+        "days": 3,
+        "status": "wait",
+        "due": null,
+        "decisions": [],
+        "external": {
+          "name": "Ольга Смирнова",
+          "phoneMasked": "+7 916 ••• ••-17"
+        }
+      }
+    ],
+    "project": {
+      "moduleKey": "tasks",
+      "entityType": "project",
+      "entityId": "0e1e030d-636b-5cd6-85a4-d61c7d9c8a5d"
+    },
+    "task": {
+      "moduleKey": "tasks",
+      "entityType": "task",
+      "entityId": "eadacd5b-73ee-585d-bd08-122056e45e35"
+    }
+  }
+}

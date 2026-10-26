@@ -70,19 +70,42 @@ module core.chat | Чаты |
   chat.files.send | Отправлять файлы и медиа | create | tenant unit chat relation | normal
   chat.polls.create | Создавать опросы | create | tenant unit chat relation | normal
   chat.create | Создавать групповые чаты | edit | tenant unit | normal
-  chat.announce | Объявления | review | tenant unit chat | normal
+  chat.announce | Объявления, важное и @все | review | tenant unit chat | normal
   chat.moderate | Модерировать | review | tenant unit chat | normal
   chat.members.manage | Управлять участниками | settings | tenant unit chat | sensitive
   chat.settings.manage | Настраивать чат | settings | tenant unit chat | normal
-  chat.receipts.read | Видеть | view | tenant unit chat | normal
+  chat.receipts.read | Видеть, кто и когда прочитал | view | tenant unit chat | normal
   chat.ephemeral.send | Временные и одноразовые сообщения | create | tenant unit chat | sensitive
   chat.pdn.read | Видеть ПДн без маски | view | tenant unit | restricted
   chat.export | Выгружать историю | export | tenant unit chat | sensitive
   chat.external | Чаты с клиентами и подрядчиками | settings | tenant unit | sensitive
-  chat.retention.manage | Сроки хранения | settings | tenant unit | sensitive
+  chat.retention.manage | Сроки хранения, очистка, место | settings | tenant unit | sensitive
   chat.hold.manage | Удержание для проверки | settings | tenant | normal
   chat.audit.read | Журнал и удалённые сообщения | view | tenant | restricted
   chat.policy.manage | Политики чатов организации | settings | tenant | normal
+module core.docs | Документы |
+  docs.read | Открывать | view | tenant unit folder doc relation self | normal
+  docs.comment | Комментировать | view | tenant unit folder doc relation | normal
+  docs.suggest | Предлагать правки | edit | tenant unit folder doc relation | normal
+  docs.create | Создавать и загружать | create | tenant unit folder | normal
+  docs.update | Править | edit | tenant unit folder doc relation | normal
+  docs.convert | Преобразовывать и распознавать | create | tenant unit folder | normal
+  docs.export | Скачивать, печатать, копировать | export | tenant unit folder doc | sensitive
+  docs.share | Делиться внутри организации | settings | tenant unit folder doc | sensitive
+  docs.share_external | Внешние ссылки | settings | tenant unit | sensitive
+  docs.sign | Утверждать | review | tenant unit folder | sensitive
+  docs.templates.manage | Шаблоны документов и маршрутов | settings | tenant unit | normal
+  docs.folders.manage | Папки, корзина и сроки хранения | settings | tenant unit folder | normal
+module core.service | Обращения |
+  service.directions.manage | Настраивать направления | settings | tenant unit | normal
+  service.requests.read | Видеть обращения | view | tenant unit project | normal
+  service.requests.create | Заводить по звонку | create | tenant unit project | normal
+  service.requests.reply | Отвечать клиентам | edit | tenant unit project | normal
+  service.requests.resolve | Решать и закрывать | review | tenant unit project | normal
+  service.clients.contacts | Контакты клиентов | view | tenant unit project | sensitive
+  service.compensation.manage | Назначать компенсацию | review | tenant unit project | sensitive
+  service.reports.read | Отчёты по обращениям | view | tenant unit project | normal
+  service.reports.staff | Оценки сотрудников | view | tenant unit project | sensitive
 module logistics | Логистика | core.calendar core.files core.forms
   fleet.vehicles.read | Видеть машины | view | tenant unit resource | normal
   fleet.vehicles.manage | Вести автопарк | settings | tenant unit | normal

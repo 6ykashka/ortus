@@ -1,0 +1,104 @@
+{
+  "id": "3c35b08e-b3c0-5a5c-a2b3-03753b3b272d",
+  "key": "ГРЗ-57",
+  "directionId": "9cc9b25b-8024-58f7-8db6-ba7379006810",
+  "kind": "cargo",
+  "title": "Две коробки помяты, внутри бой",
+  "status": "new",
+  "priority": "high",
+  "assignee": {
+    "memberId": "ac41932c-dbd9-53b1-a84b-42cbc1d6629a",
+    "displayName": "Марина Котова"
+  },
+  "createdAt": "2026-10-01T08:14:00Z",
+  "channel": "bot",
+  "client": {
+    "name": "Наталья Гусева",
+    "phoneMasked": "+7 ••• •••-••-12",
+    "since": "Клиент с 2024 года · 23 доставки",
+    "company": "ООО «Фермерская лавка»"
+  },
+  "link": {
+    "label": "Рейс Р-196 · 27.09",
+    "lines": ["Доставлено 27 сентября, 14:40", "Водитель: Илья Васильев", "Фото выгрузки: 4"]
+  },
+  "sla": {
+    "first": {
+      "goalMinutes": 240,
+      "dueAt": "2026-10-01T12:14:00Z",
+      "stoppedAt": null,
+      "state": "late",
+      "label": "Первый ответ",
+      "text": "просрочен на 1 ч 10 мин",
+      "until": "был до 15:14",
+      "overMinutes": 70
+    },
+    "legal": {
+      "goalMinutes": null,
+      "dueAt": "2026-10-31T08:14:00Z",
+      "stoppedAt": null,
+      "state": "legal",
+      "label": "Ответ по закону",
+      "text": "осталось 30 дней",
+      "until": "до 31 октября",
+      "leftMinutes": 43200
+    }
+  },
+  "head": {
+    "state": "late",
+    "label": "Первый ответ",
+    "text": "просрочен на 1 ч 10 мин",
+    "until": "был до 15:14",
+    "rank": -70,
+    "key": "first"
+  },
+  "labels": ["бой"],
+  "taskCount": 0,
+  "messages": [
+    {
+      "id": "984fb7ff-097f-58de-94c7-3860f5ab7c06",
+      "kind": "client",
+      "at": "2026-10-01T08:14:00Z",
+      "text": "Добрый день! В рейсе Р-196 две коробки из 14 пришли помятыми, внутри бой — 6 банок. Фото и акт о расхождении прикладываю.",
+      "files": [
+        {
+          "id": "33e58893-e648-5a34-8d30-e74516535628",
+          "fileName": "Фото 1.jpg",
+          "sizeBytes": 0,
+          "status": "ready"
+        },
+        {
+          "id": "1c15a376-4e29-54b5-9418-a53a47a2ea3c",
+          "fileName": "Фото 2.jpg",
+          "sizeBytes": 0,
+          "status": "ready"
+        },
+        {
+          "id": "0f571171-1457-5674-b3de-786e3841a2bc",
+          "fileName": "Акт о расхождении.pdf",
+          "sizeBytes": 0,
+          "status": "ready"
+        }
+      ]
+    },
+    {
+      "id": "479bf10d-fac5-5609-aec3-97c38191c269",
+      "kind": "public",
+      "at": "2026-10-01T08:14:00Z",
+      "text": "Наталья, приняли обращение ГРЗ-57. Ответим в течение 4 часов.",
+      "files": [],
+      "auto": true,
+      "delivery": "queued"
+    },
+    {
+      "id": "db104876-cbf5-5212-bd6c-45deb739bc6a",
+      "kind": "system",
+      "at": "2026-10-01T13:24:00Z",
+      "text": "Исполнитель: Марина Котова",
+      "files": []
+    }
+  ],
+  "tasks": [],
+  "allowedStatuses": ["work", "wait", "resolved"],
+  "revision": 2
+}

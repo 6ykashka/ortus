@@ -1,0 +1,26 @@
+{
+  "items": [
+    {
+      "who": "role",
+      "role": "member",
+      "refId": "2a857e38-2d94-51a0-81de-406de8b3c772",
+      "orgUnitId": "6de355d2-b019-5bb6-b66a-ddae6a13fb65"
+    },
+    {
+      "who": "group",
+      "role": "member",
+      "refId": "ce9dd6e5-dcb8-5d08-ad94-53c3155b3d14"
+    },
+    {
+      "who": "group",
+      "role": "moderator",
+      "refId": "ffdc7501-0a74-5af4-950b-894aeb64d658"
+    },
+    {
+      "who": "member",
+      "refId": "ea845988-640e-5506-9303-1cbfc3dede0d",
+      "role": "reader"
+    }
+  ],
+  "revision": 1
+}

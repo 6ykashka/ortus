@@ -1,0 +1,17 @@
+{
+  "id": "7355d141-9e45-511b-b27b-83aa4f38a398",
+  "seq": 2,
+  "createdAt": "2026-09-30T15:24:00Z",
+  "authorDisplayName": "Илья Васильев",
+  "kind": "text",
+  "text": "Понял. Документы на А 412 МР 77 забрал, выезжаю.",
+  "masked": false,
+  "attachments": [],
+  "tasks": [],
+  "authorMemberId": "a560b4fe-78b7-585e-b960-f0ab3622570c",
+  "editedAt": "2026-10-01T08:05:00Z",
+  "reads": {
+    "readCount": 2,
+    "totalCount": 3
+  }
+}
