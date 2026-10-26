@@ -1073,11 +1073,30 @@ function DepartOnly({
   );
 }
 
+/**
+ * W2.87: очередь отправки читается с устройства (IndexedDB, под нагрузкой — секунды; запасное хранилище в памяти включается
+ * через 5 с, pwa/store.ts). Экран ждёт её не дольше этого срока: рейс и машины уже получены, а «Загрузка» из-за очереди —
+ * это и есть смена, «зависшая» в начале окна перевода. Позже прочитанная очередь добавляет «Сдача сохранена на устройстве»
+ * и расходы на устройстве; операции очереди сами дожидаются чтения (`hydrate`), потерь нет.
+ */
+export const OUTBOX_WAIT_MS = 1_500;
+
+function useOutboxGate(ready: boolean): boolean {
+  const [late, setLate] = useState(false);
+  useEffect(() => {
+    if (ready) return undefined;
+    const t = setTimeout(() => setLate(true), OUTBOX_WAIT_MS);
+    return () => clearTimeout(t);
+  }, [ready]);
+  return ready || late;
+}
+
 export default function TodayPage(): ReactElement {
   const { me, tenant, tenantId: id } = useShell();
   const tenantId = id ?? '';
   const online = useNetwork();
   const outbox = useOutbox(tenantId);
+  const outboxGate = useOutboxGate(outbox.ready);
   const trip = useMyTrip(tenantId);
   const plan = trip.data ?? null;
   const vehicles = useVehicles(tenantId, !!plan);
@@ -1104,7 +1123,7 @@ export default function TodayPage(): ReactElement {
     );
 
   let body: ReactNode;
-  if (trip.isPending || (cars && (vehicles.isPending || reservations.isPending)) || !outbox.ready) {
+  if (trip.isPending || (cars && (vehicles.isPending || reservations.isPending)) || !outboxGate) {
     body = <Skeleton lines={6} label={shellText.a11y.loading} />;
   } else if (trip.isError) {
     body = (

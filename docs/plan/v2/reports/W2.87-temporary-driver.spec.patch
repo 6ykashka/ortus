@@ -1,0 +1,81 @@
+diff --git a/frontend/apps/web/e2e/journeys/stage2/temporary-driver.spec.ts b/frontend/apps/web/e2e/journeys/stage2/temporary-driver.spec.ts
+index 09d1b6096..e6d466c52 100644
+--- a/frontend/apps/web/e2e/journeys/stage2/temporary-driver.spec.ts
++++ b/frontend/apps/web/e2e/journeys/stage2/temporary-driver.spec.ts
+@@ -147,7 +147,7 @@ async function requestAndApprove(
+   await owner.goto(`/t/${tenant}/pool?trip=${trip.id}`);
+   await expect(J.h1(owner, 'Ресурсный пул')).toBeVisible({ timeout: 15_000 });
+   const card = driverCard(owner, code);
+-  await expect(card).toContainText('Кат. B · Север Логистик');
++  await expect(card).toContainText('Кат. B · Север Логистик', J.SERVER);
+   await card.getByRole('button', { name: `Запросить на рейс ${trip.number}` }).click();
+   const dlg = owner.getByRole('dialog');
+   await expect(dlg).toContainText(`${code} · Север Логистик`);
+@@ -260,13 +260,9 @@ async function poolClean(owner: Page, tenant: string, driver: string): Promise<v
+   ).body as { items: { id: string; status: string; driverMemberId: string }[] };
+   for (const x of list.items.filter((t) => t.driverMemberId === driver)) {
+     const path = `${base}/driver-transfer-requests/${x.id}`;
+-    const cur = J.expectOk(await call(owner, 'GET', path), 'getDriverTransfer');
+-    await call(owner, 'POST', `${path}/decision`, {
+-      body: {
+-        decision: x.status === 'approved' ? 'revoke' : 'reject',
+-        comment: 'W2.32: уборка стенд-e2e',
+-      },
+-      ifMatch: cur.headers.etag ?? '',
++    await cleanStep(owner, path, `${path}/decision`, {
++      decision: x.status === 'approved' ? 'revoke' : 'reject',
++      comment: 'W2.32: уборка стенд-e2e',
+     });
+   }
+   const pubs = J.expectOk(
+@@ -275,12 +271,36 @@ async function poolClean(owner: Page, tenant: string, driver: string): Promise<v
+   ).body as { items: { id: string; state: string; driverMemberId: string }[] };
+   for (const p of pubs.items.filter((x) => x.driverMemberId === driver && x.state === 'active')) {
+     const path = `${base}/driver-pool/publications/${p.id}`;
+-    const cur = J.expectOk(await call(owner, 'GET', path), 'getDriverPoolPublication');
+-    await call(owner, 'POST', `${path}/withdrawal`, {
+-      body: { comment: 'W2.32: уборка стенд-e2e' },
+-      ifMatch: cur.headers.etag ?? '',
+-    });
++    await cleanStep(owner, path, `${path}/withdrawal`, { comment: 'W2.32: уборка стенд-e2e' });
++  }
++  // Уборка идемпотентна и проверяется: оставшийся `approved` перевод исключает водителя из каталога молча (fleet/pool/catalog.go).
++  const rest = J.expectOk(
++    await call(
++      owner,
++      'GET',
++      `${base}/driver-transfer-requests?status=requested&status=approved&limit=200`,
++    ),
++    'listDriverTransfers',
++  ).body as { items: { id: string; driverMemberId: string }[] };
++  expect(
++    rest.items.filter((t) => t.driverMemberId === driver),
++    'после уборки пула нет открытых и одобренных переводов водителя',
++  ).toEqual([]);
++}
++
++/**
++ * Один шаг уборки: ETag читается заново на каждой попытке (ревизия перевода «рассчитана по часам» — `CheckRevision(ifMatch,
++ * Settle(x, now).Revision)`: на границе окна GET и POST видят разные ревизии → 412). 200 и 409 («уже рассмотрен»,
++ * «снята») — норма, остальное — ошибка уборки, а не молчаливо оставленные данные.
++ */
++async function cleanStep(owner: Page, path: string, url: string, body: object): Promise<void> {
++  let last = 0;
++  for (let attempt = 0; attempt < 3; attempt++) {
++    const cur = J.expectOk(await call(owner, 'GET', path), 'уборка: чтение');
++    last = (await call(owner, 'POST', url, { body, ifMatch: cur.headers.etag ?? '' })).status;
++    if (last === 200 || last === 409) return;
+   }
++  throw new Error(`уборка пула: ${url} — ${String(last)}`);
+ }
+ 
+ /** Ждать момента `at` (мс) с запасом `pad` (часы стенда настоящие). */
+@@ -443,7 +463,7 @@ async function departOnScreen(
+ ): Promise<void> {
+   await driver.goto(`/t/${tenant}/today`);
+   await expect(J.h1(driver, 'Моя смена')).toBeVisible({ timeout: 15_000 });
+-  await expect(driver.getByText(`${trip.number} · ${trip.title}`)).toBeVisible();
++  await expect(driver.getByText(`${trip.number} · ${trip.title}`)).toBeVisible(J.SERVER);
+   await expect(J.h2(driver, 'Машина на сегодня')).toBeVisible(J.SERVER);
+   await expect(driver.getByRole('button', { name: 'Подтвердить бронь' })).toHaveCount(0);
+   await offerCard(driver, ELF).getByRole('button', { name: 'Начать осмотр' }).click();
