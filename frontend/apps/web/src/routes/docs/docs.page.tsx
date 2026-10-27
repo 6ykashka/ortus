@@ -1,93 +1,106 @@
-// @stub Owner: W7.25
-// W7.26 · Заглушка страницы «Документы» для проверки блока «Маршрут документа» (`docs-route`): список документов и
-// карточка `?doc=<id>` с блоком маршрута. Владелец W7.25 заменяет файл целиком своей страницей и вставляет
-// `<DocRoutePanel tenantId docId />` (routes/docs/route/panel.tsx) в карточку — одной строкой.
-import { unwrap } from '@ortus/api-client';
-import { useQuery } from '@tanstack/react-query';
+// W7.25 · Страница «Документы» (ключи `docs-list`, `docs-doc`, `modal-doc-share`, `docs-folders`; маршрут
+// `/t/:tenantId/docs`; эталон design-2026-10-19 «Документы.dc.html»). Список — по умолчанию, карточка — `?doc=<id>`,
+// вкладка панели — `?tab=`, отбор и папка списка — `?filter=` и `?folder=`. Права и видимость — на сервере
+// (недоступный документ неотличим от отсутствующего: «Документ недоступен»).
+import { ProblemError } from '@ortus/api-client';
+import { useQueryClient } from '@tanstack/react-query';
 import { useLocation, useNavigate } from '@tanstack/react-router';
-import { type ReactElement } from 'react';
+import { type ReactElement, useEffect, useState } from 'react';
 
-import { useApi } from '../../app/api.tsx';
+import { AccessGate } from '../../shell/AccessGate.tsx';
 import { useShell } from '../../shell/context.tsx';
 import { LoadFailed } from '../company/modules/ui.tsx';
-import { docsKey, useRouteDoc } from './route/api.ts';
-import { DocRoutePanel } from './route/panel.tsx';
+import { docsKey, useFolders } from './api.ts';
+import { DocCard } from './card.tsx';
+import type { DocsCtx, DocsSearch } from './ctx.ts';
+import { DocList } from './list.tsx';
+import './docs.css';
 
-function useDocs(tenantId: string) {
-  const api = useApi();
-  return useQuery({
-    queryKey: [...docsKey(tenantId), 'stub-list'],
-    retry: false,
-    queryFn: async () =>
-      (
-        await unwrap(
-          await api.GET('/api/v1/tenants/{tenantId}/docs', {
-            params: { path: { tenantId }, query: { limit: 200 } },
-          }),
-        )
-      ).items,
-  });
-}
+const NO_PERMISSION = {
+  kind: 'deny',
+  reason: 'no_permission',
+  branch: 'A',
+  chip: 'noPermission',
+  title: 'noRole',
+  domainModule: 'docs',
+  label: null,
+  owner: false,
+} as const;
 
-function Card({ tenantId, id }: { tenantId: string; id: string }): ReactElement {
-  const navigate = useNavigate();
-  const doc = useRouteDoc(tenantId, id);
-  return (
-    <section aria-labelledby="h-docs" className="ox-rt-host">
-      <button
-        type="button"
-        className="ox-rt-link"
-        onClick={() =>
-          void navigate({ to: '/t/$tenantId/$page', params: { tenantId, page: 'docs' } })
-        }
-      >
-        К списку документов
-      </button>
-      <h1 id="h-docs" tabIndex={-1}>
-        {doc.data?.title ?? 'Документ'}
-      </h1>
-      <DocRoutePanel tenantId={tenantId} docId={id} />
-    </section>
-  );
+const FILTERS = new Set(['mine', 'shared', 'route', 'archive']);
+const TABS = new Set(['talk', 'versions', 'data', 'tools']);
+
+const searchOf = (raw: Record<string, unknown>): DocsSearch => ({
+  ...(typeof raw.doc === 'string' && raw.doc ? { doc: raw.doc } : {}),
+  ...(typeof raw.filter === 'string' && FILTERS.has(raw.filter)
+    ? { filter: raw.filter as NonNullable<DocsSearch['filter']> }
+    : {}),
+  ...(typeof raw.folder === 'string' && raw.folder ? { folder: raw.folder } : {}),
+  ...(typeof raw.tab === 'string' && TABS.has(raw.tab)
+    ? { tab: raw.tab as NonNullable<DocsSearch['tab']> }
+    : {}),
+});
+
+function useOnlineState(): boolean {
+  const [on, setOn] = useState(() => (typeof navigator === 'undefined' ? true : navigator.onLine));
+  useEffect(() => {
+    const sync = (): void => setOn(navigator.onLine);
+    window.addEventListener('online', sync);
+    window.addEventListener('offline', sync);
+    return () => {
+      window.removeEventListener('online', sync);
+      window.removeEventListener('offline', sync);
+    };
+  }, []);
+  return on;
 }
 
 export default function DocsPage(): ReactElement {
   const { tenantId: id } = useShell();
   const tenantId = id ?? '';
-  const location = useLocation();
   const navigate = useNavigate();
-  const raw = (location.search as Record<string, unknown>).doc;
-  const docId = typeof raw === 'string' && raw ? raw : '';
-  const list = useDocs(tenantId);
-  if (docId) return <Card tenantId={tenantId} id={docId} />;
-  return (
-    <section aria-labelledby="h-docs" className="ox-rt-host">
-      <h1 id="h-docs" tabIndex={-1}>
-        Документы
-      </h1>
-      {list.isError ? (
-        <LoadFailed error={list.error} onRetry={() => void list.refetch()} />
-      ) : (
-        <ul>
-          {(list.data ?? []).map((d) => (
-            <li key={d.id}>
-              <button
-                type="button"
-                className="ox-rt-link"
-                onClick={() =>
-                  void navigate({
-                    to: '/t/$tenantId/$page',
-                    params: { tenantId, page: 'docs' },
-                    search: { doc: d.id } as never,
-                  })
-                }
-              >
-                {d.title}
-              </button>
-            </li>
-          ))}
-        </ul>
-      )}
-    </section>
+  const location = useLocation();
+  const qc = useQueryClient();
+  const online = useOnlineState();
+  const search = searchOf(location.search as Record<string, unknown>);
+  const [now] = useState(() => Date.now());
+  const folders = useFolders(tenantId);
+
+  const go: DocsCtx['go'] = (patch, replace = false) => {
+    const next: Record<string, string | undefined> = { ...search, ...patch };
+    const clean = Object.fromEntries(
+      Object.entries(next).filter(([, v]) => v !== undefined && v !== ''),
+    );
+    void navigate({
+      to: '/t/$tenantId/$page',
+      params: { tenantId, page: 'docs' },
+      search: clean as never,
+      replace,
+    });
+  };
+
+  const ctx: DocsCtx = {
+    tenantId,
+    now,
+    online,
+    folders: folders.data ?? [],
+    refresh: () => qc.invalidateQueries({ queryKey: [...docsKey(tenantId)] }),
+    go,
+  };
+
+  if (folders.isError) {
+    const status = folders.error instanceof ProblemError ? folders.error.status : 0;
+    if (status === 403) return <AccessGate access={NO_PERMISSION} />;
+    return (
+      <section className="ox-docs-section">
+        <LoadFailed error={folders.error} onRetry={() => void folders.refetch()} />
+      </section>
+    );
+  }
+
+  return search.doc ? (
+    <DocCard ctx={ctx} id={search.doc} tab={search.tab} />
+  ) : (
+    <DocList ctx={ctx} search={search} />
   );
 }

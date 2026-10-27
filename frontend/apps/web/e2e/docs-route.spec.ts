@@ -22,7 +22,7 @@ async function open(
   o: { persona?: Persona; doc: string },
 ): Promise<void> {
   await openPage(app, page, 'docs', { persona: o.persona ?? 'owner' });
-  await page.getByRole('button', { name: o.doc }).click();
+  await page.getByRole('button', { name: o.doc }).first().click();
   await expect(h1(page, o.doc)).toBeVisible({ timeout: 15_000 });
   await expect(bar(page)).toBeVisible();
 }
@@ -219,6 +219,13 @@ test.describe('docs-route — «Маршрут документа» @mock', () =
     if (phone(page)) {
       const sticky = bar(page).getByRole('group', { name: 'Ознакомление' });
       await expect(sticky).toBeVisible();
+      // Карточка W7.25 длиннее экрана: кнопка включается, когда страница прокручена до конца.
+      await expect(sticky.getByRole('button', { name: 'Ознакомлен', exact: true })).toBeDisabled();
+      await page.evaluate(() => {
+        for (const el of [document.querySelector('#ox-main'), document.scrollingElement]) {
+          if (el) el.scrollTop = el.scrollHeight;
+        }
+      });
       await expect(sticky.getByRole('button', { name: 'Ознакомлен', exact: true })).toBeEnabled();
       await expect(sticky).toContainText('Прочитано до конца');
       await sticky.getByRole('button', { name: 'Ознакомлен', exact: true }).click();
@@ -269,7 +276,7 @@ test.describe('docs-route — состояния, клавиатура, axe, 390
   test('ошибка загрузки — «Повторить»; загрузка — скелетон', async ({ app, page }) => {
     await openPage(app, page, 'docs');
     await devScenario(page, { scenario: 'getDocRoute=rate_limited' });
-    await page.getByRole('button', { name: CONTRACT }).click();
+    await page.getByRole('button', { name: CONTRACT }).first().click();
     await expect(bar(page).getByRole('alert')).toContainText('Слишком много запросов');
     await devScenario(page, { scenario: 'getDocRoute=delay=1500' });
     await bar(page).getByRole('button', { name: 'Повторить' }).click();
@@ -283,9 +290,10 @@ test.describe('docs-route — состояния, клавиатура, axe, 390
   test('документ недоступен — короткий текст вместо маршрута', async ({ app, page }) => {
     await openPage(app, page, 'docs');
     await devScenario(page, { scenario: 'getDocument=not_found' });
-    await page.getByRole('button', { name: CONTRACT }).click();
-    await expect(bar(page)).toContainText('Не удалось загрузить маршрут');
-    await expect(bar(page).getByRole('button')).toHaveCount(0);
+    await page.getByRole('button', { name: CONTRACT }).first().click();
+    // Страница W7.25 при недоступном документе показывает «Документ недоступен» и не строит блок маршрута.
+    await expect(page.getByText('Документ недоступен').first()).toBeVisible();
+    await expect(bar(page)).toHaveCount(0);
   });
 
   test('нет связи — решение недоступно, подпись «только чтение»; связь вернулась — доступно', async ({
