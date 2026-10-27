@@ -89,8 +89,8 @@ export default function UsersPage(): ReactElement {
     [data.projects.data],
   );
   const units = useMemo(
-    () => unitsOf(data.units.data ?? [], home, projectNames),
-    [data.units.data, home, projectNames],
+    () => unitsOf(data.units.data ?? [], home, projectNames, data.cashAccounts.data ?? []),
+    [data.units.data, home, projectNames, data.cashAccounts.data],
   );
   const modules = shell.tenant?.modules;
   const installed = useCallback(

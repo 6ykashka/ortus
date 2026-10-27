@@ -712,3 +712,108 @@
   color: var(--ox-text-muted);
   font-size: 13px;
 }
+
+/* W5.33 · Блок «Касса · остаток и лимиты» редактора роли (Ортус CRM.dc.html :373–379): рамка #dce2d9, фон #f8f9f6,
+   флажки 18 px с кодом права, поля лимитов 40 px в сетке по 170 px. */
+.ox-role-cash {
+  margin: 0;
+  min-width: 0;
+  padding: 14px;
+  border: 1px solid #dce2d9;
+  border-radius: 10px;
+  background: #f8f9f6;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.ox-role-cash-head {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.ox-role-cash-head .material-symbols-rounded {
+  color: var(--ox-accent);
+}
+
+.ox-role-cash-head strong {
+  font-weight: 600;
+}
+
+.ox-role-cash-note {
+  font-size: 13px;
+  color: #5c6964;
+  text-wrap: pretty;
+}
+
+.ox-role-cash-limits + .ox-role-cash-note,
+.ox-role-cash-note[data-muted] {
+  font-size: 12px;
+}
+
+.ox-role-cash-flag {
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+  cursor: pointer;
+}
+
+.ox-role-cash-flag input {
+  accent-color: var(--ox-accent);
+  width: 18px;
+  height: 18px;
+  margin: 2px 0 0;
+}
+
+.ox-role-cash-flag-text {
+  display: flex;
+  flex-direction: column;
+}
+
+.ox-role-cash-flag-text code {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 12px;
+  color: #5c6964;
+}
+
+.ox-role-cash-limits {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+  gap: 8px;
+}
+
+.ox-role-cash-limit {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-size: 12px;
+  font-weight: 500;
+  color: #3a4844;
+}
+
+.ox-role-cash-limit input {
+  width: 100%;
+  min-height: 40px;
+  padding: 6px 10px;
+  border: 1px solid #cdd5cb;
+  border-radius: 8px;
+  background: #ffffff;
+  font-size: 15px;
+}
+
+.ox-role-cash-limit input:disabled {
+  background: #f1f3ef;
+  cursor: not-allowed;
+}
+
+@media (max-width: 639px) {
+  .ox-role-cash-flag {
+    min-height: 44px;
+    align-items: center;
+  }
+
+  .ox-role-cash-limit input {
+    min-height: 44px;
+  }
+}

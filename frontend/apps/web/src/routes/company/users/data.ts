@@ -90,6 +90,24 @@ export function useAccessData(tenantId: string) {
     },
     retry: false,
   });
+  // Кассы и счета для области «Касса» назначений (W5.33): нет права на кассы (403) или сбой дают подпись «Касса» без
+  // названия и выбор без касс, а не ошибку страницы.
+  const cashAccounts = useQuery({
+    queryKey: [...key, 'cashAccounts'],
+    queryFn: async () => {
+      try {
+        return await fetchAll(async (query) =>
+          unwrap(
+            await api.GET('/api/v1/tenants/{tenantId}/cash/accounts', { params: { path, query } }),
+          ),
+        );
+      } catch (e) {
+        if (isForbidden(e)) return [];
+        throw e;
+      }
+    },
+    retry: false,
+  });
   const owners = useQuery({
     queryKey: [...key, 'owners'],
     queryFn: async () =>
@@ -101,7 +119,17 @@ export function useAccessData(tenantId: string) {
     queryFn: async () =>
       unwrap(await api.GET('/api/v1/tenants/{tenantId}/subscription', { params: { path } })),
   });
-  return { members, roles, assignments, groups, units, projects, owners, subscription };
+  return {
+    members,
+    roles,
+    assignments,
+    groups,
+    units,
+    projects,
+    cashAccounts,
+    owners,
+    subscription,
+  };
 }
 
 export type AccessData = ReturnType<typeof useAccessData>;

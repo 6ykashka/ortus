@@ -17,12 +17,23 @@ export type OrgUnit = S['OrgUnit'];
 export type Group = S['Group'];
 export type Scope = S['Scope'];
 
+/** Касса или счёт для области «Касса» (CashAccount: id, название, вид). */
+export interface CashDesk {
+  id: string;
+  name: string;
+  kind: S['CashAccount']['kind'];
+}
+
 export interface Units {
   /** Регионы верхнего уровня в порядке API. */
   regions: OrgUnit[];
   byId: ReadonlyMap<string, OrgUnit>;
   /** Имена проектов задач по id (listTaskProjects, W4.10): область «проект» назначения. Пусто — нет права на проекты. */
   projects: ReadonlyMap<string, string>;
+  /** Названия касс и счетов по id (listCashAccounts, W5.33): область «Касса» назначения. Пусто — нет права на кассы. */
+  accounts: ReadonlyMap<string, string>;
+  /** Кассы и счета для выбора области «Касса» (кроме подотчётов, modalVM :4004) в порядке API. */
+  desks: readonly CashDesk[];
   /** Фирмы региона в порядке API (models.js firmsOf). */
   firmsOf: (regionId: string) => OrgUnit[];
   /**
@@ -37,6 +48,7 @@ export function unitsOf(
   units: readonly OrgUnit[],
   home: readonly string[] = [],
   projects: ReadonlyMap<string, string> = new Map(),
+  cash: readonly CashDesk[] = [],
 ): Units {
   const live = units.filter((u) => u.status === 'active');
   const byId = new Map(live.map((u) => [u.id, u]));
@@ -48,6 +60,8 @@ export function unitsOf(
     regions,
     byId,
     projects,
+    accounts: new Map(cash.map((a) => [a.id, a.name])),
+    desks: cash.filter((a) => a.kind !== 'advance'),
     firmsOf,
     firstFirm: () =>
       homeFirm ?? regions.flatMap((r) => firmsOf(r.id))[0] ?? live.find((u) => u.kind !== 'region'),
@@ -74,6 +88,10 @@ export function scopeLabel(scope: Scope, units: Units): string {
     }
     case 'resource_pool':
       return PEOPLE_TEXT.scope.project;
+    case 'account': {
+      const name = units.accounts.get(scope.resourceIds[0] ?? '');
+      return name ? format(PEOPLE_TEXT.scope.cashNamed, { name }) : PEOPLE_TEXT.scope.cash;
+    }
     case 'org_unit': {
       const u = units.byId.get(scope.resourceIds[0] ?? '');
       if (!u) return PEOPLE_TEXT.scope.none;
@@ -85,11 +103,14 @@ export function scopeLabel(scope: Scope, units: Units): string {
   }
 }
 
-export type AreaType = 'tenant' | 'region' | 'firm';
+export type AreaType = 'tenant' | 'region' | 'firm' | 'account';
 
 /** Область назначения из выбора диалога «Назначить роль» (:2730): подразделение — с поддеревом. */
-export function scopeOf(type: AreaType, region: string, firm: string): Scope {
+export function scopeOf(type: AreaType, region: string, firm: string, account = ''): Scope {
   if (type === 'tenant') return { kind: 'tenant', resourceIds: [], includeDescendants: true };
+  // Касса — один объект, поддерева нет (02 §6.12: «Только касса «…»: другие кассы по этой роли не видны»).
+  if (type === 'account')
+    return { kind: 'account', resourceIds: [account], includeDescendants: false };
   return {
     kind: 'org_unit',
     resourceIds: [type === 'region' ? region : firm],

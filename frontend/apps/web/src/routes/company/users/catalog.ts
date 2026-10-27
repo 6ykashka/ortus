@@ -214,6 +214,23 @@ export const TEMPLATE_LABELS: readonly string[] = [
   'Наблюдатель', 'Владелец чата', 'Модератор чата', 'Участник чата', 'Читатель чата', 'Чаты · создаёт группы',
 ];
 
+/** Ключи блока «Касса · остаток и лимиты» (Ортус CRM.dc.html :373–379, rolePermKeys M:317–318): вне уровней редактора. */
+export const CASH_BALANCE = 'cash.balance.read';
+export const CASH_SELF = 'cash.advance.self';
+const CASH_FLAGS: readonly string[] = [CASH_BALANCE, CASH_SELF];
+
+/** Модуль «Касса» включён в черновике роли (хотя бы один уровень, целиком или частично): блок кассы виден (:3202). */
+export const cashOn = (d: RoleDraft): boolean =>
+  (d.actions['cash']?.length ?? 0) > 0 || (d.partial?.['cash']?.length ?? 0) > 0;
+
+/** Права роли с флажком key (включён или снят); прочие ключи не трогаются. */
+export const withFlag = (permissions: readonly string[], key: string, on: boolean): string[] =>
+  on
+    ? permissions.includes(key)
+      ? [...permissions]
+      : [...permissions, key]
+    : permissions.filter((k) => k !== key);
+
 interface EditorModule {
   /** Ключ модуля эталона (models.js ALL_MODULES). */
   key: string;
@@ -267,7 +284,10 @@ const FINANCE: Readonly<Record<string, string>> = {
 export function roleCatalog(installed: (moduleKey: string) => boolean): RoleCatalog {
   return {
     modules: EDITOR_MODULES.map((m) => {
-      const actions = PERMISSIONS.filter((p) => p.module === m.catalog && !p.ownerOnly);
+      // Флажки блока «Касса · остаток и лимиты» — не уровни: `cash.balance.read` и `cash.advance.self`.
+      const actions = PERMISSIONS.filter(
+        (p) => p.module === m.catalog && !p.ownerOnly && !CASH_FLAGS.includes(p.key),
+      );
       const verbs = VERBS.flatMap(([level, label]) => {
         const perms = actions
           .filter((p) => p.level === level && p.sensitivity !== 'restricted')

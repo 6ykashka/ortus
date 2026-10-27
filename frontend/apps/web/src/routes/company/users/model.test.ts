@@ -134,6 +134,41 @@ describe('подразделения и подписи областей', () => 
     expect(scopeOf('firm', 'r-msk', 'f-sever').resourceIds).toEqual(['f-sever']);
   });
 
+  // W5.33 (02 §6.12, models.js scopeLabel :273): область «Касса» — «Касса «{название}»»; в выборе диалога — кассы
+  // и счета, кроме подотчётов (modalVM :4004: `kind !== 'advance'`).
+  describe('область «Касса»', () => {
+    const cash = [
+      { id: 'c1', name: 'Касса салона · ресепшен', kind: 'cash_drawer' as const },
+      { id: 'c2', name: 'Подотчёт · Илья Васильев', kind: 'advance' as const },
+      { id: 'c3', name: 'Терминал и СБП · салон', kind: 'acquiring' as const },
+    ];
+    const withCash = unitsOf(UNITS, [], new Map(), cash);
+
+    it('подпись с названием кассы; неизвестная касса — «Касса»', () => {
+      expect(scopeLabel(scope('account', ['c1']), withCash)).toBe(
+        'Касса «Касса салона · ресепшен»',
+      );
+      expect(scopeLabel(scope('account', ['c2']), withCash)).toBe(
+        'Касса «Подотчёт · Илья Васильев»',
+      );
+      expect(scopeLabel(scope('account', ['zz']), withCash)).toBe('Касса');
+      expect(scopeLabel(scope('account', ['c1']), u)).toBe('Касса');
+    });
+
+    it('кассы для выбора — без подотчётов, в порядке API', () => {
+      expect(withCash.desks.map((d) => d.id)).toEqual(['c1', 'c3']);
+      expect(u.desks).toEqual([]);
+    });
+
+    it('область из выбора диалога: kind account, без поддерева', () => {
+      expect(scopeOf('account', 'r-msk', 'f-sever', 'c1')).toEqual({
+        kind: 'account',
+        resourceIds: ['c1'],
+        includeDescendants: false,
+      });
+    });
+  });
+
   it('«Действует до»: конец дня по Москве и обратно', () => {
     expect(untilInstant('2026-10-31')).toBe('2026-10-31T21:00:00Z');
     expect(untilDate('2026-10-31T21:00:00Z')).toBe('31.10.2026');

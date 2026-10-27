@@ -1,0 +1,439 @@
+/* W5.33 · «Мой подотчёт»: стили рендера «Касса.dc.html» режима isSelf (:20–36, :289–317, диалоги :345–515, PD-28).
+   Тоны чипов — литералы TONE эталона (:576); акцент — --ox-accent. Цели нажатия — не ниже 44 px (эталон: 44/48/54). */
+
+.ox-cs {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  font-size: 14px;
+  line-height: 1.4;
+  color: #1c2a26;
+}
+
+.ox-cs-head {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.ox-cs-title {
+  margin: 0;
+  font-size: 26px;
+  line-height: 1.2;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+}
+
+.ox-cs-title:focus {
+  outline: none;
+}
+
+.ox-cs-sub {
+  font-size: 13px;
+  color: #5c6964;
+  text-wrap: pretty;
+}
+
+.ox-cs-loading {
+  padding: 32px;
+  border: 1px solid #dce2d9;
+  border-radius: 12px;
+  background: #ffffff;
+  color: #5c6964;
+}
+
+.ox-cs-none {
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+  padding: 24px;
+  border: 1px dashed #c3ccc1;
+  border-radius: 12px;
+  background: #ffffff;
+  color: #3a4844;
+  text-wrap: pretty;
+}
+
+.ox-cs-none .material-symbols-rounded {
+  flex: none;
+  color: #8a968f;
+}
+
+.ox-cs-err {
+  display: flex;
+  gap: 8px;
+  align-items: flex-start;
+  padding: 10px 12px;
+  border-radius: 10px;
+  background: #fbeae7;
+  color: #a13a33;
+  font-size: 13px;
+  text-wrap: pretty;
+}
+
+.ox-cs-err .material-symbols-rounded {
+  flex: none;
+}
+
+.ox-cs-err > span:not(.material-symbols-rounded) {
+  flex: 1;
+}
+
+.ox-cs-link {
+  min-height: 44px;
+  padding: 0 8px;
+  border: 0;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  font-weight: 600;
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+/* Колонка одного подотчёта :289–316 */
+.ox-cs-col {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  max-width: 560px;
+}
+
+.ox-cs-card {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 16px;
+  border: 1px solid #dce2d9;
+  border-radius: 14px;
+  background: #ffffff;
+}
+
+.ox-cs-card-name {
+  font-size: 13px;
+  color: #5c6964;
+}
+
+.ox-cs-bal {
+  font-size: 32px;
+  font-weight: 600;
+  line-height: 1.1;
+  font-variant-numeric: tabular-nums;
+}
+
+.ox-cs-line {
+  font-size: 13px;
+  color: #3a4844;
+  text-wrap: pretty;
+}
+
+.ox-cs-bar {
+  display: block;
+  height: 6px;
+  border-radius: 3px;
+  background: #eceeea;
+  overflow: hidden;
+}
+
+.ox-cs-bar-fill {
+  display: block;
+  height: 100%;
+  background: var(--ox-accent, #1f6b52);
+}
+
+.ox-cs-chip {
+  align-self: flex-start;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px 9px 2px 7px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.ox-cs-chip[data-tone='ok'] {
+  background: #e3efe7;
+  color: #1f6b52;
+}
+
+.ox-cs-chip[data-tone='info'] {
+  background: #e7eef6;
+  color: #2b5479;
+}
+
+.ox-cs-chip[data-tone='warn'] {
+  background: #faf1dc;
+  color: #7a5214;
+}
+
+.ox-cs-chip[data-tone='danger'] {
+  background: #fbeae7;
+  color: #a13a33;
+}
+
+.ox-cs-move {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  padding: 12px 14px;
+  border: 1px solid #c9d8e8;
+  border-radius: 12px;
+  background: #f3f7fb;
+  color: #2b5479;
+  font-size: 13.5px;
+}
+
+.ox-cs-move .material-symbols-rounded {
+  flex: none;
+}
+
+.ox-cs-move-text {
+  flex: 1 1 200px;
+  text-wrap: pretty;
+}
+
+.ox-cs-move-btn {
+  min-height: 44px;
+  padding: 0 14px;
+  border: 0;
+  border-radius: 10px;
+  background: #2b5479;
+  color: #ffffff;
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.ox-cs-add {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 54px;
+  border: 0;
+  border-radius: 12px;
+  background: var(--ox-accent, #1f6b52);
+  color: #ffffff;
+  font: inherit;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.ox-cs-receipts {
+  display: flex;
+  flex-direction: column;
+  border: 1px solid #dce2d9;
+  border-radius: 12px;
+  background: #ffffff;
+  overflow: hidden;
+}
+
+.ox-cs-receipts-title {
+  margin: 0;
+  padding: 12px 14px 6px;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.ox-cs-receipt {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 2px 10px;
+  align-items: center;
+  padding: 9px 14px;
+  border-top: 1px solid #f1f3ef;
+}
+
+.ox-cs-receipt-main {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.ox-cs-receipt-title {
+  font-size: 13.5px;
+}
+
+.ox-cs-receipt-st {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 12px;
+}
+
+.ox-cs-receipt-st[data-tone='info'] {
+  color: #2b5479;
+}
+
+.ox-cs-receipt-st[data-tone='ok'] {
+  color: #1f6b52;
+}
+
+.ox-cs-receipt-st[data-tone='danger'] {
+  color: #a13a33;
+}
+
+.ox-cs-receipt-status {
+  text-wrap: pretty;
+}
+
+.ox-cs-receipt-sum {
+  font-size: 13.5px;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.ox-cs-redo {
+  min-height: 44px;
+  padding: 0 12px;
+  border: 1px solid #a13a33;
+  border-radius: 10px;
+  background: #ffffff;
+  color: #a13a33;
+  font: inherit;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.ox-cs-empty {
+  padding: 12px 14px;
+  border-top: 1px solid #f1f3ef;
+  font-size: 13px;
+  color: #5c6964;
+}
+
+.ox-cs-return {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 48px;
+  border: 1px solid #cdd5cb;
+  border-radius: 12px;
+  background: #ffffff;
+  color: #1c2a26;
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+/* Диалоги :345–515 */
+.ox-cs-dlg {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.ox-cs-dlg-sub {
+  font-size: 12.5px;
+  color: #5c6964;
+}
+
+.ox-cs-tiles {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.ox-cs-tile {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  min-height: 96px;
+  padding: 8px;
+  border: 1.5px dashed #9fb3a8;
+  border-radius: 12px;
+  background: #fafbf9;
+  color: #3a4844;
+  font: inherit;
+  font-weight: 600;
+  text-align: center;
+  cursor: pointer;
+}
+
+.ox-cs-tile[data-on] {
+  border-color: #1f6b52;
+  background: #f1f7f3;
+  color: #1f6b52;
+}
+
+.ox-cs-pair {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.ox-cs-field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 0;
+  font-size: 13px;
+  font-weight: 500;
+  color: #3a4844;
+}
+
+.ox-cs-field input,
+.ox-cs-field select {
+  width: 100%;
+  min-height: 48px;
+  padding: 8px 12px;
+  border: 1px solid #cdd5cb;
+  border-radius: 8px;
+  background: #ffffff;
+  font: inherit;
+  font-size: 16px;
+  color: #1c2a26;
+}
+
+.ox-cs-field input[data-invalid] {
+  border-color: #a13a33;
+}
+
+.ox-cs-hint {
+  font-size: 12.5px;
+  color: #5c6964;
+  text-wrap: pretty;
+}
+
+.ox-cs-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 44px;
+  padding: 0 16px;
+  border: 1px solid #cdd5cb;
+  border-radius: 8px;
+  background: #ffffff;
+  color: #1c2a26;
+  font: inherit;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.ox-cs-btn[data-primary] {
+  border: 0;
+  background: var(--ox-accent, #1f6b52);
+  color: #ffffff;
+  font-weight: 600;
+}
+
+.ox-cs-btn:disabled {
+  opacity: 0.6;
+  cursor: default;
+}
+
+@media (max-width: 480px) {
+  .ox-cs-pair {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}

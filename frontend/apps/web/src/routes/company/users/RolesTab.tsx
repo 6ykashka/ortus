@@ -14,7 +14,17 @@ import { type ReactElement, useEffect, useId, useRef } from 'react';
 import { useApi } from '../../../app/api.tsx';
 import { useBusy, useRun } from '../../../shell/run.tsx';
 import { useToast } from '../../../shell/toast.tsx';
-import { roleCatalog, summaryKeys, toDraft, toPermissions } from './catalog.ts';
+import {
+  CASH_BALANCE,
+  CASH_SELF,
+  cashOn,
+  roleCatalog,
+  summaryKeys,
+  toDraft,
+  toPermissions,
+  withFlag,
+} from './catalog.ts';
+import { CashBlock } from './CashBlock.tsx';
 import { type AccessData, etagOf, idem, noRight, type Refresh } from './data.ts';
 import { grantsOf, isDriver, isDriverRole, type Role, roleKind, roleMeta } from './model.ts';
 import { FACT_COLOR, Facts, Hidden, type Tone } from './parts.tsx';
@@ -126,12 +136,19 @@ export function RolesTab({
   const heldByDriver = holders.some(isDriver);
   const earnings = current.builtIn || current.permissions.includes('fleet.earnings.read');
 
-  const change = (next: RoleDraft) =>
-    setDraft({
-      roleId: saved.id,
-      name: next.name,
-      permissions: toPermissions(current.permissions, editorRole, next, catalog),
-    });
+  const cashNow = cashOn(editorRole);
+  const change = (next: RoleDraft) => {
+    let permissions = toPermissions(current.permissions, editorRole, next, catalog);
+    // Модуль «Касса» выключен — флажки блока уходят с ним; роли с функцией «Водитель» при включении — «Только свой
+    // подотчёт» (saveRole эталона, A:439). Только при переключении модуля: правка названия права не трогает.
+    const cashNext = cashOn(next);
+    if (cashNow && !cashNext) {
+      permissions = withFlag(withFlag(permissions, CASH_BALANCE, false), CASH_SELF, false);
+    } else if (!cashNow && cashNext && driverRole) {
+      permissions = withFlag(permissions, CASH_SELF, true);
+    }
+    setDraft({ roleId: saved.id, name: next.name, permissions });
+  };
 
   const save = async () => {
     if (!mine) return;
@@ -228,6 +245,16 @@ export function RolesTab({
                   : {})}
               onChange={change}
             />
+            {!saved.builtIn && cashNow ? (
+              <CashBlock
+                permissions={current.permissions}
+                driver={driverRole}
+                readOnly={!canManage}
+                onChange={(permissions) =>
+                  setDraft({ roleId: saved.id, name: current.name, permissions })
+                }
+              />
+            ) : null}
             {saved.builtIn || !canManage ? null : (
               <div className="ox-role-foot">
                 {dirty ? <span className="ox-role-dirty">{E.dirty}</span> : null}

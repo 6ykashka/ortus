@@ -70,11 +70,16 @@ export function AssignRoleDialog({
   const [type, setType] = useState<AreaType>('firm');
   const [region, setRegion] = useState(firm?.parentId ?? units.regions[0]?.id ?? '');
   const [firmId, setFirmId] = useState(firm?.id ?? '');
+  const [account, setAccount] = useState(units.desks[0]?.id ?? '');
   const [until, setUntil] = useState('');
   const [err, setErr] = useState<string | null>(null);
 
   const role = roles.find((r) => r.id === roleId);
-  const scope = scopeOf(type, region, firmId);
+  // Область «Касса» — только роли с модулем «Касса» (:4003); при смене роли на другую область возвращается к фирме.
+  const hasCash = !!role && !role.builtIn && role.permissions.some((k) => k.startsWith('cash.'));
+  const area: AreaType = type === 'account' && !hasCash ? 'firm' : type;
+  const deskId = units.desks.some((d) => d.id === account) ? account : (units.desks[0]?.id ?? '');
+  const scope = scopeOf(area, region, firmId, deskId);
   const existing = grantsOf(memberId, data.assignments.data ?? [], data.groups.data ?? [], roles);
   if (!member) return null;
 
@@ -92,16 +97,18 @@ export function AssignRoleDialog({
       color: FACT_COLOR.info,
       text: mods.length ? format(D.industry, { modules: mods.join(', ') }) : D.coreOnly,
     });
-    const unit = units.byId.get(type === 'region' ? region : firmId);
+    const unit = units.byId.get(area === 'region' ? region : firmId);
     facts.push({
       icon: 'location_on',
       color: FACT_COLOR.info,
       text:
-        type === 'tenant'
+        area === 'tenant'
           ? D.scopeTenant
-          : type === 'region'
-            ? format(D.scopeRegion, { region: unit?.name ?? '—' })
-            : format(D.scopeFirm, { firm: unit ? unitLabel(unit, units) : '—' }),
+          : area === 'account'
+            ? format(PEOPLE_TEXT.assignCash.fact, { name: units.accounts.get(deskId) ?? '—' })
+            : area === 'region'
+              ? format(D.scopeRegion, { region: unit?.name ?? '—' })
+              : format(D.scopeFirm, { firm: unit ? unitLabel(unit, units) : '—' }),
     });
     const earnings = role.builtIn || role.permissions.includes('fleet.earnings.read');
     if (isDriver(member) && earnings) {
@@ -176,6 +183,7 @@ export function AssignRoleDialog({
     ['tenant', D.types.tenant],
     ['region', D.types.region],
     ['firm', D.types.firm],
+    ...(hasCash ? ([['account', PEOPLE_TEXT.assignCash.type]] as [AreaType, string][]) : []),
   ];
   const summary = format(D.summary, {
     role: role ? role.name : D.noRole,
@@ -243,14 +251,14 @@ export function AssignRoleDialog({
           <legend>{D.scope}</legend>
           <div>
             {types.map(([k, label]) => (
-              <button key={k} type="button" aria-pressed={type === k} onClick={() => pick(k)}>
+              <button key={k} type="button" aria-pressed={area === k} onClick={() => pick(k)}>
                 {label}
               </button>
             ))}
           </div>
         </fieldset>
         <div className="ox-dlg-row">
-          {type !== 'tenant' ? (
+          {area !== 'tenant' && area !== 'account' ? (
             <label className="ox-dlg-field" data-grow="170">
               {D.types.region}
               <select
@@ -268,7 +276,22 @@ export function AssignRoleDialog({
               </select>
             </label>
           ) : null}
-          {type === 'firm' ? (
+          {area === 'account' ? (
+            <label className="ox-dlg-field" data-grow="170">
+              {PEOPLE_TEXT.assignCash.field}
+              <select value={deskId} onChange={(e) => setAccount(e.target.value)}>
+                {units.desks.length ? null : (
+                  <option value="">{PEOPLE_TEXT.assignCash.none}</option>
+                )}
+                {units.desks.map((d) => (
+                  <option key={d.id} value={d.id}>
+                    {d.name}
+                  </option>
+                ))}
+              </select>
+            </label>
+          ) : null}
+          {area === 'firm' ? (
             <label className="ox-dlg-field" data-grow="170">
               {D.types.firm}
               <select value={firmId} onChange={(e) => setFirmId(e.target.value)}>
