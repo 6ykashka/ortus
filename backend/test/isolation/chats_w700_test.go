@@ -19,8 +19,23 @@ var chatsW700Matrix = matrix.File{
 			Method:  "GET",
 			Path:    "/api/v1/tenants/{tenantId}/chats",
 			Channel: "http",
-			Pending: "W7.11",
 			Rows: []matrix.Row{
+				{
+					Actor:   "a.owner",
+					Params:  map[string]string{"tenantId": "tenant:a"},
+					Status:  200,
+					Present: []string{"chat:a.trip"},
+					Absent:  []string{"chat:b.trip"},
+					Note:    "владелец бизнеса видит чаты своей организации и только их",
+				},
+				{
+					Actor:   "b.owner",
+					Params:  map[string]string{"tenantId": "tenant:b"},
+					Status:  200,
+					Present: []string{"chat:b.trip"},
+					Absent:  []string{"chat:a.trip"},
+					Note:    "чаты организации B — только свои",
+				},
 				{
 					Actor:  "b.owner",
 					Params: map[string]string{"tenantId": "tenant:a"},
@@ -40,7 +55,6 @@ var chatsW700Matrix = matrix.File{
 			Method:  "POST",
 			Path:    "/api/v1/tenants/{tenantId}/chats",
 			Channel: "http",
-			Pending: "W7.11",
 			Rows: []matrix.Row{
 				{
 					Actor:  "b.owner",
@@ -63,7 +77,6 @@ var chatsW700Matrix = matrix.File{
 			Method:  "POST",
 			Path:    "/api/v1/tenants/{tenantId}/chats/direct",
 			Channel: "http",
-			Pending: "W7.11",
 			Rows: []matrix.Row{
 				{
 					Actor:  "b.owner",
@@ -86,8 +99,28 @@ var chatsW700Matrix = matrix.File{
 			Method:  "GET",
 			Path:    "/api/v1/tenants/{tenantId}/chats/{chatId}",
 			Channel: "http",
-			Pending: "W7.11",
 			Rows: []matrix.Row{
+				{
+					Actor:  "a.owner",
+					Params: map[string]string{"chatId": "chat:a.trip", "tenantId": "tenant:a"},
+					Status: 200,
+					Absent: []string{"chat:b.trip"},
+					Note:   "владелец бизнеса видит чат своей организации и только его",
+				},
+				{
+					Actor:  "a.owner",
+					Params: map[string]string{"chatId": "chat:b.trip", "tenantId": "tenant:a"},
+					Status: 404,
+					Absent: []string{"chat:b.trip"},
+					Note:   "чат чужой организации по его id — как несуществующий",
+				},
+				{
+					Actor:  "b.owner",
+					Params: map[string]string{"chatId": "chat:a.trip", "tenantId": "tenant:b"},
+					Status: 404,
+					Absent: []string{"chat:a.trip"},
+					Note:   "чат организации A из организации B",
+				},
 				{
 					Actor:  "b.owner",
 					Params: map[string]string{"chatId": "tenant:missing", "tenantId": "tenant:a"},
@@ -107,7 +140,6 @@ var chatsW700Matrix = matrix.File{
 			Method:  "PATCH",
 			Path:    "/api/v1/tenants/{tenantId}/chats/{chatId}",
 			Channel: "http",
-			Pending: "W7.11",
 			Rows: []matrix.Row{
 				{
 					Actor:  "b.owner",
@@ -130,8 +162,23 @@ var chatsW700Matrix = matrix.File{
 			Method:  "POST",
 			Path:    "/api/v1/tenants/{tenantId}/chats/{chatId}/archive",
 			Channel: "http",
-			Pending: "W7.11",
 			Rows: []matrix.Row{
+				{
+					Actor:  "a.owner",
+					Params: map[string]string{"chatId": "chat:b.trip", "tenantId": "tenant:a"},
+					Status: 404,
+					Absent: []string{"chat:b.trip"},
+					Body:   "{}",
+					Note:   "чат чужой организации по его id — как несуществующий",
+				},
+				{
+					Actor:  "b.owner",
+					Params: map[string]string{"chatId": "chat:a.trip", "tenantId": "tenant:b"},
+					Status: 404,
+					Absent: []string{"chat:a.trip"},
+					Body:   "{}",
+					Note:   "чат организации A из организации B",
+				},
 				{
 					Actor:  "b.owner",
 					Params: map[string]string{"chatId": "tenant:missing", "tenantId": "tenant:a"},
@@ -153,8 +200,28 @@ var chatsW700Matrix = matrix.File{
 			Method:  "GET",
 			Path:    "/api/v1/tenants/{tenantId}/chats/{chatId}/messages",
 			Channel: "http",
-			Pending: "W7.11",
 			Rows: []matrix.Row{
+				{
+					Actor:  "a.owner",
+					Params: map[string]string{"chatId": "chat:a.trip", "tenantId": "tenant:a"},
+					Status: 200,
+					Absent: []string{"chat:b.trip"},
+					Note:   "владелец бизнеса видит чат своей организации и только его",
+				},
+				{
+					Actor:  "a.owner",
+					Params: map[string]string{"chatId": "chat:b.trip", "tenantId": "tenant:a"},
+					Status: 404,
+					Absent: []string{"chat:b.trip"},
+					Note:   "чат чужой организации по его id — как несуществующий",
+				},
+				{
+					Actor:  "b.owner",
+					Params: map[string]string{"chatId": "chat:a.trip", "tenantId": "tenant:b"},
+					Status: 404,
+					Absent: []string{"chat:a.trip"},
+					Note:   "чат организации A из организации B",
+				},
 				{
 					Actor:  "b.owner",
 					Params: map[string]string{"chatId": "tenant:missing", "tenantId": "tenant:a"},
@@ -174,8 +241,31 @@ var chatsW700Matrix = matrix.File{
 			Method:  "POST",
 			Path:    "/api/v1/tenants/{tenantId}/chats/{chatId}/messages",
 			Channel: "http",
-			Pending: "W7.11",
 			Rows: []matrix.Row{
+				{
+					Actor:  "a.owner",
+					Params: map[string]string{"chatId": "chat:a.trip", "tenantId": "tenant:a"},
+					Status: 201,
+					Absent: []string{"chat:b.trip"},
+					Body:   "{\"text\": \"Проверка изоляции\"}",
+					Note:   "владелец бизнеса видит чат своей организации и только его",
+				},
+				{
+					Actor:  "a.owner",
+					Params: map[string]string{"chatId": "chat:b.trip", "tenantId": "tenant:a"},
+					Status: 404,
+					Absent: []string{"chat:b.trip"},
+					Body:   "{\"text\": \"Проверка изоляции\"}",
+					Note:   "чат чужой организации по его id — как несуществующий",
+				},
+				{
+					Actor:  "b.owner",
+					Params: map[string]string{"chatId": "chat:a.trip", "tenantId": "tenant:b"},
+					Status: 404,
+					Absent: []string{"chat:a.trip"},
+					Body:   "{\"text\": \"Проверка изоляции\"}",
+					Note:   "чат организации A из организации B",
+				},
 				{
 					Actor:  "b.owner",
 					Params: map[string]string{"chatId": "tenant:missing", "tenantId": "tenant:a"},
@@ -197,7 +287,6 @@ var chatsW700Matrix = matrix.File{
 			Method:  "DELETE",
 			Path:    "/api/v1/tenants/{tenantId}/chats/{chatId}/messages/{messageId}",
 			Channel: "http",
-			Pending: "W7.11",
 			Rows: []matrix.Row{
 				{
 					Actor:  "b.owner",
@@ -218,7 +307,6 @@ var chatsW700Matrix = matrix.File{
 			Method:  "PATCH",
 			Path:    "/api/v1/tenants/{tenantId}/chats/{chatId}/messages/{messageId}",
 			Channel: "http",
-			Pending: "W7.11",
 			Rows: []matrix.Row{
 				{
 					Actor:  "b.owner",
@@ -241,7 +329,6 @@ var chatsW700Matrix = matrix.File{
 			Method:  "GET",
 			Path:    "/api/v1/tenants/{tenantId}/chats/{chatId}/messages/{messageId}/versions",
 			Channel: "http",
-			Pending: "W7.11",
 			Rows: []matrix.Row{
 				{
 					Actor:  "b.owner",
@@ -262,7 +349,6 @@ var chatsW700Matrix = matrix.File{
 			Method:  "POST",
 			Path:    "/api/v1/tenants/{tenantId}/chats/{chatId}/read",
 			Channel: "http",
-			Pending: "W7.11",
 			Rows: []matrix.Row{
 				{
 					Actor:  "b.owner",
@@ -285,7 +371,6 @@ var chatsW700Matrix = matrix.File{
 			Method:  "POST",
 			Path:    "/api/v1/tenants/{tenantId}/chats/{chatId}/messages/{messageId}/ack",
 			Channel: "http",
-			Pending: "W7.11",
 			Rows: []matrix.Row{
 				{
 					Actor:  "b.owner",
@@ -308,7 +393,6 @@ var chatsW700Matrix = matrix.File{
 			Method:  "GET",
 			Path:    "/api/v1/tenants/{tenantId}/chats/{chatId}/messages/{messageId}/receipts",
 			Channel: "http",
-			Pending: "W7.11",
 			Rows: []matrix.Row{
 				{
 					Actor:  "b.owner",
@@ -329,7 +413,6 @@ var chatsW700Matrix = matrix.File{
 			Method:  "POST",
 			Path:    "/api/v1/tenants/{tenantId}/chats/{chatId}/messages/{messageId}/pdn-reveal",
 			Channel: "http",
-			Pending: "W7.11",
 			Rows: []matrix.Row{
 				{
 					Actor:  "b.owner",
@@ -352,7 +435,6 @@ var chatsW700Matrix = matrix.File{
 			Method:  "PUT",
 			Path:    "/api/v1/tenants/{tenantId}/chats/{chatId}/polls/{pollId}/vote",
 			Channel: "http",
-			Pending: "W7.11",
 			Rows: []matrix.Row{
 				{
 					Actor:  "b.owner",
@@ -375,7 +457,6 @@ var chatsW700Matrix = matrix.File{
 			Method:  "POST",
 			Path:    "/api/v1/tenants/{tenantId}/chats/{chatId}/polls/{pollId}/close",
 			Channel: "http",
-			Pending: "W7.11",
 			Rows: []matrix.Row{
 				{
 					Actor:  "b.owner",
@@ -398,7 +479,6 @@ var chatsW700Matrix = matrix.File{
 			Method:  "POST",
 			Path:    "/api/v1/tenants/{tenantId}/chats/{chatId}/polls/{pollId}/remind",
 			Channel: "http",
-			Pending: "W7.11",
 			Rows: []matrix.Row{
 				{
 					Actor:  "b.owner",
@@ -421,7 +501,6 @@ var chatsW700Matrix = matrix.File{
 			Method:  "PUT",
 			Path:    "/api/v1/tenants/{tenantId}/chats/{chatId}/pin",
 			Channel: "http",
-			Pending: "W7.11",
 			Rows: []matrix.Row{
 				{
 					Actor:  "b.owner",
@@ -444,7 +523,6 @@ var chatsW700Matrix = matrix.File{
 			Method:  "DELETE",
 			Path:    "/api/v1/tenants/{tenantId}/chats/{chatId}/pin",
 			Channel: "http",
-			Pending: "W7.11",
 			Rows: []matrix.Row{
 				{
 					Actor:  "b.owner",
@@ -465,7 +543,6 @@ var chatsW700Matrix = matrix.File{
 			Method:  "POST",
 			Path:    "/api/v1/tenants/{tenantId}/chats/{chatId}/attachments/{attachmentId}/view-once",
 			Channel: "http",
-			Pending: "W7.11",
 			Rows: []matrix.Row{
 				{
 					Actor:  "b.owner",
@@ -488,7 +565,6 @@ var chatsW700Matrix = matrix.File{
 			Method:  "POST",
 			Path:    "/api/v1/tenants/{tenantId}/chats/{chatId}/messages/{messageId}/save-to-record",
 			Channel: "http",
-			Pending: "W7.11",
 			Rows: []matrix.Row{
 				{
 					Actor:  "b.owner",
@@ -511,7 +587,6 @@ var chatsW700Matrix = matrix.File{
 			Method:  "POST",
 			Path:    "/api/v1/tenants/{tenantId}/chats/{chatId}/messages/{messageId}/task",
 			Channel: "http",
-			Pending: "W7.11",
 			Rows: []matrix.Row{
 				{
 					Actor:  "b.owner",
@@ -534,8 +609,28 @@ var chatsW700Matrix = matrix.File{
 			Method:  "GET",
 			Path:    "/api/v1/tenants/{tenantId}/chats/{chatId}/members",
 			Channel: "http",
-			Pending: "W7.11",
 			Rows: []matrix.Row{
+				{
+					Actor:  "a.owner",
+					Params: map[string]string{"chatId": "chat:a.trip", "tenantId": "tenant:a"},
+					Status: 200,
+					Absent: []string{"chat:b.trip"},
+					Note:   "владелец бизнеса видит чат своей организации и только его",
+				},
+				{
+					Actor:  "a.owner",
+					Params: map[string]string{"chatId": "chat:b.trip", "tenantId": "tenant:a"},
+					Status: 404,
+					Absent: []string{"chat:b.trip"},
+					Note:   "чат чужой организации по его id — как несуществующий",
+				},
+				{
+					Actor:  "b.owner",
+					Params: map[string]string{"chatId": "chat:a.trip", "tenantId": "tenant:b"},
+					Status: 404,
+					Absent: []string{"chat:a.trip"},
+					Note:   "чат организации A из организации B",
+				},
 				{
 					Actor:  "b.owner",
 					Params: map[string]string{"chatId": "tenant:missing", "tenantId": "tenant:a"},
@@ -555,8 +650,28 @@ var chatsW700Matrix = matrix.File{
 			Method:  "GET",
 			Path:    "/api/v1/tenants/{tenantId}/chats/{chatId}/sources",
 			Channel: "http",
-			Pending: "W7.11",
 			Rows: []matrix.Row{
+				{
+					Actor:  "a.owner",
+					Params: map[string]string{"chatId": "chat:a.trip", "tenantId": "tenant:a"},
+					Status: 200,
+					Absent: []string{"chat:b.trip"},
+					Note:   "владелец бизнеса видит чат своей организации и только его",
+				},
+				{
+					Actor:  "a.owner",
+					Params: map[string]string{"chatId": "chat:b.trip", "tenantId": "tenant:a"},
+					Status: 404,
+					Absent: []string{"chat:b.trip"},
+					Note:   "чат чужой организации по его id — как несуществующий",
+				},
+				{
+					Actor:  "b.owner",
+					Params: map[string]string{"chatId": "chat:a.trip", "tenantId": "tenant:b"},
+					Status: 404,
+					Absent: []string{"chat:a.trip"},
+					Note:   "чат организации A из организации B",
+				},
 				{
 					Actor:  "b.owner",
 					Params: map[string]string{"chatId": "tenant:missing", "tenantId": "tenant:a"},
@@ -576,7 +691,6 @@ var chatsW700Matrix = matrix.File{
 			Method:  "PUT",
 			Path:    "/api/v1/tenants/{tenantId}/chats/{chatId}/sources",
 			Channel: "http",
-			Pending: "W7.11",
 			Rows: []matrix.Row{
 				{
 					Actor:  "b.owner",
@@ -599,7 +713,6 @@ var chatsW700Matrix = matrix.File{
 			Method:  "GET",
 			Path:    "/api/v1/tenants/{tenantId}/chats/{chatId}/access-explanation",
 			Channel: "http",
-			Pending: "W7.11",
 			Rows: []matrix.Row{
 				{
 					Actor:  "b.owner",
@@ -620,8 +733,28 @@ var chatsW700Matrix = matrix.File{
 			Method:  "GET",
 			Path:    "/api/v1/tenants/{tenantId}/chats/{chatId}/storage",
 			Channel: "http",
-			Pending: "W7.11",
 			Rows: []matrix.Row{
+				{
+					Actor:  "a.owner",
+					Params: map[string]string{"chatId": "chat:a.trip", "tenantId": "tenant:a"},
+					Status: 200,
+					Absent: []string{"chat:b.trip"},
+					Note:   "владелец бизнеса видит чат своей организации и только его",
+				},
+				{
+					Actor:  "a.owner",
+					Params: map[string]string{"chatId": "chat:b.trip", "tenantId": "tenant:a"},
+					Status: 404,
+					Absent: []string{"chat:b.trip"},
+					Note:   "чат чужой организации по его id — как несуществующий",
+				},
+				{
+					Actor:  "b.owner",
+					Params: map[string]string{"chatId": "chat:a.trip", "tenantId": "tenant:b"},
+					Status: 404,
+					Absent: []string{"chat:a.trip"},
+					Note:   "чат организации A из организации B",
+				},
 				{
 					Actor:  "b.owner",
 					Params: map[string]string{"chatId": "tenant:missing", "tenantId": "tenant:a"},
@@ -641,7 +774,6 @@ var chatsW700Matrix = matrix.File{
 			Method:  "POST",
 			Path:    "/api/v1/tenants/{tenantId}/chats/{chatId}/cleanups",
 			Channel: "http",
-			Pending: "W7.11",
 			Rows: []matrix.Row{
 				{
 					Actor:  "b.owner",
@@ -664,8 +796,28 @@ var chatsW700Matrix = matrix.File{
 			Method:  "GET",
 			Path:    "/api/v1/tenants/{tenantId}/chats/{chatId}/journal",
 			Channel: "http",
-			Pending: "W7.11",
 			Rows: []matrix.Row{
+				{
+					Actor:  "a.owner",
+					Params: map[string]string{"chatId": "chat:a.trip", "tenantId": "tenant:a"},
+					Status: 200,
+					Absent: []string{"chat:b.trip"},
+					Note:   "владелец бизнеса видит чат своей организации и только его",
+				},
+				{
+					Actor:  "a.owner",
+					Params: map[string]string{"chatId": "chat:b.trip", "tenantId": "tenant:a"},
+					Status: 404,
+					Absent: []string{"chat:b.trip"},
+					Note:   "чат чужой организации по его id — как несуществующий",
+				},
+				{
+					Actor:  "b.owner",
+					Params: map[string]string{"chatId": "chat:a.trip", "tenantId": "tenant:b"},
+					Status: 404,
+					Absent: []string{"chat:a.trip"},
+					Note:   "чат организации A из организации B",
+				},
 				{
 					Actor:  "b.owner",
 					Params: map[string]string{"chatId": "tenant:missing", "tenantId": "tenant:a"},
@@ -685,7 +837,6 @@ var chatsW700Matrix = matrix.File{
 			Method:  "POST",
 			Path:    "/api/v1/tenants/{tenantId}/chats/{chatId}/exports",
 			Channel: "http",
-			Pending: "W7.11",
 			Rows: []matrix.Row{
 				{
 					Actor:  "b.owner",
@@ -708,7 +859,6 @@ var chatsW700Matrix = matrix.File{
 			Method:  "GET",
 			Path:    "/api/v1/tenants/{tenantId}/chats/{chatId}/exports/{exportId}",
 			Channel: "http",
-			Pending: "W7.11",
 			Rows: []matrix.Row{
 				{
 					Actor:  "b.owner",
@@ -729,7 +879,6 @@ var chatsW700Matrix = matrix.File{
 			Method:  "GET",
 			Path:    "/api/v1/tenants/{tenantId}/chat-policies",
 			Channel: "http",
-			Pending: "W7.11",
 			Rows: []matrix.Row{
 				{
 					Actor:  "b.owner",
@@ -750,7 +899,6 @@ var chatsW700Matrix = matrix.File{
 			Method:  "PUT",
 			Path:    "/api/v1/tenants/{tenantId}/chat-policies/{kind}",
 			Channel: "http",
-			Pending: "W7.11",
 			Rows: []matrix.Row{
 				{
 					Actor:  "b.owner",
@@ -773,7 +921,6 @@ var chatsW700Matrix = matrix.File{
 			Method:  "GET",
 			Path:    "/api/v1/tenants/{tenantId}/chat-holds",
 			Channel: "http",
-			Pending: "W7.11",
 			Rows: []matrix.Row{
 				{
 					Actor:  "b.owner",
@@ -794,7 +941,6 @@ var chatsW700Matrix = matrix.File{
 			Method:  "POST",
 			Path:    "/api/v1/tenants/{tenantId}/chat-holds",
 			Channel: "http",
-			Pending: "W7.11",
 			Rows: []matrix.Row{
 				{
 					Actor:  "b.owner",
@@ -817,7 +963,6 @@ var chatsW700Matrix = matrix.File{
 			Method:  "DELETE",
 			Path:    "/api/v1/tenants/{tenantId}/chat-holds/{holdId}",
 			Channel: "http",
-			Pending: "W7.11",
 			Rows: []matrix.Row{
 				{
 					Actor:  "b.owner",

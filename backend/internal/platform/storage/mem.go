@@ -46,6 +46,12 @@ func (m *Mem) Put(key, contentType string, data []byte) {
 	m.objects[key] = memObject{contentType: contentType, data: slices.Clone(data)}
 }
 
+// Upload implements Uploader.
+func (m *Mem) Upload(_ context.Context, key, contentType string, data []byte) error {
+	m.Put(key, contentType, data)
+	return nil
+}
+
 // Keys returns the stored keys, sorted.
 func (m *Mem) Keys() []string {
 	m.mu.Lock()

@@ -232,6 +232,13 @@ func build(ctx context.Context, cfg config, log *slog.Logger, getenv func(string
 		control.Close()
 		return deps{}, nil, err
 	}
+	chatsSrv, chatSvc, err := newChats(pools, control, ev, getenv, cfg.AppEnv, log, cfg.clock()) // W7.11: «Чаты» (chats.go)
+	if err != nil {
+		pools.Close()
+		_ = controlSQL.Close()
+		control.Close()
+		return deps{}, nil, err
+	}
 	// W1.05; W1.03 and W1.06 embed theirs (access.go); W1.41: inviteMember sends the letter with the link.
 	access := newAccessServer(pools, ev, control, cfg.clock())
 	access.assignmentsHandler = access.WithInvitationMail( // assignments.Handler (embedded)
@@ -284,6 +291,7 @@ func build(ctx context.Context, cfg config, log *slog.Logger, getenv func(string
 			Spa:         newSpa(pools, ev, cfg.clock()),                                     // W5.20: «Салон и SPA» (spa.go)
 			Docs:        docsW.docs,                                                         // W7.23: «Документы» (docs.go)
 			PublicDocs:  docsW.public,                                                       // W7.23: the callback of the document server, the link of a guest
+			Chats:       chatsSrv,                                                           // W7.11: «Чаты» (chats.go)
 		},
 		docsCallback: docsW.callback, // W7.23: the JWT of the document server instead of a session (gate.go)
 		replays:      map[string]replayFunc{"logout": auth.ReplayLogout},
@@ -297,10 +305,11 @@ func build(ctx context.Context, cfg config, log *slog.Logger, getenv func(string
 		modules:       modulesreg.Gate{S: modules},
 		platformRoles: ctl.roles, // W4.60: x-permissions of /platform/** by the role of the operator
 		brandAssets:   ctl.public,
-		background:    together(lifecycle(subs, every, log), dueRequests(ctl.billing, every, ch.tenantChanged, log), ch.listen),
+		background:    together(lifecycle(subs, every, log), dueRequests(ctl.billing, every, ch.tenantChanged, log), ch.listen, chatJobs(chatSvc, control, every, log)),
 		newcomers:     auth.Accounts, // W1.50: a first dev login creates the account as the first OIDC sign-in
 		realtime:      ch.handler(),  // W1.42: GET /api/v1/realtime
 		stopping:      ch.stop,       // W1.42: http.Server does not track the hijacked sockets
+		chats:         chatSvc,       // W7.11: the jobs by term of the chats
 	}
 	return d, func() {
 		pools.Close()

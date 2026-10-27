@@ -26,7 +26,7 @@ func TestFilesOfOtherParents(t *testing.T) { //nolint:paralleltest // adds files
 		t.Fatal(err)
 	}
 	before := &files.Service{Pools: pools, Authz: ev, Parents: full.Parents,
-		Hidden: closedParents{newPoolTrips(pools, time.Now), hiddenTasks{H: tasks.HiddenTasks{Pools: pools, Authz: ev}}}}
+		Hidden: closedParents{newPoolTrips(pools, time.Now), hiddenTasks{H: tasks.HiddenTasks{Pools: pools, Authz: ev}}, files.ChatHider{Pools: pools}}}
 	photo, attachment := otherParentFiles(t)
 	seen := map[uuid.UUID]bool{}
 	for _, tc := range altaPeople(t) {

@@ -44,11 +44,11 @@ func filesServers(pools files.Pools, ev *authz.Evaluator, getenv func(string) st
 
 // filesService is the service of the module of files with its parents and what closes them, without the object storage.
 func filesService(pools files.Pools, ev *authz.Evaluator, now func() time.Time) (*files.Service, error) {
-	parents, err := files.NewParents(append(files.FleetParents(), taskParent(), formParent())...)
+	parents, err := files.NewParents(append(append(files.FleetParents(), taskParent(), formParent()), files.ChatParents()...)...)
 	if err != nil {
 		return nil, err
 	}
 	hidden := closedParents{newPoolTrips(pools, now), hiddenTasks{H: tasks.HiddenTasks{Pools: pools, Authz: ev}},
-		formFilesAccess(pools, ev, now)}
+		formFilesAccess(pools, ev, now), files.ChatHider{Pools: pools}}
 	return &files.Service{Pools: pools, Authz: ev, Parents: parents, Hidden: hidden}, nil
 }

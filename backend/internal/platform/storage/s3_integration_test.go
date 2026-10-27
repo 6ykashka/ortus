@@ -117,6 +117,23 @@ func TestS3PresignedPutThenStatOpenCopyDelete(t *testing.T) {
 	}
 }
 
+// Upload writes an object from the server with its content type (the file of an export of a chat, W7.11).
+func TestS3Upload(t *testing.T) {
+	t.Parallel()
+	s := newS3(t, nil)
+	key := "files/export/" + t.Name()
+	body := []byte(`[{"seq":1,"text":"export"}]`)
+	if err := s.Upload(t.Context(), key, "application/json", body); err != nil {
+		t.Fatal(err)
+	}
+	if got, info := read(t, s, key); got != string(body) || info.ContentType != "application/json" || info.Size != int64(len(body)) {
+		t.Fatalf("Open: %q %+v", got, info)
+	}
+	if err := s.Upload(t.Context(), "", "text/plain", body); err == nil {
+		t.Error("Upload with an empty key: no error")
+	}
+}
+
 // The content type is part of the ticket (UploadTicket.requiredContentType): another one is refused by storage.
 func TestS3PresignedPutRequiresSignedContentType(t *testing.T) {
 	t.Parallel()

@@ -13,6 +13,17 @@ import (
 
 var _ storage.Store = (*storage.Mem)(nil)
 
+func TestMemUpload(t *testing.T) {
+	t.Parallel()
+	m := storage.NewMem()
+	if err := m.Upload(t.Context(), "files/export/a", "text/csv", []byte("seq,text\n")); err != nil {
+		t.Fatal(err)
+	}
+	if got, info := read(t, m, "files/export/a"); got != "seq,text\n" || info.ContentType != "text/csv" {
+		t.Fatalf("Open: %q %+v", got, info)
+	}
+}
+
 // missing fails unless Stat, Open and Copy of key all report ErrNotFound.
 func missing(t *testing.T, s storage.Store, key string) {
 	t.Helper()

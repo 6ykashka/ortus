@@ -11,6 +11,7 @@ import (
 
 	"github.com/ortus/ortus-crm/backend/internal/api/catalog"
 	"github.com/ortus/ortus-crm/backend/internal/control/branding"
+	"github.com/ortus/ortus-crm/backend/internal/modules/chats"
 	"github.com/ortus/ortus-crm/backend/internal/modules/forms"
 	"github.com/ortus/ortus-crm/backend/internal/platform/httpx"
 	"github.com/ortus/ortus-crm/backend/internal/platform/idem"
@@ -54,6 +55,9 @@ type deps struct {
 	stopping func(ctx context.Context)
 	// docsCallback checks the JWT of a call of the document server (W7.23, ADR-0016); nil — the operation answers 503.
 	docsCallback func(*http.Request) (context.Context, error)
+	// chats is the service of the tag Chats (W7.11): the stack tests run its jobs by term (Sweep) the way the background
+	// job of the process does; nil — not wired (unit tests).
+	chats *chats.Service
 }
 
 // replayFunc answers a repeated command whose session the first call ended; false — not a replay (401).

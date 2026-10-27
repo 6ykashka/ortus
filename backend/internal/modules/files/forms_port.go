@@ -83,7 +83,7 @@ func release(ctx context.Context, tx pgx.Tx, form uuid.UUID, gone []purged) erro
 	for _, p := range gone {
 		payload := filePayload(p.id, string(PurposeFormAttachment), formOwner, form)
 		payload["rejectedCode"] = CodeRetention
-		if _, err := events.Publish(ctx, tx, events.Event{Type: EventRejected, Aggregate: "files.file", AggregateID: p.id, Payload: payload}); err != nil {
+		if _, err := events.Publish(ctx, tx, events.Event{Type: EventRejected, Aggregate: aggregateFile, AggregateID: p.id, Payload: payload}); err != nil {
 			return fmt.Errorf("files: event of a purged file: %w", err)
 		}
 		if p.size <= 0 {

@@ -1,7 +1,7 @@
-# Матрица изоляции: тег Chats («Чаты») контрактного PR этапа 7 (W7.00, 0.12.0-stage7) — строки до хендлера (pending W7.11).
+# Матрица изоляции: тег Chats («Чаты») контрактного PR этапа 7 (W7.00, 0.12.0-stage7) — хендлер W7.11 влит, строки без pending.
 # Данные «Чаты» — данные организации (tenant 0060): чужая организация — 404, как несуществующая (AC-01, AC-02), без сессии — 401.
-# Объектные id в пути — tenant:missing (такого объекта нет ни в одной базе): строки с содержимым фикстур добавит W7.11,
-# когда появится сид. Отказы шлюза по правам — chats_w700_gate.yaml. Публичные операции без тенанта (нет)
+# Объектные id в пути — tenant:missing (такого объекта нет ни в одной базе) и чат фикстур chat:<тенант>.trip (W7.11,
+# fixtures/content_chats.go: рабочий чат без состава — его видит владелец бизнеса). Отказы шлюза по правам — chats_w700_gate.yaml. Публичные операции без тенанта (нет)
 # в матрицу не входят: у них нет организации в пути, строки добавит владелец публичного контура (W7.23b, W7.31b).
 # Формат — README.md. После правки: go -C backend generate ./test/isolation
 module: chats_w700
@@ -9,8 +9,19 @@ endpoints:
   - op: listChats
     method: GET
     path: /api/v1/tenants/{tenantId}/chats
-    pending: W7.11
     rows:
+      - actor: a.owner
+        params: { tenantId: tenant:a }
+        status: 200
+        present: [chat:a.trip]
+        absent: [chat:b.trip]
+        note: владелец бизнеса видит чаты своей организации и только их
+      - actor: b.owner
+        params: { tenantId: tenant:b }
+        status: 200
+        present: [chat:b.trip]
+        absent: [chat:a.trip]
+        note: чаты организации B — только свои
       - actor: b.owner
         params: { tenantId: tenant:a }
         status: 404
@@ -22,7 +33,6 @@ endpoints:
   - op: createChat
     method: POST
     path: /api/v1/tenants/{tenantId}/chats
-    pending: W7.11
     rows:
       - actor: b.owner
         params: { tenantId: tenant:a }
@@ -37,7 +47,6 @@ endpoints:
   - op: createDirectChat
     method: POST
     path: /api/v1/tenants/{tenantId}/chats/direct
-    pending: W7.11
     rows:
       - actor: b.owner
         params: { tenantId: tenant:a }
@@ -52,8 +61,22 @@ endpoints:
   - op: getChat
     method: GET
     path: /api/v1/tenants/{tenantId}/chats/{chatId}
-    pending: W7.11
     rows:
+      - actor: a.owner
+        params: { tenantId: tenant:a, chatId: chat:a.trip }
+        status: 200
+        absent: [chat:b.trip]
+        note: владелец бизнеса видит чат своей организации и только его
+      - actor: a.owner
+        params: { tenantId: tenant:a, chatId: chat:b.trip }
+        status: 404
+        absent: [chat:b.trip]
+        note: чат чужой организации по его id — как несуществующий
+      - actor: b.owner
+        params: { tenantId: tenant:b, chatId: chat:a.trip }
+        status: 404
+        absent: [chat:a.trip]
+        note: чат организации A из организации B
       - actor: b.owner
         params: { tenantId: tenant:a, chatId: tenant:missing }
         status: 404
@@ -65,7 +88,6 @@ endpoints:
   - op: updateChat
     method: PATCH
     path: /api/v1/tenants/{tenantId}/chats/{chatId}
-    pending: W7.11
     rows:
       - actor: b.owner
         params: { tenantId: tenant:a, chatId: tenant:missing }
@@ -80,8 +102,19 @@ endpoints:
   - op: archiveChat
     method: POST
     path: /api/v1/tenants/{tenantId}/chats/{chatId}/archive
-    pending: W7.11
     rows:
+      - actor: a.owner
+        params: { tenantId: tenant:a, chatId: chat:b.trip }
+        status: 404
+        body: "{}"
+        absent: [chat:b.trip]
+        note: чат чужой организации по его id — как несуществующий
+      - actor: b.owner
+        params: { tenantId: tenant:b, chatId: chat:a.trip }
+        status: 404
+        body: "{}"
+        absent: [chat:a.trip]
+        note: чат организации A из организации B
       - actor: b.owner
         params: { tenantId: tenant:a, chatId: tenant:missing }
         status: 404
@@ -95,8 +128,22 @@ endpoints:
   - op: listChatMessages
     method: GET
     path: /api/v1/tenants/{tenantId}/chats/{chatId}/messages
-    pending: W7.11
     rows:
+      - actor: a.owner
+        params: { tenantId: tenant:a, chatId: chat:a.trip }
+        status: 200
+        absent: [chat:b.trip]
+        note: владелец бизнеса видит чат своей организации и только его
+      - actor: a.owner
+        params: { tenantId: tenant:a, chatId: chat:b.trip }
+        status: 404
+        absent: [chat:b.trip]
+        note: чат чужой организации по его id — как несуществующий
+      - actor: b.owner
+        params: { tenantId: tenant:b, chatId: chat:a.trip }
+        status: 404
+        absent: [chat:a.trip]
+        note: чат организации A из организации B
       - actor: b.owner
         params: { tenantId: tenant:a, chatId: tenant:missing }
         status: 404
@@ -108,8 +155,25 @@ endpoints:
   - op: postChatMessage
     method: POST
     path: /api/v1/tenants/{tenantId}/chats/{chatId}/messages
-    pending: W7.11
     rows:
+      - actor: a.owner
+        params: { tenantId: tenant:a, chatId: chat:a.trip }
+        status: 201
+        body: '{"text": "Проверка изоляции"}'
+        absent: [chat:b.trip]
+        note: владелец бизнеса видит чат своей организации и только его
+      - actor: a.owner
+        params: { tenantId: tenant:a, chatId: chat:b.trip }
+        status: 404
+        body: '{"text": "Проверка изоляции"}'
+        absent: [chat:b.trip]
+        note: чат чужой организации по его id — как несуществующий
+      - actor: b.owner
+        params: { tenantId: tenant:b, chatId: chat:a.trip }
+        status: 404
+        body: '{"text": "Проверка изоляции"}'
+        absent: [chat:a.trip]
+        note: чат организации A из организации B
       - actor: b.owner
         params: { tenantId: tenant:a, chatId: tenant:missing }
         status: 404
@@ -123,7 +187,6 @@ endpoints:
   - op: deleteChatMessage
     method: DELETE
     path: /api/v1/tenants/{tenantId}/chats/{chatId}/messages/{messageId}
-    pending: W7.11
     rows:
       - actor: b.owner
         params: { tenantId: tenant:a, chatId: tenant:missing, messageId: tenant:missing }
@@ -136,7 +199,6 @@ endpoints:
   - op: editChatMessage
     method: PATCH
     path: /api/v1/tenants/{tenantId}/chats/{chatId}/messages/{messageId}
-    pending: W7.11
     rows:
       - actor: b.owner
         params: { tenantId: tenant:a, chatId: tenant:missing, messageId: tenant:missing }
@@ -151,7 +213,6 @@ endpoints:
   - op: listChatMessageVersions
     method: GET
     path: /api/v1/tenants/{tenantId}/chats/{chatId}/messages/{messageId}/versions
-    pending: W7.11
     rows:
       - actor: b.owner
         params: { tenantId: tenant:a, chatId: tenant:missing, messageId: tenant:missing }
@@ -164,7 +225,6 @@ endpoints:
   - op: markChatRead
     method: POST
     path: /api/v1/tenants/{tenantId}/chats/{chatId}/read
-    pending: W7.11
     rows:
       - actor: b.owner
         params: { tenantId: tenant:a, chatId: tenant:missing }
@@ -179,7 +239,6 @@ endpoints:
   - op: ackChatMessage
     method: POST
     path: /api/v1/tenants/{tenantId}/chats/{chatId}/messages/{messageId}/ack
-    pending: W7.11
     rows:
       - actor: b.owner
         params: { tenantId: tenant:a, chatId: tenant:missing, messageId: tenant:missing }
@@ -194,7 +253,6 @@ endpoints:
   - op: getChatMessageReceipts
     method: GET
     path: /api/v1/tenants/{tenantId}/chats/{chatId}/messages/{messageId}/receipts
-    pending: W7.11
     rows:
       - actor: b.owner
         params: { tenantId: tenant:a, chatId: tenant:missing, messageId: tenant:missing }
@@ -207,7 +265,6 @@ endpoints:
   - op: revealChatMessagePdn
     method: POST
     path: /api/v1/tenants/{tenantId}/chats/{chatId}/messages/{messageId}/pdn-reveal
-    pending: W7.11
     rows:
       - actor: b.owner
         params: { tenantId: tenant:a, chatId: tenant:missing, messageId: tenant:missing }
@@ -222,7 +279,6 @@ endpoints:
   - op: voteChatPoll
     method: PUT
     path: /api/v1/tenants/{tenantId}/chats/{chatId}/polls/{pollId}/vote
-    pending: W7.11
     rows:
       - actor: b.owner
         params: { tenantId: tenant:a, chatId: tenant:missing, pollId: tenant:missing }
@@ -237,7 +293,6 @@ endpoints:
   - op: closeChatPoll
     method: POST
     path: /api/v1/tenants/{tenantId}/chats/{chatId}/polls/{pollId}/close
-    pending: W7.11
     rows:
       - actor: b.owner
         params: { tenantId: tenant:a, chatId: tenant:missing, pollId: tenant:missing }
@@ -252,7 +307,6 @@ endpoints:
   - op: remindChatPoll
     method: POST
     path: /api/v1/tenants/{tenantId}/chats/{chatId}/polls/{pollId}/remind
-    pending: W7.11
     rows:
       - actor: b.owner
         params: { tenantId: tenant:a, chatId: tenant:missing, pollId: tenant:missing }
@@ -267,7 +321,6 @@ endpoints:
   - op: pinChatMessage
     method: PUT
     path: /api/v1/tenants/{tenantId}/chats/{chatId}/pin
-    pending: W7.11
     rows:
       - actor: b.owner
         params: { tenantId: tenant:a, chatId: tenant:missing }
@@ -282,7 +335,6 @@ endpoints:
   - op: unpinChatMessage
     method: DELETE
     path: /api/v1/tenants/{tenantId}/chats/{chatId}/pin
-    pending: W7.11
     rows:
       - actor: b.owner
         params: { tenantId: tenant:a, chatId: tenant:missing }
@@ -295,7 +347,6 @@ endpoints:
   - op: openViewOnceAttachment
     method: POST
     path: /api/v1/tenants/{tenantId}/chats/{chatId}/attachments/{attachmentId}/view-once
-    pending: W7.11
     rows:
       - actor: b.owner
         params: { tenantId: tenant:a, chatId: tenant:missing, attachmentId: tenant:missing }
@@ -310,7 +361,6 @@ endpoints:
   - op: saveChatAttachmentsToRecord
     method: POST
     path: /api/v1/tenants/{tenantId}/chats/{chatId}/messages/{messageId}/save-to-record
-    pending: W7.11
     rows:
       - actor: b.owner
         params: { tenantId: tenant:a, chatId: tenant:missing, messageId: tenant:missing }
@@ -325,7 +375,6 @@ endpoints:
   - op: createTaskFromChatMessage
     method: POST
     path: /api/v1/tenants/{tenantId}/chats/{chatId}/messages/{messageId}/task
-    pending: W7.11
     rows:
       - actor: b.owner
         params: { tenantId: tenant:a, chatId: tenant:missing, messageId: tenant:missing }
@@ -340,8 +389,22 @@ endpoints:
   - op: listChatMembers
     method: GET
     path: /api/v1/tenants/{tenantId}/chats/{chatId}/members
-    pending: W7.11
     rows:
+      - actor: a.owner
+        params: { tenantId: tenant:a, chatId: chat:a.trip }
+        status: 200
+        absent: [chat:b.trip]
+        note: владелец бизнеса видит чат своей организации и только его
+      - actor: a.owner
+        params: { tenantId: tenant:a, chatId: chat:b.trip }
+        status: 404
+        absent: [chat:b.trip]
+        note: чат чужой организации по его id — как несуществующий
+      - actor: b.owner
+        params: { tenantId: tenant:b, chatId: chat:a.trip }
+        status: 404
+        absent: [chat:a.trip]
+        note: чат организации A из организации B
       - actor: b.owner
         params: { tenantId: tenant:a, chatId: tenant:missing }
         status: 404
@@ -353,8 +416,22 @@ endpoints:
   - op: getChatSources
     method: GET
     path: /api/v1/tenants/{tenantId}/chats/{chatId}/sources
-    pending: W7.11
     rows:
+      - actor: a.owner
+        params: { tenantId: tenant:a, chatId: chat:a.trip }
+        status: 200
+        absent: [chat:b.trip]
+        note: владелец бизнеса видит чат своей организации и только его
+      - actor: a.owner
+        params: { tenantId: tenant:a, chatId: chat:b.trip }
+        status: 404
+        absent: [chat:b.trip]
+        note: чат чужой организации по его id — как несуществующий
+      - actor: b.owner
+        params: { tenantId: tenant:b, chatId: chat:a.trip }
+        status: 404
+        absent: [chat:a.trip]
+        note: чат организации A из организации B
       - actor: b.owner
         params: { tenantId: tenant:a, chatId: tenant:missing }
         status: 404
@@ -366,7 +443,6 @@ endpoints:
   - op: replaceChatSources
     method: PUT
     path: /api/v1/tenants/{tenantId}/chats/{chatId}/sources
-    pending: W7.11
     rows:
       - actor: b.owner
         params: { tenantId: tenant:a, chatId: tenant:missing }
@@ -381,7 +457,6 @@ endpoints:
   - op: getChatAccessExplanation
     method: GET
     path: /api/v1/tenants/{tenantId}/chats/{chatId}/access-explanation
-    pending: W7.11
     rows:
       - actor: b.owner
         params: { tenantId: tenant:a, chatId: tenant:missing }
@@ -394,8 +469,22 @@ endpoints:
   - op: getChatStorage
     method: GET
     path: /api/v1/tenants/{tenantId}/chats/{chatId}/storage
-    pending: W7.11
     rows:
+      - actor: a.owner
+        params: { tenantId: tenant:a, chatId: chat:a.trip }
+        status: 200
+        absent: [chat:b.trip]
+        note: владелец бизнеса видит чат своей организации и только его
+      - actor: a.owner
+        params: { tenantId: tenant:a, chatId: chat:b.trip }
+        status: 404
+        absent: [chat:b.trip]
+        note: чат чужой организации по его id — как несуществующий
+      - actor: b.owner
+        params: { tenantId: tenant:b, chatId: chat:a.trip }
+        status: 404
+        absent: [chat:a.trip]
+        note: чат организации A из организации B
       - actor: b.owner
         params: { tenantId: tenant:a, chatId: tenant:missing }
         status: 404
@@ -407,7 +496,6 @@ endpoints:
   - op: createChatCleanup
     method: POST
     path: /api/v1/tenants/{tenantId}/chats/{chatId}/cleanups
-    pending: W7.11
     rows:
       - actor: b.owner
         params: { tenantId: tenant:a, chatId: tenant:missing }
@@ -422,8 +510,22 @@ endpoints:
   - op: listChatJournal
     method: GET
     path: /api/v1/tenants/{tenantId}/chats/{chatId}/journal
-    pending: W7.11
     rows:
+      - actor: a.owner
+        params: { tenantId: tenant:a, chatId: chat:a.trip }
+        status: 200
+        absent: [chat:b.trip]
+        note: владелец бизнеса видит чат своей организации и только его
+      - actor: a.owner
+        params: { tenantId: tenant:a, chatId: chat:b.trip }
+        status: 404
+        absent: [chat:b.trip]
+        note: чат чужой организации по его id — как несуществующий
+      - actor: b.owner
+        params: { tenantId: tenant:b, chatId: chat:a.trip }
+        status: 404
+        absent: [chat:a.trip]
+        note: чат организации A из организации B
       - actor: b.owner
         params: { tenantId: tenant:a, chatId: tenant:missing }
         status: 404
@@ -435,7 +537,6 @@ endpoints:
   - op: createChatExport
     method: POST
     path: /api/v1/tenants/{tenantId}/chats/{chatId}/exports
-    pending: W7.11
     rows:
       - actor: b.owner
         params: { tenantId: tenant:a, chatId: tenant:missing }
@@ -450,7 +551,6 @@ endpoints:
   - op: getChatExport
     method: GET
     path: /api/v1/tenants/{tenantId}/chats/{chatId}/exports/{exportId}
-    pending: W7.11
     rows:
       - actor: b.owner
         params: { tenantId: tenant:a, chatId: tenant:missing, exportId: tenant:missing }
@@ -463,7 +563,6 @@ endpoints:
   - op: listChatPolicies
     method: GET
     path: /api/v1/tenants/{tenantId}/chat-policies
-    pending: W7.11
     rows:
       - actor: b.owner
         params: { tenantId: tenant:a }
@@ -476,7 +575,6 @@ endpoints:
   - op: updateChatPolicy
     method: PUT
     path: /api/v1/tenants/{tenantId}/chat-policies/{kind}
-    pending: W7.11
     rows:
       - actor: b.owner
         params: { tenantId: tenant:a, kind: tenant:missing }
@@ -491,7 +589,6 @@ endpoints:
   - op: listChatHolds
     method: GET
     path: /api/v1/tenants/{tenantId}/chat-holds
-    pending: W7.11
     rows:
       - actor: b.owner
         params: { tenantId: tenant:a }
@@ -504,7 +601,6 @@ endpoints:
   - op: createChatHold
     method: POST
     path: /api/v1/tenants/{tenantId}/chat-holds
-    pending: W7.11
     rows:
       - actor: b.owner
         params: { tenantId: tenant:a }
@@ -519,7 +615,6 @@ endpoints:
   - op: releaseChatHold
     method: DELETE
     path: /api/v1/tenants/{tenantId}/chat-holds/{holdId}
-    pending: W7.11
     rows:
       - actor: b.owner
         params: { tenantId: tenant:a, holdId: tenant:missing }

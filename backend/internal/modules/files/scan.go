@@ -46,7 +46,11 @@ var sniffed = map[string]func(string) bool{
 	mimeJPEG: equals(mimeJPEG), mimePNG: equals(mimePNG), mimeWebP: equals(mimeWebP), mimeHEIC: equals(mimeHEIC),
 	mimePDF: equals(mimePDF), mimeDOCX: equals("application/zip"), mimeXLSX: equals("application/zip"),
 	mimeText: textual, mimeCSV: textual,
+	mimeMP4: equals(mimeMP4), mimeWebM: equals(mimeWebM), mimeMP3: equals(mimeMP3), mimeOGG: oggAudio,
 }
+
+// oggAudio accepts what net/http sniffs for an Ogg container: audio/ogg or application/ogg.
+func oggAudio(got string) bool { return got == mimeOGG || got == "application/ogg" }
 
 func equals(want string) func(string) bool { return func(got string) bool { return got == want } }
 

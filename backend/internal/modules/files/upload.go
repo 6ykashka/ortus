@@ -408,7 +408,7 @@ func commitUpload(ctx context.Context, tx pgx.Tx, r sessionRow, verified string,
 		}
 	}
 	_, err := events.Publish(ctx, tx, events.Event{
-		Type: EventUploaded, Aggregate: "files.file", AggregateID: r.FileID,
+		Type: EventUploaded, Aggregate: aggregateFile, AggregateID: r.FileID,
 		Payload: map[string]string{"fileId": r.FileID.String(), "purpose": string(r.Purpose), "ownerType": r.Owner.Kind(),
 			"ownerId": r.Owner.ID.String()},
 	})

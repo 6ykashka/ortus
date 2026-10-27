@@ -3,6 +3,8 @@ package storage
 import (
 	"bytes"
 	"context"
+	"crypto/sha256"
+	"encoding/hex"
 	"encoding/xml"
 	"errors"
 	"fmt"
@@ -180,6 +182,30 @@ func (s *S3) Copy(ctx context.Context, src, dst string) error {
 			return ErrNotFound
 		}
 		return fmt.Errorf("storage: copy: %s", code)
+	}
+	return nil
+}
+
+// Upload implements Uploader: a signed PUT of data with its SHA-256 as the payload hash (a server-side write, such as the
+// file of an export; a browser writes with PresignPut).
+func (s *S3) Upload(ctx context.Context, key, contentType string, data []byte) error {
+	if key == "" {
+		return errors.New("storage: empty key")
+	}
+	r, err := http.NewRequestWithContext(ctx, http.MethodPut, s.objectURL(s.endpoint, key).String(), bytes.NewReader(data))
+	if err != nil {
+		return fmt.Errorf("storage: PUT: %w", err)
+	}
+	r.Header.Set("Content-Type", contentType)
+	sum := sha256.Sum256(data)
+	s.signer.Sign(r, hex.EncodeToString(sum[:]), s.now())
+	resp, err := s.client.Do(r)
+	if err != nil {
+		return fmt.Errorf("storage: PUT: %w", err)
+	}
+	defer resp.Body.Close()
+	if resp.StatusCode != http.StatusOK {
+		return statusError(http.MethodPut, resp)
 	}
 	return nil
 }

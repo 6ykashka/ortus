@@ -38,3 +38,14 @@ type Store interface {
 	// Delete removes key; a missing key is not an error.
 	Delete(ctx context.Context, key string) error
 }
+
+// Uploader writes an object from the server: the file of an export of a chat is made by the application, not by a browser
+// with a presigned ticket. S3 and Mem implement it.
+type Uploader interface {
+	Upload(ctx context.Context, key, contentType string, data []byte) error
+}
+
+var (
+	_ Uploader = (*S3)(nil)
+	_ Uploader = (*Mem)(nil)
+)

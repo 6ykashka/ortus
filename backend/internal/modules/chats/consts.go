@@ -1,0 +1,31 @@
+package chats
+
+// Words repeated in the module: the kinds, the states and the keys of the payloads of events.
+const (
+	lit48h        = "48h"
+	litActive     = "active"
+	litAll        = "all"
+	litArchived   = "archived"
+	litChat       = "chat"
+	litChatRead   = "chat.read"
+	litChatID     = "chatId"
+	litEnded      = "ended"
+	litFinance    = "finance"
+	litGroup      = "group"
+	litKind       = "kind"
+	litMember     = "member"
+	litMessageID  = "messageId"
+	litNull       = "null"
+	litOff        = "off"
+	litOut        = "out"
+	litPending    = "pending"
+	litPhoto      = "photo"
+	litRelation   = "relation"
+	litRole       = "role"
+	litSystem     = "system"
+	litText       = "text"
+	litTripDriver = "trip_driver"
+	litVideo      = "video"
+	litPerson     = "Сотрудник"
+	litSeq        = "seq"
+)

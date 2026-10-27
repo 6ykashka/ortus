@@ -83,7 +83,7 @@ var (
 	groupKeys      = []string{groupPhotos, groupDocuments, groupAttachments, groupOther}
 	groupOfPurpose = map[Purpose]string{
 		PurposeInspection: groupPhotos, PurposeRepairEvidence: groupPhotos,
-		PurposeKnowledgeAttachment: groupAttachments, PurposeFormAttachment: groupAttachments,
+		PurposeKnowledgeAttachment: groupAttachments, PurposeFormAttachment: groupAttachments, PurposeChatAttachment: groupAttachments,
 		PurposeExpenseReceipt: groupOther, // «receipts outside documents»
 	}
 )

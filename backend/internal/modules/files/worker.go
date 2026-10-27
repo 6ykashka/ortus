@@ -178,7 +178,7 @@ func (w *Worker) record(ctx context.Context, tx pgx.Tx, id uuid.UUID, f scanned,
 	if !v.Clean {
 		payload["rejectedCode"] = v.Code
 	}
-	_, err = events.Publish(ctx, tx, events.Event{Type: event, Aggregate: "files.file", AggregateID: id, Payload: payload})
+	_, err = events.Publish(ctx, tx, events.Event{Type: event, Aggregate: aggregateFile, AggregateID: id, Payload: payload})
 	return err
 }
 

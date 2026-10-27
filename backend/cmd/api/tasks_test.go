@@ -105,11 +105,11 @@ func TestTaskParent(t *testing.T) {
 }
 
 // wantFileHiders requires the Hiders of the files of main: the pool, the hidden tasks and (W4.21, return 2) the files
-// of the answers of forms.
+// of the answers of forms and (W7.11, return 1) the chats the subject is not in.
 func wantFileHiders(t *testing.T, h files.Hider) {
 	t.Helper()
 	hs, ok := h.(closedParents)
-	if !ok || len(hs) != 3 {
+	if !ok || len(hs) != 4 {
 		t.Fatalf("hiders %#v", h)
 	}
 	if _, ok := hs[1].(hiddenTasks); !ok {
@@ -117,6 +117,9 @@ func wantFileHiders(t *testing.T, h files.Hider) {
 	}
 	if f, ok := hs[2].(hiddenFormFiles); !ok || f.S == nil || f.S.Objects == nil {
 		t.Fatalf("third hider %#v, want the files of the answers of forms", hs[2])
+	}
+	if _, ok := hs[3].(files.ChatHider); !ok { // W7.11, return 1: the chats a member is not in
+		t.Fatalf("fourth hider %#v, want the closed chats", hs[3])
 	}
 }
 

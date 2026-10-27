@@ -78,6 +78,10 @@ const (
 	mimeXLS  = "application/vnd.ms-excel"
 	mimeODT  = "application/vnd.oasis.opendocument.text"
 	mimeODS  = "application/vnd.oasis.opendocument.spreadsheet"
+	mimeMP4  = "video/mp4"
+	mimeWebM = "video/webm"
+	mimeMP3  = "audio/mpeg"
+	mimeOGG  = "audio/ogg"
 )
 
 var (
@@ -86,6 +90,8 @@ var (
 	documents = append(slices.Clone(receipts), mimeDOCX, mimeXLSX, mimeText, mimeCSV)
 	// attachments are FILE_OK of the prototype for a task: the documents, Office 97 and OpenDocument, ZIP.
 	attachments = append(slices.Clone(documents), mimeDOC, mimeXLS, mimeODT, mimeODS, mimeZIP)
+	// chatFiles are the attachments of a chat: the photos, the documents of a task and the video and voice messages (W7.11).
+	chatFiles = append(slices.Clone(attachments), mimeMP4, mimeWebM, mimeMP3, mimeOGG)
 	// allowedMIME lists the declared types each purpose accepts: evidence photos are photos only.
 	allowedMIME = map[Purpose][]string{
 		PurposeInspection:          photos,
@@ -94,6 +100,7 @@ var (
 		PurposeKnowledgeAttachment: documents,
 		PurposeFormAttachment:      documents,
 		PurposeTaskAttachment:      attachments,
+		PurposeChatAttachment:      chatFiles,
 	}
 	sha256RE = regexp.MustCompile(`^[a-f0-9]{64}$`)
 	moduleRE = regexp.MustCompile(`^[a-z][a-z0-9_-]{1,49}$`) // ObjectRef.moduleKey
