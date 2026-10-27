@@ -1,0 +1,1407 @@
+/* W6.20 · «Объекты» по рендеру эталона design-2026-10-19 («Ортус CRM.dc.html» :1921–2124). Цвета — токены @ortus/tokens;
+   значения рендера без токена — алиасы ниже. Цели нажатия на телефоне ≥ 44 px (PD-28). */
+
+.ox-rp {
+  --ox-rp-stripes: repeating-linear-gradient(
+    135deg,
+    #e0b457 0 3px,
+    #f7e9c6 3px 6px
+  ); /* :1951 на приёмке */
+  --ox-rp-track: #ecefea; /* :1951 дорожка полосы */
+  --ox-rp-photo: repeating-linear-gradient(
+    135deg,
+    #e9ede6 0 8px,
+    #e0e5dd 8px 16px
+  ); /* :2038 фото-заглушка */
+  --ox-rp-hover: #f7faf8; /* :1949 */
+  --ox-rp-row-line: #eef1ec; /* :2026 */
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.ox-rp button:focus-visible,
+.ox-rp a:focus-visible,
+.ox-rp select:focus-visible,
+.ox-rp input:focus-visible,
+.ox-rp textarea:focus-visible {
+  outline: 2px solid var(--ox-focus);
+  outline-offset: 2px;
+}
+
+/* ── Шапка списка :1922–1929 ── */
+.ox-rp-top {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 12px 16px;
+}
+
+.ox-rp-top-text {
+  flex: 1 1 260px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.ox-rp-crumb {
+  font-size: var(--ox-fs-sm);
+  color: var(--ox-text-muted);
+}
+
+.ox-rp-title {
+  margin: 0;
+  font-size: 26px;
+  line-height: 1.2;
+  font-weight: var(--ox-fw-semibold);
+  letter-spacing: -0.02em;
+}
+
+.ox-rp-title:focus {
+  outline: none;
+}
+
+.ox-rp-sub {
+  font-size: var(--ox-fs-sm);
+  color: var(--ox-text-muted);
+  text-wrap: pretty;
+}
+
+.ox-rp-leads {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px 12px;
+  font-size: var(--ox-fs-sm);
+  color: var(--ox-text-muted);
+}
+
+/* ── Кнопки ── */
+.ox-rp-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  min-height: 44px;
+  padding: 0 14px;
+  border-radius: var(--ox-radius-md);
+  border: 1px solid var(--ox-line-control);
+  background: var(--ox-card);
+  color: var(--ox-text);
+  font: inherit;
+  font-weight: var(--ox-fw-medium);
+  cursor: pointer;
+}
+
+.ox-rp-btn[data-variant='primary'] {
+  border-color: var(--ox-accent);
+  background: var(--ox-accent);
+  color: var(--ox-on-accent);
+}
+
+.ox-rp-btn[data-variant='outline'] {
+  border-color: var(--ox-accent);
+  color: var(--ox-accent);
+  min-height: 40px;
+  font-size: var(--ox-fs-sm);
+}
+
+.ox-rp-btn[data-size='lg'] {
+  min-height: 52px;
+  padding: 0 18px;
+  border-radius: var(--ox-radius-lg);
+  font-size: var(--ox-fs-lg);
+  font-weight: var(--ox-fw-semibold);
+}
+
+.ox-rp-btn[data-size='sm'] {
+  min-height: 36px;
+  padding: 0 12px;
+  font-size: var(--ox-fs-sm);
+}
+
+.ox-rp-btn:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+.ox-rp-btn > .material-symbols-rounded {
+  font-size: 18px;
+}
+
+.ox-rp-link {
+  min-height: 32px;
+  padding: 0 4px;
+  border: 0;
+  background: transparent;
+  color: var(--ox-accent);
+  font: inherit;
+  font-size: var(--ox-fs-sm);
+  font-weight: var(--ox-fw-medium);
+  cursor: pointer;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+/* ── Панель фильтров :1930–1936 ── */
+.ox-rp-bar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 12px;
+  align-items: center;
+}
+
+.ox-rp-filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.ox-rp-filter {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 36px;
+  padding: 0 12px;
+  border-radius: var(--ox-radius-pill);
+  white-space: nowrap;
+  border: 1px solid var(--ox-line-control);
+  background: var(--ox-card);
+  color: var(--ox-text);
+  font: inherit;
+  font-size: var(--ox-fs-sm);
+  font-weight: var(--ox-fw-medium);
+  cursor: pointer;
+  position: relative;
+}
+
+.ox-rp-filter::after {
+  content: '';
+  position: absolute;
+  inset: -4px 0;
+}
+
+.ox-rp-filter[aria-pressed='true'] {
+  border-color: var(--ox-accent);
+  background: var(--ox-accent);
+  color: var(--ox-on-accent);
+}
+
+.ox-rp-filter-n {
+  font-variant-numeric: tabular-nums;
+  font-weight: var(--ox-fw-semibold);
+}
+
+.ox-rp-search {
+  flex: 1 1 220px;
+  max-width: 340px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 40px;
+  padding: 0 10px;
+  border: 1px solid var(--ox-line-control);
+  border-radius: var(--ox-radius-md);
+  background: var(--ox-card);
+}
+
+.ox-rp-search > .material-symbols-rounded {
+  font-size: 18px;
+  color: var(--ox-text-muted);
+}
+
+.ox-rp-search input {
+  flex: 1;
+  min-width: 0;
+  border: 0;
+  background: transparent;
+  font: inherit;
+  font-size: var(--ox-fs-md);
+  color: var(--ox-text);
+}
+
+.ox-rp-search input:focus-visible {
+  outline: none;
+}
+
+.ox-rp-search:focus-within {
+  outline: 2px solid var(--ox-focus);
+  outline-offset: 2px;
+}
+
+.ox-rp-sort {
+  margin-left: auto;
+  font-size: var(--ox-fs-xs);
+  color: var(--ox-text-muted);
+}
+
+/* ── Таблица :1937–1963 ── */
+.ox-rp-tablebox {
+  background: var(--ox-card);
+  border: 1px solid var(--ox-line);
+  border-radius: var(--ox-radius-xl);
+  overflow-x: auto;
+}
+
+.ox-rp-table {
+  width: 100%;
+  min-width: 760px;
+  border-collapse: collapse;
+  font-size: var(--ox-fs-md);
+}
+
+.ox-rp-table th {
+  padding: 10px 16px;
+  font-size: var(--ox-fs-xs);
+  font-weight: var(--ox-fw-medium);
+  color: var(--ox-text-muted);
+  text-align: left;
+  background: var(--ox-raised);
+  border-bottom: 1px solid var(--ox-line);
+}
+
+.ox-rp-table td {
+  padding: 12px 16px;
+  vertical-align: top;
+  border-top: 1px solid var(--ox-divider);
+}
+
+.ox-rp-table tbody tr:first-child td {
+  border-top-color: transparent;
+}
+
+.ox-rp-table tbody tr {
+  cursor: pointer;
+}
+
+.ox-rp-table tbody tr:hover {
+  background: var(--ox-rp-hover);
+}
+
+.ox-rp-open {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 2px;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  text-align: left;
+  font: inherit;
+  cursor: pointer;
+}
+
+.ox-rp-open-name {
+  font-weight: var(--ox-fw-semibold);
+  color: var(--ox-accent);
+}
+
+.ox-rp-open-addr {
+  font-size: var(--ox-fs-xs);
+  color: var(--ox-text-muted);
+}
+
+.ox-rp-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.ox-rp-chip {
+  align-self: flex-start;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px 8px 2px 6px;
+  border-radius: var(--ox-radius-pill);
+  font-size: var(--ox-fs-xs);
+  font-weight: var(--ox-fw-medium);
+  line-height: 18px;
+  white-space: nowrap;
+  background: var(--ox-neutral-bg);
+  color: var(--ox-neutral-fg);
+}
+
+.ox-rp-chip > .material-symbols-rounded {
+  font-size: 15px;
+}
+
+.ox-rp-chip[data-tone='ok'] {
+  background: var(--ox-ok-bg);
+  color: var(--ox-ok-fg);
+}
+
+.ox-rp-chip[data-tone='info'] {
+  background: var(--ox-info-bg);
+  color: var(--ox-info-fg);
+}
+
+.ox-rp-chip[data-tone='warn'] {
+  background: var(--ox-warn-bg);
+  color: var(--ox-warn-fg);
+}
+
+.ox-rp-chip[data-tone='danger'] {
+  background: var(--ox-danger-bg);
+  color: var(--ox-danger-fg);
+}
+
+.ox-rp-meter {
+  display: flex;
+  height: 6px;
+  border-radius: 99px;
+  background: var(--ox-rp-track);
+  overflow: hidden;
+}
+
+.ox-rp-meter[data-size='lg'] {
+  height: 10px;
+}
+
+.ox-rp-meter-done {
+  background: var(--ox-accent);
+}
+
+.ox-rp-meter-pend {
+  background: var(--ox-rp-stripes);
+}
+
+.ox-rp-meter-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.ox-rp-meter-row > .ox-rp-meter {
+  flex: 1;
+}
+
+.ox-rp-pct {
+  font-size: var(--ox-fs-xs);
+  font-weight: var(--ox-fw-semibold);
+  font-variant-numeric: tabular-nums;
+}
+
+.ox-rp-pend {
+  font-size: var(--ox-fs-xs);
+  color: var(--ox-warn-fg);
+}
+
+.ox-rp-est {
+  font-size: var(--ox-fs-sm);
+  color: var(--ox-text-label);
+  text-wrap: pretty;
+}
+
+.ox-rp-due {
+  display: flex;
+  flex-direction: column;
+}
+
+.ox-rp-due-date {
+  font-weight: var(--ox-fw-medium);
+  font-variant-numeric: tabular-nums;
+}
+
+.ox-rp-due-date[data-slip] {
+  color: var(--ox-warn-fg);
+}
+
+.ox-rp-muted {
+  font-size: var(--ox-fs-xs);
+  color: var(--ox-text-muted);
+}
+
+.ox-rp-fm[data-muted] {
+  color: var(--ox-warn-fg);
+}
+
+.ox-rp-fm[data-draft] {
+  color: var(--ox-text-muted);
+}
+
+.ox-rp-todo-cell {
+  display: flex;
+  gap: 8px;
+  align-items: flex-start;
+}
+
+.ox-rp-todo-cell > .material-symbols-rounded {
+  flex: none;
+  font-size: 18px;
+}
+
+.ox-rp-todo-text {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  font-size: var(--ox-fs-sm);
+  text-wrap: pretty;
+}
+
+.ox-rp-tag {
+  font-weight: var(--ox-fw-semibold);
+}
+
+[data-tone='ok'] > .ox-rp-tag,
+.ox-rp-tone[data-tone='ok'] {
+  color: var(--ox-ok-fg);
+}
+
+.ox-rp-tone[data-tone='info'] {
+  color: var(--ox-info-fg);
+}
+
+.ox-rp-tone[data-tone='warn'] {
+  color: var(--ox-warn-fg);
+}
+
+.ox-rp-tone[data-tone='danger'] {
+  color: var(--ox-danger-fg);
+}
+
+.ox-rp-tone[data-tone='neutral'] {
+  color: var(--ox-neutral-fg);
+}
+
+.ox-rp-quiet {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: var(--ox-fs-sm);
+  color: var(--ox-text-muted);
+}
+
+.ox-rp-quiet > .material-symbols-rounded {
+  font-size: 18px;
+  color: var(--ox-accent);
+}
+
+/* ── Карточки списка :1964–1979 ── */
+.ox-rp-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 320px), 1fr));
+  gap: 12px;
+}
+
+.ox-rp-obj {
+  display: flex;
+  flex-direction: column;
+  background: var(--ox-card);
+  border: 1px solid var(--ox-line);
+  border-radius: var(--ox-radius-xl);
+  overflow: hidden;
+}
+
+.ox-rp-obj-open {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 14px 16px;
+  border: 0;
+  background: transparent;
+  text-align: left;
+  font: inherit;
+  cursor: pointer;
+}
+
+.ox-rp-obj-open:hover {
+  background: var(--ox-rp-hover);
+}
+
+.ox-rp-obj-name {
+  font-size: var(--ox-fs-lg);
+  font-weight: var(--ox-fw-semibold);
+}
+
+.ox-rp-obj-addr {
+  font-size: var(--ox-fs-sm);
+  color: var(--ox-text-muted);
+}
+
+.ox-rp-obj-line {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2px 12px;
+  font-size: var(--ox-fs-sm);
+}
+
+.ox-rp-obj-pct {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 8px;
+  font-size: var(--ox-fs-sm);
+}
+
+.ox-rp-obj-top {
+  display: flex;
+  gap: 8px;
+  align-items: flex-start;
+  padding: 8px 10px;
+  border-radius: var(--ox-radius-md);
+  background: var(--ox-neutral-bg);
+  font-size: var(--ox-fs-sm);
+  text-wrap: pretty;
+}
+
+.ox-rp-obj-top[data-tone='ok'] {
+  background: var(--ox-ok-bg);
+}
+
+.ox-rp-obj-top[data-tone='info'] {
+  background: var(--ox-info-bg);
+}
+
+.ox-rp-obj-top[data-tone='warn'] {
+  background: var(--ox-warn-bg);
+}
+
+.ox-rp-obj-top[data-tone='danger'] {
+  background: var(--ox-danger-bg);
+}
+
+.ox-rp-obj-top > .material-symbols-rounded {
+  flex: none;
+  font-size: 18px;
+}
+
+.ox-rp-obj-act {
+  padding: 0 16px 14px;
+}
+
+.ox-rp-obj-act .ox-rp-btn {
+  width: 100%;
+  min-height: 48px;
+  border-radius: var(--ox-radius-lg);
+  font-size: var(--ox-fs-lg);
+  font-weight: var(--ox-fw-semibold);
+}
+
+/* ── Пусто ── */
+.ox-rp-empty {
+  background: var(--ox-card);
+  border: 1px solid var(--ox-line);
+  border-radius: var(--ox-radius-xl);
+  padding: 36px 20px;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  color: var(--ox-text-muted);
+  font-size: var(--ox-fs-sm);
+}
+
+.ox-rp-empty > .material-symbols-rounded {
+  font-size: 32px;
+}
+
+.ox-rp-empty strong {
+  color: var(--ox-text);
+  font-size: var(--ox-fs-lg);
+  font-weight: var(--ox-fw-semibold);
+}
+
+/* ── Шапка карточки :1983–2005 ── */
+.ox-rp-crumbs {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px 6px;
+  font-size: var(--ox-fs-sm);
+  color: var(--ox-text-muted);
+}
+
+.ox-rp-crumbs > .material-symbols-rounded {
+  font-size: 16px;
+}
+
+.ox-rp-crumb-cur {
+  color: var(--ox-text);
+}
+
+.ox-rp-hero {
+  background: var(--ox-card);
+  border: 1px solid var(--ox-line);
+  border-radius: var(--ox-radius-xl);
+}
+
+.ox-rp-hero-main {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px 32px;
+  align-items: flex-start;
+  padding: 20px 22px 16px;
+}
+
+.ox-rp-hero-icon {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 52px;
+  height: 52px;
+  border-radius: var(--ox-radius-xl);
+  background: var(--ox-accent-soft);
+  color: var(--ox-accent);
+}
+
+.ox-rp-hero-icon > .material-symbols-rounded {
+  font-size: 28px;
+}
+
+.ox-rp-hero-text {
+  flex: 1 1 300px;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.ox-rp-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.ox-rp-prog {
+  flex: 1 1 260px;
+  max-width: 340px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.ox-rp-prog-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 8px;
+}
+
+.ox-rp-prog-head strong {
+  font-size: 22px;
+  font-weight: var(--ox-fw-semibold);
+  font-variant-numeric: tabular-nums;
+}
+
+.ox-rp-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 12px;
+  font-size: var(--ox-fs-xs);
+  color: var(--ox-text-label);
+}
+
+.ox-rp-legend > span {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.ox-rp-sw {
+  width: 8px;
+  height: 8px;
+  border-radius: 2px;
+  background: var(--ox-accent);
+}
+
+.ox-rp-sw[data-pend] {
+  background: repeating-linear-gradient(135deg, #e0b457 0 2px, #f7e9c6 2px 4px);
+}
+
+.ox-rp-hero-acts {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+}
+
+.ox-rp-tabs {
+  display: flex;
+  gap: 2px;
+  padding: 0 12px;
+  border-top: 1px solid var(--ox-divider);
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+
+.ox-rp-tab {
+  flex: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 46px;
+  padding: 0 12px;
+  border: 0;
+  border-bottom: 2px solid transparent;
+  background: transparent;
+  color: var(--ox-text-label);
+  font: inherit;
+  font-weight: var(--ox-fw-medium);
+  white-space: nowrap;
+  cursor: pointer;
+}
+
+.ox-rp-tab[aria-selected='true'] {
+  border-bottom-color: var(--ox-accent);
+  color: var(--ox-accent);
+  font-weight: var(--ox-fw-semibold);
+}
+
+.ox-rp-badge {
+  min-width: 18px;
+  height: 18px;
+  padding: 0 5px;
+  border-radius: 99px;
+  background: var(--ox-warn-bg);
+  color: var(--ox-warn-fg);
+  font-size: 11px;
+  font-weight: var(--ox-fw-semibold);
+  display: inline-grid;
+  place-items: center;
+}
+
+/* ── Обзор 1a :2007–2069 ── */
+.ox-rp-ov {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  align-items: flex-start;
+}
+
+.ox-rp-ov-main {
+  flex: 1.75 1 520px;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.ox-rp-ov-side {
+  flex: 1 1 300px;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.ox-rp-panel {
+  background: var(--ox-card);
+  border: 1px solid var(--ox-line);
+  border-radius: var(--ox-radius-xl);
+}
+
+.ox-rp-panel[data-pad] {
+  padding: 14px 18px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.ox-rp-panel[data-flush] {
+  overflow: hidden;
+}
+
+.ox-rp-panel-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px 10px;
+  padding: 14px 18px;
+}
+
+.ox-rp-h2 {
+  margin: 0;
+  font-size: var(--ox-fs-lg);
+  font-weight: var(--ox-fw-semibold);
+}
+
+.ox-rp-count {
+  min-width: 22px;
+  height: 22px;
+  padding: 0 7px;
+  border-radius: 99px;
+  background: var(--ox-warn-bg);
+  color: var(--ox-warn-fg);
+  font-size: var(--ox-fs-xs);
+  font-weight: var(--ox-fw-semibold);
+  display: grid;
+  place-items: center;
+}
+
+.ox-rp-grow {
+  flex: 1;
+}
+
+.ox-rp-item {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px 14px;
+  align-items: center;
+  padding: 14px 18px;
+  border-top: 1px solid var(--ox-divider);
+}
+
+.ox-rp-item-icon {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 36px;
+  height: 36px;
+  border-radius: var(--ox-radius-lg);
+  background: var(--ox-neutral-bg);
+  color: var(--ox-neutral-fg);
+}
+
+.ox-rp-item-icon[data-tone='ok'] {
+  background: var(--ox-ok-bg);
+  color: var(--ox-ok-fg);
+}
+
+.ox-rp-item-icon[data-tone='info'] {
+  background: var(--ox-info-bg);
+  color: var(--ox-info-fg);
+}
+
+.ox-rp-item-icon[data-tone='warn'] {
+  background: var(--ox-warn-bg);
+  color: var(--ox-warn-fg);
+}
+
+.ox-rp-item-icon[data-tone='danger'] {
+  background: var(--ox-danger-bg);
+  color: var(--ox-danger-fg);
+}
+
+.ox-rp-item-icon > .material-symbols-rounded {
+  font-size: 20px;
+}
+
+.ox-rp-item-body {
+  flex: 1 1 260px;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.ox-rp-item-title {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2px 8px;
+  align-items: baseline;
+}
+
+.ox-rp-item-tag {
+  font-size: var(--ox-fs-xs);
+  font-weight: var(--ox-fw-semibold);
+}
+
+.ox-rp-item-meta {
+  font-size: var(--ox-fs-sm);
+  color: var(--ox-text-muted);
+  text-wrap: pretty;
+}
+
+.ox-rp-none {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 16px 18px;
+  border-top: 1px solid var(--ox-divider);
+  color: var(--ox-text-muted);
+  font-size: var(--ox-fs-sm);
+}
+
+.ox-rp-none > .material-symbols-rounded {
+  font-size: 20px;
+  color: var(--ox-accent);
+}
+
+.ox-rp-vol {
+  display: grid;
+  grid-template-columns: 24px minmax(0, 1fr) minmax(80px, 150px) 40px;
+  gap: 12px;
+  align-items: center;
+  padding: 10px 18px;
+  border-top: 1px solid var(--ox-rp-row-line);
+}
+
+.ox-rp-vol > .material-symbols-rounded {
+  font-size: 20px;
+}
+
+.ox-rp-vol-name {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.ox-rp-vol-name > span:first-child {
+  font-weight: var(--ox-fw-medium);
+}
+
+.ox-rp-vol-pct {
+  font-size: var(--ox-fs-xs);
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+  color: var(--ox-text-label);
+}
+
+.ox-rp-photos {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+  gap: 10px;
+}
+
+.ox-rp-photo {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin: 0;
+}
+
+.ox-rp-photo-box {
+  aspect-ratio: 4 / 3;
+  border-radius: var(--ox-radius-md);
+  background: var(--ox-rp-photo);
+  display: grid;
+  place-items: center;
+  padding: 6px;
+  text-align: center;
+  font-family: var(--ox-font-mono);
+  font-size: 11px;
+  color: var(--ox-text-muted);
+}
+
+.ox-rp-photo figcaption {
+  font-size: var(--ox-fs-xs);
+  color: var(--ox-text-label);
+}
+
+.ox-rp-photo figcaption[data-pending] > span {
+  color: var(--ox-warn-fg);
+}
+
+.ox-rp-access {
+  display: grid;
+  grid-template-columns: 20px minmax(0, 1fr);
+  gap: 8px 10px;
+  font-size: var(--ox-fs-sm);
+}
+
+.ox-rp-access > .material-symbols-rounded {
+  font-size: 18px;
+  color: var(--ox-text-muted);
+}
+
+.ox-rp-row-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.ox-rp-person {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  padding: 8px 0;
+  border-top: 1px solid var(--ox-rp-row-line);
+}
+
+.ox-rp-avatar {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: var(--ox-neutral-bg);
+  color: var(--ox-neutral-fg);
+}
+
+.ox-rp-avatar[data-tone='accent'] {
+  background: var(--ox-accent-soft);
+  color: var(--ox-accent);
+}
+
+.ox-rp-avatar[data-tone='warn'] {
+  background: var(--ox-warn-bg);
+  color: var(--ox-warn-fg);
+}
+
+.ox-rp-avatar[data-tone='info'] {
+  background: var(--ox-info-bg);
+  color: var(--ox-info-fg);
+}
+
+.ox-rp-avatar > .material-symbols-rounded {
+  font-size: 18px;
+}
+
+.ox-rp-person-text {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.ox-rp-person-text > span:first-child {
+  font-weight: var(--ox-fw-medium);
+}
+
+.ox-rp-money {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px 16px;
+}
+
+.ox-rp-money > div {
+  display: flex;
+  flex-direction: column;
+}
+
+.ox-rp-money strong {
+  font-size: 17px;
+  font-weight: var(--ox-fw-semibold);
+  font-variant-numeric: tabular-nums;
+}
+
+.ox-rp-feed {
+  display: grid;
+  grid-template-columns: 42px minmax(0, 1fr);
+  gap: 10px;
+  padding: 8px 0;
+  border-top: 1px solid var(--ox-rp-row-line);
+  font-size: var(--ox-fs-sm);
+}
+
+.ox-rp-feed > span:first-child {
+  color: var(--ox-text-muted);
+  font-variant-numeric: tabular-nums;
+}
+
+.ox-rp-feed strong {
+  font-weight: var(--ox-fw-medium);
+}
+
+/* ── Заглушка вкладки :2071 ── */
+.ox-rp-stub {
+  background: var(--ox-card);
+  border: 1px solid var(--ox-line);
+  border-radius: var(--ox-radius-xl);
+  padding: 28px 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  text-align: center;
+  color: var(--ox-text-muted);
+  font-size: var(--ox-fs-sm);
+}
+
+.ox-rp-stub > .material-symbols-rounded {
+  font-size: 32px;
+}
+
+.ox-rp-stub strong {
+  color: var(--ox-text);
+  font-size: var(--ox-fs-lg);
+  font-weight: var(--ox-fw-semibold);
+}
+
+.ox-rp-stub-items {
+  width: 100%;
+  max-width: 520px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  text-align: left;
+}
+
+.ox-rp-stub-item {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  padding: 10px 12px;
+  border-radius: var(--ox-radius-lg);
+  background: var(--ox-neutral-bg);
+  color: var(--ox-text);
+}
+
+/* ── Работы :2081–2123 ── */
+.ox-rp-works {
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.ox-rp-work {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.ox-rp-work-head {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+  font-size: var(--ox-fs-sm);
+}
+
+.ox-rp-work-head > span:first-child {
+  font-weight: var(--ox-fw-medium);
+}
+
+.ox-rp-work-head > span:last-child {
+  font-variant-numeric: tabular-nums;
+  color: var(--ox-text-label);
+}
+
+.ox-rp-form {
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.ox-rp-fields {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.ox-rp-field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-size: var(--ox-fs-sm);
+  font-weight: var(--ox-fw-medium);
+  color: var(--ox-text-label);
+  flex: 1 1 120px;
+  min-width: 0;
+}
+
+.ox-rp-field[data-grow='2'] {
+  flex: 2 1 200px;
+}
+
+.ox-rp-field[data-grow='3'] {
+  flex: 3 1 240px;
+}
+
+.ox-rp-field select,
+.ox-rp-field input,
+.ox-rp-field textarea {
+  min-width: 0;
+  max-width: 100%;
+  min-height: 48px;
+  padding: 8px 12px;
+  border: 1px solid var(--ox-line-control);
+  border-radius: var(--ox-radius-md);
+  background: var(--ox-card);
+  font: inherit;
+  font-size: var(--ox-fs-lg);
+  color: var(--ox-text);
+}
+
+.ox-rp-field textarea {
+  min-height: 0;
+  resize: vertical;
+}
+
+.ox-rp-crew {
+  border: 0;
+  padding: 0;
+  margin: 0;
+}
+
+.ox-rp-crew legend {
+  font-size: var(--ox-fs-sm);
+  font-weight: var(--ox-fw-medium);
+  color: var(--ox-text-label);
+  margin-bottom: 6px;
+}
+
+.ox-rp-crew-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.ox-rp-crew-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 44px;
+  padding: 0 12px;
+  border-radius: var(--ox-radius-md);
+  border: 1.5px solid var(--ox-line);
+  background: var(--ox-card);
+  cursor: pointer;
+}
+
+.ox-rp-crew-item[data-on] {
+  border-color: var(--ox-accent);
+  background: var(--ox-accent-tint);
+}
+
+.ox-rp-crew-item input {
+  width: 18px;
+  height: 18px;
+  accent-color: var(--ox-accent);
+  margin: 0;
+}
+
+.ox-rp-crew-item small {
+  font-size: var(--ox-fs-xs);
+  color: var(--ox-text-muted);
+}
+
+.ox-rp-photo-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+  font-size: var(--ox-fs-sm);
+  color: var(--ox-text-muted);
+}
+
+.ox-rp-file {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+
+.ox-rp-error {
+  font-size: var(--ox-fs-sm);
+  color: var(--ox-danger-fg);
+}
+
+.ox-rp-list {
+  background: var(--ox-card);
+  border: 1px solid var(--ox-line);
+  border-radius: var(--ox-radius-xl);
+  overflow: hidden;
+}
+
+.ox-rp-log {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 14px;
+  align-items: center;
+  padding: 12px 16px;
+  border-top: 1px solid var(--ox-divider);
+}
+
+.ox-rp-log:first-child {
+  border-top: 0;
+}
+
+.ox-rp-log-id {
+  flex: 0 0 52px;
+  font-family: var(--ox-font-mono);
+  font-size: var(--ox-fs-xs);
+  color: var(--ox-text-muted);
+}
+
+.ox-rp-log-text {
+  flex: 2 1 240px;
+  min-width: 0;
+  font-size: var(--ox-fs-sm);
+  text-wrap: pretty;
+}
+
+.ox-rp-co {
+  display: flex;
+  flex-direction: column;
+  border: 1px solid var(--ox-divider);
+  border-radius: var(--ox-radius-lg);
+  overflow: hidden;
+}
+
+.ox-rp-co-form {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 12px;
+  border-radius: var(--ox-radius-lg);
+  background: var(--ox-raised);
+  border: 1px solid var(--ox-divider);
+}
+
+.ox-rp-lead {
+  font-size: var(--ox-fs-sm);
+  color: var(--ox-text-muted);
+  text-wrap: pretty;
+}
+
+.ox-rp-note {
+  font-size: var(--ox-fs-xs);
+  color: var(--ox-text-muted);
+}
+
+.ox-rp-select-row {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-top: 8px;
+  font-size: var(--ox-fs-sm);
+  color: var(--ox-text-label);
+}
+
+.ox-rp-select-row select {
+  min-width: 0;
+  max-width: 100%;
+  min-height: 44px;
+  padding: 6px 10px;
+  border: 1px solid var(--ox-line-control);
+  border-radius: var(--ox-radius-md);
+  background: var(--ox-card);
+  font: inherit;
+}
+
+@media (max-width: 639px) {
+  /* Крошка «Объекты» — кнопка возврата: цель не меньше 44 px. */
+  .ox-rp-crumbs > .ox-rp-link {
+    min-height: 44px;
+  }
+
+  .ox-rp-hero-main {
+    padding: 16px;
+  }
+
+  .ox-rp-vol {
+    grid-template-columns: 24px minmax(0, 1fr) 40px;
+  }
+
+  .ox-rp-vol .ox-rp-meter {
+    grid-column: 2 / 4;
+    grid-row: 2;
+  }
+
+  .ox-rp-sort {
+    margin-left: 0;
+    flex-basis: 100%;
+  }
+
+  .ox-rp-btn[data-fill-mobile] {
+    width: 100%;
+  }
+}
+
+/* Диалог «Назначить прораба?»: область последствий ConfirmDialog (packages/ui) не прокручивается (2 px переполнения
+   давали axe scrollable-region-focusable); три коротких пункта всегда помещаются. */
+body[data-ox-repair-assign] [role='dialog'] [class*='_scroll_'] {
+  overflow-y: visible;
+}
