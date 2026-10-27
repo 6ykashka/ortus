@@ -1,0 +1,1061 @@
+/* W6.21 · Вкладки «Замер» и «Смета» по рендеру эталона design-2026-10-19 («Ремонт и стройка.dc.html» :74–276).
+   Цвета — токены @ortus/tokens; значения рендера без токена — алиасы ниже. Цели нажатия на телефоне ≥ 44 px —
+   невидимым расширением области (PD-28: видимая высота кнопок эталона 30–40 px). */
+
+.ox-rp-section {
+  --ox-rp-hatch: repeating-linear-gradient(
+    135deg,
+    #e9ede6 0 8px,
+    #e0e5dd 8px 16px
+  ); /* :164 фото допработы */
+  --ox-rp-co-bg: #fdf8ec; /* :153 шапка допработ */
+  --ox-rp-co-border: #ebd7a8; /* :152 */
+  --ox-rp-co-line: #efe3c4; /* :158 */
+  --ox-rp-pick-bg: #f1f7f3; /* :233 выбор строки справочника */
+  --ox-rp-ok-row: #f1f8f4; /* :1429 строки сравнения */
+  --ox-rp-del-row: #fdf3f1;
+  --ox-rp-chg-row: #fffbf1;
+  --ox-rp-del-line: #e3b5af; /* :271 */
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.ox-rp-h2 {
+  margin: 0;
+  font-size: var(--ox-fs-xl);
+  font-weight: var(--ox-fw-semibold);
+}
+
+.ox-rp-h3 {
+  margin: 0;
+  font-size: var(--ox-fs-lg);
+  font-weight: var(--ox-fw-semibold);
+  text-wrap: pretty;
+}
+
+.ox-rp-lead {
+  max-width: 720px;
+  margin: 4px 0 0;
+  color: var(--ox-text-muted);
+  text-wrap: pretty;
+}
+
+.ox-rp-hint {
+  margin: 0;
+  font-size: var(--ox-fs-sm);
+  color: var(--ox-text-muted);
+}
+
+.ox-rp-hint-inline {
+  font-size: var(--ox-fs-xs);
+  color: var(--ox-text-muted);
+}
+
+.ox-rp-head {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px 16px;
+  align-items: flex-end;
+  justify-content: space-between;
+}
+
+.ox-rp-head > div {
+  flex: 1 1 360px;
+  min-width: 0;
+}
+
+/* ── Чипы ── */
+.ox-rp-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 3px 10px 3px 8px;
+  border-radius: var(--ox-radius-pill);
+  font-size: var(--ox-fs-xs);
+  font-weight: var(--ox-fw-medium);
+  background: var(--ox-neutral-bg);
+  color: var(--ox-neutral-fg);
+}
+
+.ox-rp-chip[data-size='s'] {
+  gap: 3px;
+  padding: 0 7px 0 5px;
+  line-height: 18px;
+  font-size: 11px;
+}
+
+.ox-rp-chip[data-size='s'] .material-symbols-rounded {
+  font-size: 13px !important;
+}
+
+.ox-rp-chip[data-tone='ok'] {
+  background: var(--ox-ok-bg);
+  color: var(--ox-ok-fg);
+}
+
+.ox-rp-chip[data-tone='info'] {
+  background: var(--ox-info-bg);
+  color: var(--ox-info-fg);
+}
+
+.ox-rp-chip[data-tone='warn'] {
+  background: var(--ox-warn-bg);
+  color: var(--ox-warn-fg);
+}
+
+.ox-rp-chip[data-tone='danger'] {
+  background: var(--ox-danger-bg);
+  color: var(--ox-danger-fg);
+}
+
+.ox-rp-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  padding: 0 6px;
+  border-radius: var(--ox-radius-sm);
+  font-size: 11px;
+  font-weight: var(--ox-fw-medium);
+  background: var(--ox-neutral-bg);
+  color: var(--ox-neutral-fg);
+}
+
+.ox-rp-tag .material-symbols-rounded {
+  font-size: 13px !important; /* :245 значок формулы замера — 13 px */
+}
+
+.ox-rp-tag[data-tone='ok'] {
+  background: var(--ox-ok-bg);
+  color: var(--ox-ok-fg);
+}
+
+.ox-rp-tag[data-tone='info'] {
+  background: var(--ox-info-bg);
+  color: var(--ox-info-fg);
+}
+
+/* ── Кнопки ── */
+.ox-rp-btn {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  min-height: 40px;
+  padding: 0 14px;
+  border-radius: var(--ox-radius-md);
+  border: 1px solid var(--ox-accent);
+  background: var(--ox-accent);
+  color: var(--ox-on-accent);
+  font: inherit;
+  font-weight: var(--ox-fw-medium);
+  cursor: pointer;
+}
+
+.ox-rp-btn[data-size='lg'] {
+  min-height: var(--ox-control);
+}
+
+.ox-rp-btn[data-size='lg']:not([data-variant]) {
+  padding: 0 16px;
+}
+
+.ox-rp-btn[data-size='sm'] {
+  min-height: 36px;
+  padding: 0 12px;
+}
+
+.ox-rp-btn[data-size='xs'] {
+  min-height: 30px;
+  padding: 0 10px;
+  font-size: var(--ox-fs-xs);
+}
+
+.ox-rp-btn[data-variant='secondary'] {
+  border-color: var(--ox-line-control);
+  background: var(--ox-card);
+  color: var(--ox-text);
+}
+
+.ox-rp-btn[data-variant='outline'] {
+  background: var(--ox-card);
+  color: var(--ox-accent);
+}
+
+.ox-rp-btn[data-variant='dashed'] {
+  border: 1px dashed var(--ox-accent);
+  background: var(--ox-card);
+  color: var(--ox-accent);
+}
+
+.ox-rp-btn[data-variant='danger'] {
+  border-color: var(--ox-danger-border);
+  background: var(--ox-card);
+  color: var(--ox-danger-fg);
+}
+
+.ox-rp-btn[data-variant='text'] {
+  min-height: 36px;
+  padding: 0 4px;
+  border: 0;
+  background: transparent;
+  color: var(--ox-info-fg);
+  font-size: var(--ox-fs-sm);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.ox-rp-btn[data-variant='text'][data-size='xs'] {
+  min-height: 28px;
+}
+
+.ox-rp-btn[data-variant='text'][data-size='sm'] {
+  min-height: 32px;
+}
+
+.ox-rp-btn[data-variant='text'][data-tone='danger'] {
+  color: var(--ox-danger-fg);
+  font-weight: var(--ox-fw-medium);
+}
+
+.ox-rp-btn:hover:not(:disabled) {
+  background: var(--ox-accent-hover);
+}
+
+.ox-rp-btn[data-variant]:not([data-variant='text']):hover:not(:disabled) {
+  background: var(--ox-accent-tint);
+}
+
+/* Вторичные кнопки обычной высоты — отступ 12 px (:114, :123, :197), крупные — 14 px (:267–270). */
+.ox-rp-btn[data-variant='secondary']:not([data-size='lg']) {
+  padding: 0 12px;
+}
+
+.ox-rp-btn[data-variant='secondary']:hover:not(:disabled) {
+  background: var(--ox-raised);
+}
+
+.ox-rp-btn[data-variant='text']:hover:not(:disabled) {
+  background: transparent;
+}
+
+.ox-rp-btn:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.ox-rp-btn:focus-visible,
+.ox-rp-input:focus-visible,
+.ox-rp-select:focus-visible,
+.ox-rp-pickbtn:focus-visible,
+.ox-rp-tile:focus-visible,
+.ox-rp-radio:focus-visible,
+.ox-rp-iconbtn:focus-visible {
+  outline: 2px solid var(--ox-focus);
+  outline-offset: 2px;
+}
+
+.ox-rp-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+}
+
+/* ── Таблицы ── */
+.ox-rp-tablewrap {
+  overflow-x: auto;
+  background: var(--ox-card);
+  border: 1px solid var(--ox-line);
+  border-radius: var(--ox-radius-xl);
+}
+
+.ox-rp-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: var(--ox-fs-md);
+}
+
+.ox-rp-table[data-min='720'] {
+  min-width: 720px;
+}
+
+.ox-rp-table[data-min='760'] {
+  min-width: 760px;
+}
+
+.ox-rp-table th {
+  padding: 10px 8px;
+  background: var(--ox-raised);
+  text-align: left;
+  font-size: var(--ox-fs-xs);
+  font-weight: var(--ox-fw-medium);
+  color: var(--ox-text-muted);
+}
+
+.ox-rp-table th:first-child {
+  padding-left: 14px;
+  padding-right: 14px;
+}
+
+.ox-rp-table th.ox-rp-right,
+.ox-rp-table td.ox-rp-td-n {
+  text-align: right;
+}
+
+.ox-rp-table th.ox-rp-wide {
+  padding-right: 14px;
+  padding-left: 14px;
+}
+
+.ox-rp-table tbody tr {
+  border-top: 1px solid var(--ox-divider);
+}
+
+.ox-rp-table td {
+  padding: 8px;
+}
+
+.ox-rp-table td:first-child {
+  padding-left: 14px;
+  padding-right: 14px;
+}
+
+.ox-rp-table td.ox-rp-td-n {
+  padding-right: 14px;
+  padding-left: 14px;
+  font-variant-numeric: tabular-nums;
+}
+
+.ox-rp-table td.ox-rp-td-q {
+  padding: 6px 8px;
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+.ox-rp-table td.ox-rp-td-c {
+  padding: 8px;
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+.ox-rp-table tr.ox-rp-cmp-same td {
+  padding: 6px 14px;
+}
+
+.ox-rp-table td.ox-rp-td-in {
+  padding: 6px 8px;
+}
+
+.ox-rp-table .ox-rp-name {
+  font-weight: var(--ox-fw-medium);
+}
+
+.ox-rp-table tr.ox-rp-total {
+  border-top: 1px solid var(--ox-line);
+  background: var(--ox-raised);
+  font-weight: var(--ox-fw-semibold);
+}
+
+.ox-rp-table tr.ox-rp-total td {
+  padding-top: 10px;
+  padding-bottom: 10px;
+}
+
+.ox-rp-table tr.ox-rp-sec {
+  border-top: 1px solid var(--ox-line);
+  background: var(--ox-raised);
+}
+
+.ox-rp-table tr.ox-rp-grand {
+  border-top: 2px solid var(--ox-line);
+  font-size: 15px;
+  font-weight: var(--ox-fw-semibold);
+}
+
+.ox-rp-table tr.ox-rp-grand td {
+  padding-top: 12px;
+  padding-bottom: 12px;
+}
+
+.ox-rp-table tr.ox-rp-pickrow {
+  background: var(--ox-rp-pick-bg);
+}
+
+.ox-rp-muted-cell {
+  padding: 10px 14px;
+  font-size: var(--ox-fs-sm);
+  color: var(--ox-text-muted);
+}
+
+.ox-rp-bold {
+  font-weight: var(--ox-fw-semibold);
+}
+
+.ox-rp-unit {
+  color: var(--ox-text-muted);
+}
+
+.ox-rp-table td.ox-rp-td-del {
+  padding: 4px 8px;
+  text-align: center;
+}
+
+.ox-rp-num {
+  font-variant-numeric: tabular-nums;
+}
+
+.ox-rp-input {
+  width: 76px;
+  min-height: 36px;
+  padding: 0 8px;
+  border: 1px solid var(--ox-line-control);
+  border-radius: var(--ox-radius-sm);
+  background: var(--ox-card);
+  color: var(--ox-text);
+  font: inherit;
+  text-align: right;
+}
+
+.ox-rp-input[data-w='qty'] {
+  width: 84px;
+}
+
+.ox-rp-input[data-w='price'] {
+  width: 96px;
+}
+
+.ox-rp-input[data-w='wide'] {
+  width: auto;
+  flex: 0 1 280px;
+  min-height: 38px;
+  padding: 0 10px;
+  border-radius: var(--ox-radius-md);
+  text-align: left;
+}
+
+.ox-rp-input[data-w='search'] {
+  width: 100%;
+  max-width: 420px;
+  min-height: 40px;
+  padding: 0 12px;
+  border-radius: var(--ox-radius-md);
+  text-align: left;
+}
+
+.ox-rp-input[data-w='disc'] {
+  width: 64px;
+  min-height: 34px;
+}
+
+.ox-rp-select {
+  min-height: 38px;
+  padding: 0 8px;
+  border: 1px solid var(--ox-line-control);
+  border-radius: var(--ox-radius-md);
+  background: var(--ox-card);
+  color: var(--ox-text);
+  font: inherit;
+}
+
+/* ── Карточки ── */
+.ox-rp-card {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  padding: 16px;
+  background: var(--ox-card);
+  border: 1px solid var(--ox-line);
+  border-radius: var(--ox-radius-xl);
+}
+
+.ox-rp-measure {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 14px;
+  padding: 12px 16px;
+  background: var(--ox-card);
+  border: 1px solid var(--ox-line);
+  border-radius: var(--ox-radius-xl);
+}
+
+.ox-rp-measure > span:nth-child(2) {
+  flex: 1 1 280px;
+  min-width: 0;
+  font-size: var(--ox-fs-sm);
+  text-wrap: pretty;
+}
+
+.ox-rp-measure .ox-rp-ico {
+  color: var(--ox-info-fg);
+}
+
+.ox-rp-empty {
+  padding: 28px 20px;
+  background: var(--ox-card);
+  border: 1px solid var(--ox-line);
+  border-radius: var(--ox-radius-xl);
+  text-align: center;
+  color: var(--ox-text-muted);
+  text-wrap: pretty;
+}
+
+.ox-rp-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.ox-rp-radios {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 230px), 1fr));
+  gap: 10px;
+}
+
+.ox-rp-radio,
+.ox-rp-tile {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 6px;
+  padding: 12px 14px;
+  border-radius: var(--ox-radius-xl);
+  border: 1.5px solid var(--ox-line);
+  background: var(--ox-card);
+  color: var(--ox-text);
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.ox-rp-tile {
+  gap: 3px;
+  min-height: 56px;
+  padding: 8px 12px;
+  border-radius: var(--ox-radius-lg);
+}
+
+.ox-rp-tile .ox-rp-meta {
+  font-variant-numeric: tabular-nums;
+}
+
+.ox-rp-radio[aria-checked='true'],
+.ox-rp-tile[aria-pressed='true'] {
+  border-color: var(--ox-accent);
+  background: var(--ox-accent-tint);
+}
+
+.ox-rp-radio-top {
+  display: flex;
+  width: 100%;
+  gap: 8px;
+  align-items: flex-start;
+  justify-content: space-between;
+}
+
+.ox-rp-radio-top strong {
+  font-size: var(--ox-fs-md);
+  font-weight: var(--ox-fw-semibold);
+  text-wrap: pretty;
+}
+
+.ox-rp-radio[aria-checked='true'] .ox-rp-radio-dot {
+  color: var(--ox-accent);
+}
+
+.ox-rp-radio-dot {
+  flex: none;
+  color: #8a968f; /* :1397 неотмеченная точка */
+}
+
+.ox-rp-meta {
+  font-size: var(--ox-fs-xs);
+  color: var(--ox-text-muted);
+}
+
+.ox-rp-fit {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: var(--ox-fs-xs);
+  font-weight: var(--ox-fw-medium);
+  color: var(--ox-accent);
+}
+
+.ox-rp-parts {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 260px), 1fr));
+  gap: 12px 16px;
+}
+
+.ox-rp-part {
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+}
+
+.ox-rp-part-ico {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 32px;
+  height: 32px;
+  border-radius: var(--ox-radius-md);
+  background: var(--ox-accent-soft);
+  color: var(--ox-accent);
+}
+
+.ox-rp-part > span:last-child {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.ox-rp-part strong {
+  font-size: var(--ox-fs-sm);
+  font-weight: var(--ox-fw-semibold);
+}
+
+.ox-rp-part span span {
+  font-size: var(--ox-fs-xs);
+  color: var(--ox-text-muted);
+  text-wrap: pretty;
+}
+
+.ox-rp-create {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px 14px;
+  align-items: center;
+  padding-top: 12px;
+  border-top: 1px solid var(--ox-divider);
+}
+
+.ox-rp-create > span {
+  font-size: var(--ox-fs-sm);
+  color: var(--ox-text-label);
+}
+
+.ox-rp-create strong {
+  font-weight: var(--ox-fw-semibold);
+  font-variant-numeric: tabular-nums;
+}
+
+/* ── Уведомление (es.note) ── */
+.ox-rp-note {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 12px;
+  align-items: center;
+  padding: 10px 14px;
+  border-radius: var(--ox-radius-lg);
+  background: var(--ox-accent-soft);
+  border: 1px solid var(--ox-ok-border);
+  color: #1f4d3c; /* :111 */
+  font-size: var(--ox-fs-sm);
+}
+
+.ox-rp-note > .ox-rp-ico {
+  color: var(--ox-accent);
+}
+
+.ox-rp-note-text {
+  flex: 1 1 280px;
+  text-wrap: pretty;
+}
+
+.ox-rp-iconbtn {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 32px;
+  height: 32px;
+  border: 0;
+  border-radius: var(--ox-radius-md);
+  background: transparent;
+  color: inherit;
+  cursor: pointer;
+}
+
+.ox-rp-iconbtn[data-tone='danger'] {
+  color: var(--ox-danger-fg);
+}
+
+.ox-rp-iconbtn[data-tone='danger']:hover {
+  background: var(--ox-danger-bg);
+}
+
+/* ── Допработы ── */
+.ox-rp-orders {
+  overflow: hidden;
+  background: var(--ox-card);
+  border: 1px solid var(--ox-rp-co-border);
+  border-radius: var(--ox-radius-xl);
+}
+
+.ox-rp-orders-head {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 12px 16px;
+  background: var(--ox-rp-co-bg);
+}
+
+.ox-rp-orders-head span {
+  font-size: var(--ox-fs-sm);
+  color: var(--ox-text-muted);
+  text-wrap: pretty;
+}
+
+.ox-rp-order {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px 16px;
+  align-items: flex-start;
+  padding: 12px 16px;
+  border-top: 1px solid var(--ox-rp-co-line);
+}
+
+.ox-rp-order-id {
+  flex: 0 0 44px;
+  padding-top: 2px;
+  font-family: var(--ox-font-mono);
+  font-size: var(--ox-fs-xs);
+  color: var(--ox-text-muted);
+}
+
+.ox-rp-order-main {
+  flex: 3 1 280px;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.ox-rp-order-main strong {
+  font-size: var(--ox-fs-md);
+  font-weight: var(--ox-fw-semibold);
+}
+
+.ox-rp-order-note {
+  font-size: var(--ox-fs-sm);
+  color: var(--ox-text-label);
+  text-wrap: pretty;
+}
+
+.ox-rp-photos {
+  display: flex;
+  gap: 6px;
+}
+
+.ox-rp-photo {
+  width: 56px;
+  height: 56px;
+  border-radius: var(--ox-radius-md);
+  background: var(--ox-rp-hatch);
+}
+
+.ox-rp-order-side {
+  flex: 1 1 220px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 8px;
+}
+
+.ox-rp-order-side .ox-rp-chip {
+  padding: 2px 8px 2px 6px;
+}
+
+.ox-rp-order-hint {
+  font-size: var(--ox-fs-xs);
+  color: var(--ox-warn-fg);
+  text-wrap: pretty;
+}
+
+.ox-rp-reject {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  width: 100%;
+}
+
+.ox-rp-field {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-size: var(--ox-fs-xs);
+  font-weight: var(--ox-fw-medium);
+  color: var(--ox-text-label);
+}
+
+.ox-rp-reject-btns {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.ox-rp-orders-foot {
+  padding: 10px 16px;
+  border-top: 1px solid var(--ox-rp-co-line);
+  font-size: var(--ox-fs-sm);
+  color: var(--ox-text-muted);
+}
+
+.ox-rp-orders-foot[data-s='xs'] {
+  font-size: var(--ox-fs-xs);
+  text-wrap: pretty;
+}
+
+/* ── Версии и сравнение ── */
+.ox-rp-tiles {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.ox-rp-tile-top {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  align-items: center;
+}
+
+.ox-rp-tile-top strong {
+  font-size: var(--ox-fs-sm);
+  font-weight: var(--ox-fw-semibold);
+}
+
+.ox-rp-vnote {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 12px;
+  align-items: center;
+}
+
+.ox-rp-vnote > span {
+  flex: 1 1 320px;
+  min-width: 0;
+  font-size: var(--ox-fs-sm);
+  color: var(--ox-text-label);
+  text-wrap: pretty;
+}
+
+.ox-rp-table tr[data-row='added'] {
+  background: var(--ox-rp-ok-row);
+}
+
+.ox-rp-table tr[data-row='removed'] {
+  background: var(--ox-rp-del-row);
+}
+
+.ox-rp-table tr[data-row='changed'] {
+  background: var(--ox-rp-chg-row);
+}
+
+.ox-rp-cmp-name {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.ox-rp-cmp-name > span:first-child {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  align-items: center;
+}
+
+.ox-rp-cmp-name [data-strike] {
+  text-decoration: line-through;
+}
+
+.ox-rp-cmp-sum {
+  display: flex;
+  flex-direction: column;
+  font-variant-numeric: tabular-nums;
+}
+
+.ox-rp-cmp-sum > span:last-child {
+  font-size: var(--ox-fs-xs);
+  color: var(--ox-text-muted);
+}
+
+.ox-rp-table td.ox-rp-delta {
+  padding-right: 14px;
+  padding-left: 14px;
+  text-align: right;
+  font-weight: var(--ox-fw-semibold);
+  font-variant-numeric: tabular-nums;
+}
+
+[data-dtone='ok'] {
+  color: var(--ox-ok-fg);
+}
+
+[data-dtone='danger'] {
+  color: var(--ox-danger-fg);
+}
+
+[data-dtone='muted'] {
+  color: var(--ox-text-muted);
+}
+
+/* ── Таблица сметы ── */
+.ox-rp-line {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 6px;
+  align-items: center;
+}
+
+.ox-rp-sec-title {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+}
+
+.ox-rp-sec-title strong {
+  font-weight: var(--ox-fw-semibold);
+}
+
+.ox-rp-pick {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.ox-rp-picklist {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.ox-rp-pickbtn {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 1px;
+  min-height: 44px;
+  padding: 6px 10px;
+  border-radius: var(--ox-radius-md);
+  border: 1px solid var(--ox-line-control);
+  background: var(--ox-card);
+  color: var(--ox-text);
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.ox-rp-pickbtn:hover {
+  border-color: var(--ox-accent);
+}
+
+.ox-rp-pickbtn > span:first-child {
+  font-size: var(--ox-fs-sm);
+  font-weight: var(--ox-fw-medium);
+}
+
+.ox-rp-newsec {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+}
+
+.ox-rp-disc {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+}
+
+.ox-rp-disc > span {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.ox-rp-basetext {
+  padding: 0 14px 12px;
+  text-align: right;
+  font-size: var(--ox-fs-sm);
+  color: var(--ox-text-muted);
+}
+
+.ox-rp-vh {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+
+/* ── Состояния ── */
+.ox-rp-skel {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.ox-rp-skel-line {
+  height: 14px;
+  border-radius: var(--ox-radius-sm);
+  background: var(--ox-neutral-bg);
+}
+
+.ox-rp-skel-line[data-w='short'] {
+  width: 40%;
+}
+
+.ox-rp-skel-block {
+  height: 160px;
+  border-radius: var(--ox-radius-xl);
+  background: var(--ox-neutral-bg);
+}
+
+.ox-rp-alert {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 12px;
+  padding: 12px 16px;
+  border-radius: var(--ox-radius-lg);
+  background: var(--ox-danger-bg);
+  border: 1px solid var(--ox-danger-border);
+  color: var(--ox-danger-fg);
+}
+
+.ox-rp-alert-text {
+  flex: 1 1 240px;
+}
+
+/* Цель нажатия на телефоне — 44 px (verification-protocol §1 п. 3) при видимой высоте эталона 30–40 px (PD-28):
+   прозрачная область псевдоэлементом, пиксельного следа нет (PD-29). */
+@container ox-frame (width < 640px) {
+  .ox-rp-btn::after,
+  .ox-rp-iconbtn::after,
+  .ox-rp-pickbtn::after {
+    content: '';
+    position: absolute;
+    inset: -7px 0;
+  }
+
+  .ox-rp-btn[data-size='lg']::after {
+    inset: 0;
+  }
+
+  .ox-rp-iconbtn::after {
+    inset: -6px;
+  }
+
+  .ox-rp-input {
+    min-height: 44px;
+  }
+}

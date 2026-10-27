@@ -436,7 +436,7 @@ test.describe('repair-works — работы, отметки, допработы
     await expect(main(page)).toContainText('Ждёт оценки офиса');
     await main(page).getByRole('button', { name: 'Оценить в смете' }).click();
     await expect(page).toHaveURL(/tab=estimate/);
-    await expect(main(page)).toContainText('Смета: раздел ещё не подключён');
+    await expect(page.locator('section[aria-labelledby="h-est"]')).toBeVisible();
   });
 
   test('прораб: форма отметки — ошибки полей по порядку эталона и отправка с фото', async ({

@@ -162,7 +162,7 @@ export function RepairCard(p: {
       />
     );
   } else if (Panel) {
-    body = <Panel tenantId={tenantId} ov={ov} canFin={canFin} readOnly={readOnly} />;
+    body = <Panel tenantId={tenantId} ov={ov} canFin={canFin} readOnly={readOnly} onTab={goTab} />;
   } else {
     body = <StubTab tab={tab} ov={ov} />;
   }
