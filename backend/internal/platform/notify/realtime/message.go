@@ -90,15 +90,24 @@ type Hint struct {
 	Accounts []uuid.UUID `json:"accounts,omitempty"`
 	Sessions []string    `json:"sessions,omitempty"`
 	Reason   string      `json:"reason,omitempty"`
+	ChatID   uuid.UUID   `json:"chatId,omitzero"`   // chat.changed only
+	LastSeq  int64       `json:"lastSeq,omitempty"` // chat.changed only
 }
 
-// Validate reports whether h can be delivered: a hint type (not ping), a known reason only for session.ended and at
-// least one addressee.
+// Validate reports whether h can be delivered: a hint type (not ping), a known reason only for session.ended,
+// chatId and lastSeq only for chat.changed (and both required there, for accounts only) and at least one addressee.
 func (h Hint) Validate() error {
+	if h.Type != TypeChatChanged && (h.ChatID != uuid.Nil || h.LastSeq != 0) {
+		return fmt.Errorf("%w: chat fields on %s", ErrInvalidHint, h.Type)
+	}
 	switch h.Type {
 	case TypeContextChanged, TypeNotificationsChanged:
 		if h.Reason != "" {
 			return fmt.Errorf("%w: reason %q on %s", ErrInvalidHint, h.Reason, h.Type)
+		}
+	case TypeChatChanged:
+		if err := h.validateChat(); err != nil {
+			return err
 		}
 	case TypeSessionEnded:
 		if !slices.Contains(Reasons(), h.Reason) {
@@ -107,11 +116,27 @@ func (h Hint) Validate() error {
 	default:
 		return fmt.Errorf("%w: type %q", ErrInvalidHint, h.Type)
 	}
+	return h.validateAddressees()
+}
+
+// validateAddressees wants at least one addressee and none empty.
+func (h Hint) validateAddressees() error {
 	if len(h.Accounts) == 0 && len(h.Sessions) == 0 {
 		return fmt.Errorf("%w: no addressee", ErrInvalidHint)
 	}
 	if slices.Contains(h.Accounts, uuid.Nil) || slices.Contains(h.Sessions, "") {
 		return fmt.Errorf("%w: empty addressee", ErrInvalidHint)
+	}
+	return nil
+}
+
+// validateChat checks chat.changed: for the members of a chat (accounts) only, with chatId and lastSeq.
+func (h Hint) validateChat() error {
+	if h.Reason != "" || len(h.Sessions) > 0 {
+		return fmt.Errorf("%w: chat.changed goes to the members of a chat only", ErrInvalidHint)
+	}
+	if h.ChatID == uuid.Nil || h.LastSeq <= 0 {
+		return fmt.Errorf("%w: chat.changed needs chatId and lastSeq", ErrInvalidHint)
 	}
 	return nil
 }

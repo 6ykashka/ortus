@@ -156,7 +156,13 @@ func TestHintValidate(t *testing.T) {
 		{"unknown type", Hint{Type: "chat.message", Accounts: acc}, false},
 		// W7.00: кадр chat.changed описан контрактом (0.12.0-stage7), но доставка подсказки чата — W7.12 (адресаты — участники
 		// чата, ADR-0016): до тех пор шлюз её не принимает.
-		{"chat.changed before W7.12", Hint{Type: TypeChatChanged, Accounts: acc}, false},
+		{"chat.changed to members", Hint{Type: TypeChatChanged, ChatID: uuid.New(), LastSeq: 7, Accounts: acc}, true},
+		{"chat.changed without chat", Hint{Type: TypeChatChanged, LastSeq: 7, Accounts: acc}, false},
+		{"chat.changed without seq", Hint{Type: TypeChatChanged, ChatID: uuid.New(), Accounts: acc}, false},
+		{"chat.changed to a session", Hint{Type: TypeChatChanged, ChatID: uuid.New(), LastSeq: 1, Sessions: []string{SessionKey("s")}}, false},
+		{"chat.changed with reason", Hint{Type: TypeChatChanged, ChatID: uuid.New(), LastSeq: 1, Reason: ReasonLogout, Accounts: acc}, false},
+		{"chatId on another type", Hint{Type: TypeContextChanged, ChatID: uuid.New(), Accounts: acc}, false},
+		{"lastSeq on another type", Hint{Type: TypeNotificationsChanged, LastSeq: 3, Accounts: acc}, false},
 		{"nobody", Hint{Type: TypeContextChanged}, false},
 		{"nil account", Hint{Type: TypeContextChanged, Accounts: []uuid.UUID{uuid.Nil}}, false},
 		{"empty session key", Hint{Type: TypeContextChanged, Sessions: []string{""}}, false},
@@ -193,9 +199,8 @@ func TestSessionKey(t *testing.T) {
 // добавляет проверку «chatId и lastSeq обязательны».
 func TestHintChatChangedAcceptedPendingW712(t *testing.T) {
 	t.Parallel()
-	t.Skip("pending W7.12: доставка подсказки chat.changed и адресаты — участники чата (ADR-0016)")
 	// У Hint пока нет полей chatId и lastSeq (они есть только в кадре): W7.12 добавляет их в Hint и тест дополняет.
-	h := Hint{Type: TypeChatChanged, Accounts: []uuid.UUID{uuid.New()}}
+	h := Hint{Type: TypeChatChanged, ChatID: uuid.New(), LastSeq: 1, Accounts: []uuid.UUID{uuid.New()}}
 	if err := h.Validate(); err != nil {
 		t.Fatalf("chat.changed to a chat member: %v", err)
 	}

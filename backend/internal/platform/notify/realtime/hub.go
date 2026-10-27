@@ -119,7 +119,11 @@ func (h *Hub) unregister(c *client) {
 
 // message is the frame of hint without seq.
 func (h *Hub) message(hint Hint) ServerMessage {
-	m := ServerMessage{Type: hint.Type, Reason: hint.Reason, At: h.now().UTC()}
+	m := ServerMessage{Type: hint.Type, Reason: hint.Reason, LastSeq: hint.LastSeq, At: h.now().UTC()}
+	if hint.ChatID != uuid.Nil {
+		chat := hint.ChatID
+		m.ChatID = &chat
+	}
 	if hint.TenantID != uuid.Nil {
 		tenant := hint.TenantID
 		m.TenantID = &tenant
