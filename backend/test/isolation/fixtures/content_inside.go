@@ -81,7 +81,8 @@ const (
 // insideContent is the inside content of tenant A (W4.82).
 func insideContent() Content {
 	return Content{
-		Trips: []TripDef{{Key: uMsk1, Unit: uMsk1, Number: "W482-1"}, {Key: uMsk2, Unit: uMsk2, Number: "W482-2"}},
+		RepairProjects: repairsInside(), // W6.11 (content_repairs.go)
+		Trips:          []TripDef{{Key: uMsk1, Unit: uMsk1, Number: "W482-1"}, {Key: uMsk2, Unit: uMsk2, Number: "W482-2"}},
 		CalendarResources: []CalendarResourceDef{
 			{Key: "room-msk1", Unit: uMsk1, Label: "Переговорная Москвы-1"},
 			{Key: "room-msk2", Unit: uMsk2, Label: "Переговорная Москвы-2"},
@@ -119,6 +120,7 @@ func (c Content) plus(o Content) Content {
 		Trips: slices.Concat(c.Trips, o.Trips), CalendarResources: slices.Concat(c.CalendarResources, o.CalendarResources),
 		Bookings: slices.Concat(c.Bookings, o.Bookings), KnowledgeSpaces: slices.Concat(c.KnowledgeSpaces, o.KnowledgeSpaces),
 		KnowledgeNodes: slices.Concat(c.KnowledgeNodes, o.KnowledgeNodes),
+		RepairProjects: slices.Concat(c.RepairProjects, o.RepairProjects),
 	}
 }
 
@@ -147,6 +149,9 @@ func (c Content) people() []string {
 	}
 	for _, n := range c.KnowledgeNodes {
 		out = append(out, n.Readers...)
+	}
+	for _, p := range c.RepairProjects {
+		out = append(out, p.Foreman)
 	}
 	return slices.DeleteFunc(out, func(s string) bool { return s == "" })
 }
@@ -186,6 +191,7 @@ func (c Catalog) validateEvery(t TenantDef, fail failFunc) {
 //
 //nolint:gocyclo // a list of independent checks of the catalog
 func (c Catalog) validateInside(t TenantDef, fail failFunc) {
+	c.validateRepairs(t, fail) // W6.11
 	for _, x := range t.Content.Trips {
 		if !t.hasUnit(x.Unit) || x.Number == "" {
 			fail("trip %s.%s: unknown unit or no number", t.Key, x.Key)
@@ -235,7 +241,7 @@ func (c Catalog) validateInside(t TenantDef, fail failFunc) {
 func (l *tenantLoader) insideSteps() []func() error {
 	in := *l
 	in.t.Content = l.t.InTenant
-	return []func() error{in.kbSpaces, in.trips, in.calendar, in.forms}
+	return []func() error{in.kbSpaces, in.trips, in.calendar, in.forms, in.repairs}
 }
 
 // trips writes planned trips (fleet.trips) without a driver and a vehicle.

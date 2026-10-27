@@ -1,9 +1,9 @@
 # Матрица изоляции: отказы шлюза «Ремонта и стройки» (W6.00, контракт 0.12.0-stage6) — без pending. Шлюз cmd/api
 # пускает операцию, только если у актора есть грант с действием x-permissions, вид области которого допускает x-scope
 # операции (tenant-org-unit-repair-project: tenant, unit, repair_project, relation), но раньше проверяет, что модуль
-# подключён: у фикстур подключена только «Логистика», поэтому «Ремонт и стройка» — 403 module_not_installed даже владельцу
-# (modules_gate.yaml). Проверка права (403 forbidden_action у менеджера логистики без repairs.*) и позитивные строки
-# появятся, когда W6.11 подключит модуль в фикстурах отдельным набором. Команды с If-Match получают 403 шлюза раньше
+# подключён. W6.11: модуль подключён у организации A (только WithInTenant, fixtures/content_repairs.go) и не подключён у B —
+# у B владелец получает 403 module_not_installed (modules_gate.yaml), у A менеджер логистики без repairs.* — 403
+# forbidden_action. Положительные строки хендлеров — repairs_w600.yaml. Команды с If-Match получают 403 шлюза раньше
 # предусловия. Формат — README.md.
 # После правки: go -C backend generate ./test/isolation
 module: repairs_w600_gate
@@ -12,718 +12,1185 @@ endpoints:
     method: GET
     path: /api/v1/tenants/{tenantId}/repairs/projects
     rows:
-      - actor: a.owner
+      - actor: b.owner
+        params:
+          tenantId: tenant:b
+        status: 403
+        code: module_not_installed
+        note: модуль «Ремонт и стройка» не подключён у организации B — 403 даже владельцу (modules_gate.yaml)
+      - actor: a.manager-msk1
         params:
           tenantId: tenant:a
         status: 403
-        code: module_not_installed
-        note: модуль «Ремонт и стройка» у фикстур не подключён — 403 даже владельцу (modules_gate.yaml); подключение в фикстурах — W6.11
+        code: forbidden_action
+        note: модуль подключён у A, но у менеджера логистики нет гранта repairs.* — 403 forbidden_action
   - op: createRepairProject
     method: POST
     path: /api/v1/tenants/{tenantId}/repairs/projects
     rows:
-      - actor: a.owner
+      - actor: b.owner
         params:
-          tenantId: tenant:a
+          tenantId: tenant:b
         status: 403
         code: module_not_installed
         body: '{"orgUnitId":"00000000-0000-4000-8000-000000000000","name":"x","address":"x","workers":[null]}'
-        note: модуль «Ремонт и стройка» у фикстур не подключён — 403 даже владельцу (modules_gate.yaml); подключение в фикстурах — W6.11
+        note: модуль «Ремонт и стройка» не подключён у организации B — 403 даже владельцу (modules_gate.yaml)
+      - actor: a.manager-msk1
+        params:
+          tenantId: tenant:a
+        status: 403
+        code: forbidden_action
+        body: '{"orgUnitId":"00000000-0000-4000-8000-000000000000","name":"x","address":"x","workers":[null]}'
+        note: модуль подключён у A, но у менеджера логистики нет гранта repairs.* — 403 forbidden_action
   - op: getRepairProject
     method: GET
     path: /api/v1/tenants/{tenantId}/repairs/projects/{projectId}
     rows:
-      - actor: a.owner
+      - actor: b.owner
+        params:
+          tenantId: tenant:b
+          projectId: repair_project:b.flat
+        status: 403
+        code: module_not_installed
+        note: модуль «Ремонт и стройка» не подключён у организации B — 403 даже владельцу (modules_gate.yaml)
+      - actor: a.manager-msk1
         params:
           tenantId: tenant:a
           projectId: repair_project:a.flat
         status: 403
-        code: module_not_installed
-        note: модуль «Ремонт и стройка» у фикстур не подключён — 403 даже владельцу (modules_gate.yaml); подключение в фикстурах — W6.11
+        code: forbidden_action
+        note: модуль подключён у A, но у менеджера логистики нет гранта repairs.* — 403 forbidden_action
   - op: updateRepairProject
     method: PATCH
     path: /api/v1/tenants/{tenantId}/repairs/projects/{projectId}
     rows:
-      - actor: a.owner
+      - actor: b.owner
+        params:
+          tenantId: tenant:b
+          projectId: repair_project:b.flat
+        status: 403
+        code: module_not_installed
+        body: '{"name":"x"}'
+        note: модуль «Ремонт и стройка» не подключён у организации B — 403 даже владельцу (modules_gate.yaml)
+      - actor: a.manager-msk1
         params:
           tenantId: tenant:a
           projectId: repair_project:a.flat
         status: 403
-        code: module_not_installed
+        code: forbidden_action
         body: '{"name":"x"}'
-        note: модуль «Ремонт и стройка» у фикстур не подключён — 403 даже владельцу (modules_gate.yaml); подключение в фикстурах — W6.11
+        note: модуль подключён у A, но у менеджера логистики нет гранта repairs.* — 403 forbidden_action
   - op: getRepairProjectOverview
     method: GET
     path: /api/v1/tenants/{tenantId}/repairs/projects/{projectId}/overview
     rows:
-      - actor: a.owner
+      - actor: b.owner
+        params:
+          tenantId: tenant:b
+          projectId: repair_project:b.flat
+        status: 403
+        code: module_not_installed
+        note: модуль «Ремонт и стройка» не подключён у организации B — 403 даже владельцу (modules_gate.yaml)
+      - actor: a.manager-msk1
         params:
           tenantId: tenant:a
           projectId: repair_project:a.flat
         status: 403
-        code: module_not_installed
-        note: модуль «Ремонт и стройка» у фикстур не подключён — 403 даже владельцу (modules_gate.yaml); подключение в фикстурах — W6.11
+        code: forbidden_action
+        note: модуль подключён у A, но у менеджера логистики нет гранта repairs.* — 403 forbidden_action
   - op: assignRepairForeman
     method: POST
     path: /api/v1/tenants/{tenantId}/repairs/projects/{projectId}/foreman
     rows:
-      - actor: a.owner
+      - actor: b.owner
+        params:
+          tenantId: tenant:b
+          projectId: repair_project:b.flat
+        status: 403
+        code: module_not_installed
+        body: '{"foremanMemberId":"00000000-0000-4000-8000-000000000000"}'
+        note: модуль «Ремонт и стройка» не подключён у организации B — 403 даже владельцу (modules_gate.yaml)
+      - actor: a.manager-msk1
         params:
           tenantId: tenant:a
           projectId: repair_project:a.flat
         status: 403
-        code: module_not_installed
+        code: forbidden_action
         body: '{"foremanMemberId":"00000000-0000-4000-8000-000000000000"}'
-        note: модуль «Ремонт и стройка» у фикстур не подключён — 403 даже владельцу (modules_gate.yaml); подключение в фикстурах — W6.11
+        note: модуль подключён у A, но у менеджера логистики нет гранта repairs.* — 403 forbidden_action
   - op: activateRepairProject
     method: POST
     path: /api/v1/tenants/{tenantId}/repairs/projects/{projectId}/activate
     rows:
-      - actor: a.owner
+      - actor: b.owner
+        params:
+          tenantId: tenant:b
+          projectId: repair_project:b.flat
+        status: 403
+        code: module_not_installed
+        note: модуль «Ремонт и стройка» не подключён у организации B — 403 даже владельцу (modules_gate.yaml)
+      - actor: a.manager-msk1
         params:
           tenantId: tenant:a
           projectId: repair_project:a.flat
         status: 403
-        code: module_not_installed
-        note: модуль «Ремонт и стройка» у фикстур не подключён — 403 даже владельцу (modules_gate.yaml); подключение в фикстурах — W6.11
+        code: forbidden_action
+        note: модуль подключён у A, но у менеджера логистики нет гранта repairs.* — 403 forbidden_action
   - op: listRepairWorks
     method: GET
     path: /api/v1/tenants/{tenantId}/repairs/projects/{projectId}/works
     rows:
-      - actor: a.owner
+      - actor: b.owner
+        params:
+          tenantId: tenant:b
+          projectId: repair_project:b.flat
+        status: 403
+        code: module_not_installed
+        note: модуль «Ремонт и стройка» не подключён у организации B — 403 даже владельцу (modules_gate.yaml)
+      - actor: a.manager-msk1
         params:
           tenantId: tenant:a
           projectId: repair_project:a.flat
         status: 403
-        code: module_not_installed
-        note: модуль «Ремонт и стройка» у фикстур не подключён — 403 даже владельцу (modules_gate.yaml); подключение в фикстурах — W6.11
+        code: forbidden_action
+        note: модуль подключён у A, но у менеджера логистики нет гранта repairs.* — 403 forbidden_action
   - op: listWorkLogs
     method: GET
     path: /api/v1/tenants/{tenantId}/repairs/work-logs
     rows:
-      - actor: a.owner
+      - actor: b.owner
+        params:
+          tenantId: tenant:b
+        status: 403
+        code: module_not_installed
+        note: модуль «Ремонт и стройка» не подключён у организации B — 403 даже владельцу (modules_gate.yaml)
+      - actor: a.manager-msk1
         params:
           tenantId: tenant:a
         status: 403
-        code: module_not_installed
-        note: модуль «Ремонт и стройка» у фикстур не подключён — 403 даже владельцу (modules_gate.yaml); подключение в фикстурах — W6.11
+        code: forbidden_action
+        note: модуль подключён у A, но у менеджера логистики нет гранта repairs.* — 403 forbidden_action
   - op: submitWorkLog
     method: POST
     path: /api/v1/tenants/{tenantId}/repairs/work-logs
     rows:
-      - actor: a.owner
+      - actor: b.owner
         params:
-          tenantId: tenant:a
+          tenantId: tenant:b
         status: 403
         code: module_not_installed
         body: '{"projectId":"00000000-0000-4000-8000-000000000000","workDate":"2026-10-20","timeZone":"Europe/Moscow","lines":[{"quantity":"1","unit":"hour"}],"evidenceFileIds":["00000000-0000-4000-8000-000000000000"]}'
-        note: модуль «Ремонт и стройка» у фикстур не подключён — 403 даже владельцу (modules_gate.yaml); подключение в фикстурах — W6.11
+        note: модуль «Ремонт и стройка» не подключён у организации B — 403 даже владельцу (modules_gate.yaml)
+      - actor: a.manager-msk1
+        params:
+          tenantId: tenant:a
+        status: 403
+        code: forbidden_action
+        body: '{"projectId":"00000000-0000-4000-8000-000000000000","workDate":"2026-10-20","timeZone":"Europe/Moscow","lines":[{"quantity":"1","unit":"hour"}],"evidenceFileIds":["00000000-0000-4000-8000-000000000000"]}'
+        note: модуль подключён у A, но у менеджера логистики нет гранта repairs.* — 403 forbidden_action
   - op: acceptWorkLog
     method: POST
     path: /api/v1/tenants/{tenantId}/repairs/work-logs/{workLogId}/accept
     rows:
-      - actor: a.owner
+      - actor: b.owner
+        params:
+          tenantId: tenant:b
+          workLogId: tenant:missing
+        status: 403
+        code: module_not_installed
+        note: модуль «Ремонт и стройка» не подключён у организации B — 403 даже владельцу (modules_gate.yaml)
+      - actor: a.manager-msk1
         params:
           tenantId: tenant:a
           workLogId: tenant:missing
         status: 403
-        code: module_not_installed
-        note: модуль «Ремонт и стройка» у фикстур не подключён — 403 даже владельцу (modules_gate.yaml); подключение в фикстурах — W6.11
+        code: forbidden_action
+        note: модуль подключён у A, но у менеджера логистики нет гранта repairs.* — 403 forbidden_action
   - op: returnWorkLog
     method: POST
     path: /api/v1/tenants/{tenantId}/repairs/work-logs/{workLogId}/return
     rows:
-      - actor: a.owner
+      - actor: b.owner
         params:
-          tenantId: tenant:a
+          tenantId: tenant:b
           workLogId: tenant:missing
         status: 403
         code: module_not_installed
         body: '{"reason":"xx"}'
-        note: модуль «Ремонт и стройка» у фикстур не подключён — 403 даже владельцу (modules_gate.yaml); подключение в фикстурах — W6.11
+        note: модуль «Ремонт и стройка» не подключён у организации B — 403 даже владельцу (modules_gate.yaml)
+      - actor: a.manager-msk1
+        params:
+          tenantId: tenant:a
+          workLogId: tenant:missing
+        status: 403
+        code: forbidden_action
+        body: '{"reason":"xx"}'
+        note: модуль подключён у A, но у менеджера логистики нет гранта repairs.* — 403 forbidden_action
   - op: listChangeOrders
     method: GET
     path: /api/v1/tenants/{tenantId}/repairs/projects/{projectId}/change-orders
     rows:
-      - actor: a.owner
+      - actor: b.owner
+        params:
+          tenantId: tenant:b
+          projectId: repair_project:b.flat
+        status: 403
+        code: module_not_installed
+        note: модуль «Ремонт и стройка» не подключён у организации B — 403 даже владельцу (modules_gate.yaml)
+      - actor: a.manager-msk1
         params:
           tenantId: tenant:a
           projectId: repair_project:a.flat
         status: 403
-        code: module_not_installed
-        note: модуль «Ремонт и стройка» у фикстур не подключён — 403 даже владельцу (modules_gate.yaml); подключение в фикстурах — W6.11
+        code: forbidden_action
+        note: модуль подключён у A, но у менеджера логистики нет гранта repairs.* — 403 forbidden_action
   - op: proposeChangeOrder
     method: POST
     path: /api/v1/tenants/{tenantId}/repairs/projects/{projectId}/change-orders
     rows:
-      - actor: a.owner
+      - actor: b.owner
+        params:
+          tenantId: tenant:b
+          projectId: repair_project:b.flat
+        status: 403
+        code: module_not_installed
+        body: '{"title":"x","quantity":"1","unit":"hour","photoFileIds":["00000000-0000-4000-8000-000000000000"]}'
+        note: модуль «Ремонт и стройка» не подключён у организации B — 403 даже владельцу (modules_gate.yaml)
+      - actor: a.manager-msk1
         params:
           tenantId: tenant:a
           projectId: repair_project:a.flat
         status: 403
-        code: module_not_installed
+        code: forbidden_action
         body: '{"title":"x","quantity":"1","unit":"hour","photoFileIds":["00000000-0000-4000-8000-000000000000"]}'
-        note: модуль «Ремонт и стройка» у фикстур не подключён — 403 даже владельцу (modules_gate.yaml); подключение в фикстурах — W6.11
+        note: модуль подключён у A, но у менеджера логистики нет гранта repairs.* — 403 forbidden_action
   - op: rejectChangeOrder
     method: POST
     path: /api/v1/tenants/{tenantId}/repairs/change-orders/{changeOrderId}/reject
     rows:
-      - actor: a.owner
+      - actor: b.owner
         params:
-          tenantId: tenant:a
+          tenantId: tenant:b
           changeOrderId: tenant:missing
         status: 403
         code: module_not_installed
         body: '{"reason":"already_in_estimate"}'
-        note: модуль «Ремонт и стройка» у фикстур не подключён — 403 даже владельцу (modules_gate.yaml); подключение в фикстурах — W6.11
+        note: модуль «Ремонт и стройка» не подключён у организации B — 403 даже владельцу (modules_gate.yaml)
+      - actor: a.manager-msk1
+        params:
+          tenantId: tenant:a
+          changeOrderId: tenant:missing
+        status: 403
+        code: forbidden_action
+        body: '{"reason":"already_in_estimate"}'
+        note: модуль подключён у A, но у менеджера логистики нет гранта repairs.* — 403 forbidden_action
   - op: getMeasurement
     method: GET
     path: /api/v1/tenants/{tenantId}/repairs/projects/{projectId}/measurement
     rows:
-      - actor: a.owner
+      - actor: b.owner
+        params:
+          tenantId: tenant:b
+          projectId: repair_project:b.flat
+        status: 403
+        code: module_not_installed
+        note: модуль «Ремонт и стройка» не подключён у организации B — 403 даже владельцу (modules_gate.yaml)
+      - actor: a.manager-msk1
         params:
           tenantId: tenant:a
           projectId: repair_project:a.flat
         status: 403
-        code: module_not_installed
-        note: модуль «Ремонт и стройка» у фикстур не подключён — 403 даже владельцу (modules_gate.yaml); подключение в фикстурах — W6.11
+        code: forbidden_action
+        note: модуль подключён у A, но у менеджера логистики нет гранта repairs.* — 403 forbidden_action
   - op: putMeasurement
     method: PUT
     path: /api/v1/tenants/{tenantId}/repairs/projects/{projectId}/measurement
     rows:
-      - actor: a.owner
+      - actor: b.owner
+        params:
+          tenantId: tenant:b
+          projectId: repair_project:b.flat
+        status: 403
+        code: module_not_installed
+        body: '{"rooms":[{"name":"x","lengthM":"1","widthM":"1","heightM":"1","openingsM2":"1"}]}'
+        note: модуль «Ремонт и стройка» не подключён у организации B — 403 даже владельцу (modules_gate.yaml)
+      - actor: a.manager-msk1
         params:
           tenantId: tenant:a
           projectId: repair_project:a.flat
         status: 403
-        code: module_not_installed
+        code: forbidden_action
         body: '{"rooms":[{"name":"x","lengthM":"1","widthM":"1","heightM":"1","openingsM2":"1"}]}'
-        note: модуль «Ремонт и стройка» у фикстур не подключён — 403 даже владельцу (modules_gate.yaml); подключение в фикстурах — W6.11
+        note: модуль подключён у A, но у менеджера логистики нет гранта repairs.* — 403 forbidden_action
   - op: listEstimates
     method: GET
     path: /api/v1/tenants/{tenantId}/repairs/projects/{projectId}/estimates
     rows:
-      - actor: a.owner
+      - actor: b.owner
+        params:
+          tenantId: tenant:b
+          projectId: repair_project:b.flat
+        status: 403
+        code: module_not_installed
+        note: модуль «Ремонт и стройка» не подключён у организации B — 403 даже владельцу (modules_gate.yaml)
+      - actor: a.manager-msk1
         params:
           tenantId: tenant:a
           projectId: repair_project:a.flat
         status: 403
-        code: module_not_installed
-        note: модуль «Ремонт и стройка» у фикстур не подключён — 403 даже владельцу (modules_gate.yaml); подключение в фикстурах — W6.11
+        code: forbidden_action
+        note: модуль подключён у A, но у менеджера логистики нет гранта repairs.* — 403 forbidden_action
   - op: getEstimate
     method: GET
     path: /api/v1/tenants/{tenantId}/repairs/projects/{projectId}/estimates/{version}
     rows:
-      - actor: a.owner
+      - actor: b.owner
+        params:
+          tenantId: tenant:b
+          projectId: repair_project:b.flat
+          version: tenant:missing
+        status: 403
+        code: module_not_installed
+        note: модуль «Ремонт и стройка» не подключён у организации B — 403 даже владельцу (modules_gate.yaml)
+      - actor: a.manager-msk1
         params:
           tenantId: tenant:a
           projectId: repair_project:a.flat
           version: tenant:missing
         status: 403
-        code: module_not_installed
-        note: модуль «Ремонт и стройка» у фикстур не подключён — 403 даже владельцу (modules_gate.yaml); подключение в фикстурах — W6.11
+        code: forbidden_action
+        note: модуль подключён у A, но у менеджера логистики нет гранта repairs.* — 403 forbidden_action
   - op: createEstimateFromTemplate
     method: POST
     path: /api/v1/tenants/{tenantId}/repairs/projects/{projectId}/estimate-drafts
     rows:
-      - actor: a.owner
+      - actor: b.owner
+        params:
+          tenantId: tenant:b
+          projectId: repair_project:b.flat
+        status: 403
+        code: module_not_installed
+        body: '{"templateId":"00000000-0000-4000-8000-000000000000"}'
+        note: модуль «Ремонт и стройка» не подключён у организации B — 403 даже владельцу (modules_gate.yaml)
+      - actor: a.manager-msk1
         params:
           tenantId: tenant:a
           projectId: repair_project:a.flat
         status: 403
-        code: module_not_installed
+        code: forbidden_action
         body: '{"templateId":"00000000-0000-4000-8000-000000000000"}'
-        note: модуль «Ремонт и стройка» у фикстур не подключён — 403 даже владельцу (modules_gate.yaml); подключение в фикстурах — W6.11
+        note: модуль подключён у A, но у менеджера логистики нет гранта repairs.* — 403 forbidden_action
   - op: createEstimateRevision
     method: POST
     path: /api/v1/tenants/{tenantId}/repairs/projects/{projectId}/estimates
     rows:
-      - actor: a.owner
+      - actor: b.owner
+        params:
+          tenantId: tenant:b
+          projectId: repair_project:b.flat
+        status: 403
+        code: module_not_installed
+        body: '{"kind":"revision"}'
+        note: модуль «Ремонт и стройка» не подключён у организации B — 403 даже владельцу (modules_gate.yaml)
+      - actor: a.manager-msk1
         params:
           tenantId: tenant:a
           projectId: repair_project:a.flat
         status: 403
-        code: module_not_installed
+        code: forbidden_action
         body: '{"kind":"revision"}'
-        note: модуль «Ремонт и стройка» у фикстур не подключён — 403 даже владельцу (modules_gate.yaml); подключение в фикстурах — W6.11
+        note: модуль подключён у A, но у менеджера логистики нет гранта repairs.* — 403 forbidden_action
   - op: updateEstimateDraft
     method: PATCH
     path: /api/v1/tenants/{tenantId}/repairs/projects/{projectId}/estimates/{version}
     rows:
-      - actor: a.owner
+      - actor: b.owner
         params:
-          tenantId: tenant:a
-          projectId: repair_project:a.flat
+          tenantId: tenant:b
+          projectId: repair_project:b.flat
           version: tenant:missing
         status: 403
         code: module_not_installed
         body: '{"addSections":["x"]}'
-        note: модуль «Ремонт и стройка» у фикстур не подключён — 403 даже владельцу (modules_gate.yaml); подключение в фикстурах — W6.11
+        note: модуль «Ремонт и стройка» не подключён у организации B — 403 даже владельцу (modules_gate.yaml)
+      - actor: a.manager-msk1
+        params:
+          tenantId: tenant:a
+          projectId: repair_project:a.flat
+          version: tenant:missing
+        status: 403
+        code: forbidden_action
+        body: '{"addSections":["x"]}'
+        note: модуль подключён у A, но у менеджера логистики нет гранта repairs.* — 403 forbidden_action
   - op: sendEstimate
     method: POST
     path: /api/v1/tenants/{tenantId}/repairs/projects/{projectId}/estimates/{version}/send
     rows:
-      - actor: a.owner
+      - actor: b.owner
+        params:
+          tenantId: tenant:b
+          projectId: repair_project:b.flat
+          version: tenant:missing
+        status: 403
+        code: module_not_installed
+        note: модуль «Ремонт и стройка» не подключён у организации B — 403 даже владельцу (modules_gate.yaml)
+      - actor: a.manager-msk1
         params:
           tenantId: tenant:a
           projectId: repair_project:a.flat
           version: tenant:missing
         status: 403
-        code: module_not_installed
-        note: модуль «Ремонт и стройка» у фикстур не подключён — 403 даже владельцу (modules_gate.yaml); подключение в фикстурах — W6.11
+        code: forbidden_action
+        note: модуль подключён у A, но у менеджера логистики нет гранта repairs.* — 403 forbidden_action
   - op: recallEstimate
     method: POST
     path: /api/v1/tenants/{tenantId}/repairs/projects/{projectId}/estimates/{version}/recall
     rows:
-      - actor: a.owner
+      - actor: b.owner
+        params:
+          tenantId: tenant:b
+          projectId: repair_project:b.flat
+          version: tenant:missing
+        status: 403
+        code: module_not_installed
+        note: модуль «Ремонт и стройка» не подключён у организации B — 403 даже владельцу (modules_gate.yaml)
+      - actor: a.manager-msk1
         params:
           tenantId: tenant:a
           projectId: repair_project:a.flat
           version: tenant:missing
         status: 403
-        code: module_not_installed
-        note: модуль «Ремонт и стройка» у фикстур не подключён — 403 даже владельцу (modules_gate.yaml); подключение в фикстурах — W6.11
+        code: forbidden_action
+        note: модуль подключён у A, но у менеджера логистики нет гранта repairs.* — 403 forbidden_action
   - op: deleteEstimateDraft
     method: DELETE
     path: /api/v1/tenants/{tenantId}/repairs/projects/{projectId}/estimates/{version}
     rows:
-      - actor: a.owner
+      - actor: b.owner
+        params:
+          tenantId: tenant:b
+          projectId: repair_project:b.flat
+          version: tenant:missing
+        status: 403
+        code: module_not_installed
+        note: модуль «Ремонт и стройка» не подключён у организации B — 403 даже владельцу (modules_gate.yaml)
+      - actor: a.manager-msk1
         params:
           tenantId: tenant:a
           projectId: repair_project:a.flat
           version: tenant:missing
         status: 403
-        code: module_not_installed
-        note: модуль «Ремонт и стройка» у фикстур не подключён — 403 даже владельцу (modules_gate.yaml); подключение в фикстурах — W6.11
+        code: forbidden_action
+        note: модуль подключён у A, но у менеджера логистики нет гранта repairs.* — 403 forbidden_action
   - op: diffEstimates
     method: GET
     path: /api/v1/tenants/{tenantId}/repairs/projects/{projectId}/estimates/{version}/diff
     rows:
-      - actor: a.owner
+      - actor: b.owner
+        params:
+          tenantId: tenant:b
+          projectId: repair_project:b.flat
+          version: tenant:missing
+        status: 403
+        code: module_not_installed
+        note: модуль «Ремонт и стройка» не подключён у организации B — 403 даже владельцу (modules_gate.yaml)
+      - actor: a.manager-msk1
         params:
           tenantId: tenant:a
           projectId: repair_project:a.flat
           version: tenant:missing
         status: 403
-        code: module_not_installed
-        note: модуль «Ремонт и стройка» у фикстур не подключён — 403 даже владельцу (modules_gate.yaml); подключение в фикстурах — W6.11
+        code: forbidden_action
+        note: модуль подключён у A, но у менеджера логистики нет гранта repairs.* — 403 forbidden_action
   - op: saveProjectAsTemplate
     method: POST
     path: /api/v1/tenants/{tenantId}/repairs/projects/{projectId}/save-as-template
     rows:
-      - actor: a.owner
+      - actor: b.owner
+        params:
+          tenantId: tenant:b
+          projectId: repair_project:b.flat
+        status: 403
+        code: module_not_installed
+        body: "{}"
+        note: модуль «Ремонт и стройка» не подключён у организации B — 403 даже владельцу (modules_gate.yaml)
+      - actor: a.manager-msk1
         params:
           tenantId: tenant:a
           projectId: repair_project:a.flat
         status: 403
-        code: module_not_installed
+        code: forbidden_action
         body: "{}"
-        note: модуль «Ремонт и стройка» у фикстур не подключён — 403 даже владельцу (modules_gate.yaml); подключение в фикстурах — W6.11
+        note: модуль подключён у A, но у менеджера логистики нет гранта repairs.* — 403 forbidden_action
   - op: listPriceItems
     method: GET
     path: /api/v1/tenants/{tenantId}/repairs/price-items
     rows:
-      - actor: a.owner
+      - actor: b.owner
+        params:
+          tenantId: tenant:b
+        status: 403
+        code: module_not_installed
+        note: модуль «Ремонт и стройка» не подключён у организации B — 403 даже владельцу (modules_gate.yaml)
+      - actor: a.manager-msk1
         params:
           tenantId: tenant:a
         status: 403
-        code: module_not_installed
-        note: модуль «Ремонт и стройка» у фикстур не подключён — 403 даже владельцу (modules_gate.yaml); подключение в фикстурах — W6.11
+        code: forbidden_action
+        note: модуль подключён у A, но у менеджера логистики нет гранта repairs.* — 403 forbidden_action
   - op: createPriceItem
     method: POST
     path: /api/v1/tenants/{tenantId}/repairs/price-items
     rows:
-      - actor: a.owner
+      - actor: b.owner
         params:
-          tenantId: tenant:a
+          tenantId: tenant:b
         status: 403
         code: module_not_installed
         body: '{"section":"x","name":"x","unit":"hour","kind":"work","price":{"amountMinor":1,"currency":"RUB"}}'
-        note: модуль «Ремонт и стройка» у фикстур не подключён — 403 даже владельцу (modules_gate.yaml); подключение в фикстурах — W6.11
+        note: модуль «Ремонт и стройка» не подключён у организации B — 403 даже владельцу (modules_gate.yaml)
+      - actor: a.manager-msk1
+        params:
+          tenantId: tenant:a
+        status: 403
+        code: forbidden_action
+        body: '{"section":"x","name":"x","unit":"hour","kind":"work","price":{"amountMinor":1,"currency":"RUB"}}'
+        note: модуль подключён у A, но у менеджера логистики нет гранта repairs.* — 403 forbidden_action
   - op: updatePriceItem
     method: PATCH
     path: /api/v1/tenants/{tenantId}/repairs/price-items/{priceItemId}
     rows:
-      - actor: a.owner
+      - actor: b.owner
         params:
-          tenantId: tenant:a
+          tenantId: tenant:b
           priceItemId: tenant:missing
         status: 403
         code: module_not_installed
         body: '{"section":"x"}'
-        note: модуль «Ремонт и стройка» у фикстур не подключён — 403 даже владельцу (modules_gate.yaml); подключение в фикстурах — W6.11
+        note: модуль «Ремонт и стройка» не подключён у организации B — 403 даже владельцу (modules_gate.yaml)
+      - actor: a.manager-msk1
+        params:
+          tenantId: tenant:a
+          priceItemId: tenant:missing
+        status: 403
+        code: forbidden_action
+        body: '{"section":"x"}'
+        note: модуль подключён у A, но у менеджера логистики нет гранта repairs.* — 403 forbidden_action
   - op: listTemplates
     method: GET
     path: /api/v1/tenants/{tenantId}/repairs/templates
     rows:
-      - actor: a.owner
+      - actor: b.owner
+        params:
+          tenantId: tenant:b
+        status: 403
+        code: module_not_installed
+        note: модуль «Ремонт и стройка» не подключён у организации B — 403 даже владельцу (modules_gate.yaml)
+      - actor: a.manager-msk1
         params:
           tenantId: tenant:a
         status: 403
-        code: module_not_installed
-        note: модуль «Ремонт и стройка» у фикстур не подключён — 403 даже владельцу (modules_gate.yaml); подключение в фикстурах — W6.11
+        code: forbidden_action
+        note: модуль подключён у A, но у менеджера логистики нет гранта repairs.* — 403 forbidden_action
   - op: getTemplate
     method: GET
     path: /api/v1/tenants/{tenantId}/repairs/templates/{templateId}
     rows:
-      - actor: a.owner
+      - actor: b.owner
+        params:
+          tenantId: tenant:b
+          templateId: tenant:missing
+        status: 403
+        code: module_not_installed
+        note: модуль «Ремонт и стройка» не подключён у организации B — 403 даже владельцу (modules_gate.yaml)
+      - actor: a.manager-msk1
         params:
           tenantId: tenant:a
           templateId: tenant:missing
         status: 403
-        code: module_not_installed
-        note: модуль «Ремонт и стройка» у фикстур не подключён — 403 даже владельцу (modules_gate.yaml); подключение в фикстурах — W6.11
+        code: forbidden_action
+        note: модуль подключён у A, но у менеджера логистики нет гранта repairs.* — 403 forbidden_action
   - op: updateTemplate
     method: PATCH
     path: /api/v1/tenants/{tenantId}/repairs/templates/{templateId}
     rows:
-      - actor: a.owner
+      - actor: b.owner
         params:
-          tenantId: tenant:a
+          tenantId: tenant:b
           templateId: tenant:missing
         status: 403
         code: module_not_installed
         body: '{"name":"x"}'
-        note: модуль «Ремонт и стройка» у фикстур не подключён — 403 даже владельцу (modules_gate.yaml); подключение в фикстурах — W6.11
-  - op: copyTemplate
-    method: POST
-    path: /api/v1/tenants/{tenantId}/repairs/templates/{templateId}/copy
-    rows:
-      - actor: a.owner
+        note: модуль «Ремонт и стройка» не подключён у организации B — 403 даже владельцу (modules_gate.yaml)
+      - actor: a.manager-msk1
         params:
           tenantId: tenant:a
           templateId: tenant:missing
         status: 403
+        code: forbidden_action
+        body: '{"name":"x"}'
+        note: модуль подключён у A, но у менеджера логистики нет гранта repairs.* — 403 forbidden_action
+  - op: copyTemplate
+    method: POST
+    path: /api/v1/tenants/{tenantId}/repairs/templates/{templateId}/copy
+    rows:
+      - actor: b.owner
+        params:
+          tenantId: tenant:b
+          templateId: tenant:missing
+        status: 403
         code: module_not_installed
         body: "{}"
-        note: модуль «Ремонт и стройка» у фикстур не подключён — 403 даже владельцу (modules_gate.yaml); подключение в фикстурах — W6.11
+        note: модуль «Ремонт и стройка» не подключён у организации B — 403 даже владельцу (modules_gate.yaml)
+      - actor: a.manager-msk1
+        params:
+          tenantId: tenant:a
+          templateId: tenant:missing
+        status: 403
+        code: forbidden_action
+        body: "{}"
+        note: модуль подключён у A, но у менеджера логистики нет гранта repairs.* — 403 forbidden_action
   - op: getSchedule
     method: GET
     path: /api/v1/tenants/{tenantId}/repairs/projects/{projectId}/schedule
     rows:
-      - actor: a.owner
+      - actor: b.owner
+        params:
+          tenantId: tenant:b
+          projectId: repair_project:b.flat
+        status: 403
+        code: module_not_installed
+        note: модуль «Ремонт и стройка» не подключён у организации B — 403 даже владельцу (modules_gate.yaml)
+      - actor: a.manager-msk1
         params:
           tenantId: tenant:a
           projectId: repair_project:a.flat
         status: 403
-        code: module_not_installed
-        note: модуль «Ремонт и стройка» у фикстур не подключён — 403 даже владельцу (modules_gate.yaml); подключение в фикстурах — W6.11
+        code: forbidden_action
+        note: модуль подключён у A, но у менеджера логистики нет гранта repairs.* — 403 forbidden_action
   - op: createScheduleFromEstimate
     method: POST
     path: /api/v1/tenants/{tenantId}/repairs/projects/{projectId}/schedule/from-estimate
     rows:
-      - actor: a.owner
+      - actor: b.owner
+        params:
+          tenantId: tenant:b
+          projectId: repair_project:b.flat
+        status: 403
+        code: module_not_installed
+        body: '{"estimateVersion":1}'
+        note: модуль «Ремонт и стройка» не подключён у организации B — 403 даже владельцу (modules_gate.yaml)
+      - actor: a.manager-msk1
         params:
           tenantId: tenant:a
           projectId: repair_project:a.flat
         status: 403
-        code: module_not_installed
+        code: forbidden_action
         body: '{"estimateVersion":1}'
-        note: модуль «Ремонт и стройка» у фикстур не подключён — 403 даже владельцу (modules_gate.yaml); подключение в фикстурах — W6.11
+        note: модуль подключён у A, но у менеджера логистики нет гранта repairs.* — 403 forbidden_action
   - op: previewScheduleChange
     method: POST
     path: /api/v1/tenants/{tenantId}/repairs/projects/{projectId}/schedule/preview
     rows:
-      - actor: a.owner
+      - actor: b.owner
+        params:
+          tenantId: tenant:b
+          projectId: repair_project:b.flat
+        status: 403
+        code: module_not_installed
+        body: '{"changes":[{"stageId":"00000000-0000-4000-8000-000000000000"}]}'
+        note: модуль «Ремонт и стройка» не подключён у организации B — 403 даже владельцу (modules_gate.yaml)
+      - actor: a.manager-msk1
         params:
           tenantId: tenant:a
           projectId: repair_project:a.flat
         status: 403
-        code: module_not_installed
+        code: forbidden_action
         body: '{"changes":[{"stageId":"00000000-0000-4000-8000-000000000000"}]}'
-        note: модуль «Ремонт и стройка» у фикстур не подключён — 403 даже владельцу (modules_gate.yaml); подключение в фикстурах — W6.11
+        note: модуль подключён у A, но у менеджера логистики нет гранта repairs.* — 403 forbidden_action
   - op: applyScheduleChange
     method: POST
     path: /api/v1/tenants/{tenantId}/repairs/projects/{projectId}/schedule/changes
     rows:
-      - actor: a.owner
+      - actor: b.owner
+        params:
+          tenantId: tenant:b
+          projectId: repair_project:b.flat
+        status: 403
+        code: module_not_installed
+        body: '{"changes":[{"stageId":"00000000-0000-4000-8000-000000000000"}],"reason":"client_request"}'
+        note: модуль «Ремонт и стройка» не подключён у организации B — 403 даже владельцу (modules_gate.yaml)
+      - actor: a.manager-msk1
         params:
           tenantId: tenant:a
           projectId: repair_project:a.flat
         status: 403
-        code: module_not_installed
+        code: forbidden_action
         body: '{"changes":[{"stageId":"00000000-0000-4000-8000-000000000000"}],"reason":"client_request"}'
-        note: модуль «Ремонт и стройка» у фикстур не подключён — 403 даже владельцу (modules_gate.yaml); подключение в фикстурах — W6.11
+        note: модуль подключён у A, но у менеджера логистики нет гранта repairs.* — 403 forbidden_action
   - op: setScheduleStageExecutor
     method: PATCH
     path: /api/v1/tenants/{tenantId}/repairs/projects/{projectId}/schedule/stages/{stageId}
     rows:
-      - actor: a.owner
+      - actor: b.owner
+        params:
+          tenantId: tenant:b
+          projectId: repair_project:b.flat
+          stageId: tenant:missing
+        status: 403
+        code: module_not_installed
+        body: "{}"
+        note: модуль «Ремонт и стройка» не подключён у организации B — 403 даже владельцу (modules_gate.yaml)
+      - actor: a.manager-msk1
         params:
           tenantId: tenant:a
           projectId: repair_project:a.flat
           stageId: tenant:missing
         status: 403
-        code: module_not_installed
+        code: forbidden_action
         body: "{}"
-        note: модуль «Ремонт и стройка» у фикстур не подключён — 403 даже владельцу (modules_gate.yaml); подключение в фикстурах — W6.11
+        note: модуль подключён у A, но у менеджера логистики нет гранта repairs.* — 403 forbidden_action
   - op: createScheduleBaseline
     method: POST
     path: /api/v1/tenants/{tenantId}/repairs/projects/{projectId}/schedule/baselines
     rows:
-      - actor: a.owner
+      - actor: b.owner
+        params:
+          tenantId: tenant:b
+          projectId: repair_project:b.flat
+        status: 403
+        code: module_not_installed
+        body: '{"agreementNo":1}'
+        note: модуль «Ремонт и стройка» не подключён у организации B — 403 даже владельцу (modules_gate.yaml)
+      - actor: a.manager-msk1
         params:
           tenantId: tenant:a
           projectId: repair_project:a.flat
         status: 403
-        code: module_not_installed
+        code: forbidden_action
         body: '{"agreementNo":1}'
-        note: модуль «Ремонт и стройка» у фикстур не подключён — 403 даже владельцу (modules_gate.yaml); подключение в фикстурах — W6.11
+        note: модуль подключён у A, но у менеджера логистики нет гранта repairs.* — 403 forbidden_action
   - op: handOverRepairProject
     method: POST
     path: /api/v1/tenants/{tenantId}/repairs/projects/{projectId}/hand-over
     rows:
-      - actor: a.owner
+      - actor: b.owner
+        params:
+          tenantId: tenant:b
+          projectId: repair_project:b.flat
+        status: 403
+        code: module_not_installed
+        body: '{"actDocumentId":"00000000-0000-4000-8000-000000000000"}'
+        note: модуль «Ремонт и стройка» не подключён у организации B — 403 даже владельцу (modules_gate.yaml)
+      - actor: a.manager-msk1
         params:
           tenantId: tenant:a
           projectId: repair_project:a.flat
         status: 403
-        code: module_not_installed
+        code: forbidden_action
         body: '{"actDocumentId":"00000000-0000-4000-8000-000000000000"}'
-        note: модуль «Ремонт и стройка» у фикстур не подключён — 403 даже владельцу (modules_gate.yaml); подключение в фикстурах — W6.11
+        note: модуль подключён у A, но у менеджера логистики нет гранта repairs.* — 403 forbidden_action
   - op: listRepairDocuments
     method: GET
     path: /api/v1/tenants/{tenantId}/repairs/projects/{projectId}/documents
     rows:
-      - actor: a.owner
+      - actor: b.owner
+        params:
+          tenantId: tenant:b
+          projectId: repair_project:b.flat
+        status: 403
+        code: module_not_installed
+        note: модуль «Ремонт и стройка» не подключён у организации B — 403 даже владельцу (modules_gate.yaml)
+      - actor: a.manager-msk1
         params:
           tenantId: tenant:a
           projectId: repair_project:a.flat
         status: 403
-        code: module_not_installed
-        note: модуль «Ремонт и стройка» у фикстур не подключён — 403 даже владельцу (modules_gate.yaml); подключение в фикстурах — W6.11
+        code: forbidden_action
+        note: модуль подключён у A, но у менеджера логистики нет гранта repairs.* — 403 forbidden_action
   - op: requestDocumentSignature
     method: POST
     path: /api/v1/tenants/{tenantId}/repairs/documents/{documentId}/sign-requests
     rows:
-      - actor: a.owner
+      - actor: b.owner
+        params:
+          tenantId: tenant:b
+          documentId: tenant:missing
+        status: 403
+        code: module_not_installed
+        note: модуль «Ремонт и стройка» не подключён у организации B — 403 даже владельцу (modules_gate.yaml)
+      - actor: a.manager-msk1
         params:
           tenantId: tenant:a
           documentId: tenant:missing
         status: 403
-        code: module_not_installed
-        note: модуль «Ремонт и стройка» у фикстур не подключён — 403 даже владельцу (modules_gate.yaml); подключение в фикстурах — W6.11
+        code: forbidden_action
+        note: модуль подключён у A, но у менеджера логистики нет гранта repairs.* — 403 forbidden_action
   - op: listSupplyRequests
     method: GET
     path: /api/v1/tenants/{tenantId}/repairs/supply-requests
     rows:
-      - actor: a.owner
+      - actor: b.owner
+        params:
+          tenantId: tenant:b
+        status: 403
+        code: module_not_installed
+        note: модуль «Ремонт и стройка» не подключён у организации B — 403 даже владельцу (modules_gate.yaml)
+      - actor: a.manager-msk1
         params:
           tenantId: tenant:a
         status: 403
-        code: module_not_installed
-        note: модуль «Ремонт и стройка» у фикстур не подключён — 403 даже владельцу (modules_gate.yaml); подключение в фикстурах — W6.11
+        code: forbidden_action
+        note: модуль подключён у A, но у менеджера логистики нет гранта repairs.* — 403 forbidden_action
   - op: createSupplyRequest
     method: POST
     path: /api/v1/tenants/{tenantId}/repairs/projects/{projectId}/supply-requests
     rows:
-      - actor: a.owner
+      - actor: b.owner
+        params:
+          tenantId: tenant:b
+          projectId: repair_project:b.flat
+        status: 403
+        code: module_not_installed
+        body: '{"priceItemId":"00000000-0000-4000-8000-000000000000","quantity":"1","needBy":"2026-10-20"}'
+        note: модуль «Ремонт и стройка» не подключён у организации B — 403 даже владельцу (modules_gate.yaml)
+      - actor: a.manager-msk1
         params:
           tenantId: tenant:a
           projectId: repair_project:a.flat
         status: 403
-        code: module_not_installed
+        code: forbidden_action
         body: '{"priceItemId":"00000000-0000-4000-8000-000000000000","quantity":"1","needBy":"2026-10-20"}'
-        note: модуль «Ремонт и стройка» у фикстур не подключён — 403 даже владельцу (modules_gate.yaml); подключение в фикстурах — W6.11
+        note: модуль подключён у A, но у менеджера логистики нет гранта repairs.* — 403 forbidden_action
   - op: reserveSupplyRequest
     method: POST
     path: /api/v1/tenants/{tenantId}/repairs/supply-requests/{supplyRequestId}/reserve
     rows:
-      - actor: a.owner
+      - actor: b.owner
         params:
-          tenantId: tenant:a
+          tenantId: tenant:b
           supplyRequestId: tenant:missing
         status: 403
         code: module_not_installed
         body: '{"warehouseId":"00000000-0000-4000-8000-000000000000"}'
-        note: модуль «Ремонт и стройка» у фикстур не подключён — 403 даже владельцу (modules_gate.yaml); подключение в фикстурах — W6.11
+        note: модуль «Ремонт и стройка» не подключён у организации B — 403 даже владельцу (modules_gate.yaml)
+      - actor: a.manager-msk1
+        params:
+          tenantId: tenant:a
+          supplyRequestId: tenant:missing
+        status: 403
+        code: forbidden_action
+        body: '{"warehouseId":"00000000-0000-4000-8000-000000000000"}'
+        note: модуль подключён у A, но у менеджера логистики нет гранта repairs.* — 403 forbidden_action
   - op: issueSupplyRequest
     method: POST
     path: /api/v1/tenants/{tenantId}/repairs/supply-requests/{supplyRequestId}/issue
     rows:
-      - actor: a.owner
+      - actor: b.owner
+        params:
+          tenantId: tenant:b
+          supplyRequestId: tenant:missing
+        status: 403
+        code: module_not_installed
+        note: модуль «Ремонт и стройка» не подключён у организации B — 403 даже владельцу (modules_gate.yaml)
+      - actor: a.manager-msk1
         params:
           tenantId: tenant:a
           supplyRequestId: tenant:missing
         status: 403
-        code: module_not_installed
-        note: модуль «Ремонт и стройка» у фикстур не подключён — 403 даже владельцу (modules_gate.yaml); подключение в фикстурах — W6.11
+        code: forbidden_action
+        note: модуль подключён у A, но у менеджера логистики нет гранта repairs.* — 403 forbidden_action
   - op: consumeSupplyRequest
     method: POST
     path: /api/v1/tenants/{tenantId}/repairs/supply-requests/{supplyRequestId}/consume
     rows:
-      - actor: a.owner
+      - actor: b.owner
+        params:
+          tenantId: tenant:b
+          supplyRequestId: tenant:missing
+        status: 403
+        code: module_not_installed
+        note: модуль «Ремонт и стройка» не подключён у организации B — 403 даже владельцу (modules_gate.yaml)
+      - actor: a.manager-msk1
         params:
           tenantId: tenant:a
           supplyRequestId: tenant:missing
         status: 403
-        code: module_not_installed
-        note: модуль «Ремонт и стройка» у фикстур не подключён — 403 даже владельцу (modules_gate.yaml); подключение в фикстурах — W6.11
+        code: forbidden_action
+        note: модуль подключён у A, но у менеджера логистики нет гранта repairs.* — 403 forbidden_action
   - op: createPurchase
     method: POST
     path: /api/v1/tenants/{tenantId}/repairs/purchases
     rows:
-      - actor: a.owner
+      - actor: b.owner
         params:
-          tenantId: tenant:a
+          tenantId: tenant:b
         status: 403
         code: module_not_installed
         body: '{"supplier":"x","lines":[{"supplyRequestId":"00000000-0000-4000-8000-000000000000"}]}'
-        note: модуль «Ремонт и стройка» у фикстур не подключён — 403 даже владельцу (modules_gate.yaml); подключение в фикстурах — W6.11
+        note: модуль «Ремонт и стройка» не подключён у организации B — 403 даже владельцу (modules_gate.yaml)
+      - actor: a.manager-msk1
+        params:
+          tenantId: tenant:a
+        status: 403
+        code: forbidden_action
+        body: '{"supplier":"x","lines":[{"supplyRequestId":"00000000-0000-4000-8000-000000000000"}]}'
+        note: модуль подключён у A, но у менеджера логистики нет гранта repairs.* — 403 forbidden_action
   - op: listPurchases
     method: GET
     path: /api/v1/tenants/{tenantId}/repairs/purchases
     rows:
-      - actor: a.owner
+      - actor: b.owner
+        params:
+          tenantId: tenant:b
+        status: 403
+        code: module_not_installed
+        note: модуль «Ремонт и стройка» не подключён у организации B — 403 даже владельцу (modules_gate.yaml)
+      - actor: a.manager-msk1
         params:
           tenantId: tenant:a
         status: 403
-        code: module_not_installed
-        note: модуль «Ремонт и стройка» у фикстур не подключён — 403 даже владельцу (modules_gate.yaml); подключение в фикстурах — W6.11
+        code: forbidden_action
+        note: модуль подключён у A, но у менеджера логистики нет гранта repairs.* — 403 forbidden_action
   - op: receivePurchase
     method: POST
     path: /api/v1/tenants/{tenantId}/repairs/purchases/{purchaseId}/receive
     rows:
-      - actor: a.owner
+      - actor: b.owner
         params:
-          tenantId: tenant:a
+          tenantId: tenant:b
           purchaseId: tenant:missing
         status: 403
         code: module_not_installed
         body: '{"receiptQr":"x"}'
-        note: модуль «Ремонт и стройка» у фикстур не подключён — 403 даже владельцу (modules_gate.yaml); подключение в фикстурах — W6.11
+        note: модуль «Ремонт и стройка» не подключён у организации B — 403 даже владельцу (modules_gate.yaml)
+      - actor: a.manager-msk1
+        params:
+          tenantId: tenant:a
+          purchaseId: tenant:missing
+        status: 403
+        code: forbidden_action
+        body: '{"receiptQr":"x"}'
+        note: модуль подключён у A, но у менеджера логистики нет гранта repairs.* — 403 forbidden_action
   - op: listProjectStock
     method: GET
     path: /api/v1/tenants/{tenantId}/repairs/project-stock
     rows:
-      - actor: a.owner
+      - actor: b.owner
+        params:
+          tenantId: tenant:b
+        status: 403
+        code: module_not_installed
+        note: модуль «Ремонт и стройка» не подключён у организации B — 403 даже владельцу (modules_gate.yaml)
+      - actor: a.manager-msk1
         params:
           tenantId: tenant:a
         status: 403
-        code: module_not_installed
-        note: модуль «Ремонт и стройка» у фикстур не подключён — 403 даже владельцу (modules_gate.yaml); подключение в фикстурах — W6.11
+        code: forbidden_action
+        note: модуль подключён у A, но у менеджера логистики нет гранта repairs.* — 403 forbidden_action
   - op: returnProjectStock
     method: POST
     path: /api/v1/tenants/{tenantId}/repairs/projects/{projectId}/stock/return
     rows:
-      - actor: a.owner
+      - actor: b.owner
+        params:
+          tenantId: tenant:b
+          projectId: repair_project:b.flat
+        status: 403
+        code: module_not_installed
+        body: '{"warehouseId":"00000000-0000-4000-8000-000000000000","items":[{"priceItemId":"00000000-0000-4000-8000-000000000000","quantity":"1"}]}'
+        note: модуль «Ремонт и стройка» не подключён у организации B — 403 даже владельцу (modules_gate.yaml)
+      - actor: a.manager-msk1
         params:
           tenantId: tenant:a
           projectId: repair_project:a.flat
         status: 403
-        code: module_not_installed
+        code: forbidden_action
         body: '{"warehouseId":"00000000-0000-4000-8000-000000000000","items":[{"priceItemId":"00000000-0000-4000-8000-000000000000","quantity":"1"}]}'
-        note: модуль «Ремонт и стройка» у фикстур не подключён — 403 даже владельцу (modules_gate.yaml); подключение в фикстурах — W6.11
+        note: модуль подключён у A, но у менеджера логистики нет гранта repairs.* — 403 forbidden_action
   - op: transferProjectStock
     method: POST
     path: /api/v1/tenants/{tenantId}/repairs/projects/{projectId}/stock/transfer
     rows:
-      - actor: a.owner
+      - actor: b.owner
+        params:
+          tenantId: tenant:b
+          projectId: repair_project:b.flat
+        status: 403
+        code: module_not_installed
+        body: '{"toProjectId":"00000000-0000-4000-8000-000000000000","items":[{"priceItemId":"00000000-0000-4000-8000-000000000000","quantity":"1"}]}'
+        note: модуль «Ремонт и стройка» не подключён у организации B — 403 даже владельцу (modules_gate.yaml)
+      - actor: a.manager-msk1
         params:
           tenantId: tenant:a
           projectId: repair_project:a.flat
         status: 403
-        code: module_not_installed
+        code: forbidden_action
         body: '{"toProjectId":"00000000-0000-4000-8000-000000000000","items":[{"priceItemId":"00000000-0000-4000-8000-000000000000","quantity":"1"}]}'
-        note: модуль «Ремонт и стройка» у фикстур не подключён — 403 даже владельцу (modules_gate.yaml); подключение в фикстурах — W6.11
+        note: модуль подключён у A, но у менеджера логистики нет гранта repairs.* — 403 forbidden_action
   - op: getProjectFinance
     method: GET
     path: /api/v1/tenants/{tenantId}/repairs/projects/{projectId}/finance
     rows:
-      - actor: a.owner
+      - actor: b.owner
+        params:
+          tenantId: tenant:b
+          projectId: repair_project:b.flat
+        status: 403
+        code: module_not_installed
+        note: модуль «Ремонт и стройка» не подключён у организации B — 403 даже владельцу (modules_gate.yaml)
+      - actor: a.manager-msk1
         params:
           tenantId: tenant:a
           projectId: repair_project:a.flat
         status: 403
-        code: module_not_installed
-        note: модуль «Ремонт и стройка» у фикстур не подключён — 403 даже владельцу (modules_gate.yaml); подключение в фикстурах — W6.11
+        code: forbidden_action
+        note: модуль подключён у A, но у менеджера логистики нет гранта repairs.* — 403 forbidden_action
   - op: listCrewAccruals
     method: GET
     path: /api/v1/tenants/{tenantId}/repairs/projects/{projectId}/accruals
     rows:
-      - actor: a.owner
+      - actor: b.owner
+        params:
+          tenantId: tenant:b
+          projectId: repair_project:b.flat
+        status: 403
+        code: module_not_installed
+        note: модуль «Ремонт и стройка» не подключён у организации B — 403 даже владельцу (modules_gate.yaml)
+      - actor: a.manager-msk1
         params:
           tenantId: tenant:a
           projectId: repair_project:a.flat
         status: 403
-        code: module_not_installed
-        note: модуль «Ремонт и стройка» у фикстур не подключён — 403 даже владельцу (modules_gate.yaml); подключение в фикстурах — W6.11
+        code: forbidden_action
+        note: модуль подключён у A, но у менеджера логистики нет гранта repairs.* — 403 forbidden_action
   - op: accrueByAct
     method: POST
     path: /api/v1/tenants/{tenantId}/repairs/acts/{documentId}/accruals
     rows:
-      - actor: a.owner
+      - actor: b.owner
+        params:
+          tenantId: tenant:b
+          documentId: tenant:missing
+        status: 403
+        code: module_not_installed
+        note: модуль «Ремонт и стройка» не подключён у организации B — 403 даже владельцу (modules_gate.yaml)
+      - actor: a.manager-msk1
         params:
           tenantId: tenant:a
           documentId: tenant:missing
         status: 403
-        code: module_not_installed
-        note: модуль «Ремонт и стройка» у фикстур не подключён — 403 даже владельцу (modules_gate.yaml); подключение в фикстурах — W6.11
+        code: forbidden_action
+        note: модуль подключён у A, но у менеджера логистики нет гранта repairs.* — 403 forbidden_action
   - op: payoutAccruals
     method: POST
     path: /api/v1/tenants/{tenantId}/repairs/accruals/payout
     rows:
-      - actor: a.owner
+      - actor: b.owner
         params:
-          tenantId: tenant:a
+          tenantId: tenant:b
         status: 403
         code: module_not_installed
         body: '{"accrualIds":["00000000-0000-4000-8000-000000000000"]}'
-        note: модуль «Ремонт и стройка» у фикстур не подключён — 403 даже владельцу (modules_gate.yaml); подключение в фикстурах — W6.11
+        note: модуль «Ремонт и стройка» не подключён у организации B — 403 даже владельцу (modules_gate.yaml)
+      - actor: a.manager-msk1
+        params:
+          tenantId: tenant:a
+        status: 403
+        code: forbidden_action
+        body: '{"accrualIds":["00000000-0000-4000-8000-000000000000"]}'
+        note: модуль подключён у A, но у менеджера логистики нет гранта repairs.* — 403 forbidden_action
   - op: listSubcontractors
     method: GET
     path: /api/v1/tenants/{tenantId}/repairs/projects/{projectId}/subcontractors
     rows:
-      - actor: a.owner
+      - actor: b.owner
+        params:
+          tenantId: tenant:b
+          projectId: repair_project:b.flat
+        status: 403
+        code: module_not_installed
+        note: модуль «Ремонт и стройка» не подключён у организации B — 403 даже владельцу (modules_gate.yaml)
+      - actor: a.manager-msk1
         params:
           tenantId: tenant:a
           projectId: repair_project:a.flat
         status: 403
-        code: module_not_installed
-        note: модуль «Ремонт и стройка» у фикстур не подключён — 403 даже владельцу (modules_gate.yaml); подключение в фикстурах — W6.11
+        code: forbidden_action
+        note: модуль подключён у A, но у менеджера логистики нет гранта repairs.* — 403 forbidden_action
   - op: setSubcontractorAccess
     method: PUT
     path: /api/v1/tenants/{tenantId}/repairs/projects/{projectId}/subcontractors/{subcontractorId}
     rows:
-      - actor: a.owner
+      - actor: b.owner
+        params:
+          tenantId: tenant:b
+          projectId: repair_project:b.flat
+          subcontractorId: tenant:missing
+        status: 403
+        code: module_not_installed
+        body: '{"active":false}'
+        note: модуль «Ремонт и стройка» не подключён у организации B — 403 даже владельцу (modules_gate.yaml)
+      - actor: a.manager-msk1
         params:
           tenantId: tenant:a
           projectId: repair_project:a.flat
           subcontractorId: tenant:missing
         status: 403
-        code: module_not_installed
+        code: forbidden_action
         body: '{"active":false}'
-        note: модуль «Ремонт и стройка» у фикстур не подключён — 403 даже владельцу (modules_gate.yaml); подключение в фикстурах — W6.11
+        note: модуль подключён у A, но у менеджера логистики нет гранта repairs.* — 403 forbidden_action
   - op: getClientLink
     method: GET
     path: /api/v1/tenants/{tenantId}/repairs/projects/{projectId}/client-link
     rows:
-      - actor: a.owner
+      - actor: b.owner
+        params:
+          tenantId: tenant:b
+          projectId: repair_project:b.flat
+        status: 403
+        code: module_not_installed
+        note: модуль «Ремонт и стройка» не подключён у организации B — 403 даже владельцу (modules_gate.yaml)
+      - actor: a.manager-msk1
         params:
           tenantId: tenant:a
           projectId: repair_project:a.flat
         status: 403
-        code: module_not_installed
-        note: модуль «Ремонт и стройка» у фикстур не подключён — 403 даже владельцу (modules_gate.yaml); подключение в фикстурах — W6.11
+        code: forbidden_action
+        note: модуль подключён у A, но у менеджера логистики нет гранта repairs.* — 403 forbidden_action
   - op: issueClientLink
     method: POST
     path: /api/v1/tenants/{tenantId}/repairs/projects/{projectId}/client-link
     rows:
-      - actor: a.owner
+      - actor: b.owner
+        params:
+          tenantId: tenant:b
+          projectId: repair_project:b.flat
+        status: 403
+        code: module_not_installed
+        note: модуль «Ремонт и стройка» не подключён у организации B — 403 даже владельцу (modules_gate.yaml)
+      - actor: a.manager-msk1
         params:
           tenantId: tenant:a
           projectId: repair_project:a.flat
         status: 403
-        code: module_not_installed
-        note: модуль «Ремонт и стройка» у фикстур не подключён — 403 даже владельцу (modules_gate.yaml); подключение в фикстурах — W6.11
+        code: forbidden_action
+        note: модуль подключён у A, но у менеджера логистики нет гранта repairs.* — 403 forbidden_action
   - op: revokeClientLink
     method: DELETE
     path: /api/v1/tenants/{tenantId}/repairs/projects/{projectId}/client-link
     rows:
-      - actor: a.owner
+      - actor: b.owner
+        params:
+          tenantId: tenant:b
+          projectId: repair_project:b.flat
+        status: 403
+        code: module_not_installed
+        note: модуль «Ремонт и стройка» не подключён у организации B — 403 даже владельцу (modules_gate.yaml)
+      - actor: a.manager-msk1
         params:
           tenantId: tenant:a
           projectId: repair_project:a.flat
         status: 403
-        code: module_not_installed
-        note: модуль «Ремонт и стройка» у фикстур не подключён — 403 даже владельцу (modules_gate.yaml); подключение в фикстурах — W6.11
+        code: forbidden_action
+        note: модуль подключён у A, но у менеджера логистики нет гранта repairs.* — 403 forbidden_action

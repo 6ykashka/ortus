@@ -6,13 +6,14 @@
 # If-Match (README, «Цель набора»): без него строгий сервер отвечает 428 раньше хендлера, поэтому у них только отказы
 # шлюза — без сессии 401, чужая организация 404. Публичные операции кабинета заказчика: неизвестная ссылка — 404.
 # Отказы шлюза (403 module_not_installed — модуль у фикстур не подключён) — repairs_w600_gate.yaml. Формат — README.md.
+# W6.11: 13 операций шагов 6.1–6.2 без pending (хендлеры есть); у остальных pending — WS-владелец (W6.12 замер и смета, W6.13 снабжение,
+# W6.14 график, W6.15 финансы и кабинет). Позитивные строки хендлеров пишутся, когда у фикстур подключён модуль «Ремонт и стройка».
 # После правки: go -C backend generate ./test/isolation
 module: repairs_w600
 endpoints:
   - op: listRepairProjects
     method: GET
     path: /api/v1/tenants/{tenantId}/repairs/projects
-    pending: W6.11
     rows:
       - actor: anonymous
         params:
@@ -25,10 +26,26 @@ endpoints:
         absent:
           - tenant:a
         note: чужая организация — как несуществующая (AC-02)
+      - actor: a.owner
+        params: { tenantId: tenant:a }
+        status: 200
+        present: [repair_project:a.flat, repair_project:a.other]
+        note: владелец видит все объекты организации (положительная строка)
+      - actor: a.repairs-foreman
+        params: { tenantId: tenant:a }
+        status: 200
+        present: [repair_project:a.flat]
+        absent: [repair_project:a.other]
+        note: прораб своего объекта видит только его; суммы договора и телефона заказчика нет без repairs.finance.read (поля — isolation_w611_test.go)
+      - actor: a.repairs-foreman-two
+        params: { tenantId: tenant:a }
+        status: 200
+        present: [repair_project:a.other]
+        absent: [repair_project:a.flat]
+        note: прораб другого объекта не видит «Лесную»
   - op: createRepairProject
     method: POST
     path: /api/v1/tenants/{tenantId}/repairs/projects
-    pending: W6.11
     rows:
       - actor: anonymous
         params:
@@ -46,7 +63,6 @@ endpoints:
   - op: getRepairProject
     method: GET
     path: /api/v1/tenants/{tenantId}/repairs/projects/{projectId}
-    pending: W6.11
     rows:
       - actor: anonymous
         params:
@@ -61,10 +77,20 @@ endpoints:
         absent:
           - tenant:a
         note: чужая организация — как несуществующая (AC-02)
+      - actor: a.owner
+        params: { tenantId: tenant:a, projectId: repair_project:a.flat }
+        status: 200
+      - actor: a.repairs-foreman
+        params: { tenantId: tenant:a, projectId: repair_project:a.flat }
+        status: 200
+      - actor: a.repairs-foreman-two
+        params: { tenantId: tenant:a, projectId: repair_project:a.flat }
+        status: 404
+        absent: [repair_project:a.flat]
+        note: прораб чужого объекта — как несуществующий объект (AC-01)
   - op: updateRepairProject
     method: PATCH
     path: /api/v1/tenants/{tenantId}/repairs/projects/{projectId}
-    pending: W6.11
     rows:
       - actor: anonymous
         params:
@@ -84,7 +110,6 @@ endpoints:
   - op: getRepairProjectOverview
     method: GET
     path: /api/v1/tenants/{tenantId}/repairs/projects/{projectId}/overview
-    pending: W6.11
     rows:
       - actor: anonymous
         params:
@@ -99,10 +124,20 @@ endpoints:
         absent:
           - tenant:a
         note: чужая организация — как несуществующая (AC-02)
+      - actor: a.owner
+        params: { tenantId: tenant:a, projectId: repair_project:a.flat }
+        status: 200
+      - actor: a.repairs-foreman
+        params: { tenantId: tenant:a, projectId: repair_project:a.flat }
+        status: 200
+      - actor: a.repairs-foreman-two
+        params: { tenantId: tenant:a, projectId: repair_project:a.flat }
+        status: 404
+        absent: [repair_project:a.flat]
+        note: прораб чужого объекта — как несуществующий объект (AC-01)
   - op: assignRepairForeman
     method: POST
     path: /api/v1/tenants/{tenantId}/repairs/projects/{projectId}/foreman
-    pending: W6.11
     rows:
       - actor: anonymous
         params:
@@ -122,7 +157,6 @@ endpoints:
   - op: activateRepairProject
     method: POST
     path: /api/v1/tenants/{tenantId}/repairs/projects/{projectId}/activate
-    pending: W6.11
     rows:
       - actor: anonymous
         params:
@@ -140,7 +174,6 @@ endpoints:
   - op: listRepairWorks
     method: GET
     path: /api/v1/tenants/{tenantId}/repairs/projects/{projectId}/works
-    pending: W6.11
     rows:
       - actor: anonymous
         params:
@@ -155,10 +188,20 @@ endpoints:
         absent:
           - tenant:a
         note: чужая организация — как несуществующая (AC-02)
+      - actor: a.owner
+        params: { tenantId: tenant:a, projectId: repair_project:a.flat }
+        status: 200
+      - actor: a.repairs-foreman
+        params: { tenantId: tenant:a, projectId: repair_project:a.flat }
+        status: 200
+      - actor: a.repairs-foreman-two
+        params: { tenantId: tenant:a, projectId: repair_project:a.flat }
+        status: 404
+        absent: [repair_project:a.flat]
+        note: прораб чужого объекта — как несуществующий объект (AC-01)
   - op: listWorkLogs
     method: GET
     path: /api/v1/tenants/{tenantId}/repairs/work-logs
-    pending: W6.11
     rows:
       - actor: anonymous
         params:
@@ -171,10 +214,24 @@ endpoints:
         absent:
           - tenant:a
         note: чужая организация — как несуществующая (AC-02)
+      - actor: a.owner
+        params: { tenantId: tenant:a }
+        status: 200
+        present: [repair_project:a.flat]
+        note: владелец видит все объекты организации (положительная строка)
+      - actor: a.repairs-foreman
+        params: { tenantId: tenant:a }
+        status: 200
+        present: [repair_project:a.flat]
+        note: прораб своего объекта без repairs.finance.read — читает объект, цен и телефона нет (поля — isolation_w611_test.go)
+      - actor: a.repairs-foreman-two
+        params: { tenantId: tenant:a }
+        status: 200
+        absent: [repair_project:a.flat]
+        note: отметок чужого объекта в списке нет
   - op: submitWorkLog
     method: POST
     path: /api/v1/tenants/{tenantId}/repairs/work-logs
-    pending: W6.11
     rows:
       - actor: anonymous
         params:
@@ -189,10 +246,15 @@ endpoints:
           - tenant:a
         body: '{"projectId":"00000000-0000-4000-8000-000000000000","workDate":"2026-10-20","timeZone":"Europe/Moscow","lines":[{"quantity":"1","unit":"hour"}],"evidenceFileIds":["00000000-0000-4000-8000-000000000000"]}'
         note: чужая организация — как несуществующая (AC-02)
+      - actor: a.repairs-foreman-two
+        params: { tenantId: tenant:a }
+        status: 404
+        absent: [repair_project:a.flat]
+        note: прораб чужого объекта — как несуществующий объект (AC-01)
+        body: '{"projectId":"{{repair_project:a.flat}}","workDate":"2026-10-01","timeZone":"Europe/Moscow","lines":[{"quantity":"1","unit":"m2"}],"evidenceFileIds":["00000000-0000-4000-8000-000000000000"]}'
   - op: acceptWorkLog
     method: POST
     path: /api/v1/tenants/{tenantId}/repairs/work-logs/{workLogId}/accept
-    pending: W6.11
     rows:
       - actor: anonymous
         params:
@@ -210,7 +272,6 @@ endpoints:
   - op: returnWorkLog
     method: POST
     path: /api/v1/tenants/{tenantId}/repairs/work-logs/{workLogId}/return
-    pending: W6.11
     rows:
       - actor: anonymous
         params:
@@ -230,7 +291,7 @@ endpoints:
   - op: listChangeOrders
     method: GET
     path: /api/v1/tenants/{tenantId}/repairs/projects/{projectId}/change-orders
-    pending: W6.11
+    pending: W6.12
     rows:
       - actor: anonymous
         params:
@@ -248,7 +309,7 @@ endpoints:
   - op: proposeChangeOrder
     method: POST
     path: /api/v1/tenants/{tenantId}/repairs/projects/{projectId}/change-orders
-    pending: W6.11
+    pending: W6.12
     rows:
       - actor: anonymous
         params:
@@ -268,7 +329,7 @@ endpoints:
   - op: rejectChangeOrder
     method: POST
     path: /api/v1/tenants/{tenantId}/repairs/change-orders/{changeOrderId}/reject
-    pending: W6.11
+    pending: W6.12
     rows:
       - actor: anonymous
         params:
@@ -288,7 +349,7 @@ endpoints:
   - op: getMeasurement
     method: GET
     path: /api/v1/tenants/{tenantId}/repairs/projects/{projectId}/measurement
-    pending: W6.11
+    pending: W6.12
     rows:
       - actor: anonymous
         params:
@@ -306,7 +367,7 @@ endpoints:
   - op: putMeasurement
     method: PUT
     path: /api/v1/tenants/{tenantId}/repairs/projects/{projectId}/measurement
-    pending: W6.11
+    pending: W6.12
     rows:
       - actor: anonymous
         params:
@@ -326,7 +387,7 @@ endpoints:
   - op: listEstimates
     method: GET
     path: /api/v1/tenants/{tenantId}/repairs/projects/{projectId}/estimates
-    pending: W6.11
+    pending: W6.12
     rows:
       - actor: anonymous
         params:
@@ -344,7 +405,7 @@ endpoints:
   - op: getEstimate
     method: GET
     path: /api/v1/tenants/{tenantId}/repairs/projects/{projectId}/estimates/{version}
-    pending: W6.11
+    pending: W6.12
     rows:
       - actor: anonymous
         params:
@@ -364,7 +425,7 @@ endpoints:
   - op: createEstimateFromTemplate
     method: POST
     path: /api/v1/tenants/{tenantId}/repairs/projects/{projectId}/estimate-drafts
-    pending: W6.11
+    pending: W6.12
     rows:
       - actor: anonymous
         params:
@@ -384,7 +445,7 @@ endpoints:
   - op: createEstimateRevision
     method: POST
     path: /api/v1/tenants/{tenantId}/repairs/projects/{projectId}/estimates
-    pending: W6.11
+    pending: W6.12
     rows:
       - actor: anonymous
         params:
@@ -404,7 +465,7 @@ endpoints:
   - op: updateEstimateDraft
     method: PATCH
     path: /api/v1/tenants/{tenantId}/repairs/projects/{projectId}/estimates/{version}
-    pending: W6.11
+    pending: W6.12
     rows:
       - actor: anonymous
         params:
@@ -426,7 +487,7 @@ endpoints:
   - op: sendEstimate
     method: POST
     path: /api/v1/tenants/{tenantId}/repairs/projects/{projectId}/estimates/{version}/send
-    pending: W6.11
+    pending: W6.12
     rows:
       - actor: anonymous
         params:
@@ -446,7 +507,7 @@ endpoints:
   - op: recallEstimate
     method: POST
     path: /api/v1/tenants/{tenantId}/repairs/projects/{projectId}/estimates/{version}/recall
-    pending: W6.11
+    pending: W6.12
     rows:
       - actor: anonymous
         params:
@@ -466,7 +527,7 @@ endpoints:
   - op: deleteEstimateDraft
     method: DELETE
     path: /api/v1/tenants/{tenantId}/repairs/projects/{projectId}/estimates/{version}
-    pending: W6.11
+    pending: W6.12
     rows:
       - actor: anonymous
         params:
@@ -486,7 +547,7 @@ endpoints:
   - op: diffEstimates
     method: GET
     path: /api/v1/tenants/{tenantId}/repairs/projects/{projectId}/estimates/{version}/diff
-    pending: W6.11
+    pending: W6.12
     rows:
       - actor: anonymous
         params:
@@ -506,7 +567,7 @@ endpoints:
   - op: saveProjectAsTemplate
     method: POST
     path: /api/v1/tenants/{tenantId}/repairs/projects/{projectId}/save-as-template
-    pending: W6.11
+    pending: W6.12
     rows:
       - actor: anonymous
         params:
@@ -526,7 +587,7 @@ endpoints:
   - op: listPriceItems
     method: GET
     path: /api/v1/tenants/{tenantId}/repairs/price-items
-    pending: W6.11
+    pending: W6.12
     rows:
       - actor: anonymous
         params:
@@ -542,7 +603,7 @@ endpoints:
   - op: createPriceItem
     method: POST
     path: /api/v1/tenants/{tenantId}/repairs/price-items
-    pending: W6.11
+    pending: W6.12
     rows:
       - actor: anonymous
         params:
@@ -560,7 +621,7 @@ endpoints:
   - op: updatePriceItem
     method: PATCH
     path: /api/v1/tenants/{tenantId}/repairs/price-items/{priceItemId}
-    pending: W6.11
+    pending: W6.12
     rows:
       - actor: anonymous
         params:
@@ -580,7 +641,7 @@ endpoints:
   - op: listTemplates
     method: GET
     path: /api/v1/tenants/{tenantId}/repairs/templates
-    pending: W6.11
+    pending: W6.12
     rows:
       - actor: anonymous
         params:
@@ -596,7 +657,7 @@ endpoints:
   - op: getTemplate
     method: GET
     path: /api/v1/tenants/{tenantId}/repairs/templates/{templateId}
-    pending: W6.11
+    pending: W6.12
     rows:
       - actor: anonymous
         params:
@@ -614,7 +675,7 @@ endpoints:
   - op: updateTemplate
     method: PATCH
     path: /api/v1/tenants/{tenantId}/repairs/templates/{templateId}
-    pending: W6.11
+    pending: W6.12
     rows:
       - actor: anonymous
         params:
@@ -634,7 +695,7 @@ endpoints:
   - op: copyTemplate
     method: POST
     path: /api/v1/tenants/{tenantId}/repairs/templates/{templateId}/copy
-    pending: W6.11
+    pending: W6.12
     rows:
       - actor: anonymous
         params:
@@ -654,7 +715,7 @@ endpoints:
   - op: getSchedule
     method: GET
     path: /api/v1/tenants/{tenantId}/repairs/projects/{projectId}/schedule
-    pending: W6.11
+    pending: W6.14
     rows:
       - actor: anonymous
         params:
@@ -672,7 +733,7 @@ endpoints:
   - op: createScheduleFromEstimate
     method: POST
     path: /api/v1/tenants/{tenantId}/repairs/projects/{projectId}/schedule/from-estimate
-    pending: W6.11
+    pending: W6.14
     rows:
       - actor: anonymous
         params:
@@ -692,7 +753,7 @@ endpoints:
   - op: previewScheduleChange
     method: POST
     path: /api/v1/tenants/{tenantId}/repairs/projects/{projectId}/schedule/preview
-    pending: W6.11
+    pending: W6.14
     rows:
       - actor: anonymous
         params:
@@ -712,7 +773,7 @@ endpoints:
   - op: applyScheduleChange
     method: POST
     path: /api/v1/tenants/{tenantId}/repairs/projects/{projectId}/schedule/changes
-    pending: W6.11
+    pending: W6.14
     rows:
       - actor: anonymous
         params:
@@ -732,7 +793,7 @@ endpoints:
   - op: setScheduleStageExecutor
     method: PATCH
     path: /api/v1/tenants/{tenantId}/repairs/projects/{projectId}/schedule/stages/{stageId}
-    pending: W6.11
+    pending: W6.14
     rows:
       - actor: anonymous
         params:
@@ -754,7 +815,7 @@ endpoints:
   - op: createScheduleBaseline
     method: POST
     path: /api/v1/tenants/{tenantId}/repairs/projects/{projectId}/schedule/baselines
-    pending: W6.11
+    pending: W6.14
     rows:
       - actor: anonymous
         params:
@@ -774,7 +835,6 @@ endpoints:
   - op: handOverRepairProject
     method: POST
     path: /api/v1/tenants/{tenantId}/repairs/projects/{projectId}/hand-over
-    pending: W6.11
     rows:
       - actor: anonymous
         params:
@@ -794,7 +854,7 @@ endpoints:
   - op: listRepairDocuments
     method: GET
     path: /api/v1/tenants/{tenantId}/repairs/projects/{projectId}/documents
-    pending: W6.11
+    pending: W6.15
     rows:
       - actor: anonymous
         params:
@@ -812,7 +872,7 @@ endpoints:
   - op: requestDocumentSignature
     method: POST
     path: /api/v1/tenants/{tenantId}/repairs/documents/{documentId}/sign-requests
-    pending: W6.11
+    pending: W6.12
     rows:
       - actor: anonymous
         params:
@@ -830,7 +890,7 @@ endpoints:
   - op: listSupplyRequests
     method: GET
     path: /api/v1/tenants/{tenantId}/repairs/supply-requests
-    pending: W6.11
+    pending: W6.13
     rows:
       - actor: anonymous
         params:
@@ -846,7 +906,7 @@ endpoints:
   - op: createSupplyRequest
     method: POST
     path: /api/v1/tenants/{tenantId}/repairs/projects/{projectId}/supply-requests
-    pending: W6.11
+    pending: W6.13
     rows:
       - actor: anonymous
         params:
@@ -866,7 +926,7 @@ endpoints:
   - op: reserveSupplyRequest
     method: POST
     path: /api/v1/tenants/{tenantId}/repairs/supply-requests/{supplyRequestId}/reserve
-    pending: W6.11
+    pending: W6.13
     rows:
       - actor: anonymous
         params:
@@ -886,7 +946,7 @@ endpoints:
   - op: issueSupplyRequest
     method: POST
     path: /api/v1/tenants/{tenantId}/repairs/supply-requests/{supplyRequestId}/issue
-    pending: W6.11
+    pending: W6.13
     rows:
       - actor: anonymous
         params:
@@ -904,7 +964,7 @@ endpoints:
   - op: consumeSupplyRequest
     method: POST
     path: /api/v1/tenants/{tenantId}/repairs/supply-requests/{supplyRequestId}/consume
-    pending: W6.11
+    pending: W6.13
     rows:
       - actor: anonymous
         params:
@@ -922,7 +982,7 @@ endpoints:
   - op: createPurchase
     method: POST
     path: /api/v1/tenants/{tenantId}/repairs/purchases
-    pending: W6.11
+    pending: W6.13
     rows:
       - actor: anonymous
         params:
@@ -940,7 +1000,7 @@ endpoints:
   - op: listPurchases
     method: GET
     path: /api/v1/tenants/{tenantId}/repairs/purchases
-    pending: W6.11
+    pending: W6.13
     rows:
       - actor: anonymous
         params:
@@ -956,7 +1016,7 @@ endpoints:
   - op: receivePurchase
     method: POST
     path: /api/v1/tenants/{tenantId}/repairs/purchases/{purchaseId}/receive
-    pending: W6.11
+    pending: W6.13
     rows:
       - actor: anonymous
         params:
@@ -976,7 +1036,7 @@ endpoints:
   - op: listProjectStock
     method: GET
     path: /api/v1/tenants/{tenantId}/repairs/project-stock
-    pending: W6.11
+    pending: W6.13
     rows:
       - actor: anonymous
         params:
@@ -992,7 +1052,7 @@ endpoints:
   - op: returnProjectStock
     method: POST
     path: /api/v1/tenants/{tenantId}/repairs/projects/{projectId}/stock/return
-    pending: W6.11
+    pending: W6.13
     rows:
       - actor: anonymous
         params:
@@ -1012,7 +1072,7 @@ endpoints:
   - op: transferProjectStock
     method: POST
     path: /api/v1/tenants/{tenantId}/repairs/projects/{projectId}/stock/transfer
-    pending: W6.11
+    pending: W6.13
     rows:
       - actor: anonymous
         params:
@@ -1032,7 +1092,7 @@ endpoints:
   - op: getProjectFinance
     method: GET
     path: /api/v1/tenants/{tenantId}/repairs/projects/{projectId}/finance
-    pending: W6.11
+    pending: W6.15
     rows:
       - actor: anonymous
         params:
@@ -1050,7 +1110,7 @@ endpoints:
   - op: listCrewAccruals
     method: GET
     path: /api/v1/tenants/{tenantId}/repairs/projects/{projectId}/accruals
-    pending: W6.11
+    pending: W6.15
     rows:
       - actor: anonymous
         params:
@@ -1068,7 +1128,7 @@ endpoints:
   - op: accrueByAct
     method: POST
     path: /api/v1/tenants/{tenantId}/repairs/acts/{documentId}/accruals
-    pending: W6.11
+    pending: W6.15
     rows:
       - actor: anonymous
         params:
@@ -1086,7 +1146,7 @@ endpoints:
   - op: payoutAccruals
     method: POST
     path: /api/v1/tenants/{tenantId}/repairs/accruals/payout
-    pending: W6.11
+    pending: W6.15
     rows:
       - actor: anonymous
         params:
@@ -1104,7 +1164,7 @@ endpoints:
   - op: listSubcontractors
     method: GET
     path: /api/v1/tenants/{tenantId}/repairs/projects/{projectId}/subcontractors
-    pending: W6.11
+    pending: W6.15
     rows:
       - actor: anonymous
         params:
@@ -1122,7 +1182,7 @@ endpoints:
   - op: setSubcontractorAccess
     method: PUT
     path: /api/v1/tenants/{tenantId}/repairs/projects/{projectId}/subcontractors/{subcontractorId}
-    pending: W6.11
+    pending: W6.15
     rows:
       - actor: anonymous
         params:
@@ -1144,7 +1204,7 @@ endpoints:
   - op: getClientLink
     method: GET
     path: /api/v1/tenants/{tenantId}/repairs/projects/{projectId}/client-link
-    pending: W6.11
+    pending: W6.15
     rows:
       - actor: anonymous
         params:
@@ -1162,7 +1222,7 @@ endpoints:
   - op: issueClientLink
     method: POST
     path: /api/v1/tenants/{tenantId}/repairs/projects/{projectId}/client-link
-    pending: W6.11
+    pending: W6.15
     rows:
       - actor: anonymous
         params:
@@ -1180,7 +1240,7 @@ endpoints:
   - op: revokeClientLink
     method: DELETE
     path: /api/v1/tenants/{tenantId}/repairs/projects/{projectId}/client-link
-    pending: W6.11
+    pending: W6.15
     rows:
       - actor: anonymous
         params:
@@ -1198,7 +1258,7 @@ endpoints:
   - op: getClientCabinet
     method: GET
     path: /api/v1/public/client/{clientToken}
-    pending: W6.11
+    pending: W6.15
     rows:
       - actor: anonymous
         params:
@@ -1209,7 +1269,7 @@ endpoints:
   - op: approveEstimateByClient
     method: POST
     path: /api/v1/public/client/{clientToken}/estimates/{version}/approve
-    pending: W6.11
+    pending: W6.15
     rows:
       - actor: anonymous
         params:
@@ -1221,7 +1281,7 @@ endpoints:
   - op: signDocumentByClient
     method: POST
     path: /api/v1/public/client/{clientToken}/documents/{documentId}/sign
-    pending: W6.11
+    pending: W6.15
     rows:
       - actor: anonymous
         params:

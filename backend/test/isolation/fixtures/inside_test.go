@@ -30,6 +30,26 @@ func TestCatalogInsideRefs(t *testing.T) {
 	}
 }
 
+// W6.11: объекты ремонта, прорабы и их роль — ссылки разрешаются всегда; прорабы пишутся только WithInTenant.
+func TestCatalogRepairsRefs(t *testing.T) {
+	t.Parallel()
+	c := Default()
+	for _, ref := range []string{"repair_project:a.flat", "repair_project:a.other", "repair_project:b.flat",
+		"person:a.repairs-foreman@a", "person:a.repairs-foreman-two@a", "account:a.repairs-foreman"} {
+		if _, err := c.ID(ref); err != nil {
+			t.Errorf("%s: %v", ref, err)
+		}
+	}
+	for _, key := range []string{"a.repairs-foreman", "a.repairs-foreman-two"} {
+		if a := c.mustActor(t, key); !a.InTenant {
+			t.Errorf("%s is written always, want only WithInTenant", key)
+		}
+	}
+	if _, err := c.ID("repair_project:a.missing"); err == nil {
+		t.Error("repair_project:a.missing resolves, want an unknown reference")
+	}
+}
+
 // The inside actors are marked: Load writes them (and their roles) only WithInTenant; an actor written always holds no
 // inside role, and the content written always names no inside actor (Validate).
 func TestCatalogInsideActorsAreMarked(t *testing.T) {

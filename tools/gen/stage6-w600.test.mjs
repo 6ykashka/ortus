@@ -505,7 +505,7 @@ describe('контракт 0.12.0-stage6 (W6.00): дельты, экраны, м
     assert.match(log, /W6\.00/);
   });
 
-  it('isolation: строки операций тега Repairs записаны (pending W6.11) и отказы шлюза без pending', () => {
+  it('isolation: строки операций тега Repairs записаны (pending у операций без хендлера) и отказы шлюза без pending', () => {
     for (const f of [
       'backend/test/isolation/repairs_w600.yaml',
       'backend/test/isolation/repairs_w600_gate.yaml',
@@ -517,6 +517,25 @@ describe('контракт 0.12.0-stage6 (W6.00): дельты, экраны, м
     const protectedOps = OPERATIONS.filter((o) => !o.public).map((o) => o.id);
     const missing = protectedOps.filter((id) => !listed.has(id) && !LEGACY.includes(id));
     assert.ok(missing.length === 0, `нет строк изоляции: ${missing.join(', ')}`);
-    for (const e of rows.endpoints) assert.equal(e.pending, 'W6.11', e.op);
+    // W6.11: у 13 операций шагов 6.1–6.2 хендлеры есть (pending снят); у остальных pending — WS-владелец (W6.12–W6.15).
+    const served = new Set([
+      'listRepairProjects',
+      'createRepairProject',
+      'getRepairProject',
+      'updateRepairProject',
+      'getRepairProjectOverview',
+      'assignRepairForeman',
+      'activateRepairProject',
+      'handOverRepairProject',
+      'listRepairWorks',
+      'listWorkLogs',
+      'submitWorkLog',
+      'acceptWorkLog',
+      'returnWorkLog',
+    ]);
+    for (const e of rows.endpoints) {
+      if (served.has(e.op)) assert.equal(e.pending, undefined, e.op);
+      else assert.match(e.pending, /^W6\.1[2-5]$/, e.op);
+    }
   });
 });

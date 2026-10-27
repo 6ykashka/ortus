@@ -93,6 +93,8 @@ type Content struct {
 	Bookings          []BookingDef
 	KnowledgeSpaces   []KnowledgeSpaceDef
 	KnowledgeNodes    []KnowledgeNodeDef
+	// W6.11: the objects of repairs with their works and marks (content_repairs.go).
+	RepairProjects []RepairProjectDef
 }
 
 // KnowledgeRequestDef is an open request of a member of the tenant to read the page of the objects

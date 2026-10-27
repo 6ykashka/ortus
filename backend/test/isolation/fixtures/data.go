@@ -99,6 +99,7 @@ func roles() []RoleDef {
 		{Key: roleFormsRead, Name: "Формы: просмотр", Kind: RoleKindCustom, Actions: clone(formsReaderActions), InTenant: true},
 		{Key: roleFormsOwn, Name: "Формы: свои ответы", Kind: RoleKindCustom, Actions: clone(formsOwnActions), InTenant: true},
 		{Key: roleKBEditor, Name: "Редактор базы знаний", Kind: RoleKindCustom, Actions: clone(kbEditorActions), InTenant: true},
+		{Key: roleRepairsForeman, Name: "Прораб", Kind: RoleKindCustom, Actions: clone(foremanActions), InTenant: true}, // W6.11
 	}
 }
 
@@ -127,6 +128,7 @@ func objects() []ObjectDef {
 		{Kind: ObjectAccount, Key: "cash", Name: "Касса Москва-1"},
 		{Kind: ObjectChat, Key: "trip", Name: "Чат рейса"},
 		{Kind: ObjectRepairProject, Key: "flat", Name: "Квартира на Лесной"},
+		{Kind: ObjectRepairProject, Key: "other", Name: "Дом на Речной"},
 	}
 }
 
@@ -367,6 +369,14 @@ func Default() Catalog {
 			// Редактор БЗ Москвы-1 с knowledge.organize: шлюз переноса пропускает, узел без доступа — 404 (Q-W4.04-11).
 			{Key: "a.kb-editor", Name: "Редактор базы знаний Москва-1", InTenant: true, Memberships: []MemberDef{
 				{Tenant: TenantA, Home: uMsk1, Grants: unitGrant(roleKBEditor, uMsk1)},
+			}},
+			// W6.11: прорабы объектов ремонта — грант на сам объект (область repair_project), без repairs.finance.read; пишутся
+			// только WithInTenant (content_repairs.go). Чужой прораб не видит объект «Лесная» (404, AC-01).
+			{Key: actorRepairsForeman, Name: "Прораб Квартиры на Лесной", InTenant: true, Memberships: []MemberDef{
+				{Tenant: TenantA, Home: uMsk1, Grants: []GrantDef{{Role: roleRepairsForeman, Scope: ObjectRepairProject + ":flat"}}},
+			}},
+			{Key: actorRepairsForemanTwo, Name: "Прораб Дома на Речной", InTenant: true, Memberships: []MemberDef{
+				{Tenant: TenantA, Home: uMsk1, Grants: []GrantDef{{Role: roleRepairsForeman, Scope: ObjectRepairProject + ":other"}}},
 			}},
 			// Оператор платформы (отдельный контур, без членств): положительные строки тега Platform.
 			{Key: "p.operator", Name: "Оператор платформы", Operator: "owner"},

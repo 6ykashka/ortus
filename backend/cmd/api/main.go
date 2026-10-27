@@ -273,6 +273,7 @@ func build(ctx context.Context, cfg config, log *slog.Logger, getenv func(string
 			Forms:       formsSrv,                                                           // W4.21: «Формы и опросы» (forms.go)
 			PublicForms: publicFormsSrv,                                                     // W4.21: the guest of a public link
 			Inventory:   newInventory(pools, ev, cfg.clock()),                               // W5.10: «Склад» (inventory.go)
+			Repairs:     newRepairs(pools, cfg.clock()),                                     // W6.11: «Ремонт и стройка» (repairs.go)
 		},
 		replays: map[string]replayFunc{"logout": auth.ReplayLogout},
 		ready:   control.Ping,
