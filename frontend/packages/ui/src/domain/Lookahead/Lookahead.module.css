@@ -1,0 +1,106 @@
+/* «Ближайшие 3 недели» — design/Ремонт и стройка.dc.html :392–405. */
+.root {
+  display: flex;
+  flex-direction: column;
+  gap: var(--ox-space-3);
+}
+
+.week {
+  background: var(--ox-card);
+  border: 1px solid var(--ox-line);
+  border-radius: var(--ox-radius-xl);
+  overflow: hidden;
+}
+
+.head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 2px 10px;
+  padding: var(--ox-space-3) var(--ox-space-4);
+}
+
+.title {
+  margin: 0;
+  font-size: 15px;
+  font-weight: var(--ox-fw-semibold);
+}
+
+.sub {
+  font-size: var(--ox-fs-xs);
+  color: var(--ox-text-muted);
+}
+
+.item {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 6px;
+  width: 100%;
+  min-height: 44px;
+  padding: var(--ox-space-3) var(--ox-space-4);
+  border: 0;
+  border-top: 1px solid var(--ox-divider);
+  background: var(--ox-card);
+  color: var(--ox-text);
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.item:focus-visible {
+  outline: 2px solid var(--ox-focus);
+  outline-offset: -2px;
+}
+
+.line {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 2px 10px;
+}
+
+.when {
+  font-size: var(--ox-fs-sm);
+  color: var(--ox-text-label);
+  font-variant-numeric: tabular-nums;
+}
+
+.who {
+  font-size: var(--ox-fs-sm);
+  color: var(--ox-text-muted);
+}
+
+.chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.chip {
+  display: inline-flex;
+}
+
+/* Чип эталона (:400): 12px, отступы 2px 8px 2px 6px. */
+.chip > span {
+  padding: 2px 8px 2px 6px;
+}
+
+/* Значок чипа эталона — 15 px (общий Status рисует 16 px через style значка). */
+.chip > span > span {
+  font-size: 15px !important;
+}
+
+/* «Критический путь» — тёмный чип эталона (:1117). */
+.chip[data-strong='true'] > span {
+  background: var(--ox-text);
+  color: var(--ox-on-accent);
+  font-weight: var(--ox-fw-semibold);
+}
+
+.empty {
+  padding: var(--ox-space-3) var(--ox-space-4);
+  border-top: 1px solid var(--ox-divider);
+  font-size: var(--ox-fs-sm);
+  color: var(--ox-text-muted);
+}

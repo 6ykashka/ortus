@@ -1,0 +1,461 @@
+/* Диаграмма Ганта — design/Ремонт и стройка.dc.html :329–390. Цвета — токены; оттенки полос — color-mix. Страница может задать точные
+   значения эталона переменными --ox-gantt-accepted, --ox-gantt-base, --ox-gantt-phase-bg (W6.23, gantt.css). */
+.root {
+  --gantt-accepted: var(
+    --ox-gantt-accepted,
+    color-mix(in srgb, var(--ox-accent) 55%, var(--ox-card))
+  );
+  --gantt-base: var(--ox-gantt-base, color-mix(in srgb, var(--ox-text-muted) 40%, var(--ox-card)));
+  --gantt-link: color-mix(in srgb, var(--ox-text-muted) 55%, var(--ox-card));
+  --gantt-link-dim: color-mix(in srgb, var(--ox-text-muted) 22%, var(--ox-card));
+  --gantt-weekend: color-mix(in srgb, var(--ox-text) 4%, transparent);
+  --gantt-hatch: color-mix(in srgb, var(--ox-text) 8%, transparent);
+
+  min-width: 0;
+  background: var(--ox-card);
+  border: 1px solid var(--ox-line);
+  border-radius: var(--ox-radius-xl);
+  overflow: hidden;
+}
+
+.scroll {
+  overflow-x: auto;
+  overscroll-behavior-x: contain;
+}
+
+.inner {
+  position: relative;
+}
+
+.head {
+  display: flex;
+  border-bottom: 1px solid var(--ox-line);
+  background: var(--ox-gantt-phase-bg, var(--ox-raised));
+}
+
+.corner {
+  position: sticky;
+  left: 0;
+  z-index: 3;
+  flex: none;
+  display: flex;
+  align-items: flex-end;
+  padding: 0 var(--ox-space-3) 7px;
+  background: var(--ox-gantt-phase-bg, var(--ox-raised));
+  border-right: 1px solid var(--ox-divider);
+  font-size: var(--ox-fs-xs);
+  font-weight: var(--ox-fw-medium);
+  color: var(--ox-text-muted);
+}
+
+.timeline {
+  position: relative;
+  flex: none;
+}
+
+.month {
+  position: absolute;
+  top: 0;
+  height: 24px;
+  padding: 5px 6px 0;
+  border-left: 1px solid var(--ox-divider);
+  font-size: var(--ox-fs-xs);
+  font-weight: var(--ox-fw-semibold);
+  color: var(--ox-text-label);
+  white-space: nowrap;
+  overflow: hidden;
+}
+
+.tick {
+  position: absolute;
+  top: 25px;
+  height: 22px;
+  display: grid;
+  place-items: center;
+  border-radius: 4px;
+  font-size: 11px;
+  font-variant-numeric: tabular-nums;
+  color: var(--ox-text-label);
+  white-space: nowrap;
+  overflow: hidden;
+}
+
+.tick[data-week='true'] {
+  border-left: 1px solid var(--ox-divider);
+  border-radius: 0;
+  color: var(--ox-text-muted);
+}
+
+.tick[data-off='true'] {
+  color: var(--ox-text-muted);
+  opacity: 0.7;
+}
+
+.tick[data-today='true'] {
+  background: var(--ox-danger-fg);
+  color: var(--ox-on-accent);
+  font-weight: var(--ox-fw-semibold);
+  opacity: 1;
+}
+
+.todayPill {
+  position: absolute;
+  top: 3px;
+  height: 18px;
+  display: inline-flex;
+  align-items: center;
+  padding: 0 7px;
+  border-radius: var(--ox-radius-pill);
+  background: var(--ox-danger-fg);
+  color: var(--ox-on-accent);
+  font-size: 11px;
+  font-weight: var(--ox-fw-semibold);
+  white-space: nowrap;
+}
+
+.body {
+  position: relative;
+}
+
+.phaseRow {
+  display: flex;
+  height: 30px;
+  border-top: 1px solid var(--ox-divider);
+  background: var(--ox-gantt-phase-bg, var(--ox-raised));
+}
+
+.phaseName {
+  position: sticky;
+  left: 0;
+  z-index: 2;
+  flex: none;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  gap: var(--ox-space-2);
+  padding: 0 var(--ox-space-3);
+  background: var(--ox-gantt-phase-bg, var(--ox-raised));
+  border-right: 1px solid var(--ox-divider);
+}
+
+.phaseLabel {
+  flex: none;
+  font-size: 11px;
+  font-weight: var(--ox-fw-semibold);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--ox-text-muted);
+  white-space: nowrap;
+}
+
+.phaseDates {
+  min-width: 0;
+  font-size: 11px;
+  color: var(--ox-text-muted);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  font-variant-numeric: tabular-nums;
+}
+
+.phaseBar {
+  position: absolute;
+  top: 12px;
+  height: 4px;
+  border-radius: 2px;
+  background: var(--gantt-base);
+}
+
+.stageRow {
+  display: flex;
+  height: 44px;
+  border-top: 1px solid var(--ox-divider);
+  background: var(--ox-card);
+}
+
+.stageRow[data-selected='true'] {
+  background: var(--ox-accent-tint);
+}
+
+.stageRow[data-dimmed='true'] .bar,
+.stageRow[data-dimmed='true'] .ms {
+  opacity: 0.3;
+}
+
+.name {
+  position: sticky;
+  left: 0;
+  z-index: 2;
+  flex: none;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: flex-start;
+  gap: 1px;
+  padding: 0 var(--ox-space-2) 0 var(--ox-space-3);
+  border: 0;
+  border-right: 1px solid var(--ox-divider);
+  background: inherit;
+  color: var(--ox-text);
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+  /* Цель нажатия 44 px: кнопка перекрывает верхнюю линию строки (1 px), линию рисует inset-тень. */
+  align-self: flex-start;
+  height: 44px;
+  margin-top: -1px;
+  box-shadow: inset 0 1px 0 var(--ox-divider);
+}
+
+.name:focus-visible {
+  outline: 2px solid var(--ox-focus);
+  outline-offset: -2px;
+}
+
+.nameLine {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  width: 100%;
+  min-width: 0;
+}
+
+.title {
+  min-width: 0;
+  font-size: var(--ox-fs-sm);
+  font-weight: var(--ox-fw-medium);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.mark {
+  flex: none;
+  display: inline-flex;
+}
+
+.mark[data-tone='warn'] {
+  color: var(--ox-warn-fg);
+}
+
+.mark[data-tone='danger'] {
+  color: var(--ox-danger-fg);
+}
+
+.meta {
+  width: 100%;
+  font-size: 11px;
+  color: var(--ox-text-muted);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  font-variant-numeric: tabular-nums;
+}
+
+.variance {
+  font-weight: var(--ox-fw-semibold);
+}
+
+.variance[data-tone='warn'] {
+  color: var(--ox-warn-fg);
+}
+
+.variance[data-tone='ok'] {
+  color: var(--ox-ok-fg);
+}
+
+.bar {
+  position: absolute;
+  top: 10px;
+  height: 18px;
+  display: flex;
+  border-radius: 5px;
+  background: var(--ox-accent-soft);
+  box-shadow: inset 0 0 0 1px var(--ox-ok-border);
+  overflow: hidden;
+  user-select: none;
+  touch-action: pan-x pan-y;
+  cursor: pointer;
+}
+
+.bar[data-movable='true'] {
+  cursor: grab;
+}
+
+.bar[data-kind='accepted'],
+.bar[data-kind='act'] {
+  background: transparent;
+  box-shadow: none;
+}
+
+.bar[data-selected='true'] {
+  box-shadow:
+    0 0 0 2px var(--ox-card),
+    0 0 0 4px var(--ox-accent);
+  overflow: visible;
+}
+
+.bar[data-changed='true'] {
+  outline: 2px dashed var(--ox-warn-fg);
+  outline-offset: 2px;
+}
+
+.seg {
+  flex: none;
+  height: 100%;
+}
+
+.seg[data-kind='act'] {
+  background: var(--ox-accent);
+}
+
+.seg[data-kind='accepted'] {
+  background: var(--gantt-accepted);
+}
+
+.seg[data-kind='review'] {
+  background: repeating-linear-gradient(
+    135deg,
+    var(--ox-warn-border) 0 2px,
+    var(--ox-warn-bg) 2px 4px
+  );
+}
+
+.handle {
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 8px;
+  height: 100%;
+  border-left: 1px solid var(--gantt-hatch);
+  cursor: ew-resize;
+}
+
+.ms {
+  position: absolute;
+  top: 12px;
+  width: 14px;
+  height: 14px;
+  transform: rotate(45deg);
+  border-radius: 2px;
+  background: var(--ox-text);
+  cursor: pointer;
+}
+
+.ms[data-selected='true'] {
+  box-shadow:
+    0 0 0 2px var(--ox-card),
+    0 0 0 4px var(--ox-accent);
+}
+
+.base {
+  position: absolute;
+  top: 32px;
+  height: 4px;
+  border-radius: 2px;
+  background: var(--gantt-base);
+}
+
+.baseMs {
+  position: absolute;
+  top: 29px;
+  width: 9px;
+  height: 9px;
+  transform: rotate(45deg);
+  border: 1.5px solid var(--ox-text-muted);
+  background: var(--ox-card);
+}
+
+.overlay {
+  position: absolute;
+  top: 0;
+  height: 100%;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.weekend,
+.holiday {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+}
+
+.weekend {
+  background: var(--gantt-weekend);
+}
+
+.holiday {
+  background: repeating-linear-gradient(135deg, var(--gantt-hatch) 0 3px, transparent 3px 7px);
+}
+
+.pause {
+  position: absolute;
+  height: 6px;
+  border-radius: 3px;
+  background: repeating-linear-gradient(90deg, var(--gantt-base) 0 3px, transparent 3px 6px);
+}
+
+.pauseLabel {
+  position: absolute;
+  padding-left: 3px;
+  font-size: 10px;
+  line-height: 12px;
+  color: var(--ox-text-muted);
+  white-space: nowrap;
+}
+
+.pauseLabel[data-clipped='true'] {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+}
+
+.links {
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+
+.link path {
+  stroke: var(--gantt-link);
+}
+
+.link polygon {
+  fill: var(--gantt-link);
+}
+
+.link[data-state='hot'] path {
+  stroke: var(--ox-accent);
+}
+
+.link[data-state='hot'] polygon {
+  fill: var(--ox-accent);
+}
+
+.link[data-state='crit'] path {
+  stroke: var(--ox-text);
+}
+
+.link[data-state='crit'] polygon {
+  fill: var(--ox-text);
+}
+
+.link[data-state='dim'] path {
+  stroke: var(--gantt-link-dim);
+}
+
+.link[data-state='dim'] polygon {
+  fill: var(--gantt-link-dim);
+}
+
+.todayLine {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 2px;
+  background: var(--ox-danger-fg);
+}

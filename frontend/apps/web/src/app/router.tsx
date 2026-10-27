@@ -52,6 +52,13 @@ const publicFormRoute = createRoute({
   component: lazyRouteComponent(() => import('../routes/public-form/PublicFormScreen.tsx')),
 });
 
+// W6.23 · График объекта «Ремонта и стройки» страницей (вкладку карточки W6.20 встраивает `ScheduleTab`).
+const repairScheduleRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: '/t/$tenantId/repair/$projectId/schedule',
+  component: lazyRouteComponent(() => import('../routes/repair/child/gantt/ScheduleScreen.tsx')),
+});
+
 const tenantRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: '/t/$tenantId',
@@ -93,6 +100,7 @@ const routeTree = rootRoute.addChildren([
   invitationRoute,
   formFillRoute,
   publicFormRoute,
+  repairScheduleRoute,
   tenantRoute,
   tenantPageRoute,
   platformRoute,

@@ -1,0 +1,666 @@
+/* W6.23 · «График» объекта по рендеру эталона design-2026-10-19 («Ремонт и стройка.dc.html» :279–511; PD-28).
+   Диаграмма, предпросмотр и «Ближайшие 3 недели» — компоненты @ortus/ui (Gantt, ScheduleChangePreview, Lookahead); здесь —
+   каркас страницы, панель справа и панель этапа. Цели нажатия ≥ 44 px на телефоне (verification-protocol §1). */
+
+.ox-gt {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  min-width: 0;
+  font-size: var(--ox-fs-md);
+  line-height: var(--ox-lh-base);
+
+  /* Оттенки полос эталона (:329–390): принято #7DB396, по договору #AEB9B3, строка раздела #FBFCFA. */
+  --ox-gantt-accepted: #7db396;
+  --ox-gantt-base: #aeb9b3;
+  --ox-gantt-phase-bg: #fbfcfa;
+}
+
+.ox-gt-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 8px 16px;
+}
+
+.ox-gt-titles {
+  flex: 1 1 320px;
+  min-width: 0;
+}
+
+.ox-gt-title {
+  margin: 0;
+  font-size: 20px;
+  font-weight: var(--ox-fw-semibold);
+}
+
+.ox-gt-title[data-level='1'] {
+  font-size: 24px;
+  letter-spacing: -0.02em;
+}
+
+.ox-gt-intro {
+  margin: 4px 0 0;
+  max-width: 720px;
+  color: var(--ox-text-muted);
+  text-wrap: pretty;
+}
+
+.ox-gt-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+/* Чипы шапки эталона (:287): 13px, отступы 4px 10px 4px 8px; чип сводки (:425): 2px 8px 2px 6px. */
+.ox-gt-chips > [data-tone] {
+  padding: 4px 10px 4px 8px;
+  gap: 5px;
+  font-size: 13px;
+}
+
+.ox-gt-self > [data-tone] {
+  padding: 2px 8px 2px 6px;
+}
+
+/* Значок чипа сводки эталона (:425) — 15 px (общий Status рисует 16 px через style значка). */
+.ox-gt-self > [data-tone] > span {
+  font-size: 15px !important;
+}
+
+.ox-gt-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 14px;
+}
+
+.ox-gt-seg {
+  display: inline-flex;
+  padding: 3px;
+  border-radius: 10px;
+  background: var(--ox-canvas);
+}
+
+.ox-gt-seg button {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 44px;
+  padding: 0 12px;
+  border: 0;
+  border-radius: 8px;
+  background: transparent;
+  color: var(--ox-text);
+  font: inherit;
+  font-size: var(--ox-fs-sm);
+  font-weight: var(--ox-fw-medium);
+  white-space: nowrap;
+  cursor: pointer;
+}
+
+.ox-gt-seg button[data-on='true'] {
+  background: var(--ox-card);
+  box-shadow: 0 1px 2px rgba(28, 42, 38, 0.14);
+  font-weight: var(--ox-fw-semibold);
+}
+
+.ox-gt-check {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 44px;
+  font-size: var(--ox-fs-sm);
+  white-space: nowrap;
+  cursor: pointer;
+}
+
+.ox-gt-check input {
+  width: 18px;
+  height: 18px;
+  margin: 0;
+  accent-color: var(--ox-accent);
+}
+
+.ox-gt-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 44px;
+  padding: 0 12px;
+  border: 1px solid var(--ox-line-control);
+  border-radius: 8px;
+  background: var(--ox-card);
+  color: var(--ox-text);
+  font: inherit;
+  font-size: var(--ox-fs-sm);
+  font-weight: var(--ox-fw-medium);
+  cursor: pointer;
+}
+
+.ox-gt-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.ox-gt-layout {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  gap: 16px;
+}
+
+.ox-gt-main {
+  flex: 1 1 100%;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.ox-gt-layout[data-side='true'] .ox-gt-main {
+  flex: 1 1 0;
+}
+
+.ox-gt-aside {
+  flex: 1 1 100%;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.ox-gt-aside[data-side='true'] {
+  flex: 0 0 320px;
+}
+
+.ox-gt-chart {
+  min-width: 0;
+  background: var(--ox-card);
+  border: 1px solid var(--ox-line);
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.ox-gt-chart > :first-child {
+  border: 0;
+  border-radius: 0;
+}
+
+.ox-gt-legend {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px 14px;
+  padding: 10px 14px;
+  border-top: 1px solid var(--ox-divider);
+  font-size: var(--ox-fs-xs);
+  color: var(--ox-text-label);
+}
+
+.ox-gt-legend-hint {
+  flex: 1 1 260px;
+  color: var(--ox-text-muted);
+  text-wrap: pretty;
+}
+
+.ox-gt-lg {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.ox-gt-lg::before {
+  content: '';
+  display: inline-block;
+  width: 16px;
+  height: 10px;
+  border-radius: 3px;
+}
+
+.ox-gt-lg[data-k='act']::before {
+  background: var(--ox-accent);
+}
+
+.ox-gt-lg[data-k='accepted']::before {
+  background: #7db396;
+}
+
+.ox-gt-lg[data-k='review']::before {
+  background: repeating-linear-gradient(135deg, #e0b457 0 2px, #f7e9c6 2px 4px);
+}
+
+.ox-gt-lg[data-k='plan']::before {
+  background: #e3efe7;
+  box-shadow: inset 0 0 0 1px #bfd9c8;
+}
+
+.ox-gt-lg[data-k='base']::before {
+  height: 4px;
+  border-radius: 2px;
+  background: #aeb9b3;
+}
+
+.ox-gt-lg[data-k='pause']::before {
+  height: 6px;
+  border-radius: 3px;
+  background: repeating-linear-gradient(90deg, #aeb9b3 0 3px, transparent 3px 6px);
+}
+
+.ox-gt-lg[data-k='today']::before {
+  width: 2px;
+  height: 12px;
+  border-radius: 0;
+  background: var(--ox-danger-fg);
+}
+
+.ox-gt-card {
+  background: var(--ox-card);
+  border: 1px solid var(--ox-line);
+  border-radius: 12px;
+  padding: 14px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  overflow: hidden;
+}
+
+.ox-gt-flush {
+  padding: 0;
+  gap: 0;
+}
+
+.ox-gt-pad {
+  padding: 14px 16px 8px;
+}
+
+.ox-gt-h3 {
+  margin: 0;
+  font-size: var(--ox-fs-lg);
+  font-weight: var(--ox-fw-semibold);
+}
+
+.ox-gt-h3-lg {
+  font-size: 18px;
+  letter-spacing: -0.01em;
+  text-wrap: pretty;
+}
+
+.ox-gt-grid2 {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.ox-gt-col {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.ox-gt-grid2 .ox-gt-col {
+  gap: 0;
+}
+
+.ox-gt-grow {
+  flex: 1;
+  min-width: 0;
+}
+
+.ox-gt-start {
+  align-self: flex-start;
+}
+
+.ox-gt-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px 8px;
+  font-size: var(--ox-fs-sm);
+  color: var(--ox-text-label);
+}
+
+.ox-gt-label {
+  font-size: var(--ox-fs-xs);
+  color: var(--ox-text-muted);
+}
+
+.ox-gt-big {
+  font-size: 17px;
+  font-weight: var(--ox-fw-semibold);
+  font-variant-numeric: tabular-nums;
+}
+
+.ox-gt-big[data-late='true'] {
+  color: var(--ox-warn-fg);
+}
+
+.ox-gt-self {
+  align-self: flex-start;
+  display: flex;
+}
+
+.ox-gt-text {
+  margin: 0;
+  font-size: var(--ox-fs-sm);
+  text-wrap: pretty;
+}
+
+p.ox-gt-text {
+  color: var(--ox-text-label);
+}
+
+.ox-gt-strong {
+  font-size: var(--ox-fs-sm);
+  font-weight: var(--ox-fw-medium);
+  text-wrap: pretty;
+}
+
+.ox-gt-note {
+  font-size: var(--ox-fs-sm);
+  color: var(--ox-text-label);
+  text-wrap: pretty;
+}
+
+.ox-gt-hint {
+  font-size: var(--ox-fs-xs);
+  color: var(--ox-text-muted);
+  text-wrap: pretty;
+}
+
+.ox-gt-num {
+  font-variant-numeric: tabular-nums;
+}
+
+.ox-gt-pills {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.ox-gt-pill {
+  min-height: 44px;
+  padding: 0 12px;
+  border-radius: 999px;
+  border: 1px solid var(--ox-line-control);
+  background: var(--ox-card);
+  color: var(--ox-text);
+  font: inherit;
+  font-size: var(--ox-fs-sm);
+  font-weight: var(--ox-fw-medium);
+  cursor: pointer;
+}
+
+.ox-gt-pill-sm {
+  min-height: 44px;
+  font-size: var(--ox-fs-xs);
+}
+
+.ox-gt-issue {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  width: 100%;
+  min-height: 44px;
+  padding: 10px 16px;
+  border: 0;
+  border-top: 1px solid var(--ox-divider);
+  background: var(--ox-card);
+  color: var(--ox-text);
+  font: inherit;
+  font-size: var(--ox-fs-sm);
+  text-align: left;
+  text-wrap: pretty;
+  cursor: pointer;
+}
+
+.ox-gt-issue-icon[data-tone='warn'] {
+  color: var(--ox-warn-fg);
+}
+
+.ox-gt-issue-icon[data-tone='danger'] {
+  color: var(--ox-danger-fg);
+}
+
+.ox-gt-issue-icon {
+  display: inline-flex;
+}
+
+.ox-gt-log {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 8px 0;
+  border-top: 1px solid var(--ox-divider);
+  font-size: var(--ox-fs-sm);
+}
+
+.ox-gt-reason {
+  font-size: var(--ox-fs-xs);
+  color: var(--ox-warn-fg);
+}
+
+.ox-gt-how {
+  margin: 0;
+  padding: 0 0 0 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-size: var(--ox-fs-sm);
+  color: var(--ox-text-label);
+  text-wrap: pretty;
+}
+
+.ox-gt-notice {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  padding: 10px 12px;
+  border-radius: 10px;
+  background: var(--ox-ok-bg);
+  color: var(--ox-ok-fg);
+  font-size: var(--ox-fs-sm);
+  text-wrap: pretty;
+}
+
+.ox-gt-back {
+  padding: 8px 8px 0;
+}
+
+.ox-gt-linkbtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  min-height: 44px;
+  padding: 0 10px;
+  border: 0;
+  border-radius: 8px;
+  background: transparent;
+  color: var(--ox-accent);
+  font: inherit;
+  font-size: var(--ox-fs-sm);
+  font-weight: var(--ox-fw-medium);
+  text-align: left;
+  cursor: pointer;
+}
+
+.ox-gt-sec {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 12px 16px 14px;
+  border-top: 1px solid var(--ox-divider);
+}
+
+.ox-gt-sec-top {
+  gap: 8px;
+  padding: 4px 16px 14px;
+  border-top: 0;
+}
+
+.ox-gt-sec-last {
+  gap: 4px;
+  padding-bottom: 16px;
+}
+
+.ox-gt-cap {
+  font-size: var(--ox-fs-xs);
+  font-weight: var(--ox-fw-semibold);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--ox-text-muted);
+}
+
+.ox-gt-step {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.ox-gt-step-label {
+  font-size: var(--ox-fs-sm);
+  color: var(--ox-text-label);
+}
+
+.ox-gt-step-ctl {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.ox-gt-step-val {
+  min-width: 92px;
+  text-align: center;
+  font-size: var(--ox-fs-sm);
+  font-weight: var(--ox-fw-medium);
+  font-variant-numeric: tabular-nums;
+}
+
+.ox-gt-sq {
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  border-radius: 8px;
+  border: 1px solid var(--ox-line-control);
+  background: var(--ox-card);
+  color: var(--ox-text);
+  cursor: pointer;
+}
+
+.ox-gt-sq:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.ox-gt-sq-sm {
+  width: 44px;
+  height: 44px;
+}
+
+.ox-gt-pred {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.ox-gt-pair {
+  display: flex;
+  gap: 4px;
+}
+
+.ox-gt-select,
+.ox-gt-input {
+  min-height: 44px;
+  padding: 0 10px;
+  border: 1px solid var(--ox-line-control);
+  border-radius: 8px;
+  background: var(--ox-card);
+  color: var(--ox-text);
+  font: inherit;
+  font-size: var(--ox-fs-md);
+}
+
+.ox-gt-conflict {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  padding: 8px 10px;
+  border-radius: 8px;
+  background: var(--ox-danger-bg);
+  color: var(--ox-danger-fg);
+  font-size: var(--ox-fs-sm);
+  text-wrap: pretty;
+}
+
+.ox-gt-prep-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 2px 10px;
+  padding: 12px 16px;
+}
+
+.ox-gt-baseline {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding-top: 12px;
+  border-top: 1px solid var(--ox-divider);
+}
+
+.ox-gt-error {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 12px;
+  padding: 12px 14px;
+  border-radius: 10px;
+  border: 1px solid var(--ox-danger-border);
+  background: var(--ox-danger-bg);
+  color: var(--ox-danger-fg);
+}
+
+/* Страница вне оболочки (маршрут `/t/:id/repair/:projectId/schedule`) */
+.ox-gt-screen {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 16px;
+}
+
+.ox-gt-crumb {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px 8px;
+  font-size: var(--ox-fs-sm);
+  color: var(--ox-text-muted);
+}
+
+.ox-gt-crumb a {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  color: var(--ox-accent);
+  text-decoration: none;
+  font-weight: var(--ox-fw-medium);
+}
+
+/* Эталон рисует кнопки управления высотой 36 px (:292–299, :429), на телефоне — 44 px (PD-28, verification-protocol §1.3). */
+@media (min-width: 640px) {
+  .ox-gt-seg button,
+  .ox-gt-check,
+  .ox-gt-btn,
+  .ox-gt-pill {
+    min-height: 36px;
+  }
+
+  .ox-gt-issue {
+    min-height: 0;
+  }
+}

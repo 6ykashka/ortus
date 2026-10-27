@@ -173,9 +173,27 @@ export interface GanttStage {
   end: string;
   /** Полоса по факту: акт / принято / на приёмке / план. */
   kind: 'act' | 'accepted' | 'review' | 'plan';
-  paused?: { start: string; end: string }[];
+  /** Паузы после этапа (сушка, набор прочности): календарные дни, `label` — подпись над полосой паузы. */
+  paused?: { start: string; end: string; label?: string }[];
   critical?: boolean;
   baseline?: { start: string; end: string };
+  /** W6.23 (необязательные поля): раздел — строка-заголовок над этапами раздела. */
+  phase?: string;
+  /** Веха (сдача): ромб вместо полосы. */
+  milestone?: boolean;
+  /** Подпись под названием этапа («19.10–23.10 · 10 дн»), на узком экране не показывается. */
+  meta?: string;
+  /** Отклонение от договора («+2 дн») и тон подписи. */
+  variance?: { text: string; tone: 'ok' | 'warn' };
+  /** Значки «Требует внимания» у названия: иконка и пояснение. */
+  marks?: { icon: string; label: string; tone: 'warn' | 'danger' }[];
+  /** Можно ли тянуть полосу (сдвиг начала) и правый край (длительность); по умолчанию — нет. */
+  canMove?: boolean;
+  canResize?: boolean;
+  /** Этап сдвинут несохранённым изменением (пунктирная обводка). */
+  changed?: boolean;
+  /** Доли принятого и находящегося на приёмке объёма 0…1 — деление полосы идущего этапа. */
+  progress?: { accepted: number; review: number };
 }
 export interface GanttChange {
   stageId: string;
@@ -188,10 +206,20 @@ export interface GanttProps {
   links: { from: string; to: string }[];
   baseline?: boolean;
   today: string;
+  /** `weekends` — номера дней недели `Date.getUTCDay()` (0 — вс … 6 — сб), обычно `[0, 6]`; `holidays` — ISO-даты. */
   calendar: { weekends: number[]; holidays?: string[] };
   zoom: 'fit' | 'day';
   onSelect?: (stageId: string) => void;
+  /** Новые даты этапа при перетаскивании (рабочие дни по `calendar`); вызывается на каждом шаге в днях. */
   onPreview?: (change: GanttChange) => void;
+  /** W6.23 (необязательные): выбранный этап, режим «Критический путь» (этапы с запасом гаснут), подпись области. */
+  selected?: string | null;
+  criticalMode?: boolean;
+  /** Перетаскивание мышью выключено на узком экране и без права правки. */
+  dragEnabled?: boolean;
+  /** Прокрутить к «сегодня» (счётчик нажатий «К сегодня»): растёт — прокручивает. */
+  scrollToToday?: number;
+  ariaLabel?: string;
 }
 
 /** Без причины сохранить нельзя; `role="region"`, причина — `select` с подписью. */
@@ -203,11 +231,31 @@ export interface ScheduleChangePreviewProps {
   reasons: { value: string; label: string }[];
   onApply: (reason: string) => void;
   onCancel: () => void;
+  /** W6.23 (необязательные): готовые тексты вместо собранных из `changes` и `finish`; сдача позже договора. */
+  texts?: { lines?: string; moved?: string; finish?: string; notify?: string };
+  late?: boolean;
+  /** Идёт сохранение: кнопки неактивны. */
+  busy?: boolean;
 }
 
 /** По неделям; готовность исполнителя и материалов; список кнопок без диаграммы. */
 export interface LookaheadProps {
-  weeks: { start: string; label: string }[];
-  items: { id: string; title: string; week: string; onOpen?: () => void }[];
+  weeks: { start: string; label: string; sub?: string }[];
+  items: {
+    id: string;
+    title: string;
+    week: string;
+    onOpen?: () => void;
+    /** W6.23 (необязательные): когда, кто и чипы строки; без `chips` — по `prep`. */
+    when?: string;
+    who?: string;
+    /** `strong` — тёмный чип («Критический путь» эталона :1117). */
+    chips?: {
+      label: string;
+      tone: 'ok' | 'info' | 'warn' | 'danger' | 'neutral';
+      icon: string;
+      strong?: boolean;
+    }[];
+  }[];
   prep: Record<string, { crew: boolean; materials: boolean }>;
 }

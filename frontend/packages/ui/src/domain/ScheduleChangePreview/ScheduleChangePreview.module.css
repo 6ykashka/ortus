@@ -1,0 +1,90 @@
+/* Предпросмотр изменения графика — design/Ремонт и стройка.dc.html :304–325. */
+.root {
+  display: flex;
+  flex-direction: column;
+  gap: var(--ox-space-3);
+  padding: 14px var(--ox-space-4);
+  border: 1px solid var(--ox-warn-border);
+  border-radius: var(--ox-radius-xl);
+  background: var(--ox-warn-bg);
+}
+
+.top {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+}
+
+.icon {
+  color: var(--ox-warn-fg);
+  display: inline-flex;
+}
+
+.text {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.line {
+  font-size: var(--ox-fs-sm);
+  color: var(--ox-text-label);
+  text-wrap: pretty;
+}
+
+.finish {
+  font-size: var(--ox-fs-sm);
+  font-weight: var(--ox-fw-semibold);
+  color: var(--ox-ok-fg);
+  text-wrap: pretty;
+}
+
+.finish[data-late='true'] {
+  color: var(--ox-warn-fg);
+}
+
+.notify {
+  font-size: var(--ox-fs-xs);
+  color: var(--ox-text-muted);
+  text-wrap: pretty;
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--ox-space-2);
+}
+
+.reason {
+  display: flex;
+  align-items: center;
+  gap: var(--ox-space-2);
+  font-size: var(--ox-fs-sm);
+  font-weight: var(--ox-fw-medium);
+  color: var(--ox-text-label);
+}
+
+.select {
+  min-height: 44px;
+  max-width: 260px;
+  padding: 0 10px;
+  border: 1px solid var(--ox-line-control);
+  border-radius: var(--ox-radius-md);
+  background: var(--ox-card);
+  color: var(--ox-text);
+  font: inherit;
+  font-size: var(--ox-fs-md);
+}
+
+.select:focus-visible {
+  outline: 2px solid var(--ox-focus);
+  outline-offset: 1px;
+}
+
+.hint {
+  font-size: var(--ox-fs-xs);
+  color: var(--ox-text-muted);
+}

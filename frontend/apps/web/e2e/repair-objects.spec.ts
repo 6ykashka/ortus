@@ -347,12 +347,14 @@ test.describe('repair-card — карточка объекта, обзор 1a @m
     app,
     page,
   }) => {
-    await open(app, page, 'ЖК Речной · квартира 42', 'owner', 'График');
-    await expect(page).toHaveURL(/tab=schedule/);
-    await expect(main(page)).toContainText('График: раздел ещё не подключён');
-    await expect(main(page)).toContainText('Сдача сдвигается на 01.12');
+    await open(app, page, 'ЖК Речной · квартира 42', 'owner', 'Снабжение');
+    await expect(page).toHaveURL(/tab=supply/);
+    await expect(main(page)).toContainText('Снабжение: раздел ещё не подключён');
     await reloadReady(page);
-    await expect(tabs(page).filter({ hasText: 'График' })).toHaveAttribute('aria-selected', 'true');
+    await expect(tabs(page).filter({ hasText: 'Снабжение' })).toHaveAttribute(
+      'aria-selected',
+      'true',
+    );
     await main(page).getByRole('button', { name: 'Объекты' }).click();
     await expect(h1(page, 'Объекты')).toBeVisible();
     await expect(page).not.toHaveURL(/obj=/);

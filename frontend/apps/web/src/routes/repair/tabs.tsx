@@ -6,6 +6,9 @@ import type { components } from '@ortus/api-client';
 import { Icon } from '@ortus/ui';
 import type { ComponentType, ReactElement } from 'react';
 
+import { useCan } from '../../shell/context.tsx';
+import { ScheduleTab } from './child/gantt/index.ts';
+import './child/gantt/gantt.css';
 import { EstimateTab } from './estimate/index.ts';
 import { MeasureTab, type RepairTabLink } from './measure/index.ts';
 import { decisionView, type TabId } from './model.ts';
@@ -37,9 +40,23 @@ function EstimatePanel(p: TabPanelProps): ReactElement {
   return <EstimateTab projectId={p.ov.project.id} onNavigate={linkTab(p.onTab)} />;
 }
 
+function SchedulePanel(p: TabPanelProps): ReactElement {
+  const can = useCan();
+  return (
+    <ScheduleTab
+      tenantId={p.tenantId}
+      projectId={p.ov.project.id}
+      can={(...perms) => can(...perms)}
+      readOnly={p.readOnly}
+      headingLevel={2}
+    />
+  );
+}
+
 export const TAB_PANELS: Partial<Record<TabId, ComponentType<TabPanelProps>>> = {
   measure: MeasurePanel,
   estimate: EstimatePanel,
+  schedule: SchedulePanel,
 };
 
 export function StubTab(p: { tab: TabId; ov: S['RepairProjectOverview'] }): ReactElement {
