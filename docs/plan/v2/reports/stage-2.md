@@ -3,6 +3,89 @@
 - stage: 2 · проверяющий выхода и критик полноты (проверка 1) · mode: `ci:local` + stand (`e2e-stand` под сторожем, слот 12) + mock (job `e2e`)
 - Критика полноты: [../critique/stage-2.md](../critique/stage-2.md)
 
+## Проверка 3 — 2026-10-27/28
+
+- main: `f089f0f89` (docs(plan): статус W2.91, W7.33, W5.20), совпадает с `origin/main` на старте. Worktree `.claude/worktrees/exit-s2` (detached; прежний каталог-сирота с одним `node_modules` удалён и создан заново). Код продукта не менялся.
+- Среда: Windows 11, Docker 27.4.0 (общий, не перезапускался), pnpm 9.15.9, `GOFLAGS=-p=2`. Слот 12: Vite стенда 5212, API 8112, compose `ortus-s12`; mock — `E2E_ROLE=verifier`, приложение 6112, эталон 7212. Слот 0 и `docs/demo/**` не трогались. Замок `e2e-stand-2.lock` держался на время прогона сторожа, снят; `ortus-s12` после `down -v` не остался.
+- MVP: облачных stage и prod-pilot нет (W3.00, W3.06 отложены решением пользователя 19.10); «стенд stage» — локальный compose слота 12.
+- Итоги WS прогона: влиты W2.78…W2.83, W2.87, W2.91, W2.97 и прочие из списка оркестратора; **W2.92, W2.93, W2.94, W2.95, W2.96 не влиты** («не принят после 5 возвратов», ветки `ws/W2.92`…`ws/W2.96` есть, работа в них сделана и описана в их отчётах).
+
+### Вердикт
+
+**Не пройден.** Сквозная смена водителя на телефоне и у менеджера на локальном стенде проходит, AC-03, 04, 05, 12 и AC-06 (Q-W2.07-1 и D-35) зелёные. Из трёх блокеров проверки 2 снят один: W2.91 влит, `@known-defect` Q-W2.75-3 снят, журни «сдача обычной машины до окна рейса» (`temporary-driver-vehicle-shift.spec.ts:124`) зелёный на трёх вьюпортах. Остаются два пункта, оба технические (решений людей не требуют) и оба лежат в готовых, но невлитых ветках:
+
+1. **Одна строка `@known-defect` в `journeys/stage2`:** `temporary-driver-vehicle.spec.ts:629` (Q-W2.75-1, «Моя смена» временного водителя до окна без поставленной машины). Исправление — W2.92 (`ws/W2.92`), не влито. Есть находка исполнителя W2.92 (Q-W2.92-2): после «Поставить машину» до окна `listVehicles` всё равно отвечает 403 (`pool.openVehicle` открывает строку доступа с начала окна), название машины на экране — «—».
+2. **`modal-finish-route.spec.ts:120` красная на GitHub** (run 40554378905: шарды 5/8 [tablet-768] и 8/8 [desktop-1440], `reserveVehicle 409 reservation_overlap`, три попытки). На слоте 12 строка зелёная на трёх вьюпортах (стенд свежий, порядок строк другой). Причина и исправление найдены в W2.93 (`ws/W2.93`, `reserveWindow` сдвигает окно брони внутри окна рейса Р-208, когда его занимают `consumed`-брони чужих смен), не влито.
+
+### Критерий выхода по пунктам
+
+| # | Пункт (план v2 §4) | Итог | Основание |
+|---|---|---|---|
+| 1 | Полная смена водителя на телефоне и у менеджера на стенде | **выполнен** | `driver-shift.spec.ts:169`, `:213`, `:543`, `guide-path.spec.ts:336`, `temporary-driver-vehicle-shift.spec.ts:38`, `:124` — mobile-390, tablet-768, desktop-1440 зелёные с первой попытки на слоте 12 |
+| 2 | AC-03 | **выполнен** | `reservation-race.spec.ts:185` stand × 3; `TestAC03*` в `go-concurrency` (isolation ✓) |
+| 3 | AC-04 | **выполнен** | `defect-decision.spec.ts:184` stand × 3; `TestAC04DepartureRefusals` (integration ✓) |
+| 4 | AC-05 | **выполнен** | isolation ✓ (`fleet_review_gate`, `data_trips`, `fleet_w252_export_*`); `driver-shift.spec.ts:543` |
+| 5 | AC-06 «только рейс» (Q-W2.07-1, W2.57) | **выполнен** | `temporary-driver.spec.ts:702`, `:737` stand × 3; `fleet_pool_ac06_test.go` |
+| 6 | AC-06, дополнения D-35 (S2-20, W2.70–W2.75) | **выполнен после начала окна рейса и для сдачи обычной машины до окна; «Моя смена» до окна — нет** | `temporary-driver-vehicle.spec.ts:244`, `:341`, `:429`, `:539`, `driver-today-offer.spec.ts:357`, `:409` stand × 3 зелёные; строка Q-W2.75-1 (`:629`) в `fixme` |
+| 7 | AC-12 | **выполнен** | `module-draining.spec.ts:194`, `:255` stand × 3 |
+| 8 | Все WS этапа «готово» (или блокеры людей) | **выполнен по реестру** | W2.00…W2.09, W2.20…W2.26, W2.30…W2.32, W2.41…W2.57, W2.60…W2.62, W2.70…W2.76, W2.78…W2.83, W2.87, W2.91, W2.97 — «готово»; W2.92…W2.96 вне реестра §4, не влиты (см. вердикт). Строки W2.84…W2.86 — «в работе» с 24.10 (учёт интегратора, ветки не влиты) |
+| 9 | Нет `@known-defect` в `journeys/stage2` (или решение людей) | **не выполнен** | одна строка: `temporary-driver-vehicle.spec.ts:629` (Q-W2.75-1) |
+| 10 | Строки этапа 2 без красного (стенд и GitHub) | **не выполнен на GitHub** | локально на стенде — 0 упавших, 0 повторов; на GitHub `modal-finish-route.spec.ts:120` красная (шарды 5/8, 8/8) |
+
+### Прогоны
+
+#### 1. `corepack pnpm install --frozen-lockfile` — exit 0 (98 с).
+
+#### 2. `ci:local` — по job
+
+`pnpm run ci:local` (`--all`) включает `e2e-stand` на слоте по умолчанию без сторожа и без замка, поэтому job гонялись по отдельности (`pipeline.mjs --job <id>`), стенд — под сторожем.
+
+```text
+lint          exit 0   (prettier, eslint, golangci-lint, actionlint, spectral)
+contract      exit 0
+unit          exit 0   (11 мин: check-icu, typecheck, test, check-decisions, allowlist-lint, mcp-check)
+integration   exit 1 -> 5 пакетов красные при первом прогоне, повтор -p 1: 4 ok, authhttp ok отдельным запуском
+isolation     exit 0 при повторе (первый прогон в одной цепочке — exit 1, лог потерян, см. ниже)
+build         exit 0 при повторе (первый прогон — exit 1 на check-k6, лог потерян)
+```
+
+- Лог первых прогонов isolation/build потерян по моей ошибке скрипта (общий файл `job-$j.log`, перезаписан); причина первого красного не установлена. Повторы на спокойном ПК зелёные: `build` (build, storybook, check-k6 — 217 запросов, 0 неуспешных, images), `isolation` (go-isolation, go-concurrency).
+- `integration` при первом прогоне шёл параллельно со стендом другого агента (слот 1): красные `importer` (`TestSendInvitations`: `Invited 0` вместо 1), `notify/mail` (7 тестов SMTP), `notify/realtime` (8 тестов шлюза, по 15 с), `session/oidc` и `session/oidc/authhttp`. Повтор `-tags integration -count=1 -p 1` по этим пакетам: importer 10 с, mail 2 с, realtime 12 с, oidc 9 с — ok; `authhttp` — `TestLogout` с nil-паникой в `server_test.go:413` (`signedIn`), отдельным запуском пакета — ok (29 с). Все пять — нагрузка и время ожидания контейнеров, не регрессия продукта (на GitHub `integration` зелёный).
+
+#### 3. e2e-stand — `stand-guard.mjs --slot 12`, полный набор `@stand|@mailpit`
+
+Итог сторожа: 468 строк, **432 пройдено, 0 упало, 36 пропущено, 120 мин, повторов нет (ни одной «прошла только на повторе»)**, `down -v` выполнен. Код 1 — по правилу «@stand не должен пропускаться»: 12 строк × 3 вьюпорта, все этапов 5…7 с `test.skip` на «backend не влит»: `cash-self.spec.ts:224`, `cash.spec.ts:327`, `inventory.spec.ts:296`, `inventory-movements.spec.ts:277`, `repair-estimate.spec.ts:429`, `repair-measure.spec.ts:261`, `repair-money.spec.ts:289`, `repair-objects.spec.ts:707`, `repair-schedule.spec.ts:309`, `service-portal.spec.ts:296`, `spa-appointments.spec.ts:412`, `spa-services.spec.ts:203`. Строк этапа 2 среди пропущенных нет. Часть причин устарела: backend SPA (W5.20) влит в `main` (`7cef3df75`), а `spa-appointments`/`spa-services` всё ещё ссылаются на «W5.20, ещё не в main». Сторож не снимал прогон по тишине.
+
+Строки этапа 2 на трёх вьюпортах (все с первой попытки): `journeys/stage2/{driver-shift (:169, :213, :254, :543), guide-path, defect-decision, reservation-race, module-draining (:194, :255), temporary-driver-vehicle (:244, :341, :429, :539), temporary-driver-vehicle-shift (:38, :124), temporary-driver}`, `driver-today-offer.spec.ts:357`/`:409`, `modal-finish-route.spec.ts:120` (на свежем стенде), `logistics-*`, `driver-*`, `modal-driver-request-s220`.
+
+#### 4. e2e mock страниц этапа 2
+
+`playwright test journeys/stage2 driver- logistics- modal-driver modal-finish modal-accept temporary-driver reservation-race defect-decision module-draining guide-path home core-data --workers=2` (проверяющий, слот 12): 1060 строк, **884 passed, 174 skipped (@stand, fixme), 2 failed, 48,8 мин**. Упали `driver-today.spec.ts:196` и `:210` [mobile-390]; повтор `--repeat-each=3 --workers=1` — **6 из 6 passed** (флейк под параллельным стендом; тот же класс, что Q-W2.93/Q-W2.94 по `driver-today`).
+
+Дополнительно `shell.spec.ts:232` («390: нижняя навигация водителя и прораба», стадия 1, W1.49) **красная и локально, и на GitHub** (шарды 5/20 [390], 12/20 [768]): у прораба «Подотчёт» открывает `/cash-self` с заголовком «Касса» («Кассы недоступны: в ваших ролях нет модуля «Касса»…»), тест ждёт «Подотчёт». Регрессия после W5.32/W5.33 (`5c3119acf`, `37a62c034`), к этапу 2 не относится (нижняя навигация водителя в той же строке проходит).
+
+#### 5. CI на GitHub (`gh`, `6ykashka/ortus`)
+
+Run 40554378905 на `f089f0f89` (completed, failure, 61 мин): lint, contract, unit (12 мин), integration, isolation, build — **зелёные**. Красные:
+
+- `e2e-stand`: 7 шардов из 8. Шарды 5/8, 8/8 — `modal-finish-route.spec.ts:120` (строка этапа 2, блокер 2). Шарды 1, 3, 4, 6, 7 — 0 упавших, код 1 из-за пропусков этапов 5…7 (2…10 строк на шард, правило «@stand не пропускается»); шарды 4/8 и 7/8 при этом упёрлись и в лимит job 25 мин. Зелёный только 2/8.
+- `e2e` mock: 7 шардов из 20: 6, 7, 13, 14, 19, 20 — лимит job 25 мин (таймауты `visual/*`, причина `REFERENCE_REF: design-stage-1` без файла «Временный водитель - варианты.dc.html» — W2.94, не влито); 5/20 и 12/20 — `shell.spec.ts:232`, и `repair-schedule.spec.ts:270` [768] (этап 4).
+- Предыдущий run 40534514200 (`c1cae30c8`) — то же.
+
+### Сверка с историями и инвентарём
+
+| Что | Итог |
+|---|---|
+| S2-01…S2-19 | закрыты, без изменений |
+| S2-20 (D-35) | экраны 1a–1g и backend на `main`; сдача до окна рейса — закрыта W2.91; «Моя смена» до окна — нет (Q-W2.75-1, `fixme`) |
+| AC-03…06, AC-12 | автоматизированы и зелёные (см. таблицу) |
+| Инвентарь экранов этапа 2 | 16 из 16, у каждого mock и `@stand`; красная только `modal-finish-route` на GitHub |
+| W2.41…W2.57 (`decisions.md`) | все «готово» в `status.md` |
+
+### Что дальше
+
+FollowUps W2.98…W2.104 (в критике). Без W2.98 (влить W2.93) и W2.99 (влить W2.92) выход не закрыть.
+
 ## Проверка 2 — 2026-10-26
 
 - main: `f181f5db4` (docs(plan): статус W4.81), совпадает с `origin/main` на старте. Worktree `.claude/worktrees/exit-s2` (detached). Код продукта не менялся.
