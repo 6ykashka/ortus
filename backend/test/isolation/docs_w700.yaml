@@ -1,7 +1,7 @@
-# Матрица изоляции: тег Docs («Документы») контрактного PR этапа 7 (W7.00, 0.12.0-stage7) — строки до хендлера (pending W7.23).
+# Матрица изоляции: тег Docs («Документы») контрактного PR этапа 7 (W7.00, 0.12.0-stage7) — хендлеры сервера модуля W7.23; маршрут, подпись и ознакомление (pending W7.24) ждут W7.24.
 # Данные «Документы» — данные организации (tenant 0061): чужая организация — 404, как несуществующая (AC-01, AC-02), без сессии — 401.
-# Объектные id в пути — tenant:missing (такого объекта нет ни в одной базе): строки с содержимым фикстур добавит W7.23,
-# когда появится сид. Отказы шлюза по правам — docs_w700_gate.yaml. Публичные операции без тенанта (openDocLink, docServerCallback)
+# Объектные id в пути — tenant:missing (такого объекта нет ни в одной базе); строки с содержимым фикстур — docs_w723.yaml.
+# Отказы шлюза по правам — docs_w700_gate.yaml. Публичные операции без тенанта (openDocLink, docServerCallback)
 # в матрицу не входят: у них нет организации в пути, строки добавит владелец публичного контура (W7.23b, W7.31b).
 # Формат — README.md. После правки: go -C backend generate ./test/isolation
 module: docs_w700
@@ -9,7 +9,6 @@ endpoints:
   - op: listDocuments
     method: GET
     path: /api/v1/tenants/{tenantId}/docs
-    pending: W7.23
     rows:
       - actor: b.owner
         params: { tenantId: tenant:a }
@@ -22,7 +21,6 @@ endpoints:
   - op: createDocument
     method: POST
     path: /api/v1/tenants/{tenantId}/docs
-    pending: W7.23
     rows:
       - actor: b.owner
         params: { tenantId: tenant:a }
@@ -37,7 +35,6 @@ endpoints:
   - op: getDocument
     method: GET
     path: /api/v1/tenants/{tenantId}/docs/{documentId}
-    pending: W7.23
     rows:
       - actor: b.owner
         params: { tenantId: tenant:a, documentId: tenant:missing }
@@ -50,7 +47,6 @@ endpoints:
   - op: updateDocument
     method: PATCH
     path: /api/v1/tenants/{tenantId}/docs/{documentId}
-    pending: W7.23
     rows:
       - actor: b.owner
         params: { tenantId: tenant:a, documentId: tenant:missing }
@@ -65,7 +61,6 @@ endpoints:
   - op: moveDocument
     method: POST
     path: /api/v1/tenants/{tenantId}/docs/{documentId}/move
-    pending: W7.23
     rows:
       - actor: b.owner
         params: { tenantId: tenant:a, documentId: tenant:missing }
@@ -80,7 +75,6 @@ endpoints:
   - op: archiveDocument
     method: POST
     path: /api/v1/tenants/{tenantId}/docs/{documentId}/archive
-    pending: W7.23
     rows:
       - actor: b.owner
         params: { tenantId: tenant:a, documentId: tenant:missing }
@@ -95,7 +89,6 @@ endpoints:
   - op: restoreDocument
     method: POST
     path: /api/v1/tenants/{tenantId}/docs/{documentId}/restore
-    pending: W7.23
     rows:
       - actor: b.owner
         params: { tenantId: tenant:a, documentId: tenant:missing }
@@ -110,7 +103,6 @@ endpoints:
   - op: openDocumentSession
     method: GET
     path: /api/v1/tenants/{tenantId}/docs/{documentId}/open
-    pending: W7.23
     rows:
       - actor: b.owner
         params: { tenantId: tenant:a, documentId: tenant:missing }
@@ -123,7 +115,6 @@ endpoints:
   - op: listDocVersions
     method: GET
     path: /api/v1/tenants/{tenantId}/docs/{documentId}/versions
-    pending: W7.23
     rows:
       - actor: b.owner
         params: { tenantId: tenant:a, documentId: tenant:missing }
@@ -136,7 +127,6 @@ endpoints:
   - op: saveDocVersion
     method: POST
     path: /api/v1/tenants/{tenantId}/docs/{documentId}/versions
-    pending: W7.23
     rows:
       - actor: b.owner
         params: { tenantId: tenant:a, documentId: tenant:missing }
@@ -151,7 +141,6 @@ endpoints:
   - op: nameDocVersion
     method: PUT
     path: /api/v1/tenants/{tenantId}/docs/{documentId}/versions/{version}/name
-    pending: W7.23
     rows:
       - actor: b.owner
         params: { tenantId: tenant:a, documentId: tenant:missing, version: tenant:missing }
@@ -166,7 +155,6 @@ endpoints:
   - op: restoreDocVersion
     method: POST
     path: /api/v1/tenants/{tenantId}/docs/{documentId}/versions/{version}/restore
-    pending: W7.23
     rows:
       - actor: b.owner
         params: { tenantId: tenant:a, documentId: tenant:missing, version: tenant:missing }
@@ -181,7 +169,6 @@ endpoints:
   - op: listDocComments
     method: GET
     path: /api/v1/tenants/{tenantId}/docs/{documentId}/comments
-    pending: W7.23
     rows:
       - actor: b.owner
         params: { tenantId: tenant:a, documentId: tenant:missing }
@@ -194,7 +181,6 @@ endpoints:
   - op: createDocComment
     method: POST
     path: /api/v1/tenants/{tenantId}/docs/{documentId}/comments
-    pending: W7.23
     rows:
       - actor: b.owner
         params: { tenantId: tenant:a, documentId: tenant:missing }
@@ -209,7 +195,6 @@ endpoints:
   - op: replyDocComment
     method: POST
     path: /api/v1/tenants/{tenantId}/docs/{documentId}/comments/{commentId}/replies
-    pending: W7.23
     rows:
       - actor: b.owner
         params: { tenantId: tenant:a, documentId: tenant:missing, commentId: tenant:missing }
@@ -224,7 +209,6 @@ endpoints:
   - op: resolveDocComment
     method: POST
     path: /api/v1/tenants/{tenantId}/docs/{documentId}/comments/{commentId}/resolve
-    pending: W7.23
     rows:
       - actor: b.owner
         params: { tenantId: tenant:a, documentId: tenant:missing, commentId: tenant:missing }
@@ -239,7 +223,6 @@ endpoints:
   - op: skipDocMentionGrant
     method: POST
     path: /api/v1/tenants/{tenantId}/docs/{documentId}/comments/{commentId}/skip-grant
-    pending: W7.23
     rows:
       - actor: b.owner
         params: { tenantId: tenant:a, documentId: tenant:missing, commentId: tenant:missing }
@@ -254,7 +237,6 @@ endpoints:
   - op: getDocShares
     method: GET
     path: /api/v1/tenants/{tenantId}/docs/{documentId}/shares
-    pending: W7.23
     rows:
       - actor: b.owner
         params: { tenantId: tenant:a, documentId: tenant:missing }
@@ -267,7 +249,6 @@ endpoints:
   - op: setDocShares
     method: PUT
     path: /api/v1/tenants/{tenantId}/docs/{documentId}/shares
-    pending: W7.23
     rows:
       - actor: b.owner
         params: { tenantId: tenant:a, documentId: tenant:missing }
@@ -282,7 +263,6 @@ endpoints:
   - op: grantDocAccess
     method: POST
     path: /api/v1/tenants/{tenantId}/docs/{documentId}/grants
-    pending: W7.23
     rows:
       - actor: b.owner
         params: { tenantId: tenant:a, documentId: tenant:missing }
@@ -297,7 +277,6 @@ endpoints:
   - op: listDocLinks
     method: GET
     path: /api/v1/tenants/{tenantId}/docs/{documentId}/links
-    pending: W7.23
     rows:
       - actor: b.owner
         params: { tenantId: tenant:a, documentId: tenant:missing }
@@ -310,7 +289,6 @@ endpoints:
   - op: createDocLink
     method: POST
     path: /api/v1/tenants/{tenantId}/docs/{documentId}/links
-    pending: W7.23
     rows:
       - actor: b.owner
         params: { tenantId: tenant:a, documentId: tenant:missing }
@@ -325,7 +303,6 @@ endpoints:
   - op: revokeDocLink
     method: DELETE
     path: /api/v1/tenants/{tenantId}/docs/{documentId}/links/{linkId}
-    pending: W7.23
     rows:
       - actor: b.owner
         params: { tenantId: tenant:a, documentId: tenant:missing, linkId: tenant:missing }
@@ -338,7 +315,7 @@ endpoints:
   - op: syncDocDataset
     method: POST
     path: /api/v1/tenants/{tenantId}/docs/{documentId}/dataset-sync
-    pending: W7.23
+    pending: W7.24
     rows:
       - actor: b.owner
         params: { tenantId: tenant:a, documentId: tenant:missing }
@@ -353,7 +330,6 @@ endpoints:
   - op: createDocJob
     method: POST
     path: /api/v1/tenants/{tenantId}/doc-jobs
-    pending: W7.23
     rows:
       - actor: b.owner
         params: { tenantId: tenant:a }
@@ -368,7 +344,6 @@ endpoints:
   - op: getDocJob
     method: GET
     path: /api/v1/tenants/{tenantId}/doc-jobs/{jobId}
-    pending: W7.23
     rows:
       - actor: b.owner
         params: { tenantId: tenant:a, jobId: tenant:missing }
@@ -381,7 +356,6 @@ endpoints:
   - op: retryDocJob
     method: POST
     path: /api/v1/tenants/{tenantId}/doc-jobs/{jobId}/retry
-    pending: W7.23
     rows:
       - actor: b.owner
         params: { tenantId: tenant:a, jobId: tenant:missing }
@@ -396,7 +370,6 @@ endpoints:
   - op: reviewOcrWord
     method: POST
     path: /api/v1/tenants/{tenantId}/docs/{documentId}/ocr/words/{wordId}
-    pending: W7.23
     rows:
       - actor: b.owner
         params: { tenantId: tenant:a, documentId: tenant:missing, wordId: tenant:missing }
@@ -411,7 +384,6 @@ endpoints:
   - op: getDocRoute
     method: GET
     path: /api/v1/tenants/{tenantId}/docs/{documentId}/route
-    pending: W7.23
     rows:
       - actor: b.owner
         params: { tenantId: tenant:a, documentId: tenant:missing }
@@ -424,7 +396,7 @@ endpoints:
   - op: startDocRoute
     method: POST
     path: /api/v1/tenants/{tenantId}/docs/{documentId}/route
-    pending: W7.23
+    pending: W7.24
     rows:
       - actor: b.owner
         params: { tenantId: tenant:a, documentId: tenant:missing }
@@ -439,7 +411,7 @@ endpoints:
   - op: decideDocRoute
     method: POST
     path: /api/v1/tenants/{tenantId}/docs/{documentId}/route/decisions
-    pending: W7.23
+    pending: W7.24
     rows:
       - actor: b.owner
         params: { tenantId: tenant:a, documentId: tenant:missing }
@@ -454,7 +426,7 @@ endpoints:
   - op: requestDocSignCode
     method: POST
     path: /api/v1/tenants/{tenantId}/docs/{documentId}/route/sign/code
-    pending: W7.23
+    pending: W7.24
     rows:
       - actor: b.owner
         params: { tenantId: tenant:a, documentId: tenant:missing }
@@ -469,7 +441,7 @@ endpoints:
   - op: confirmDocSign
     method: POST
     path: /api/v1/tenants/{tenantId}/docs/{documentId}/route/sign
-    pending: W7.23
+    pending: W7.24
     rows:
       - actor: b.owner
         params: { tenantId: tenant:a, documentId: tenant:missing }
@@ -484,7 +456,7 @@ endpoints:
   - op: ackDocument
     method: POST
     path: /api/v1/tenants/{tenantId}/docs/{documentId}/ack
-    pending: W7.23
+    pending: W7.24
     rows:
       - actor: b.owner
         params: { tenantId: tenant:a, documentId: tenant:missing }
@@ -499,7 +471,7 @@ endpoints:
   - op: closeDocAck
     method: POST
     path: /api/v1/tenants/{tenantId}/docs/{documentId}/route/ack/close
-    pending: W7.23
+    pending: W7.24
     rows:
       - actor: b.owner
         params: { tenantId: tenant:a, documentId: tenant:missing }
@@ -514,7 +486,7 @@ endpoints:
   - op: resumeDocRoute
     method: POST
     path: /api/v1/tenants/{tenantId}/docs/{documentId}/route/resume
-    pending: W7.23
+    pending: W7.24
     rows:
       - actor: b.owner
         params: { tenantId: tenant:a, documentId: tenant:missing }
@@ -529,7 +501,7 @@ endpoints:
   - op: cancelDocRoute
     method: POST
     path: /api/v1/tenants/{tenantId}/docs/{documentId}/route/cancel
-    pending: W7.23
+    pending: W7.24
     rows:
       - actor: b.owner
         params: { tenantId: tenant:a, documentId: tenant:missing }
@@ -544,7 +516,6 @@ endpoints:
   - op: listDocActivity
     method: GET
     path: /api/v1/tenants/{tenantId}/docs/{documentId}/activity
-    pending: W7.23
     rows:
       - actor: b.owner
         params: { tenantId: tenant:a, documentId: tenant:missing }
@@ -557,7 +528,6 @@ endpoints:
   - op: listDocFolders
     method: GET
     path: /api/v1/tenants/{tenantId}/doc-folders
-    pending: W7.23
     rows:
       - actor: b.owner
         params: { tenantId: tenant:a }
@@ -570,7 +540,6 @@ endpoints:
   - op: createDocFolder
     method: POST
     path: /api/v1/tenants/{tenantId}/doc-folders
-    pending: W7.23
     rows:
       - actor: b.owner
         params: { tenantId: tenant:a }
@@ -585,7 +554,6 @@ endpoints:
   - op: deleteDocFolder
     method: DELETE
     path: /api/v1/tenants/{tenantId}/doc-folders/{folderId}
-    pending: W7.23
     rows:
       - actor: b.owner
         params: { tenantId: tenant:a, folderId: tenant:missing }
@@ -598,7 +566,6 @@ endpoints:
   - op: updateDocFolder
     method: PATCH
     path: /api/v1/tenants/{tenantId}/doc-folders/{folderId}
-    pending: W7.23
     rows:
       - actor: b.owner
         params: { tenantId: tenant:a, folderId: tenant:missing }
@@ -613,7 +580,6 @@ endpoints:
   - op: setDocFolderShares
     method: PUT
     path: /api/v1/tenants/{tenantId}/doc-folders/{folderId}/shares
-    pending: W7.23
     rows:
       - actor: b.owner
         params: { tenantId: tenant:a, folderId: tenant:missing }
@@ -628,7 +594,6 @@ endpoints:
   - op: listDocTemplates
     method: GET
     path: /api/v1/tenants/{tenantId}/doc-templates
-    pending: W7.23
     rows:
       - actor: b.owner
         params: { tenantId: tenant:a }
@@ -641,7 +606,6 @@ endpoints:
   - op: listDocRouteTemplates
     method: GET
     path: /api/v1/tenants/{tenantId}/doc-route-templates
-    pending: W7.23
     rows:
       - actor: b.owner
         params: { tenantId: tenant:a }

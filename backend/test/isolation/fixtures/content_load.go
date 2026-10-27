@@ -39,7 +39,7 @@ func (l *tenantLoader) contentSteps() []func() error {
 	// tasks — W4.11 (content_tasks.go), knowledge — W4.31, forms — W4.21 (content_forms.go); the kinds of W4.82
 	// (content_inside.go) before the forms: a response is about a trip.
 	return []func() error{l.imports, l.vehicles, l.files, l.notifications, l.tasks, l.knowledge, l.kbSpaces, l.trips, l.calendar,
-		l.forms}
+		l.forms, l.docs}
 }
 
 func (l *tenantLoader) contentID(kind, key string) uuid.UUID {

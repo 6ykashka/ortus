@@ -1,0 +1,156 @@
+# Матрица изоляции: «Документы» контракта 0.12.0-stage7 с содержимым фикстур (W7.23): хендлеры сервера модуля
+# internal/modules/docs. Фикстуры с содержимым дают каждому тенанту папку folder:<t>.contracts «Договоры» и документ
+# doc:<t>.contract «Договор поставки» с первой версией (fixtures/content_docs.go). Строки «чужой объект в своём тенанте»:
+# id папки или документа организации B в пути организации A — владельцу A 404, как несуществующий (AC-01). Положительные
+# строки владельца своей организации читают данные фикстур; изменяющие строки над объектами фикстур не пишутся — набор
+# общий для всех матриц (у команд с If-Match только отказы до хендлера, docs_w700.yaml). Отказы шлюза по правам —
+# docs_w700_gate.yaml. Формат — README.md. После правки: go -C backend generate ./test/isolation
+module: docs_w723
+endpoints:
+  - op: listDocuments
+    method: GET
+    path: /api/v1/tenants/{tenantId}/docs
+    rows:
+      - actor: a.owner
+        params: { tenantId: tenant:a }
+        status: 200
+        present: [doc:a.contract]
+        absent: [tenant:b, doc:b.contract]
+        note: документы своей организации; документов тенанта B нет
+  - op: listDocFolders
+    method: GET
+    path: /api/v1/tenants/{tenantId}/doc-folders
+    rows:
+      - actor: a.owner
+        params: { tenantId: tenant:a }
+        status: 200
+        present: [folder:a.contracts]
+        absent: [tenant:b, folder:b.contracts]
+        note: папки своей организации; папок тенанта B нет
+  - op: getDocument
+    method: GET
+    path: /api/v1/tenants/{tenantId}/docs/{documentId}
+    rows:
+      - actor: a.owner
+        params: { tenantId: tenant:a, documentId: doc:a.contract }
+        status: 200
+        present: [doc:a.contract, folder:a.contracts]
+        absent: [tenant:b, doc:b.contract]
+      - actor: a.owner
+        params: { tenantId: tenant:a, documentId: doc:b.contract }
+        status: 404
+        absent: [doc:b.contract, tenant:b]
+        note: документ организации B в пути организации A — как несуществующий
+  - op: listDocVersions
+    method: GET
+    path: /api/v1/tenants/{tenantId}/docs/{documentId}/versions
+    rows:
+      - actor: a.owner
+        params: { tenantId: tenant:a, documentId: doc:a.contract }
+        status: 200
+        absent: [tenant:b, doc:b.contract]
+      - actor: a.owner
+        params: { tenantId: tenant:a, documentId: doc:b.contract }
+        status: 404
+        absent: [doc:b.contract, tenant:b]
+  - op: listDocComments
+    method: GET
+    path: /api/v1/tenants/{tenantId}/docs/{documentId}/comments
+    rows:
+      - actor: a.owner
+        params: { tenantId: tenant:a, documentId: doc:a.contract }
+        status: 200
+        absent: [tenant:b, doc:b.contract]
+      - actor: a.owner
+        params: { tenantId: tenant:a, documentId: doc:b.contract }
+        status: 404
+        absent: [doc:b.contract, tenant:b]
+  - op: getDocShares
+    method: GET
+    path: /api/v1/tenants/{tenantId}/docs/{documentId}/shares
+    rows:
+      - actor: a.owner
+        params: { tenantId: tenant:a, documentId: doc:a.contract }
+        status: 200
+        absent: [tenant:b, doc:b.contract]
+      - actor: a.owner
+        params: { tenantId: tenant:a, documentId: doc:b.contract }
+        status: 404
+        absent: [doc:b.contract, tenant:b]
+  - op: listDocActivity
+    method: GET
+    path: /api/v1/tenants/{tenantId}/docs/{documentId}/activity
+    rows:
+      - actor: a.owner
+        params: { tenantId: tenant:a, documentId: doc:a.contract }
+        status: 200
+        absent: [tenant:b, doc:b.contract]
+      - actor: a.owner
+        params: { tenantId: tenant:a, documentId: doc:b.contract }
+        status: 404
+        absent: [doc:b.contract, tenant:b]
+  - op: openDocumentSession
+    method: GET
+    path: /api/v1/tenants/{tenantId}/docs/{documentId}/open
+    rows:
+      - actor: a.owner
+        params: { tenantId: tenant:a, documentId: doc:a.contract }
+        status: 200
+        absent: [tenant:b, doc:b.contract]
+        note: стенд без сервера документов — editorAvailable false, документ открывается на просмотр
+      - actor: a.owner
+        params: { tenantId: tenant:a, documentId: doc:b.contract }
+        status: 404
+        absent: [doc:b.contract, tenant:b]
+  - op: listDocLinks
+    method: GET
+    path: /api/v1/tenants/{tenantId}/docs/{documentId}/links
+    rows:
+      - actor: a.owner
+        params: { tenantId: tenant:a, documentId: doc:b.contract }
+        status: 404
+        absent: [doc:b.contract, tenant:b]
+  - op: moveDocument
+    method: POST
+    path: /api/v1/tenants/{tenantId}/docs/{documentId}/move
+    rows:
+      - actor: a.owner
+        params: { tenantId: tenant:a, documentId: doc:b.contract }
+        status: 404
+        body: '{"folderId": "00000000-0000-4000-8000-000000000001"}'
+        absent: [doc:b.contract, tenant:b]
+        note: документ организации B — как несуществующий
+  - op: archiveDocument
+    method: POST
+    path: /api/v1/tenants/{tenantId}/docs/{documentId}/archive
+    rows:
+      - actor: a.owner
+        params: { tenantId: tenant:a, documentId: doc:b.contract }
+        status: 404
+        absent: [doc:b.contract, tenant:b]
+  - op: createDocComment
+    method: POST
+    path: /api/v1/tenants/{tenantId}/docs/{documentId}/comments
+    rows:
+      - actor: a.owner
+        params: { tenantId: tenant:a, documentId: doc:b.contract }
+        status: 404
+        body: '{"text": "Привет", "anchor": {"kind": "page", "ref": "1"}}'
+        absent: [doc:b.contract, tenant:b]
+  - op: getDocRoute
+    method: GET
+    path: /api/v1/tenants/{tenantId}/docs/{documentId}/route
+    rows:
+      - actor: a.owner
+        params: { tenantId: tenant:a, documentId: doc:b.contract }
+        status: 404
+        absent: [doc:b.contract, tenant:b]
+  - op: getDocJob
+    method: GET
+    path: /api/v1/tenants/{tenantId}/doc-jobs/{jobId}
+    rows:
+      - actor: a.owner
+        params: { tenantId: tenant:a, jobId: tenant:missing }
+        status: 404
+        absent: [tenant:b]
+        note: задания нет ни в одной базе

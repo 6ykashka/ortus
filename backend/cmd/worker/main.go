@@ -119,7 +119,9 @@ func run(ctx context.Context, args []string, getenv func(string) string, stdout,
 	// W4.21: «Хранить ответы» of the forms (forms.go).
 	formsSvc, formsSvcErr := newFormsService(pools, getenv, cfg.clock(), log)
 	retainForms, formsErr := formsRetentionJob(getenv, listTenants(control), formsSvc, log)
-	if err := errors.Join(registerFiles(reg, pools, getenv, log), poolErr, exportErr, kbErr, formsSvcErr, formsErr); err != nil { // W1.09
+	// W7.23: the jobs of «Документы» — recognition, compression, merge, conversion (docs.go).
+	runDocs, docsErr := docsLoop(pools, control, audience, listTenants(control), getenv, cfg.clock(), log)
+	if err := errors.Join(registerFiles(reg, pools, getenv, log), poolErr, exportErr, kbErr, formsSvcErr, formsErr, docsErr); err != nil { // W1.09
 		fmt.Fprintf(stderr, "worker: configuration: %v\n", err)
 		return exitConfig
 	}
@@ -139,6 +141,7 @@ func run(ctx context.Context, args []string, getenv func(string) string, stdout,
 	purging.Go(func() { runExports(jobs) })  // W4.50: the export jobs (WORKER_EXPORT_INTERVAL; 0 — returns at once)
 	purging.Go(func() { reviewKB(jobs) })    // W4.31: WORKER_KB_REVIEW_INTERVAL; 0 — returns at once
 	purging.Go(func() { retainForms(jobs) }) // W4.21: WORKER_FORMS_RETENTION_INTERVAL; 0 — returns at once
+	purging.Go(func() { runDocs(jobs) })     // W7.23: WORKER_DOCS_INTERVAL; 0 — returns at once
 	err = w.Run(ctx)
 	stop()
 	purging.Wait()

@@ -1,7 +1,11 @@
 package main
 
 import (
+	"bytes"
 	"context"
+	"crypto/sha256"
+	"encoding/hex"
+	"io"
 	"log/slog"
 	"net/http"
 	"net/url"
@@ -126,6 +130,41 @@ type gateway struct {
 	replays map[string]replayFunc
 	modules moduleGate    // nil: no module check (unit tests of the gateway); W1.08
 	roles   platformRoles // nil: an operator passes every /platform/** operation (unit tests); W4.60
+	// docsCallback checks the JWT of the document server for the operation of the scope docs-server-callback (W7.23,
+	// ADR-0016); nil: the operation answers 503 dependency_unavailable.
+	docsCallback func(*http.Request) (context.Context, error)
+}
+
+// scopeDocsCallback is the x-scope of the call of the document server: no session, the JWT of the server stands for it.
+const scopeDocsCallback = "docs-server-callback"
+
+// callbackBodyMax bounds the body of a call of the document server the gateway reads for its idempotency key.
+const callbackBodyMax = 64 << 10
+
+// serverCall admits the call of the document server: its JWT is checked (not a session), and, because the server sends
+// no Idempotency-Key, the key is made of the body — a repeat of the same call is the same key (Q-W7.23-2).
+func (g *gateway) serverCall(w http.ResponseWriter, r *http.Request, next http.Handler) {
+	if g.docsCallback == nil {
+		problem.Write(w, r, problem.New(problem.CodeDependencyUnavailable, ""))
+		return
+	}
+	ctx, err := g.docsCallback(r)
+	if err != nil {
+		problem.Write(w, r, err)
+		return
+	}
+	body, err := io.ReadAll(http.MaxBytesReader(w, r.Body, callbackBodyMax))
+	if err != nil {
+		problem.Write(w, r, problem.New(problem.CodeMalformedRequest, ""))
+		return
+	}
+	r = r.WithContext(ctx)
+	r.Body = io.NopCloser(bytes.NewReader(body))
+	if r.Header.Get("Idempotency-Key") == "" {
+		sum := sha256.Sum256(body)
+		r.Header.Set("Idempotency-Key", "docs-callback-"+hex.EncodeToString(sum[:16]))
+	}
+	next.ServeHTTP(w, r)
 }
 
 func (g *gateway) middleware(next http.Handler) http.Handler {
@@ -142,6 +181,10 @@ func (g *gateway) middleware(next http.Handler) http.Handler {
 		}
 		if op.Public {
 			next.ServeHTTP(w, r)
+			return
+		}
+		if op.Scope == scopeDocsCallback {
+			g.serverCall(w, r, next)
 			return
 		}
 		r, err := g.admit(r, op, params)

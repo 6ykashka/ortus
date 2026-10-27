@@ -225,6 +225,13 @@ func build(ctx context.Context, cfg config, log *slog.Logger, getenv func(string
 		control.Close()
 		return deps{}, nil, err
 	}
+	docsW, err := newDocs(pools, control, ev, getenv, cfg.AppEnv, log, cfg.clock()) // W7.23: «Документы» (docs.go)
+	if err != nil {
+		pools.Close()
+		_ = controlSQL.Close()
+		control.Close()
+		return deps{}, nil, err
+	}
 	// W1.05; W1.03 and W1.06 embed theirs (access.go); W1.41: inviteMember sends the letter with the link.
 	access := newAccessServer(pools, ev, control, cfg.clock())
 	access.assignmentsHandler = access.WithInvitationMail( // assignments.Handler (embedded)
@@ -275,9 +282,12 @@ func build(ctx context.Context, cfg config, log *slog.Logger, getenv func(string
 			Inventory:   newInventory(pools, ev, cfg.clock()),                               // W5.10: «Склад» (inventory.go)
 			Repairs:     newRepairs(pools, cfg.clock()),                                     // W6.11: «Ремонт и стройка» (repairs.go)
 			Spa:         newSpa(pools, ev, cfg.clock()),                                     // W5.20: «Салон и SPA» (spa.go)
+			Docs:        docsW.docs,                                                         // W7.23: «Документы» (docs.go)
+			PublicDocs:  docsW.public,                                                       // W7.23: the callback of the document server, the link of a guest
 		},
-		replays: map[string]replayFunc{"logout": auth.ReplayLogout},
-		ready:   control.Ping,
+		docsCallback: docsW.callback, // W7.23: the JWT of the document server instead of a session (gate.go)
+		replays:      map[string]replayFunc{"logout": auth.ReplayLogout},
+		ready:        control.Ping,
 		// S1-25: tenant keys in core.idempotency_keys of the tenant DB; identity and platform operations in
 		// idempotency_keys of the control DB (control 0005, W1.48: tenant + actor + operation).
 		// W4.60: a branding file of 1 MiB comes in base64.

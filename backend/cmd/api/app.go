@@ -52,6 +52,8 @@ type deps struct {
 	// stopping runs before the HTTP server shuts down: it closes the hijacked sockets and waits for them until ctx
 	// ends; nil — nothing.
 	stopping func(ctx context.Context)
+	// docsCallback checks the JWT of a call of the document server (W7.23, ADR-0016); nil — the operation answers 503.
+	docsCallback func(*http.Request) (context.Context, error)
 }
 
 // replayFunc answers a repeated command whose session the first call ended; false — not a replay (401).
@@ -69,6 +71,8 @@ func newHandler(d deps) http.Handler {
 		replays: d.replays,
 		modules: d.modules,       // W1.08
 		roles:   d.platformRoles, // W4.60
+		// W7.23: the call of the document server carries no session, its JWT is checked instead
+		docsCallback: d.docsCallback,
 	}
 	// authhttp.WithExchange: the strict server of the tag Auth reads and sets cookies (W1.03).
 	return requestid.Middleware(httpx.Logging(d.log)(httpx.Recover(d.log)(httpx.SecurityHeaders(
