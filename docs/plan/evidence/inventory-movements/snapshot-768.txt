@@ -1,0 +1,169 @@
+### Page
+- Page URL: http://127.0.0.1:5202/t/f04f636e-b66d-509e-ae10-9c27a18e3baa/inventory-movements
+- Page Title: Ортус CRM
+### Snapshot
+```yaml
+- generic [ref=f9e3]:
+  - link "К содержимому" [ref=f9e4] [cursor=pointer]:
+    - /url: "#ox-main"
+  - generic [ref=f9e6]:
+    - banner [ref=f9e7]:
+      - generic [ref=f9e8]:
+        - generic [ref=f9e9]: о
+        - generic [ref=f9e10]:
+          - generic [ref=f9e11]: ортус
+          - generic [ref=f9e12]: пространство бизнеса
+      - generic [ref=f9e13]:
+        - generic [ref=f9e14]: domain
+        - generic [ref=f9e15]: Альта Групп
+        - combobox "Область просмотра" [ref=f9e17]:
+          - option "Все подразделения" [selected]
+          - option "Москва · весь регион"
+          - option "Москва / Север Логистик"
+          - option "Москва / Юг Транс"
+          - option "Москва / Восток Карго"
+          - option "Москва / Центр Экспресс"
+          - option "Самара · весь регион"
+          - option "Самара / Волга Логистик"
+          - option "Самара / Самара Трак"
+          - option "Самара / Жигули Карго"
+          - option "Самара / Приволжье Сервис"
+          - option "Санкт-Петербург · весь регион"
+          - option "Санкт-Петербург / Нева Логистик"
+          - option "Санкт-Петербург / Балтик Транс"
+          - option "Санкт-Петербург / Охта Карго"
+          - option "Санкт-Петербург / Пулково Экспресс"
+      - 'button "Уведомления: 2 новых" [ref=f9e86] [cursor=pointer]':
+        - generic [ref=f9e19]: notifications
+        - generic [ref=f9e87]: "2"
+      - button "Профиль" [ref=f9e20] [cursor=pointer]: ДЗ
+    - generic [ref=f9e21]:
+      - navigation "Основная навигация" [ref=f9e22]:
+        - button "Главная" [ref=f9e24] [cursor=pointer]:
+          - generic [ref=f9e25]: home
+        - button "Модули и место" [ref=f9e28] [cursor=pointer]:
+          - generic [ref=f9e29]: extension
+        - button "Пользователи и роли" [ref=f9e31] [cursor=pointer]:
+          - generic [ref=f9e32]: group
+        - button "Структура" [ref=f9e34] [cursor=pointer]:
+          - generic [ref=f9e35]: account_tree
+        - button "Подписка и места" [ref=f9e37] [cursor=pointer]:
+          - generic [ref=f9e38]: workspace_premium
+        - button "Оформление" [ref=f9e40] [cursor=pointer]:
+          - generic [ref=f9e41]: palette
+        - button "Салон и SPA" [ref=f9e44] [cursor=pointer]:
+          - generic [ref=f9e45]: spa
+        - button "Чаты" [ref=f9e48] [cursor=pointer]:
+          - generic [ref=f9e49]: forum
+        - button "Задачи" [ref=f9e51] [cursor=pointer]:
+          - generic [ref=f9e52]: task_alt
+        - button "Обращения" [ref=f9e54] [cursor=pointer]:
+          - generic [ref=f9e55]: support_agent
+        - button "Формы и опросы" [ref=f9e57] [cursor=pointer]:
+          - generic [ref=f9e58]: dynamic_form
+        - button "Календарь" [ref=f9e60] [cursor=pointer]:
+          - generic [ref=f9e61]: calendar_month
+        - button "База знаний" [ref=f9e63] [cursor=pointer]:
+          - generic [ref=f9e64]: menu_book
+        - button "Документы" [ref=f9e66] [cursor=pointer]:
+          - generic [ref=f9e67]: description
+        - button "Данные" [ref=f9e69] [cursor=pointer]:
+          - generic [ref=f9e70]: table_view
+        - button "Файлы" [ref=f9e72] [cursor=pointer]:
+          - generic [ref=f9e73]: folder_open
+        - button "Касса" [ref=f9e75] [cursor=pointer]:
+          - generic [ref=f9e76]: account_balance_wallet
+      - main [ref=f9e78]:
+        - region [ref=f9e88]:
+          - generic [ref=f9e89]:
+            - generic [ref=f9e90]: Альта Групп · все подразделения
+            - heading "Движения склада" [level=1] [ref=f9e91]
+            - paragraph [ref=f9e92]: "Журнал движений неизменяем: ошибку исправляет сторно — компенсирующая запись. Отрицательных остатков нет."
+          - generic [ref=f9e93]:
+            - navigation "Связанные разделы" [ref=f9e94]:
+              - button "Остатки и резервы" [ref=f9e95] [cursor=pointer]
+            - button [ref=f9e97] [cursor=pointer]:
+              - generic [ref=f9e99]:
+                - generic [ref=f9e100]: add
+                - text: Новое движение
+          - list "Движения склада" [ref=f9e101]:
+            - listitem [ref=f9e102]:
+              - generic [ref=f9e103]:
+                - generic [ref=f9e104]: Расход
+                - generic [ref=f9e105]: Склад салона
+                - generic [ref=f9e106]: 01.10.2026, 09:50
+                - generic [ref=f9e107]: Салон и SPA · запись
+              - button "Сторно движения от 01.10.2026, 09:50" [ref=f9e109] [cursor=pointer]: Сторно
+              - generic [ref=f9e111]:
+                - generic [ref=f9e112]: Масло массажное
+                - strong [ref=f9e113]: −30 мл
+                - generic [ref=f9e114]: до 15.11.2026
+            - listitem [ref=f9e115]:
+              - generic [ref=f9e116]:
+                - generic [ref=f9e117]: Сторно
+                - generic [ref=f9e118]: Склад салона
+                - generic [ref=f9e119]: 30.09.2026, 20:10
+              - generic [ref=f9e121]:
+                - generic [ref=f9e122]: Масло массажное
+                - strong [ref=f9e123]: 30 мл
+                - generic [ref=f9e124]: до 15.11.2026
+            - listitem [ref=f9e125]:
+              - generic [ref=f9e126]:
+                - generic [ref=f9e127]: Расход
+                - generic [ref=f9e128]: Склад салона
+                - generic [ref=f9e129]: 30.09.2026, 19:40
+                - generic [ref=f9e130]: Салон и SPA · запись
+              - button "Сторно движения от 30.09.2026, 19:40" [ref=f9e132] [cursor=pointer]: Сторно
+              - generic [ref=f9e134]:
+                - generic [ref=f9e135]: Масло массажное
+                - strong [ref=f9e136]: −30 мл
+                - generic [ref=f9e137]: до 15.11.2026
+            - listitem [ref=f9e138]:
+              - generic [ref=f9e139]:
+                - generic [ref=f9e140]: Расход
+                - generic [ref=f9e141]: Склад салона
+                - generic [ref=f9e142]: 29.09.2026, 17:05
+                - generic [ref=f9e143]: Салон и SPA · запись
+              - button "Сторно движения от 29.09.2026, 17:05" [ref=f9e145] [cursor=pointer]: Сторно
+              - generic [ref=f9e147]:
+                - generic [ref=f9e148]: Масло массажное
+                - strong [ref=f9e149]: −30 мл
+                - generic [ref=f9e150]: до 15.11.2026
+            - listitem [ref=f9e151]:
+              - generic [ref=f9e152]:
+                - generic [ref=f9e153]: Приход
+                - generic [ref=f9e154]: Склад № 1
+                - generic [ref=f9e155]: 12.09.2026, 12:30
+              - button "Сторно движения от 12.09.2026, 12:30" [ref=f9e157] [cursor=pointer]: Сторно
+              - generic [ref=f9e158]:
+                - generic [ref=f9e159]:
+                  - generic [ref=f9e160]: Масло массажное
+                  - strong [ref=f9e161]: +40 мл
+                  - generic [ref=f9e162]: до 20.09.2026
+                - generic [ref=f9e163]:
+                  - generic [ref=f9e164]: Масло массажное
+                  - strong [ref=f9e165]: +500 мл
+                  - generic [ref=f9e166]: до 30.06.2027
+            - listitem [ref=f9e167]:
+              - generic [ref=f9e168]:
+                - generic [ref=f9e169]: Приход
+                - generic [ref=f9e170]: Склад салона
+                - generic [ref=f9e171]: 10.09.2026, 11:00
+              - button "Сторно движения от 10.09.2026, 11:00" [ref=f9e173] [cursor=pointer]: Сторно
+              - generic [ref=f9e174]:
+                - generic [ref=f9e175]:
+                  - generic [ref=f9e176]: Масло массажное
+                  - strong [ref=f9e177]: +160 мл
+                  - generic [ref=f9e178]: до 15.11.2026
+                - generic [ref=f9e179]:
+                  - generic [ref=f9e180]: Масло массажное
+                  - strong [ref=f9e181]: +150 мл
+                  - generic [ref=f9e182]: до 01.03.2027
+                - generic [ref=f9e183]:
+                  - generic [ref=f9e184]: Крем восстанавливающий
+                  - strong [ref=f9e185]: +12 г
+                  - generic [ref=f9e186]: до 31.12.2026
+                - generic [ref=f9e187]:
+                  - generic [ref=f9e188]: Полотенца одноразовые
+                  - strong [ref=f9e189]: +200 шт.
+```

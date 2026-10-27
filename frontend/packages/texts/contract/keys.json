@@ -2249,5 +2249,7 @@
   "errors.problem.job_in_progress",
   "errors.problem.file_password_protected",
   "errors.problem.sign_code_invalid",
-  "errors.problem.service_assignee_out_of_scope"
+  "errors.problem.service_assignee_out_of_scope",
+  "shell.nav.items.inventory",
+  "shell.nav.items.inventoryMovements"
 ]

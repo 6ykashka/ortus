@@ -1,0 +1,33 @@
+### Result
+5. [GET] http://gc.kis.v2.scr.kaspersky-labs.com/7D8B79A2-8974-4D7B-A76A-F4F29624C06BLqsXsazU-jD6DsTUQLXvGZ_TVLTF1ImYzSweeswXwIV93csywV6Ai-mb9ymBOzbYDMuVfLxDOGP4wvgRY4nH6g/init?data=eyJ1cmwiOiJodHRwOi8vMTI3LjAuMC4xOjUyMDIvdC9mMDRmNjM2ZS1iNjZkLTUwOWUtYWUxMC05YzI3YTE4ZTNiYWEvaW52ZW50b3J5LW1vdmVtZW50cyIsInBsdWdpbnMiOiJ3c20mY2EmdnMmeGhyX2NvbnRlbnQiLCJkYXRhIjp7ImRhdGEiOlt7InBsdWdpbiI6IndzbSIsInBhcmFtZXRlcnMiOiJ7XCJyZWZlcnJlclwiOlwiXCIsXCJzdHViSWRcIjpcIlwifSJ9LHsicGx1Z2luIjoieGhyX2NvbnRlbnQiLCJwYXJhbWV0ZXJzIjoie1wicmVmZXJyZXJcIjpcIlwifSJ9XX0sImlzVG9wTGV2ZWwiOnRydWUsInBhZ2VTdGFydFRpbWUiOjAsIm5hdmlnYXRpb25TdGFydFRpbWUiOjE3OTI5NzQ0MjkzMzR9&nocache=143da&tm=2026-10-26T00%3A27%3A09.548Z => [200] OK
+19. [POST] http://gc.kis.v2.scr.kaspersky-labs.com/E6A89253-8DA4-4266-8170-648116FE3D7B/EDAFA01E-B5FF-40DB-BB46-D089F2065BD8/to/wsm.sessionActivated?tm=2026-10-26T00%3A27%3A09.563Z => [200] OK
+437. [GET] http://127.0.0.1:5202/api/v1/me/context => [200] 
+442. [GET] http://127.0.0.1:5202/api/v1/tenants/f04f636e-b66d-509e-ae10-9c27a18e3baa/storage => [200] 
+443. [GET] http://127.0.0.1:5202/api/v1/tenants/f04f636e-b66d-509e-ae10-9c27a18e3baa/org-units?limit=200 => [200] 
+444. [GET] http://127.0.0.1:5202/api/v1/me/notifications/summary => [200] 
+453. [GET] http://127.0.0.1:5202/api/v1/tenants/f04f636e-b66d-509e-ae10-9c27a18e3baa/org-units?limit=200 => [200] 
+454. [GET] http://127.0.0.1:5202/api/v1/tenants/f04f636e-b66d-509e-ae10-9c27a18e3baa/inventory/movements?limit=200 => [200] 
+455. [GET] http://127.0.0.1:5202/api/v1/tenants/f04f636e-b66d-509e-ae10-9c27a18e3baa/inventory/warehouses?limit=200 => [200] 
+456. [GET] http://127.0.0.1:5202/api/v1/tenants/f04f636e-b66d-509e-ae10-9c27a18e3baa/inventory/items?limit=200 => [200] 
+457. [GET] http://gc.kis.v2.scr.kaspersky-labs.com/E6A89253-8DA4-4266-8170-648116FE3D7B/EDAFA01E-B5FF-40DB-BB46-D089F2065BD8/from?get&nocache=1b0e0&tm=2026-10-26T00%3A27%3A11.575Z => [200] OK
+458. [GET] http://127.0.0.1:5202/api/v1/tenants/f04f636e-b66d-509e-ae10-9c27a18e3baa/inventory/balances?limit=200&warehouseId=56cac097-e940-5cf3-9ffb-07c143a89add&itemId=03e32d62-c517-53a0-9277-0dec5e2388aa => [200] 
+459. [POST] http://gc.kis.v2.scr.kaspersky-labs.com/E6A89253-8DA4-4266-8170-648116FE3D7B/EDAFA01E-B5FF-40DB-BB46-D089F2065BD8/to/dp.onGetFields?tm=2026-10-26T00%3A27%3A12.704Z => [200] OK
+460. [POST] http://127.0.0.1:5202/api/v1/tenants/f04f636e-b66d-509e-ae10-9c27a18e3baa/inventory/movements => [409] 
+461. [GET] http://127.0.0.1:5202/api/v1/tenants/f04f636e-b66d-509e-ae10-9c27a18e3baa/inventory/movements?limit=200 => [200] 
+462. [GET] http://127.0.0.1:5202/api/v1/tenants/f04f636e-b66d-509e-ae10-9c27a18e3baa/inventory/warehouses?limit=200 => [200] 
+463. [GET] http://127.0.0.1:5202/api/v1/tenants/f04f636e-b66d-509e-ae10-9c27a18e3baa/inventory/items?limit=200 => [200] 
+464. [GET] http://127.0.0.1:5202/api/v1/tenants/f04f636e-b66d-509e-ae10-9c27a18e3baa/inventory/balances?limit=200&warehouseId=56cac097-e940-5cf3-9ffb-07c143a89add&itemId=03e32d62-c517-53a0-9277-0dec5e2388aa => [200] 
+465. [GET] http://gc.kis.v2.scr.kaspersky-labs.com/E6A89253-8DA4-4266-8170-648116FE3D7B/EDAFA01E-B5FF-40DB-BB46-D089F2065BD8/from?get&nocache=1d8d7&tm=2026-10-26T00%3A27%3A13.580Z => [200] OK
+466. [POST] http://127.0.0.1:5202/api/v1/tenants/f04f636e-b66d-509e-ae10-9c27a18e3baa/inventory/movements => [201] 
+467. [GET] http://127.0.0.1:5202/api/v1/tenants/f04f636e-b66d-509e-ae10-9c27a18e3baa/inventory/movements?limit=200 => [200] 
+468. [GET] http://127.0.0.1:5202/api/v1/tenants/f04f636e-b66d-509e-ae10-9c27a18e3baa/inventory/warehouses?limit=200 => [200] 
+469. [GET] http://127.0.0.1:5202/api/v1/tenants/f04f636e-b66d-509e-ae10-9c27a18e3baa/inventory/items?limit=200 => [200] 
+470. [GET] http://127.0.0.1:5202/api/v1/tenants/f04f636e-b66d-509e-ae10-9c27a18e3baa/inventory/balances?limit=200&warehouseId=56cac097-e940-5cf3-9ffb-07c143a89add&itemId=03e32d62-c517-53a0-9277-0dec5e2388aa => [200] 
+471. [GET] http://gc.kis.v2.scr.kaspersky-labs.com/E6A89253-8DA4-4266-8170-648116FE3D7B/EDAFA01E-B5FF-40DB-BB46-D089F2065BD8/from?get&nocache=1e67a&tm=2026-10-26T00%3A27%3A15.588Z => [200] OK
+472. [POST] http://127.0.0.1:5202/api/v1/tenants/f04f636e-b66d-509e-ae10-9c27a18e3baa/inventory/movements => [201] 
+473. [GET] http://127.0.0.1:5202/api/v1/tenants/f04f636e-b66d-509e-ae10-9c27a18e3baa/inventory/movements?limit=200 => [200] 
+474. [GET] http://127.0.0.1:5202/api/v1/tenants/f04f636e-b66d-509e-ae10-9c27a18e3baa/inventory/warehouses?limit=200 => [200] 
+475. [GET] http://127.0.0.1:5202/api/v1/tenants/f04f636e-b66d-509e-ae10-9c27a18e3baa/inventory/items?limit=200 => [200] 
+476. [GET] http://gc.kis.v2.scr.kaspersky-labs.com/E6A89253-8DA4-4266-8170-648116FE3D7B/EDAFA01E-B5FF-40DB-BB46-D089F2065BD8/from?get&nocache=1ba74&tm=2026-10-26T00%3A27%3A17.596Z => [200] OK
+
+Note: 446 static requests not shown, run with "static" option to see them.

@@ -41,6 +41,8 @@ const ADR_0001: Record<string, string> = {
   files: 'files',
   cash: 'cash',
   cashSelf: 'cash-self',
+  inventory: 'inventory',
+  inventoryMovements: 'inventory-movements',
   spa: 'spa',
   repair: 'repair',
   repairSupply: 'repair-supply',
@@ -118,6 +120,23 @@ describe('подпись страницы (pageLabel)', () => {
     expect(p?.view).toEqual(['modules.settings.manage']);
     expect(p?.manifest.id).toBe('fleet');
     expect(pageBySegment('tenant', 'expense-categories')?.key).toBe('expenseCategories');
+  });
+
+  it('«Склад» (W5.11, Q-W5.11-4): модуль ядра inventory, две страницы вне меню (в эталоне пункта нет), права чтения', () => {
+    for (const [key, view, label] of [
+      ['inventory', ['inventory.items.read'], 'items.inventory'],
+      ['inventoryMovements', ['inventory.movements.read'], 'items.inventoryMovements'],
+    ] as const) {
+      const p = PAGES.get(key);
+      expect(p?.nav, key).toBeUndefined();
+      expect(pageLabel(key), key).toBe(label);
+      expect(p?.view, key).toEqual(view);
+      expect(p?.gate, key).toBe('A');
+      expect(p?.manifest.id, key).toBe('inventory');
+      expect(p?.manifest.moduleKey, key).toBe('inventory');
+      expect(p?.manifest.domainModule, key).toBe('inventory');
+    }
+    expect(pageBySegment('tenant', 'inventory-movements')?.key).toBe('inventoryMovements');
   });
 
   it('у каждой страницы «Компании» есть подпись (имя раздела в гейте не пустое)', () => {

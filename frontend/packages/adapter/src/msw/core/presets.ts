@@ -4,9 +4,12 @@
 //   trial-ended     — пробный период закончился: организация и подписка только для чтения;
 //   storage-full    — место организации заполнено (quota_exceeded при загрузке);
 //   repairs-ready   — «Ремонт и стройка» подключён, сегодня 20.10.2026 (W6.00, Q-W4.00-repair-15).
+//   inventory-ready — расширенный сид склада «Альты» для страниц W5.11: два склада, четыре позиции, просроченная партия,
+//                     активный резерв визита (по умолчанию склад — сид эталона: масло 250 мл, крем 12 г).
 import type { components } from '@ortus/api-client';
 import { seedUuid } from '@ortus/domain/seed';
 
+import { richInventory } from '../inventory/state.ts';
 import { quotaBytes, seatsLimit } from './dto.ts';
 import { inviteMember } from './people.ts';
 import { orgOf, type ScenarioState, seatsUsed, type TenantRow } from './state.ts';
@@ -18,6 +21,7 @@ export const PRESETS = [
   'trial-ended',
   'storage-full',
   'repairs-ready',
+  'inventory-ready',
 ] as const;
 export type PresetName = (typeof PRESETS)[number];
 
@@ -115,6 +119,11 @@ function repairsReady(s: ScenarioState): void {
   org.policyVersion++;
 }
 
+/** Склад «Альты» заменяется расширенным сидом страниц склада (W5.11). */
+function inventoryReady(s: ScenarioState): void {
+  richInventory(orgOf(s, ALTA));
+}
+
 export function applyPreset(s: ScenarioState, name: PresetName): void {
   const run: Record<PresetName, (s: ScenarioState) => void> = {
     'logistics-ready': logisticsReady,
@@ -122,6 +131,7 @@ export function applyPreset(s: ScenarioState, name: PresetName): void {
     'trial-ended': trialEnded,
     'storage-full': storageFull,
     'repairs-ready': repairsReady,
+    'inventory-ready': inventoryReady,
   };
   run[name](s);
 }

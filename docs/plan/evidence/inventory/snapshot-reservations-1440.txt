@@ -1,0 +1,132 @@
+### Page
+- Page URL: http://127.0.0.1:5202/t/f04f636e-b66d-509e-ae10-9c27a18e3baa/inventory?view=reservations
+- Page Title: Ортус CRM
+### Snapshot
+```yaml
+- generic [ref=f4e1]:
+  - generic [ref=f4e354]:
+    - log
+    - log
+  - generic [ref=f4e3]:
+    - link "К содержимому" [ref=f4e4] [cursor=pointer]:
+      - /url: "#ox-main"
+    - generic [ref=f4e6]:
+      - banner [ref=f4e7]:
+        - generic [ref=f4e8]:
+          - generic [ref=f4e9]: о
+          - generic [ref=f4e10]:
+            - generic [ref=f4e11]: ортус
+            - generic [ref=f4e12]: пространство бизнеса
+        - generic [ref=f4e13]:
+          - generic [ref=f4e14]: domain
+          - generic [ref=f4e15]: Альта Групп
+          - combobox "Область просмотра" [ref=f4e17]:
+            - option "Все подразделения" [selected]
+            - option "Москва · весь регион"
+            - option "Москва / Север Логистик"
+            - option "Москва / Юг Транс"
+            - option "Москва / Восток Карго"
+            - option "Москва / Центр Экспресс"
+            - option "Самара · весь регион"
+            - option "Самара / Волга Логистик"
+            - option "Самара / Самара Трак"
+            - option "Самара / Жигули Карго"
+            - option "Самара / Приволжье Сервис"
+            - option "Санкт-Петербург · весь регион"
+            - option "Санкт-Петербург / Нева Логистик"
+            - option "Санкт-Петербург / Балтик Транс"
+            - option "Санкт-Петербург / Охта Карго"
+            - option "Санкт-Петербург / Пулково Экспресс"
+        - 'button "Уведомления: 2 новых" [ref=f4e18] [cursor=pointer]':
+          - generic [ref=f4e19]: notifications
+          - generic [ref=f4e20]: "2"
+        - button "Профиль" [ref=f4e21] [cursor=pointer]: ДЗ
+      - generic [ref=f4e22]:
+        - navigation "Основная навигация" [ref=f4e23]:
+          - generic [ref=f4e24]: Обзор
+          - button "Главная" [ref=f4e25] [cursor=pointer]:
+            - generic [ref=f4e26]: home
+          - generic [ref=f4e28]: Компания
+          - button "Модули и место" [ref=f4e29] [cursor=pointer]:
+            - generic [ref=f4e30]: extension
+          - button "Пользователи и роли" [ref=f4e32] [cursor=pointer]:
+            - generic [ref=f4e33]: group
+          - button "Структура" [ref=f4e35] [cursor=pointer]:
+            - generic [ref=f4e36]: account_tree
+          - button "Подписка и места" [ref=f4e38] [cursor=pointer]:
+            - generic [ref=f4e39]: workspace_premium
+          - button "Оформление" [ref=f4e41] [cursor=pointer]:
+            - generic [ref=f4e42]: palette
+          - generic [ref=f4e44]: Отрасли
+          - button "Салон и SPA" [ref=f4e45] [cursor=pointer]:
+            - generic [ref=f4e46]: spa
+          - generic [ref=f4e48]: Общие модули
+          - button "Чаты" [ref=f4e49] [cursor=pointer]:
+            - generic [ref=f4e50]: forum
+          - button "Задачи" [ref=f4e52] [cursor=pointer]:
+            - generic [ref=f4e53]: task_alt
+          - button "Обращения" [ref=f4e55] [cursor=pointer]:
+            - generic [ref=f4e56]: support_agent
+          - button "Формы и опросы" [ref=f4e58] [cursor=pointer]:
+            - generic [ref=f4e59]: dynamic_form
+          - button "Календарь" [ref=f4e61] [cursor=pointer]:
+            - generic [ref=f4e62]: calendar_month
+          - button "База знаний" [ref=f4e64] [cursor=pointer]:
+            - generic [ref=f4e65]: menu_book
+          - button "Документы" [ref=f4e67] [cursor=pointer]:
+            - generic [ref=f4e68]: description
+          - button "Данные" [ref=f4e70] [cursor=pointer]:
+            - generic [ref=f4e71]: table_view
+          - button "Файлы" [ref=f4e73] [cursor=pointer]:
+            - generic [ref=f4e74]: folder_open
+          - button "Касса" [ref=f4e76] [cursor=pointer]:
+            - generic [ref=f4e77]: account_balance_wallet
+          - generic [ref=f4e80]:
+            - generic [ref=f4e81]: shield
+            - text: Данные других организаций изолированы
+        - main [ref=f4e82]:
+          - region [ref=f4e90]:
+            - generic [ref=f4e91]:
+              - generic [ref=f4e92]: Альта Групп · все подразделения
+              - heading "Склад" [level=1] [ref=f4e93]
+              - paragraph [ref=f4e94]: "Остатки материалов по складам и партиям. Расход идёт по сроку годности: сначала партии, которые испортятся раньше."
+            - generic [ref=f4e95]:
+              - navigation "Связанные разделы" [ref=f4e96]:
+                - button "Движения склада" [ref=f4e97] [cursor=pointer]
+              - generic [ref=f4e98]:
+                - button [ref=f4e99] [cursor=pointer]:
+                  - generic [ref=f4e101]:
+                    - generic [ref=f4e102]: warehouse
+                    - text: Новый склад
+                - button [ref=f4e103] [cursor=pointer]:
+                  - generic [ref=f4e105]:
+                    - generic [ref=f4e106]: add
+                    - text: Новая позиция
+            - generic [ref=f4e107]:
+              - tablist "Разделы склада" [ref=f4e108]:
+                - tab "Остатки" [ref=f4e109] [cursor=pointer]
+                - tab "Резервы" [active] [selected] [ref=f4e110] [cursor=pointer]
+              - tabpanel "Резервы" [ref=f4e358]:
+                - paragraph [ref=f4e359]: Резерв создают записи салона и закупки ремонта; здесь его можно снять.
+                - list "Резервы" [ref=f4e360]:
+                  - listitem [ref=f4e361]:
+                    - generic [ref=f4e362]:
+                      - strong [ref=f4e363]: Салон и SPA · запись
+                      - generic [ref=f4e364]: Склад салона · Создан 30.09.2026, 15:00
+                      - generic [ref=f4e365]: Действует
+                    - generic [ref=f4e367]:
+                      - generic [ref=f4e368]: Масло массажное
+                      - strong [ref=f4e369]: 30 мл
+                    - button "Снять резерв" [ref=f4e371] [cursor=pointer]
+                  - listitem [ref=f4e372]:
+                    - generic [ref=f4e373]:
+                      - strong [ref=f4e374]: Салон и SPA · запись
+                      - generic [ref=f4e375]: Склад салона · Создан 28.09.2026, 15:00
+                      - generic [ref=f4e376]: Снят
+                    - generic [ref=f4e378]:
+                      - generic [ref=f4e379]: Масло массажное
+                      - strong [ref=f4e380]: 30 мл
+      - status [ref=f4e355]:
+        - generic [ref=f4e356]: check_circle
+        - generic [ref=f4e357]: Позиция «Масло массажное» сохранена
+```

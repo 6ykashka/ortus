@@ -35,6 +35,8 @@ export type PageKey =
   | 'data'
   | 'files'
   | 'cash'
+  | 'inventory'
+  | 'inventoryMovements'
   | 'tenants'
   | 'usage'
   | 'requests'

@@ -1,0 +1,229 @@
+### Page
+- Page URL: http://127.0.0.1:5202/t/f04f636e-b66d-509e-ae10-9c27a18e3baa/inventory
+- Page Title: Ортус CRM
+### Snapshot
+```yaml
+- generic [ref=f4e1]:
+  - generic [ref=f4e3]:
+    - link "К содержимому" [ref=f4e4] [cursor=pointer]:
+      - /url: "#ox-main"
+    - generic [ref=f4e6]:
+      - banner [ref=f4e7]:
+        - generic [ref=f4e8]:
+          - generic [ref=f4e9]: о
+          - generic [ref=f4e10]:
+            - generic [ref=f4e11]: ортус
+            - generic [ref=f4e12]: пространство бизнеса
+        - generic [ref=f4e13]:
+          - generic [ref=f4e14]: domain
+          - generic [ref=f4e15]: Альта Групп
+          - combobox "Область просмотра" [ref=f4e17]:
+            - option "Все подразделения" [selected]
+            - option "Москва · весь регион"
+            - option "Москва / Север Логистик"
+            - option "Москва / Юг Транс"
+            - option "Москва / Восток Карго"
+            - option "Москва / Центр Экспресс"
+            - option "Самара · весь регион"
+            - option "Самара / Волга Логистик"
+            - option "Самара / Самара Трак"
+            - option "Самара / Жигули Карго"
+            - option "Самара / Приволжье Сервис"
+            - option "Санкт-Петербург · весь регион"
+            - option "Санкт-Петербург / Нева Логистик"
+            - option "Санкт-Петербург / Балтик Транс"
+            - option "Санкт-Петербург / Охта Карго"
+            - option "Санкт-Петербург / Пулково Экспресс"
+        - 'button "Уведомления: 2 новых" [ref=f4e18] [cursor=pointer]':
+          - generic [ref=f4e19]: notifications
+          - generic [ref=f4e20]: "2"
+        - button "Профиль" [ref=f4e21] [cursor=pointer]: ДЗ
+      - generic [ref=f4e22]:
+        - navigation "Основная навигация" [ref=f4e23]:
+          - generic [ref=f4e24]: Обзор
+          - button "Главная" [ref=f4e25] [cursor=pointer]:
+            - generic [ref=f4e26]: home
+          - generic [ref=f4e28]: Компания
+          - button "Модули и место" [ref=f4e29] [cursor=pointer]:
+            - generic [ref=f4e30]: extension
+          - button "Пользователи и роли" [ref=f4e32] [cursor=pointer]:
+            - generic [ref=f4e33]: group
+          - button "Структура" [ref=f4e35] [cursor=pointer]:
+            - generic [ref=f4e36]: account_tree
+          - button "Подписка и места" [ref=f4e38] [cursor=pointer]:
+            - generic [ref=f4e39]: workspace_premium
+          - button "Оформление" [ref=f4e41] [cursor=pointer]:
+            - generic [ref=f4e42]: palette
+          - generic [ref=f4e44]: Отрасли
+          - button "Салон и SPA" [ref=f4e45] [cursor=pointer]:
+            - generic [ref=f4e46]: spa
+          - generic [ref=f4e48]: Общие модули
+          - button "Чаты" [ref=f4e49] [cursor=pointer]:
+            - generic [ref=f4e50]: forum
+          - button "Задачи" [ref=f4e52] [cursor=pointer]:
+            - generic [ref=f4e53]: task_alt
+          - button "Обращения" [ref=f4e55] [cursor=pointer]:
+            - generic [ref=f4e56]: support_agent
+          - button "Формы и опросы" [ref=f4e58] [cursor=pointer]:
+            - generic [ref=f4e59]: dynamic_form
+          - button "Календарь" [ref=f4e61] [cursor=pointer]:
+            - generic [ref=f4e62]: calendar_month
+          - button "База знаний" [ref=f4e64] [cursor=pointer]:
+            - generic [ref=f4e65]: menu_book
+          - button "Документы" [ref=f4e67] [cursor=pointer]:
+            - generic [ref=f4e68]: description
+          - button "Данные" [ref=f4e70] [cursor=pointer]:
+            - generic [ref=f4e71]: table_view
+          - button "Файлы" [ref=f4e73] [cursor=pointer]:
+            - generic [ref=f4e74]: folder_open
+          - button "Касса" [ref=f4e76] [cursor=pointer]:
+            - generic [ref=f4e77]: account_balance_wallet
+          - generic [ref=f4e80]:
+            - generic [ref=f4e81]: shield
+            - text: Данные других организаций изолированы
+        - main [ref=f4e82]:
+          - region [ref=f4e90]:
+            - generic [ref=f4e91]:
+              - generic [ref=f4e92]: Альта Групп · все подразделения
+              - heading "Склад" [level=1] [ref=f4e93]
+              - paragraph [ref=f4e94]: "Остатки материалов по складам и партиям. Расход идёт по сроку годности: сначала партии, которые испортятся раньше."
+            - generic [ref=f4e95]:
+              - navigation "Связанные разделы" [ref=f4e96]:
+                - button "Движения склада" [ref=f4e97] [cursor=pointer]
+              - generic [ref=f4e98]:
+                - button [ref=f4e99] [cursor=pointer]:
+                  - generic [ref=f4e101]:
+                    - generic [ref=f4e102]: warehouse
+                    - text: Новый склад
+                - button [ref=f4e103] [cursor=pointer]:
+                  - generic [ref=f4e105]:
+                    - generic [ref=f4e106]: add
+                    - text: Новая позиция
+            - generic [ref=f4e107]:
+              - tablist "Разделы склада" [ref=f4e108]:
+                - tab "Остатки" [selected] [ref=f4e109] [cursor=pointer]
+                - tab "Резервы" [ref=f4e110] [cursor=pointer]
+              - tabpanel "Остатки" [ref=f4e111]:
+                - group "Фильтры остатков" [ref=f4e222]:
+                  - combobox "Склад" [ref=f4e225]:
+                    - option "Все склады" [selected]
+                    - option "Склад салона"
+                    - option "Склад № 1"
+                  - generic [ref=f4e226] [cursor=pointer]:
+                    - checkbox "Ниже минимума" [ref=f4e227]
+                    - generic [ref=f4e228]: Ниже минимума
+                - list "Остатки" [ref=f4e230]:
+                  - listitem [ref=f4e231]:
+                    - generic [ref=f4e232]:
+                      - strong [ref=f4e233]: Крем восстанавливающий
+                      - generic [ref=f4e234]: Склад салона · Артикул CRM-50
+                      - generic [ref=f4e235]: Ниже минимума
+                    - generic [ref=f4e236]:
+                      - generic [ref=f4e237]:
+                        - term [ref=f4e238]: В наличии
+                        - definition [ref=f4e239]: 12 г
+                      - generic [ref=f4e240]:
+                        - term [ref=f4e241]: В резерве
+                        - definition [ref=f4e242]: 0 г
+                      - generic [ref=f4e243]:
+                        - term [ref=f4e244]: Доступно
+                        - definition [ref=f4e245]: 12 г
+                    - generic [ref=f4e246]: "Минимум: 50 г"
+                    - generic [ref=f4e247]:
+                      - button "Партии (1)" [ref=f4e248] [cursor=pointer]
+                      - 'button "Изменить позицию: Крем восстанавливающий" [ref=f4e249] [cursor=pointer]': Изменить
+                  - listitem [ref=f4e269]:
+                    - generic [ref=f4e270]:
+                      - strong [ref=f4e271]: Масло массажное
+                      - generic [ref=f4e272]: Склад салона · Артикул OIL-500
+                    - generic [ref=f4e273]:
+                      - generic [ref=f4e274]:
+                        - term [ref=f4e275]: В наличии
+                        - definition [ref=f4e276]: 250 мл
+                      - generic [ref=f4e277]:
+                        - term [ref=f4e278]: В резерве
+                        - definition [ref=f4e279]: 30 мл
+                      - generic [ref=f4e280]:
+                        - term [ref=f4e281]: Доступно
+                        - definition [ref=f4e282]: 220 мл
+                    - generic [ref=f4e283]: "Минимум: 100 мл"
+                    - generic [ref=f4e284]:
+                      - button "Партии (2)" [ref=f4e285] [cursor=pointer]
+                      - 'button "Изменить позицию: Масло массажное" [ref=f4e286] [cursor=pointer]': Изменить
+                  - listitem [ref=f4e287]:
+                    - generic [ref=f4e288]:
+                      - strong [ref=f4e289]: Масло массажное
+                      - generic [ref=f4e290]: Склад № 1 · Артикул OIL-500
+                    - generic [ref=f4e291]:
+                      - generic [ref=f4e292]:
+                        - term [ref=f4e293]: В наличии
+                        - definition [ref=f4e294]: 540 мл
+                      - generic [ref=f4e295]:
+                        - term [ref=f4e296]: В резерве
+                        - definition [ref=f4e297]: 0 мл
+                      - generic [ref=f4e298]:
+                        - term [ref=f4e299]: Доступно
+                        - definition [ref=f4e300]: 540 мл
+                    - generic [ref=f4e301]: "Минимум: 100 мл"
+                    - generic [ref=f4e302]:
+                      - button "Партии (2)" [ref=f4e303] [cursor=pointer]
+                      - 'button "Изменить позицию: Масло массажное" [ref=f4e304] [cursor=pointer]': Изменить
+                  - listitem [ref=f4e250]:
+                    - generic [ref=f4e251]:
+                      - strong [ref=f4e252]: Перчатки нитриловые
+                      - generic [ref=f4e253]: Склад салона · Артикул GLV-100
+                      - generic [ref=f4e254]: Ниже минимума
+                    - generic [ref=f4e255]:
+                      - generic [ref=f4e256]:
+                        - term [ref=f4e257]: В наличии
+                        - definition [ref=f4e258]: 0 шт.
+                      - generic [ref=f4e259]:
+                        - term [ref=f4e260]: В резерве
+                        - definition [ref=f4e261]: 0 шт.
+                      - generic [ref=f4e262]:
+                        - term [ref=f4e263]: Доступно
+                        - definition [ref=f4e264]: 0 шт.
+                    - generic [ref=f4e265]: "Минимум: 100 шт."
+                    - generic [ref=f4e266]:
+                      - generic [ref=f4e267]: Без партий
+                      - 'button "Изменить позицию: Перчатки нитриловые" [ref=f4e268] [cursor=pointer]': Изменить
+                  - listitem [ref=f4e305]:
+                    - generic [ref=f4e306]:
+                      - strong [ref=f4e307]: Полотенца одноразовые
+                      - generic [ref=f4e308]: Склад салона · Артикул TWL-200
+                    - generic [ref=f4e309]:
+                      - generic [ref=f4e310]:
+                        - term [ref=f4e311]: В наличии
+                        - definition [ref=f4e312]: 200 шт.
+                      - generic [ref=f4e313]:
+                        - term [ref=f4e314]: В резерве
+                        - definition [ref=f4e315]: 0 шт.
+                      - generic [ref=f4e316]:
+                        - term [ref=f4e317]: Доступно
+                        - definition [ref=f4e318]: 200 шт.
+                    - generic [ref=f4e319]: "Минимум: 100 шт."
+                    - generic [ref=f4e320]:
+                      - generic [ref=f4e321]: Без партий
+                      - 'button "Изменить позицию: Полотенца одноразовые" [ref=f4e322] [cursor=pointer]': Изменить
+  - generic [ref=f4e324]:
+    - button "Пропустить" [ref=f4e326]
+    - dialog [active] [ref=f4e327]:
+      - heading "Позиция «Масло массажное»" [level=2] [ref=f4e328]
+      - generic [ref=f4e330]:
+        - paragraph [ref=f4e331]: OIL-500 · мл. Единица и артикул не меняются.
+        - generic [ref=f4e332]:
+          - generic [ref=f4e333]: Название
+          - textbox "Название" [ref=f4e335]: Масло массажное
+        - generic [ref=f4e336]:
+          - generic [ref=f4e337]: Минимальный уровень
+          - generic [ref=f4e338]:
+            - textbox "Минимальный уровень" [ref=f4e339]: "100"
+            - generic [ref=f4e340]: мл
+          - generic [ref=f4e341]: Когда остаток станет меньше, позиция отметится «Ниже минимума».
+        - generic [ref=f4e342]:
+          - button "Убрать позицию в архив" [ref=f4e343] [cursor=pointer]
+          - generic [ref=f4e346]: Позиция исчезнет из списков; движения и остатки сохранятся.
+      - generic [ref=f4e347]:
+        - button "Отмена" [ref=f4e348] [cursor=pointer]
+        - button "Сохранить" [ref=f4e351] [cursor=pointer]
+```

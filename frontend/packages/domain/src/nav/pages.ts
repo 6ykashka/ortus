@@ -35,6 +35,8 @@ export const PAGE_ORDER: readonly PageKey[] = [
   'data',
   'files',
   'cash',
+  'inventory',
+  'inventoryMovements',
   'tenants',
   'usage',
   'requests',

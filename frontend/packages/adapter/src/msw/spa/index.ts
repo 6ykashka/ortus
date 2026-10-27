@@ -11,6 +11,7 @@ import { page, uuidParam } from '../core/page.ts';
 import { fail, type Violation } from '../core/problem.ts';
 import type { Registry } from '../core/registry.ts';
 import { MINUTE } from '../core/time.ts';
+import { issueForSource, onHandNumber } from '../inventory/index.ts';
 import {
   type ApptRow,
   appointmentDto,
@@ -481,21 +482,21 @@ export const spaHandlers: Registry = {
       need.set(lower(o.itemId), num(o.actualQuantity));
     }
     // Нехватка — до любых списаний: частичного списания нет.
+    const warehouseId = lower(b.warehouseId);
     for (const [itemId, q] of need) {
       const item = v.data.items.find((x) => x.id === itemId) as ItemRow;
-      if (item.onHand < q) {
-        fail('invalid_transition', shortText(item, q, item.onHand), {
-          reason: 'insufficient_stock',
-        });
+      const have = onHandNumber(ctx, warehouseId, itemId);
+      if (have < q) {
+        fail('invalid_transition', shortText(item, q, have), { reason: 'insufficient_stock' });
       }
     }
-    const ids: string[] = [];
-    for (const [itemId, q] of need) {
-      const item = v.data.items.find((x) => x.id === itemId) as ItemRow;
-      item.onHand = +(item.onHand - q).toFixed(6);
-      item.revision++;
-      if (q > 0) ids.push(ctx.newId('spa-movement'));
-    }
+    // Склад один с тегом Inventory (W5.11): списание по FEFO движениями «Расход» с основанием «визит».
+    const ids = issueForSource(
+      ctx,
+      warehouseId,
+      [...need].map(([itemId, quantity]) => ({ itemId, quantity })),
+      { moduleKey: 'spa', entityType: 'appointment', entityId: a.id },
+    );
     a.movementIds = ids;
     a.finalPrice = b.finalPrice ? money(b.finalPrice, 'finalPrice') : a.price;
     a.status = 'completed';

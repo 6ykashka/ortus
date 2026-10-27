@@ -144,6 +144,7 @@ describe('постоянный сценарий и dev-маршрут', () => {
       'trial-ended',
       'storage-full',
       'repairs-ready',
+      'inventory-ready',
     ]);
     expect(body.invitations.map((i) => i.email)).toEqual([
       'o.petrova@alta.example',

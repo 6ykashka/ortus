@@ -1,0 +1,7 @@
+### Result
+5. [GET] http://gc.kis.v2.scr.kaspersky-labs.com/7D8B79A2-8974-4D7B-A76A-F4F29624C06BvQg88wVIXdUQDjABiAUmKfsOU6lGwzdCf_9HGKhVzfyi9oiGyY2hT_L6Fzzt2_kx0zCd_GMxjwzI6TI-__R7pg/init?data=eyJ1cmwiOiJodHRwOi8vMTI3LjAuMC4xOjUyMDIvdC9mMDRmNjM2ZS1iNjZkLTUwOWUtYWUxMC05YzI3YTE4ZTNiYWEvaW52ZW50b3J5IiwicGx1Z2lucyI6IndzbSZjYSZ2cyZ4aHJfY29udGVudCIsImRhdGEiOnsiZGF0YSI6W3sicGx1Z2luIjoid3NtIiwicGFyYW1ldGVycyI6IntcInJlZmVycmVyXCI6XCJcIixcInN0dWJJZFwiOlwiXCJ9In0seyJwbHVnaW4iOiJ4aHJfY29udGVudCIsInBhcmFtZXRlcnMiOiJ7XCJyZWZlcnJlclwiOlwiXCJ9In1dfSwiaXNUb3BMZXZlbCI6dHJ1ZSwicGFnZVN0YXJ0VGltZSI6MCwibmF2aWdhdGlvblN0YXJ0VGltZSI6MTc5Mjk3NDQyMjg0Nn0%3D&nocache=1bdc4&tm=2026-10-26T00%3A27%3A02.894Z => [200] OK
+19. [POST] http://gc.kis.v2.scr.kaspersky-labs.com/E6A89253-8DA4-4266-8170-648116FE3D7B/BDF1828D-49E1-4FAF-BEDC-A6AE8BCB6DA7/to/wsm.sessionActivated?tm=2026-10-26T00%3A27%3A02.907Z => [200] OK
+437. [GET] http://127.0.0.1:5202/api/v1/me/context => [200] 
+441. [GET] http://127.0.0.1:5202/api/v1/me/notifications/summary => [200] 
+
+Note: 437 static requests not shown, run with "static" option to see them.

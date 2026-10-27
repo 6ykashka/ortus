@@ -144,6 +144,9 @@ export const shell = {
       earnings: 'Начисления водителям',
       // W2.41 · страница «Логистики» вне меню (no-reference, Q-W2.41-2) — заголовок screens.yaml.
       expenseCategories: 'Категории расходов',
+      // W5.11 · страницы склада вне меню (no-reference, Q-W5.11-4) — заголовки screens.yaml.
+      inventory: 'Склад',
+      inventoryMovements: 'Движения склада',
     },
     bottom: {
       fleet: 'Логист',

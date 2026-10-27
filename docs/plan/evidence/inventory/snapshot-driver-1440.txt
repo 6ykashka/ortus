@@ -1,0 +1,48 @@
+### Page
+- Page URL: http://127.0.0.1:5202/t/f04f636e-b66d-509e-ae10-9c27a18e3baa/inventory
+- Page Title: Ортус CRM
+### Snapshot
+```yaml
+- generic [ref=f6e3]:
+  - link "К содержимому" [ref=f6e4] [cursor=pointer]:
+    - /url: "#ox-main"
+  - generic [ref=f6e6]:
+    - banner [ref=f6e7]:
+      - generic [ref=f6e8]:
+        - generic [ref=f6e9]: о
+        - generic [ref=f6e10]:
+          - generic [ref=f6e11]: ортус
+          - generic [ref=f6e12]: пространство бизнеса
+      - generic [ref=f6e13]:
+        - generic [ref=f6e14]: domain
+        - generic [ref=f6e15]:
+          - generic [ref=f6e16]: Альта Групп
+          - generic [ref=f6e17]: Мои назначения
+      - button "Уведомления" [ref=f6e18] [cursor=pointer]:
+        - generic [ref=f6e19]: notifications
+      - button "Профиль" [ref=f6e20] [cursor=pointer]: ИВ
+    - generic [ref=f6e21]:
+      - navigation "Основная навигация" [ref=f6e22]:
+        - generic [ref=f6e23]: Работа
+        - button "Сегодня" [ref=f6e24] [cursor=pointer]:
+          - generic [ref=f6e25]: today
+        - button "Автомобили" [ref=f6e27] [cursor=pointer]:
+          - generic [ref=f6e28]: local_shipping
+        - button "Подотчёт" [ref=f6e30] [cursor=pointer]:
+          - generic [ref=f6e31]: account_balance_wallet
+        - button "Чаты" [ref=f6e33] [cursor=pointer]:
+          - generic [ref=f6e34]: forum
+        - button "База знаний" [ref=f6e36] [cursor=pointer]:
+          - generic [ref=f6e37]: menu_book
+        - button "Документы" [ref=f6e39] [cursor=pointer]:
+          - generic [ref=f6e40]: description
+        - generic [ref=f6e43]:
+          - generic [ref=f6e44]: shield
+          - text: Данные других организаций изолированы
+      - main [ref=f6e45]:
+        - generic [ref=f6e47]:
+          - generic [ref=f6e48]: lock
+          - generic [ref=f6e50]: Нет права
+          - heading "Нет доступа к разделу «Склад и материалы»" [level=1] [ref=f6e51]
+          - paragraph [ref=f6e52]: Ни одна ваша роль не разрешает его просматривать. Владелец бизнеса может добавить действие в роль.
+```

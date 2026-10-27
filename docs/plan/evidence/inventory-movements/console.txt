@@ -1,0 +1,5 @@
+### Result
+Total messages: 4 (Errors: 1, Warnings: 0)
+Returning 1 messages for level "warning"
+
+[ERROR] Failed to load resource: the server responded with a status of 409 () @ http://127.0.0.1:5202/api/v1/tenants/f04f636e-b66d-509e-ae10-9c27a18e3baa/inventory/movements:0

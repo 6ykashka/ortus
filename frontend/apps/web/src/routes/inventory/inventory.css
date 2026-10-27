@@ -1,0 +1,348 @@
+/* W5.11 · «Склад» и «Движения склада» (no-reference, B-6): макета нет — вид собран из токенов @ortus/tokens и
+   карточек страниц логистики (шапка и ряды как у «Категорий расходов», чипы как `ch` эталона). Цели нажатия на телефоне
+   не меньше 44 px; на 390 px ряды складываются в колонку, горизонтальной прокрутки нет. */
+
+.ox-inv {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  min-width: 0;
+}
+
+.ox-inv-top {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.ox-inv-crumb {
+  font-size: var(--ox-fs-sm);
+  color: var(--ox-text-muted);
+}
+
+.ox-inv-title {
+  margin: 0;
+  font-size: 26px;
+  line-height: 1.2;
+  font-weight: var(--ox-fw-semibold);
+  letter-spacing: -0.02em;
+}
+
+.ox-inv-title:focus {
+  outline: none;
+}
+
+.ox-inv-intro {
+  margin: 0;
+  max-width: 720px;
+  color: var(--ox-text-muted);
+  text-wrap: pretty;
+}
+
+.ox-inv-note {
+  margin: 0;
+  font-size: var(--ox-fs-sm);
+  color: var(--ox-text-muted);
+  text-wrap: pretty;
+}
+
+/* Связанные разделы и действия страницы. */
+.ox-inv-bar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.ox-inv-links,
+.ox-inv-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.ox-inv-pill {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  padding: 0 14px;
+  border-radius: var(--ox-radius-md);
+  border: 1px solid var(--ox-line-control);
+  background: var(--ox-card);
+  color: var(--ox-text);
+  font: inherit;
+  font-size: var(--ox-fs-sm);
+  font-weight: var(--ox-fw-medium);
+  cursor: pointer;
+}
+
+.ox-inv-pill:focus-visible,
+.ox-inv-link:focus-visible {
+  outline: 2px solid var(--ox-focus);
+  outline-offset: 2px;
+}
+
+/* Фильтры остатков. */
+.ox-inv-filters {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 16px;
+  margin-bottom: 12px;
+}
+
+.ox-inv-filter {
+  flex: 0 1 260px;
+  min-width: 200px;
+}
+
+/* Ряды остатков, резервов и движений. */
+.ox-inv-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.ox-inv-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1.4fr) minmax(0, 1.6fr) auto;
+  grid-template-areas:
+    'main qty acts'
+    'main sub acts'
+    'extra extra extra';
+  gap: 6px 16px;
+  align-items: start;
+  padding: 14px 16px;
+  background: var(--ox-card);
+  border: 1px solid var(--ox-line);
+  border-radius: var(--ox-radius-xl);
+}
+
+.ox-inv-main {
+  grid-area: main;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 4px;
+  min-width: 0;
+}
+
+.ox-inv-name {
+  font-weight: var(--ox-fw-semibold);
+  overflow-wrap: anywhere;
+}
+
+.ox-inv-where,
+.ox-inv-sub,
+.ox-inv-when {
+  font-size: var(--ox-fs-sm);
+  color: var(--ox-text-muted);
+}
+
+.ox-inv-sub {
+  grid-area: sub;
+}
+
+.ox-inv-qty {
+  grid-area: qty;
+  margin: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 20px;
+}
+
+.ox-inv-qty > div {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.ox-inv-qty dt {
+  font-size: var(--ox-fs-xs);
+  color: var(--ox-text-muted);
+}
+
+.ox-inv-qty dd {
+  margin: 0;
+  font-weight: var(--ox-fw-semibold);
+  font-variant-numeric: tabular-nums;
+}
+
+.ox-inv-acts {
+  grid-area: acts;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 4px;
+}
+
+.ox-inv-link {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  padding: 0 8px;
+  border: 0;
+  background: none;
+  color: var(--ox-accent);
+  font: inherit;
+  font-size: var(--ox-fs-sm);
+  font-weight: var(--ox-fw-medium);
+  cursor: pointer;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+/* Чип состояния (ch эталона) и метка партии. */
+.ox-inv-chip,
+.ox-inv-tag {
+  display: inline-flex;
+  align-items: center;
+  padding: 1px 8px;
+  border-radius: var(--ox-radius-pill);
+  font-size: var(--ox-fs-xs);
+  font-weight: var(--ox-fw-medium);
+  line-height: 18px;
+  white-space: nowrap;
+  background: var(--ox-neutral-bg);
+  color: var(--ox-neutral-fg);
+}
+
+.ox-inv-chip[data-tone='ok'],
+.ox-inv-tag[data-tone='ok'] {
+  background: var(--ox-ok-bg);
+  color: var(--ox-ok-fg);
+}
+
+.ox-inv-chip[data-tone='info'],
+.ox-inv-tag[data-tone='info'] {
+  background: var(--ox-info-bg);
+  color: var(--ox-info-fg);
+}
+
+.ox-inv-chip[data-tone='warn'],
+.ox-inv-tag[data-tone='warn'] {
+  background: var(--ox-warn-bg);
+  color: var(--ox-warn-fg);
+}
+
+.ox-inv-chip[data-tone='danger'],
+.ox-inv-tag[data-tone='danger'] {
+  background: var(--ox-danger-bg);
+  color: var(--ox-danger-fg);
+}
+
+/* Партии в порядке FEFO и строки движения. */
+.ox-inv-lots,
+.ox-inv-lines {
+  grid-area: extra;
+  list-style: none;
+  margin: 4px 0 0;
+  padding: 8px 0 0;
+  border-top: 1px solid var(--ox-line);
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.ox-inv-lot,
+.ox-inv-line {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px 12px;
+  font-size: var(--ox-fs-sm);
+}
+
+.ox-inv-lot strong,
+.ox-inv-line strong {
+  font-variant-numeric: tabular-nums;
+}
+
+.ox-inv-line .ox-inv-sub {
+  grid-area: auto;
+}
+
+/* Движения: вид и склад слева, время и действия справа. */
+.ox-inv-row[data-kind='move'] {
+  grid-template-columns: minmax(0, 1fr) auto;
+  grid-template-areas:
+    'main acts'
+    'extra extra';
+}
+
+/* Формы диалогов. */
+.ox-inv-form {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.ox-inv-form-line {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 12px;
+  border: 1px solid var(--ox-line);
+  border-radius: var(--ox-radius-md);
+}
+
+.ox-inv-form-line-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.ox-inv-archive {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 6px;
+}
+
+.ox-inv-error {
+  display: flex;
+  gap: 8px;
+  align-items: flex-start;
+  padding: 10px 12px;
+  border-radius: var(--ox-radius-md);
+  background: var(--ox-danger-bg);
+  color: var(--ox-danger-fg);
+  font-size: var(--ox-fs-sm);
+}
+
+/* Телефон: ряды в одну колонку. */
+@media (max-width: 639px) {
+  .ox-inv-row,
+  .ox-inv-row[data-kind='move'] {
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-areas:
+      'main'
+      'qty'
+      'sub'
+      'acts'
+      'extra';
+  }
+
+  .ox-inv-row[data-kind='move'] {
+    grid-template-areas:
+      'main'
+      'acts'
+      'extra';
+  }
+
+  .ox-inv-acts {
+    flex-direction: row;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: flex-start;
+  }
+
+  .ox-inv-filter {
+    flex-basis: 100%;
+  }
+}

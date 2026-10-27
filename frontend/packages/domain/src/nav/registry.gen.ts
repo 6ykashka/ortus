@@ -9,6 +9,7 @@ import { manifest as docs } from './modules/docs.ts';
 import { manifest as files } from './modules/files.ts';
 import { manifest as fleet } from './modules/fleet.ts';
 import { manifest as forms } from './modules/forms.ts';
+import { manifest as inventory } from './modules/inventory.ts';
 import { manifest as knowledge } from './modules/knowledge.ts';
 import { manifest as overview } from './modules/overview.ts';
 import { manifest as platform } from './modules/platform.ts';
@@ -29,6 +30,7 @@ export const MANIFESTS: readonly NavManifest[] = [
   files,
   fleet,
   forms,
+  inventory,
   knowledge,
   overview,
   platform,
