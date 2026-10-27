@@ -11,6 +11,8 @@ import { ScheduleTab } from './child/gantt/index.ts';
 import './child/gantt/gantt.css';
 import { EstimateTab } from './estimate/index.ts';
 import { MeasureTab, type RepairTabLink } from './measure/index.ts';
+import { MONEY_TABS } from './money-tabs/index.ts';
+import './money-tabs/money.css';
 import { decisionView, type TabId } from './model.ts';
 import { REPAIR_TEXT as T } from './texts.ts';
 
@@ -57,6 +59,15 @@ export const TAB_PANELS: Partial<Record<TabId, ComponentType<TabPanelProps>>> = 
   measure: MeasurePanel,
   estimate: EstimatePanel,
   schedule: SchedulePanel,
+  ...Object.fromEntries(
+    MONEY_TABS.map((m) => {
+      const Tab = m.component;
+      const Panel = (p: TabPanelProps): ReactElement => (
+        <Tab tenantId={p.tenantId} projectId={p.ov.project.id} />
+      );
+      return [m.key, Panel];
+    }),
+  ),
 };
 
 export function StubTab(p: { tab: TabId; ov: S['RepairProjectOverview'] }): ReactElement {

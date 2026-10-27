@@ -1,0 +1,590 @@
+/* W6.24 · Вкладки объекта «Документы», «Финансы», «Оплата бригады», «Подрядчики», «Кабинет заказчика» по рендеру
+   `Ремонт и стройка.dc.html` (design-2026-10-19: :513–611). Цвета — токены @ortus/tokens; значения эталона без токена —
+   алиасы ниже. Цели нажатия на телефоне ≥ 44 px (кнопки @ortus/ui). */
+
+.ox-mt,
+.ox-mt-host {
+  --ox-mt-stripes: repeating-linear-gradient(
+    135deg,
+    #e9ede6 0 8px,
+    #e0e5dd 8px 16px
+  ); /* :604 фото-заглушка */
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  min-width: 0;
+}
+
+.ox-mt-head {
+  display: flex;
+  flex-direction: column;
+}
+
+.ox-mt-h2 {
+  margin: 0;
+  font-size: var(--ox-fs-xl);
+  font-weight: var(--ox-fw-semibold);
+}
+
+.ox-mt-h2:focus {
+  outline: none;
+}
+
+.ox-mt-intro {
+  margin: 4px 0 0;
+  max-width: 720px;
+  color: var(--ox-text-muted);
+  text-wrap: pretty;
+}
+
+.ox-mt-note {
+  font-size: var(--ox-fs-xs);
+  color: var(--ox-text-muted);
+  text-wrap: pretty;
+}
+
+.ox-mt-card {
+  background: var(--ox-card);
+  border: 1px solid var(--ox-line);
+  border-radius: var(--ox-radius-xl);
+  overflow: hidden;
+}
+
+.ox-mt-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+/* ── Документы :516–526 ── */
+.ox-mt-doc {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 14px;
+  align-items: center;
+  padding: 12px 16px;
+  border-top: 1px solid var(--ox-divider);
+}
+
+.ox-mt-doc:first-child {
+  border-top-color: transparent;
+}
+
+.ox-mt-doc-icon {
+  font-size: 22px;
+  color: var(--ox-text-muted);
+}
+
+.ox-mt-doc-main {
+  flex: 1 1 220px;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.ox-mt-name {
+  font-weight: var(--ox-fw-medium);
+}
+
+.ox-mt-meta {
+  font-size: var(--ox-fs-xs);
+  color: var(--ox-text-muted);
+}
+
+.ox-mt-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+}
+
+/* ── Финансы :550–556 ── */
+.ox-mt-cards {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 190px), 1fr));
+  gap: 12px;
+}
+
+.ox-mt-kpi {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 16px;
+  border-radius: var(--ox-radius-xl);
+  background: var(--ox-card);
+  border: 1px solid var(--ox-line);
+}
+
+.ox-mt-kpi-label {
+  font-size: var(--ox-fs-sm);
+  color: var(--ox-text-muted);
+}
+
+.ox-mt-kpi-value {
+  font-size: var(--ox-fs-xl);
+  font-weight: var(--ox-fw-semibold);
+  font-variant-numeric: tabular-nums;
+}
+
+.ox-mt-sub {
+  font-size: var(--ox-fs-xs);
+  color: var(--ox-text-muted);
+}
+
+.ox-mt-card-title {
+  padding: 12px 16px;
+  border-bottom: 1px solid var(--ox-line);
+  font-weight: var(--ox-fw-semibold);
+}
+
+.ox-mt-move {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 14px;
+  align-items: center;
+  padding: 10px 16px;
+  border-top: 1px solid var(--ox-divider);
+}
+
+.ox-mt-move:first-child {
+  border-top-color: transparent;
+}
+
+.ox-mt-move-at {
+  width: 48px;
+  font-size: var(--ox-fs-xs);
+  color: var(--ox-text-muted);
+}
+
+.ox-mt-move-text {
+  flex: 1 1 220px;
+}
+
+.ox-mt-move-sum {
+  font-variant-numeric: tabular-nums;
+  font-weight: var(--ox-fw-medium);
+  color: var(--ox-text-label);
+}
+
+.ox-mt-move-sum[data-income='true'] {
+  color: var(--ox-accent);
+}
+
+.ox-mt-empty {
+  padding: 16px;
+  color: var(--ox-text-muted);
+}
+
+/* ── Оплата бригады :563–568 ── */
+.ox-mt-scroll {
+  overflow-x: auto;
+}
+
+.ox-mt-table {
+  width: 100%;
+  min-width: 640px;
+  border-collapse: collapse;
+  font-size: var(--ox-fs-md);
+}
+
+.ox-mt-table th {
+  padding: 10px 8px;
+  background: var(--ox-raised);
+  text-align: left;
+  font-size: var(--ox-fs-xs);
+  font-weight: var(--ox-fw-medium);
+  color: var(--ox-text-muted);
+}
+
+.ox-mt-table th:first-child,
+.ox-mt-table td:first-child {
+  padding-left: 14px;
+}
+
+.ox-mt-table th:last-child,
+.ox-mt-table td:last-child {
+  padding-right: 14px;
+}
+
+.ox-mt-table td {
+  padding: 10px 8px;
+  border-top: 1px solid var(--ox-divider);
+  vertical-align: middle;
+}
+
+.ox-mt-table .ox-mt-num {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+.ox-mt-who {
+  display: flex;
+  flex-direction: column;
+}
+
+.ox-mt-work {
+  color: var(--ox-text-label);
+}
+
+/* ── Подрядчики :580–586 ── */
+.ox-mt-stack {
+  display: grid;
+  gap: 12px;
+}
+
+.ox-mt-sub-card {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px 16px;
+  align-items: center;
+  padding: 16px;
+  border-radius: var(--ox-radius-xl);
+  background: var(--ox-card);
+  border: 1px solid var(--ox-line);
+}
+
+.ox-mt-sub-main {
+  flex: 1 1 240px;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.ox-mt-sub-scope {
+  font-size: var(--ox-fs-sm);
+  color: var(--ox-text-label);
+}
+
+.ox-mt-sub-access {
+  font-size: var(--ox-fs-xs);
+  color: var(--ox-text-label);
+}
+
+.ox-mt-sub-access[data-closed='true'] {
+  color: var(--ox-danger-fg);
+}
+
+.ox-mt-sub-money {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 180px;
+  font-size: var(--ox-fs-sm);
+}
+
+.ox-mt-sub-money strong {
+  font-variant-numeric: tabular-nums;
+}
+
+/* «Закрыть доступ» / «Открыть доступ до …» :584 — белая кнопка с рамкой, у закрытия рамка и текст красные. */
+.ox-mt-sub-btn {
+  min-height: 44px;
+  padding: 0 14px;
+  border-radius: var(--ox-radius-md, 8px);
+  border: 1px solid var(--ox-line);
+  background: var(--ox-card);
+  color: var(--ox-text);
+  font: inherit;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.ox-mt-sub-btn[data-tone='danger'] {
+  border-color: var(--ox-danger-border);
+  color: var(--ox-danger-fg);
+}
+
+.ox-mt-sub-btn:focus-visible {
+  outline: 2px solid var(--ox-focus);
+  outline-offset: 2px;
+}
+
+.ox-mt-sub-btn:disabled {
+  opacity: 0.6;
+  cursor: default;
+}
+
+/* ── Кабинет заказчика :593–609 ── */
+.ox-mt-link {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  align-items: center;
+  padding: 12px 14px;
+  border-radius: var(--ox-radius-lg);
+  border: 1px solid var(--ox-ok-border);
+  background: var(--ox-ok-bg);
+  color: var(--ox-ok-fg);
+  font-size: var(--ox-fs-sm);
+}
+
+.ox-mt-link[data-tone='danger'] {
+  border-color: var(--ox-danger-border);
+  background: var(--ox-danger-bg);
+  color: var(--ox-danger-fg);
+}
+
+.ox-mt-link[data-tone='neutral'] {
+  border-color: var(--ox-neutral-border);
+  background: var(--ox-neutral-bg);
+  color: var(--ox-neutral-fg);
+}
+
+.ox-mt-link-text {
+  flex: 1 1 240px;
+  text-wrap: pretty;
+}
+
+.ox-mt-url {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+  padding: 12px 14px;
+  border-radius: var(--ox-radius-lg);
+  border: 1px solid var(--ox-line);
+  background: var(--ox-card);
+  font-size: var(--ox-fs-sm);
+}
+
+.ox-mt-url-label {
+  flex: 1 1 100%;
+  color: var(--ox-text-muted);
+}
+
+.ox-mt-url-value {
+  flex: 1 1 240px;
+  min-width: 0;
+  overflow-wrap: anywhere;
+  font-family: var(--ox-font-mono);
+}
+
+.ox-mt-preview {
+  align-self: center;
+  width: 100%;
+  max-width: 420px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 18px;
+  border-radius: 16px;
+  background: var(--ox-card);
+  border: 1px solid var(--ox-line);
+  box-shadow: var(--ox-shadow-popover);
+}
+
+.ox-mt-preview-brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-weight: var(--ox-fw-semibold);
+}
+
+.ox-mt-preview-mark {
+  display: grid;
+  place-items: center;
+  width: 30px;
+  height: 30px;
+  padding-bottom: 2px;
+  border-radius: var(--ox-radius-md);
+  background: var(--ox-accent);
+  color: var(--ox-on-accent);
+  font-weight: var(--ox-fw-semibold);
+}
+
+.ox-mt-preview-title {
+  font-size: 17px;
+  font-weight: var(--ox-fw-semibold);
+}
+
+.ox-mt-greeting {
+  font-size: var(--ox-fs-sm);
+  color: var(--ox-text-muted);
+}
+
+.ox-mt-bar {
+  height: 8px;
+  border-radius: 99px;
+  background: #ecefea; /* :602 трек готовности */
+  overflow: hidden;
+}
+
+.ox-mt-bar > span {
+  display: block;
+  height: 100%;
+  background: var(--ox-accent);
+}
+
+.ox-mt-stage {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: var(--ox-fs-sm);
+}
+
+.ox-mt-stage > .ox-mt-stage-name {
+  flex: 1;
+  white-space: nowrap;
+}
+
+.ox-mt-stage .material-symbols-rounded {
+  font-size: 18px;
+}
+
+.ox-mt-stage[data-tone='ok'] .material-symbols-rounded {
+  color: var(--ox-ok-fg);
+}
+
+.ox-mt-stage[data-tone='info'] .material-symbols-rounded {
+  color: var(--ox-info-fg);
+}
+
+.ox-mt-stage[data-tone='warn'] .material-symbols-rounded {
+  color: var(--ox-warn-fg);
+}
+
+.ox-mt-stage[data-tone='muted'] .material-symbols-rounded {
+  /* Эталон :1308 — #8a968f (3:1); axe считает глиф текстом, пока шрифт значков не подгружен, поэтому токен текста. */
+  color: var(--ox-text-muted);
+}
+
+.ox-mt-stage-when {
+  color: var(--ox-text-muted);
+  text-align: right;
+}
+
+.ox-mt-photos {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 6px;
+}
+
+.ox-mt-photos > span {
+  aspect-ratio: 1;
+  border-radius: var(--ox-radius-md);
+  background: var(--ox-mt-stripes);
+}
+
+.ox-mt-sign {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 12px;
+  border-radius: var(--ox-radius-lg);
+  background: var(--ox-warn-bg);
+  color: var(--ox-warn-fg);
+  font-size: var(--ox-fs-sm);
+}
+
+.ox-mt-sign-fake {
+  align-self: flex-start;
+  display: inline-flex;
+  align-items: center;
+  min-height: 38px;
+  padding: 0 14px;
+  border-radius: var(--ox-radius-md);
+  background: var(--ox-accent);
+  color: var(--ox-on-accent);
+  font-weight: var(--ox-fw-medium);
+}
+
+.ox-mt-paid {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+  font-size: var(--ox-fs-sm);
+}
+
+.ox-mt-paid > span {
+  color: var(--ox-text-muted);
+}
+
+.ox-mt-paid > strong {
+  font-variant-numeric: tabular-nums;
+}
+
+/* ── Хост вкладок (до оболочки карточки W6.20) ── */
+.ox-mt-host-top {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.ox-mt-host-title {
+  margin: 0;
+  font-size: var(--ox-fs-2xl);
+  font-weight: var(--ox-fw-semibold);
+  letter-spacing: -0.02em;
+}
+
+.ox-mt-host-title:focus {
+  outline: none;
+}
+
+.ox-mt-tabs {
+  display: flex;
+  gap: 4px;
+  overflow-x: auto;
+  padding: 4px;
+  border-bottom: 1px solid var(--ox-line);
+}
+
+.ox-mt-tab {
+  flex: 0 0 auto;
+  min-height: 44px;
+  padding: 0 14px;
+  border: 0;
+  border-radius: var(--ox-radius-md);
+  background: transparent;
+  color: var(--ox-text-label);
+  font: inherit;
+  font-weight: var(--ox-fw-regular);
+  cursor: pointer;
+}
+
+.ox-mt-tab[aria-current='page'] {
+  background: var(--ox-accent-soft);
+  color: var(--ox-accent);
+  font-weight: var(--ox-fw-semibold);
+}
+
+.ox-mt-tab:focus-visible {
+  outline: 2px solid var(--ox-focus);
+  outline-offset: 1px;
+}
+
+.ox-mt-pick {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  min-height: 56px;
+  padding: 10px 16px;
+  border: 0;
+  border-top: 1px solid var(--ox-divider);
+  background: transparent;
+  color: var(--ox-text);
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.ox-mt-pick:first-child {
+  border-top-color: transparent;
+}
+
+.ox-mt-pick:focus-visible {
+  outline: 2px solid var(--ox-focus);
+  outline-offset: -2px;
+}
+
+@media (max-width: 639px) {
+  .ox-mt-doc > .ox-mt-actions,
+  .ox-mt-sub-card > button {
+    width: 100%;
+  }
+}

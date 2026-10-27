@@ -212,9 +212,9 @@ describe('карточка объекта по правам', () => {
   it('вкладка другого WS без реализации — заглушка, а не ошибка', async () => {
     await open();
     await openObject('ЖК Северный парк · квартира 117');
-    await tab('Подрядчики');
-    expect(await screen.findByText('Подрядчики: раздел ещё не подключён')).toBeTruthy();
-    expect(screen.getByRole('tab', { name: /Подрядчики/ }).getAttribute('aria-selected')).toBe(
+    await tab('Снабжение');
+    expect(await screen.findByText('Снабжение: раздел ещё не подключён')).toBeTruthy();
+    expect(screen.getByRole('tab', { name: /Снабжение/ }).getAttribute('aria-selected')).toBe(
       'true',
     );
   });
