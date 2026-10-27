@@ -531,9 +531,14 @@ func insertInspection(ctx context.Context, tx querier, tc tenantctx.TenantContex
 
 // releaseUsualSQL ends at $3 the consumed reservation of vehicle $2 for trip $1 that still runs — when it is the usual
 // vehicle of the temporary driver approved with the request of the trip (the scope of visibleSQL of the inspections).
+// A return before the start of the window (the trip began by the approved access, Q-W2.75-3) must not leave an empty
+// range: lower() of it is NULL and listReservations answers 503. The upper bound never goes below the lower one plus
+// the minimal step of a timestamptz (1 microsecond): the reservation is closed at once and holds the vehicle for no
+// other trip (Q-W2.91-1).
 const releaseUsualSQL = `update sched.reservations r
-   set during = tstzrange(lower(r.during), greatest(lower(r.during), $3), '[)'),
-       occupied = tstzrange(lower(r.occupied), greatest(lower(r.occupied), $3), '[)'), revision = r.revision + 1
+   set during = tstzrange(lower(r.during), greatest($3, lower(r.during) + interval '1 microsecond'), '[)'),
+       occupied = tstzrange(lower(r.occupied), greatest($3, lower(r.occupied) + interval '1 microsecond'), '[)'),
+       revision = r.revision + 1
   from sched.resources s
  where s.id = r.resource_id and s.kind = 'vehicle' and s.ref_id = $2 and r.source_type = 'fleet.trip'
    and r.source_id = $1 and r.state = 'consumed' and upper(r.occupied) > $3

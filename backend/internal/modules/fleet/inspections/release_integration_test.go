@@ -11,7 +11,9 @@ import (
 	"github.com/google/uuid"
 	"github.com/jackc/pgx/v5/pgconn"
 
-	harness "github.com/ortus/ortus-crm/backend/test" //nolint:depguard // integration test: clock of the suites
+	fleetapi "github.com/ortus/ortus-crm/backend/internal/api/fleet"
+	"github.com/ortus/ortus-crm/backend/internal/modules/fleet/vehicles" //nolint:depguard // integration test: the status of the usual vehicle
+	harness "github.com/ortus/ortus-crm/backend/test"                    //nolint:depguard // integration test: clock of the suites
 )
 
 // W2.78 (Q-W2.72-1, S2-20 правило 6, Q-W2.70-9): обычная машина временного водителя отпущена осмотром сдачи — до
@@ -78,6 +80,53 @@ func TestReturnFreesUsualVehicleForItsCompany(t *testing.T) {
 	}
 	expect(t, "the trip of the temporary driver", state, state == "submitted", released.Valid,
 		released.Time.Equal(harness.Now()))
+}
+
+// Q-W2.75-3 (Q-W2.91-1): осмотр сдачи обычной машины, поданный до начала окна рейса (рейс начат по доступу до окна),
+// не оставляет у брони пустой интервал — listReservations читает lower(during) и lower(occupied) и на NULL отвечает
+// 503; бронь закрыта сразу (верх не дальше нижней границы и минимального шага), машина свободна фирме.
+func TestReturnBeforeWindowKeepsReservationInterval(t *testing.T) {
+	t.Parallel()
+	e := newEnv(t)
+	tr, _ := e.usualTrip(t, "returning", true)
+	now := harness.Now()
+	exec(t, db(t, "a"), `update sched.reservations set during = tstzrange($2, $3), occupied = tstzrange($2, $3) where id = $1`,
+		tr.Reservation, now.Add(time.Hour), now.Add(8*time.Hour))
+	if _, err := e.svc.Submit(t.Context(), e.tc(t, "a.owner", "a"), e.returnBody(t, tr, "48500")); err != nil {
+		t.Fatalf("return inspection before the window: %v", err)
+	}
+	var (
+		during, occupied     bool
+		lowerD, lowerO       sql.NullTime
+		spanDuring, spanOccp float64
+	)
+	if err := db(t, "a").QueryRowContext(t.Context(), `select not isempty(during), not isempty(occupied), lower(during), lower(occupied),
+		coalesce(extract(epoch from upper(during) - lower(during)), 0), coalesce(extract(epoch from upper(occupied) - lower(occupied)), 0)
+		from sched.reservations where id = $1`, tr.Reservation).Scan(&during, &occupied, &lowerD, &lowerO, &spanDuring, &spanOccp); err != nil {
+		t.Fatal(err)
+	}
+	expect(t, "the intervals of the reservation are not empty", during, during, occupied, lowerD.Valid, lowerO.Valid)
+	expect(t, "the reservation is closed at once: no longer than the minimal step", spanDuring, spanDuring <= 1, spanOccp <= 1)
+	pool, err := e.pools.For(t.Context(), ref("tenant:a"))
+	if err != nil {
+		t.Fatal(err)
+	}
+	v, err := vehicles.Get(t.Context(), pool, tr.Vehicle, now)
+	if err != nil {
+		t.Fatal(err)
+	}
+	status, _, _ := v.State.Status()
+	expect(t, "the usual vehicle is free for its company at once", status, status == fleetapi.VehicleStatusAvailable)
+	e.freeForCompany(t, tr)
+}
+
+// freeForCompany: another trip of the vehicle company moves to «Осмотр» on the vehicle (vehicle_released_at, W2.78).
+func (e env) freeForCompany(t *testing.T, tr trip) {
+	t.Helper()
+	exec(t, db(t, "a"), `update fleet.trips set state = 'submitted', returned_at = $2 where id = $1`, tr.ID, harness.Now())
+	if err := toInspection(t, companyTrip(t, "msk2"), tr.Vehicle); err != nil {
+		t.Errorf("another trip of the vehicle company after the early return: %v, want the move", err)
+	}
 }
 
 // Машина фирмы рейса и машина другой фирмы без одобренного перевода держатся за рейсом до приёмки: другой рейс по ним
