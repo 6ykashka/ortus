@@ -1,8 +1,9 @@
 # Матрица изоляции: салон и SPA контракта 0.12.0-stage5 (W5.00, контрактный PR этапа 5); хендлеры — W5.20.
-# Строки пишутся до хендлера (pending): без сессии 401, чужая организация 404 (AC-02). Положительные строки и строки
-# «нет такого объекта» владельцу (404, список только своих, absent: tenant:b) требуют фикстур модуля (кассы, склады,
-# услуги) — их добавляет W5.20 вместе с хендлерами и снимает pending. Отказы шлюза (403 forbidden_action,
-# module_not_installed) — отдельный файл без pending. Визиты чужого практика видит только «область» роли.
+# Строки писались до хендлера (pending, W5.00); W5.20 снял pending: без сессии 401, чужая организация 404 (AC-02).
+# Положительные строки владельца (услуги, визиты) требуют подключённого модуля spa: у фикстур W1.04 подключена только
+# «Логистика», и шлюз отвечает владельцу 403 module_not_installed (modules_gate.yaml) — эти случаи (чужой tenant и
+# область «self» практика, чужая услуга и визит — 404, список только своих) проверены integration-тестами модуля
+# (backend/internal/modules/spa/*_integration_test.go) и стеком (cmd/api/spa_stack_integration_test.go).
 # Формат — README.md.
 # После правки: go -C backend generate ./test/isolation
 module: spa_w500
@@ -10,7 +11,6 @@ endpoints:
   - op: getSpaService
     method: GET
     path: /api/v1/tenants/{tenantId}/spa/services/{serviceId}
-    pending: W5.20
     rows:
       - actor: anonymous
         params: { tenantId: tenant:a, serviceId: tenant:missing }
@@ -23,7 +23,6 @@ endpoints:
   - op: updateSpaService
     method: PATCH
     path: /api/v1/tenants/{tenantId}/spa/services/{serviceId}
-    pending: W5.20
     rows:
       - actor: anonymous
         params: { tenantId: tenant:a, serviceId: tenant:missing }
@@ -38,7 +37,6 @@ endpoints:
   - op: cancelAppointment
     method: POST
     path: /api/v1/tenants/{tenantId}/spa/appointments/{appointmentId}/cancel
-    pending: W5.20
     rows:
       - actor: anonymous
         params: { tenantId: tenant:a, appointmentId: tenant:missing }
@@ -53,7 +51,6 @@ endpoints:
   - op: rescheduleAppointment
     method: POST
     path: /api/v1/tenants/{tenantId}/spa/appointments/{appointmentId}/reschedule
-    pending: W5.20
     rows:
       - actor: anonymous
         params: { tenantId: tenant:a, appointmentId: tenant:missing }

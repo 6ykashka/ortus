@@ -19,7 +19,6 @@ var spaW500Matrix = matrix.File{
 			Method:  "GET",
 			Path:    "/api/v1/tenants/{tenantId}/spa/services/{serviceId}",
 			Channel: "http",
-			Pending: "W5.20",
 			Rows: []matrix.Row{
 				{
 					Actor:  "anonymous",
@@ -40,7 +39,6 @@ var spaW500Matrix = matrix.File{
 			Method:  "PATCH",
 			Path:    "/api/v1/tenants/{tenantId}/spa/services/{serviceId}",
 			Channel: "http",
-			Pending: "W5.20",
 			Rows: []matrix.Row{
 				{
 					Actor:  "anonymous",
@@ -63,7 +61,6 @@ var spaW500Matrix = matrix.File{
 			Method:  "POST",
 			Path:    "/api/v1/tenants/{tenantId}/spa/appointments/{appointmentId}/cancel",
 			Channel: "http",
-			Pending: "W5.20",
 			Rows: []matrix.Row{
 				{
 					Actor:  "anonymous",
@@ -86,7 +83,6 @@ var spaW500Matrix = matrix.File{
 			Method:  "POST",
 			Path:    "/api/v1/tenants/{tenantId}/spa/appointments/{appointmentId}/reschedule",
 			Channel: "http",
-			Pending: "W5.20",
 			Rows: []matrix.Row{
 				{
 					Actor:  "anonymous",
