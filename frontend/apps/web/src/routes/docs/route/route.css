@@ -1,0 +1,715 @@
+/* W7.26 · «Маршрут документа» по рендеру эталона design-2026-10-19 («Документы.dc.html» полоса :145–189, диалог
+   «На согласование» :631–701, «Утвердить · ПЭП» :703–715; PD-28). Токены Ортуса; на телефоне (< 640) ознакомление —
+   липкая панель с кнопкой 54 px (:545–551), диалоги — листом снизу (ui Dialog). */
+
+.ox-rt {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 12px 16px;
+  border-bottom: 1px solid var(--ox-divider);
+  background: var(--ox-raised);
+}
+
+.ox-rt-empty {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 12px;
+  font-size: var(--ox-fs-md);
+  color: var(--ox-text-muted);
+}
+
+.ox-rt-empty-text {
+  flex: 1 1 220px;
+}
+
+.ox-rt-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px 8px;
+}
+
+.ox-rt-title {
+  margin: 0;
+  font-size: 13.5px;
+  font-weight: var(--ox-fw-semibold);
+}
+
+.ox-rt-steps {
+  display: contents;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.ox-rt-step-wrap {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.ox-rt-step {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 30px;
+  padding: 0 10px 0 6px;
+  border: 1px solid var(--ox-line);
+  border-radius: var(--ox-radius-pill);
+  background: var(--ox-card);
+  font-size: 12.5px;
+}
+
+.ox-rt-step[data-state='done'] {
+  border-color: var(--ox-ok-border);
+  background: var(--ox-ok-bg);
+}
+
+.ox-rt-step[data-state='active'] {
+  border-color: var(--ox-info-fg);
+  background: var(--ox-info-bg);
+}
+
+.ox-rt-step[data-state='back'] {
+  border-color: var(--ox-warn-border);
+  background: var(--ox-warn-bg);
+}
+
+.ox-rt-step-ic {
+  color: var(--ox-text-muted);
+}
+
+.ox-rt-step[data-state='done'] .ox-rt-step-ic {
+  color: var(--ox-ok-fg);
+}
+
+.ox-rt-step[data-state='active'] .ox-rt-step-ic {
+  color: var(--ox-info-fg);
+}
+
+.ox-rt-step[data-state='back'] .ox-rt-step-ic {
+  color: var(--ox-warn-fg);
+}
+
+.ox-rt-step-name {
+  font-weight: var(--ox-fw-semibold);
+}
+
+.ox-rt-step-sub {
+  color: var(--ox-text-muted);
+}
+
+.ox-rt-arrow {
+  color: var(--ox-text-muted);
+}
+
+.ox-rt-grow {
+  flex: 1;
+}
+
+.ox-rt-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  min-height: 32px;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: var(--ox-accent);
+  font: inherit;
+  font-size: var(--ox-fs-md);
+  font-weight: var(--ox-fw-medium);
+  cursor: pointer;
+}
+
+.ox-rt-now {
+  margin: 0;
+  font-size: var(--ox-fs-md);
+  color: var(--ox-text);
+  text-wrap: pretty;
+}
+
+.ox-rt-back {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 10px;
+  padding: 10px 12px;
+  border-radius: var(--ox-radius-lg);
+  background: var(--ox-warn-bg);
+  color: var(--ox-warn-fg);
+  font-size: var(--ox-fs-md);
+}
+
+.ox-rt-back-text {
+  flex: 1 1 260px;
+  text-wrap: pretty;
+}
+
+.ox-rt-decide {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  gap: 8px;
+}
+
+.ox-rt-comment {
+  flex: 1 1 280px;
+  min-height: 44px;
+  padding: 10px 12px;
+  border: 1px solid var(--ox-line-control);
+  border-radius: var(--ox-radius-md);
+  background: var(--ox-control);
+  color: var(--ox-text);
+  font: inherit;
+  font-size: var(--ox-fs-md);
+  resize: vertical;
+}
+
+.ox-rt-comment-wrap {
+  flex: 1 1 280px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.ox-rt-err {
+  margin: 0;
+  font-size: var(--ox-fs-sm);
+  color: var(--ox-danger-fg);
+  text-wrap: pretty;
+}
+
+.ox-rt-ack {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 12px;
+}
+
+.ox-rt-note {
+  font-size: var(--ox-fs-sm);
+  color: var(--ox-text-muted);
+  text-wrap: pretty;
+}
+
+.ox-rt-done {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: var(--ox-fs-md);
+  color: var(--ox-ok-fg);
+}
+
+.ox-rt-acts {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+/* «Отменить маршрут»: белая кнопка с красной рамкой (эталон :183). */
+.ox-rt-acts button[data-variant='danger'] {
+  min-height: 32px;
+  border: 1px solid var(--ox-danger-border);
+  background: var(--ox-card);
+  color: var(--ox-danger-fg);
+}
+
+.ox-rt-sheet {
+  border: 1px solid var(--ox-line);
+  border-radius: var(--ox-radius-lg);
+  background: var(--ox-card);
+  font-size: var(--ox-fs-sm);
+}
+
+.ox-rt-sheet > summary {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 44px;
+  padding: 0 10px;
+  cursor: pointer;
+  font-weight: var(--ox-fw-semibold);
+}
+
+.ox-rt-sheet-row {
+  display: grid;
+  grid-template-columns: minmax(110px, 150px) minmax(0, 1fr) auto;
+  gap: 4px 8px;
+  align-items: baseline;
+  padding: 6px 10px;
+  border-top: 1px solid var(--ox-divider);
+}
+
+.ox-rt-sheet-row > span:first-child,
+.ox-rt-sheet-row > span:last-child {
+  color: var(--ox-text-muted);
+}
+
+.ox-rt-sheet-foot {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  padding: 7px 10px;
+  border-top: 1px solid var(--ox-divider);
+}
+
+.ox-rt-sha {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 11px;
+  color: var(--ox-text-muted);
+  overflow-wrap: anywhere;
+}
+
+/* Телефон: липкая панель ознакомления, кнопка 54 px. */
+.ox-rt-sticky {
+  position: sticky;
+  bottom: 0;
+  z-index: 5;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 10px 16px;
+  margin: 0 -16px -12px;
+  border-top: 1px solid var(--ox-line);
+  background: var(--ox-surface);
+}
+
+.ox-rt-sticky-read {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: var(--ox-fs-sm);
+  color: var(--ox-text-muted);
+}
+
+.ox-rt-sticky-read[data-on='true'] {
+  color: var(--ox-ok-fg);
+}
+
+.ox-rt-sticky-btn {
+  min-height: 54px;
+  width: 100%;
+  border: 0;
+  border-radius: var(--ox-radius-lg);
+  background: var(--ox-accent);
+  color: var(--ox-on-accent);
+  font: inherit;
+  font-size: 16px;
+  font-weight: var(--ox-fw-semibold);
+  cursor: pointer;
+}
+
+.ox-rt-sticky-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* ───────────── «На согласование» ───────────── */
+
+.ox-rt-dlg {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.ox-rt-dlg-sub {
+  margin: 0;
+  font-size: 12.5px;
+  color: var(--ox-text-muted);
+  text-wrap: pretty;
+}
+
+.ox-rt-lock {
+  align-self: flex-start;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px 8px 2px 6px;
+  border-radius: var(--ox-radius-pill);
+  background: var(--ox-neutral-bg);
+  color: var(--ox-neutral-fg);
+  font-size: 12px;
+  font-weight: var(--ox-fw-medium);
+}
+
+.ox-rt-route-name {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 4px 8px;
+  font-size: 13px;
+}
+
+.ox-rt-route-name > span:last-child {
+  font-size: 12px;
+  color: var(--ox-text-muted);
+}
+
+.ox-rt-card {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 14px;
+  border: 1px solid var(--ox-line);
+  border-radius: var(--ox-radius-lg);
+}
+
+.ox-rt-card[data-first='true'] {
+  border-color: var(--ox-accent);
+}
+
+.ox-rt-card-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 10px;
+}
+
+.ox-rt-num {
+  display: grid;
+  place-items: center;
+  flex: none;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: var(--ox-text);
+  color: var(--ox-card);
+  font-size: 12px;
+  font-weight: var(--ox-fw-semibold);
+}
+
+.ox-rt-card-name {
+  margin: 0;
+  font-size: 15px;
+  font-weight: var(--ox-fw-semibold);
+}
+
+.ox-rt-days {
+  display: inline-flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+  font-size: 12.5px;
+  color: var(--ox-text-muted);
+}
+
+.ox-rt-days select {
+  min-height: 44px;
+  padding: 0 6px;
+  border: 1px solid var(--ox-line-control);
+  border-radius: var(--ox-radius-sm);
+  background: var(--ox-control);
+  color: var(--ox-text);
+  font: inherit;
+}
+
+.ox-rt-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px 8px 2px 6px;
+  border-radius: var(--ox-radius-pill);
+  background: var(--ox-ok-bg);
+  color: var(--ox-ok-fg);
+  font-size: 12px;
+  font-weight: var(--ox-fw-medium);
+}
+
+.ox-rt-ibtn {
+  display: grid;
+  place-items: center;
+  flex: none;
+  width: 44px;
+  height: 44px;
+  border: 1px solid var(--ox-line);
+  border-radius: var(--ox-radius-md);
+  background: var(--ox-card);
+  color: var(--ox-text);
+  cursor: pointer;
+}
+
+.ox-rt-ibtn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.ox-rt-ibtn[data-bare='true'] {
+  border: 0;
+  background: transparent;
+  color: var(--ox-text-muted);
+}
+
+.ox-rt-modes {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+
+.ox-rt-mode {
+  min-height: 44px;
+  padding: 0 12px;
+  border: 1px solid var(--ox-line-control);
+  border-radius: var(--ox-radius-md);
+  background: var(--ox-control);
+  color: var(--ox-text);
+  font: inherit;
+  font-size: 12.5px;
+  font-weight: var(--ox-fw-medium);
+  white-space: nowrap;
+  cursor: pointer;
+}
+
+.ox-rt-mode[aria-checked='true'] {
+  border-color: var(--ox-accent);
+  background: var(--ox-accent);
+  color: var(--ox-on-accent);
+}
+
+.ox-rt-person {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 6px 6px 6px 10px;
+  border: 1px solid var(--ox-divider);
+  border-radius: var(--ox-radius-lg);
+}
+
+.ox-rt-ord {
+  display: grid;
+  place-items: center;
+  flex: none;
+  width: 20px;
+  height: 20px;
+  border-radius: 6px;
+  background: var(--ox-neutral-bg);
+  font-size: 11px;
+  font-weight: var(--ox-fw-semibold);
+}
+
+.ox-rt-person-main {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.ox-rt-person-main > strong {
+  font-size: 13.5px;
+  font-weight: var(--ox-fw-semibold);
+}
+
+.ox-rt-person-main > span {
+  font-size: 12px;
+  color: var(--ox-text-muted);
+  text-wrap: pretty;
+}
+
+.ox-rt-warn {
+  flex: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px 8px 2px 6px;
+  border-radius: var(--ox-radius-pill);
+  background: var(--ox-warn-bg);
+  color: var(--ox-warn-fg);
+  font-size: 12px;
+  font-weight: var(--ox-fw-medium);
+}
+
+.ox-rt-noteline {
+  display: flex;
+  gap: 6px;
+  align-items: flex-start;
+  font-size: 12.5px;
+  color: var(--ox-text-muted);
+}
+
+.ox-rt-add {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+  padding: 10px 12px;
+  border: 1.5px dashed var(--ox-line-control);
+  border-radius: var(--ox-radius-lg);
+  font-size: 12.5px;
+}
+
+.ox-rt-add-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  color: var(--ox-accent);
+  font-weight: var(--ox-fw-medium);
+}
+
+.ox-rt-add-btn {
+  min-height: 44px;
+  padding: 0 12px;
+  border: 0;
+  border-radius: var(--ox-radius-md);
+  background: var(--ox-neutral-bg);
+  color: var(--ox-text);
+  font: inherit;
+  font-size: 12.5px;
+  cursor: pointer;
+}
+
+.ox-rt-rules {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 260px), 1fr));
+  gap: 10px 16px;
+}
+
+.ox-rt-project {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 10px;
+  padding: 10px 12px;
+  border-radius: var(--ox-radius-lg);
+  background: var(--ox-neutral-bg);
+  font-size: 13px;
+}
+
+.ox-rt-aside {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 14px;
+  border-radius: var(--ox-radius-lg);
+  background: var(--ox-neutral-bg);
+}
+
+.ox-rt-aside-title {
+  margin: 0;
+  font-size: 15px;
+  font-weight: var(--ox-fw-semibold);
+}
+
+.ox-rt-conseq {
+  display: flex;
+  gap: 8px;
+  align-items: flex-start;
+  padding: 8px 10px;
+  border-radius: var(--ox-radius-md);
+  background: var(--ox-info-bg);
+  color: var(--ox-info-fg);
+  font-size: 12.5px;
+  text-wrap: pretty;
+}
+
+.ox-rt-conseq-list {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.ox-rt-alert {
+  display: flex;
+  gap: 8px;
+  align-items: flex-start;
+  padding: 10px 12px;
+  border-radius: var(--ox-radius-md);
+  background: var(--ox-danger-bg);
+  color: var(--ox-danger-fg);
+  font-size: 13px;
+  text-wrap: pretty;
+}
+
+.ox-rt-footer-check {
+  flex: 1 1 100%;
+}
+
+.ox-rt-pass {
+  width: 100%;
+  min-height: 48px;
+  padding: 0 14px;
+  border: 1.5px solid var(--ox-line-control);
+  border-radius: var(--ox-radius-md);
+  background: var(--ox-control);
+  color: var(--ox-text);
+  font: inherit;
+  font-size: 16px;
+}
+
+.ox-rt-sign-sub {
+  margin: 0;
+  font-size: 13px;
+  color: var(--ox-text);
+  text-wrap: pretty;
+}
+
+.ox-rt-field-col {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+@media (min-width: 640px) {
+  .ox-rt-sticky {
+    display: none;
+  }
+}
+
+.ox-rt-host {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+/* Диалог «На согласование» — две колонки до 1000 px (эталон :631–701). Размер панели задаёт ui Dialog (620),
+   поэтому расширяем её по содержимому. */
+div[data-size='lg']:has(.ox-rt-dlg) {
+  max-width: min(1000px, 100%);
+}
+
+.ox-rt-dlg-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 12px;
+}
+
+.ox-rt-dlg-head .ox-rt-dlg-sub {
+  flex: 1 1 260px;
+  min-width: 0;
+}
+
+.ox-rt-dlg-ic {
+  display: grid;
+  flex: none;
+  place-items: center;
+  width: 38px;
+  height: 38px;
+  border-radius: 9px;
+  background: var(--ox-neutral-bg);
+  color: var(--ox-text-muted);
+}
+
+.ox-rt-cols {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 14px 18px;
+}
+
+.ox-rt-main {
+  flex: 1 1 520px;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.ox-rt-cols > .ox-rt-aside {
+  flex: 1 1 300px;
+  min-width: 0;
+}
