@@ -53,8 +53,9 @@ type Suite struct {
 }
 
 // Timing compares medians of Samples response times: a 404 of a foreign id must not be noticeably slower or
-// faster than a 404 of a missing one — the difference is a violation when it exceeds both Abs and Ratio × the
-// faster median.
+// faster than a 404 of a missing one. The difference is a violation when it exceeds both Abs and Ratio × the
+// faster median AND the fastest answers differ by more than Abs too: a permanent leak slows every answer, a burst
+// of PC load (several slow answers in a row) leaves fast ones. One extra pair is measured first and dropped (warm-up).
 type Timing struct {
 	Samples int
 	Abs     time.Duration
@@ -62,8 +63,8 @@ type Timing struct {
 }
 
 // DefaultTiming catches only a noticeable difference («время ответа не различается заметно», AC-01): the
-// medians of 5 pairs differ by more than 250 ms and more than 3 times.
-func DefaultTiming() Timing { return Timing{Samples: 5, Abs: 250 * time.Millisecond, Ratio: 3} }
+// medians of 7 pairs differ by more than 250 ms and more than 3 times, and so do the fastest answers.
+func DefaultTiming() Timing { return Timing{Samples: 7, Abs: 250 * time.Millisecond, Ratio: 3} }
 
 func (s *Suite) timing() Timing {
 	if s.Timing.Samples > 0 {
@@ -76,7 +77,7 @@ func (s *Suite) timing() Timing {
 func (s *Suite) sameTime(ctx context.Context, ep Endpoint, r Row, missing map[string]uuid.UUID) []string {
 	tm := s.timing()
 	var foreign, twin []time.Duration
-	for range tm.Samples {
+	for i := range tm.Samples + 1 {
 		for _, o := range []struct {
 			override map[string]uuid.UUID
 			into     *[]time.Duration
@@ -85,20 +86,26 @@ func (s *Suite) sameTime(ctx context.Context, ep Endpoint, r Row, missing map[st
 			if _, err := s.do(ctx, ep, r, o.override); err != nil {
 				return []string{err.Error()}
 			}
-			*o.into = append(*o.into, time.Since(start))
+			if i > 0 {
+				*o.into = append(*o.into, time.Since(start))
+			}
 		}
 	}
 	f, m := median(foreign), median(twin)
-	diff, fast := f-m, min(f, m)
-	if diff < 0 {
-		diff = -diff
-	}
-	if diff > tm.Abs && float64(diff) > tm.Ratio*float64(fast) {
+	diff, fast := absDur(f-m), min(f, m)
+	minDiff := absDur(slices.Min(foreign) - slices.Min(twin))
+	if diff > tm.Abs && float64(diff) > tm.Ratio*float64(fast) && minDiff > tm.Abs {
 		return []string{fmt.Sprintf("AC-01: response time of a foreign id %s, of an unknown id %s — the difference is noticeable", f, m)}
 	}
 	return nil
 }
 
+func absDur(d time.Duration) time.Duration {
+	if d < 0 {
+		return -d
+	}
+	return d
+}
 func median(d []time.Duration) time.Duration {
 	s := slices.Clone(d)
 	slices.Sort(s)

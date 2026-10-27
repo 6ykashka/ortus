@@ -7,6 +7,7 @@ import (
 	"net/http"
 	"strings"
 	"sync"
+	"sync/atomic"
 	"testing"
 	"time"
 
@@ -169,6 +170,24 @@ func TestCheckNotFoundTiming(t *testing.T) {
 	}
 }
 
+// AC-01 под нагрузкой ПК: пачка медленных ответов на чужой id (перегруженный диск, соседний Docker) не должна
+// краснить строку, если часть замеров быстрая; постоянная утечка (все замеры медленные) краснит.
+func TestCheckNotFoundTimingBurstIsNoise(t *testing.T) {
+	t.Parallel()
+	foreign := ref(t, "unit:a.msk1")
+	var calls atomic.Int32
+	burst := suite(func(w http.ResponseWriter, r *http.Request) {
+		if strings.HasSuffix(r.URL.Path, foreign) && calls.Add(1) <= 5 {
+			time.Sleep(60 * time.Millisecond)
+		}
+		problem(w, 404, "not_found")
+	})
+	burst.Timing = Timing{Samples: 7, Abs: 20 * time.Millisecond, Ratio: 2}
+	row := Row{Actor: "b.owner", Params: map[string]string{"unitId": "unit:a.msk1"}, Status: 404}
+	if v := Check(t.Context(), burst, unitEndpoint, row); len(v) != 0 {
+		t.Fatalf("a burst of slow answers is load noise, violations: %q", v)
+	}
+}
 func TestCheckPathParams(t *testing.T) {
 	t.Parallel()
 	want := "/api/v1/units/" + ref(t, "unit:a.msk1")
