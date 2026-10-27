@@ -3,8 +3,8 @@
 // кладёт компонент в `TAB_PANELS`. Пока записи нет — заглушка вкладки с пунктами «Требует решения» этой вкладки
 // (эталон: «{Вкладка}: в прототипе нет данных этого объекта» + `stubItems`, Q-W6.20-1).
 import type { components } from '@ortus/api-client';
-import { Icon } from '@ortus/ui';
-import type { ComponentType, ReactElement } from 'react';
+import { Icon, Skeleton } from '@ortus/ui';
+import { type ComponentType, type ReactElement, Suspense } from 'react';
 
 import { useCan } from '../../shell/context.tsx';
 import { ScheduleTab } from './child/gantt/index.ts';
@@ -63,7 +63,9 @@ export const TAB_PANELS: Partial<Record<TabId, ComponentType<TabPanelProps>>> = 
     MONEY_TABS.map((m) => {
       const Tab = m.component;
       const Panel = (p: TabPanelProps): ReactElement => (
-        <Tab tenantId={p.tenantId} projectId={p.ov.project.id} />
+        <Suspense fallback={<Skeleton lines={4} />}>
+          <Tab tenantId={p.tenantId} projectId={p.ov.project.id} />
+        </Suspense>
       );
       return [m.key, Panel];
     }),
