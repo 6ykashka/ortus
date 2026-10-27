@@ -1,0 +1,32 @@
+- main [ref=f5e3]:
+  - generic [ref=f5e4]:
+    - generic [ref=f5e5]:
+      - generic [ref=f5e6]: МАС-43
+      - generic [ref=f5e7]:
+        - generic [ref=f5e8]: schedule
+        - text: Получили
+    - heading "Начали позже, холодно" [level=1] [ref=f5e9]
+    - paragraph [ref=f5e10]: Ответим до 18:24
+    - list "Обращение" [ref=f5e11]:
+      - listitem [ref=f5e12]:
+        - generic [ref=f5e13]: check_circle
+        - generic [ref=f5e14]: Получили 16:24
+      - listitem [ref=f5e15]:
+        - generic [ref=f5e16]: radio_button_unchecked
+        - generic [ref=f5e17]: Ответили
+      - listitem [ref=f5e18]:
+        - generic [ref=f5e19]: radio_button_unchecked
+        - generic [ref=f5e20]: Решено
+    - article [ref=f5e22]:
+      - generic [ref=f5e23]: Вы · 16:24
+      - paragraph [ref=f5e24]: Начали позже, холодно
+    - generic [ref=f5e26]:
+      - generic [ref=f5e27] [cursor=pointer]:
+        - button "Прикрепить фото" [ref=f5e28]
+        - generic [ref=f5e29]: photo_camera
+      - textbox "Сообщение" [ref=f5e30]:
+        - /placeholder: Написать
+      - button "Отправить" [disabled] [ref=f5e31]
+    - generic [ref=f5e32]:
+      - paragraph [ref=f5e33]: Не хотите опросов — ответьте СТОП
+      - button "Не присылать опросы" [ref=f5e34] [cursor=pointer]

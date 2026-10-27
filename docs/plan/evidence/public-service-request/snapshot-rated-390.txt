@@ -1,0 +1,42 @@
+- main [ref=f7e3]:
+  - generic [ref=f7e4]:
+    - generic [ref=f7e5]:
+      - generic [ref=f7e6]: МАС-43
+      - generic [ref=f7e7]:
+        - generic [ref=f7e8]: check_circle
+        - text: Решено
+    - heading "Начали позже, холодно" [level=1] [ref=f7e9]
+    - list "Обращение" [ref=f7e10]:
+      - listitem [ref=f7e11]:
+        - generic [ref=f7e12]: check_circle
+        - generic [ref=f7e13]: Получили 16:24
+      - listitem [ref=f7e14]:
+        - generic [ref=f7e15]: check_circle
+        - generic [ref=f7e16]: Ответили 16:24
+      - listitem [ref=f7e17]:
+        - generic [ref=f7e18]: check_circle
+        - generic [ref=f7e19]: Решено
+    - generic [ref=f7e20]:
+      - article [ref=f7e21]:
+        - generic [ref=f7e22]: Вы · 16:24
+        - paragraph [ref=f7e23]: Начали позже, холодно
+      - article [ref=f7e24]:
+        - generic [ref=f7e25]: Вы · 16:24
+        - paragraph [ref=f7e26]: Жду ответа
+      - article [ref=f7e27]:
+        - generic [ref=f7e28]: Команда · 16:24
+        - paragraph [ref=f7e29]: "Ольга, извините: подогрев стола уже чинят. Дарим скидку 20% на следующий визит."
+    - region [ref=f7e55]:
+      - paragraph [ref=f7e56]: "Вы уже оценили: 5 из 5"
+      - button "Вопрос не решён — вернуть в работу" [ref=f7e43] [cursor=pointer]
+      - generic [ref=f7e44]: Можно вернуть до 6 октября
+    - generic [ref=f7e46]:
+      - generic [ref=f7e47] [cursor=pointer]:
+        - button "Прикрепить фото" [ref=f7e48]
+        - generic [ref=f7e49]: photo_camera
+      - textbox "Сообщение" [ref=f7e50]:
+        - /placeholder: Написать
+      - button "Отправить" [disabled] [ref=f7e51]
+    - generic [ref=f7e52]:
+      - paragraph [ref=f7e53]: Не хотите опросов — ответьте СТОП
+      - button "Не присылать опросы" [ref=f7e54] [cursor=pointer]

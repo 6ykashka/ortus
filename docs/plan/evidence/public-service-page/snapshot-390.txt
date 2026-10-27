@@ -1,0 +1,25 @@
+- main [ref=f1e3]:
+  - generic [ref=f1e4]:
+    - generic [ref=f1e5]:
+      - generic [ref=f1e6]: А
+      - generic [ref=f1e7]:
+        - strong [ref=f1e8]: Альта Групп
+        - generic [ref=f1e9]: Массаж
+    - heading "Чем помочь?" [level=1] [ref=f1e10]
+    - region [ref=f1e11]:
+      - heading "Оценить и поблагодарить" [level=2] [ref=f1e12]
+      - button "Спасибо мастеру" [ref=f1e13] [cursor=pointer]:
+        - generic [ref=f1e14]: favorite
+    - region [ref=f1e16]:
+      - heading "Если что-то не так" [level=2] [ref=f1e17]
+      - button "Жалоба" [ref=f1e18] [cursor=pointer]:
+        - generic [ref=f1e19]: report
+      - button "Вернуть деньги за услугу" [ref=f1e21] [cursor=pointer]:
+        - generic [ref=f1e22]: currency_ruble
+    - region [ref=f1e24]:
+      - heading "Другое" [level=2] [ref=f1e25]
+      - button "Вопрос" [ref=f1e26] [cursor=pointer]:
+        - generic [ref=f1e27]: help
+      - button "Предложение" [ref=f1e29] [cursor=pointer]:
+        - generic [ref=f1e30]: lightbulb
+    - paragraph [ref=f1e32]: "Время работы: ежедневно 10:00–21:00"

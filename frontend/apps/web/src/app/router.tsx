@@ -5,7 +5,9 @@
 //   /auth/login          — вход (W1.22, src/routes/auth/LoginPage.tsx);
 //   /auth/invitation     — принятие приглашения по ссылке письма #token= (W1.22, Q-W1.41-3);
 //   /forms/$formId       — заполнение формы сотрудником без оболочки (W4.70, Q-W4.00-forms-21);
-//   /f/$token            — публичная форма гостя без сессии, `?embed=1` — встраивание (W4.70).
+//   /f/$token            — публичная форма гостя без сессии, `?embed=1` — встраивание (W4.70);
+//   /s/$slug             — страница направления для клиента без сессии, `?w=` — токен работы (W7.33);
+//   /r/$token            — обращение клиента по личной ссылке (W7.33).
 // Неизвестный маршрут и неизвестная страница — «Страница не найдена» (404).
 import {
   createBrowserHistory,
@@ -59,6 +61,18 @@ const repairScheduleRoute = createRoute({
   component: lazyRouteComponent(() => import('../routes/repair/child/gantt/ScheduleScreen.tsx')),
 });
 
+const servicePageRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: '/s/$slug',
+  component: lazyRouteComponent(() => import('../routes/service-portal/PageScreen.tsx')),
+});
+
+const serviceRequestRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: '/r/$token',
+  component: lazyRouteComponent(() => import('../routes/service-portal/RequestScreen.tsx')),
+});
+
 const tenantRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: '/t/$tenantId',
@@ -101,6 +115,8 @@ const routeTree = rootRoute.addChildren([
   formFillRoute,
   publicFormRoute,
   repairScheduleRoute,
+  servicePageRoute,
+  serviceRequestRoute,
   tenantRoute,
   tenantPageRoute,
   platformRoute,

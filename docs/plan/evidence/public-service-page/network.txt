@@ -1,0 +1,9 @@
+### Result
+5. [GET] http://gc.kis.v2.scr.kaspersky-labs.com/7D8B79A2-8974-4D7B-A76A-F4F29624C06BISGUhWu2uDjC3ffo2mEsFI-8o7ONADNpPF4wyu8qGgnC6fq2f8WOMIqrZHNwdqj6aQ56ThgbizlmudrAqUMU0A/init?data=eyJ1cmwiOiJodHRwOi8vMTI3LjAuMC4xOjUyMDMvcy9tYXM%2Fdz13b3JrLTEiLCJwbHVnaW5zIjoid3NtJmNhJnZzJnhocl9jb250ZW50IiwiZGF0YSI6eyJkYXRhIjpbeyJwbHVnaW4iOiJ3c20iLCJwYXJhbWV0ZXJzIjoie1wicmVmZXJyZXJcIjpcIlwiLFwic3R1YklkXCI6XCJcIn0ifSx7InBsdWdpbiI6Inhocl9jb250ZW50IiwicGFyYW1ldGVycyI6IntcInJlZmVycmVyXCI6XCJcIn0ifV19LCJpc1RvcExldmVsIjp0cnVlLCJwYWdlU3RhcnRUaW1lIjowLCJuYXZpZ2F0aW9uU3RhcnRUaW1lIjoxNzkzMDYxOTUyMjg3fQ%3D%3D&nocache=1743e&tm=2026-10-27T00%3A45%3A52.338Z => [200] OK
+19. [POST] http://gc.kis.v2.scr.kaspersky-labs.com/AB8ACB4D-E468-4979-AF0D-1E522A8D452F/64AE467A-A30C-406F-B9C5-843D7B3AB88A/to/wsm.sessionActivated?tm=2026-10-27T00%3A45%3A52.354Z => [200] OK
+479. [GET] http://127.0.0.1:5203/api/v1/public/service/mas => [200] 
+481. [GET] http://gc.kis.v2.scr.kaspersky-labs.com/AB8ACB4D-E468-4979-AF0D-1E522A8D452F/64AE467A-A30C-406F-B9C5-843D7B3AB88A/from?get&nocache=12a25&tm=2026-10-27T00%3A45%3A54.364Z => [200] OK
+482. [GET] http://gc.kis.v2.scr.kaspersky-labs.com/AB8ACB4D-E468-4979-AF0D-1E522A8D452F/64AE467A-A30C-406F-B9C5-843D7B3AB88A/from?get&nocache=10140&tm=2026-10-27T00%3A45%3A56.367Z => [200] OK
+483. [POST] http://gc.kis.v2.scr.kaspersky-labs.com/AB8ACB4D-E468-4979-AF0D-1E522A8D452F/64AE467A-A30C-406F-B9C5-843D7B3AB88A/to/dp.onGetFields?tm=2026-10-27T00%3A45%3A57.328Z => [200] OK
+
+Note: 477 static requests not shown, run with "static" option to see them.

@@ -1,0 +1,585 @@
+/* W7.33 · Портал клиента (`/s/{slug}`, `/r/{token}`): вид «Обращения - варианты.dc.html» 1a (design-2026-10-19).
+   Мобильный первым: колонка на всю ширину, на широком экране — карточка 480 px по центру. Цвета макета. */
+
+.ox-sp {
+  --sp-ink: #1c2a26;
+  --sp-muted: #5c6964;
+  --sp-line: #dce2d9;
+  --sp-field: #cdd5cb;
+  --sp-accent: #1f6b52;
+  --sp-accent-soft: #e3efe7;
+  --sp-soft: #f4f6f2;
+  --sp-danger: #a13a33;
+  --sp-danger-soft: #fbeae7;
+  min-height: 100dvh;
+  display: flex;
+  justify-content: center;
+  background: var(--sp-soft);
+  color: var(--sp-ink);
+  font:
+    400 14px/1.4 'IBM Plex Sans',
+    system-ui,
+    sans-serif;
+}
+.ox-sp *,
+.ox-sp *::before,
+.ox-sp *::after {
+  box-sizing: border-box;
+}
+.ox-sp-col {
+  width: 100%;
+  max-width: 480px;
+  min-height: 100dvh;
+  padding: 8px 16px 32px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  background: #ffffff;
+}
+@media (min-width: 640px) {
+  .ox-sp {
+    padding: 24px 16px;
+  }
+  .ox-sp-col {
+    min-height: 0;
+    padding: 16px 20px 28px;
+    border: 1px solid var(--sp-line);
+    border-radius: 16px;
+    align-self: flex-start;
+  }
+}
+
+.ox-sp-loading {
+  margin: 48px 0 0;
+  color: var(--sp-muted);
+  text-align: center;
+}
+
+/* Шапка направления */
+.ox-sp-head {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 6px 0 10px;
+}
+.ox-sp-badge {
+  display: grid;
+  place-items: center;
+  width: 30px;
+  height: 30px;
+  flex: none;
+  border-radius: 8px;
+  color: #ffffff;
+  font-size: 13px;
+  font-weight: 600;
+}
+.ox-sp-who {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  line-height: 1.2;
+}
+.ox-sp-who strong {
+  font-size: 14px;
+  font-weight: 600;
+}
+.ox-sp-who span {
+  font-size: 12px;
+  color: var(--sp-muted);
+}
+
+.ox-sp-h1 {
+  margin: 4px 0 2px;
+  font-size: 20px;
+  font-weight: 600;
+  line-height: 1.25;
+}
+.ox-sp-note,
+.ox-sp-due {
+  margin: 0;
+  font-size: 12px;
+  color: var(--sp-muted);
+  text-wrap: pretty;
+}
+.ox-sp-key {
+  font-family: 'IBM Plex Mono', ui-monospace, monospace;
+  font-weight: 600;
+}
+
+/* Кнопки и ссылки-кнопки */
+.ox-sp-btn,
+.ox-sp-linkbtn,
+.ox-sp-row,
+.ox-sp-chipbtn,
+.ox-sp-x {
+  font: inherit;
+  cursor: pointer;
+}
+.ox-sp-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 48px;
+  min-width: 44px;
+  padding: 0 18px;
+  border: 1px solid var(--sp-field);
+  border-radius: 10px;
+  background: #ffffff;
+  color: var(--sp-ink);
+  font-weight: 600;
+  text-decoration: none;
+}
+.ox-sp-btn[data-variant='primary'] {
+  border-color: var(--sp-accent);
+  background: var(--sp-accent);
+  color: #ffffff;
+}
+.ox-sp-btn:disabled {
+  opacity: 0.55;
+  cursor: default;
+}
+.ox-sp-linkbtn {
+  align-self: flex-start;
+  min-height: 44px;
+  padding: 0 4px;
+  border: 0;
+  background: none;
+  color: var(--sp-accent);
+  font-size: 13px;
+  font-weight: 500;
+}
+.ox-sp-head .ox-sp-linkbtn {
+  flex: none;
+  font-size: 12px;
+}
+.ox-sp :focus-visible {
+  outline: 2px solid var(--sp-accent);
+  outline-offset: 2px;
+}
+
+/* Группы типов обращений */
+.ox-sp-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.ox-sp-group h2 {
+  margin: 8px 0 0;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--sp-muted);
+}
+.ox-sp-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  min-height: 48px;
+  padding: 6px 10px;
+  border: 1px solid var(--sp-line);
+  border-radius: 12px;
+  background: #ffffff;
+  color: var(--sp-ink);
+  font-size: 14px;
+  font-weight: 500;
+  text-align: left;
+  text-decoration: none;
+}
+.ox-sp-row > .material-symbols-rounded {
+  color: #7b3f6e;
+}
+.ox-sp-mine {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+/* Формы */
+.ox-sp-form {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.ox-sp-field {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-size: 13px;
+  font-weight: 600;
+}
+.ox-sp-field input,
+.ox-sp-field textarea,
+.ox-sp-compose textarea {
+  width: 100%;
+  min-height: 44px;
+  padding: 10px 12px;
+  border: 1px solid var(--sp-field);
+  border-radius: 10px;
+  background: #ffffff;
+  color: var(--sp-ink);
+  font: 400 16px/1.4 inherit;
+  resize: vertical;
+}
+.ox-sp-field [aria-invalid='true'] {
+  border-color: var(--sp-danger);
+}
+.ox-sp-err {
+  margin: 0;
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--sp-danger);
+}
+.ox-sp-alert {
+  margin: 0;
+  padding: 10px 12px;
+  border-radius: 10px;
+  background: var(--sp-danger-soft);
+  color: var(--sp-danger);
+  font-weight: 500;
+}
+.ox-sp-check {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  min-height: 44px;
+  padding: 6px 0;
+  font-size: 13px;
+}
+.ox-sp-check input {
+  width: 22px;
+  height: 22px;
+  margin: 0;
+  flex: none;
+  accent-color: var(--sp-accent);
+}
+.ox-sp-check strong {
+  display: block;
+  font-weight: 500;
+}
+.ox-sp-check small {
+  display: block;
+  color: var(--sp-muted);
+  font-size: 12px;
+}
+.ox-sp-consent {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.ox-sp-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+/* Оценка: пять значков */
+.ox-sp-scalebox {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.ox-sp-scale {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 6px;
+}
+.ox-sp-scale button {
+  display: grid;
+  place-items: center;
+  min-height: 48px;
+  border: 1px solid var(--sp-line);
+  border-radius: 10px;
+  background: #ffffff;
+  color: var(--sp-muted);
+  cursor: pointer;
+}
+.ox-sp-scale button[data-on] {
+  border: 2px solid var(--sp-accent);
+  background: var(--sp-accent-soft);
+  color: var(--sp-accent);
+}
+.ox-sp-scale button[data-on][data-low] {
+  border-color: var(--sp-danger);
+  background: var(--sp-danger-soft);
+  color: var(--sp-danger);
+}
+.ox-sp-scalecap {
+  display: flex;
+  justify-content: space-between;
+  font-size: 11px;
+  color: var(--sp-muted);
+}
+.ox-sp-reasons {
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+.ox-sp-reasons legend {
+  padding: 0;
+  margin-bottom: 6px;
+  font-size: 13px;
+  font-weight: 600;
+}
+.ox-sp-reasons > div {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+.ox-sp-chipbtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  min-height: 44px;
+  padding: 0 12px;
+  border: 1px solid var(--sp-field);
+  border-radius: 999px;
+  background: #ffffff;
+  color: var(--sp-ink);
+  font-size: 12px;
+}
+.ox-sp-chipbtn[aria-pressed='true'] {
+  border-color: var(--sp-ink);
+  background: var(--sp-ink);
+  color: #ffffff;
+}
+
+/* Готово / квитанция / состояния */
+.ox-sp-done,
+.ox-sp-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  padding: 24px 4px;
+  text-align: center;
+}
+.ox-sp-done > .material-symbols-rounded {
+  color: var(--sp-accent);
+}
+.ox-sp-state > .material-symbols-rounded {
+  color: var(--sp-muted);
+}
+.ox-sp-done h1,
+.ox-sp-state h1 {
+  margin: 0;
+  font-size: 20px;
+  font-weight: 600;
+}
+.ox-sp-done p,
+.ox-sp-state p {
+  margin: 0;
+  color: var(--sp-muted);
+  text-wrap: pretty;
+}
+.ox-sp-done .ox-sp-btn {
+  width: 100%;
+}
+.ox-sp-facts {
+  display: flex;
+  gap: 24px;
+  margin: 0;
+}
+.ox-sp-facts dt {
+  font-size: 11px;
+  color: var(--sp-muted);
+}
+.ox-sp-facts dd {
+  margin: 0;
+  font-weight: 600;
+}
+
+/* Обращение */
+.ox-sp-reqhead {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 10px 0 4px;
+  border-bottom: 1px solid var(--sp-line);
+}
+.ox-sp-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px 8px 2px 6px;
+  border-radius: 999px;
+  background: var(--sp-soft);
+  color: var(--sp-ink);
+  font-size: 12px;
+  font-weight: 500;
+}
+.ox-sp-chip[data-status='resolved'],
+.ox-sp-chip[data-status='closed'] {
+  background: var(--sp-accent-soft);
+  color: var(--sp-accent);
+}
+.ox-sp-reqtitle {
+  margin: 4px 0 0;
+  font-size: 15px;
+  font-weight: 600;
+  line-height: 1.3;
+}
+.ox-sp-steps {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  font-size: 11px;
+  color: var(--sp-muted);
+}
+.ox-sp-steps li {
+  display: flex;
+  align-items: center;
+  gap: 3px;
+}
+.ox-sp-steps li[data-done] {
+  color: var(--sp-accent);
+}
+.ox-sp-steps li[data-current] {
+  font-weight: 600;
+}
+.ox-sp-thread {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.ox-sp-msg {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  max-width: 92%;
+  padding: 10px 12px;
+  border-radius: 4px 16px 16px 16px;
+  background: var(--sp-soft);
+}
+.ox-sp-msg[data-mine] {
+  align-self: flex-end;
+  border-radius: 16px 4px 16px 16px;
+  background: var(--sp-accent-soft);
+}
+.ox-sp-msg p {
+  margin: 0;
+  font-size: 13px;
+  line-height: 1.45;
+  text-wrap: pretty;
+  overflow-wrap: anywhere;
+}
+.ox-sp-meta {
+  font-size: 11px;
+  color: var(--sp-muted);
+}
+.ox-sp-files {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  font-size: 12px;
+  color: var(--sp-muted);
+}
+.ox-sp-files li {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  overflow-wrap: anywhere;
+}
+.ox-sp-x {
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  border: 0;
+  background: none;
+  color: var(--sp-muted);
+}
+
+.ox-sp-sat {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 12px;
+  border: 1px solid var(--sp-line);
+  border-radius: 12px;
+}
+.ox-sp-sat h2 {
+  margin: 0;
+  font-size: 14px;
+  font-weight: 600;
+}
+.ox-sp-sat small {
+  color: var(--sp-muted);
+  font-size: 12px;
+}
+.ox-sp-rated {
+  margin: 0;
+  font-weight: 600;
+  color: var(--sp-accent);
+}
+
+.ox-sp-composer {
+  position: sticky;
+  bottom: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-top: auto;
+  padding: 10px 0 4px;
+  background: #ffffff;
+  border-top: 1px solid var(--sp-line);
+}
+.ox-sp-compose {
+  display: flex;
+  align-items: flex-end;
+  gap: 8px;
+}
+.ox-sp-compose textarea {
+  flex: 1;
+  min-width: 0;
+  border-radius: 22px;
+  resize: none;
+}
+.ox-sp-compose .ox-sp-btn {
+  min-height: 44px;
+}
+.ox-sp-attach {
+  position: relative;
+  display: grid;
+  place-items: center;
+  flex: none;
+  width: 44px;
+  height: 44px;
+  color: var(--sp-muted);
+  cursor: pointer;
+}
+.ox-sp-attach:focus-within {
+  outline: 2px solid var(--sp-accent);
+  border-radius: 10px;
+}
+.ox-sp-sr {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  opacity: 0;
+  cursor: pointer;
+}
+.ox-sp-foot {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ox-sp * {
+    transition: none !important;
+    animation: none !important;
+  }
+}

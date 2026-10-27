@@ -1,0 +1,1600 @@
+- generic [ref=e3]:
+  - generic [ref=e4]:
+    - generic [ref=e5]:
+      - link "2" [ref=e6] [cursor=pointer]:
+        - /url: "#t2"
+      - generic [ref=e7]:
+        - text: Одна страница для всех направлений вместо отдельных и вкладка «Оценки». Очередь
+        - link "1b" [ref=e8] [cursor=pointer]:
+          - /url: "#1b"
+        - text: и карточка
+        - link "1c" [ref=e9] [cursor=pointer]:
+          - /url: "#1c"
+        - text: "встроены в прототип: «Ортус CRM» → «Обращения»"
+    - generic [ref=e10]:
+      - heading "Отдельные страницы или одна общая" [level=2] [ref=e11]
+      - generic [ref=e12]:
+        - generic [ref=e14]:
+          - text: Страница направления —
+          - link "1a" [ref=e15] [cursor=pointer]:
+            - /url: "#1a"
+        - generic [ref=e16]:
+          - text: "Общая: сначала работа —"
+          - link "2a" [ref=e17] [cursor=pointer]:
+            - /url: "#2a"
+        - generic [ref=e18]:
+          - text: "Общая: сначала «что случилось» —"
+          - link "2b" [ref=e19] [cursor=pointer]:
+            - /url: "#2b"
+        - generic [ref=e20]: Адрес
+        - generic [ref=e21]: "Свой у каждого: alta.ortus.ru/massage, /otdelka"
+        - generic [ref=e22]: "Один: alta.ortus.ru/help — на сайте, в боте и в подписи писем"
+        - generic [ref=e23]: "Один: alta.ortus.ru/help"
+        - generic [ref=e24]: Клиент нескольких направлений
+        - generic [ref=e25]: Держит разные ссылки, «Мои обращения» разделены
+        - generic [ref=e26]: Видит все свои визиты, объекты и обращения в одном списке
+        - generic [ref=e27]: То же, но список работ — вторым шагом
+        - generic [ref=e28]: Типы обращений
+        - generic [ref=e29]: Свои у направления
+        - generic [ref=e30]: Свои у направления — после выбора работы
+        - generic [ref=e31]: Общий список видов на всю организацию; внутри — типы направлений
+        - generic [ref=e32]: Куда попадёт
+        - generic [ref=e33]: Известно сразу
+        - generic [ref=e34]: В направление выбранной работы
+        - generic [ref=e35]: По работе; без неё — клиент выбирает направление
+        - generic [ref=e36]: Слабое место
+        - generic [ref=e37]: Клиент с сайта не знает, какую страницу открыть
+        - generic [ref=e38]: "Лишний шаг: вход по телефону и коду"
+        - generic [ref=e39]: Общий список видов нужно согласовать между направлениями
+      - generic [ref=e40]:
+        - text: Предлагаю
+        - link "2a" [ref=e41] [cursor=pointer]:
+          - /url: "#2a"
+        - text: как общий вход с сайта, из бота и «Моих обращений». Страницы направлений из
+        - link "1a" [ref=e42] [cursor=pointer]:
+          - /url: "#1a"
+        - text: "остаются для QR и личных ссылок: туда клиент приходит уже с работой, и общая страница не нужна. Решение записано как FB-08."
+    - generic [ref=e43]:
+      - generic [ref=e44]:
+        - generic [ref=e45]:
+          - link "2a" [ref=e46] [cursor=pointer]:
+            - /url: "#2a"
+          - text: Общая страница, сначала работа. Клиент входит по телефону, видит свои работы во всех направлениях и выбирает нужную.
+        - generic [ref=e48]:
+          - generic [ref=e49]:
+            - generic [ref=e50]:
+              - generic [ref=e51]: "1"
+              - text: Ваши работы
+            - generic [ref=e53]:
+              - generic [ref=e54]:
+                - generic [ref=e55]: 10:12
+                - generic [ref=e56]:
+                  - generic [ref=e57]: signal_cellular_alt
+                  - generic [ref=e58]: battery_full
+              - generic [ref=e59]:
+                - generic [ref=e60]: А
+                - generic [ref=e61]:
+                  - strong [ref=e62]: Альта Групп
+                  - generic [ref=e63]: Помощь и отзывы
+              - generic [ref=e64]:
+                - strong [ref=e65]: Чем помочь?
+                - generic [ref=e66]:
+                  - generic [ref=e67]: verified
+                  - text: Вы вошли по номеру +7 ••• •••-••-40
+                - generic [ref=e68]: Ваши последние работы
+                - generic [ref=e69]:
+                  - generic [ref=e71]:
+                    - generic [ref=e72]: Дом на Лесной
+                    - generic [ref=e73]: Отделка · сдан 12.09, гарантия
+                  - generic [ref=e74]: chevron_right
+                - generic [ref=e75]:
+                  - generic [ref=e77]:
+                    - generic [ref=e78]: Визит 28 сентября
+                    - generic [ref=e79]: Массаж · массаж спины
+                  - generic [ref=e80]: chevron_right
+                - generic [ref=e81]:
+                  - generic [ref=e83]:
+                    - generic [ref=e84]: Визит 14 сентября
+                    - generic [ref=e85]: Косметология · чистка лица
+                  - generic [ref=e86]: chevron_right
+                - generic [ref=e87]: Нет нужной работы? Выберите направление
+                - generic [ref=e88]:
+                  - generic [ref=e89]: Массаж
+                  - generic [ref=e91]: Косметология
+                  - generic [ref=e93]: Отделка
+                  - generic [ref=e95]: Грузоперевозки
+                - generic [ref=e96]: Мои обращения · 1 открытое
+          - generic [ref=e97]:
+            - generic [ref=e98]:
+              - generic [ref=e99]: "2"
+              - text: Типы направления работы
+            - generic [ref=e101]:
+              - generic [ref=e102]:
+                - generic [ref=e103]: 10:13
+                - generic [ref=e104]:
+                  - generic [ref=e105]: signal_cellular_alt
+                  - generic [ref=e106]: battery_full
+              - generic [ref=e107]:
+                - generic [ref=e108]: arrow_back_ios_new
+                - generic [ref=e109]:
+                  - strong [ref=e110]: Дом на Лесной
+                  - generic [ref=e111]: Отделка · гарантия до 12.09.2027
+              - generic [ref=e112]:
+                - generic [ref=e113]: Если что-то сломалось
+                - generic [ref=e114]:
+                  - generic [ref=e115]: verified_user
+                  - generic [ref=e116]:
+                    - generic [ref=e117]: Гарантийный случай
+                    - generic [ref=e118]: Ответим за 4 рабочих часа
+                - generic [ref=e119]:
+                  - generic [ref=e120]: gavel
+                  - generic [ref=e121]:
+                    - generic [ref=e122]: Претензия
+                    - generic [ref=e123]: Рассмотрим за 10 дней
+                - generic [ref=e124]: Вопросы и идеи
+                - generic [ref=e125]:
+                  - generic [ref=e126]: help
+                  - generic [ref=e127]:
+                    - generic [ref=e128]: Вопрос по ремонту
+                    - generic [ref=e129]: Ответим за 8 рабочих часов
+                - generic [ref=e130]:
+                  - generic [ref=e131]: lightbulb
+                  - generic [ref=e132]: Предложение
+                - generic [ref=e133]: Оценка
+                - generic [ref=e134]:
+                  - generic [ref=e135]: star
+                  - generic [ref=e136]: Оценить сдачу объекта
+                - generic [ref=e137]:
+                  - generic [ref=e138]: favorite
+                  - generic [ref=e139]: Спасибо бригаде
+          - generic [ref=e140]:
+            - strong [ref=e141]: Как устроено
+            - generic [ref=e142]: Вход — телефон и код из SMS или кнопка «Поделиться контактом» в боте.
+            - generic [ref=e143]: В списке — работы за 90 дней и объекты на гарантии, с цветом и именем направления.
+            - generic [ref=e144]:
+              - text: После выбора работы — те же типы и сроки, что на странице направления
+              - link "1a" [ref=e145] [cursor=pointer]:
+                - /url: "#1a"
+              - text: . Настраивать ничего заново не нужно.
+            - generic [ref=e146]: Список работ собирается по номеру телефона. Чужих имён, адресов и сумм там нет.
+      - generic [ref=e147]:
+        - generic [ref=e148]:
+          - link "2b" [ref=e149] [cursor=pointer]:
+            - /url: "#2b"
+          - text: Общая страница, сначала «что случилось». Один список видов на всю организацию, направление берётся из выбранной работы.
+        - generic [ref=e151]:
+          - generic [ref=e152]:
+            - generic [ref=e153]:
+              - generic [ref=e154]: "1"
+              - text: Что случилось
+            - generic [ref=e156]:
+              - generic [ref=e157]:
+                - generic [ref=e158]: 10:12
+                - generic [ref=e159]:
+                  - generic [ref=e160]: signal_cellular_alt
+                  - generic [ref=e161]: battery_full
+              - generic [ref=e162]:
+                - generic [ref=e163]: А
+                - generic [ref=e164]:
+                  - strong [ref=e165]: Альта Групп
+                  - generic [ref=e166]: Помощь и отзывы
+              - generic [ref=e167]:
+                - strong [ref=e168]: Что случилось?
+                - generic [ref=e169]:
+                  - generic [ref=e170]:
+                    - generic [ref=e171]: report
+                    - generic [ref=e172]: Что-то не так
+                  - generic [ref=e173]:
+                    - generic [ref=e174]: build
+                    - generic [ref=e175]: Сломалось после ремонта
+                  - generic [ref=e176]:
+                    - generic [ref=e177]: help
+                    - generic [ref=e178]: Вопрос
+                  - generic [ref=e179]:
+                    - generic [ref=e180]: currency_ruble
+                    - generic [ref=e181]: Вернуть деньги
+                  - generic [ref=e182]:
+                    - generic [ref=e183]: favorite
+                    - generic [ref=e184]: Сказать спасибо
+                  - generic [ref=e185]:
+                    - generic [ref=e186]: lightbulb
+                    - generic [ref=e187]: Предложить идею
+                - generic [ref=e188]: Плитка «Сломалось после ремонта» видна, потому что у клиента есть объект на гарантии.
+                - generic [ref=e190]:
+                  - generic [ref=e191]: star
+                  - generic [ref=e192]:
+                    - generic [ref=e193]: Оценить последний визит
+                    - generic [ref=e194]: 28 сентября · массаж спины
+          - generic [ref=e195]:
+            - generic [ref=e196]:
+              - generic [ref=e197]: "2"
+              - text: К чему относится
+            - generic [ref=e199]:
+              - generic [ref=e200]:
+                - generic [ref=e201]: 10:13
+                - generic [ref=e202]:
+                  - generic [ref=e203]: signal_cellular_alt
+                  - generic [ref=e204]: battery_full
+              - generic [ref=e205]:
+                - generic [ref=e206]: arrow_back_ios_new
+                - strong [ref=e207]: Что-то не так
+              - generic [ref=e208]:
+                - generic [ref=e209]: К чему это относится?
+                - generic [ref=e210]:
+                  - generic [ref=e211]: radio_button_checked
+                  - generic [ref=e212]:
+                    - generic [ref=e213]: Визит 28 сентября
+                    - generic [ref=e214]: Массаж · массаж спины
+                - generic [ref=e215]:
+                  - generic [ref=e216]: radio_button_unchecked
+                  - generic [ref=e217]:
+                    - generic [ref=e218]: Дом на Лесной
+                    - generic [ref=e219]: Отделка
+                - generic [ref=e220]:
+                  - generic [ref=e221]: radio_button_unchecked
+                  - generic [ref=e222]: Другое, выбрать направление
+                - generic [ref=e223]:
+                  - generic [ref=e224]: alt_route
+                  - text: Попадёт в «Массаж» как жалоба. Ответим в течение 2 часов.
+                - generic [ref=e225]: Опишите, что случилось
+                - generic [ref=e226]:
+                  - generic [ref=e227]: photo_camera
+                  - text: Добавить фото
+                - generic [ref=e228]: Отправить
+          - generic [ref=e229]:
+            - strong [ref=e230]: Как устроено
+            - generic [ref=e231]: "Виды общие для организации. Каждый вид связан с типом в каждом направлении: «Что-то не так» → «Жалоба» в «Массаже», «Опоздание или жалоба» в «Грузоперевозках»."
+            - generic [ref=e232]: Направление и срок определяются после выбора работы. Перед отправкой клиент видит, куда попадёт обращение.
+            - generic [ref=e233]: "Минус: добавить новый тип в направление можно, только связав его с общим видом. А общие виды правит владелец, а не руководитель направления."
+      - generic [ref=e234]:
+        - generic [ref=e235]:
+          - link "2c" [ref=e236] [cursor=pointer]:
+            - /url: "#2c"
+          - text: "Вкладка «Оценки» направления: опрос после услуги, оценка решения, NPS. Частота и тихие часы — общие для организации."
+        - generic [ref=e238]:
+          - generic [ref=e239]:
+            - generic [ref=e240]: МАС
+            - generic [ref=e241]:
+              - heading "Массаж" [level=2] [ref=e242]
+              - generic [ref=e243]: Салон и SPA · Альта SPA · рабочее время ежедневно 10:00–21:00
+            - generic [ref=e244]:
+              - generic [ref=e245]: edit_note
+              - text: Черновик v6 · 1 изменение
+            - generic [ref=e246]: Опубликовать v6
+          - generic [ref=e247]:
+            - generic [ref=e248]: Типы обращений
+            - generic [ref=e249]: Сроки и календарь
+            - generic [ref=e250]: Каналы
+            - generic [ref=e251]: Оценки
+            - generic [ref=e252]: Команда
+            - generic [ref=e253]: Процесс и автоматизация
+          - generic [ref=e254]:
+            - generic [ref=e255]:
+              - generic [ref=e256]:
+                - generic [ref=e257]:
+                  - generic [ref=e258]: star
+                  - strong [ref=e259]: Опрос после услуги
+                  - generic [ref=e260]:
+                    - generic [ref=e261]: check_circle
+                    - text: Включён
+                - generic [ref=e262]:
+                  - generic [ref=e263]: Когда
+                  - generic [ref=e264]:
+                    - generic [ref=e265]: Визит завершён
+                    - text: через
+                    - generic [ref=e266]: 2 часа
+                    - generic [ref=e267]: "было: сразу"
+                  - generic [ref=e268]: Форма
+                  - generic [ref=e269]:
+                    - generic [ref=e270]: dynamic_form
+                    - text: «Оценка визита» · v3 · оценка 1–5, причины, комментарий, «Свяжитесь со мной»
+                    - generic [ref=e271]: Открыть
+                  - generic [ref=e272]: Причины
+                  - generic [ref=e273]:
+                    - generic [ref=e274]: Опоздание начала
+                    - generic [ref=e275]: Температура в кабинете
+                    - generic [ref=e276]: Чистота
+                    - generic [ref=e277]: Мастер
+                    - generic [ref=e278]: Запись
+                    - generic [ref=e279]: Цена
+                    - generic [ref=e280]: ＋ Причина
+                - generic [ref=e281]:
+                  - generic [ref=e282]:
+                    - generic [ref=e283]: Оценка
+                    - generic [ref=e284]: Что происходит
+                  - generic [ref=e285]:
+                    - generic [ref=e286]: 1–3 и «свяжитесь»
+                    - generic [ref=e287]: Жалоба с высоким приоритетом и сроком ответа 2 часа. Клиенту — автоответ с этим сроком
+                  - generic [ref=e288]:
+                    - generic [ref=e289]: 1–3 без просьбы
+                    - generic [ref=e290]: "Очередь «Низкие оценки» без срока: открыть жалобу или отметить просмотренной"
+                  - generic [ref=e291]:
+                    - generic [ref=e292]: 4–5
+                    - generic [ref=e293]: В отчёт. Комментарий с благодарностью приходит мастеру
+                  - generic [ref=e294]:
+                    - generic [ref=e295]: 5 из 5
+                    - generic [ref=e296]: Просить отзыв на картах — выключено, решение отложено (FB-01)
+                - generic [ref=e297]:
+                  - generic [ref=e298]: check_box
+                  - generic [ref=e299]:
+                    - generic [ref=e300]: Не спрашивать, если по визиту уже есть открытое обращение
+                    - generic [ref=e301]: Клиент уже сказал, что не так, — второй вопрос только раздражает
+              - generic [ref=e302]:
+                - generic [ref=e303]:
+                  - generic [ref=e304]:
+                    - generic [ref=e305]: task_alt
+                    - strong [ref=e306]: Оценка решения
+                    - generic [ref=e307]:
+                      - generic [ref=e308]: check_circle
+                      - text: Включена
+                  - generic [ref=e309]: После «Решено» — «Довольны ли решением?» 1–5 и кнопка «Вопрос не решён». Один раз на обращение, в тот же канал.
+                  - generic [ref=e310]:
+                    - generic [ref=e311]: «Не решён» в течение
+                    - generic [ref=e312]: 5 дней
+                    - generic [ref=e313]: Оценка 1–2
+                    - generic [ref=e314]: возвращает обращение руководителю направления
+                - generic [ref=e315]:
+                  - generic [ref=e316]:
+                    - generic [ref=e317]: recommend
+                    - strong [ref=e318]: NPS
+                    - generic [ref=e319]:
+                      - generic [ref=e320]: schedule
+                      - text: Раз в квартал
+                  - generic [ref=e321]: "«Порекомендуете ли нас?» 0–10. Постоянным клиентам: не меньше 3 визитов за 90 дней."
+                  - generic [ref=e322]:
+                    - generic [ref=e323]: Следующая рассылка
+                    - generic [ref=e324]: 1 января · около 140 клиентов
+                    - generic [ref=e325]: Оценка 0–6
+                    - generic [ref=e326]: в «Низкие оценки»
+            - generic [ref=e327]:
+              - generic [ref=e328]:
+                - generic [ref=e329]:
+                  - strong [ref=e330]: Частота и тихие часы
+                  - generic [ref=e331]:
+                    - generic [ref=e332]: domain
+                    - text: Для всей организации
+                - generic [ref=e333]:
+                  - generic [ref=e334]: Не чаще
+                  - generic [ref=e335]:
+                    - generic [ref=e336]: 1 опроса в 14 дней
+                    - text: на клиента
+                  - generic [ref=e337]: Тихие часы
+                  - generic [ref=e338]: 21:00–9:00 по времени клиента, сообщение ждёт до 9:00
+                  - generic [ref=e339]: Канал
+                  - generic [ref=e340]: Бот, если клиент его подключил, иначе SMS
+                  - generic [ref=e341]: Отказ
+                  - generic [ref=e342]: «СТОП» в SMS или ссылка в опросе отключает опросы во всех направлениях
+                - generic [ref=e343]: "Клиент салона и ремонта не получит два опроса подряд: очередь опросов общая. Меняет владелец."
+              - generic [ref=e344]:
+                - strong [ref=e345]: Текст сообщения
+                - generic [ref=e346]: "{имя}, спасибо, что были у нас сегодня. Как прошёл {услуга} у {мастер}? Оценка займёт 10 секунд: {ссылка}"
+                - generic [ref=e347]: "Пример с данными: 128 знаков, 2 SMS. Короче 70 знаков — одно SMS на кириллице."
+              - generic [ref=e348]:
+                - strong [ref=e349]: За 30 дней
+                - generic [ref=e350]:
+                  - generic [ref=e351]:
+                    - strong [ref=e352]: "412"
+                    - generic [ref=e353]: отправлено
+                  - generic [ref=e354]:
+                    - strong [ref=e355]: 312 · 76%
+                    - generic [ref=e356]: ответили
+                  - generic [ref=e357]:
+                    - strong [ref=e358]: "3"
+                    - generic [ref=e359]: отказались от опросов
+                - generic [ref=e360]: "Если отказов станет больше 2%, направление получит предупреждение: опросов слишком много."
+    - paragraph [ref=e361]:
+      - text: "Что дальше: «встроить"
+      - link "2a" [ref=e362] [cursor=pointer]:
+        - /url: "#2a"
+      - text: как страницу клиента в прототип» · «сделать отчёт
+      - link "1e" [ref=e363] [cursor=pointer]:
+        - /url: "#1e"
+      - text: рабочим» · «настройка направления
+      - link "1d" [ref=e364] [cursor=pointer]:
+        - /url: "#1d"
+      - text: в прототипе»
+  - generic [ref=e365]:
+    - generic [ref=e366]:
+      - link "1" [ref=e367] [cursor=pointer]:
+        - /url: "#t1"
+      - generic [ref=e368]: "Обращения клиентов по направлениям: портал, очередь, карточка, настройка и отчёт по мотивам Jira Service Management"
+    - generic [ref=e369]:
+      - generic [ref=e370]:
+        - heading "Что берём из Jira Service Management и как это ложится на Ортус" [level=2] [ref=e371]
+        - paragraph [ref=e372]: "В Jira Service Management клиент открывает портал, выбирает тип запроса, названный простыми словами, и заполняет короткую форму. Запрос попадает в очередь сервисного пространства. Сотрудник отвечает клиенту или пишет внутреннюю заметку, таймеры SLA считают время до ответа и до решения, после решения клиент ставит оценку. С октября 2025 года на новых сайтах работа с внешними клиентами вынесена в отдельное приложение Customer Service Management: у каждой группы клиентов своя страница поддержки, каналы, оформление и маршрут запросов. У нас такая группа — направление, которое владелец заводит сам. Процесс, роли и автоматизацию даёт модуль «Задачи»."
+        - generic [ref=e373]:
+          - generic [ref=e374]: Тема
+          - generic [ref=e375]: В Jira
+          - generic [ref=e376]: У нас
+          - generic [ref=e377]: Направление
+          - generic [ref=e378]: Сервисное пространство с ключом. В Customer Service Management — отдельные среды поддержки для разных групп клиентов
+          - generic [ref=e379]:
+            - text: Владелец заводит «Массаж», «Отделку», «Грузоперевозки». У направления ключ для номеров (МАС-41), модуль, область, команда и страница для клиентов —
+            - link "1d" [ref=e380] [cursor=pointer]:
+              - /url: "#1d"
+          - generic [ref=e381]: Типы обращений
+          - generic [ref=e382]: "Тип запроса: понятное клиенту название, форма, группа на портале; внутри — тип работы"
+          - generic [ref=e383]:
+            - text: Тип с формой из «Форм и опросов», привязкой к визиту, объекту или рейсу, своими сроками и каналами —
+            - link "1d" [ref=e384] [cursor=pointer]:
+              - /url: "#1d"
+          - generic [ref=e385]: Портал и клиенты
+          - generic [ref=e386]: Центр помощи, «Мои запросы». Клиенты бесплатны и видят свои запросы и запросы своей организации
+          - generic [ref=e387]:
+            - text: "Страница направления в оформлении организации. Клиент не занимает место и не заводит аккаунт: личная ссылка или код из SMS —"
+            - link "1a" [ref=e388] [cursor=pointer]:
+              - /url: "#1a"
+          - generic [ref=e389]: Каналы
+          - generic [ref=e390]: Портал, почта, виджет, чат; запрос от имени клиента
+          - generic [ref=e391]:
+            - text: QR, SMS или мессенджер после работы, кабинет заказчика, виджет, бот Telegram или MAX, звонок. Ответ уходит в канал обращения —
+            - link "1a" [ref=e392] [cursor=pointer]:
+              - /url: "#1a"
+            - text: ","
+            - link "1c" [ref=e393] [cursor=pointer]:
+              - /url: "#1c"
+          - generic [ref=e394]: Очереди и сроки
+          - generic [ref=e395]: Очереди по фильтру; цели SLA по типу и приоритету, рабочий календарь, пауза, нарушения
+          - generic [ref=e396]:
+            - text: Очереди направления и «Все мои». Рабочее время направления, пауза только на «Ждёт клиента», срок по закону отдельно и без пауз —
+            - link "1b" [ref=e397] [cursor=pointer]:
+              - /url: "#1b"
+            - text: ","
+            - link "1d" [ref=e398] [cursor=pointer]:
+              - /url: "#1d"
+          - generic [ref=e399]: Ответ и заметка
+          - generic [ref=e400]: «Ответить клиенту» и «Внутренняя заметка», шаблоны ответов
+          - generic [ref=e401]:
+            - text: То же, плюс задача из обращения, компенсация и закрытая от сотрудника жалоба до разбора —
+            - link "1c" [ref=e402] [cursor=pointer]:
+              - /url: "#1c"
+          - generic [ref=e403]: Оценка и отчёты
+          - generic [ref=e404]: Оценка 1–5 после решения; отчёты по SLA и удовлетворённости
+          - generic [ref=e405]:
+            - text: "Две оценки: после услуги (низкая сама становится жалобой) и после решения. Отчёт по направлениям всегда с числом ответов —"
+            - link "1e" [ref=e406] [cursor=pointer]:
+              - /url: "#1e"
+        - generic [ref=e407]:
+          - strong [ref=e408]: Чего нет в Jira и нужно нам
+          - generic [ref=e409]: "1. Обращение привязано к работе: визиту, объекту или рейсу. Из личной ссылки привязка подставляется сама, сотрудник сразу видит мастера, прораба или водителя."
+          - generic [ref=e410]: 2. Опрос после услуги, а не только после обращения. Оценка 1–3 с просьбой связаться открывает жалобу со сроком ответа.
+          - generic [ref=e411]: 3. Сотрудник, на которого жалуются, не видит жалобу до разбора. Благодарность приходит ему сразу.
+          - generic [ref=e412]: "4. У претензий есть срок по закону: 10 дней по ст. 31 Закона о защите прав потребителей, 30 дней на претензию к перевозчику по ст. 40 Устава автомобильного транспорта."
+      - generic [ref=e413]:
+        - heading "Пять макетов одного сценария" [level=3] [ref=e414]
+        - generic [ref=e415]: "«Альта Групп» завела четыре направления: Массаж, Косметология, Отделка, Грузоперевозки. Ольга Романова оценила SPA-ритуал на 2 из 5 и попросила связаться. Оценка стала жалобой МАС-41 с ответом в течение 2 часов. Сегодня 1 октября, 16:24."
+        - 'link "1a Портал клиента: опрос, выбор обращения, статус" [ref=e416] [cursor=pointer]':
+          - /url: "#1a"
+          - generic [ref=e417]: 1a
+          - generic [ref=e418]: "Портал клиента: опрос, выбор обращения, статус"
+        - link "1b Очередь обработчика" [ref=e419] [cursor=pointer]:
+          - /url: "#1b"
+          - generic [ref=e420]: 1b
+          - generic [ref=e421]: Очередь обработчика
+        - 'link "1c Карточка: ответ клиенту и внутренняя заметка" [ref=e422] [cursor=pointer]':
+          - /url: "#1c"
+          - generic [ref=e423]: 1c
+          - generic [ref=e424]: "Карточка: ответ клиенту и внутренняя заметка"
+        - link "1d Направление, типы обращений и сроки" [ref=e425] [cursor=pointer]:
+          - /url: "#1d"
+          - generic [ref=e426]: 1d
+          - generic [ref=e427]: Направление, типы обращений и сроки
+        - link "1e Отчёт по направлениям" [ref=e428] [cursor=pointer]:
+          - /url: "#1e"
+          - generic [ref=e429]: 1e
+          - generic [ref=e430]: Отчёт по направлениям
+        - generic [ref=e431]: Разбор, права, данные и открытые вопросы — docs/22-client-requests.md.
+    - generic [ref=e432]:
+      - generic [ref=e433]:
+        - generic [ref=e434]:
+          - link "1a" [ref=e435] [cursor=pointer]:
+            - /url: "#1a"
+          - text: Портал клиента. SMS после визита → оценка → страница направления → статус и оценка решения. Ниже — та же страница у отделки и грузоперевозок.
+        - generic [ref=e437]:
+          - generic [ref=e438]:
+            - generic [ref=e439]:
+              - generic [ref=e440]:
+                - generic [ref=e441]: "1"
+                - text: SMS через 2 часа после визита
+              - generic [ref=e443]:
+                - generic [ref=e444]:
+                  - generic [ref=e445]: 15:00
+                  - generic [ref=e446]:
+                    - generic [ref=e447]: signal_cellular_alt
+                    - generic [ref=e448]: battery_full
+                - generic [ref=e449]:
+                  - generic [ref=e450]: arrow_back_ios_new
+                  - generic [ref=e451]: А
+                  - generic [ref=e452]:
+                    - strong [ref=e453]: Альта SPA
+                    - generic [ref=e454]: SMS
+                - generic [ref=e455]:
+                  - generic [ref=e456]: Сегодня, 15:00
+                  - generic [ref=e457]: "Ольга, спасибо, что были у нас сегодня. Как прошёл SPA-ритуал у Анны? Оценка займёт 10 секунд: alta.ortus.ru/m/7KX2"
+                  - generic [ref=e458]: Не хотите опросов — ответьте СТОП
+                - generic [ref=e459]: Сообщение
+              - generic [ref=e461]: Уходит по событию «Визит завершён», только с 9:00 до 21:00 и не чаще раза в 14 дней. Если клиент подключил бота, то же сообщение придёт в Telegram или MAX.
+            - generic [ref=e462]:
+              - generic [ref=e463]:
+                - generic [ref=e464]: "2"
+                - text: Оценка визита
+              - generic [ref=e466]:
+                - generic [ref=e467]:
+                  - generic [ref=e468]: 15:01
+                  - generic [ref=e469]:
+                    - generic [ref=e470]: signal_cellular_alt
+                    - generic [ref=e471]: battery_full
+                - generic [ref=e472]:
+                  - generic [ref=e473]: А
+                  - generic [ref=e474]:
+                    - strong [ref=e475]: Альта SPA
+                    - generic [ref=e476]: Массаж
+                - generic [ref=e477]:
+                  - generic [ref=e478]:
+                    - generic [ref=e479]: spa
+                    - text: SPA-ритуал · 1 октября · Анна
+                  - strong [ref=e480]: Как вам визит?
+                  - generic [ref=e481]:
+                    - generic [ref=e482]:
+                      - generic [ref=e483]: sentiment_very_dissatisfied
+                      - generic [ref=e485]: sentiment_dissatisfied
+                      - generic [ref=e487]: sentiment_neutral
+                      - generic [ref=e489]: sentiment_satisfied
+                      - generic [ref=e491]: sentiment_very_satisfied
+                    - generic [ref=e493]:
+                      - generic [ref=e494]: 1 · плохо
+                      - generic [ref=e495]: 5 · отлично
+                  - generic [ref=e496]: Что пошло не так?
+                  - generic [ref=e497]:
+                    - generic [ref=e498]:
+                      - generic [ref=e499]: check
+                      - text: Опоздание начала
+                    - generic [ref=e500]:
+                      - generic [ref=e501]: check
+                      - text: Температура в кабинете
+                    - generic [ref=e502]: Чистота
+                    - generic [ref=e503]: Мастер
+                    - generic [ref=e504]: Запись
+                    - generic [ref=e505]: Цена
+                  - generic [ref=e506]: Начали на 15 минут позже, в кабинете холодно. Сам массаж хороший.
+                  - generic [ref=e507]:
+                    - generic [ref=e508]: check_box
+                    - generic [ref=e509]:
+                      - generic [ref=e510]: Свяжитесь со мной
+                      - generic [ref=e511]: Ответим в течение 2 часов
+                  - generic [ref=e512]: Отправить
+              - generic [ref=e513]: Оценка 1–3 с просьбой связаться сама открывает жалобу с высоким приоритетом. Без просьбы — попадает в очередь «Низкие оценки» без срока. Причины задаёт направление, по ним строится отчёт.
+            - generic [ref=e514]:
+              - generic [ref=e515]:
+                - generic [ref=e516]: "3"
+                - text: Страница направления
+              - generic [ref=e518]:
+                - generic [ref=e519]:
+                  - generic [ref=e520]: 15:20
+                  - generic [ref=e521]:
+                    - generic [ref=e522]: signal_cellular_alt
+                    - generic [ref=e523]: battery_full
+                - generic [ref=e524]:
+                  - generic [ref=e525]: А
+                  - generic [ref=e526]:
+                    - strong [ref=e527]: Альта SPA
+                    - generic [ref=e528]: Массаж
+                  - generic [ref=e529]: Мои обращения · 1
+                - generic [ref=e530]:
+                  - strong [ref=e531]: Чем помочь?
+                  - generic [ref=e532]:
+                    - generic [ref=e533]:
+                      - generic [ref=e534]: Ваш визит
+                      - generic [ref=e535]: 1 октября, 11:30 · SPA-ритуал
+                    - generic [ref=e536]: Другой
+                  - generic [ref=e537]: Оценить и поблагодарить
+                  - generic [ref=e538]:
+                    - generic [ref=e539]: star
+                    - generic [ref=e540]:
+                      - generic [ref=e541]: Оценить визит
+                      - generic [ref=e542]: "Вы уже оценили: 2 из 5"
+                    - generic [ref=e543]: chevron_right
+                  - generic [ref=e544]:
+                    - generic [ref=e545]: favorite
+                    - generic [ref=e546]:
+                      - generic [ref=e547]: Спасибо мастеру
+                      - generic [ref=e548]: Анна увидит ваши слова
+                    - generic [ref=e549]: chevron_right
+                  - generic [ref=e550]: Если что-то не так
+                  - generic [ref=e551]:
+                    - generic [ref=e552]: report
+                    - generic [ref=e553]:
+                      - generic [ref=e554]: Пожаловаться
+                      - generic [ref=e555]: Ответим в течение 2 часов
+                    - generic [ref=e556]: chevron_right
+                  - generic [ref=e557]:
+                    - generic [ref=e558]: currency_ruble
+                    - generic [ref=e559]:
+                      - generic [ref=e560]: Вернуть деньги
+                      - generic [ref=e561]: Рассмотрим за 10 дней
+                    - generic [ref=e562]: chevron_right
+                  - generic [ref=e563]: Другое
+                  - generic [ref=e564]:
+                    - generic [ref=e565]: help
+                    - generic [ref=e566]:
+                      - generic [ref=e567]: Задать вопрос
+                      - generic [ref=e568]: Ответим в течение 4 часов
+                    - generic [ref=e569]: chevron_right
+                  - generic [ref=e570]:
+                    - generic [ref=e571]: lightbulb
+                    - generic [ref=e572]:
+                      - generic [ref=e573]: Предложить идею
+                      - generic [ref=e574]: Ответим за 2 дня
+                    - generic [ref=e575]: chevron_right
+              - generic [ref=e576]: Сюда ведут QR в салоне, виджет на сайте и «Мои обращения». Типы и группы задаёт направление, обещанный срок берётся из его настроек и считается в рабочем времени салона.
+            - generic [ref=e577]:
+              - generic [ref=e578]:
+                - generic [ref=e579]: "4"
+                - text: Ответ и оценка решения
+              - generic [ref=e581]:
+                - generic [ref=e582]:
+                  - generic [ref=e583]: 16:32
+                  - generic [ref=e584]:
+                    - generic [ref=e585]: signal_cellular_alt
+                    - generic [ref=e586]: battery_full
+                - generic [ref=e587]:
+                  - generic [ref=e588]: arrow_back_ios_new
+                  - generic [ref=e589]: МАС-41
+                  - generic [ref=e590]:
+                    - generic [ref=e591]: check_circle
+                    - text: Решено
+                - generic [ref=e592]:
+                  - strong [ref=e593]: Жалоба · начали позже, в кабинете холодно
+                  - generic [ref=e594]:
+                    - generic [ref=e595]:
+                      - generic [ref=e596]: check_circle
+                      - text: Получили 15:12
+                    - generic [ref=e597]:
+                      - generic [ref=e598]: check_circle
+                      - text: Ответили 16:31
+                    - generic [ref=e599]:
+                      - generic [ref=e600]: check_circle
+                      - text: Решено
+                  - generic [ref=e601]:
+                    - generic [ref=e602]: Дарья, Альта SPA · 16:31
+                    - generic [ref=e603]: "Ольга, извините за ожидание и холод в кабинете: в тот день не включился подогрев стола, его уже чинят. Дарим скидку 20% на следующий визит, она привязана к вашему номеру."
+                  - generic [ref=e604]:
+                    - generic [ref=e605]: Довольны ли решением?
+                    - generic [ref=e606]:
+                      - generic [ref=e607]: sentiment_very_dissatisfied
+                      - generic [ref=e609]: sentiment_dissatisfied
+                      - generic [ref=e611]: sentiment_neutral
+                      - generic [ref=e613]: sentiment_satisfied
+                      - generic [ref=e615]: sentiment_very_satisfied
+                    - generic [ref=e617]: Вопрос не решён — вернуть в работу
+                - generic [ref=e619]:
+                  - generic [ref=e620]: photo_camera
+                  - generic [ref=e621]: Написать
+              - generic [ref=e622]: "Статусы для клиента: «Получили», «Отвечаем», «Ждём вашего ответа», «Решено». Оценка решения — одна на обращение. «Не решён» возвращает обращение в очередь с прежним номером."
+          - generic [ref=e623]:
+            - generic [ref=e624]: Та же страница в других направлениях
+            - generic [ref=e625]:
+              - generic [ref=e626]:
+                - generic [ref=e627]:
+                  - generic [ref=e628]: ОТД
+                  - generic [ref=e629]:
+                    - strong [ref=e630]: Отделка
+                    - generic [ref=e631]: Блок «Обращения» в кабинете заказчика
+                - generic [ref=e632]:
+                  - generic [ref=e633]: home_work
+                  - text: Дом на Лесной · Мытищи · сдан 12.09 · гарантия до 12.09.2027
+                - generic [ref=e634]:
+                  - generic [ref=e635]:
+                    - generic [ref=e636]: Если что-то сломалось
+                    - generic [ref=e637]:
+                      - generic [ref=e638]: Гарантийный случай
+                      - generic [ref=e639]: Ответим за 4 рабочих часа
+                    - generic [ref=e640]:
+                      - generic [ref=e641]: Претензия по качеству или срокам
+                      - generic [ref=e642]: Рассмотрим за 10 дней
+                  - generic [ref=e643]:
+                    - generic [ref=e644]: Вопросы и идеи
+                    - generic [ref=e645]:
+                      - generic [ref=e646]: Вопрос по ремонту
+                      - generic [ref=e647]: Ответим за 8 рабочих часов
+                    - generic [ref=e648]: Предложение
+                  - generic [ref=e649]:
+                    - generic [ref=e650]: Оценка
+                    - generic [ref=e651]:
+                      - generic [ref=e652]: Оценить сдачу этапа
+                      - generic [ref=e653]: После подписания акта
+                    - generic [ref=e654]:
+                      - generic [ref=e655]: Спасибо бригаде
+                      - generic [ref=e656]: Увидят прораб и бригада
+                - generic [ref=e657]: "«Гарантийный случай» виден, пока не истёк срок гарантии объекта. После — «Платный ремонт»: заявка уходит в воронку «Заявки · Ремонт»."
+              - generic [ref=e658]:
+                - generic [ref=e659]:
+                  - generic [ref=e660]: ГРЗ
+                  - generic [ref=e661]:
+                    - strong [ref=e662]: Грузоперевозки
+                    - generic [ref=e663]: Бот в Telegram или MAX, кнопки вместо страницы
+                - generic [ref=e664]:
+                  - generic [ref=e665]: local_shipping
+                  - text: Рейс Р-196 · доставлено 27.09 · ООО «Фермерская лавка»
+                - generic [ref=e666]:
+                  - generic [ref=e667]:
+                    - generic [ref=e668]: Если что-то не так
+                    - generic [ref=e669]:
+                      - generic [ref=e670]: Повреждение или недостача груза
+                      - generic [ref=e671]: Фото, акт о расхождении, сумма
+                    - generic [ref=e672]: Опоздание к окну выгрузки
+                  - generic [ref=e673]:
+                    - generic [ref=e674]: Вопросы и идеи
+                    - generic [ref=e675]:
+                      - generic [ref=e676]: Вопрос по доставке
+                      - generic [ref=e677]: Ответим за 2 часа
+                    - generic [ref=e678]: Предложение
+                  - generic [ref=e679]:
+                    - generic [ref=e680]: Оценка
+                    - generic [ref=e681]:
+                      - generic [ref=e682]: Оценить доставку
+                      - generic [ref=e683]: После статуса «Доставлено»
+                    - generic [ref=e684]: Спасибо водителю
+                - generic [ref=e685]: "Претензию к перевозчику по закону рассматривают за 30 дней. Получатель — компания: если направление разрешает, её контакты видят обращения друг друга."
+            - generic [ref=e686]: Без личной ссылки (QR, виджет) клиент вводит телефон и код из SMS, затем выбирает свой визит, объект или рейс или пишет без привязки.
+      - generic [ref=e687]:
+        - generic [ref=e688]:
+          - link "1b" [ref=e689] [cursor=pointer]:
+            - /url: "#1b"
+          - text: Очередь обработчика. Все направления сотрудника, готовые очереди вместо языка запросов, сортировка по сроку; звонок заводит сотрудник.
+        - generic [ref=e691]:
+          - navigation [ref=e692]:
+            - generic [ref=e693]:
+              - generic [ref=e694]: Направления
+              - generic [ref=e695]:
+                - generic [ref=e696]: inbox
+                - generic [ref=e697]: Все мои
+                - generic [ref=e698]: "23"
+              - generic [ref=e699]:
+                - generic [ref=e701]: Массаж
+                - generic [ref=e702]: "9"
+              - generic [ref=e703]:
+                - generic [ref=e705]: Косметология
+                - generic [ref=e706]: "2"
+              - generic [ref=e707]:
+                - generic [ref=e709]: Отделка
+                - generic [ref=e710]: "5"
+              - generic [ref=e711]:
+                - generic [ref=e713]: Грузоперевозки
+                - generic [ref=e714]: "7"
+            - generic [ref=e715]:
+              - generic [ref=e716]: Очереди
+              - generic [ref=e717]:
+                - generic [ref=e718]: mark_email_unread
+                - generic [ref=e719]: Без ответа
+                - generic [ref=e720]: "6"
+              - generic [ref=e721]:
+                - generic [ref=e722]: person
+                - generic [ref=e723]: Мои
+                - generic [ref=e724]: "4"
+              - generic [ref=e725]:
+                - generic [ref=e726]: schedule
+                - generic [ref=e727]: Срок под угрозой
+                - generic [ref=e728]: "2"
+              - generic [ref=e729]:
+                - generic [ref=e730]: error
+                - generic [ref=e731]: Срок нарушен
+                - generic [ref=e732]: "1"
+              - generic [ref=e733]:
+                - generic [ref=e734]: hourglass_top
+                - generic [ref=e735]: Ждут клиента
+                - generic [ref=e736]: "3"
+              - generic [ref=e737]:
+                - generic [ref=e738]: sentiment_dissatisfied
+                - generic [ref=e739]: Низкие оценки
+                - generic [ref=e740]: "2"
+              - generic [ref=e741]:
+                - generic [ref=e742]: task_alt
+                - generic [ref=e743]: Решено за 7 дней
+                - generic [ref=e744]: "31"
+            - generic [ref=e746]: Видны направления, где у сотрудника есть роль. Свою очередь можно сохранить из фильтров.
+          - main [ref=e747]:
+            - generic [ref=e748]:
+              - heading "Обращения" [level=2] [ref=e749]
+              - generic [ref=e750]: Все мои направления · 23 открытых · сначала самый ранний срок
+              - generic [ref=e751]:
+                - generic [ref=e752]: call
+                - text: Обращение по звонку
+            - generic [ref=e753]:
+              - generic [ref=e754]:
+                - generic [ref=e755]: search
+                - text: Номер, клиент, телефон или текст
+              - generic [ref=e756]:
+                - text: Тип
+                - generic [ref=e757]: expand_more
+              - generic [ref=e758]:
+                - text: Канал
+                - generic [ref=e759]: expand_more
+              - generic [ref=e760]:
+                - text: Исполнитель
+                - generic [ref=e761]: expand_more
+              - generic [ref=e762]:
+                - text: Подразделение
+                - generic [ref=e763]: expand_more
+              - generic [ref=e764]: Сохранить как очередь
+            - generic [ref=e765]:
+              - generic [ref=e766]:
+                - generic [ref=e767]: Номер
+                - generic [ref=e768]: Обращение
+                - generic [ref=e769]: Связано и канал
+                - generic [ref=e770]: Исполнитель
+                - generic [ref=e771]: Статус
+                - generic [ref=e772]: Срок
+              - generic [ref=e773]:
+                - generic [ref=e774]: ГРЗ-57
+                - generic [ref=e775]:
+                  - generic [ref=e776]:
+                    - generic [ref=e777]: inventory_2
+                    - generic [ref=e778]: Повреждение груза
+                  - strong [ref=e779]: Две коробки помяты, внутри бой
+                  - generic [ref=e780]: ООО «Фермерская лавка»
+                - generic [ref=e781]:
+                  - generic [ref=e782]: Рейс Р-196 · 27.09
+                  - generic [ref=e783]:
+                    - generic [ref=e784]: smart_toy
+                    - generic [ref=e785]: Бот в Telegram
+                - generic [ref=e786]:
+                  - generic [ref=e787]: Не назначено
+                  - generic [ref=e788]: Взять себе
+                - generic [ref=e789]:
+                  - generic [ref=e790]: radio_button_unchecked
+                  - generic [ref=e791]: Новое
+                - generic [ref=e792]:
+                  - generic [ref=e793]: error
+                  - generic [ref=e794]:
+                    - generic [ref=e795]: Первый ответ
+                    - generic [ref=e796]: просрочен на 1 ч 10 мин
+              - generic [ref=e797]:
+                - generic [ref=e798]: МАС-41
+                - generic [ref=e799]:
+                  - generic [ref=e800]:
+                    - generic [ref=e801]: report
+                    - generic [ref=e802]: Жалоба
+                  - strong [ref=e803]: Начали на 15 минут позже, в кабинете холодно
+                  - generic [ref=e804]: Ольга Романова
+                - generic [ref=e805]:
+                  - generic [ref=e806]: Визит 1.10, 11:30 · SPA-ритуал
+                  - generic [ref=e807]:
+                    - generic [ref=e808]: star
+                    - generic [ref=e809]: Оценка 2 из 5 · SMS
+                - generic [ref=e810]:
+                  - generic [ref=e811]: Не назначено
+                  - generic [ref=e812]: Взять себе
+                - generic [ref=e813]:
+                  - generic [ref=e814]: radio_button_unchecked
+                  - generic [ref=e815]: Новое
+                - generic [ref=e816]:
+                  - generic [ref=e817]: schedule
+                  - generic [ref=e818]:
+                    - generic [ref=e819]: Первый ответ
+                    - generic [ref=e820]: осталось 48 мин
+              - generic [ref=e821]:
+                - generic [ref=e822]: ОТД-11
+                - generic [ref=e823]:
+                  - generic [ref=e824]:
+                    - generic [ref=e825]: gavel
+                    - generic [ref=e826]: Претензия
+                  - strong [ref=e827]: "Прошу уменьшить цену: перепад ламината в коридоре"
+                  - generic [ref=e828]: Игорь Чернов
+                - generic [ref=e829]:
+                  - generic [ref=e830]: Профсоюзная, 64 · кв. 210
+                  - generic [ref=e831]:
+                    - generic [ref=e832]: home_work
+                    - generic [ref=e833]: Кабинет заказчика
+                - generic [ref=e834]: Дарья Зимина
+                - generic [ref=e836]:
+                  - generic [ref=e837]: pending
+                  - generic [ref=e838]: В работе
+                - generic [ref=e839]:
+                  - generic [ref=e840]: gavel
+                  - generic [ref=e841]:
+                    - generic [ref=e842]: Ответ по закону
+                    - generic [ref=e843]: осталось 6 дней
+              - generic [ref=e844]:
+                - generic [ref=e845]: МАС-40
+                - generic [ref=e846]:
+                  - generic [ref=e847]:
+                    - generic [ref=e848]: help
+                    - generic [ref=e849]: Вопрос
+                  - strong [ref=e850]: Можно ли SPA-ритуал во время беременности?
+                  - generic [ref=e851]: Екатерина Л.
+                - generic [ref=e852]:
+                  - generic [ref=e853]: Без привязки
+                  - generic [ref=e854]:
+                    - generic [ref=e855]: web
+                    - generic [ref=e856]: Виджет на сайте
+                - generic [ref=e857]:
+                  - generic [ref=e858]: Не назначено
+                  - generic [ref=e859]: Взять себе
+                - generic [ref=e860]:
+                  - generic [ref=e861]: radio_button_unchecked
+                  - generic [ref=e862]: Новое
+                - generic [ref=e863]:
+                  - generic [ref=e864]: schedule
+                  - generic [ref=e865]:
+                    - generic [ref=e866]: Первый ответ
+                    - generic [ref=e867]: осталось 3 ч 40 мин
+              - generic [ref=e868]:
+                - generic [ref=e869]: ОТД-12
+                - generic [ref=e870]:
+                  - generic [ref=e871]:
+                    - generic [ref=e872]: verified_user
+                    - generic [ref=e873]: Гарантийный случай
+                  - strong [ref=e874]: Отошла плитка у душевого трапа
+                  - generic [ref=e875]: Андрей Кузнецов
+                - generic [ref=e876]:
+                  - generic [ref=e877]: Дом на Лесной · Мытищи
+                  - generic [ref=e878]:
+                    - generic [ref=e879]: home_work
+                    - generic [ref=e880]: Кабинет заказчика
+                - generic [ref=e881]: Дарья Зимина
+                - generic [ref=e883]:
+                  - generic [ref=e884]: pending
+                  - generic [ref=e885]: В работе
+                - generic [ref=e886]:
+                  - generic [ref=e887]: schedule
+                  - generic [ref=e888]:
+                    - generic [ref=e889]: Решение
+                    - generic [ref=e890]: осталось 9 раб. дней
+              - generic [ref=e891]:
+                - generic [ref=e892]: ГРЗ-55
+                - generic [ref=e893]:
+                  - generic [ref=e894]:
+                    - generic [ref=e895]: inventory_2
+                    - generic [ref=e896]: Недостача груза
+                  - strong [ref=e897]: Привезли 5 паллет из 6
+                  - generic [ref=e898]: ИП Сафонов
+                - generic [ref=e899]:
+                  - generic [ref=e900]: Рейс Р-192 · 26.09
+                  - generic [ref=e901]:
+                    - generic [ref=e902]: call
+                    - generic [ref=e903]: Звонок
+                - generic [ref=e904]: Вера Котельникова
+                - generic [ref=e906]:
+                  - generic [ref=e907]: hourglass_top
+                  - generic [ref=e908]: Ждёт клиента
+                - generic [ref=e909]:
+                  - generic [ref=e910]: pause_circle
+                  - generic [ref=e911]:
+                    - generic [ref=e912]: Пауза
+                    - generic [ref=e913]: ждём акт о расхождении
+              - generic [ref=e914]:
+                - generic [ref=e915]: КОС-6
+                - generic [ref=e916]:
+                  - generic [ref=e917]:
+                    - generic [ref=e918]: lightbulb
+                    - generic [ref=e919]: Предложение
+                  - strong [ref=e920]: Сделайте онлайн-запись на выходные
+                  - generic [ref=e921]: Мария К.
+                - generic [ref=e922]:
+                  - generic [ref=e923]: Без привязки
+                  - generic [ref=e924]:
+                    - generic [ref=e925]: qr_code_2
+                    - generic [ref=e926]: QR в салоне
+                - generic [ref=e927]:
+                  - generic [ref=e928]: Не назначено
+                  - generic [ref=e929]: Взять себе
+                - generic [ref=e930]:
+                  - generic [ref=e931]: radio_button_unchecked
+                  - generic [ref=e932]: Новое
+                - generic [ref=e933]:
+                  - generic [ref=e934]: schedule
+                  - generic [ref=e935]:
+                    - generic [ref=e936]: Первый ответ
+                    - generic [ref=e937]: осталось 2 раб. дня
+              - generic [ref=e938]:
+                - generic [ref=e939]: МАС-39
+                - generic [ref=e940]:
+                  - generic [ref=e941]:
+                    - generic [ref=e942]: favorite
+                    - generic [ref=e943]: Благодарность
+                  - strong [ref=e944]: Спасибо Анне, спина больше не болит
+                  - generic [ref=e945]: Мария К.
+                - generic [ref=e946]:
+                  - generic [ref=e947]: Визит 30.09 · классический массаж
+                  - generic [ref=e948]:
+                    - generic [ref=e949]: star
+                    - generic [ref=e950]: Оценка 5 из 5 · SMS
+                - generic [ref=e951]: Правило
+                - generic [ref=e953]:
+                  - generic [ref=e954]: check_circle
+                  - generic [ref=e955]: Решено
+                - generic [ref=e956]:
+                  - generic [ref=e957]: check_circle
+                  - generic [ref=e958]:
+                    - generic [ref=e959]: Готово
+                    - generic [ref=e960]: передано мастеру
+            - generic [ref=e961]: Срок идёт в рабочем времени направления и встаёт на паузу, только когда ждём клиента. Срок по закону идёт календарными днями без пауз. Жалобу на сотрудника видят руководитель направления и исполнитель обращения.
+      - generic [ref=e962]:
+        - generic [ref=e963]:
+          - link "1c" [ref=e964] [cursor=pointer]:
+            - /url: "#1c"
+          - text: Карточка обращения. Ответ клиенту и внутренняя заметка, сроки, клиент и визит, задача и компенсация, жалоба закрыта от мастера.
+        - generic [ref=e966]:
+          - main [ref=e967]:
+            - generic [ref=e968]: Обращения › Массаж › МАС-41
+            - generic [ref=e969]:
+              - generic [ref=e970]:
+                - generic [ref=e971]: МАС-41
+                - generic [ref=e972]:
+                  - generic [ref=e973]: report
+                  - text: Жалоба
+                - generic [ref=e974]:
+                  - generic [ref=e975]: radio_button_unchecked
+                  - text: Новое
+                - generic [ref=e976]:
+                  - generic [ref=e977]: priority_high
+                  - text: Высокий приоритет · оценка 2 из 5
+              - heading "Начали на 15 минут позже, в кабинете холодно" [level=2] [ref=e978]
+              - generic [ref=e979]: Создано правилом «Оценка 1–3 и просьба связаться → жалоба» · 1 октября, 15:12 · канал SMS
+            - generic [ref=e980]:
+              - generic [ref=e981]:
+                - generic [ref=e982]: play_arrow
+                - text: Взять в работу
+              - generic [ref=e983]: Ждём клиента
+              - generic [ref=e984]: Решено…
+              - generic [ref=e985]: В другое направление…
+              - generic [ref=e986]: more_horiz
+            - generic [ref=e988]:
+              - generic [ref=e989]:
+                - generic [ref=e990]: schedule
+                - generic [ref=e991]:
+                  - generic [ref=e992]: Первый ответ · до 17:12
+                  - generic [ref=e993]: осталось 48 мин
+              - generic [ref=e994]:
+                - generic [ref=e995]: flag
+                - generic [ref=e996]:
+                  - generic [ref=e997]: Решение · до 3 октября, 15:12
+                  - generic [ref=e998]: 2 рабочих дня
+              - generic [ref=e999]: "Рабочее время салона: ежедневно 10:00–21:00"
+            - generic [ref=e1000]:
+              - generic [ref=e1001]:
+                - generic [ref=e1002]: sentiment_dissatisfied
+                - generic [ref=e1004]:
+                  - generic [ref=e1005]:
+                    - strong [ref=e1006]: Ольга Романова
+                    - text: · оценка визита · 15:12
+                  - generic [ref=e1007]:
+                    - generic [ref=e1008]:
+                      - generic [ref=e1009]: star
+                      - text: 2 из 5
+                    - generic [ref=e1010]: Опоздание начала
+                    - generic [ref=e1011]: Температура в кабинете
+                    - generic [ref=e1012]: Просит связаться
+                  - generic [ref=e1013]: «Начали на 15 минут позже, в кабинете холодно. Сам массаж хороший.»
+              - generic [ref=e1014]:
+                - generic [ref=e1015]: bolt
+                - generic [ref=e1017]:
+                  - generic [ref=e1018]:
+                    - strong [ref=e1019]: Автоответ клиенту
+                    - generic [ref=e1020]: SMS · 15:12
+                    - generic [ref=e1021]:
+                      - generic [ref=e1022]: visibility
+                      - text: Клиент видит
+                  - generic [ref=e1023]: Ольга, спасибо за честную оценку. Администратор ответит в течение 2 часов.
+              - generic [ref=e1024]:
+                - generic [ref=e1025]: ДЗ
+                - generic [ref=e1026]:
+                  - generic [ref=e1027]:
+                    - strong [ref=e1028]: Дарья Зимина
+                    - generic [ref=e1029]: 15:40
+                    - generic [ref=e1030]:
+                      - generic [ref=e1031]: lock
+                      - text: Внутренняя заметка · клиент не видит
+                  - generic [ref=e1032]: "Проверила журнал кабинета № 2: в 11:30 не включился подогрев стола, Анна начала в 11:45. Завела задачу T-71 на ремонт стола. Предлагаю скидку 20% на следующий визит."
+              - generic [ref=e1033]:
+                - generic [ref=e1034]:
+                  - generic [ref=e1035]: Ответить клиенту
+                  - generic [ref=e1036]:
+                    - generic [ref=e1037]: lock
+                    - text: Внутренняя заметка
+                - generic [ref=e1038]:
+                  - generic [ref=e1039]: "Ольга, извините за ожидание и холод в кабинете: в тот день не включился подогрев стола, его уже чинят. Дарим скидку 20% на следующий визит, она привязана к вашему номеру."
+                  - generic [ref=e1040]:
+                    - generic [ref=e1041]:
+                      - generic [ref=e1042]: text_snippet
+                      - text: Шаблоны ответов
+                    - generic [ref=e1043]:
+                      - generic [ref=e1044]: attach_file
+                      - text: Файл
+                    - generic [ref=e1045]:
+                      - generic [ref=e1046]: redeem
+                      - text: "Компенсация: скидка 20% на следующий визит"
+                      - generic [ref=e1047]: close
+                  - generic [ref=e1048]:
+                    - generic [ref=e1049]:
+                      - generic [ref=e1050]: sms
+                      - text: Уйдёт в SMS на +7 ••• •••-••-18 — канал обращения
+                    - generic [ref=e1051]: Отправить
+                    - generic [ref=e1052]:
+                      - generic [ref=e1053]: send
+                      - text: Отправить и решить
+          - complementary [ref=e1054]:
+            - generic [ref=e1055]:
+              - generic [ref=e1056]: Исполнитель
+              - generic [ref=e1057]:
+                - generic [ref=e1058]: Не назначено
+                - generic [ref=e1059]: Назначить меня
+              - generic [ref=e1060]: Приоритет
+              - generic [ref=e1061]: Высокий
+              - generic [ref=e1062]: Подразделение
+              - generic [ref=e1063]: Альта SPA
+              - generic [ref=e1064]: Метки
+              - generic [ref=e1065]: опоздание · оборудование
+            - generic [ref=e1066]:
+              - generic [ref=e1067]: Клиент
+              - strong [ref=e1068]: Ольга Романова
+              - generic [ref=e1069]:
+                - text: +7 ••• •••-••-18
+                - generic [ref=e1070]:
+                  - generic [ref=e1071]: visibility
+                  - text: Показать
+              - generic [ref=e1072]: Клиент с марта 2025 · 7 визитов · прошлые оценки 5, 5, 4
+              - generic [ref=e1073]: Раньше обращений не было
+            - generic [ref=e1074]:
+              - generic [ref=e1075]: Визит
+              - strong [ref=e1076]: SPA-ритуал · 1 октября, 11:30–13:00
+              - generic [ref=e1077]: Кабинет № 2 · стол с подогревом
+              - generic [ref=e1078]: "Мастер: Анна Морозова"
+              - generic [ref=e1079]: Открыть в календаре
+            - generic [ref=e1080]:
+              - generic [ref=e1081]: Кто видит
+              - generic [ref=e1082]:
+                - generic [ref=e1083]: shield_person
+                - generic [ref=e1084]: Жалоба на визит мастера. Анна Морозова не видит обращение, пока руководитель не поделится выводом. Благодарности мастер видит сразу.
+              - generic [ref=e1085]: Поделиться выводом с мастером…
+            - generic [ref=e1086]:
+              - generic [ref=e1087]:
+                - generic [ref=e1088]: Связанные задачи
+                - generic [ref=e1089]: ＋ Задача
+              - generic [ref=e1090]:
+                - generic [ref=e1091]: T-71
+                - generic [ref=e1092]: Починить подогрев стола в кабинете № 2
+                - generic [ref=e1093]: Новая
+            - generic [ref=e1094]:
+              - generic [ref=e1095]: После решения
+              - generic [ref=e1096]: Клиенту придёт вопрос «Довольны ли решением?». Скидка сохранится в карточке клиента и применится при оплате визита. Вернуть деньги можно только через кассу, основание — МАС-41.
+      - generic [ref=e1097]:
+        - generic [ref=e1098]:
+          - link "1d" [ref=e1099] [cursor=pointer]:
+            - /url: "#1d"
+          - text: Направление и типы обращений. Направления заводит владелец; у типа — форма, привязка, сроки и каналы; срок по закону без пауз.
+        - generic [ref=e1101]:
+          - navigation [ref=e1102]:
+            - strong [ref=e1103]: Направления
+            - generic [ref=e1104]:
+              - generic [ref=e1105]: МАС
+              - generic [ref=e1106]:
+                - strong [ref=e1107]: Массаж
+                - generic [ref=e1108]: Салон и SPA · Альта SPA
+            - generic [ref=e1109]:
+              - generic [ref=e1110]: КОС
+              - generic [ref=e1111]:
+                - strong [ref=e1112]: Косметология
+                - generic [ref=e1113]: Салон и SPA · Альта SPA
+            - generic [ref=e1114]:
+              - generic [ref=e1115]: ОТД
+              - generic [ref=e1116]:
+                - strong [ref=e1117]: Отделка
+                - generic [ref=e1118]: Ремонт и стройка · Москва
+            - generic [ref=e1119]:
+              - generic [ref=e1120]: ГРЗ
+              - generic [ref=e1121]:
+                - strong [ref=e1122]: Грузоперевозки
+                - generic [ref=e1123]: Логистика · Москва, Самара
+            - generic [ref=e1124]:
+              - generic [ref=e1125]: add
+              - text: Новое направление
+            - generic [ref=e1127]: "Направление — сервисный проект модуля «Задачи»: ключ, область, процесс с версиями и роли из «Пользователей и ролей». На одном модуле может быть несколько направлений: «Массаж» и «Косметология» работают на «Салоне и SPA»."
+          - main [ref=e1128]:
+            - generic [ref=e1129]:
+              - generic [ref=e1130]: ОТД
+              - generic [ref=e1131]:
+                - heading "Отделка" [level=2] [ref=e1132]
+                - generic [ref=e1133]: "Номера обращений: ОТД-1, ОТД-2… · страница для клиентов alta.ortus.ru/otdelka"
+              - generic [ref=e1134]:
+                - generic [ref=e1135]: edit_note
+                - text: Черновик v4 · 2 изменения
+              - generic [ref=e1136]: Опубликовать v4
+            - generic [ref=e1137]:
+              - generic [ref=e1138]:
+                - generic [ref=e1139]: construction
+                - text: "Модуль: Ремонт и стройка"
+              - generic [ref=e1140]:
+                - generic [ref=e1141]: account_tree
+                - text: "Область: регион «Москва»"
+              - generic [ref=e1142]:
+                - generic [ref=e1143]: group
+                - text: "Команда: 3 · руководитель направления и 2 специалиста"
+            - generic [ref=e1144]:
+              - generic [ref=e1145]: Типы обращений
+              - generic [ref=e1146]: Сроки и календарь
+              - generic [ref=e1147]: Каналы
+              - generic [ref=e1148]: Оценки
+              - generic [ref=e1149]: Команда
+              - generic [ref=e1150]: Процесс и автоматизация
+            - generic [ref=e1151]:
+              - generic [ref=e1152]:
+                - generic [ref=e1153]: Тип для клиента
+                - generic [ref=e1154]: Внутри
+                - generic [ref=e1155]: Форма и привязка
+                - generic [ref=e1156]: Ответ / решение
+                - generic [ref=e1157]: Каналы
+              - generic [ref=e1158]: "Группа на странице: «Если что-то сломалось»"
+              - generic [ref=e1159]:
+                - generic [ref=e1160]:
+                  - strong [ref=e1161]: Гарантийный случай
+                  - generic [ref=e1162]: Отошло, треснуло, перестало работать после сдачи
+                - generic [ref=e1163]: Гарантия
+                - generic [ref=e1164]:
+                  - generic [ref=e1165]: Форма «Гарантийный случай» v2
+                  - generic [ref=e1166]: Объект обязателен · проверка гарантии
+                - generic [ref=e1167]:
+                  - generic [ref=e1168]: 4 раб. часа
+                  - generic [ref=e1169]: 10 раб. дней
+                - generic [ref=e1170]: Кабинет, QR на акте, бот, звонок
+              - generic [ref=e1171]:
+                - generic [ref=e1172]:
+                  - strong [ref=e1173]: Претензия по качеству или срокам
+                  - generic [ref=e1174]: Уменьшить цену, вернуть деньги, возместить расходы
+                - generic [ref=e1175]: Претензия
+                - generic [ref=e1176]:
+                  - generic [ref=e1177]: Форма «Претензия» v1
+                  - generic [ref=e1178]: Объект и договор обязательны
+                - generic [ref=e1179]:
+                  - generic [ref=e1180]: 1 раб. день
+                  - generic [ref=e1181]:
+                    - generic [ref=e1182]: gavel
+                    - text: по закону 10 дней
+                - generic [ref=e1183]: Кабинет, звонок
+              - generic [ref=e1184]: "Группа на странице: «Вопросы и идеи»"
+              - generic [ref=e1185]:
+                - generic [ref=e1186]:
+                  - strong [ref=e1187]: Вопрос по ремонту
+                  - generic [ref=e1188]: Сроки, материалы, доступ на объект
+                - generic [ref=e1189]: Вопрос
+                - generic [ref=e1190]:
+                  - generic [ref=e1191]: Без формы
+                  - generic [ref=e1192]: Объект по желанию
+                - generic [ref=e1193]:
+                  - generic [ref=e1194]: 8 раб. часов
+                  - generic [ref=e1195]: 3 раб. дня
+                - generic [ref=e1196]: Кабинет, виджет, бот, звонок
+              - generic [ref=e1197]:
+                - generic [ref=e1198]:
+                  - strong [ref=e1199]: Предложение
+                  - generic [ref=e1200]: Что сделать удобнее
+                - generic [ref=e1201]: Предложение
+                - generic [ref=e1202]:
+                  - generic [ref=e1203]: Без формы
+                  - generic [ref=e1204]: Без привязки
+                - generic [ref=e1205]:
+                  - generic [ref=e1206]: 3 раб. дня
+                  - generic [ref=e1207]: без срока
+                - generic [ref=e1208]: Кабинет, виджет, бот
+              - generic [ref=e1209]: "Группа на странице: «Оценка»"
+              - generic [ref=e1210]:
+                - generic [ref=e1211]:
+                  - strong [ref=e1212]: Оценить сдачу этапа
+                  - generic [ref=e1213]: Приходит после подписания акта
+                - generic [ref=e1214]: Оценка услуги
+                - generic [ref=e1215]:
+                  - generic [ref=e1216]: Опрос «Оценка этапа» · 1–5 и причины
+                  - generic [ref=e1217]: 1–3 и «свяжитесь» → жалоба
+                - generic [ref=e1218]: без срока
+                - generic [ref=e1219]: SMS, бот
+              - generic [ref=e1220]:
+                - generic [ref=e1221]:
+                  - strong [ref=e1222]: Спасибо бригаде
+                  - generic [ref=e1223]: Увидят прораб и бригада
+                - generic [ref=e1224]: Благодарность
+                - generic [ref=e1225]:
+                  - generic [ref=e1226]: Без формы
+                  - generic [ref=e1227]: Объект обязателен
+                - generic [ref=e1228]: без срока, закрывается сама
+                - generic [ref=e1229]: Кабинет, бот
+              - generic [ref=e1230]: "Не на странице: заводят сотрудники и правила"
+              - generic [ref=e1231]:
+                - generic [ref=e1232]:
+                  - strong [ref=e1233]: Жалоба
+                  - generic [ref=e1234]: Из низкой оценки или по звонку
+                - generic [ref=e1235]: Жалоба
+                - generic [ref=e1236]:
+                  - generic [ref=e1237]: Без формы
+                  - generic [ref=e1238]: Объект обязателен
+                - generic [ref=e1239]:
+                  - generic [ref=e1240]: 2 раб. часа
+                  - generic [ref=e1241]: 2 раб. дня
+                - generic [ref=e1242]: Правило, звонок
+            - generic [ref=e1243]:
+              - generic [ref=e1244]:
+                - generic [ref=e1245]:
+                  - generic [ref=e1246]: calendar_month
+                  - text: Рабочее время
+                - generic [ref=e1247]: Пн–пт 9:00–19:00, праздники РФ, часовой пояс Москвы. Рабочие часы и дни считаются только в это время.
+              - generic [ref=e1248]:
+                - generic [ref=e1249]:
+                  - generic [ref=e1250]: notifications_active
+                  - text: Эскалация
+                - generic [ref=e1251]: 75% срока — уведомление исполнителю. Срок нарушен — руководителю направления. Ещё рабочий день — владельцу.
+              - generic [ref=e1252]:
+                - generic [ref=e1253]:
+                  - generic [ref=e1254]: gavel
+                  - text: Сроки по закону
+                - generic [ref=e1255]: "Претензия: 10 дней по ст. 31 Закона о защите прав потребителей. Календарные дни, без паузы на «Ждёт клиента». Значения проверяет юрист."
+          - complementary [ref=e1256]:
+            - generic [ref=e1257]:
+              - generic [ref=e1258]:
+                - generic [ref=e1259]: Тип обращения · Отделка
+                - generic [ref=e1260]: close
+              - heading "Гарантийный случай" [level=3] [ref=e1261]
+              - generic [ref=e1262]: Изменения попадут в черновик v4 направления
+            - generic [ref=e1263]:
+              - generic [ref=e1264]:
+                - generic [ref=e1265]: Что видит клиент
+                - generic [ref=e1266]: Гарантийный случай
+                - generic [ref=e1267]: Если после сдачи что-то отошло, треснуло или перестало работать
+                - generic [ref=e1268]:
+                  - text: "Группа: Если что-то сломалось"
+                  - generic [ref=e1269]: expand_more
+              - generic [ref=e1270]:
+                - generic [ref=e1271]: Форма
+                - generic [ref=e1272]:
+                  - generic [ref=e1273]:
+                    - generic [ref=e1274]: dynamic_form
+                    - strong [ref=e1275]: «Гарантийный случай» · v2
+                    - generic [ref=e1276]: Открыть
+                  - generic [ref=e1277]: "Где: помещение* · Что случилось* · Фото, до 10* · Когда заметили"
+              - generic [ref=e1278]:
+                - generic [ref=e1279]: Привязка
+                - generic [ref=e1280]: Объект обязателен. Из кабинета заказчика подставляется сам, по звонку сотрудник выбирает объект клиента.
+                - generic [ref=e1281]:
+                  - generic [ref=e1282]: check_box
+                  - generic [ref=e1283]:
+                    - generic [ref=e1284]: Только пока действует гарантия объекта
+                    - generic [ref=e1285]: Иначе клиент видит «Платный ремонт», заявка уходит в воронку «Заявки · Ремонт»
+              - generic [ref=e1286]:
+                - generic [ref=e1287]: Обработка
+                - generic [ref=e1288]:
+                  - generic [ref=e1289]: Приоритет
+                  - generic [ref=e1290]: Средний
+                  - generic [ref=e1291]: Назначать
+                  - generic [ref=e1292]: Руководителю направления
+                - generic [ref=e1293]: Прораб объекта получает задачу на выезд. Переписку и телефон клиента он не видит.
+              - generic [ref=e1294]:
+                - generic [ref=e1295]: Сроки
+                - generic [ref=e1296]:
+                  - generic [ref=e1297]: Первый ответ
+                  - generic [ref=e1298]: "4"
+                  - generic [ref=e1299]: рабочих часа
+                  - generic [ref=e1300]: Решение
+                  - generic [ref=e1301]: "10"
+                  - generic [ref=e1302]: рабочих дней · было 14
+                - generic [ref=e1303]: "Пауза: «Ждёт клиента». Эскалация — как у направления."
+              - generic [ref=e1304]:
+                - generic [ref=e1305]: Каналы
+                - generic [ref=e1306]:
+                  - generic [ref=e1307]:
+                    - generic [ref=e1308]: check
+                    - text: Кабинет заказчика
+                  - generic [ref=e1309]:
+                    - generic [ref=e1310]: check
+                    - text: QR на акте
+                  - generic [ref=e1311]:
+                    - generic [ref=e1312]: check
+                    - text: Бот
+                  - generic [ref=e1313]:
+                    - generic [ref=e1314]: check
+                    - text: Звонок
+                  - generic [ref=e1315]:
+                    - generic [ref=e1316]: block
+                    - text: "Виджет: нужна привязка к объекту"
+              - generic [ref=e1317]:
+                - generic [ref=e1318]: check_box
+                - generic [ref=e1319]:
+                  - generic [ref=e1320]: Спросить «Довольны ли решением?»
+                  - generic [ref=e1321]: После статуса «Решено», один раз на обращение
+            - generic [ref=e1322]:
+              - generic [ref=e1323]: Отмена
+              - generic [ref=e1324]: Сохранить в черновик
+      - generic [ref=e1325]:
+        - generic [ref=e1326]:
+          - link "1e" [ref=e1327] [cursor=pointer]:
+            - /url: "#1e"
+          - text: Отчёт по направлениям. Сроки, оценки с числом ответов, причины низких оценок; оценки мастеров — по отдельному праву.
+        - generic [ref=e1329]:
+          - generic [ref=e1330]:
+            - generic [ref=e1331]:
+              - heading "Отчёт по обращениям" [level=2] [ref=e1332]
+              - generic [ref=e1333]: Направления, где у вас есть право «Отчёты» · 1–30 сентября 2026
+            - generic [ref=e1334]:
+              - generic [ref=e1335]: 7 дней
+              - generic [ref=e1336]: 30 дней
+              - generic [ref=e1337]: Квартал
+            - generic [ref=e1338]:
+              - generic [ref=e1339]: download
+              - text: Выгрузить CSV
+          - generic [ref=e1340]:
+            - generic [ref=e1341]:
+              - generic [ref=e1342]: Направление
+              - generic [ref=e1343]: Обращений
+              - generic [ref=e1344]: Открыто
+              - generic [ref=e1345]: В срок
+              - generic [ref=e1346]: Первый ответ, медиана
+              - generic [ref=e1347]: Оценка услуги
+              - generic [ref=e1348]: Оценка решения
+              - generic [ref=e1349]: Чаще всего
+            - generic [ref=e1350]:
+              - generic [ref=e1351]:
+                - generic [ref=e1352]: МАС
+                - strong [ref=e1354]: Массаж
+              - generic [ref=e1355]: "64"
+              - generic [ref=e1356]: "9"
+              - generic [ref=e1357]: 91%
+              - generic [ref=e1358]: 42 мин
+              - generic [ref=e1359]:
+                - strong [ref=e1360]: 4,7
+                - generic [ref=e1361]: 312 оценок
+              - generic [ref=e1362]:
+                - strong [ref=e1363]: 4,5
+                - generic [ref=e1364]: 38 оценок
+              - generic [ref=e1365]: Опоздание начала · 11
+            - generic [ref=e1366]:
+              - generic [ref=e1367]:
+                - generic [ref=e1368]: КОС
+                - strong [ref=e1370]: Косметология
+              - generic [ref=e1371]: "12"
+              - generic [ref=e1372]: "2"
+              - generic [ref=e1373]: 100%
+              - generic [ref=e1374]: 1 ч 05 мин
+              - generic [ref=e1375]:
+                - strong [ref=e1376]: 4,8
+                - generic [ref=e1377]: 57 оценок
+              - generic [ref=e1378]:
+                - strong [ref=e1379]: 5,0
+                - generic [ref=e1380]: мало ответов · 6
+              - generic [ref=e1381]: Онлайн-запись · 4
+            - generic [ref=e1382]:
+              - generic [ref=e1383]:
+                - generic [ref=e1384]: ОТД
+                - strong [ref=e1386]: Отделка
+              - generic [ref=e1387]: "23"
+              - generic [ref=e1388]: "5"
+              - generic [ref=e1389]: 78%
+              - generic [ref=e1390]: 3 ч 20 мин
+              - generic [ref=e1391]:
+                - strong [ref=e1392]: 4,2
+                - generic [ref=e1393]: мало ответов · 14
+              - generic [ref=e1394]:
+                - strong [ref=e1395]: 4,0
+                - generic [ref=e1396]: мало ответов · 15
+              - generic [ref=e1397]: Сроки этапов · 7
+            - generic [ref=e1398]:
+              - generic [ref=e1399]:
+                - generic [ref=e1400]: ГРЗ
+                - strong [ref=e1402]: Грузоперевозки
+              - generic [ref=e1403]: "41"
+              - generic [ref=e1404]: "7"
+              - generic [ref=e1405]: 83%
+              - generic [ref=e1406]: 1 ч 50 мин
+              - generic [ref=e1407]:
+                - strong [ref=e1408]: 4,4
+                - generic [ref=e1409]: 96 оценок
+              - generic [ref=e1410]:
+                - strong [ref=e1411]: 3,9
+                - generic [ref=e1412]: 30 оценок
+              - generic [ref=e1413]: Опоздание к окну выгрузки · 12
+            - generic [ref=e1414]:
+              - generic [ref=e1415]: Все направления
+              - generic [ref=e1416]: "140"
+              - generic [ref=e1417]: "23"
+              - generic [ref=e1418]: 87%
+              - generic [ref=e1419]: 1 ч 05 мин
+              - generic [ref=e1420]:
+                - generic [ref=e1421]: 4,6
+                - generic [ref=e1422]: 479 оценок
+              - generic [ref=e1423]:
+                - generic [ref=e1424]: 4,2
+                - generic [ref=e1425]: 89 оценок
+          - generic [ref=e1426]:
+            - generic [ref=e1427]:
+              - generic [ref=e1428]:
+                - strong [ref=e1429]: Массаж · причины низких оценок
+                - generic [ref=e1430]: 24 оценки 1–3 из 312. 18 клиентов попросили связаться — их оценки стали жалобами.
+              - generic [ref=e1431]:
+                - generic [ref=e1432]: Опоздание начала
+                - generic [ref=e1435]: "11"
+              - generic [ref=e1436]:
+                - generic [ref=e1437]: Температура в кабинете
+                - generic [ref=e1440]: "6"
+              - generic [ref=e1441]:
+                - generic [ref=e1442]: Чистота
+                - generic [ref=e1445]: "3"
+              - generic [ref=e1446]:
+                - generic [ref=e1447]: Запись и администратор
+                - generic [ref=e1450]: "2"
+              - generic [ref=e1451]:
+                - generic [ref=e1452]: Другое
+                - generic [ref=e1455]: "2"
+              - generic [ref=e1456]: Причины — варианты из опроса направления; по клику открывается список оценок и жалоб.
+            - generic [ref=e1457]:
+              - strong [ref=e1458]: Массаж · по неделям
+              - generic [ref=e1459]:
+                - generic [ref=e1460]: Неделя
+                - generic [ref=e1461]: Обращений
+                - generic [ref=e1462]: В срок
+                - generic [ref=e1463]: Оценка услуги
+              - generic [ref=e1464]:
+                - generic [ref=e1465]: 1–7 сентября
+                - generic [ref=e1466]: "14"
+                - generic [ref=e1467]: 93%
+                - generic [ref=e1471]:
+                  - strong [ref=e1472]: 4,8
+                  - text: · 71
+              - generic [ref=e1473]:
+                - generic [ref=e1474]: 8–14 сентября
+                - generic [ref=e1475]: "17"
+                - generic [ref=e1476]: 94%
+                - generic [ref=e1480]:
+                  - strong [ref=e1481]: 4,7
+                  - text: · 80
+              - generic [ref=e1482]:
+                - generic [ref=e1483]: 15–21 сентября
+                - generic [ref=e1484]: "15"
+                - generic [ref=e1485]: 93%
+                - generic [ref=e1489]:
+                  - strong [ref=e1490]: 4,7
+                  - text: · 76
+              - generic [ref=e1491]:
+                - generic [ref=e1492]: 22–30 сентября
+                - generic [ref=e1493]: "18"
+                - generic [ref=e1494]: 83%
+                - generic [ref=e1498]:
+                  - strong [ref=e1499]: 4,5
+                  - text: · 85
+              - generic [ref=e1500]: "Шкала оценки — от 4,0 до 5,0. Последняя неделя: 3 из 5 нарушений сроков — жалобы, пришедшие после 20:00."
+          - generic [ref=e1501]:
+            - generic [ref=e1502]:
+              - strong [ref=e1503]: Массаж · мастера
+              - generic [ref=e1504]:
+                - generic [ref=e1505]: lock
+                - text: Право «Оценки сотрудников» · владелец и руководитель направления
+            - generic [ref=e1506]:
+              - generic [ref=e1507]: Мастер
+              - generic [ref=e1508]: Оценка услуги
+              - generic [ref=e1509]: Оценок
+              - generic [ref=e1510]: Жалобы подтвердились
+              - generic [ref=e1511]: Благодарности
+            - generic [ref=e1512]:
+              - generic [ref=e1513]: Анна Морозова
+              - strong [ref=e1514]: 4,8
+              - generic [ref=e1515]: "120"
+              - generic [ref=e1516]: 1 из 2
+              - generic [ref=e1517]: "14"
+            - generic [ref=e1518]:
+              - generic [ref=e1519]: Ксения Лебедева
+              - strong [ref=e1520]: 4,6
+              - generic [ref=e1521]: "98"
+              - generic [ref=e1522]: 3 из 3
+              - generic [ref=e1523]: "9"
+            - generic [ref=e1524]:
+              - generic [ref=e1525]: Олег Тихонов
+              - strong [ref=e1526]: 4,7
+              - generic [ref=e1527]: "94"
+              - generic [ref=e1528]: 0 из 1
+              - generic [ref=e1529]: "6"
+            - generic [ref=e1530]: Жалоба идёт в счёт мастера, только если при решении выбран итог «Подтвердилась». Сам мастер видит свои оценки и благодарности, но не сравнение с коллегами.
+          - generic [ref=e1531]: Оценка всегда показывается с числом ответов. Меньше 20 ответов — пометка «мало ответов», без сравнения с прошлым периодом. «В срок» — доля обращений, где первый ответ и решение уложились в цели.
+    - paragraph [ref=e1532]:
+      - text: "Что дальше: «встроить"
+      - link "1b" [ref=e1533] [cursor=pointer]:
+        - /url: "#1b"
+      - text: и
+      - link "1c" [ref=e1534] [cursor=pointer]:
+        - /url: "#1c"
+      - text: "в прототип» · «вариант одной страницы для всех направлений вместо отдельных» · «показать вкладку „Оценки“: опросы, частота, тихие часы»"

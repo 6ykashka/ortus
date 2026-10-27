@@ -1,0 +1,22 @@
+- main [ref=f1e3]:
+  - generic [ref=f1e4]:
+    - generic [ref=f1e5]:
+      - generic [ref=f1e6]: А
+      - generic [ref=f1e7]:
+        - strong [ref=f1e8]: Альта Групп
+        - generic [ref=f1e9]: Массаж
+      - button "Мои обращения · 1" [ref=f1e53] [cursor=pointer]
+    - region [ref=f1e54]:
+      - generic [ref=f1e55]: check_circle
+      - heading "Приняли ваше обращение" [level=1] [ref=f1e56]
+      - generic [ref=f1e57]:
+        - generic [ref=f1e58]:
+          - term [ref=f1e59]: Номер
+          - definition [ref=f1e60]: МАС-42
+        - generic [ref=f1e61]:
+          - term [ref=f1e62]: Статус
+          - definition [ref=f1e63]: Получили
+      - paragraph [ref=f1e64]: "Сохраните ссылку: по ней можно вернуться к обращению."
+      - link "Следить за ответом" [ref=f1e65] [cursor=pointer]:
+        - /url: /r/tok_2faaaa1bd28e5170873b98edbe98e8a0z
+      - button "Написать ещё" [ref=f1e66] [cursor=pointer]
