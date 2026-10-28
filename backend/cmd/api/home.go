@@ -24,10 +24,10 @@ import (
 // here), the memberships of the control DB for the tenant of the query, the module states of the registry W1.08 and the
 // clock of the application (APP_FIXED_NOW outside prod). The source of tasks also gives the counters of
 // getMyTaskSummary; it reads through the port of the module «Задачи» on the same pools, evaluator and control DB.
-func homeServer(dir tenantctx.Directory, pools scopeddb.Pools, ev *authz.Evaluator, states home.Modules, org orgFacts, now func() time.Time) homeapi.StrictServerInterface {
+func homeServer(dir tenantctx.Directory, pools scopeddb.Pools, ev *authz.Evaluator, states home.Modules, org orgFacts, now func() time.Time, extra ...home.Source) homeapi.StrictServerInterface {
 	tk := hometasks.Source{Tasks: taskPort{S: &tasks.Service{Pools: pools, Authz: ev, Directory: tasks.ControlDirectory{DB: org.control}, Now: now}}}
-	reg, err := home.NewRegistry(homefleet.Source{Pools: pools, Authz: ev},
-		homeorg.Source{Pools: pools, Authz: ev, Control: org.control, Subscriptions: orgSubscriptions{current: org.subs.Current}}, tk)
+	reg, err := home.NewRegistry(append([]home.Source{homefleet.Source{Pools: pools, Authz: ev},
+		homeorg.Source{Pools: pools, Authz: ev, Control: org.control, Subscriptions: orgSubscriptions{current: org.subs.Current}}, tk}, extra...)...)
 	if err != nil { // the sources above are never nil: a programming error
 		panic(err)
 	}

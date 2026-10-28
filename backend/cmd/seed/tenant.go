@@ -80,7 +80,10 @@ func seedTenantDB(ctx context.Context, super, control *sql.DB, dsn string, td te
 		where tenant_id = $1 and schema_version <> $2`, td.tenant.id(), res.To); err != nil {
 		return res, fmt.Errorf("tenant_routing: %w", err)
 	}
-	return res, writeTenant(ctx, db, td, objs)
+	if err := writeTenant(ctx, db, td, objs); err != nil {
+		return res, err
+	}
+	return res, writeServiceIndex(ctx, control, td) // W7.31: the control index of the personal links and the pages
 }
 
 func writeTenant(ctx context.Context, db *sql.DB, td tenantData, objs objectStore) (err error) {
@@ -109,6 +112,7 @@ func writeTenant(ctx context.Context, db *sql.DB, td tenantData, objs objectStor
 		writeKnowledge,  // the knowledge base (knowledge.go, W4.31)
 		writeForms,      // the forms and their responses (forms.go, W4.21)
 		writeDocs,       // the documents of the demo (docs.go, W7.23)
+		writeService,    // the directions and the requests of «Обращения» (service.go, W7.31)
 		writeStand,      // «Логистика» of «Альта» on the stand (stand.go, W2.54)
 	} {
 		if err = step(ctx, tx, td); err != nil {

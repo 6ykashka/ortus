@@ -41,7 +41,7 @@ var alta = tenantData{
 	// «Диспетчер · Самара» — регион Самара.
 	members: []member{
 		{"m-owner", "Дарья Зимина", "d.zimina@alta.example", stActive, "Владелец", "", homeAlta},
-		{"m-kotova", "Марина Котова", "m.kotova@alta.example", stActive, "Логист", "", homeAlta},
+		{memberKotova, "Марина Котова", "m.kotova@alta.example", stActive, "Логист", "", homeAlta},
 		{"m-vasiliev", "Илья Васильев", "i.vasiliev@alta.example", stActive, "Водитель", "driver", homeAlta},
 		{"m-morozova", "Анна Морозова", "a.morozova@alta.example", stActive, "Массажист", "", homeAlta},
 		{"m-sokolov", "Алексей Соколов", "a.sokolov@alta.example", stActive, "Прораб", "", homeAlta},

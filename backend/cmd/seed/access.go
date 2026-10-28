@@ -107,12 +107,12 @@ var (
 var altaAccess = access{
 	roles: []roleDef{roleOwner, roleManager, roleDriver, roleTherapist, roleForeman, rolePM, roleApprover, roleExecutor, roleViewer},
 	groups: []groupDef{
-		{"g-disp", "Диспетчеры Север", []string{"m-kotova", "m-petrova"}},
+		{"g-disp", "Диспетчеры Север", []string{memberKotova, "m-petrova"}},
 		{"g-drv", "Водители Север", []string{"m-vasiliev", "m-gromov"}},
 	},
 	assignments: []assignmentDef{
 		{"a1", memberOwner, roleOwner.proto, scopeTenant, ""},
-		{"ap1", "m-kotova", rolePM.proto, scopeProject, projectFleet},
+		{"ap1", memberKotova, rolePM.proto, scopeProject, projectFleet},
 		{"ap2", groupPrefix + "g-drv", roleExecutor.proto, scopeProject, projectFleet},
 		{"ap3", "m-kotelnikova", roleApprover.proto, scopeProject, projectFleet},
 		{"a2", groupPrefix + "g-drv", roleDriver.proto, scopeUnit, homeAlta},

@@ -19,7 +19,6 @@ var serviceW700Matrix = matrix.File{
 			Method:  "GET",
 			Path:    "/api/v1/tenants/{tenantId}/service/directions",
 			Channel: "http",
-			Pending: "W7.31",
 			Rows: []matrix.Row{
 				{
 					Actor:  "b.owner",
@@ -40,7 +39,6 @@ var serviceW700Matrix = matrix.File{
 			Method:  "POST",
 			Path:    "/api/v1/tenants/{tenantId}/service/directions",
 			Channel: "http",
-			Pending: "W7.31",
 			Rows: []matrix.Row{
 				{
 					Actor:  "b.owner",
@@ -63,7 +61,6 @@ var serviceW700Matrix = matrix.File{
 			Method:  "GET",
 			Path:    "/api/v1/tenants/{tenantId}/service/requests",
 			Channel: "http",
-			Pending: "W7.31",
 			Rows: []matrix.Row{
 				{
 					Actor:  "b.owner",
@@ -84,7 +81,6 @@ var serviceW700Matrix = matrix.File{
 			Method:  "POST",
 			Path:    "/api/v1/tenants/{tenantId}/service/requests",
 			Channel: "http",
-			Pending: "W7.31",
 			Rows: []matrix.Row{
 				{
 					Actor:  "b.owner",
@@ -107,7 +103,6 @@ var serviceW700Matrix = matrix.File{
 			Method:  "GET",
 			Path:    "/api/v1/tenants/{tenantId}/service/queues",
 			Channel: "http",
-			Pending: "W7.31",
 			Rows: []matrix.Row{
 				{
 					Actor:  "b.owner",
@@ -128,7 +123,6 @@ var serviceW700Matrix = matrix.File{
 			Method:  "GET",
 			Path:    "/api/v1/tenants/{tenantId}/service/requests/{requestId}",
 			Channel: "http",
-			Pending: "W7.31",
 			Rows: []matrix.Row{
 				{
 					Actor:  "b.owner",
@@ -149,7 +143,6 @@ var serviceW700Matrix = matrix.File{
 			Method:  "PATCH",
 			Path:    "/api/v1/tenants/{tenantId}/service/requests/{requestId}",
 			Channel: "http",
-			Pending: "W7.31",
 			Rows: []matrix.Row{
 				{
 					Actor:  "b.owner",
@@ -172,7 +165,6 @@ var serviceW700Matrix = matrix.File{
 			Method:  "POST",
 			Path:    "/api/v1/tenants/{tenantId}/service/requests/{requestId}/messages",
 			Channel: "http",
-			Pending: "W7.31",
 			Rows: []matrix.Row{
 				{
 					Actor:  "b.owner",
@@ -195,7 +187,6 @@ var serviceW700Matrix = matrix.File{
 			Method:  "POST",
 			Path:    "/api/v1/tenants/{tenantId}/service/requests/{requestId}/compensation",
 			Channel: "http",
-			Pending: "W7.31",
 			Rows: []matrix.Row{
 				{
 					Actor:  "b.owner",
@@ -218,7 +209,6 @@ var serviceW700Matrix = matrix.File{
 			Method:  "POST",
 			Path:    "/api/v1/tenants/{tenantId}/service/requests/{requestId}/transitions",
 			Channel: "http",
-			Pending: "W7.31",
 			Rows: []matrix.Row{
 				{
 					Actor:  "b.owner",
@@ -241,7 +231,6 @@ var serviceW700Matrix = matrix.File{
 			Method:  "POST",
 			Path:    "/api/v1/tenants/{tenantId}/service/requests/{requestId}/move",
 			Channel: "http",
-			Pending: "W7.31",
 			Rows: []matrix.Row{
 				{
 					Actor:  "b.owner",
@@ -264,7 +253,6 @@ var serviceW700Matrix = matrix.File{
 			Method:  "POST",
 			Path:    "/api/v1/tenants/{tenantId}/service/requests/{requestId}/client-phone/reveal",
 			Channel: "http",
-			Pending: "W7.31",
 			Rows: []matrix.Row{
 				{
 					Actor:  "b.owner",
@@ -287,7 +275,6 @@ var serviceW700Matrix = matrix.File{
 			Method:  "POST",
 			Path:    "/api/v1/tenants/{tenantId}/service/requests/{requestId}/conclusion",
 			Channel: "http",
-			Pending: "W7.31",
 			Rows: []matrix.Row{
 				{
 					Actor:  "b.owner",
@@ -310,7 +297,6 @@ var serviceW700Matrix = matrix.File{
 			Method:  "POST",
 			Path:    "/api/v1/tenants/{tenantId}/service/requests/{requestId}/tasks",
 			Channel: "http",
-			Pending: "W7.31",
 			Rows: []matrix.Row{
 				{
 					Actor:  "b.owner",
@@ -333,7 +319,6 @@ var serviceW700Matrix = matrix.File{
 			Method:  "GET",
 			Path:    "/api/v1/tenants/{tenantId}/service/ratings",
 			Channel: "http",
-			Pending: "W7.31",
 			Rows: []matrix.Row{
 				{
 					Actor:  "b.owner",
@@ -354,7 +339,6 @@ var serviceW700Matrix = matrix.File{
 			Method:  "POST",
 			Path:    "/api/v1/tenants/{tenantId}/service/ratings/{ratingId}/decision",
 			Channel: "http",
-			Pending: "W7.31",
 			Rows: []matrix.Row{
 				{
 					Actor:  "b.owner",
@@ -377,7 +361,6 @@ var serviceW700Matrix = matrix.File{
 			Method:  "GET",
 			Path:    "/api/v1/tenants/{tenantId}/service/directions/{directionId}/templates",
 			Channel: "http",
-			Pending: "W7.31",
 			Rows: []matrix.Row{
 				{
 					Actor:  "b.owner",
@@ -398,7 +381,6 @@ var serviceW700Matrix = matrix.File{
 			Method:  "GET",
 			Path:    "/api/v1/tenants/{tenantId}/service/directions/{directionId}",
 			Channel: "http",
-			Pending: "W7.31",
 			Rows: []matrix.Row{
 				{
 					Actor:  "b.owner",
@@ -419,7 +401,6 @@ var serviceW700Matrix = matrix.File{
 			Method:  "PUT",
 			Path:    "/api/v1/tenants/{tenantId}/service/directions/{directionId}/draft",
 			Channel: "http",
-			Pending: "W7.31",
 			Rows: []matrix.Row{
 				{
 					Actor:  "b.owner",
@@ -442,7 +423,6 @@ var serviceW700Matrix = matrix.File{
 			Method:  "POST",
 			Path:    "/api/v1/tenants/{tenantId}/service/directions/{directionId}/publish",
 			Channel: "http",
-			Pending: "W7.31",
 			Rows: []matrix.Row{
 				{
 					Actor:  "b.owner",
@@ -465,7 +445,6 @@ var serviceW700Matrix = matrix.File{
 			Method:  "GET",
 			Path:    "/api/v1/tenants/{tenantId}/service/report",
 			Channel: "http",
-			Pending: "W7.31",
 			Rows: []matrix.Row{
 				{
 					Actor:  "b.owner",

@@ -1,4 +1,4 @@
-# Матрица изоляции: тег Service («Обращения») контрактного PR этапа 7 (W7.00, 0.12.0-stage7) — строки до хендлера (pending W7.31).
+# Матрица изоляции: тег Service («Обращения») контрактного PR этапа 7 (W7.00, 0.12.0-stage7) — хендлеры W7.31 подключены, pending снят.
 # Данные «Обращения» — данные организации (tenant 0062): чужая организация — 404, как несуществующая (AC-01, AC-02), без сессии — 401.
 # Объектные id в пути — tenant:missing (такого объекта нет ни в одной базе): строки с содержимым фикстур добавит W7.31,
 # когда появится сид. Отказы шлюза по правам — service_w700_gate.yaml. Публичные операции без тенанта (тег PublicService)
@@ -9,7 +9,6 @@ endpoints:
   - op: listServiceDirections
     method: GET
     path: /api/v1/tenants/{tenantId}/service/directions
-    pending: W7.31
     rows:
       - actor: b.owner
         params: { tenantId: tenant:a }
@@ -22,7 +21,6 @@ endpoints:
   - op: createServiceDirection
     method: POST
     path: /api/v1/tenants/{tenantId}/service/directions
-    pending: W7.31
     rows:
       - actor: b.owner
         params: { tenantId: tenant:a }
@@ -37,7 +35,6 @@ endpoints:
   - op: listServiceRequests
     method: GET
     path: /api/v1/tenants/{tenantId}/service/requests
-    pending: W7.31
     rows:
       - actor: b.owner
         params: { tenantId: tenant:a }
@@ -50,7 +47,6 @@ endpoints:
   - op: createServiceRequest
     method: POST
     path: /api/v1/tenants/{tenantId}/service/requests
-    pending: W7.31
     rows:
       - actor: b.owner
         params: { tenantId: tenant:a }
@@ -65,7 +61,6 @@ endpoints:
   - op: getServiceQueueCounts
     method: GET
     path: /api/v1/tenants/{tenantId}/service/queues
-    pending: W7.31
     rows:
       - actor: b.owner
         params: { tenantId: tenant:a }
@@ -78,7 +73,6 @@ endpoints:
   - op: getServiceRequest
     method: GET
     path: /api/v1/tenants/{tenantId}/service/requests/{requestId}
-    pending: W7.31
     rows:
       - actor: b.owner
         params: { tenantId: tenant:a, requestId: tenant:missing }
@@ -91,7 +85,6 @@ endpoints:
   - op: updateServiceRequest
     method: PATCH
     path: /api/v1/tenants/{tenantId}/service/requests/{requestId}
-    pending: W7.31
     rows:
       - actor: b.owner
         params: { tenantId: tenant:a, requestId: tenant:missing }
@@ -106,7 +99,6 @@ endpoints:
   - op: postServiceMessage
     method: POST
     path: /api/v1/tenants/{tenantId}/service/requests/{requestId}/messages
-    pending: W7.31
     rows:
       - actor: b.owner
         params: { tenantId: tenant:a, requestId: tenant:missing }
@@ -121,7 +113,6 @@ endpoints:
   - op: setServiceCompensation
     method: POST
     path: /api/v1/tenants/{tenantId}/service/requests/{requestId}/compensation
-    pending: W7.31
     rows:
       - actor: b.owner
         params: { tenantId: tenant:a, requestId: tenant:missing }
@@ -136,7 +127,6 @@ endpoints:
   - op: transitionServiceRequest
     method: POST
     path: /api/v1/tenants/{tenantId}/service/requests/{requestId}/transitions
-    pending: W7.31
     rows:
       - actor: b.owner
         params: { tenantId: tenant:a, requestId: tenant:missing }
@@ -151,7 +141,6 @@ endpoints:
   - op: moveServiceRequest
     method: POST
     path: /api/v1/tenants/{tenantId}/service/requests/{requestId}/move
-    pending: W7.31
     rows:
       - actor: b.owner
         params: { tenantId: tenant:a, requestId: tenant:missing }
@@ -166,7 +155,6 @@ endpoints:
   - op: revealServiceClientPhone
     method: POST
     path: /api/v1/tenants/{tenantId}/service/requests/{requestId}/client-phone/reveal
-    pending: W7.31
     rows:
       - actor: b.owner
         params: { tenantId: tenant:a, requestId: tenant:missing }
@@ -181,7 +169,6 @@ endpoints:
   - op: shareServiceConclusion
     method: POST
     path: /api/v1/tenants/{tenantId}/service/requests/{requestId}/conclusion
-    pending: W7.31
     rows:
       - actor: b.owner
         params: { tenantId: tenant:a, requestId: tenant:missing }
@@ -196,7 +183,6 @@ endpoints:
   - op: createServiceRequestTask
     method: POST
     path: /api/v1/tenants/{tenantId}/service/requests/{requestId}/tasks
-    pending: W7.31
     rows:
       - actor: b.owner
         params: { tenantId: tenant:a, requestId: tenant:missing }
@@ -211,7 +197,6 @@ endpoints:
   - op: listServiceRatings
     method: GET
     path: /api/v1/tenants/{tenantId}/service/ratings
-    pending: W7.31
     rows:
       - actor: b.owner
         params: { tenantId: tenant:a }
@@ -224,7 +209,6 @@ endpoints:
   - op: decideServiceRating
     method: POST
     path: /api/v1/tenants/{tenantId}/service/ratings/{ratingId}/decision
-    pending: W7.31
     rows:
       - actor: b.owner
         params: { tenantId: tenant:a, ratingId: tenant:missing }
@@ -239,7 +223,6 @@ endpoints:
   - op: listServiceReplyTemplates
     method: GET
     path: /api/v1/tenants/{tenantId}/service/directions/{directionId}/templates
-    pending: W7.31
     rows:
       - actor: b.owner
         params: { tenantId: tenant:a, directionId: tenant:missing }
@@ -252,7 +235,6 @@ endpoints:
   - op: getServiceDirection
     method: GET
     path: /api/v1/tenants/{tenantId}/service/directions/{directionId}
-    pending: W7.31
     rows:
       - actor: b.owner
         params: { tenantId: tenant:a, directionId: tenant:missing }
@@ -265,7 +247,6 @@ endpoints:
   - op: updateServiceDirectionDraft
     method: PUT
     path: /api/v1/tenants/{tenantId}/service/directions/{directionId}/draft
-    pending: W7.31
     rows:
       - actor: b.owner
         params: { tenantId: tenant:a, directionId: tenant:missing }
@@ -280,7 +261,6 @@ endpoints:
   - op: publishServiceDirection
     method: POST
     path: /api/v1/tenants/{tenantId}/service/directions/{directionId}/publish
-    pending: W7.31
     rows:
       - actor: b.owner
         params: { tenantId: tenant:a, directionId: tenant:missing }
@@ -295,7 +275,6 @@ endpoints:
   - op: getServiceReport
     method: GET
     path: /api/v1/tenants/{tenantId}/service/report
-    pending: W7.31
     rows:
       - actor: b.owner
         params: { tenantId: tenant:a }

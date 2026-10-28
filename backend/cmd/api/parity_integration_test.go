@@ -81,6 +81,10 @@ func TestStackCapabilitiesParity(t *testing.T) { //nolint:paralleltest // one se
 				t.Fatalf("/me/context: %d %s", status, raw)
 			}
 			got, exp := altaCapabilities(t, raw), altaCapabilities(t, want)
+			// W7.31: the seed gives the dispatchers of ГРЗ the role «Специалист по обращениям» (project svc-grz); the stage service is not
+			// in the stage composition of the mock yet (integrator row of W7.30), so the examples of getMyContext have no service.* —
+			// they are not compared until it is, then this filter goes.
+			got = slices.DeleteFunc(got, func(k string) bool { return strings.HasPrefix(k, "service.") && !slices.Contains(exp, k) })
 			if !slices.Equal(got, exp) {
 				t.Errorf("%s: stand %d capabilities, mock %d\n%s", persona, len(got), len(exp), diff(got, exp))
 			}

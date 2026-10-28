@@ -119,7 +119,7 @@ func TestStage7W700Constraints(t *testing.T) {
 	})
 }
 
-// Down 0062 → 0060 снимает схемы service, docs, chat и возвращает 27 файлов без остатка.
+// Down 0063 → 0060 снимает схемы service, docs, chat и возвращает 27 файлов без остатка.
 func TestStage7W700DownUp(t *testing.T) {
 	t.Parallel()
 	eachCluster(t, func(t *testing.T, c *migratetest.Cluster) {
@@ -131,7 +131,7 @@ func TestStage7W700DownUp(t *testing.T) {
 		if n := scalar[int](t, db, `select count(*) from pg_namespace where nspname in ('chat', 'docs', 'service')`); n != 0 {
 			t.Fatalf("chat/docs/service still exist after down to 27")
 		}
-		if res, err := migrations.UpTo(t.Context(), db, migrations.Tenant, migrations.Latest(migrations.Tenant)); err != nil || res.To != 62 {
+		if res, err := migrations.UpTo(t.Context(), db, migrations.Tenant, migrations.Latest(migrations.Tenant)); err != nil || res.To != 63 {
 			t.Fatalf("up = %+v, %v", res, err)
 		}
 	})

@@ -26,6 +26,7 @@ import (
 	"github.com/ortus/ortus-crm/backend/internal/control/tenants/operators"
 	"github.com/ortus/ortus-crm/backend/internal/control/tenants/platformhttp"
 	"github.com/ortus/ortus-crm/backend/internal/modules/access/invitations"
+	homeservice "github.com/ortus/ortus-crm/backend/internal/modules/home/service"
 	"github.com/ortus/ortus-crm/backend/internal/modules/modulesreg"
 	"github.com/ortus/ortus-crm/backend/internal/platform/authz"
 	"github.com/ortus/ortus-crm/backend/internal/platform/idem"
@@ -172,6 +173,11 @@ func build(ctx context.Context, cfg config, log *slog.Logger, getenv func(string
 	// S1-02 (W1.02): the control DB is never a tenant DB, whatever its name.
 	pools.Reserved = []string{pcfg.ConnConfig.Database}
 	controlSQL := stdlib.OpenDBFromPool(control)
+	closeAll := func() { // the failed start gives back what the steps above opened
+		pools.Close()
+		_ = controlSQL.Close()
+		control.Close()
+	}
 	data := tenantctx.TenantData{Pools: pools}
 	sessions := oidc.NewPGSessionStore(control) // Q-W0.09-8: sessions survive the process and serve every replica
 	// W1.42 (ADR-0015): the permission cache, the gateway and the tickets of the realtime channel; the gateway checks
@@ -196,16 +202,12 @@ func build(ctx context.Context, cfg config, log *slog.Logger, getenv func(string
 	}
 	filesSrv, billingSrv, err := filesServers(pools, ev, getenv, log, cfg.clock()) // W1.09; W2.57: the pool closes trips
 	if err != nil {
-		pools.Close()
-		_ = controlSQL.Close()
-		control.Close()
+		closeAll()
 		return deps{}, nil, err
 	}
 	exports, err := exportFiles(getenv) // W4.50: the files of the export jobs of «Данные» (data.go)
 	if err != nil {
-		pools.Close()
-		_ = controlSQL.Close()
-		control.Close()
+		closeAll()
 		return deps{}, nil, fmt.Errorf("object storage: %w", err)
 	}
 	// W1.08: the module registry, the subscription of the control DB and their parts of /me/context.
@@ -213,30 +215,28 @@ func build(ctx context.Context, cfg config, log *slog.Logger, getenv func(string
 	// W4.60: the billing (price book, tier requests, seats, usage) and the branding of the control DB.
 	ctl, err := newControl(controlSQL, control, pools, subs, modules, ch, ev, cfg, getenv, log)
 	if err != nil {
-		pools.Close()
-		_ = controlSQL.Close()
-		control.Close()
+		closeAll()
 		return deps{}, nil, err
 	}
 	formsSrv, publicFormsSrv, err := newForms(pools, ev, control, getenv, cfg.AppEnv, cfg.AllowedOrigins, log, cfg.clock()) // W4.21 (forms.go)
 	if err != nil {
-		pools.Close()
-		_ = controlSQL.Close()
-		control.Close()
+		closeAll()
 		return deps{}, nil, err
 	}
 	docsW, err := newDocs(pools, control, ev, getenv, cfg.AppEnv, log, cfg.clock()) // W7.23: «Документы» (docs.go)
 	if err != nil {
-		pools.Close()
-		_ = controlSQL.Close()
-		control.Close()
+		closeAll()
 		return deps{}, nil, err
 	}
 	chatsSrv, chatSvc, err := newChats(pools, control, ev, getenv, cfg.AppEnv, log, cfg.clock()) // W7.11: «Чаты» (chats.go)
 	if err != nil {
-		pools.Close()
-		_ = controlSQL.Close()
-		control.Close()
+		closeAll()
+		return deps{}, nil, err
+	}
+	// W7.31 (service.go): «Обращения» — the tags Service and PublicService, the worker of the terms of requests.
+	svcW, err := newServiceWiring(pools, ev, control, cfg, getenv)
+	if err != nil {
+		closeAll()
 		return deps{}, nil, err
 	}
 	// W1.05; W1.03 and W1.06 embed theirs (access.go); W1.41: inviteMember sends the letter with the link.
@@ -257,7 +257,8 @@ func build(ctx context.Context, cfg config, log *slog.Logger, getenv func(string
 				Extras:   meExtras{subs: subs, modules: modules, pools: pools},             // W1.08: modules, tenantState
 				Branding: ctl.themes,                                                       // W4.60: TenantContext.branding
 			},
-			Home: homeServer(dir, pools, ev, moduleStates{S: modules}, orgFacts{control: control, subs: subs}, cfg.clock()), // W2.09, W2.54
+			Home: homeServer(dir, pools, ev, moduleStates{S: modules}, orgFacts{control: control, subs: subs}, cfg.clock(), // W2.09, W2.54
+				homeservice.Source{Requests: serviceHome{S: svcW.svc}}), // W7.31: the requests that need a decision
 			Auth: auth,
 			// W4.60 (control.go): the requests, the price book, the usage and the facts of the tenants, the catalogue of
 			// accounts and the operators over the subscriptions of W1.08, the operator commands (W1.48) and the registry.
@@ -292,6 +293,9 @@ func build(ctx context.Context, cfg config, log *slog.Logger, getenv func(string
 			Docs:        docsW.docs,                                                         // W7.23: «Документы» (docs.go)
 			PublicDocs:  docsW.public,                                                       // W7.23: the callback of the document server, the link of a guest
 			Chats:       chatsSrv,                                                           // W7.11: «Чаты» (chats.go)
+			// W7.31 (service.go): «Обращения» — the staff and the clients by a personal link.
+			Service:       svcW.staff,
+			PublicService: svcW.public,
 		},
 		docsCallback: docsW.callback, // W7.23: the JWT of the document server instead of a session (gate.go)
 		replays:      map[string]replayFunc{"logout": auth.ReplayLogout},
@@ -305,16 +309,14 @@ func build(ctx context.Context, cfg config, log *slog.Logger, getenv func(string
 		modules:       modulesreg.Gate{S: modules},
 		platformRoles: ctl.roles, // W4.60: x-permissions of /platform/** by the role of the operator
 		brandAssets:   ctl.public,
-		background:    together(lifecycle(subs, every, log), dueRequests(ctl.billing, every, ch.tenantChanged, log), ch.listen, chatJobs(chatSvc, control, every, log)),
+		background:    together(lifecycle(subs, every, log), dueRequests(ctl.billing, every, ch.tenantChanged, log), ch.listen, chatJobs(chatSvc, control, every, log), serviceSweep(svcW.svc, control, svcW.every, log)),
 		newcomers:     auth.Accounts, // W1.50: a first dev login creates the account as the first OIDC sign-in
 		realtime:      ch.handler(),  // W1.42: GET /api/v1/realtime
 		stopping:      ch.stop,       // W1.42: http.Server does not track the hijacked sockets
 		chats:         chatSvc,       // W7.11: the jobs by term of the chats
 	}
 	return d, func() {
-		pools.Close()
-		_ = controlSQL.Close()
-		control.Close()
+		closeAll()
 	}, nil
 }
 
