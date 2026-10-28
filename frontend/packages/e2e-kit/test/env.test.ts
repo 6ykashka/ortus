@@ -128,3 +128,51 @@ describe('resolveHarnessEnv', () => {
     assert.throws(() => r({ PORT: '0' }), /PORT/);
   });
 });
+
+describe('resolveHarnessEnv: E2E_WORKERS', () => {
+  it('локально по умолчанию 4, в CI 1', () => {
+    assert.equal(fn('resolveHarnessEnv')({}).workers, 4);
+    assert.equal(fn('resolveHarnessEnv')({ CI: 'true' }).workers, 1);
+  });
+
+  it('E2E_WORKERS задаёт число воркеров (1…16), в том числе в CI', () => {
+    assert.equal(fn('resolveHarnessEnv')({ E2E_WORKERS: '3' }).workers, 3);
+    assert.equal(fn('resolveHarnessEnv')({ E2E_WORKERS: '16' }).workers, 16);
+    assert.equal(fn('resolveHarnessEnv')({ CI: 'true', E2E_WORKERS: '2' }).workers, 2);
+  });
+
+  it('пустое значение — как не задано', () => {
+    assert.equal(fn('resolveHarnessEnv')({ E2E_WORKERS: '' }).workers, 4);
+  });
+
+  it('экспоненциальная и шестнадцатеричная записи отклоняются (только десятичные цифры)', () => {
+    for (const bad of ['1e1', '0x4', '0b11', '+3', '3_0']) {
+      assert.throws(
+        () => fn('resolveHarnessEnv')({ E2E_WORKERS: bad }),
+        new RegExp(`E2E_WORKERS=${bad.replace(/\W/g, '\\$&')}: ожидается целое 1…16`),
+      );
+    }
+    assert.equal(fn('resolveHarnessEnv')({ E2E_WORKERS: ' 3 ' }).workers, 3);
+  });
+
+  it('невалидное значение — понятная ошибка с именем переменной', () => {
+    for (const bad of ['0', '17', '-1', '2.5', 'many']) {
+      assert.throws(
+        () => fn('resolveHarnessEnv')({ E2E_WORKERS: bad }),
+        new RegExp(`E2E_WORKERS=${bad.replace('.', '\\.')}: ожидается целое 1…16`),
+      );
+    }
+  });
+
+  it('строгий разбор целых действует на все целочисленные переменные', () => {
+    for (const name of ['ORTUS_SLOT', 'PORT', 'REFERENCE_PORT', 'ORTUS_STAGE']) {
+      for (const bad of ['1e1', '0x4', '+3']) {
+        assert.throws(
+          () => fn('resolveHarnessEnv')({ [name]: bad }),
+          new RegExp(name + '=.*ожидается целое'),
+          name + '=' + bad,
+        );
+      }
+    }
+  });
+});

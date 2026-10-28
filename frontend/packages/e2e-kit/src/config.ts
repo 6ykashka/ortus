@@ -80,7 +80,7 @@ export function defineHarnessConfig(o: HarnessConfigOptions): PlaywrightTestConf
     fullyParallel: true,
     forbidOnly: h.ci,
     retries: h.ci ? 2 : 0,
-    workers: h.ci ? 1 : undefined,
+    workers: h.workers,
     reporter: [['list'], ['html', { open: 'never', outputFolder: 'playwright-report' }]],
     outputDir: 'test-results',
     snapshotPathTemplate: '{testDir}/visual/__screenshots__/{platform}/{projectName}/{arg}{ext}',

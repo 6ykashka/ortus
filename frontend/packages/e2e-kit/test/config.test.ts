@@ -127,3 +127,14 @@ describe('defineHarnessConfig', () => {
     assert.equal(c.testDir, 'e2e');
   });
 });
+
+describe('defineHarnessConfig: workers', () => {
+  it('локально по умолчанию 4, E2E_WORKERS=3 даёт 3', () => {
+    assert.equal(cfg({}).workers, 4);
+    assert.equal(cfg({ E2E_WORKERS: '3' }).workers, 3);
+  });
+
+  it('невалидный E2E_WORKERS — ошибка конфига', () => {
+    assert.throws(() => cfg({ E2E_WORKERS: '0' }), /E2E_WORKERS=0/);
+  });
+});

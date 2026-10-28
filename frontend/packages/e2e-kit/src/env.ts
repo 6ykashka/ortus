@@ -32,6 +32,8 @@ export interface HarnessEnv {
   stage: number;
   allowHosts: string[];
   ci: boolean;
+  /** Воркеры Playwright: E2E_WORKERS (1…16), иначе в CI 1, локально 4. */
+  workers: number;
 }
 
 /** Эталон текущего этапа (общий) и предыдущего этапа (план v2 §3.6). */
@@ -39,6 +41,8 @@ export const SHARED_REFERENCE_PORT = 4173;
 export const PREVIOUS_REFERENCE_PORT = 4174;
 /** Совпадает с deploy/compose/stand.mjs MAX_SLOT: слоты исполнителей и проверяющих этапа. */
 export const MAX_SLOT = 20;
+/** Воркеры по умолчанию: локально 4 (по числу ядер выходило 11 и тайм-ауты), в CI 1. */
+export const DEFAULT_LOCAL_WORKERS = 4;
 
 const LOCAL = '127.0.0.1';
 
@@ -49,7 +53,9 @@ function intVar(
   max: number,
 ): number | undefined {
   if (raw === undefined || raw.trim() === '') return undefined;
-  const n = Number(raw);
+  const text = raw.trim();
+  // Только десятичные цифры: Number() принимает '1e1', '0x4', '0b11'.
+  const n = /^-?\d+$/.test(text) ? Number(text) : Number.NaN;
   if (!Number.isInteger(n) || n < min || n > max) {
     throw new Error(`${name}=${raw}: ожидается целое ${min}…${max}`);
   }
@@ -137,5 +143,7 @@ export function resolveHarnessEnv(env: EnvSource = process.env): HarnessEnv {
     stage: intVar('ORTUS_STAGE', env.ORTUS_STAGE, 0, 99) ?? 0,
     allowHosts,
     ci: flag(env.CI),
+    workers:
+      intVar('E2E_WORKERS', env.E2E_WORKERS, 1, 16) ?? (flag(env.CI) ? 1 : DEFAULT_LOCAL_WORKERS),
   };
 }
