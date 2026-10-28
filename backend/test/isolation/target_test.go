@@ -63,12 +63,33 @@ var newTarget matrix.Factory = func(ctx context.Context, env matrix.Env) (matrix
 	base := &url.URL{Scheme: "http", Host: addr}
 	s := &sessions{base: base.String(), byActor: map[string]session{}}
 	return matrix.Target{
-			Handler:      httputil.NewSingleHostReverseProxy(base),
+			Handler:      limitInFlight(httputil.NewSingleHostReverseProxy(base), maxInFlight),
 			Authenticate: s.authenticate,
 		}, func() {
 			stop()
 			cleanup()
 		}, nil
+}
+
+// maxInFlight bounds the requests the suite has in the API at once (W2.104). A tenant pool has tenantctx.DefaultMaxConns (4)
+// connections and an operation of a guest (getPublicUploadStatus: the transaction of the link + Session/File of the module
+// of files) holds one and asks for a second. Parallel tests of all modules fill the pool with such holders and the
+// requests wait for each other until the slowest finish (20-30 s on this machine, over the 30 s WriteTimeout of the API:
+// 502 «proxy error: EOF»). Two requests need four connections at most, so none of them starves.
+const maxInFlight = 2
+
+// limitInFlight lets n requests at a time through h; the others wait for their turn (or for their own cancellation).
+func limitInFlight(h http.Handler, n int) http.Handler {
+	turns := make(chan struct{}, n)
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		select {
+		case turns <- struct{}{}:
+			defer func() { <-turns }()
+		case <-r.Context().Done():
+			return
+		}
+		h.ServeHTTP(w, r)
+	})
 }
 
 func freeAddr(ctx context.Context) (string, error) {
