@@ -34,6 +34,7 @@ import { clearDeviceData } from '../pwa/store.ts';
 import { AccessGate } from './AccessGate.tsx';
 import { Banners, OfflineBootBanner } from './Banners.tsx';
 import { usePlatformBadges, useTenantBadges } from './badges.ts';
+import { useChatBadge } from './chat-badge.ts';
 import { applyBrand, brandHeader, brandNav } from './brand.ts';
 import { ShellContext, type ShellValue } from './context.tsx';
 import { Header, type Popover, ProfilePopover } from './Header.tsx';
@@ -180,15 +181,23 @@ export function AppShell({ me, area, tenant, page }: AppShellProps): ReactElemen
   const tasks = useTenantBadges(
     area === 'tenant' && ctx.audience !== 'driver' ? tenantId : null,
   ).tasks;
+  // W7.13: бейдж «Чаты» — Σ непрочитанных; запрос только там, где пункт меню доступен.
+  const chat = useChatBadge(
+    area === 'tenant' && pageAccess(ctx, 'chat').kind === 'allow' ? tenantId : null,
+  );
   const groups = useMemo(
     () =>
       brandNav(
         buildNav(ctx, {
-          badges: { ...(requests ? { requests } : {}), ...(tasks ? { tasks } : {}) },
+          badges: {
+            ...(requests ? { requests } : {}),
+            ...(tasks ? { tasks } : {}),
+            ...(chat ? { chat } : {}),
+          },
         }),
         theme,
       ),
-    [ctx, requests, tasks, theme],
+    [ctx, requests, tasks, chat, theme],
   );
   const access = page ? pageAccess(ctx, page) : ({ kind: 'not_found' } as const);
   const readOnly = access.kind === 'allow' && access.readOnly;
