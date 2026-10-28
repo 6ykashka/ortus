@@ -3,6 +3,86 @@
 - stage: 2 · проверяющий выхода и критик полноты (проверка 1) · mode: `ci:local` + stand (`e2e-stand` под сторожем, слот 12) + mock (job `e2e`)
 - Критика полноты: [../critique/stage-2.md](../critique/stage-2.md)
 
+## Проверка 4 — 2026-10-28 (после W2.98 и W2.99)
+
+- main: `2fc3dbb06` (docs(plan): статус W2.98, W6.15), совпадает с `origin/main` на старте. Worktree `.claude/worktrees/exit-s2` (detached, создан заново). Код продукта не менялся.
+- Среда: Windows 11, Docker (общий, не перезапускался), pnpm 9.15.9, `GOFLAGS=-p=2`. Слот 12: Vite стенда 5212, API 8112, compose `ortus-s12`; mock — `E2E_ROLE=verifier`, `E2E_FRESH_SERVER=1`, `E2E_OWN_REFERENCE=1`. Слот 0 и `docs/demo/**` не трогались. Замок `e2e-stand-1.lock` держался на время сторожа, снят; `ortus-s12` после `down -v` не осталось.
+- MVP: облачных stage и prod-pilot нет (W3.00, W3.06 отложены решением пользователя 19.10); «стенд stage» — локальный compose слота 12. Q-W2.32-1 закрыт владельцем продукта 19.10 решением D-35.
+- Итоги WS прогона: влиты W2.78…W2.83, W2.87, W2.91, W2.97, W2.98, W2.99 и остальные из списка оркестратора; **W2.92, W2.93, W2.94, W2.95, W2.96 не влиты** («не принят после 5 возвратов», ветки `ws/W2.92`…`ws/W2.96` есть). Содержание W2.92 и W2.93 перенесено в `main` заново как W2.99 и W2.98; W2.94 (CI `REFERENCE_REF`), W2.95, W2.96 остаются в ветках.
+
+### Вердикт
+
+**Пройден.** Сквозная смена водителя на телефоне и у менеджера на локальном стенде проходит на трёх вьюпортах с первой попытки (0 повторов). AC-03, 04, 05, 12 и AC-06 (Q-W2.07-1 «только рейс» и D-35) зелёные. Оба технических блокера проверки 3 сняты: W2.99 влит — `@known-defect` Q-W2.75-1 снят (`temporary-driver-vehicle.spec.ts:629` стал обычной строкой стенда), W2.98 влит — `modal-finish-route.spec.ts:120` зелёная на трёх вьюпортах и на накопленном стенде. Строк `@known-defect`/`fixme` в `journeys/stage2` нет (в комментариях остались только упоминания снятых). Внешних блокеров людей нет.
+
+Не мешает выходу, но держит CI красным (см. «CI на GitHub» и FollowUps W2.100…W2.105 в критике): одна строка этапа 2 нестабильна на GitHub (`driver-outbox.spec.ts:476`), остальное — этапы 5…7, лимит job mock и локальный флейк изоляции.
+
+### Критерий выхода по пунктам
+
+| # | Пункт (план v2 §4) | Итог | Основание |
+|---|---|---|---|
+| 1 | Полная смена водителя на телефоне и у менеджера на стенде | **выполнен** | `journeys/stage2/driver-shift.spec.ts` (12 строк ok), `guide-path`, `temporary-driver-vehicle-shift` (в `journeys.stage2.temporary-driver-vehicle` 21 ok), `driver-outbox.spec.ts:476` — mobile-390, tablet-768, desktop-1440 зелёные с первой попытки |
+| 2 | AC-03 | **выполнен** | `reservation-race` stand × 3; `TestAC03*` в `go-concurrency` (ok, 159 с и 234 с) |
+| 3 | AC-04 | **выполнен** | `defect-decision` stand × 3; `TestAC04DepartureRefusals` (integration ✓) |
+| 4 | AC-05 | **выполнен** | isolation (`fleet_review_gate`, `data_trips`, `fleet_w252_export_*`) и `driver-shift` stand; пакеты `test/isolation/{matrix,fixtures,cmd/isogen}` ok |
+| 5 | AC-06 «только рейс» (Q-W2.07-1, W2.57) | **выполнен** | `temporary-driver.spec.ts` (6 ok = 2 строки × 3), `fleet_pool_ac06_test.go` |
+| 6 | AC-06, D-35 (S2-20, W2.70…W2.75, W2.99) | **выполнен** | `temporary-driver-vehicle.spec.ts` stand × 3 включая бывший `@known-defect`; `driver-today-offer` (6 ok); машина временного водителя открывается с момента назначения (W2.99) |
+| 7 | AC-12 | **выполнен** | `module-draining` stand × 3 (6 ok) |
+| 8 | Все WS этапа 2 «готово» (или внешние блокеры) | **выполнен** | 47 строк `status.md`: W2.00…W2.09, W2.20…W2.26, W2.30…W2.32, W2.41…W2.57, W2.60…W2.62, W2.70…W2.76 — «готово» или «готово, есть блокеры» (блокеры внешние: люди/доступы, сверено в проверках 1…3); W2.84…W2.86 «в работе» с 24.10 — вне перечня критерия |
+| 9 | Нет `@known-defect` в `journeys/stage2` | **выполнен** | `Select-String` по `journeys/stage2/*.ts`: только комментарии `driver-a11y.spec.ts:12,15`, `temporary-driver.spec.ts:734` о снятых строках |
+| 10 | Строки этапа 2 без красного | **выполнен локально, нестабильно на GitHub** | локально 0 упавших / 0 повторов (стенд и mock); GitHub run 40651906140: `modal-finish-route` зелёная, `driver-outbox.spec.ts:476` flaky (шард 6/8 [1440] — только на повторе) |
+
+### Прогоны
+
+#### 1. `corepack pnpm install --frozen-lockfile` — exit 0 (59 с).
+
+#### 2. `ci:local` — по job (`pipeline.mjs --job <id>`; полный `--all` включает `e2e-stand` без сторожа)
+
+```text
+lint          exit 0
+contract      exit 0
+unit          exit 0
+integration   exit 0   (go-integration, -p 2)
+isolation     exit 1 x3 (go-concurrency ok; go-isolation: TestIsolationFormsPublicW490 (W483 в первом прогоне) — 502 «proxy error: EOF» через 31 с, forms_public_w490_test.go:362)
+build         exit 1 -> exit 0 при повторе (images: ENOTFOUND registry.npmjs.org внутри Docker; сеть)
+```
+
+- `TestIsolationFormsPublicW490` и `W483` отдельным запуском (`-run`) — **ok** (16,7 с), в составе пакета падает 3 из 3 на этом ПК; на GitHub `isolation` зелёный (run 40651906140). Это тесты этапа 4 (W4.83, W4.90), к этапу 2 не относятся; FollowUp W2.104.
+- `build` при повторе зелёный целиком (пакеты, storybook, check-k6, образы).
+
+#### 3. e2e-stand — `stand-guard.mjs --slot 12`, полный набор `@stand|@mailpit`
+
+Итог сторожа: **441 passed, 0 failed, 0 flaky, 51 skipped, 119 мин**, сторож не снимал прогон по тишине, повтор на свежем стенде не понадобился, `down -v` выполнен. Код 1 — по правилу «@stand не пропускается»: 17 файлов × 3 вьюпорта, все этапов 5…7: `cash-self:224`, `cash:327`, `inventory:296`, `inventory-movements:277`, `repair-estimate:429`, `repair-measure:261`, `repair-money:289`, `repair-objects:707`, `repair-schedule:309`, `service-portal:296`, `service:409`, `spa-appointments:412`, `spa-services:203` (были и в проверке 3) и новые `docs-doc:351`, `docs-list:346`, `docs-route:432`, `docs-share:224` (этап 7, W7.25 влит, backend W7.24 влит). Строк этапа 2 среди пропущенных нет.
+
+Строки этапа 2 на трёх вьюпортах (ok с первой попытки): `journeys/stage2/{driver-shift ×12, guide-path, defect-decision, reservation-race, module-draining ×6, temporary-driver-vehicle ×21, temporary-driver ×6}`, `driver-today-offer ×6`, `modal-finish-route ×6`, `driver-outbox.spec.ts:476 ×3`, `logistics-* ×45`.
+
+#### 4. e2e mock страниц этапа 2
+
+`playwright test journeys/stage2 driver- logistics- modal-driver modal-finish modal-accept temporary-driver reservation-race defect-decision module-draining guide-path home core-data company-expense --workers=2` (слот 12, проверяющий): **922 passed, 180 skipped (@stand, mock-режимы), 0 failed, 50,3 мин**; флейков `driver-today.spec.ts:196`, `:210` проверки 3 не повторилось. Все 16 экранов этапа 2 из `screens.yaml` покрыты спеками (`modal-accept-shift` — в `logistics-review.spec.ts`, `logistics-vehicle-import` — в `logistics-fleet-import.spec.ts`).
+
+Проходка Playwright MCP (verification-protocol §4) не выполнена: `dev` без сценарного сервера mock показывает «Не удалось загрузить модули прототипа» (то же, что в W2.99); замена — e2e mock и стенд на трёх проектах.
+
+#### 5. CI на GitHub (`gh`, `6ykashka/ortus`)
+
+Run 40651906140 на `2fc3dbb06` (completed, failure, 63 мин): lint, contract, unit, integration, isolation, build — **зелёные**. Красные:
+
+- `e2e-stand`: 7 шардов из 8 (1, 3, 4, 5, 6, 7, 8) — **0 упавших в шардах 1, 3, 4, 5, 7, 8**, код 1 из-за пропусков этапов 5…7; шард 6/8 — `driver-outbox.spec.ts:476` [desktop-1440] flaky (первая попытка: `expectRow('Мойка · 400 ₽')` не найден за 5 с после «Сохранить на устройстве», `driver-outbox.spec.ts:514`; повтор ok). Зелёный только 2/8. Шарды 4/8, 7/8 упёрлись в лимит 25 мин. `modal-finish-route.spec.ts:120` зелёная.
+- `e2e` mock: 9 шардов из 20: 6, 7, 13, 14, 19, 20 — лимит job 25 мин (W2.94, `REFERENCE_REF: design-stage-1`, не влито); 5/20 — `shell.spec.ts:232` [390]; 8/20 — `docs-list:40`, `docs-route:329`, `docs-share:196` [768] (этап 7); 12/20 — `repair-schedule.spec.ts:270` и `shell.spec.ts:232` [768].
+- Предыдущие run 40641039334, 40629403863, 40617454439, 40598036235 — `modal-finish-route:120` (снята W2.98) и `driver-outbox:476` (40641039334: красная на 390 и 1440 после трёх попыток).
+
+### Сверка с историями и инвентарём
+
+| Что | Итог |
+|---|---|
+| S2-01…S2-19 | закрыты, без изменений с проверки 3 |
+| S2-20 (D-35, `design/docs/29-temporary-driver-vehicle.md`, DoR `s2-20-temporary-driver-vehicle.md`) | варианты 1a–1g и backend на `main`; сдача обычной машины до окна — W2.91; «Моя смена» и название поставленной машины до окна — W2.99 |
+| AC-03, 04, 05, 06, 12 | автоматизированы и зелёные |
+| Инвентарь экранов этапа 2 (16 из 16) | у каждого mock и `@stand`, зелёные локально |
+| W2.41…W2.57 (`decisions.md`) | все «готово» |
+
+### Что дальше
+
+FollowUps W2.100…W2.105 (в критике) — все не блокируют выход: CI GitHub зелёным их не сделать без интегратора (`ci.yml`) и владельцев этапов 5…7.
+
 ## Проверка 3 — 2026-10-27/28
 
 - main: `f089f0f89` (docs(plan): статус W2.91, W7.33, W5.20), совпадает с `origin/main` на старте. Worktree `.claude/worktrees/exit-s2` (detached; прежний каталог-сирота с одним `node_modules` удалён и создан заново). Код продукта не менялся.
