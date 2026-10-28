@@ -9,13 +9,17 @@ import (
 	"os"
 	"slices"
 	"strconv"
+	"strings"
 	"sync"
 	"sync/atomic"
 	"testing"
 	"time"
 
 	"github.com/google/uuid"
+	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgxpool"
+
+	"github.com/ortus/ortus-crm/backend/internal/modules/cash" //nolint:depguard // integration test: the real proposals of the cash desks
 
 	"github.com/ortus/ortus-crm/backend/internal/platform/problem"
 	"github.com/ortus/ortus-crm/backend/internal/platform/tenantctx"
@@ -85,10 +89,11 @@ func runMain(m *testing.M) int {
 }
 
 var (
-	roleOfficeKeys = []string{actRead, actManage, actLogsRead, actReview, actFinance, actEstimates, actHandOver, actCatalog, actMeasure, actDocSend}
-	deskActions    = []string{actRead, actManage, actLogsRead, actReview}
-	foremanKeys    = []string{actRead, actLogsRead, actSubmit, actChanges, actMeasure}
-	readerActions  = []string{actRead}
+	roleOfficeKeys = []string{actRead, actManage, actLogsRead, actReview, actFinance, actEstimates, actHandOver, actCatalog, actMeasure, actDocSend,
+		actCrewAccrue, actCrewPay, actSubs, actClientLink}
+	deskActions   = []string{actRead, actManage, actLogsRead, actReview}
+	foremanKeys   = []string{actRead, actLogsRead, actSubmit, actChanges, actMeasure}
+	readerActions = []string{actRead}
 )
 
 // seedPhotos writes the files of photos as the uploads of the owner of A (state ready).
@@ -185,12 +190,38 @@ func (c *codeInbox) SendSignCode(_ context.Context, phone, code string, _ time.T
 	return nil
 }
 
+// SendClientLink records the link of the cabinet that went to the phone (the same inbox: a link starts with «http»).
+func (c *codeInbox) SendClientLink(_ context.Context, phone, url string) error {
+	c.mu.Lock()
+	defer c.mu.Unlock()
+	if c.codes == nil {
+		c.codes = map[string][]string{}
+	}
+	c.codes[phone] = append(c.codes[phone], url)
+	return nil
+}
+
+// lastLink is the latest link of the cabinet sent to phone.
+func (c *codeInbox) lastLink(phone string) string {
+	c.mu.Lock()
+	defer c.mu.Unlock()
+	for _, v := range slices.Backward(c.codes[phone]) {
+		if strings.HasPrefix(v, "http") {
+			return v
+		}
+	}
+	return ""
+}
+
 // last is the latest code sent to phone ("" — none) and sent is how many went.
 func (c *codeInbox) last(phone string) string {
 	c.mu.Lock()
 	defer c.mu.Unlock()
-	if all := c.codes[phone]; len(all) > 0 {
-		return all[len(all)-1]
+	all := c.codes[phone]
+	for _, v := range slices.Backward(all) {
+		if !strings.HasPrefix(v, "http") {
+			return v
+		}
 	}
 	return ""
 }
@@ -202,7 +233,18 @@ func (c *codeInbox) sent(phone string) int {
 }
 
 func service() *Service {
-	return &Service{Pools: pools, Now: clock, Codes: inbox, SignKey: []byte("key-of-the-suites")}
+	return &Service{Pools: pools, Now: clock, Codes: inbox, SignKey: []byte("key-of-the-suites"), Links: PGLinks{DB: control},
+		Offers: cashOffers{svc: &cash.Service{Pools: pools, Now: clock}}, PublicBase: "https://crm.suites.example"}
+}
+
+// cashOffers is the port of the payouts over the proposals of the real cash desks (W5.31), in the transaction of the payout.
+type cashOffers struct{ svc *cash.Service }
+
+func (c cashOffers) OfferPayroll(ctx context.Context, tx pgx.Tx, o PayrollOffer) error {
+	label := o.SourceLabel
+	_, err := c.svc.Offer(ctx, tx, cash.Offer{Key: o.Key, Kind: "payroll", Title: o.Title, Amount: o.AmountMinor, Direction: "out",
+		SourceKind: o.SourceKind, SourceID: o.SourceID, SourceLabel: &label})
+	return err
 }
 
 // as resolves the tenant context of actor in tenant A, as the gateway does.

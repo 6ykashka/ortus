@@ -575,6 +575,20 @@ describe('контракт 0.12.0-stage6 (W6.00): дельты, экраны, м
       'updateTemplate',
       'copyTemplate',
       'requestDocumentSignature',
+      // W6.15: документы, финансы, начисления и выплата бригаде, подрядчики, ссылка и публичный кабинет (шаг 6.6).
+      'listRepairDocuments',
+      'getProjectFinance',
+      'listCrewAccruals',
+      'accrueByAct',
+      'payoutAccruals',
+      'listSubcontractors',
+      'setSubcontractorAccess',
+      'getClientLink',
+      'issueClientLink',
+      'revokeClientLink',
+      'getClientCabinet',
+      'approveEstimateByClient',
+      'signDocumentByClient',
     ]);
     for (const e of rows.endpoints) {
       if (served.has(e.op)) assert.equal(e.pending, undefined, e.op);

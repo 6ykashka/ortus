@@ -37,6 +37,16 @@ func (l LogCodes) SendSignCode(ctx context.Context, phone, code string, expires 
 	return nil
 }
 
+// SendClientLink writes the address of the cabinet of the client to the log (the stub of the port for a stand, W6.15).
+func (l LogCodes) SendClientLink(ctx context.Context, phone, url string) error {
+	log := l.Log
+	if log == nil {
+		log = slog.Default()
+	}
+	log.InfoContext(ctx, "repairs: link of the cabinet of the client (stub of the SMS port)", "phone", maskPhone(phone), "url", url)
+	return nil
+}
+
 var processKey = sync.OnceValue(func() []byte {
 	k := make([]byte, 32)
 	if _, err := rand.Read(k); err != nil {

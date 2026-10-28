@@ -288,7 +288,7 @@ func build(ctx context.Context, cfg config, log *slog.Logger, getenv func(string
 			Forms:       formsSrv,                                                           // W4.21: «Формы и опросы» (forms.go)
 			PublicForms: publicFormsSrv,                                                     // W4.21: the guest of a public link
 			Inventory:   newInventory(pools, ev, cfg.clock()),                               // W5.10: «Склад» (inventory.go)
-			Repairs:     newRepairs(pools, cfg.clock()),                                     // W6.11: «Ремонт и стройка» (repairs.go)
+			Repairs:     newRepairs(pools, control, mailCfg.Origin, cfg.clock()),            // W6.11: «Ремонт и стройка» (repairs.go)
 			Spa:         newSpa(pools, ev, cfg.clock()),                                     // W5.20: «Салон и SPA» (spa.go)
 			Docs:        docsW.docs,                                                         // W7.23: «Документы» (docs.go)
 			PublicDocs:  docsW.public,                                                       // W7.23: the callback of the document server, the link of a guest

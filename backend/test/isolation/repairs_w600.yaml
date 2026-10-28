@@ -6,8 +6,8 @@
 # If-Match (README, «Цель набора»): без него строгий сервер отвечает 428 раньше хендлера, поэтому у них только отказы
 # шлюза — без сессии 401, чужая организация 404. Публичные операции кабинета заказчика: неизвестная ссылка — 404.
 # Отказы шлюза (403 module_not_installed — модуль у фикстур не подключён) — repairs_w600_gate.yaml. Формат — README.md.
-# W6.11: 13 операций шагов 6.1–6.2 без pending (хендлеры есть); W6.14: 6 операций графика без pending; у остальных pending — WS-владелец (W6.12 замер и смета,
-# W6.13 снабжение, W6.15 финансы и кабинет). Позитивные строки хендлеров пишутся, когда у фикстур подключён модуль «Ремонт и стройка».
+# Хендлеры есть у всех операций тега (W6.11–W6.15), pending не осталось. W6.15: строки финансов, начислений, подрядчиков и ссылки кабинета для владельца и прораба;
+# путь «акт → начисление → выплата», выпуск ссылки и кабинет по токену, согласование сметы гостем (параметр version — число, строка со ссылкой его не выразит) — isolation_w615_test.go.
 # После правки: go -C backend generate ./test/isolation
 module: repairs_w600
 endpoints:
@@ -963,7 +963,6 @@ endpoints:
   - op: listRepairDocuments
     method: GET
     path: /api/v1/tenants/{tenantId}/repairs/projects/{projectId}/documents
-    pending: W6.15
     rows:
       - actor: anonymous
         params:
@@ -978,6 +977,14 @@ endpoints:
         absent:
           - tenant:a
         note: чужая организация — как несуществующая (AC-02)
+      - actor: a.owner
+        params: { tenantId: tenant:a, projectId: repair_project:a.flat }
+        status: 200
+        note: владелец читает документы объекта (суммы — с repairs.finance.read)
+      - actor: a.repairs-foreman-two
+        params: { tenantId: tenant:a, projectId: repair_project:a.flat }
+        status: 404
+        note: прораб чужого объекта — документов как будто нет
   - op: requestDocumentSignature
     method: POST
     path: /api/v1/tenants/{tenantId}/repairs/documents/{documentId}/sign-requests
@@ -1272,7 +1279,6 @@ endpoints:
   - op: getProjectFinance
     method: GET
     path: /api/v1/tenants/{tenantId}/repairs/projects/{projectId}/finance
-    pending: W6.15
     rows:
       - actor: anonymous
         params:
@@ -1287,10 +1293,18 @@ endpoints:
         absent:
           - tenant:a
         note: чужая организация — как несуществующая (AC-02)
+      - actor: a.owner
+        params: { tenantId: tenant:a, projectId: repair_project:a.flat }
+        status: 200
+        present: [repair_project:a.flat]
+        note: владелец читает финансы объекта
+      - actor: a.repairs-foreman
+        params: { tenantId: tenant:a, projectId: repair_project:a.flat }
+        status: 403
+        note: прораб без repairs.finance.read — отказ шлюза, цен и маржи нет
   - op: listCrewAccruals
     method: GET
     path: /api/v1/tenants/{tenantId}/repairs/projects/{projectId}/accruals
-    pending: W6.15
     rows:
       - actor: anonymous
         params:
@@ -1305,10 +1319,17 @@ endpoints:
         absent:
           - tenant:a
         note: чужая организация — как несуществующая (AC-02)
+      - actor: a.owner
+        params: { tenantId: tenant:a, projectId: repair_project:a.flat }
+        status: 200
+        note: владелец читает начисления бригаде
+      - actor: a.repairs-foreman
+        params: { tenantId: tenant:a, projectId: repair_project:a.flat }
+        status: 403
+        note: прораб без repairs.finance.read — отказ шлюза
   - op: accrueByAct
     method: POST
     path: /api/v1/tenants/{tenantId}/repairs/acts/{documentId}/accruals
-    pending: W6.15
     rows:
       - actor: anonymous
         params:
@@ -1323,10 +1344,13 @@ endpoints:
         absent:
           - tenant:a
         note: чужая организация — как несуществующая (AC-02)
+      - actor: a.repairs-foreman
+        params: { tenantId: tenant:a, documentId: tenant:missing }
+        status: 403
+        note: прораб без repairs.crew.accrue — отказ шлюза
   - op: payoutAccruals
     method: POST
     path: /api/v1/tenants/{tenantId}/repairs/accruals/payout
-    pending: W6.15
     rows:
       - actor: anonymous
         params:
@@ -1341,10 +1365,14 @@ endpoints:
           - tenant:a
         body: '{"accrualIds":["00000000-0000-4000-8000-000000000000"]}'
         note: чужая организация — как несуществующая (AC-02)
+      - actor: a.repairs-foreman
+        params: { tenantId: tenant:a }
+        status: 403
+        body: '{"accrualIds":["00000000-0000-4000-8000-000000000000"]}'
+        note: прораб без repairs.crew.pay — отказ шлюза
   - op: listSubcontractors
     method: GET
     path: /api/v1/tenants/{tenantId}/repairs/projects/{projectId}/subcontractors
-    pending: W6.15
     rows:
       - actor: anonymous
         params:
@@ -1359,10 +1387,17 @@ endpoints:
         absent:
           - tenant:a
         note: чужая организация — как несуществующая (AC-02)
+      - actor: a.owner
+        params: { tenantId: tenant:a, projectId: repair_project:a.flat }
+        status: 200
+        note: владелец читает подрядчиков объекта
+      - actor: a.repairs-foreman
+        params: { tenantId: tenant:a, projectId: repair_project:a.flat }
+        status: 403
+        note: прораб без repairs.subcontractors.manage — отказ шлюза
   - op: setSubcontractorAccess
     method: PUT
     path: /api/v1/tenants/{tenantId}/repairs/projects/{projectId}/subcontractors/{subcontractorId}
-    pending: W6.15
     rows:
       - actor: anonymous
         params:
@@ -1381,10 +1416,15 @@ endpoints:
           - tenant:a
         body: '{"active":false}'
         note: чужая организация — как несуществующая (AC-02)
+      - actor: a.repairs-foreman
+        params:
+          { tenantId: tenant:a, projectId: repair_project:a.flat, subcontractorId: tenant:missing }
+        status: 403
+        body: '{"active":false}'
+        note: прораб без repairs.subcontractors.manage — отказ шлюза
   - op: getClientLink
     method: GET
     path: /api/v1/tenants/{tenantId}/repairs/projects/{projectId}/client-link
-    pending: W6.15
     rows:
       - actor: anonymous
         params:
@@ -1399,10 +1439,17 @@ endpoints:
         absent:
           - tenant:a
         note: чужая организация — как несуществующая (AC-02)
+      - actor: a.owner
+        params: { tenantId: tenant:a, projectId: repair_project:a.flat }
+        status: 200
+        note: владелец читает состояние ссылки кабинета
+      - actor: a.repairs-foreman
+        params: { tenantId: tenant:a, projectId: repair_project:a.flat }
+        status: 403
+        note: прораб без repairs.client_link.manage — отказ шлюза
   - op: issueClientLink
     method: POST
     path: /api/v1/tenants/{tenantId}/repairs/projects/{projectId}/client-link
-    pending: W6.15
     rows:
       - actor: anonymous
         params:
@@ -1417,10 +1464,13 @@ endpoints:
         absent:
           - tenant:a
         note: чужая организация — как несуществующая (AC-02)
+      - actor: a.repairs-foreman
+        params: { tenantId: tenant:a, projectId: repair_project:a.flat }
+        status: 403
+        note: прораб без repairs.client_link.manage — отказ шлюза, ссылки нет
   - op: revokeClientLink
     method: DELETE
     path: /api/v1/tenants/{tenantId}/repairs/projects/{projectId}/client-link
-    pending: W6.15
     rows:
       - actor: anonymous
         params:
@@ -1435,39 +1485,29 @@ endpoints:
         absent:
           - tenant:a
         note: чужая организация — как несуществующая (AC-02)
+      - actor: a.repairs-foreman
+        params: { tenantId: tenant:a, projectId: repair_project:a.flat }
+        status: 403
+        note: прораб без repairs.client_link.manage — отказ шлюза
   - op: getClientCabinet
     method: GET
     path: /api/v1/public/client/{clientToken}
-    pending: W6.15
     rows:
       - actor: anonymous
         params:
           clientToken: tenant:missing
-        status: 404
-        code: not_found
-        note: неизвестная ссылка кабинета — 404 (отозванная или просроченная — 410 public_token_expired, нужен объект из W6.15)
-  - op: approveEstimateByClient
-    method: POST
-    path: /api/v1/public/client/{clientToken}/estimates/{version}/approve
-    pending: W6.15
-    rows:
-      - actor: anonymous
-        params:
-          clientToken: tenant:missing
-          version: tenant:missing
         status: 404
         code: not_found
         note: неизвестная ссылка кабинета — 404 (отозванная или просроченная — 410 public_token_expired, нужен объект из W6.15)
   - op: signDocumentByClient
     method: POST
     path: /api/v1/public/client/{clientToken}/documents/{documentId}/sign
-    pending: W6.15
     rows:
-      - actor: anonymous
+      - actor: a.owner
         params:
           clientToken: tenant:missing
           documentId: tenant:missing
         status: 404
         code: not_found
         body: '{"smsCode":"123456"}'
-        note: неизвестная ссылка кабинета — 404 (отозванная или просроченная — 410 public_token_expired, нужен объект из W6.15)
+        note: маршрут гостя без тенанта; Idempotency-Key формат строк ставит только актору (гость без него — 400 до хендлера), сессия маршрутом не читается; неизвестная ссылка 404, отозванная 410 — isolation_w615_test.go

@@ -31,6 +31,16 @@ type Service struct {
 	// signature is refused with dependency_unavailable. SignKey hashes the codes; empty — a key of the process.
 	Codes   CodeSender
 	SignKey []byte
+
+	// Links is the control index of the links of the cabinet of the client (control 0010); nil — the cabinet and its
+	// links answer dependency_unavailable (W6.15). Offers hands the payouts to the crew to the proposals of the cash
+	// desks (W5.31); nil — a payout is refused with dependency_unavailable. PublicBase is the origin of the deployment
+	// the address of the cabinet starts with; CrewSharePct is the share of the sum of an act the crew gets (0 — the
+	// default of the module, Q-W6.15-1).
+	Links        Links
+	Offers       PayrollOffers
+	PublicBase   string
+	CrewSharePct int
 }
 
 func (s *Service) now() time.Time {

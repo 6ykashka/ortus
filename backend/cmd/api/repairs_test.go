@@ -14,7 +14,7 @@ import (
 // of repairsPending), an operation with one does not; every listed operation is an operation of the tag.
 func TestRepairsImplementedFollowsServer(t *testing.T) {
 	t.Parallel()
-	v := reflect.ValueOf(newRepairs(nil, time.Now))
+	v := reflect.ValueOf(newRepairs(nil, nil, "", time.Now))
 	for m := range reflect.TypeFor[repairsapi.StrictServerInterface]().Methods() {
 		op := strings.ToLower(m.Name[:1]) + m.Name[1:]
 		if pending := answers501(v.MethodByName(m.Name), m.Type.In(1)); pending == repairsImplemented[op] {
@@ -32,7 +32,7 @@ func TestRepairsImplementedFollowsServer(t *testing.T) {
 			t.Errorf("%s is not an operation of the tag Repairs", op)
 		}
 	}
-	if len(repairsImplemented) < 53 {
-		t.Errorf("W6.11-W6.14 serve 53 operations, %d listed", len(repairsImplemented))
+	if len(repairsImplemented) < 66 {
+		t.Errorf("W6.11-W6.15 serve 66 operations, %d listed", len(repairsImplemented))
 	}
 }

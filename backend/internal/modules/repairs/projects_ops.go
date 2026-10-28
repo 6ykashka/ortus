@@ -591,7 +591,10 @@ func (s *Service) Activate(ctx context.Context, tc tenantctx.TenantContext, id u
 
 // HandOver answers handOverRepairProject: by the signed act of hand over the object is handed over with its warranty.
 func (s *Service) HandOver(ctx context.Context, tc tenantctx.TenantContext, id uuid.UUID, ifMatch string, b rapi.RepairHandOver) (rapi.RepairProject, error) {
-	var out rapi.RepairProject
+	var (
+		out     rapi.RepairProject
+		revoked []string
+	)
 	err := s.run(ctx, tc, true, func(r *req) error {
 		p, err := r.visibleProject(ctx, id, true)
 		if err != nil {
@@ -618,12 +621,19 @@ func (s *Service) HandOver(ctx context.Context, tc tenantctx.TenantContext, id u
 			p.id, r.now, months, r.now); err != nil {
 			return store("hand over", err)
 		}
+		// the cabinet of the client lives until the hand over (Q-W6.15-6)
+		if revoked, err = r.revokeLinks(ctx, p.id); err != nil {
+			return err
+		}
 		if err := r.event(ctx, p.id, evHandedOver, "объект сдан заказчику"); err != nil {
 			return err
 		}
 		out, err = r.projectOut(ctx, p.id)
 		return err
 	})
+	if err == nil {
+		s.revokeIndex(ctx, revoked)
+	}
 	return out, err
 }
 
