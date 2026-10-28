@@ -532,6 +532,18 @@ describe('контракт 0.12.0-stage6 (W6.00): дельты, экраны, м
       'submitWorkLog',
       'acceptWorkLog',
       'returnWorkLog',
+      // W6.13: 11 операций шага 6.4 (снабжение) — хендлеры есть, pending снят.
+      'listSupplyRequests',
+      'createSupplyRequest',
+      'reserveSupplyRequest',
+      'issueSupplyRequest',
+      'consumeSupplyRequest',
+      'createPurchase',
+      'listPurchases',
+      'receivePurchase',
+      'listProjectStock',
+      'returnProjectStock',
+      'transferProjectStock',
       // W6.14: график (шаг 6.5)
       'getSchedule',
       'createScheduleFromEstimate',

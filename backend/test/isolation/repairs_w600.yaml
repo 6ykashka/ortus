@@ -909,7 +909,6 @@ endpoints:
   - op: listSupplyRequests
     method: GET
     path: /api/v1/tenants/{tenantId}/repairs/supply-requests
-    pending: W6.13
     rows:
       - actor: anonymous
         params:
@@ -922,10 +921,19 @@ endpoints:
         absent:
           - tenant:a
         note: чужая организация — как несуществующая (AC-02)
+      - actor: a.owner
+        params:
+          tenantId: tenant:a
+        status: 200
+        note: владелец читает заявки организации (положительная строка)
+      - actor: a.repairs-foreman
+        params:
+          tenantId: tenant:a
+        status: 403
+        note: прораб без repairs.supply.request и supply.manage не читает заявки
   - op: createSupplyRequest
     method: POST
     path: /api/v1/tenants/{tenantId}/repairs/projects/{projectId}/supply-requests
-    pending: W6.13
     rows:
       - actor: anonymous
         params:
@@ -942,10 +950,16 @@ endpoints:
           - tenant:a
         body: '{"priceItemId":"00000000-0000-4000-8000-000000000000","quantity":"1","needBy":"2026-10-20"}'
         note: чужая организация — как несуществующая (AC-02)
+      - actor: a.repairs-foreman
+        params:
+          tenantId: tenant:a
+          projectId: repair_project:a.flat
+        status: 403
+        body: '{"priceItemId":"00000000-0000-4000-8000-000000000000","quantity":"1","needBy":"2026-10-20"}'
+        note: прораб без repairs.supply.request не пишет заявку
   - op: reserveSupplyRequest
     method: POST
     path: /api/v1/tenants/{tenantId}/repairs/supply-requests/{supplyRequestId}/reserve
-    pending: W6.13
     rows:
       - actor: anonymous
         params:
@@ -962,10 +976,16 @@ endpoints:
           - tenant:a
         body: '{"warehouseId":"00000000-0000-4000-8000-000000000000"}'
         note: чужая организация — как несуществующая (AC-02)
+      - actor: a.repairs-foreman
+        params:
+          tenantId: tenant:a
+          supplyRequestId: tenant:missing
+        status: 403
+        body: '{"warehouseId":"00000000-0000-4000-8000-000000000000"}'
+        note: прораб без repairs.supply.manage — отказ шлюза
   - op: issueSupplyRequest
     method: POST
     path: /api/v1/tenants/{tenantId}/repairs/supply-requests/{supplyRequestId}/issue
-    pending: W6.13
     rows:
       - actor: anonymous
         params:
@@ -980,10 +1000,15 @@ endpoints:
         absent:
           - tenant:a
         note: чужая организация — как несуществующая (AC-02)
+      - actor: a.repairs-foreman
+        params:
+          tenantId: tenant:a
+          supplyRequestId: tenant:missing
+        status: 403
+        note: прораб без inventory.movements.post не выдаёт со склада
   - op: consumeSupplyRequest
     method: POST
     path: /api/v1/tenants/{tenantId}/repairs/supply-requests/{supplyRequestId}/consume
-    pending: W6.13
     rows:
       - actor: anonymous
         params:
@@ -998,10 +1023,15 @@ endpoints:
         absent:
           - tenant:a
         note: чужая организация — как несуществующая (AC-02)
+      - actor: a.repairs-foreman
+        params:
+          tenantId: tenant:a
+          supplyRequestId: tenant:missing
+        status: 403
+        note: прораб без repairs.supply.request и work_logs.review не списывает
   - op: createPurchase
     method: POST
     path: /api/v1/tenants/{tenantId}/repairs/purchases
-    pending: W6.13
     rows:
       - actor: anonymous
         params:
@@ -1016,10 +1046,15 @@ endpoints:
           - tenant:a
         body: '{"supplier":"x","lines":[{"supplyRequestId":"00000000-0000-4000-8000-000000000000"}]}'
         note: чужая организация — как несуществующая (AC-02)
+      - actor: a.repairs-foreman
+        params:
+          tenantId: tenant:a
+        status: 403
+        body: '{"supplier":"x","lines":[{"supplyRequestId":"00000000-0000-4000-8000-000000000000"}]}'
+        note: прораб без repairs.supply.manage — отказ шлюза
   - op: listPurchases
     method: GET
     path: /api/v1/tenants/{tenantId}/repairs/purchases
-    pending: W6.13
     rows:
       - actor: anonymous
         params:
@@ -1032,10 +1067,19 @@ endpoints:
         absent:
           - tenant:a
         note: чужая организация — как несуществующая (AC-02)
+      - actor: a.owner
+        params:
+          tenantId: tenant:a
+        status: 200
+        note: владелец читает закупки (положительная строка)
+      - actor: a.repairs-foreman
+        params:
+          tenantId: tenant:a
+        status: 403
+        note: прораб без repairs.supply.manage — отказ шлюза
   - op: receivePurchase
     method: POST
     path: /api/v1/tenants/{tenantId}/repairs/purchases/{purchaseId}/receive
-    pending: W6.13
     rows:
       - actor: anonymous
         params:
@@ -1052,10 +1096,16 @@ endpoints:
           - tenant:a
         body: '{"receiptQr":"x"}'
         note: чужая организация — как несуществующая (AC-02)
+      - actor: a.repairs-foreman
+        params:
+          tenantId: tenant:a
+          purchaseId: tenant:missing
+        status: 403
+        body: '{"receiptQr":"x"}'
+        note: прораб без repairs.supply.manage — отказ шлюза
   - op: listProjectStock
     method: GET
     path: /api/v1/tenants/{tenantId}/repairs/project-stock
-    pending: W6.13
     rows:
       - actor: anonymous
         params:
@@ -1068,10 +1118,19 @@ endpoints:
         absent:
           - tenant:a
         note: чужая организация — как несуществующая (AC-02)
+      - actor: a.owner
+        params:
+          tenantId: tenant:a
+        status: 200
+        note: владелец читает остатки на объектах (положительная строка)
+      - actor: a.repairs-foreman
+        params:
+          tenantId: tenant:a
+        status: 403
+        note: прораб без repairs.supply.manage — отказ шлюза
   - op: returnProjectStock
     method: POST
     path: /api/v1/tenants/{tenantId}/repairs/projects/{projectId}/stock/return
-    pending: W6.13
     rows:
       - actor: anonymous
         params:
@@ -1088,10 +1147,16 @@ endpoints:
           - tenant:a
         body: '{"warehouseId":"00000000-0000-4000-8000-000000000000","items":[{"priceItemId":"00000000-0000-4000-8000-000000000000","quantity":"1"}]}'
         note: чужая организация — как несуществующая (AC-02)
+      - actor: a.repairs-foreman
+        params:
+          tenantId: tenant:a
+          projectId: repair_project:a.flat
+        status: 403
+        body: '{"warehouseId":"00000000-0000-4000-8000-000000000000","items":[{"priceItemId":"00000000-0000-4000-8000-000000000000","quantity":"1"}]}'
+        note: прораб без repairs.supply.manage — отказ шлюза
   - op: transferProjectStock
     method: POST
     path: /api/v1/tenants/{tenantId}/repairs/projects/{projectId}/stock/transfer
-    pending: W6.13
     rows:
       - actor: anonymous
         params:
@@ -1108,6 +1173,13 @@ endpoints:
           - tenant:a
         body: '{"toProjectId":"00000000-0000-4000-8000-000000000000","items":[{"priceItemId":"00000000-0000-4000-8000-000000000000","quantity":"1"}]}'
         note: чужая организация — как несуществующая (AC-02)
+      - actor: a.repairs-foreman
+        params:
+          tenantId: tenant:a
+          projectId: repair_project:a.flat
+        status: 403
+        body: '{"toProjectId":"00000000-0000-4000-8000-000000000000","items":[{"priceItemId":"00000000-0000-4000-8000-000000000000","quantity":"1"}]}'
+        note: прораб без repairs.supply.manage — отказ шлюза
   - op: getProjectFinance
     method: GET
     path: /api/v1/tenants/{tenantId}/repairs/projects/{projectId}/finance

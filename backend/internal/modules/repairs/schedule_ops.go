@@ -281,8 +281,8 @@ func (r *req) bump(ctx context.Context, project uuid.UUID) error {
 	return store("schedule revision", err)
 }
 
-// publish puts an event of the schedule into the outbox in the transaction of the change.
-func (r *req) publish(ctx context.Context, typ string, project uuid.UUID, payload map[string]any) error {
+// publishProject puts an event of the schedule into the outbox in the transaction of the change.
+func (r *req) publishProject(ctx context.Context, typ string, project uuid.UUID, payload map[string]any) error {
 	payload["projectId"] = project
 	_, err := events.Publish(ctx, r.tx, events.Event{Type: typ, Aggregate: aggregateProject, AggregateID: project, Payload: payload})
 	return store("event "+typ, err)
@@ -349,7 +349,7 @@ func (r *req) saveMove(ctx context.Context, sc *sched, pl *plan, b rapi.Schedule
 	if err := r.event(ctx, sc.p.id, evScheduleChanged, "перенёс этапы графика: "+reasonLabels[b.Reason]); err != nil {
 		return err
 	}
-	return r.publish(ctx, eventScheduleChanged, sc.p.id, movePayload(pl, b.Reason, notify, before, after))
+	return r.publishProject(ctx, eventScheduleChanged, sc.p.id, movePayload(pl, b.Reason, notify, before, after))
 }
 
 // movePayload is the payload of repairs.schedule.changed.v1: the stages, the old and the new due date, the reason, who is told.
@@ -421,7 +421,7 @@ func (r *req) setExecutor(ctx context.Context, sc *sched, st stageRow, b rapi.St
 	if err := r.bump(ctx, sc.p.id); err != nil {
 		return err
 	}
-	return r.publish(ctx, eventScheduleChanged, sc.p.id, map[string]any{"kind": "executor", "stageIds": []uuid.UUID{st.id}, "notify": notified})
+	return r.publishProject(ctx, eventScheduleChanged, sc.p.id, map[string]any{"kind": "executor", "stageIds": []uuid.UUID{st.id}, "notify": notified})
 }
 func orNone(name string) string {
 	if name == "" {
@@ -544,7 +544,7 @@ func (r *req) writeBaseline(ctx context.Context, sc *sched, f *forecast, agreeme
 	if err := r.event(ctx, sc.p.id, evScheduleBaseline, "зафиксировал базовый план графика: допсоглашение № "+strconv.Itoa(agreementNo)); err != nil {
 		return err
 	}
-	return r.publish(ctx, eventScheduleBaselineSet, sc.p.id, map[string]any{"version": version, "agreementNo": agreementNo, "dueOn": due.Format("2006-01-02")})
+	return r.publishProject(ctx, eventScheduleBaselineSet, sc.p.id, map[string]any{"version": version, "agreementNo": agreementNo, "dueOn": due.Format("2006-01-02")})
 }
 
 // estimateRow is an estimate version the schedule is built from.

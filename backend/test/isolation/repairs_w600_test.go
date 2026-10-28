@@ -1085,7 +1085,6 @@ var repairsW600Matrix = matrix.File{
 			Method:  "GET",
 			Path:    "/api/v1/tenants/{tenantId}/repairs/supply-requests",
 			Channel: "http",
-			Pending: "W6.13",
 			Rows: []matrix.Row{
 				{
 					Actor:  "anonymous",
@@ -1098,6 +1097,18 @@ var repairsW600Matrix = matrix.File{
 					Status: 404,
 					Absent: []string{"tenant:a"},
 					Note:   "чужая организация — как несуществующая (AC-02)",
+				},
+				{
+					Actor:  "a.owner",
+					Params: map[string]string{"tenantId": "tenant:a"},
+					Status: 200,
+					Note:   "владелец читает заявки организации (положительная строка)",
+				},
+				{
+					Actor:  "a.repairs-foreman",
+					Params: map[string]string{"tenantId": "tenant:a"},
+					Status: 403,
+					Note:   "прораб без repairs.supply.request и supply.manage не читает заявки",
 				},
 			},
 		},
@@ -1106,7 +1117,6 @@ var repairsW600Matrix = matrix.File{
 			Method:  "POST",
 			Path:    "/api/v1/tenants/{tenantId}/repairs/projects/{projectId}/supply-requests",
 			Channel: "http",
-			Pending: "W6.13",
 			Rows: []matrix.Row{
 				{
 					Actor:  "anonymous",
@@ -1121,6 +1131,13 @@ var repairsW600Matrix = matrix.File{
 					Absent: []string{"tenant:a"},
 					Body:   "{\"priceItemId\":\"00000000-0000-4000-8000-000000000000\",\"quantity\":\"1\",\"needBy\":\"2026-10-20\"}",
 					Note:   "чужая организация — как несуществующая (AC-02)",
+				},
+				{
+					Actor:  "a.repairs-foreman",
+					Params: map[string]string{"projectId": "repair_project:a.flat", "tenantId": "tenant:a"},
+					Status: 403,
+					Body:   "{\"priceItemId\":\"00000000-0000-4000-8000-000000000000\",\"quantity\":\"1\",\"needBy\":\"2026-10-20\"}",
+					Note:   "прораб без repairs.supply.request не пишет заявку",
 				},
 			},
 		},
@@ -1129,7 +1146,6 @@ var repairsW600Matrix = matrix.File{
 			Method:  "POST",
 			Path:    "/api/v1/tenants/{tenantId}/repairs/supply-requests/{supplyRequestId}/reserve",
 			Channel: "http",
-			Pending: "W6.13",
 			Rows: []matrix.Row{
 				{
 					Actor:  "anonymous",
@@ -1144,6 +1160,13 @@ var repairsW600Matrix = matrix.File{
 					Absent: []string{"tenant:a"},
 					Body:   "{\"warehouseId\":\"00000000-0000-4000-8000-000000000000\"}",
 					Note:   "чужая организация — как несуществующая (AC-02)",
+				},
+				{
+					Actor:  "a.repairs-foreman",
+					Params: map[string]string{"supplyRequestId": "tenant:missing", "tenantId": "tenant:a"},
+					Status: 403,
+					Body:   "{\"warehouseId\":\"00000000-0000-4000-8000-000000000000\"}",
+					Note:   "прораб без repairs.supply.manage — отказ шлюза",
 				},
 			},
 		},
@@ -1152,7 +1175,6 @@ var repairsW600Matrix = matrix.File{
 			Method:  "POST",
 			Path:    "/api/v1/tenants/{tenantId}/repairs/supply-requests/{supplyRequestId}/issue",
 			Channel: "http",
-			Pending: "W6.13",
 			Rows: []matrix.Row{
 				{
 					Actor:  "anonymous",
@@ -1165,6 +1187,12 @@ var repairsW600Matrix = matrix.File{
 					Status: 404,
 					Absent: []string{"tenant:a"},
 					Note:   "чужая организация — как несуществующая (AC-02)",
+				},
+				{
+					Actor:  "a.repairs-foreman",
+					Params: map[string]string{"supplyRequestId": "tenant:missing", "tenantId": "tenant:a"},
+					Status: 403,
+					Note:   "прораб без inventory.movements.post не выдаёт со склада",
 				},
 			},
 		},
@@ -1173,7 +1201,6 @@ var repairsW600Matrix = matrix.File{
 			Method:  "POST",
 			Path:    "/api/v1/tenants/{tenantId}/repairs/supply-requests/{supplyRequestId}/consume",
 			Channel: "http",
-			Pending: "W6.13",
 			Rows: []matrix.Row{
 				{
 					Actor:  "anonymous",
@@ -1186,6 +1213,12 @@ var repairsW600Matrix = matrix.File{
 					Status: 404,
 					Absent: []string{"tenant:a"},
 					Note:   "чужая организация — как несуществующая (AC-02)",
+				},
+				{
+					Actor:  "a.repairs-foreman",
+					Params: map[string]string{"supplyRequestId": "tenant:missing", "tenantId": "tenant:a"},
+					Status: 403,
+					Note:   "прораб без repairs.supply.request и work_logs.review не списывает",
 				},
 			},
 		},
@@ -1194,7 +1227,6 @@ var repairsW600Matrix = matrix.File{
 			Method:  "POST",
 			Path:    "/api/v1/tenants/{tenantId}/repairs/purchases",
 			Channel: "http",
-			Pending: "W6.13",
 			Rows: []matrix.Row{
 				{
 					Actor:  "anonymous",
@@ -1209,6 +1241,13 @@ var repairsW600Matrix = matrix.File{
 					Absent: []string{"tenant:a"},
 					Body:   "{\"supplier\":\"x\",\"lines\":[{\"supplyRequestId\":\"00000000-0000-4000-8000-000000000000\"}]}",
 					Note:   "чужая организация — как несуществующая (AC-02)",
+				},
+				{
+					Actor:  "a.repairs-foreman",
+					Params: map[string]string{"tenantId": "tenant:a"},
+					Status: 403,
+					Body:   "{\"supplier\":\"x\",\"lines\":[{\"supplyRequestId\":\"00000000-0000-4000-8000-000000000000\"}]}",
+					Note:   "прораб без repairs.supply.manage — отказ шлюза",
 				},
 			},
 		},
@@ -1217,7 +1256,6 @@ var repairsW600Matrix = matrix.File{
 			Method:  "GET",
 			Path:    "/api/v1/tenants/{tenantId}/repairs/purchases",
 			Channel: "http",
-			Pending: "W6.13",
 			Rows: []matrix.Row{
 				{
 					Actor:  "anonymous",
@@ -1230,6 +1268,18 @@ var repairsW600Matrix = matrix.File{
 					Status: 404,
 					Absent: []string{"tenant:a"},
 					Note:   "чужая организация — как несуществующая (AC-02)",
+				},
+				{
+					Actor:  "a.owner",
+					Params: map[string]string{"tenantId": "tenant:a"},
+					Status: 200,
+					Note:   "владелец читает закупки (положительная строка)",
+				},
+				{
+					Actor:  "a.repairs-foreman",
+					Params: map[string]string{"tenantId": "tenant:a"},
+					Status: 403,
+					Note:   "прораб без repairs.supply.manage — отказ шлюза",
 				},
 			},
 		},
@@ -1238,7 +1288,6 @@ var repairsW600Matrix = matrix.File{
 			Method:  "POST",
 			Path:    "/api/v1/tenants/{tenantId}/repairs/purchases/{purchaseId}/receive",
 			Channel: "http",
-			Pending: "W6.13",
 			Rows: []matrix.Row{
 				{
 					Actor:  "anonymous",
@@ -1253,6 +1302,13 @@ var repairsW600Matrix = matrix.File{
 					Absent: []string{"tenant:a"},
 					Body:   "{\"receiptQr\":\"x\"}",
 					Note:   "чужая организация — как несуществующая (AC-02)",
+				},
+				{
+					Actor:  "a.repairs-foreman",
+					Params: map[string]string{"purchaseId": "tenant:missing", "tenantId": "tenant:a"},
+					Status: 403,
+					Body:   "{\"receiptQr\":\"x\"}",
+					Note:   "прораб без repairs.supply.manage — отказ шлюза",
 				},
 			},
 		},
@@ -1261,7 +1317,6 @@ var repairsW600Matrix = matrix.File{
 			Method:  "GET",
 			Path:    "/api/v1/tenants/{tenantId}/repairs/project-stock",
 			Channel: "http",
-			Pending: "W6.13",
 			Rows: []matrix.Row{
 				{
 					Actor:  "anonymous",
@@ -1274,6 +1329,18 @@ var repairsW600Matrix = matrix.File{
 					Status: 404,
 					Absent: []string{"tenant:a"},
 					Note:   "чужая организация — как несуществующая (AC-02)",
+				},
+				{
+					Actor:  "a.owner",
+					Params: map[string]string{"tenantId": "tenant:a"},
+					Status: 200,
+					Note:   "владелец читает остатки на объектах (положительная строка)",
+				},
+				{
+					Actor:  "a.repairs-foreman",
+					Params: map[string]string{"tenantId": "tenant:a"},
+					Status: 403,
+					Note:   "прораб без repairs.supply.manage — отказ шлюза",
 				},
 			},
 		},
@@ -1282,7 +1349,6 @@ var repairsW600Matrix = matrix.File{
 			Method:  "POST",
 			Path:    "/api/v1/tenants/{tenantId}/repairs/projects/{projectId}/stock/return",
 			Channel: "http",
-			Pending: "W6.13",
 			Rows: []matrix.Row{
 				{
 					Actor:  "anonymous",
@@ -1297,6 +1363,13 @@ var repairsW600Matrix = matrix.File{
 					Absent: []string{"tenant:a"},
 					Body:   "{\"warehouseId\":\"00000000-0000-4000-8000-000000000000\",\"items\":[{\"priceItemId\":\"00000000-0000-4000-8000-000000000000\",\"quantity\":\"1\"}]}",
 					Note:   "чужая организация — как несуществующая (AC-02)",
+				},
+				{
+					Actor:  "a.repairs-foreman",
+					Params: map[string]string{"projectId": "repair_project:a.flat", "tenantId": "tenant:a"},
+					Status: 403,
+					Body:   "{\"warehouseId\":\"00000000-0000-4000-8000-000000000000\",\"items\":[{\"priceItemId\":\"00000000-0000-4000-8000-000000000000\",\"quantity\":\"1\"}]}",
+					Note:   "прораб без repairs.supply.manage — отказ шлюза",
 				},
 			},
 		},
@@ -1305,7 +1378,6 @@ var repairsW600Matrix = matrix.File{
 			Method:  "POST",
 			Path:    "/api/v1/tenants/{tenantId}/repairs/projects/{projectId}/stock/transfer",
 			Channel: "http",
-			Pending: "W6.13",
 			Rows: []matrix.Row{
 				{
 					Actor:  "anonymous",
@@ -1320,6 +1392,13 @@ var repairsW600Matrix = matrix.File{
 					Absent: []string{"tenant:a"},
 					Body:   "{\"toProjectId\":\"00000000-0000-4000-8000-000000000000\",\"items\":[{\"priceItemId\":\"00000000-0000-4000-8000-000000000000\",\"quantity\":\"1\"}]}",
 					Note:   "чужая организация — как несуществующая (AC-02)",
+				},
+				{
+					Actor:  "a.repairs-foreman",
+					Params: map[string]string{"projectId": "repair_project:a.flat", "tenantId": "tenant:a"},
+					Status: 403,
+					Body:   "{\"toProjectId\":\"00000000-0000-4000-8000-000000000000\",\"items\":[{\"priceItemId\":\"00000000-0000-4000-8000-000000000000\",\"quantity\":\"1\"}]}",
+					Note:   "прораб без repairs.supply.manage — отказ шлюза",
 				},
 			},
 		},

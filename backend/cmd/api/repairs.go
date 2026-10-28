@@ -19,6 +19,7 @@ import (
 // deeper than the methods of the embedded servers and never shadow them.
 type repairsServer struct {
 	repairs.Server         // W6.11
+	repairs.SupplyServer   // W6.13
 	repairs.ScheduleServer // W6.14
 	repairsPending
 }
@@ -29,7 +30,7 @@ var _ repairsapi.StrictServerInterface = repairsServer{}
 // outside prod).
 func newRepairs(pools repairs.Pools, now func() time.Time) repairsapi.StrictServerInterface {
 	svc := &repairs.Service{Pools: pools, Now: now}
-	return repairsServer{Server: repairs.Server{S: svc}, ScheduleServer: repairs.ScheduleServer{S: svc}}
+	return repairsServer{Server: repairs.Server{S: svc}, SupplyServer: repairs.SupplyServer{S: svc}, ScheduleServer: repairs.ScheduleServer{S: svc}}
 }
 
 // repairsImplemented are the operations of the tag Repairs that have a server; an owner adds its own together with the
@@ -37,6 +38,8 @@ func newRepairs(pools repairs.Pools, now func() time.Time) repairsapi.StrictServ
 var repairsImplemented = map[string]bool{
 	// W6.11: objects, the foreman, works, marks.
 	"listRepairProjects": true, "createRepairProject": true, "getRepairProject": true, "updateRepairProject": true, "getRepairProjectOverview": true, "assignRepairForeman": true, "activateRepairProject": true, "handOverRepairProject": true, "listRepairWorks": true, "listWorkLogs": true, "submitWorkLog": true, "acceptWorkLog": true, "returnWorkLog": true,
+	// W6.13: the supply over the warehouse.
+	"listSupplyRequests": true, "createSupplyRequest": true, "reserveSupplyRequest": true, "issueSupplyRequest": true, "consumeSupplyRequest": true, "createPurchase": true, "listPurchases": true, "receivePurchase": true, "listProjectStock": true, "returnProjectStock": true, "transferProjectStock": true,
 	// W6.14: the schedule.
 	"getSchedule": true, "createScheduleFromEstimate": true, "previewScheduleChange": true, "applyScheduleChange": true, "setScheduleStageExecutor": true, "createScheduleBaseline": true,
 }
@@ -67,10 +70,6 @@ func (repairsNotImplemented) ApproveEstimateByClient(context.Context, repairsapi
 	return nil, errRepairsNotImplemented
 }
 
-func (repairsNotImplemented) ConsumeSupplyRequest(context.Context, repairsapi.ConsumeSupplyRequestRequestObject) (repairsapi.ConsumeSupplyRequestResponseObject, error) {
-	return nil, errRepairsNotImplemented
-}
-
 func (repairsNotImplemented) CopyTemplate(context.Context, repairsapi.CopyTemplateRequestObject) (repairsapi.CopyTemplateResponseObject, error) {
 	return nil, errRepairsNotImplemented
 }
@@ -84,14 +83,6 @@ func (repairsNotImplemented) CreateEstimateRevision(context.Context, repairsapi.
 }
 
 func (repairsNotImplemented) CreatePriceItem(context.Context, repairsapi.CreatePriceItemRequestObject) (repairsapi.CreatePriceItemResponseObject, error) {
-	return nil, errRepairsNotImplemented
-}
-
-func (repairsNotImplemented) CreatePurchase(context.Context, repairsapi.CreatePurchaseRequestObject) (repairsapi.CreatePurchaseResponseObject, error) {
-	return nil, errRepairsNotImplemented
-}
-
-func (repairsNotImplemented) CreateSupplyRequest(context.Context, repairsapi.CreateSupplyRequestRequestObject) (repairsapi.CreateSupplyRequestResponseObject, error) {
 	return nil, errRepairsNotImplemented
 }
 
@@ -131,10 +122,6 @@ func (repairsNotImplemented) IssueClientLink(context.Context, repairsapi.IssueCl
 	return nil, errRepairsNotImplemented
 }
 
-func (repairsNotImplemented) IssueSupplyRequest(context.Context, repairsapi.IssueSupplyRequestRequestObject) (repairsapi.IssueSupplyRequestResponseObject, error) {
-	return nil, errRepairsNotImplemented
-}
-
 func (repairsNotImplemented) ListChangeOrders(context.Context, repairsapi.ListChangeOrdersRequestObject) (repairsapi.ListChangeOrdersResponseObject, error) {
 	return nil, errRepairsNotImplemented
 }
@@ -151,23 +138,11 @@ func (repairsNotImplemented) ListPriceItems(context.Context, repairsapi.ListPric
 	return nil, errRepairsNotImplemented
 }
 
-func (repairsNotImplemented) ListProjectStock(context.Context, repairsapi.ListProjectStockRequestObject) (repairsapi.ListProjectStockResponseObject, error) {
-	return nil, errRepairsNotImplemented
-}
-
-func (repairsNotImplemented) ListPurchases(context.Context, repairsapi.ListPurchasesRequestObject) (repairsapi.ListPurchasesResponseObject, error) {
-	return nil, errRepairsNotImplemented
-}
-
 func (repairsNotImplemented) ListRepairDocuments(context.Context, repairsapi.ListRepairDocumentsRequestObject) (repairsapi.ListRepairDocumentsResponseObject, error) {
 	return nil, errRepairsNotImplemented
 }
 
 func (repairsNotImplemented) ListSubcontractors(context.Context, repairsapi.ListSubcontractorsRequestObject) (repairsapi.ListSubcontractorsResponseObject, error) {
-	return nil, errRepairsNotImplemented
-}
-
-func (repairsNotImplemented) ListSupplyRequests(context.Context, repairsapi.ListSupplyRequestsRequestObject) (repairsapi.ListSupplyRequestsResponseObject, error) {
 	return nil, errRepairsNotImplemented
 }
 
@@ -191,23 +166,11 @@ func (repairsNotImplemented) RecallEstimate(context.Context, repairsapi.RecallEs
 	return nil, errRepairsNotImplemented
 }
 
-func (repairsNotImplemented) ReceivePurchase(context.Context, repairsapi.ReceivePurchaseRequestObject) (repairsapi.ReceivePurchaseResponseObject, error) {
-	return nil, errRepairsNotImplemented
-}
-
 func (repairsNotImplemented) RejectChangeOrder(context.Context, repairsapi.RejectChangeOrderRequestObject) (repairsapi.RejectChangeOrderResponseObject, error) {
 	return nil, errRepairsNotImplemented
 }
 
 func (repairsNotImplemented) RequestDocumentSignature(context.Context, repairsapi.RequestDocumentSignatureRequestObject) (repairsapi.RequestDocumentSignatureResponseObject, error) {
-	return nil, errRepairsNotImplemented
-}
-
-func (repairsNotImplemented) ReserveSupplyRequest(context.Context, repairsapi.ReserveSupplyRequestRequestObject) (repairsapi.ReserveSupplyRequestResponseObject, error) {
-	return nil, errRepairsNotImplemented
-}
-
-func (repairsNotImplemented) ReturnProjectStock(context.Context, repairsapi.ReturnProjectStockRequestObject) (repairsapi.ReturnProjectStockResponseObject, error) {
 	return nil, errRepairsNotImplemented
 }
 
@@ -228,10 +191,6 @@ func (repairsNotImplemented) SetSubcontractorAccess(context.Context, repairsapi.
 }
 
 func (repairsNotImplemented) SignDocumentByClient(context.Context, repairsapi.SignDocumentByClientRequestObject) (repairsapi.SignDocumentByClientResponseObject, error) {
-	return nil, errRepairsNotImplemented
-}
-
-func (repairsNotImplemented) TransferProjectStock(context.Context, repairsapi.TransferProjectStockRequestObject) (repairsapi.TransferProjectStockResponseObject, error) {
 	return nil, errRepairsNotImplemented
 }
 
