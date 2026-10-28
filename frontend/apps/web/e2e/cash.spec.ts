@@ -1,14 +1,17 @@
 // W5.32 · e2e страницы `cash` «Касса» (`/t/:tenantId/cash`; эталон design-2026-10-19 «Касса.dc.html», разбор
 // docs/plan/v2/analysis/dor/cash.md §1.4–1.6): вкладки «Кассы», «Входящие», «Смены», «Настройки», диалоги модуля.
 // Режим mock — сценарный сервер W5.00 (контракт 0.12.0-stage5, сид «Альты»: 8 касс, смены 117 и 118, заявка Котовой,
-// четыре предложения); stand — backend W5.31 (@stand-spec, не влит в main). Персонаж — владелец: в mock у кассира нет
+// четыре предложения); stand — настоящий backend W5.31 (@stand, W2.103). Персонаж — владелец: в mock у кассира нет
 // cash.* в /me/context (Q-W5.32-7), поэтому ограниченные права проверяет Vitest подменой ответа listCashAccounts.
 // Пункты verification-protocol §1.3: загрузка и ошибка списка (Vitest, сеть mock здесь не подменить), нет связи,
 // клавиатура, раскладка 390 / 1440, axe.
 import type { Locator, Page } from '@playwright/test';
 
 import { expect, test } from './_stand/fixtures.ts';
+import { type StandAccount, cashDrawer, cashSafe, openShift } from './cash.stand.ts';
 import { dialog, h1, hitHeight, noHorizontalScroll, openPage, toast } from './modules.helpers.ts';
+import { runLabel } from './_stand/stand.ts';
+import { tenantId } from './shell.helpers.ts';
 
 const NB = String.fromCharCode(160);
 const money = (s: string): string => s.replace(/ /g, NB);
@@ -321,10 +324,232 @@ test.describe('cash — страница «Касса» @mock', () => {
   });
 });
 
-test.describe('cash — stand @stand-spec', () => {
-  test.skip(({ harness }) => harness.mode !== 'stand', 'режим stand — backend кассы');
+// Стенд: backend кассы W5.31 в main. Кассы, сейф, начальный остаток и смена — командами API (cash.stand.ts), страница
+// читает настоящий backend; проводки, сторно, перемещения и закрытие смены — окнами страницы. Сид стенда касс не создаёт.
+test.describe('cash — страница «Касса» @stand', () => {
+  test.skip(({ harness }) => harness.mode !== 'stand', 'режим stand');
+  test.setTimeout(180_000);
 
-  test.fixme('сценарии кассы на stand: backend W5.31 не влит в main (ветка ws/W5.31), права кассира и лимиты', async () => {
-    expect(true).toBe(true);
+  const pick = (page: Page, acct: StandAccount): Locator => acc(page, acct.name);
+
+  /** Касса готова на стенде; владелец открывает «Кассу» и выбирает её по названию. */
+  async function openStand(
+    app: Parameters<typeof openPage>[0],
+    page: Page,
+    make: (tenant: string) => Promise<StandAccount>,
+  ): Promise<{ tenant: string; acct: StandAccount }> {
+    await app('/', { persona: 'owner' });
+    const tenant = await tenantId(page);
+    const acct = await make(tenant);
+    await app(`/t/${tenant}/cash`, { persona: 'owner' });
+    await expect(h1(page, 'Касса')).toBeVisible({ timeout: 30_000 });
+    await pick(page, acct).click({ timeout: 30_000 });
+    await expect(card(page).getByRole('heading', { level: 2, name: acct.name })).toBeVisible();
+    return { tenant, acct };
+  }
+
+  test('владелец на стенде: шапка, вкладки, карточка кассы — факты, действия, «Ваш доступ»', async ({
+    app,
+    page,
+  }, testInfo) => {
+    const { acct } = await openStand(app, page, (t) =>
+      cashDrawer(page, t, testInfo.project.name, { shiftMode: 'open', opening: 7350 }),
+    );
+    await expect(main(page)).toContainText(/\d+ касс\S* (и|или) сч\S+ в вашей области/);
+    await expect(main(page).locator('.ox-ca-tab')).toHaveText([
+      'Кассы',
+      /^Входящие\d*$/,
+      'Смены',
+      'Настройки',
+    ]);
+    await expect(main(page).getByRole('button', { name: 'Новая операция' })).toBeVisible();
+    const c = card(page);
+    // Смена кассы закрыта: вместо «Принять оплату» — «Открыть смену».
+    for (const b of ['Открыть смену', 'Переместить']) {
+      await expect(c.getByRole('button', { name: b })).toBeVisible();
+    }
+    await expect(c.locator('.ox-ca-fact').first()).toContainText(money('7 350 ₽'));
+    await expect(c.locator('.ox-ca-access')).toContainText('Ваш доступ: Владелец бизнеса');
+    await expect(pick(page, acct)).toContainText(money('7 350 ₽'));
+    await page.reload();
+    await expect(pick(page, acct)).toContainText(money('7 350 ₽'), { timeout: 30_000 });
+  });
+
+  test('владелец на стенде: «Новая операция» — проверка полей, приход проведён, сторно с причиной', async ({
+    app,
+    page,
+  }, testInfo) => {
+    const { acct } = await openStand(app, page, (t) =>
+      cashDrawer(page, t, testInfo.project.name, { opening: 1000 }),
+    );
+    await main(page).getByRole('button', { name: 'Новая операция' }).click();
+    const d = dialog(page);
+    await expect(d.getByRole('heading', { name: 'Новая операция' })).toBeVisible();
+    await d.getByRole('button', { name: 'Провести' }).click();
+    await expect(d.getByRole('alert')).toContainText('Укажите сумму больше нуля.');
+    await d.getByLabel('Сумма, ₽').fill('1500');
+    await d.getByLabel('Основание · обязательно').fill(`Сертификат ${acct.label}`);
+    await d.getByRole('button', { name: 'Провести' }).click();
+    await expect(toast(page)).toHaveText('Операция проведена', { timeout: 20_000 });
+    const row = rows(page).filter({ hasText: `Сертификат ${acct.label}` });
+    await expect(row.locator('.ox-ca-opamount')).toHaveText(`+1${NB}500${NB}₽`);
+    await expect(card(page).locator('.ox-ca-fact').first()).toContainText(money('2 500 ₽'));
+    await row.getByRole('button', { name: 'Сторно' }).click();
+    const r = dialog(page);
+    await expect(r.getByRole('heading', { name: /^Сторно K-/ })).toBeVisible();
+    await r.getByRole('button', { name: 'Сторнировать' }).click();
+    await expect(r.getByRole('alert')).toContainText('Укажите причину.');
+    await r.getByLabel('Причина исправления').fill('ошибка ввода');
+    await r.getByRole('button', { name: 'Сторнировать' }).click();
+    await expect(toast(page)).toHaveText('Сторно проведено', { timeout: 20_000 });
+    await expect(row).toContainText('исправлена K-');
+    await expect(card(page).locator('.ox-ca-fact').first()).toContainText(money('1 000 ₽'));
+  });
+
+  test('владелец на стенде: расход больше остатка — заметка и отказ сервера в диалоге', async ({
+    app,
+    page,
+  }, testInfo) => {
+    const { acct } = await openStand(app, page, (t) =>
+      cashDrawer(page, t, testInfo.project.name, { opening: 500 }),
+    );
+    await main(page).getByRole('button', { name: 'Новая операция' }).click();
+    const d = dialog(page);
+    await d.getByRole('radio', { name: 'Расход' }).click();
+    await d.getByLabel('Сумма, ₽').fill('9999999');
+    await expect(d).toContainText('наличная касса не уходит в минус');
+    await d.getByLabel('Основание · обязательно').fill(`Закупка ${acct.label}`);
+    await d.getByRole('button', { name: 'Провести' }).click();
+    await expect(d.getByRole('alert')).toContainText(/нет столько наличных|недостаточно/i, {
+      timeout: 20_000,
+    });
+    await expect(card(page).locator('.ox-ca-fact').first()).toContainText(money('500 ₽'));
+  });
+
+  test('владелец на стенде: «Перемещение» — касса → сейф, «В пути», приём получателем', async ({
+    app,
+    page,
+  }, testInfo) => {
+    let safe: StandAccount | undefined;
+    const { acct } = await openStand(app, page, async (t) => {
+      const label = runLabel(testInfo.project.name);
+      safe = await cashSafe(page, t, testInfo.project.name, label);
+      return cashDrawer(page, t, testInfo.project.name, { opening: 3000, label });
+    });
+    if (!safe) throw new Error('сейф не создан');
+    await card(page).getByRole('button', { name: 'Переместить' }).click();
+    const d = dialog(page);
+    await expect(d.getByLabel('Куда', { exact: true })).toHaveValue(/.+/);
+    await d.getByLabel('Куда', { exact: true }).selectOption({ label: safe.name });
+    await d.getByLabel('Сумма, ₽').fill('1000');
+    await d.getByLabel('Основание').fill('Сдача выручки');
+    await d.getByRole('button', { name: 'Отправить' }).click();
+    await expect(toast(page)).toHaveText('Отправлено: деньги в пути до приёма', {
+      timeout: 20_000,
+    });
+    await expect(main(page).locator('.ox-ca-moves')).toContainText(
+      `1${NB}000${NB}₽ в «${safe.name}»`,
+    );
+    await pick(page, safe).click();
+    const move = main(page)
+      .locator('.ox-ca-move')
+      .filter({ hasText: `1${NB}000${NB}₽ из «${acct.name}»` });
+    await move.getByRole('button', { name: `Принять 1${NB}000${NB}₽` }).click();
+    await expect(toast(page)).toHaveText(`Принято: 1${NB}000${NB}₽`, { timeout: 20_000 });
+    await expect(move).toHaveCount(0);
+    await expect(pick(page, safe)).toContainText(money('1 000 ₽'));
+  });
+
+  test('владелец на стенде: «Смены» — открытая смена в списке, закрытие с пересчётом', async ({
+    app,
+    page,
+  }, testInfo) => {
+    const { acct } = await openStand(app, page, async (t) => {
+      const a = await cashDrawer(page, t, testInfo.project.name, {
+        shiftMode: 'open',
+        opening: 3000,
+      });
+      await openShift(page, t, a.id, 0);
+      return a;
+    });
+    await tabBtn(page, 'Смены').click();
+    const list = aside(page, 'Смены');
+    await expect(
+      list.getByRole('button', { name: new RegExp(`Смена \\d+ · ${acct.name}`) }),
+    ).toBeVisible({
+      timeout: 20_000,
+    });
+    await pick(page, acct).count();
+    await tabBtn(page, 'Кассы').click();
+    await pick(page, acct).click();
+    await card(page).getByRole('button', { name: 'Закрыть смену' }).click();
+    const d = dialog(page);
+    await expect(d.getByRole('heading', { name: /^Закрыть смену \d+$/ })).toBeVisible();
+    await d.getByLabel('Купюры 1000 ₽, штук').fill('3');
+    await d.getByRole('button', { name: 'Закрыть смену' }).click();
+    await expect(toast(page)).toContainText('Смена закрыта', { timeout: 20_000 });
+    await tabBtn(page, 'Смены').click();
+    await list.getByRole('button', { name: new RegExp(`Смена \\d+ · ${acct.name}`) }).click();
+    await expect(main(page).locator('.ox-ca-table')).toBeVisible();
+  });
+
+  test('владелец на стенде: «Настройки» — кассы и роли, «Новая касса» с доступом, создание', async ({
+    app,
+    page,
+  }, testInfo) => {
+    await openStand(app, page, (t) => cashDrawer(page, t, testInfo.project.name));
+    const name = `Касса этажа ${runLabel(testInfo.project.name)}`;
+    await tabBtn(page, 'Настройки').click();
+    await expect(main(page)).toContainText('Кассы и счета');
+    await expect(main(page)).toContainText('Касса в ролях');
+    await main(page).getByRole('button', { name: 'Новая касса' }).click();
+    const d = dialog(page);
+    await expect(d).toContainText('Кто получит доступ');
+    await d.getByRole('button', { name: 'Создать кассу' }).click();
+    await expect(d.getByRole('alert')).toContainText('Укажите название кассы.');
+    await d.getByLabel('Название').fill(name);
+    await d.getByRole('button', { name: 'Создать кассу' }).click();
+    await expect(toast(page)).toHaveText('Касса создана', { timeout: 20_000 });
+    await expect(main(page).getByRole('heading', { level: 2, name })).toBeVisible({
+      timeout: 20_000,
+    });
+  });
+
+  test('владелец на стенде: диплинк ?open=inbox открывает «Входящие» и очищает адрес', async ({
+    app,
+    page,
+  }, testInfo) => {
+    await openStand(app, page, (t) => cashDrawer(page, t, testInfo.project.name));
+    await openPage(app, page, 'cash?open=inbox');
+    await expect(h1(page, 'Касса')).toBeVisible({ timeout: 30_000 });
+    await expect(tabBtn(page, 'Входящие')).toHaveAttribute('aria-pressed', 'true');
+    await expect(page).toHaveURL(/\/cash$/);
+  });
+
+  test('владелец на стенде: нет связи — баннер и заблокированные кнопки', async ({
+    app,
+    page,
+    context,
+  }, testInfo) => {
+    await openStand(app, page, (t) => cashDrawer(page, t, testInfo.project.name));
+    await context.setOffline(true);
+    await expect(main(page)).toContainText('Нет связи с сервером');
+    await expect(main(page).getByRole('button', { name: 'Новая операция' })).toBeDisabled();
+    await expect(card(page).getByRole('button', { name: 'Переместить' })).toBeDisabled();
+    await context.setOffline(false);
+    await expect(main(page).getByRole('button', { name: 'Новая операция' })).toBeEnabled();
+  });
+
+  test('сотрудник без права на кассу на стенде: «Нет доступа к разделу «Касса»» вместо списка', async ({
+    app,
+    page,
+  }) => {
+    await openPage(app, page, 'cash', { persona: 'driver' });
+    await expect(
+      page.getByRole('heading', { level: 1, name: /^Нет доступа к разделу «Касса»/ }),
+    ).toBeVisible({
+      timeout: 30_000,
+    });
+    await expect(main(page).getByRole('button', { name: 'Новая операция' })).toHaveCount(0);
   });
 });

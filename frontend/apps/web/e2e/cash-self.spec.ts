@@ -6,7 +6,8 @@ import type { Page } from '@playwright/test';
 import { expect, test } from './_stand/fixtures.ts';
 import { chooseReceiptPhoto, grantAdvanceSelf, openCashSelf } from './cash-self.helpers.ts';
 import { dialog, h1, hitHeight, noHorizontalScroll, toast } from './modules.helpers.ts';
-import { call } from './shell.helpers.ts';
+import { advanceFor } from './cash.stand.ts';
+import { call, tenantId } from './shell.helpers.ts';
 
 const phone = (page: Page): boolean => (page.viewportSize()?.width ?? 0) < 640;
 const cashSelfCard = (page: Page) => page.locator('.ox-cs-card');
@@ -215,11 +216,169 @@ test.describe('cash-self — «Мой подотчёт» @mock', () => {
   });
 });
 
-// Backend кассы (W5.31 плана v2: `internal/modules/cash`) в main не влит — на стенде ни одной операции кассы нет.
-// Проверка на стенде после него: выдача под отчёт владельцем → чек водителя (фото в Files) → решение выдающим →
-// возврат остатка и приём. @stand-spec: причина — отсутствие backend, не страницы.
-test.describe('cash-self — стенд @stand', () => {
+// Стенд: backend подотчёта W5.31 в main. Право cash.advance.self выдаётся роли «Водитель» командой API (как в mock),
+// счёт подотчёта Ильи Васильева, касса-источник и выдача — командами API (cash.stand.ts); страница читает настоящий
+// backend. Счёт держателя на стенде один (страница рисует карточку на каждый счёт), поэтому остаток сверяется по
+// приращению, а не по числу. Выдачу принимает кассир (владелец): держатель с одним cash.advance.self перемещений не видит.
+test.describe('cash-self — «Мой подотчёт» @stand', () => {
+  test.skip(({ harness }) => harness.mode !== 'stand', 'режим stand');
+  test.setTimeout(180_000);
+
+  const HOLDER = 'i.vasiliev@alta.example';
+
+  /** Сумма из текста остатка «4 450 ₽» (пробелы и NBSP убираются). */
+  const rubles = (text: string): number => Number(text.replace(/[^\d]/g, ''));
+  const balance = async (page: Page): Promise<number> =>
+    rubles(await page.locator('.ox-cs-bal').innerText());
+
+  /** Выдача под отчёт владельцем и вход держателя на страницу; принять выдачу — `accept`. */
+  async function openHolder(
+    app: Parameters<typeof grantAdvanceSelf>[0],
+    page: Page,
+    project: string,
+    o: { issued?: number } = {},
+  ): Promise<{ tenant: string; accountId: string; label: string }> {
+    const tenant = await grantAdvanceSelf(app, page);
+    const adv = await advanceFor(page, tenant, project, {
+      holderEmail: HOLDER,
+      funds: 50_000,
+      issued: o.issued ?? 10_000,
+    });
+    await app(`/t/${tenant}/cash-self`, { persona: 'driver' });
+    await expect(h1(page, 'Мой подотчёт')).toBeVisible({ timeout: 30_000 });
+    return { tenant, accountId: adv.id, label: adv.label };
+  }
+
+  test('держатель на стенде: меню «Подотчёт» и прямой URL — заголовок, пояснение, выданная сумма на руках', async ({
+    app,
+    page,
+  }, testInfo) => {
+    const tenant = await grantAdvanceSelf(app, page);
+    await advanceFor(page, tenant, testInfo.project.name, {
+      holderEmail: HOLDER,
+      funds: 50_000,
+      issued: 10_000,
+    });
+    await app(`/t/${tenant}/today`, { persona: 'driver' });
+    const nav = phone(page)
+      ? page.getByRole('navigation', { name: 'Навигация', exact: true })
+      : page.getByRole('navigation', { name: 'Основная навигация' });
+    await nav.getByRole('button', { name: 'Подотчёт' }).click();
+    await expect(page).toHaveURL(/\/cash-self$/);
+    await expect(h1(page, 'Мой подотчёт')).toBeVisible({ timeout: 30_000 });
+    await expect(page.getByText('Деньги на руках, отчёт чеками и возврат остатка')).toBeVisible();
+    await expect(cashSelfCard(page).getByText('Подотчёт · на руках')).toBeVisible();
+    await expect.poll(() => balance(page), { timeout: 20_000 }).toBeGreaterThanOrEqual(10_000);
+    await expect(page.locator('.ox-cs-line')).toHaveText(
+      /^Выдано \d[\d\s]*₽ · \d\d\.\d\d · отчитались на \d[\d\s]*₽$/,
+    );
+    const rest = await balance(page);
+    await page.reload();
+    await expect(h1(page, 'Мой подотчёт')).toBeVisible({ timeout: 30_000 });
+    await expect.poll(() => balance(page), { timeout: 20_000 }).toBe(rest);
+  });
+  test('держатель на стенде: «Добавить чек» — окно, остаток на руках, ошибки полей до отправки', async ({
+    app,
+    page,
+  }, testInfo) => {
+    await openHolder(app, page, testInfo.project.name);
+    await page.getByRole('button', { name: 'Добавить чек' }).click();
+    const dlg = dialog(page);
+    await expect(dlg.getByRole('heading', { name: 'Добавить чек' })).toBeVisible();
+    await expect(dlg.getByText(/^На руках \d[\d\s]*₽$/)).toBeVisible();
+    await expect(dlg.getByLabel('Статья').locator('option')).toHaveText([
+      'Топливо',
+      'Мойка',
+      'Парковка',
+      'Мелкий ремонт',
+    ]);
+    await dlg.getByRole('button', { name: 'Отправить на проверку' }).click();
+    await expect(dlg.getByRole('alert')).toContainText('Сумма: укажите число больше нуля');
+    await dlg.getByLabel('Сумма, ₽').fill('1 260');
+    await dlg.getByRole('button', { name: 'Отправить на проверку' }).click();
+    await expect(dlg.getByRole('alert')).toContainText('Сфотографируйте чек');
+    await dlg.getByRole('button', { name: 'Отменить' }).click();
+    await expect(dlg).toBeHidden();
+  });
+  test('держатель на стенде: «Вернуть остаток» — отказ при сумме больше остатка, затем возврат ждёт приёма', async ({
+    app,
+    page,
+  }, testInfo) => {
+    await openHolder(app, page, testInfo.project.name);
+    const rest = await balance(page);
+    await page.getByRole('button', { name: /^Вернуть остаток \d[\d\s]*₽$/ }).click();
+    const dlg = dialog(page);
+    await expect(dlg.getByRole('heading', { name: 'Вернуть остаток' })).toBeVisible();
+    await expect(dlg.getByLabel('Сумма, ₽')).toHaveValue(String(rest));
+    await dlg.getByLabel('Сумма, ₽').fill(String(rest + 99_999));
+    await dlg.getByRole('button', { name: 'Вернуть' }).click();
+    await expect(dlg.getByRole('alert')).toContainText(/На руках меньше: \d[\d\s]*₽/, {
+      timeout: 20_000,
+    });
+    await dlg.getByLabel('Сумма, ₽').fill(String(rest));
+    await dlg.getByRole('button', { name: 'Вернуть' }).click();
+    await expect(toast(page)).toHaveText('Возврат отправлен: ждёт приёма', { timeout: 20_000 });
+    await expect(page.locator('.ox-cs-move').first()).toContainText(
+      /Возврат \d[\d\s]*₽ ждёт приёма/,
+    );
+    await expect.poll(() => balance(page), { timeout: 20_000 }).toBe(0);
+    await expect(page.getByText('Отчитались полностью')).toBeVisible();
+    await expect(page.getByRole('button', { name: /^Вернуть остаток/ })).toHaveCount(0);
+  });
+
+  test('сотрудник без подотчёта на стенде: «Кассы недоступны…» вместо «Мой подотчёт»', async ({
+    app,
+    page,
+  }) => {
+    await app('/', { persona: 'therapist' });
+    const id = await tenantId(page);
+    await app(`/t/${id}/cash-self`, { persona: 'therapist' });
+    await expect(page.getByRole('heading', { level: 1 })).toBeVisible({ timeout: 30_000 });
+    await expect(page.getByRole('button', { name: 'Добавить чек' })).toHaveCount(0);
+    await expect(h1(page, 'Мой подотчёт')).toHaveCount(0);
+  });
+
+  test('держатель на стенде: клавиатура, axe, 390 — без горизонтальной прокрутки, цели ≥ 44 px', async ({
+    app,
+    page,
+    axe,
+  }, testInfo) => {
+    await openHolder(app, page, testInfo.project.name);
+    await expect(page.locator('.ox-cs-bal')).toBeVisible();
+    const add = page.getByRole('button', { name: 'Добавить чек' });
+    await add.focus();
+    await page.keyboard.press('Enter');
+    const dlg = dialog(page);
+    await expect(dlg.getByRole('heading', { name: 'Добавить чек' })).toBeVisible();
+    // Escape ловит диалог, когда фокус уже внутри (ловушка фокуса ставится не мгновенно).
+    await expect
+      .poll(() => page.evaluate(() => !!document.activeElement?.closest('[role=dialog]')))
+      .toBe(true);
+    await page.keyboard.press('Escape');
+    await expect(dlg).toBeHidden();
+    await expect(add).toBeFocused();
+    const serious = (await axe(page)).violations.filter(
+      (v) => v.impact === 'serious' || v.impact === 'critical',
+    );
+    expect(serious).toEqual([]);
+    expect(await noHorizontalScroll(page)).toBe(true);
+    if (phone(page)) {
+      for (const btn of [add, page.getByRole('button', { name: /^Вернуть остаток/ })]) {
+        expect(await hitHeight(btn)).toBeGreaterThanOrEqual(44);
+      }
+    }
+  });
+});
+
+// Чек с фото на стенде. Backend подотчёта (W5.31) принимает чек только с готовым файлом Files, а `initiateUpload` с
+// purpose `expense_receipt` и владельцем `cash/account` отвечает 422: родитель файлов «cash/account» в cmd/api
+// (files.NewParents) не зарегистрирован — только рейсы Логистики, задачи, формы и чаты. Пока родитель не подключён,
+// чек, решение выдающего и «Переснять» на стенде невозможны. Тег @stand не ставится: строка ждёт backend, а не страницу.
+test.describe('cash-self — чек с фото (ждёт backend: родитель файлов cash/account)', () => {
   test.skip(({ harness }) => harness.mode !== 'stand', 'режим stand');
 
-  test.fixme('держатель подотчёта на стенде: чек, проверка выдающим, возврат остатка', async () => {});
+  test.fixme('держатель: фото чека → «Чек отправлен на проверку» → решение выдающего → «Принят»/«Переснять»', async () => {
+    // Сценарий: «Добавить чек» → фото (MinIO стенда) → «Фото чека добавлено» → отправка; владелец принимает
+    // (decideAdvanceReceipt) — остаток держателя уменьшается; отклонённый чек даёт «Переснять» с данными чека.
+  });
 });

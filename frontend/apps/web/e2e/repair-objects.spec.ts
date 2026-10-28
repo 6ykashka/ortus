@@ -5,10 +5,19 @@
 import { expect, test } from './_stand/fixtures.ts';
 import { h1, hitHeight, noHorizontalScroll, toast } from './modules.helpers.ts';
 import { addPhoto, heading, openRepair, phone, reloadReady } from './repair.helpers.ts';
-import { devScenario } from './shell.helpers.ts';
+import { runLabel } from './_stand/stand.ts';
+import {
+  type StandObject,
+  contractedObject,
+  foremanAssigned,
+  grantForeman,
+  repairObject,
+} from './repair.stand.ts';
+import { devScenario, tenantId } from './shell.helpers.ts';
+import { wide } from './viewport.helpers.ts';
 
 // Раскладка списка рассчитана на две ширины: карточки на 390, таблица на 1440 (проекты mobile-390, desktop-1440).
-test.skip(({ viewport }) => viewport?.width === 768, 'spec рассчитан на mobile-390 и desktop-1440');
+const MOCK_WIDTHS = 'mock-блоки рассчитаны на mobile-390 и desktop-1440';
 
 const main = (page: import('@playwright/test').Page) => page.locator('#ox-main');
 const filters = (page: import('@playwright/test').Page) =>
@@ -26,6 +35,7 @@ const NAMES = [
 
 test.describe('repair-list — список объектов @mock', () => {
   test.skip(({ harness }) => harness.mode !== 'mock', 'пресеты и сценарии — сценарный сервер mock');
+  test.skip(({ viewport }) => viewport?.width === 768, MOCK_WIDTHS);
   test.setTimeout(90_000);
 
   test('владелец: h1, четыре фильтра со счётчиками, объекты «сначала то, что ждёт решения»', async ({
@@ -211,6 +221,7 @@ test.describe('repair-list — список объектов @mock', () => {
 
 test.describe('repair-card — карточка объекта, обзор 1a @mock', () => {
   test.skip(({ harness }) => harness.mode !== 'mock', 'пресеты и сценарии — сценарный сервер mock');
+  test.skip(({ viewport }) => viewport?.width === 768, MOCK_WIDTHS);
   test.setTimeout(90_000);
 
   async function open(
@@ -378,6 +389,7 @@ test.describe('repair-card — карточка объекта, обзор 1a @m
 
 test.describe('repair-works — работы, отметки, допработы @mock', () => {
   test.skip(({ harness }) => harness.mode !== 'mock', 'пресеты и сценарии — сценарный сервер mock');
+  test.skip(({ viewport }) => viewport?.width === 768, MOCK_WIDTHS);
   test.setTimeout(120_000);
 
   const work = (page: import('@playwright/test').Page) => main(page);
@@ -578,6 +590,7 @@ test.describe('repair-works — работы, отметки, допработы
 
 test.describe('modal-assign-foreman — «Назначить прораба?» @mock', () => {
   test.skip(({ harness }) => harness.mode !== 'mock', 'пресеты и сценарии — сценарный сервер mock');
+  test.skip(({ viewport }) => viewport?.width === 768, MOCK_WIDTHS);
   test.setTimeout(90_000);
 
   test('«Не назначен прораб» → диалог → «Назначить» → тост, пункт и «Прораб не назначен» исчезают', async ({
@@ -698,11 +711,357 @@ test.describe('modal-assign-foreman — «Назначить прораба?» @
   });
 });
 
+// Стенд: backend объектов, обзора, работ и назначения прораба W6.11/W6.13 в main. Объекты создаются командами API
+// (repair.stand.ts) с общей меткой прогона в названии и адресе — список на стенде копится от прогона к прогону, поэтому
+// строки находят поиском по метке. Отметка работ с фото на стенде невозможна (у Files нет родителя «repairs/project», как
+// и для чека подотчёта) — её проверяет mock-блок выше, здесь работы читаются на пустых состояниях.
 test.describe('repair-stand — страницы на backend @stand', () => {
   test.skip(({ harness }) => harness.mode !== 'stand', 'проверка на стенде compose');
-  test.fixme(
-    true,
-    'backend «Ремонта и стройки» (W6.11) не влит в main: список, карточка и команды проверяются на стенде после него',
-  );
-  test('список объектов и карточка на стенде', () => {});
+  test.setTimeout(180_000);
+
+  /** Два объекта с общей меткой: А с прорабом и согласованной сметой, Б без прораба (решение «Не назначен прораб»). */
+  async function twoObjects(
+    app: Parameters<typeof openRepair>[0],
+    page: Page,
+    project: string,
+  ): Promise<{ tenant: string; a: StandObject; b: StandObject; label: string }> {
+    await app('/', { persona: 'owner' });
+    const tenant = await tenantId(page);
+    const label = runLabel(project);
+    const a = await contractedObject(page, tenant, project, {
+      name: `ЖК Речной · кв. 42 · ${label} А`,
+      label,
+    });
+    const b = await repairObject(page, tenant, project, {
+      foreman: false,
+      name: `ЖК Речной · кв. 42 · ${label} Б`,
+      label,
+    });
+    return { tenant, a, b, label };
+  }
+
+  // Карточки на 390 и 768, таблица на 1440: строки объекта — то и другое.
+  const rowsOf = (page: Page) => main(page).locator('.ox-rp-obj, tbody tr');
+  const searchBox = (page: Page) => page.getByRole('searchbox', { name: 'Поиск по объектам' });
+
+  async function openList(
+    app: Parameters<typeof openRepair>[0],
+    page: Page,
+    persona: 'owner' | 'foreman' = 'owner',
+    search = '',
+  ): Promise<void> {
+    const tenant = await tenantId(page);
+    await app(`/t/${tenant}/repair${search}`, { persona });
+    await expect(h1(page, 'Объекты')).toBeVisible({ timeout: 30_000 });
+  }
+
+  async function openCard(
+    app: Parameters<typeof openRepair>[0],
+    page: Page,
+    tenant: string,
+    obj: StandObject,
+    o: { persona?: 'owner' | 'foreman'; tab?: string } = {},
+  ): Promise<void> {
+    await app(`/t/${tenant}/repair?obj=${obj.id}${o.tab ? `&tab=${o.tab}` : ''}`, {
+      persona: o.persona ?? 'owner',
+    });
+    await expect(heading(page, obj.name)).toBeVisible({ timeout: 30_000 });
+  }
+
+  test('владелец на стенде: список — заголовок, четыре фильтра со счётчиками, поиск, объекты «сначала то, что ждёт решения»', async ({
+    app,
+    page,
+  }, testInfo) => {
+    const { a, b, label } = await twoObjects(app, page, testInfo.project.name);
+    await openList(app, page);
+    await expect(main(page)).toContainText('Ремонт и стройка');
+    await expect(filters(page).getByRole('button')).toHaveText([
+      /^Активные\s*\d+$/,
+      /^Требуют решения\s*\d+$/,
+      /^До договора\s*\d+$/,
+      /^Сданы\s*\d+$/,
+    ]);
+    await expect(filters(page).getByRole('button', { name: /Активные/ })).toHaveAttribute(
+      'aria-pressed',
+      'true',
+    );
+    await expect(searchBox(page)).toHaveAttribute('placeholder', 'Адрес, заказчик, прораб');
+    await expect(main(page)).toContainText('Сначала то, что ждёт решения');
+    await expect(main(page)).toContainText('Объект-черновик создаётся из заявки на этапе «Замер»');
+    await searchBox(page).fill(label);
+    await expect(rowsOf(page)).toHaveCount(2);
+    await expect(page).toHaveURL(/q=/);
+    const ra = rowsOf(page).filter({ hasText: a.name });
+    const rb = rowsOf(page).filter({ hasText: b.name });
+    await expect(ra).toContainText('Подготовка');
+    await expect(ra).toContainText('Алексей Соколов');
+    await expect(rb).toContainText(phone(page) ? 'Прораб: не назначен' : 'не назначен');
+    await expect(rb).toContainText('Не назначен прораб');
+    if (!wide(page)) {
+      await expect(main(page).getByRole('button', { name: 'Отметить работу' })).toHaveCount(0);
+      expect(await noHorizontalScroll(page)).toBe(true);
+    } else {
+      await expect(main(page).getByRole('columnheader')).toHaveText([
+        'Объект',
+        'Этап и готовность',
+        'Сдача',
+        'Прораб',
+        'Требует решения',
+      ]);
+    }
+  });
+
+  test('владелец на стенде: поиск по метке, пустой результат; фильтры «Требуют решения», «До договора», «Сданы» держатся в адресе', async ({
+    app,
+    page,
+  }, testInfo) => {
+    const { b, label } = await twoObjects(app, page, testInfo.project.name);
+    await openList(app, page);
+    await searchBox(page).fill(label);
+    await expect(rowsOf(page)).toHaveCount(2);
+    await searchBox(page).fill('нет такого объекта zz');
+    await expect(page.getByText('По фильтру объектов нет')).toBeVisible();
+    await expect(page.getByText('Измените запрос или очистите поиск.')).toBeVisible();
+    await searchBox(page).fill(label);
+    await filters(page)
+      .getByRole('button', { name: /Требуют решения/ })
+      .click();
+    await expect(page).toHaveURL(/filter=todo/);
+    await expect(rowsOf(page).filter({ hasText: b.name })).toHaveCount(1);
+    await filters(page)
+      .getByRole('button', { name: /До договора/ })
+      .click();
+    await expect(page).toHaveURL(/filter=draft/);
+    await expect(rowsOf(page).filter({ hasText: label })).toHaveCount(0);
+    await reloadReady(page);
+    await expect(filters(page).getByRole('button', { name: /До договора/ })).toHaveAttribute(
+      'aria-pressed',
+      'true',
+    );
+    await filters(page).getByRole('button', { name: /Сданы/ }).click();
+    await expect(rowsOf(page).filter({ hasText: label })).toHaveCount(0);
+  });
+
+  test('прораб на стенде: «Объекты, где вы прораб», два фильтра, без поиска, карточки с «Отметить работу»', async ({
+    app,
+    page,
+    undo,
+    session,
+  }, testInfo) => {
+    const { a } = await twoObjects(app, page, testInfo.project.name);
+    const owner = await session();
+    await owner.open('/', 'owner');
+    await grantForeman(owner.page, a, undo);
+    await openList(app, page, 'foreman');
+    await expect(main(page)).toContainText('Объекты, где вы прораб');
+    await expect(filters(page).getByRole('button')).toHaveText([
+      /^Активные\s*\d+$/,
+      /^Сданы\s*\d+$/,
+    ]);
+    await expect(searchBox(page)).toHaveCount(0);
+    await expect(main(page).getByText(a.name).first()).toBeVisible({ timeout: 30_000 });
+    await expect(main(page).getByRole('button', { name: 'Отметить работу' }).first()).toBeVisible();
+  });
+
+  test('владелец на стенде: карточка — шапка, чипы, готовность «по объёмам», кнопки и одиннадцать вкладок', async ({
+    app,
+    page,
+  }, testInfo) => {
+    const { tenant, a } = await twoObjects(app, page, testInfo.project.name);
+    await openList(app, page, 'owner', `?q=${a.label}`);
+    await main(page)
+      .getByRole('button', { name: new RegExp(a.name) })
+      .first()
+      .click();
+    await expect(heading(page, a.name)).toBeVisible({ timeout: 30_000 });
+    await expect(page).toHaveURL(/obj=/);
+    await expect(main(page)).toContainText('Ремонт и стройка');
+    await expect(main(page).getByRole('button', { name: 'Объекты' })).toBeVisible();
+    const hero = page.locator('.ox-rp-hero');
+    await expect(hero).toContainText('Подготовка');
+    await expect(hero).toContainText(`${a.address} · 54 м², 3 комнаты`);
+    await expect(hero).toContainText('Готовность по объёмам');
+    await expect(hero).toContainText('0% принято');
+    await expect(hero).toContainText('Для заказчика — по закрытым актам');
+    await expect(hero.getByRole('button', { name: 'Кабинет заказчика' })).toBeVisible();
+    await expect(hero.getByRole('button', { name: 'Отметить работу' })).toHaveCount(0);
+    await expect(tabs(page)).toHaveText([
+      'Обзор',
+      'Работы',
+      'Замер',
+      'Смета',
+      'График',
+      'Документы',
+      'Снабжение',
+      'Финансы',
+      'Оплата бригады',
+      'Подрядчики',
+      'Кабинет заказчика',
+    ]);
+    await expect(tabs(page).first()).toHaveAttribute('aria-selected', 'true');
+    expect(tenant).toBeTruthy();
+  });
+
+  test('владелец на стенде: обзор — «Требует решения», объёмы, фотоотчёт, как попасть, люди, деньги, лента', async ({
+    app,
+    page,
+  }, testInfo) => {
+    const { tenant, a } = await twoObjects(app, page, testInfo.project.name);
+    await openCard(app, page, tenant, a);
+    const m = main(page);
+    await expect(m.getByRole('heading', { level: 2, name: 'Требует решения' })).toBeVisible();
+    await expect(m).toContainText('Сначала то, что держит работу');
+    await expect(m.getByRole('heading', { level: 2, name: 'Объёмы работ' })).toBeVisible();
+    await expect(m).toContainText('факт — только по принятым отметкам');
+    await expect(m.locator('.ox-rp-link', { hasText: 'Открыть график' })).toBeVisible();
+    await expect(m.getByRole('heading', { level: 2, name: 'Фотоотчёт' })).toBeVisible();
+    await expect(m).toContainText('Фото появятся с первой отметкой прораба');
+    await expect(m.getByRole('heading', { level: 2, name: 'Как попасть на объект' })).toBeVisible();
+    await expect(m).toContainText(a.address);
+    await expect(m.getByRole('heading', { level: 2, name: 'Люди на объекте' })).toBeVisible();
+    await expect(m).toContainText('Заказчик · кабинет по ссылке до сдачи');
+    await expect(m).toContainText('Прораб · работает в CRM');
+    await expect(m).toContainText('Бригада · 1 человек');
+    await expect(m.getByRole('heading', { level: 2, name: 'Деньги' })).toBeVisible();
+    await expect(m).toContainText('Финансы объектов');
+    await expect(m).toContainText('Маржа, план');
+    await expect(m.getByRole('button', { name: 'Открыть финансы' })).toBeVisible();
+    await expect(m.getByRole('heading', { level: 2, name: 'Лента' })).toBeVisible();
+    await expect(m).toContainText('создан объект');
+    await m.locator('.ox-rp-link', { hasText: 'Открыть график' }).click();
+    await expect(page).toHaveURL(/tab=schedule/);
+  });
+
+  test('прораб на стенде: «Мои вопросы по объекту», без вкладок денег и без сумм', async ({
+    app,
+    page,
+    undo,
+    session,
+  }, testInfo) => {
+    const { tenant, a } = await twoObjects(app, page, testInfo.project.name);
+    const owner = await session();
+    await owner.open('/', 'owner');
+    await grantForeman(owner.page, a, undo);
+    await openCard(app, page, tenant, a, { persona: 'foreman' });
+    const m = main(page);
+    await expect(
+      m.getByRole('heading', { level: 2, name: 'Мои вопросы по объекту' }),
+    ).toBeVisible();
+    await expect(tabs(page)).toHaveText([
+      'Обзор',
+      'Работы',
+      'Замер',
+      'График',
+      'Документы',
+      /^Снабжение/,
+    ]);
+    await expect(m.getByRole('heading', { level: 2, name: 'Деньги' })).toHaveCount(0);
+    await expect(m).not.toContainText('343 925');
+    await expect(m.getByRole('button', { name: 'Кабинет заказчика' })).toHaveCount(0);
+    await expect(m.getByRole('button', { name: 'Отметить работу' }).first()).toBeVisible();
+    await expect(m).toContainText('Отметка за сегодня не отправлена');
+  });
+
+  test('владелец на стенде: вкладка «Работы» — пустые состояния; вкладка «Снабжение» — заглушка; «Объекты» возвращает к списку', async ({
+    app,
+    page,
+  }, testInfo) => {
+    const { tenant, a } = await twoObjects(app, page, testInfo.project.name);
+    await openCard(app, page, tenant, a, { tab: 'works' });
+    const m = main(page);
+    await expect(m.getByRole('heading', { level: 2, name: 'Объёмы работ' })).toBeVisible();
+    await expect(m).toContainText('Факт учитывает только принятые отметки.');
+    await expect(m).toContainText('Отметок пока нет');
+    await expect(m.getByRole('heading', { level: 2, name: 'Допработы' })).toBeVisible();
+    await expect(m).toContainText(
+      'Прораб предлагает допработу с объекта: описание, объём и фото. Офис оценивает её в смете, заказчик подписывает допсоглашение кодом из SMS.',
+    );
+    await expect(m).toContainText('Допработ по объекту пока нет.');
+    await tabs(page).filter({ hasText: 'Снабжение' }).click();
+    await expect(page).toHaveURL(/tab=supply/);
+    await expect(m).toContainText('Снабжение: раздел ещё не подключён');
+    await reloadReady(page);
+    await expect(tabs(page).filter({ hasText: 'Снабжение' })).toHaveAttribute(
+      'aria-selected',
+      'true',
+    );
+    await main(page).getByRole('button', { name: 'Объекты' }).click();
+    await expect(h1(page, 'Объекты')).toBeVisible();
+    await expect(page).not.toHaveURL(/obj=/);
+  });
+
+  test('владелец на стенде: клавиатура вкладок, неизвестный объект', async ({
+    app,
+    page,
+  }, testInfo) => {
+    const { tenant, a } = await twoObjects(app, page, testInfo.project.name);
+    await openCard(app, page, tenant, a);
+    await tabs(page).first().focus();
+    await page.keyboard.press('ArrowRight');
+    await expect(tabs(page).nth(1)).toBeFocused();
+    await expect(page).toHaveURL(/tab=works/);
+    await page.keyboard.press('End');
+    await expect(tabs(page).last()).toBeFocused();
+    expect(await noHorizontalScroll(page)).toBe(true);
+    await app(`/t/${tenant}/repair?obj=00000000-0000-4000-8000-000000000000`, { persona: 'owner' });
+    await expect(heading(page, 'Объект не найден')).toBeVisible({ timeout: 30_000 });
+    await main(page).getByRole('button', { name: 'К списку объектов' }).click();
+    await expect(h1(page, 'Объекты')).toBeVisible();
+  });
+
+  test('владелец на стенде: «Не назначен прораб» → диалог → «Назначить» → тост, пункт и «Прораб не назначен» исчезают', async ({
+    app,
+    page,
+    axe,
+  }, testInfo) => {
+    const { tenant, b } = await twoObjects(app, page, testInfo.project.name);
+    await openCard(app, page, tenant, b);
+    const m = main(page);
+    await expect(m).toContainText('Не назначен прораб');
+    await expect(m).toContainText('Без прораба нет отметок работ и заявок на материалы');
+    await expect(m).toContainText('Прораб не назначен');
+    await expect(m).toContainText('Нужен до начала работ');
+    await m.getByRole('button', { name: 'Назначить прораба' }).click();
+    const dlg = page.getByRole('dialog', { name: 'Назначить прораба?' });
+    await expect(dlg).toBeVisible({ timeout: 20_000 });
+    await expect(dlg).toContainText(`${b.name} · Алексей Соколов`);
+    await expect(dlg).toContainText('Что произойдёт');
+    await expect(dlg).toContainText('Объект появится в списке объектов прораба');
+    await expect(dlg).toContainText('Прораб сможет отправлять отметки работ и заявки на материалы');
+    await expect(dlg).toContainText('Смета, цены и деньги объекта прорабу не видны');
+    const serious = (await axe(page)).violations.filter(
+      (v) => v.impact === 'serious' || v.impact === 'critical',
+    );
+    expect(serious.map((v) => v.id)).toEqual([]);
+    await dlg.getByRole('button', { name: 'Отмена' }).click();
+    await expect(dlg).toHaveCount(0);
+    await expect(m.getByRole('button', { name: 'Назначить прораба' })).toBeFocused();
+    await m.getByRole('button', { name: 'Назначить прораба' }).click();
+    await page.getByRole('dialog').getByRole('button', { name: 'Назначить' }).click();
+    await expect(toast(page)).toHaveText('Прораб назначен: Алексей Соколов', { timeout: 20_000 });
+    await expect(page.getByRole('dialog')).toHaveCount(0);
+    await expect(m.getByRole('button', { name: 'Назначить прораба' })).toHaveCount(0);
+    await expect(m).toContainText('Прораб · работает в CRM');
+  });
+
+  test('владелец на стенде: «Прораб уже назначен» — текст сервера в тосте, объект перечитан', async ({
+    app,
+    page,
+  }, testInfo) => {
+    const { tenant, b } = await twoObjects(app, page, testInfo.project.name);
+    await openCard(app, page, tenant, b);
+    const m = main(page);
+    await m.getByRole('button', { name: 'Назначить прораба' }).click();
+    await expect(page.getByRole('dialog', { name: 'Назначить прораба?' })).toBeVisible({
+      timeout: 20_000,
+    });
+    // Другое окно успевает назначить того же прораба раньше.
+    await foremanAssigned(page, b);
+    await page.getByRole('dialog').getByRole('button', { name: 'Назначить' }).click();
+    await expect(page.getByRole('dialog')).toHaveCount(0, { timeout: 20_000 });
+    await expect(toast(page)).toBeVisible();
+    await expect(m.getByRole('button', { name: 'Назначить прораба' })).toHaveCount(0, {
+      timeout: 20_000,
+    });
+  });
 });

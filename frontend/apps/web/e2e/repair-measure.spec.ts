@@ -1,7 +1,7 @@
 // W6.21 · e2e страницы `repair-measure` — вкладка «Замер» карточки объекта (эталон design-2026-10-19
 // «Ремонт и стройка.dc.html» :74–100, логика :1645–1679; DoR docs/plan/v2/analysis/dor/repair.md §1.3, §5 п. 22,
 // Q-W4.00-repair-17, -24). Данные — MSW W6.00 (пресет repairs-ready, «сегодня» 20.10.2026); backend замера — W6.12
-// (режим stand — @stand-spec, test.fixme до него). Вкладка открывается хостом-заглушкой `repair.page.tsx`
+// (режим stand — @stand, W2.103). Вкладка открывается хостом-заглушкой `repair.page.tsx`
 // (`?obj=&tab=`), карточку объекта делает W6.20.
 import type { Locator, Page } from '@playwright/test';
 
@@ -9,7 +9,9 @@ import { expect, test } from './_stand/fixtures.ts';
 import { phone } from './logistics-review.helpers.ts';
 import { h1, hitHeight, noHorizontalScroll, openPage, toast } from './modules.helpers.ts';
 import { OBJ, openRepair } from './repair.tabs.helpers.ts';
-import { devScenario } from './shell.helpers.ts';
+import type { Session, Undo } from './_stand/fixtures.ts';
+import { type StandObject, grantForeman, measure, repairObject } from './repair.stand.ts';
+import { devScenario, tenantId } from './shell.helpers.ts';
 
 const OFFLINE = 'Нет связи с сервером. Операция не выполнена.';
 
@@ -255,11 +257,227 @@ test.describe('repair-measure — «Замер» @mock', () => {
 });
 
 // Backend замера — W6.12 (ws/W6.12 не в main на 26.10.2026): getMeasurement, putMeasurement. До него — fixme.
-test.describe('repair-measure — стенд @stand-spec', () => {
+test.describe('repair-measure — «Замер» @stand', () => {
   test.skip(({ harness }) => harness.mode !== 'stand', 'режим stand');
+  test.setTimeout(180_000);
 
-  test.fixme('замер на стенде: правка → новая версия, итоги пересчитаны сервером', () => {
-    // Причина: backend замера и смет (W6.12) не влит в main; MSW-сценарий этого spec — в @mock выше.
-    expect(true).toBe(true);
+  /** Свой объект на стенде (три помещения: пол 35,5 м², стены без проёмов 100,4 м²) и вкладка «Замер» персонажа. */
+  async function openMeasure(
+    app: Parameters<typeof openPage>[0],
+    page: Page,
+    project: string,
+    persona: 'owner' | 'foreman' = 'owner',
+    fx?: { undo: Undo; session: () => Promise<Session> },
+  ): Promise<StandObject> {
+    await app('/', { persona: 'owner' });
+    const tenant = await tenantId(page);
+    const obj = await repairObject(page, tenant, project);
+    await measure(page, obj);
+    if (persona === 'foreman' && fx) {
+      // Выдача и её снятие — из отдельной сессии владельца: основная страница теста дальше работает прорабом.
+      const owner = await fx.session();
+      await owner.open('/', 'owner');
+      await grantForeman(owner.page, obj, fx.undo);
+    }
+    await app(`/t/${tenant}/repair?obj=${obj.id}&tab=measure`, { persona });
+    await expect(section(page).getByRole('heading', { level: 2, name: 'Замер' })).toBeVisible({
+      timeout: 30_000,
+    });
+    return obj;
+  }
+
+  test('владелец на стенде: открывается из меню «Объекты» и по прямому URL; заголовок и пояснение', async ({
+    app,
+    page,
+  }, testInfo) => {
+    await openMeasure(app, page, testInfo.project.name);
+    await expect(section(page)).toContainText(
+      'Замерщик или прораб заполняет на объекте с телефона. Площади пола и стен за вычетом проёмов пересчитывают объёмы в черновике сметы; согласованная версия не меняется.',
+    );
+    await expect(section(page)).toContainText(
+      'Фото и план помещения прикладываются к замеру через «Файлы».',
+    );
+    await page.goto(page.url().replace(/\?.*$/, ''));
+    await expect(h1(page, 'Объекты')).toBeVisible({ timeout: 30_000 });
+  });
+
+  test('владелец на стенде: таблица помещений — размеры, пол и стены по помещению, итоги 35,5 и 100,4', async ({
+    app,
+    page,
+  }, testInfo) => {
+    await openMeasure(app, page, testInfo.project.name);
+    await expect(table(page).getByRole('columnheader')).toHaveText([
+      'Помещение',
+      'Длина, м',
+      'Ширина, м',
+      'Высота, м',
+      'Проёмы, м²',
+      'Пол, м²',
+      'Стены, м²',
+    ]);
+    await expect(table(page).getByRole('row')).toHaveCount(5);
+    await expect(field(page, 'Длина: Гостиная')).toHaveValue('5');
+    await expect(field(page, 'Проёмы: Гостиная')).toHaveValue('4');
+    await expect(cell(rowOf(page, 'Гостиная'), 5)).toHaveText('20');
+    await expect(cell(rowOf(page, 'Гостиная'), 6)).toHaveText('44,6');
+    await expect(cell(rowOf(page, 'Кухня'), 5)).toHaveText('10,5');
+    await expect(cell(rowOf(page, 'Санузел'), 5)).toHaveText('5');
+    await expect(totals(page).nth(1)).toHaveText('35,5');
+    await expect(totals(page).nth(2)).toHaveText('100,4');
+  });
+
+  test('владелец на стенде: правка размера пересчитывает помещение и итоги и сохраняет новую версию замера', async ({
+    app,
+    page,
+  }, testInfo) => {
+    await openMeasure(app, page, testInfo.project.name);
+    const len = field(page, 'Длина: Кухня');
+    await len.fill('4');
+    await expect(cell(rowOf(page, 'Кухня'), 5)).toHaveText('12');
+    await expect(cell(rowOf(page, 'Кухня'), 6)).toHaveText('35,8');
+    await expect(totals(page).nth(1)).toHaveText('37');
+    const put = saved(page);
+    await len.press('Tab');
+    await put;
+    await page.reload();
+    await expect(field(page, 'Длина: Кухня')).toHaveValue('4', { timeout: 30_000 });
+    await expect(totals(page).nth(1)).toHaveText('37');
+    await expect(totals(page).nth(2)).toHaveText('103,1');
+  });
+
+  test('владелец на стенде: «Добавить помещение» добавляет «Коридор» 3,0 × 1,4 × 2,7 и сохраняет сразу', async ({
+    app,
+    page,
+  }, testInfo) => {
+    await openMeasure(app, page, testInfo.project.name);
+    const put = saved(page);
+    await section(page).getByRole('button', { name: 'Добавить помещение' }).click();
+    await put;
+    await expect(rowOf(page, 'Коридор')).toBeVisible();
+    await expect(field(page, 'Длина: Коридор')).toHaveValue('3');
+    await expect(field(page, 'Ширина: Коридор')).toHaveValue('1,4');
+    await expect(field(page, 'Высота: Коридор')).toHaveValue('2,7');
+    await expect(cell(rowOf(page, 'Коридор'), 5)).toHaveText('4,2');
+    await page.reload();
+    await expect(rowOf(page, 'Коридор')).toBeVisible({ timeout: 30_000 });
+  });
+
+  test('владелец на стенде: ввод и сразу «Добавить помещение» без Tab — щелчок не теряется, сохраняются обе версии', async ({
+    app,
+    page,
+  }, testInfo) => {
+    await openMeasure(app, page, testInfo.project.name);
+    await field(page, 'Длина: Кухня').fill('4');
+    const puts: string[] = [];
+    page.on('response', (r) => {
+      if (r.request().method() === 'PUT' && r.url().includes('/measurement'))
+        puts.push(String(r.status()));
+    });
+    await section(page).getByRole('button', { name: 'Добавить помещение' }).click();
+    await expect(rowOf(page, 'Коридор')).toBeVisible();
+    await expect.poll(() => puts, { timeout: 20_000 }).toEqual(['200', '200']);
+    await page.reload();
+    await expect(field(page, 'Длина: Кухня')).toHaveValue('4', { timeout: 30_000 });
+    await expect(rowOf(page, 'Коридор')).toBeVisible();
+  });
+
+  test('владелец на стенде: запятая — десятичный разделитель; нечисло считается нулём и не портит замер', async ({
+    app,
+    page,
+  }, testInfo) => {
+    await openMeasure(app, page, testInfo.project.name);
+    await field(page, 'Ширина: Кухня').fill('3,6');
+    await expect(cell(rowOf(page, 'Кухня'), 5)).toHaveText('12,6');
+    await field(page, 'Высота: Санузел').fill('abc');
+    await expect(cell(rowOf(page, 'Санузел'), 6)).toHaveText('0');
+    await expect(cell(rowOf(page, 'Санузел'), 5)).toHaveText('5');
+  });
+
+  test('владелец на стенде: «Открыть смету» ведёт на вкладку «Смета»', async ({
+    app,
+    page,
+  }, testInfo) => {
+    await openMeasure(app, page, testInfo.project.name);
+    await section(page).getByRole('button', { name: 'Открыть смету' }).click();
+    await expect(page.locator('section[aria-labelledby="h-est"]')).toBeVisible({ timeout: 30_000 });
+    await expect(page).toHaveURL(/tab=estimate/);
+  });
+
+  test('прораб на стенде: правит замер своего объекта, «Открыть смету» и вкладки «Смета» нет', async ({
+    app,
+    page,
+    undo,
+    session,
+  }, testInfo) => {
+    await openMeasure(app, page, testInfo.project.name, 'foreman', { undo, session });
+    await expect(field(page, 'Длина: Кухня')).toBeEnabled();
+    await expect(section(page).getByRole('button', { name: 'Открыть смету' })).toHaveCount(0);
+    await expect(page.getByRole('tab', { name: 'Смета' })).toHaveCount(0);
+  });
+
+  test('владелец на стенде: нет связи при сохранении — тост, прежнее значение', async ({
+    app,
+    page,
+    context,
+  }, testInfo) => {
+    await openMeasure(app, page, testInfo.project.name);
+    await context.setOffline(true);
+    await field(page, 'Длина: Кухня').fill('9');
+    await field(page, 'Длина: Кухня').press('Tab');
+    await expect(toast(page)).toHaveText(OFFLINE, { timeout: 20_000 });
+    await expect(field(page, 'Длина: Кухня')).toHaveValue('3,5');
+    await context.setOffline(false);
+  });
+
+  test('владелец на стенде: клавиатура — Tab обходит поля таблицы и кнопки; фокус виден', async ({
+    app,
+    page,
+  }, testInfo) => {
+    await openMeasure(app, page, testInfo.project.name);
+    const target = section(page).getByRole('button', { name: 'Открыть смету' });
+    await expect(target).toBeVisible();
+    let reached = false;
+    const seen = new Set<string>();
+    for (let i = 0; i < 60 && !reached; i++) {
+      await page.keyboard.press('Tab');
+      seen.add(await page.evaluate(() => document.activeElement?.getAttribute('aria-label') ?? ''));
+      reached = await target.evaluate((el) => el === document.activeElement);
+    }
+    expect(reached).toBe(true);
+    expect(seen.has('Длина: Гостиная')).toBe(true);
+    expect(seen.has('Проёмы: Санузел')).toBe(true);
+    expect(await target.evaluate((el) => getComputedStyle(el).outlineStyle)).not.toBe('none');
+  });
+
+  test('владелец на стенде: axe без serious; 390 — без горизонтальной прокрутки, цели не меньше 44 px', async ({
+    app,
+    page,
+    axe,
+  }, testInfo) => {
+    await openMeasure(app, page, testInfo.project.name);
+    await expect(table(page)).toBeVisible();
+    await page.waitForLoadState('networkidle');
+    await page.evaluate(() => document.fonts.ready.then(() => undefined));
+    const serious = (await axe(page)).violations.filter(
+      (v) => v.impact === 'serious' || v.impact === 'critical',
+    );
+    expect(
+      serious.map((v) => `${v.id}: ${v.nodes.map((n) => n.target.join(' ')).join(', ')}`),
+    ).toEqual([]);
+    expect(await noHorizontalScroll(page)).toBe(true);
+    if (phone(page)) {
+      await expect(page.getByRole('navigation', { name: 'Навигация', exact: true })).toBeVisible();
+      const wrap = section(page).locator('.ox-rp-tablewrap');
+      expect(await wrap.evaluate((el) => el.scrollWidth > el.clientWidth)).toBe(true);
+      expect(
+        await hitHeight(section(page).getByRole('button', { name: 'Добавить помещение' })),
+      ).toBeGreaterThanOrEqual(44);
+      expect(
+        await hitHeight(section(page).getByRole('button', { name: 'Открыть смету' })),
+      ).toBeGreaterThanOrEqual(44);
+      expect(await hitHeight(field(page, 'Длина: Кухня'))).toBeGreaterThanOrEqual(44);
+    } else {
+      await expect(page.getByRole('navigation', { name: 'Основная навигация' })).toBeVisible();
+    }
   });
 });

@@ -2,14 +2,16 @@
 // :145–189, «На согласование» :631–701, «Утвердить · ПЭП» :703–715). Режим mock — MSW Docs (W7.00) на сиде «Альты»:
 // «Договор подряда № 42/26» (v3, маршрут активен: шаг 1 «Согласовать» — Алексей Соколов, шаг 2 «Подпись заказчика»),
 // «Приказ № 14 · работа 4 ноября» (согласован, автор Марина Котова, шаблон маршрута папки «Приказы»).
-// Пункты verification-protocol §1.3: меню и URL, состояния, клавиатура, axe, 390 / 1440. Режим stand — после W7.24.
+// Пункты verification-protocol §1.3: меню и URL, состояния, клавиатура, axe, 390 / 1440. Режим stand — backend W7.24 (@stand, W2.103).
 import type { Persona } from '@ortus/e2e-kit';
 import type { Locator, Page } from '@playwright/test';
 
 import { expect, test } from './_stand/fixtures.ts';
 import { phone } from './logistics-review.helpers.ts';
+import { wide } from './viewport.helpers.ts';
 import { dialog, h1, hitHeight, noHorizontalScroll, openPage, toast } from './modules.helpers.ts';
-import { devScenario } from './shell.helpers.ts';
+import { memberIdByEmail, startRoute, textDoc } from './docs.stand.ts';
+import { devScenario, tenantId } from './shell.helpers.ts';
 
 const CONTRACT = 'Договор подряда № 42/26';
 const ORDER = 'Приказ № 14 · работа 4 ноября';
@@ -341,7 +343,7 @@ test.describe('docs-route — состояния, клавиатура, axe, 390
     await expect(dialog(page).getByRole('complementary', { name: 'Что произойдёт' })).toContainText(
       'закроется для правки',
     );
-    if (!phone(page)) {
+    if (wide(page)) {
       // Эталон :631–701: две колонки до 1000 px, «Что произойдёт» справа от формы, «Закрыть» × в шапке.
       const box = await dialog(page).locator('.ox-rt-dlg').boundingBox();
       const side = await dialog(page)
@@ -426,8 +428,194 @@ test.describe('docs-route — состояния, клавиатура, axe, 390
   });
 });
 
+// Стенд: backend маршрута документа W7.24 в main. Раздел «Документы» на стенде открыт только владельцу, поэтому он же
+// и автор, и согласующий, и утверждающий (правило «автор не согласует» в строках выключено). Документ и маршрут —
+// командами API (docs.stand.ts) или окном «На согласование» страницы; метка прогона делает названия уникальными.
 test.describe('docs-route — «Маршрут документа» @stand', () => {
   test.skip(({ harness }) => harness.mode !== 'stand', 'режим stand');
+  test.setTimeout(180_000);
 
-  test.fixme('@stand-spec маршрут на настоящем backend (причина: backend маршрута — W7.24, ещё не в main)', () => {});
+  /** Свежий документ; `route` — маршрут «Согласовать → Утвердить» с владельцем в обоих шагах, или без маршрута. */
+  async function openFresh(
+    app: Parameters<typeof openPage>[0],
+    page: Page,
+    project: string,
+    o: { route?: 'approve' | 'ack' } = {},
+  ) {
+    await app('/', { persona: 'owner' });
+    const tenant = await tenantId(page);
+    const doc = await textDoc(page, tenant, project);
+    const me = await memberIdByEmail(page, tenant, 'd.zimina@alta.example');
+    if (o.route === 'approve') {
+      await startRoute(page, tenant, doc.id, [
+        { kind: 'approve', name: 'Согласовать', who: [me] },
+        { kind: 'sign', name: 'Утвердить', who: [me] },
+      ]);
+    } else if (o.route === 'ack') {
+      const kotova = await memberIdByEmail(page, tenant, 'm.kotova@alta.example');
+      await startRoute(page, tenant, doc.id, [
+        { kind: 'ack', name: 'Ознакомить', audience: [kotova] },
+      ]);
+    }
+    await app(`/t/${tenant}/docs?doc=${doc.id}`, { persona: 'owner' });
+    await expect(h1(page, doc.title)).toBeVisible({ timeout: 30_000 });
+    await expect(bar(page)).toBeVisible({ timeout: 30_000 });
+    return { tenant, doc, me };
+  }
+
+  test('владелец на стенде: полоса маршрута — заголовок, чипы шагов, «Сейчас», задача и решение согласующего', async ({
+    app,
+    page,
+  }, testInfo) => {
+    await openFresh(app, page, testInfo.project.name, { route: 'approve' });
+    await expect(bar(page).getByRole('heading', { name: 'Маршрут · v1' })).toBeVisible();
+    const steps = bar(page).getByRole('listitem');
+    await expect(steps).toHaveCount(2);
+    await expect(steps.nth(0)).toContainText('1 · Согласовать');
+    await expect(steps.nth(0)).toContainText('все сразу · 0 из 1');
+    await expect(steps.nth(1)).toContainText('2 · Утвердить');
+    await expect(steps.nth(1)).toContainText('Дарья Зимина');
+    await expect(bar(page)).toContainText(
+      /Шаг 1 «Согласовать» · до \d\d\.\d\d\. Ждут: Дарья Зимина\./,
+    );
+    await expect(bar(page).getByRole('button', { name: 'Задача в «Задачах»' })).toBeVisible();
+    await expect(bar(page).getByRole('button', { name: 'Отменить маршрут' })).toBeVisible();
+    await expect(bar(page).getByRole('button', { name: 'Согласовать v1' })).toBeVisible();
+    await expect(bar(page).getByLabel('Комментарий к решению')).toHaveAttribute(
+      'placeholder',
+      'Комментарий; чтобы вернуть на доработку — обязателен',
+    );
+  });
+
+  test('согласующий на стенде: «Вернуть на доработку» без комментария — ошибка, затем возврат с причиной', async ({
+    app,
+    page,
+  }, testInfo) => {
+    await openFresh(app, page, testInfo.project.name, { route: 'approve' });
+    await bar(page).getByRole('button', { name: 'Вернуть на доработку' }).click();
+    await expect(bar(page).getByRole('alert')).toHaveText('Напишите, что доработать');
+    await bar(page).getByLabel('Комментарий к решению').fill('Срок окончания — 27 ноября');
+    await expect(bar(page).getByRole('alert')).toHaveCount(0);
+    await bar(page).getByRole('button', { name: 'Вернуть на доработку' }).click();
+    await expect(bar(page)).toContainText(
+      'Дарья Зимина вернул(а) v1 на доработку: «Срок окончания — 27 ноября».',
+      { timeout: 20_000 },
+    );
+    await expect(bar(page).getByLabel('Комментарий к решению')).toHaveCount(0);
+    const resume = bar(page).getByRole('button', { name: 'Отправить снова · v1' });
+    await expect(resume).toBeDisabled();
+    await expect(bar(page)).toContainText('Сначала внесите правки: согласуют новую версию');
+    await expect(bar(page).getByRole('button', { name: 'Отменить маршрут' })).toBeVisible();
+  });
+
+  test('согласующий на стенде: «Согласовать v1» — шаг закрыт, маршрут идёт к утверждению', async ({
+    app,
+    page,
+  }, testInfo) => {
+    await openFresh(app, page, testInfo.project.name, { route: 'approve' });
+    await bar(page).getByRole('button', { name: 'Согласовать v1' }).click();
+    const steps = bar(page).getByRole('listitem');
+    await expect(steps.nth(0)).toContainText('все сразу · 1 из 1', { timeout: 20_000 });
+    await expect(bar(page)).toContainText('Шаг 2 «Утвердить»');
+    await expect(bar(page).getByRole('button', { name: 'Согласовать v1' })).toHaveCount(0);
+    await expect(bar(page).getByRole('button', { name: 'Утвердить · ПЭП' })).toBeVisible();
+  });
+
+  test('утверждающий на стенде: «Утвердить · ПЭП» открывает подтверждение, при недоступном сервисе подписи — отказ без подписания', async ({
+    app,
+    page,
+  }, testInfo) => {
+    await openFresh(app, page, testInfo.project.name, { route: 'approve' });
+    await bar(page).getByRole('button', { name: 'Согласовать v1' }).click();
+    await expect(bar(page).getByRole('button', { name: 'Утвердить · ПЭП' })).toBeVisible({
+      timeout: 20_000,
+    });
+    await bar(page).getByRole('button', { name: 'Утвердить · ПЭП' }).click();
+    const s = dialog(page);
+    await expect(s.getByRole('heading', { name: 'Утвердить · ПЭП' })).toBeVisible();
+    await expect(s).toContainText('Подпись — повторный вход в Ортус.');
+    // Стенд e2e работает на dev-входе: повторного входа (pep_login) в нём нет, backend отвечает 503
+    // dependency_unavailable — страница показывает «Сервис временно недоступен» и ничего не подписывает.
+    await expect(s).toContainText('Сервис временно недоступен. Повторите позже.', {
+      timeout: 20_000,
+    });
+    await expect(s.getByLabel('Пароль')).toBeDisabled();
+    await s.getByRole('button', { name: 'Отмена' }).click();
+    await expect(dialog(page)).toHaveCount(0);
+    await expect(bar(page).getByRole('button', { name: 'Утвердить · ПЭП' })).toBeVisible();
+    await expect(bar(page).getByRole('heading', { name: 'Маршрут · v1' })).toBeVisible();
+  });
+
+  test('владелец на стенде: «На согласование» — шаблон папки, правило автора, «Что произойдёт», отправка и отмена маршрута', async ({
+    app,
+    page,
+  }, testInfo) => {
+    const { doc } = await openFresh(app, page, testInfo.project.name);
+    await expect(bar(page)).toContainText('У документа нет маршрута.');
+    await bar(page).getByRole('button', { name: 'На согласование' }).click();
+    const d = dialog(page);
+    await expect(d.getByRole('heading', { name: 'На согласование' })).toBeVisible();
+    await expect(d).toContainText('автор — вы, Дарья Зимина');
+    await expect(d).toContainText('шаблон «Приказ по фирме»');
+    await expect(d.locator('section.ox-rt-card')).toHaveCount(3);
+    await expect(d.locator('section.ox-rt-card').first()).toContainText('Вера Котельникова');
+    await expect(d).toContainText(/Согласуют v\d+/);
+    const what = d.getByRole('complementary', { name: 'Что произойдёт' });
+    await expect(what).toContainText('Лист согласования');
+    await expect(what).toContainText('1 · Согласовать');
+    await expect(what).toContainText('2 · Утвердить');
+    // Шаблон назначает утверждающим автора, правило «автор не утверждает» закрывает отправку.
+    const send = d.getByRole('button', { name: 'Отправить на согласование' });
+    await expect(d.getByRole('alert')).toContainText('Автор не утверждает свой документ');
+    await expect(send).toBeDisabled();
+    await d.getByText('Автор не согласует и не утверждает свой документ').click();
+    await expect(d.getByRole('alert')).toHaveCount(0);
+    await expect(send).toBeEnabled();
+    await send.click();
+    await expect(toast(page)).toHaveText('Отправлено на согласование', { timeout: 20_000 });
+    await expect(dialog(page)).toHaveCount(0);
+    await expect(bar(page).getByRole('heading', { name: /^Маршрут · v\d+$/ })).toBeVisible();
+    const steps = bar(page).getByRole('listitem');
+    await expect(steps).toHaveCount(3);
+    await expect(steps.nth(1)).toContainText('2 · Утвердить');
+    await expect(steps.nth(2)).toContainText('3 · Ознакомить');
+    await expect(bar(page)).toContainText('Шаг 1 «Согласовать»');
+    await expect(bar(page).getByRole('button', { name: 'На согласование' })).toHaveCount(0);
+    await page.reload();
+    await expect(h1(page, doc.title)).toBeVisible({ timeout: 30_000 });
+    await expect(bar(page).getByRole('heading', { name: /^Маршрут · v\d+$/ })).toBeVisible({
+      timeout: 30_000,
+    });
+    await bar(page).getByRole('button', { name: 'Отменить маршрут' }).click();
+    await expect(toast(page)).toHaveText('Маршрут отменён', { timeout: 20_000 });
+    await expect(bar(page)).toContainText('У документа нет маршрута.');
+    await expect(bar(page).getByRole('button', { name: 'На согласование' })).toBeVisible();
+  });
+
+  test('автор на стенде: ознакомление — «Завершить ознакомление» закрывает шаг, кнопки «Ознакомлен» у автора нет', async ({
+    app,
+    page,
+  }, testInfo) => {
+    await openFresh(app, page, testInfo.project.name, { route: 'ack' });
+    await expect(bar(page)).toContainText('Шаг 1 «Ознакомить»');
+    await expect(bar(page).getByRole('button', { name: /^Завершить ознакомление/ })).toBeVisible();
+    await expect(bar(page).getByRole('button', { name: 'Ознакомлен', exact: true })).toHaveCount(0);
+    await bar(page)
+      .getByRole('button', { name: /^Завершить ознакомление/ })
+      .click();
+    await expect(toast(page)).toHaveText('Ознакомление завершено', { timeout: 20_000 });
+    await expect(bar(page).getByRole('heading', { name: 'Маршрут завершён · v1' })).toBeVisible();
+  });
+
+  test('сотрудник без права на документы на стенде: маршрут не открывается — гейт раздела', async ({
+    app,
+    page,
+  }, testInfo) => {
+    const { tenant, doc } = await openFresh(app, page, testInfo.project.name, { route: 'approve' });
+    await app(`/t/${tenant}/docs?doc=${doc.id}`, { persona: 'driver' });
+    await expect(page.getByText('Нет доступа к разделу «Документы»')).toBeVisible({
+      timeout: 30_000,
+    });
+    await expect(bar(page)).toHaveCount(0);
+  });
 });

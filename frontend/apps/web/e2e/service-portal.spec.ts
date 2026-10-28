@@ -1,11 +1,12 @@
 // W7.33 · e2e страниц портала клиента `public-service-page` (`/s/{slug}`) и `public-service-request` (`/r/{token}`):
 // эталон — design-2026-10-19 «Обращения - варианты.dc.html» 1a (экраны 2 «Оценка визита», 3 «Страница направления»,
 // 4 «Ответ и оценка решения»). Без входа и оболочки, вход — личная ссылка (Q-W4.00-service-9). Данные — сценарный
-// сервер W7.00 (тег PublicService, режим mock); backend портала — W7.31 (в main нет: @stand-spec — fixme).
+// сервер W7.00 (тег PublicService, режим mock); backend портала — W7.31 (@stand, W2.103).
 // Гость в режиме mock — та же вкладка после выхода (состояние сценарного сервера живёт во вкладке).
 import type { Locator, Page } from '@playwright/test';
 
 import { expect, test } from './_stand/fixtures.ts';
+import { runLabel } from './_stand/stand.ts';
 import { call, devScenario, phone, serious, smallTargets } from './forms-results.helpers.ts';
 import { noHorizontalScroll } from './modules.helpers.ts';
 
@@ -290,8 +291,231 @@ test.describe('service-portal — «Портал клиента» @mock', () => 
   });
 });
 
-test.describe('service-portal — стенд @stand-spec', () => {
+// Стенд: backend портала клиента W7.31 в main. Гость открывает страницы без входа в своём контексте браузера;
+// обращение клиента создаёт тот же публичный вызов, что и форма, а сотрудник («владелец Альты») отвечает и решает в
+// отдельной сессии (фикстура session). Направление «Массаж» (slug mas) — из сида «Альты».
+test.describe('service-portal — «Портал клиента» @stand', () => {
   test.skip(({ harness }) => harness.mode !== 'stand', 'режим stand');
-  // backend портала (W7.31) в main не влит: операций PublicService на стенде нет.
-  test.fixme('гость: страница направления → обращение → личная ссылка → оценка решения', async () => {});
+  test.setTimeout(180_000);
+
+  /**
+   * Телефон клиента, уникальный на каждый вызов: сервер ограничивает число обращений одного клиента в час (по телефону),
+   * а три проекта и повторы идут подряд с одним и тем же номером.
+   */
+  let seq = 0;
+  const freshPhone = (): string => `+7 9${String(Date.now()).slice(-8)}${String(seq++ % 10)}`;
+
+  /** Клиент создаёт обращение публичным вызовом формы и получает личную ссылку. */
+  async function submitReal(
+    page: Page,
+    typeId: string,
+    text: string,
+    who: string,
+  ): Promise<Receipt> {
+    const r = await call(page, 'POST', '/api/v1/public/service/mas/requests', {
+      body: { typeId, text, consent: true, clientName: who, phone: freshPhone() },
+    });
+    if (r.status !== 201)
+      throw new Error(`submitPublicServiceRequest ${r.status}: ${JSON.stringify(r.body)}`);
+    return r.body as Receipt;
+  }
+
+  /** Сотрудник отвечает и ставит «Решено»: владелец Альты видит все направления. */
+  async function resolveAs(owner: Page, key: string): Promise<void> {
+    const tenant = (
+      (await call(owner, 'GET', '/api/v1/me/context')).body as {
+        tenants: { name: string; tenantId: string }[];
+      }
+    ).tenants.find((t) => t.name === 'Альта Групп')?.tenantId;
+    if (!tenant) throw new Error('нет организации «Альта Групп»');
+    const base = `/api/v1/tenants/${tenant}/service/requests`;
+    const list = await call(owner, 'GET', `${base}?limit=200`);
+    const row = (list.body as { items: { id: string; key: string }[] }).items.find(
+      (x) => x.key === key,
+    );
+    if (!row) throw new Error(`нет обращения ${key} в очереди`);
+    const say = await call(owner, 'POST', `${base}/${row.id}/messages`, {
+      body: { kind: 'public', text: 'Извините, всё исправили.' },
+    });
+    if (say.status >= 300)
+      throw new Error(`postServiceMessage ${say.status}: ${JSON.stringify(say.body)}`);
+    const etag = (await call(owner, 'GET', `${base}/${row.id}`)).headers.etag ?? '';
+    const done = await call(owner, 'POST', `${base}/${row.id}/transitions`, {
+      body: { to: 'resolved', outcome: 'Разъяснено' },
+      ifMatch: etag,
+    });
+    if (done.status >= 300)
+      throw new Error(`transitionServiceRequest ${done.status}: ${JSON.stringify(done.body)}`);
+  }
+
+  test('гость на стенде: страница направления — шапка, «Чем помочь?», три группы типов, без оболочки', async ({
+    app,
+    page,
+  }) => {
+    await app('/s/mas');
+    await expect(h1(page)).toHaveText('Чем помочь?', { timeout: 30_000 });
+    await expect(col(page)).toContainText('Альта Групп');
+    await expect(col(page)).toContainText('Массаж');
+    await expect(col(page).locator('.ox-sp-group h2')).toHaveText([
+      'Оценить и поблагодарить',
+      'Если что-то не так',
+      'Другое',
+    ]);
+    for (const n of [
+      'Спасибо мастеру',
+      'Жалоба',
+      'Вернуть деньги за услугу',
+      'Вопрос',
+      'Предложение',
+    ])
+      await expect(col(page).getByRole('button', { name: n })).toBeVisible();
+    await expect(page.getByRole('navigation')).toHaveCount(0);
+    await expect(col(page)).toContainText('Время работы:');
+  });
+
+  test('гость на стенде: обращение с согласием — ошибки полей, отправка, квитанция с личной ссылкой', async ({
+    app,
+    page,
+  }) => {
+    await app('/s/mas');
+    await col(page).getByRole('button', { name: 'Жалоба' }).click();
+    await expect(h1(page)).toHaveText('Жалоба');
+    await col(page).getByRole('button', { name: 'Отправить' }).click();
+    await expect(errs(page)).toHaveText([
+      'Опишите, что случилось',
+      'Нужно согласие на обработку персональных данных',
+    ]);
+    await col(page).getByLabel('Ваше имя').fill('Ольга');
+    await col(page).getByLabel('Телефон').fill('+7 900 12');
+    await col(page)
+      .getByLabel('Опишите, что случилось')
+      .fill('Начали на 15 минут позже, в кабинете холодно');
+    await col(page).getByLabel('Согласен на обработку персональных данных').check();
+    await col(page).getByRole('button', { name: 'Отправить' }).click();
+    await expect(errs(page)).toHaveText(['Телефон — не меньше 10 цифр']);
+    await col(page).getByLabel('Телефон').fill(freshPhone());
+    await col(page).getByRole('button', { name: 'Отправить' }).click();
+    await expect(h1(page)).toHaveText('Приняли ваше обращение', { timeout: 30_000 });
+    await expect(col(page).locator('dd').first()).toHaveText(/[А-Я]{3}-\d+/);
+    await col(page).getByRole('link', { name: 'Следить за ответом' }).click();
+    await expect(page).toHaveURL(/\/r\/[A-Za-z0-9_-]{16,}/);
+    await expect(chip(page)).toContainText('Получили', { timeout: 30_000 });
+    await expect(col(page)).toContainText('Начали на 15 минут позже');
+    await page.goBack();
+    await expect(col(page).getByRole('button', { name: /Мои обращения · \d+/ })).toBeVisible({
+      timeout: 30_000,
+    });
+  });
+
+  test('гость на стенде: страница обращения — статус, лента «Получили · Ответили · Решено», переписка', async ({
+    app,
+    page,
+  }, testInfo) => {
+    await app('/s/mas');
+    const label = runLabel(testInfo.project.name);
+    const r = await submitReal(page, 'complaint', `Начали позже, холодно ${label}`, 'Ольга');
+    await app(`/r/${r.token}`);
+    await expect(col(page).locator('.ox-sp-key').first()).toHaveText(r.key, { timeout: 30_000 });
+    await expect(chip(page)).toContainText('Получили');
+    const steps = col(page).locator('.ox-sp-steps .ox-sp-step-text');
+    await expect(steps).toHaveCount(3);
+    await expect(steps.first()).toHaveText(/^Получили \d\d:\d\d$/);
+    await expect(col(page).getByText('Довольны ли решением?')).toHaveCount(0);
+    const send = col(page).getByRole('button', { name: 'Отправить' });
+    await expect(send).toBeDisabled();
+    await col(page).getByLabel('Сообщение').fill('Жду ответа');
+    await send.click();
+    await expect(col(page).locator('.ox-sp-msg[data-mine]').last()).toContainText('Жду ответа', {
+      timeout: 30_000,
+    });
+    await expect(col(page).getByLabel('Сообщение')).toHaveValue('');
+  });
+
+  test('гость на стенде: решённое обращение — «Довольны ли решением?», одна оценка; «Вопрос не решён» возвращает в работу', async ({
+    app,
+    page,
+    session,
+  }, testInfo) => {
+    await app('/s/mas');
+    const label = runLabel(testInfo.project.name);
+    const a = await submitReal(page, 'question', `Вопрос про запись ${label}`, 'Ольга');
+    const b = await submitReal(page, 'question', `Вопрос про цену ${label}`, 'Ольга');
+    const staff = await session();
+    await staff.open('/', 'owner');
+    await resolveAs(staff.page, a.key);
+    await resolveAs(staff.page, b.key);
+    await app(`/r/${a.token}`);
+    await expect(chip(page)).toContainText('Решено', { timeout: 30_000 });
+    await expect(col(page).getByRole('heading', { name: 'Довольны ли решением?' })).toBeVisible();
+    await expect(
+      col(page)
+        .locator('.ox-sp-msg:not([data-mine])')
+        .filter({ hasText: 'Извините, всё исправили.' }),
+    ).toBeVisible();
+    await scale(page, 'Оценка решения', 4).click();
+    await expect(col(page).getByText('Вы уже оценили: 4 из 5')).toBeVisible({ timeout: 30_000 });
+    await expect(col(page).getByRole('radiogroup', { name: 'Оценка решения' })).toHaveCount(0);
+    await app(`/r/${b.token}`);
+    await col(page).getByRole('button', { name: 'Вопрос не решён — вернуть в работу' }).click();
+    await col(page).getByLabel('Что осталось нерешённым?').fill('Боль вернулась');
+    await col(page).getByRole('button', { name: 'Вернуть в работу' }).click();
+    await expect(chip(page)).toContainText('Отвечаем', { timeout: 30_000 });
+    await expect(col(page)).toContainText('Боль вернулась');
+    await expect(col(page).getByText('Довольны ли решением?')).toHaveCount(0);
+  });
+
+  test('гость на стенде: «СТОП» — отказ от опросов', async ({ app, page }, testInfo) => {
+    await app('/s/mas');
+    const r = await submitReal(
+      page,
+      'question',
+      `Вопрос про запись ${runLabel(testInfo.project.name)}`,
+      'Ольга',
+    );
+    await app(`/r/${r.token}`);
+    await expect(col(page)).toContainText('Не хотите опросов — ответьте СТОП', {
+      timeout: 30_000,
+    });
+    await col(page).getByRole('button', { name: 'Не присылать опросы' }).click();
+    await expect(col(page)).toContainText('Хорошо, опросы больше не придут.', { timeout: 30_000 });
+  });
+
+  test('гость на стенде: неизвестные slug и токен — «Страница не найдена»', async ({
+    app,
+    page,
+  }) => {
+    await app('/s/nope');
+    await expect(h1(page)).toHaveText('Страница не найдена', { timeout: 30_000 });
+    await app('/r/tok_unknown00000000000000000');
+    await expect(h1(page)).toHaveText('Страница не найдена', { timeout: 30_000 });
+  });
+
+  test('гость на стенде: клавиатура, axe; 390 — без прокрутки, цели 44 px', async ({
+    app,
+    page,
+    axe,
+  }, testInfo) => {
+    await app('/s/mas');
+    await expect(h1(page)).toHaveText('Чем помочь?', { timeout: 30_000 });
+    expect(await serious(page, axe)).toEqual([]);
+    expect(await noHorizontalScroll(page)).toBe(true);
+    if (phone(page)) expect(await smallTargets(col(page))).toEqual([]);
+    await col(page).getByRole('button', { name: 'Вопрос' }).click();
+    await expect(h1(page)).toHaveText('Вопрос');
+    expect(await serious(page, axe)).toEqual([]);
+    expect(await noHorizontalScroll(page)).toBe(true);
+    if (phone(page)) expect(await smallTargets(col(page))).toEqual([]);
+    await col(page).getByRole('button', { name: 'Назад' }).click();
+    const r = await submitReal(
+      page,
+      'complaint',
+      `Холодно ${runLabel(testInfo.project.name)}`,
+      'Ольга',
+    );
+    await app(`/r/${r.token}`);
+    await expect(chip(page)).toContainText('Получили', { timeout: 30_000 });
+    expect(await serious(page, axe)).toEqual([]);
+    expect(await noHorizontalScroll(page)).toBe(true);
+    if (phone(page)) expect(await smallTargets(col(page))).toEqual([]);
+  });
 });

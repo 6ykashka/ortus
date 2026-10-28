@@ -1,12 +1,13 @@
 // W7.32 · e2e страницы `service` «Обращения» (`/t/:tenantId/service`; эталон design-2026-10-19 «Обращения.dc.html»,
 // разбор docs/plan/v2/analysis/dor/service.md §1.1): очередь, «Низкие оценки», «Обращение по звонку», карточка.
 // Режим mock — сценарный сервер W7.00 (контракт 0.12.0-stage7, сид «Альты»: 4 направления, 8 обращений, 2 низкие оценки,
-// «сейчас» 1.10 16:24); stand — backend W7.31 (@stand-spec, не влит в main). Персонажи: владелец (все направления) и
+// «сейчас» 1.10 16:24); stand — настоящий backend W7.31 (@stand, W2.103). Персонажи: владелец (все направления) и
 // логист Котова («Грузоперевозки»). Пункты verification-protocol §1.3: загрузка и ошибка списка (Vitest), нет связи,
 // клавиатура, раскладка 390 / 1440, axe.
 import type { Locator, Page } from '@playwright/test';
 
 import { expect, test } from './_stand/fixtures.ts';
+import { runLabel } from './_stand/stand.ts';
 import { h1, hitHeight, noHorizontalScroll, openPage, toast } from './modules.helpers.ts';
 
 const main = (page: Page): Locator => page.locator('section.ox-sv');
@@ -403,10 +404,337 @@ test.describe('service — страница «Обращения» @mock', () =>
   });
 });
 
-test.describe('service — стенд @stand-spec', () => {
-  test.skip(({ harness }) => harness.mode !== 'stand', 'режим stand — backend обращений');
+// Стенд: backend обращений W7.31 в main. Сид «Альты» (направления, восемь обращений, низкие оценки) читается настоящим
+// backend; изменяющие строки работают со своими обращениями, заведёнными «Обращением по звонку» (имя клиента несёт метку
+// прогона), — сидовые обращения общие для трёх проектов и не меняются.
+test.describe('service — страница «Обращения» @stand', () => {
+  test.skip(({ harness }) => harness.mode !== 'stand', 'режим stand');
+  test.setTimeout(180_000);
 
-  test.fixme('сценарии «Обращений» на stand: backend W7.31 не влит в main, права Котовой и скрытие жалобы на сотрудника', async () => {
-    expect(true).toBe(true);
+  /** «Обращение по звонку»: заводит обращение направления «Грузоперевозки», возвращает его номер из карточки. */
+  async function callIn(page: Page, client: string, what: string): Promise<string> {
+    await main(page).getByRole('button', { name: 'Обращение по звонку' }).click();
+    const panel = main(page).locator('.ox-sv-call');
+    await expect(panel.getByRole('heading', { name: 'Обращение по звонку' })).toBeVisible();
+    await panel.getByLabel('Направление').selectOption({ label: 'ГРЗ · Грузоперевозки' });
+    await panel.getByLabel('Клиент', { exact: true }).fill(client);
+    await panel.getByLabel('Телефон').fill('+7 900 111-22-33');
+    await panel.getByLabel('Что случилось').fill(what);
+    await panel.getByRole('button', { name: 'Завести обращение' }).click();
+    await expect(toast(page)).toHaveText('Обращение заведено', { timeout: 20_000 });
+    await expect(card(page)).toBeVisible({ timeout: 20_000 });
+    return (await main(page).locator('.ox-sv-cardhead .ox-sv-key').first().innerText()).trim();
+  }
+
+  async function openOwn(
+    app: Parameters<typeof openPage>[0],
+    page: Page,
+    project: string,
+  ): Promise<{ key: string; label: string }> {
+    await openService(app, page);
+    await expect(rows(page).first()).toBeVisible({ timeout: 30_000 });
+    const label = runLabel(project);
+    const key = await callIn(page, `Клиент ${label}`, `Не доехал груз ${label}`);
+    return { key, label };
+  }
+
+  test('владелец на стенде: шапка, подзаголовок, очереди со счётчиками, обращения сида', async ({
+    app,
+    page,
+  }) => {
+    await openService(app, page);
+    await expect(rows(page).first()).toBeVisible({ timeout: 30_000 });
+    await expect(main(page)).toContainText(
+      'Все мои направления · открытые · сначала самый ранний срок',
+    );
+    await expect(main(page).getByRole('button', { name: 'Обращение по звонку' })).toBeVisible();
+    for (const q of [
+      /^Все мои/,
+      /^Срок нарушен/,
+      /^Срок под угрозой/,
+      /^Ждут клиента/,
+      /^Низкие оценки/,
+      /^Решено и закрыто/,
+    ]) {
+      await expect(queue(page, q)).toBeVisible();
+    }
+    await expect(rowOf(page, 'ГРЗ-57')).toContainText(/просрочен на /);
+    await expect(rowOf(page, 'ГРЗ-55')).toContainText('Ждёт клиента');
+    await expect(rowOf(page, 'МАС-41')).toContainText('SMS · оценка 2 из 5');
+    await expect(rowOf(page, 'МАС-40')).toContainText('Без привязки');
+  });
+
+  test('владелец на стенде: очереди «Срок нарушен», «Ждут клиента», «Низкие оценки» и направление «Массаж»', async ({
+    app,
+    page,
+  }) => {
+    await openService(app, page);
+    await expect(rows(page).first()).toBeVisible({ timeout: 30_000 });
+    await queue(page, /^Срок нарушен/).click();
+    await expect(rowOf(page, 'ГРЗ-57')).toBeVisible();
+    await queue(page, /^Ждут клиента/).click();
+    await expect(rowOf(page, 'ГРЗ-55')).toBeVisible();
+    await queue(page, /^Низкие оценки/).click();
+    await expect(main(page).locator('.ox-sv-rating').first()).toBeVisible();
+    await expect(main(page)).toContainText('Оценки 1–3, где клиент не просил связаться.');
+    await queue(page, /^Открытые/).click();
+    await queue(page, /^Массаж/).click();
+    await expect(rowOf(page, 'МАС-40')).toBeVisible();
+    await expect(rowOf(page, 'ГРЗ-57')).toHaveCount(0);
+  });
+
+  test('владелец на стенде: поиск и фильтры «Тип» и «Канал»', async ({ app, page }) => {
+    await openService(app, page);
+    await expect(rows(page).first()).toBeVisible({ timeout: 30_000 });
+    await main(page).getByLabel('Поиск').fill('Гусева');
+    await expect(rowOf(page, 'ГРЗ-57')).toBeVisible();
+    await expect(rowOf(page, 'МАС-40')).toHaveCount(0);
+    await main(page).getByLabel('Поиск').fill('');
+    await main(page).getByLabel('Тип').selectOption('question');
+    await expect(rowOf(page, 'МАС-40')).toBeVisible();
+    await expect(rowOf(page, 'ГРЗ-57')).toHaveCount(0);
+    await main(page).getByLabel('Тип').selectOption('');
+    await main(page).getByLabel('Канал').selectOption('sms');
+    await expect(rowOf(page, 'МАС-41')).toBeVisible();
+    await expect(rowOf(page, 'МАС-40')).toHaveCount(0);
+  });
+
+  test('владелец на стенде: «Обращение по звонку» — проверка полей, подсказка, заведено → карточка', async ({
+    app,
+    page,
+  }, testInfo) => {
+    await openService(app, page);
+    await expect(rows(page).first()).toBeVisible({ timeout: 30_000 });
+    await main(page).getByRole('button', { name: 'Обращение по звонку' }).click();
+    const panel = main(page).locator('.ox-sv-call');
+    await expect(panel.getByRole('heading', { name: 'Обращение по звонку' })).toBeVisible();
+    await panel.getByLabel('Направление').selectOption({ label: 'ГРЗ · Грузоперевозки' });
+    await expect(panel).toContainText('Канал «звонок», исполнитель — вы.');
+    await panel.getByRole('button', { name: 'Завести обращение' }).click();
+    await expect(panel.getByRole('alert')).toContainText('Укажите имя клиента');
+    const label = runLabel(testInfo.project.name);
+    await panel.getByLabel('Клиент', { exact: true }).fill(`Пётр ${label}`);
+    await panel.getByLabel('Телефон').fill('+7 900 111-22-33');
+    await panel.getByLabel('Что случилось').fill('Не доехал груз');
+    await panel.getByRole('button', { name: 'Завести обращение' }).click();
+    await expect(toast(page)).toHaveText('Обращение заведено', { timeout: 20_000 });
+    await expect(card(page)).toBeVisible();
+    await expect(card(page)).toContainText('Заведено по звонку');
+    await expect(status(page)).toContainText('В работе');
+  });
+
+  test('владелец на стенде: карточка — «Ждём клиента» → «Вернуть в работу», затем «Решено…» с итогом и «Закрыть»', async ({
+    app,
+    page,
+  }, testInfo) => {
+    const { key } = await openOwn(app, page, testInfo.project.name);
+    await main(page).getByRole('button', { name: 'Ждём клиента' }).click();
+    await expect(toast(page)).toHaveText('Срок на паузе: ждём клиента', { timeout: 20_000 });
+    await expect(status(page)).toContainText('Ждёт клиента');
+    await main(page).getByRole('button', { name: 'Вернуть в работу' }).click();
+    await expect(toast(page)).toHaveText('Срок снова идёт', { timeout: 20_000 });
+    await main(page).getByRole('button', { name: 'Решено…' }).click();
+    const panel = main(page).getByRole('region', { name: 'Итог решения' });
+    await panel.getByRole('button', { name: 'Решить' }).click();
+    await expect(panel.getByRole('alert')).toContainText('Выберите итог решения');
+    await panel.getByRole('radio', { name: 'Устранено' }).click();
+    await panel.getByRole('button', { name: 'Решить' }).click();
+    await expect(toast(page)).toHaveText(`${key} решено`, { timeout: 20_000 });
+    await expect(status(page)).toContainText('Решено');
+    await expect(card(page)).toContainText('Итог: Устранено.');
+    await main(page).getByRole('button', { name: 'Закрыть' }).click();
+    await expect(toast(page)).toHaveText(`${key} закрыто`, { timeout: 20_000 });
+    await expect(card(page)).toContainText(
+      'Обращение закрыто: ответы и заметки больше не добавляются.',
+    );
+    await expect(main(page).getByRole('tablist')).toHaveCount(0);
+  });
+
+  test('владелец на стенде: перенос в другое направление даёт новый номер', async ({
+    app,
+    page,
+  }, testInfo) => {
+    const { key } = await openOwn(app, page, testInfo.project.name);
+    await main(page).getByRole('button', { name: 'В другое направление…' }).click();
+    const panel = main(page).getByRole('region', { name: 'Перенести в другое направление' });
+    await expect(panel).toContainText(
+      'Старый номер будет вести на новый, клиенту уйдёт сообщение.',
+    );
+    await panel.getByRole('button', { name: 'Перенести' }).click();
+    await expect(toast(page)).toHaveText(/^Новый номер: [А-Я]{3}-\d+$/, { timeout: 20_000 });
+    await expect(card(page)).toContainText(`прежний номер ${key}`);
+  });
+
+  test('владелец на стенде: ответ клиенту по шаблону, внутренняя заметка, ошибки пустого текста', async ({
+    app,
+    page,
+  }, testInfo) => {
+    const { key } = await openOwn(app, page, testInfo.project.name);
+    const compose = main(page).locator('.ox-sv-compose');
+    await compose.getByRole('button', { name: 'Отправить', exact: true }).click();
+    await expect(main(page).getByRole('alert')).toContainText('Напишите текст ответа');
+    await compose.getByRole('button', { name: 'Шаблоны ответов' }).click();
+    await compose.getByRole('button', { name: /Приняли в работу/ }).click();
+    await expect(compose.getByLabel('Ответ клиенту')).toHaveValue(
+      new RegExp(`приняли ваше обращение ${key}\\. Ответим `),
+    );
+    await compose.getByRole('button', { name: 'Отправить', exact: true }).click();
+    await expect(toast(page)).toHaveText('Ответ отправлен клиенту', { timeout: 20_000 });
+    await expect(card(page)).toContainText('Клиент видит');
+    await compose.getByRole('tab', { name: /Внутренняя заметка/ }).click();
+    await expect(compose).toContainText('Заметку клиент не увидит');
+    await compose.getByRole('button', { name: 'Сохранить заметку' }).click();
+    await expect(main(page).getByRole('alert')).toContainText('Напишите текст заметки');
+    await compose.getByLabel('Внутренняя заметка', { exact: true }).fill('Позвонить завтра');
+    await compose.getByRole('button', { name: 'Сохранить заметку' }).click();
+    await expect(toast(page)).toHaveText('Заметка сохранена', { timeout: 20_000 });
+    await expect(card(page)).toContainText('Внутренняя заметка · клиент не видит');
+  });
+
+  test('владелец на стенде: приоритет, исполнитель, задача по обращению', async ({
+    app,
+    page,
+  }, testInfo) => {
+    await openOwn(app, page, testInfo.project.name);
+    await expect(aside(page)).toContainText('+7 900 111-22-33');
+    await aside(page).getByLabel('Приоритет').selectOption('normal');
+    await expect(toast(page)).toHaveText('Приоритет изменён', { timeout: 20_000 });
+    await aside(page).getByLabel('Исполнитель').selectOption('');
+    await expect(toast(page)).toHaveText('Исполнитель снят', { timeout: 20_000 });
+    await aside(page).getByRole('button', { name: 'Назначить меня' }).click();
+    await expect(aside(page).getByLabel('Исполнитель').locator('option:checked')).toHaveText(
+      'Дарья Зимина',
+      { timeout: 20_000 },
+    );
+    await aside(page).getByRole('button', { name: '＋ Задача' }).click();
+    await aside(page).getByLabel('Тема задачи').fill('Хм');
+    await aside(page).getByRole('button', { name: 'Создать' }).click();
+    await expect(aside(page).getByRole('alert')).toContainText(
+      'Тема задачи — не короче 3 символов',
+    );
+    await aside(page).getByLabel('Тема задачи').fill('Проверить подогрев стола');
+    await aside(page).getByRole('button', { name: 'Создать' }).click();
+    await expect(toast(page)).toHaveText('Задача создана', { timeout: 20_000 });
+    await expect(aside(page)).toContainText('Проверить подогрев стола');
+  });
+
+  test('владелец на стенде: показ телефона сидового обращения — маска, затем полный номер', async ({
+    app,
+    page,
+  }) => {
+    await openRequest(app, page, 'ГРЗ-57');
+    // Показ телефона записывается в историю и остаётся у сидового обращения для следующих проектов прогона:
+    // номер маскирован до первого «Показать», дальше открыт.
+    await expect(aside(page)).toContainText(/\+7 (••• •••-••-12|916 204-44-12)/);
+    const show = aside(page).getByRole('button', { name: 'Показать' });
+    if (await show.count()) {
+      await show.click();
+      await expect(toast(page)).toHaveText('Телефон показан, запись в истории', {
+        timeout: 20_000,
+      });
+    }
+    await expect(aside(page)).toContainText('+7 916 204-44-12');
+  });
+
+  test('логист Котова на стенде: только своё направление, телефон скрыт, компенсации нет', async ({
+    app,
+    page,
+  }) => {
+    await openService(app, page, 'manager');
+    await expect(rows(page).first()).toBeVisible({ timeout: 30_000 });
+    await expect(queue(page, /^Массаж/)).toHaveCount(0);
+    await expect(rowOf(page, 'ГРЗ-57')).toBeVisible();
+    await expect(rowOf(page, 'МАС-40')).toHaveCount(0);
+    await rowOf(page, 'ГРЗ-57').locator('.ox-sv-key').click();
+    await expect(aside(page)).toContainText(
+      'Телефон показывают руководителю направления и владельцу',
+    );
+    await expect(aside(page).getByRole('button', { name: 'Показать' })).toHaveCount(0);
+    await expect(main(page).getByLabel('Компенсация')).toHaveCount(0);
+  });
+
+  test('владелец на стенде: диплинк ?open=<id> открывает карточку и очищает адрес', async ({
+    app,
+    page,
+  }, testInfo) => {
+    const alta = await openService(app, page);
+    await expect(rows(page).first()).toBeVisible({ timeout: 30_000 });
+    const key = await callIn(page, `Клиент ${runLabel(testInfo.project.name)}`, 'Диплинк');
+    const id = await page.evaluate(
+      async ({ tenant, k }) => {
+        const res = await fetch(`/api/v1/tenants/${tenant}/service/requests?limit=200`);
+        const body = (await res.json()) as { items: { id: string; key: string }[] };
+        return body.items.find((r) => r.key === k)?.id ?? '';
+      },
+      { tenant: alta, k: key },
+    );
+    expect(id).not.toBe('');
+    await openPage(app, page, `service?open=${id}`);
+    await expect(card(page)).toBeVisible({ timeout: 30_000 });
+    await expect(main(page).locator('.ox-sv-cardhead .ox-sv-key')).toHaveText(key);
+    await expect(page).toHaveURL(/\/service$/);
+  });
+
+  test('владелец на стенде: нет связи — заметка и заблокированные кнопки', async ({
+    app,
+    page,
+    context,
+  }, testInfo) => {
+    await openOwn(app, page, testInfo.project.name);
+    await context.setOffline(true);
+    await expect(main(page)).toContainText('Нет связи с сервером');
+    await expect(main(page).getByRole('button', { name: 'Ждём клиента' })).toBeDisabled();
+    await context.setOffline(false);
+    await expect(main(page).getByRole('button', { name: 'Ждём клиента' })).toBeEnabled();
+  });
+
+  test('владелец на стенде: клавиатура — строка очереди открывается по Enter, «Очередь» возвращает назад', async ({
+    app,
+    page,
+  }) => {
+    await openService(app, page);
+    await expect(rows(page).first()).toBeVisible({ timeout: 30_000 });
+    const key = rowOf(page, 'ОТД-11').locator('.ox-sv-key');
+    await key.focus();
+    await page.keyboard.press('Enter');
+    await expect(card(page)).toBeVisible();
+    const back = main(page).getByRole('button', { name: 'Очередь' });
+    await back.focus();
+    await page.keyboard.press('Enter');
+    await expect(rows(page).first()).toBeVisible();
+  });
+
+  test('владелец на стенде: раскладка — без горизонтальной прокрутки, цели ≥ 44 px на телефоне, axe без serious', async ({
+    app,
+    page,
+    axe,
+  }, testInfo) => {
+    await openService(app, page);
+    await expect(rows(page).first()).toBeVisible({ timeout: 30_000 });
+    expect(await noHorizontalScroll(page)).toBe(true);
+    const narrow = testInfo.project.name.includes('390');
+    if (narrow) {
+      for (const l of [
+        main(page).getByRole('button', { name: 'Обращение по звонку' }),
+        queue(page, /^Срок нарушен/),
+      ]) {
+        expect(await hitHeight(l), String(l)).toBeGreaterThanOrEqual(44);
+      }
+    }
+    const bad1 = (await axe(page)).violations.filter(
+      (v) => v.impact === 'serious' || v.impact === 'critical',
+    );
+    expect(
+      bad1.map((v) => `${v.id}: ${v.nodes.map((n) => n.target.join(' ')).join(' | ')}`),
+    ).toEqual([]);
+    await rowOf(page, 'МАС-41').locator('.ox-sv-key').click();
+    await expect(card(page)).toBeVisible();
+    expect(await noHorizontalScroll(page)).toBe(true);
+    const bad2 = (await axe(page)).violations.filter(
+      (v) => v.impact === 'serious' || v.impact === 'critical',
+    );
+    expect(
+      bad2.map((v) => `${v.id}: ${v.nodes.map((n) => n.target.join(' ')).join(' | ')}`),
+    ).toEqual([]);
   });
 });

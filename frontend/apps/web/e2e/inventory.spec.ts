@@ -1,13 +1,14 @@
 // W5.11 · e2e страницы `inventory` «Склад» (экран inventory-stock, no-reference: склада в эталоне нет, B-6; D-20 комплекта —
 // остатки по партиям в порядке FEFO). Страница вне меню (Q-W5.11-4): прямой URL. Обязательные пункты
 // verification-protocol §1.3: прямой URL, загрузка, ошибка, только чтение, нет права, нет связи, клавиатура, axe,
-// раскладка 390 / 1440. Стенд — после вливания backend W5.10 (в main его нет).
+// раскладка 390 / 1440. Стенд — backend W5.10 (@stand, W2.103).
 import type { Persona } from '@ortus/e2e-kit';
 import type { Page } from '@playwright/test';
 
 import { expect, test } from './_stand/fixtures.ts';
 import { phone } from './logistics-review.helpers.ts';
 import { h1, hitHeight, noHorizontalScroll, toast } from './modules.helpers.ts';
+import { dateIn, stockFixture } from './inventory.stand.ts';
 import { devScenario, tenantId } from './shell.helpers.ts';
 
 const H1 = 'Склад';
@@ -289,9 +290,130 @@ test.describe('inventory — склад: остатки и резервы @mock'
   });
 });
 
-// Стенд: backend склада — W5.10 (в main его нет), строка включается после вливания W5.10 и миграции tenant 0043.
+// Стенд: backend склада W5.10 в main. Склад, позиция и партии — командами API из сессии владельца (inventory.stand.ts),
+// страница читает их настоящим backend; экран «Склад» вне меню — прямой URL.
+const ruDate = (iso: string): string => iso.split('-').reverse().join('.');
+
 test.describe('inventory — склад @stand', () => {
   test.skip(({ harness }) => harness.mode !== 'stand', 'режим stand');
+  test.setTimeout(150_000);
 
-  test.fixme('W5.10: склад на стенде — остатки FEFO, правка позиции, резерв', () => {});
+  test('владелец на стенде: остатки позиции по партиям в порядке FEFO, ближайший срок — первым', async ({
+    app,
+    page,
+  }, testInfo) => {
+    await app('/', { persona: 'owner' });
+    const alta = await tenantId(page);
+    const soon = dateIn(20);
+    const late = dateIn(200);
+    const f = await stockFixture(page, alta, testInfo.project.name, {
+      lots: [
+        { qty: '250', expiresOn: late },
+        { qty: '100', expiresOn: soon },
+      ],
+    });
+    await app(`/t/${alta}/inventory`, { persona: 'owner' });
+    await expect(h1(page, H1)).toBeVisible({ timeout: 15_000 });
+    await page.getByRole('combobox', { name: 'Склад' }).selectOption({ label: f.warehouse.name });
+    const row = stock(page)
+      .getByRole('listitem')
+      .filter({ has: page.locator('.ox-inv-name', { hasText: f.item.name }) });
+    await expect(row).toHaveCount(1);
+    await expect(row).toContainText(`В наличии350${NB}мл`);
+    await expect(row).toContainText(`Доступно350${NB}мл`);
+    await row.getByRole('button', { name: 'Партии (2)' }).click();
+    const lots = row.getByRole('list', { name: `Партии: ${f.item.name}` }).getByRole('listitem');
+    await expect(lots).toHaveCount(2);
+    await expect(lots.nth(0)).toContainText(`до ${ruDate(soon)}`);
+    await expect(lots.nth(0)).toContainText('Спишется первой');
+    await expect(lots.nth(1)).toContainText(`до ${ruDate(late)}`);
+  });
+
+  test('владелец на стенде: правка позиции — минимум 120,5 сохраняется сервером, пустое название — ошибка поля', async ({
+    app,
+    page,
+  }, testInfo) => {
+    await app('/', { persona: 'owner' });
+    const alta = await tenantId(page);
+    const f = await stockFixture(page, alta, testInfo.project.name, {
+      lots: [{ qty: '40', expiresOn: dateIn(90) }],
+    });
+    await app(`/t/${alta}/inventory`, { persona: 'owner' });
+    await expect(h1(page, H1)).toBeVisible({ timeout: 15_000 });
+    await page.getByRole('combobox', { name: 'Склад' }).selectOption({ label: f.warehouse.name });
+    const row = stock(page)
+      .getByRole('listitem')
+      .filter({ has: page.locator('.ox-inv-name', { hasText: f.item.name }) });
+    await row.getByRole('button', { name: `Изменить позицию: ${f.item.name}` }).click();
+    const dlg = page.getByRole('dialog', { name: `Позиция «${f.item.name}»` });
+    await dlg.getByLabel('Название').fill('');
+    await dlg.getByRole('button', { name: 'Сохранить' }).click();
+    await expect(dlg.getByText('Укажите название позиции')).toBeVisible();
+    await dlg.getByLabel('Название').fill(f.item.name);
+    await dlg.getByLabel('Минимальный уровень').fill('120,5');
+    await dlg.getByRole('button', { name: 'Сохранить' }).click();
+    await expect(toast(page)).toHaveText(`Позиция «${f.item.name}» сохранена`, { timeout: 20_000 });
+    await expect(row).toContainText(`Минимум: 120,5${NB}мл`);
+    await expect(row).toContainText('Ниже минимума');
+    await page.reload();
+    await expect(h1(page, H1)).toBeVisible({ timeout: 15_000 });
+    await page.getByRole('combobox', { name: 'Склад' }).selectOption({ label: f.warehouse.name });
+    await expect(row).toContainText(`Минимум: 120,5${NB}мл`);
+  });
+
+  test('владелец на стенде: новый склад и новая позиция — ошибки полей, тосты, склад в списке', async ({
+    app,
+    page,
+  }, testInfo) => {
+    await app('/', { persona: 'owner' });
+    const alta = await tenantId(page);
+    // Метка прогона делает название, артикул и код уникальными на общем стенде.
+    const f = await stockFixture(page, alta, testInfo.project.name);
+    await app(`/t/${alta}/inventory`, { persona: 'owner' });
+    await expect(h1(page, H1)).toBeVisible({ timeout: 15_000 });
+    await page.getByRole('button', { name: 'Новая позиция' }).click();
+    const item = page.getByRole('dialog', { name: 'Новая позиция' });
+    await item.getByRole('button', { name: 'Добавить' }).click();
+    for (const t of [
+      'Выберите подразделение',
+      'Укажите название позиции',
+      'Укажите артикул',
+      'Выберите единицу',
+    ]) {
+      await expect(item.getByText(t)).toBeVisible();
+    }
+    await item.getByLabel('Подразделение').selectOption({ index: 1 });
+    await item.getByLabel('Название').fill(`Скраб ${f.label}`);
+    await item.getByLabel('Единица').selectOption('g');
+    await item.getByLabel('Артикул').fill(`SCR-${f.label.toUpperCase()}`);
+    await item.getByRole('button', { name: 'Добавить' }).click();
+    await expect(toast(page)).toHaveText(`Позиция «Скраб ${f.label}» добавлена`, {
+      timeout: 20_000,
+    });
+    await expect(item).toBeHidden();
+    await page.getByRole('button', { name: 'Новый склад' }).click();
+    const wh = page.getByRole('dialog', { name: 'Новый склад' });
+    await wh.getByRole('button', { name: 'Создать склад' }).click();
+    await expect(wh.getByText('Укажите название склада')).toBeVisible();
+    await wh.getByLabel('Подразделение').selectOption({ index: 1 });
+    await wh.getByLabel('Название').fill(`Прачечная ${f.label}`);
+    await wh.getByLabel('Код').fill(`L${f.label.toUpperCase()}`);
+    await wh.getByRole('button', { name: 'Создать склад' }).click();
+    await expect(toast(page)).toHaveText(`Склад «Прачечная ${f.label}» создан`, {
+      timeout: 20_000,
+    });
+    await expect(page.getByRole('combobox', { name: 'Склад' })).toContainText(
+      `Прачечная ${f.label}`,
+    );
+  });
+
+  test('водитель на стенде: нет права на склад — гейт вместо остатков', async ({ app, page }) => {
+    await app('/', { persona: 'driver' });
+    const alta = await tenantId(page);
+    await app(`/t/${alta}/inventory`, { persona: 'driver' });
+    await expect(page.getByRole('heading', { name: /^Нет доступа к разделу/ })).toBeVisible({
+      timeout: 15_000,
+    });
+    await expect(stock(page)).toHaveCount(0);
+  });
 });

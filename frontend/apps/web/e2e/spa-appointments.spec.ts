@@ -3,13 +3,22 @@
 // чек-лист docs/plan/analysis/06-calendar-kb-data-files-spa-cash-repair.md §SPA). Режим mock — MSW W5.21 на сиде
 // «Альты» (ap-1 10:00 «Классический массаж · Мария К.», ap-2 11:30 «SPA-ритуал · Ольга Р.» со столом, ap-3 14:00;
 // масло 250 мл, крем 12 г; «сейчас» сервера 10:30 МСК). Обязательные пункты verification-protocol §1.3: меню и URL,
-// состояния (загрузка, ошибка, нет связи, пусто, гейт), клавиатура, axe, 390 / 1440. Режим stand — после W5.20.
+// состояния (загрузка, ошибка, нет связи, пусто, гейт), клавиатура, axe, 390 / 1440. Режим stand — backend W5.20 (@stand, W2.103).
 import type { Locator, Page } from '@playwright/test';
 
 import { expect, test } from './_stand/fixtures.ts';
 import { phone } from './logistics-review.helpers.ts';
 import { dialog, h1, hitHeight, noHorizontalScroll, openPage, toast } from './modules.helpers.ts';
-import { devScenario } from './shell.helpers.ts';
+import { dateIn, stockFixture } from './inventory.stand.ts';
+import { devScenario, tenantId } from './shell.helpers.ts';
+import {
+  pastDay,
+  spaResources,
+  spaService,
+  spaVisit,
+  standDay,
+  stockSalonWarehouse,
+} from './spa.stand.ts';
 
 const H1 = 'Салон и SPA';
 const DAY = 'Четверг, 1 октября 2026';
@@ -408,6 +417,262 @@ test.describe('spa-appointments — «Салон и SPA», визиты @mock', 
 
 test.describe('spa-appointments — «Салон и SPA», визиты @stand', () => {
   test.skip(({ harness }) => harness.mode !== 'stand', 'режим stand');
+  test.setTimeout(180_000);
 
-  test.fixme('@stand-spec визиты на настоящем backend (причина: backend SPA — W5.20, ещё не в main)', () => {});
+  /** Услуга с техкартой и визит на свой день; страница читает их настоящим backend. */
+  async function setup(
+    app: Parameters<typeof openPage>[0],
+    page: Page,
+    project: string,
+    o: { stocked?: boolean; table?: boolean; past?: boolean } = {},
+  ) {
+    await app('/', { persona: 'owner' });
+    const alta = await tenantId(page);
+    const res = await spaResources(page, alta);
+    const f = await stockFixture(page, alta, project, {
+      lots: [{ qty: '500', expiresOn: dateIn(300) }],
+    });
+    if (o.stocked) await stockSalonWarehouse(page, alta, f.item.id, '500', dateIn(300));
+    const svc = await spaService(page, alta, res, {
+      name: `Массаж ${f.label}`,
+      itemId: f.item.id,
+      qty: '30',
+      ...(o.table ? { equipmentIds: [res.table.id] } : {}),
+    });
+    const day = o.past ? pastDay() : standDay();
+    const visit = await spaVisit(page, alta, res, svc, {
+      date: day,
+      time: '10:00',
+      ...(o.table ? { equipmentIds: [res.table.id] } : {}),
+    });
+    return { alta, res, f, svc, day, visit };
+  }
+
+  const openDay = async (
+    app: Parameters<typeof openPage>[0],
+    page: Page,
+    alta: string,
+    day: string,
+    persona: 'owner' | 'therapist' = 'owner',
+  ): Promise<void> => {
+    await app(`/t/${alta}/spa?date=${day}`, { persona });
+    await expect(h1(page, persona === 'therapist' ? 'Мой день' : H1)).toBeVisible({
+      timeout: 20_000,
+    });
+  };
+  const visitCard = (page: Page, service: string): Locator =>
+    cards(page).filter({ hasText: service });
+
+  test('владелец на стенде: карточка визита — время, услуга, статус, кабинет, буфер, техкарта; остатки кабинета', async ({
+    app,
+    page,
+  }, testInfo) => {
+    const { alta, svc, f, day } = await setup(app, page, testInfo.project.name);
+    await openDay(app, page, alta, day);
+    await expect(section(page).locator('.ox-spa-crumb')).toHaveText(
+      'Альта Групп · все специалисты',
+    );
+    const c = visitCard(page, svc.name);
+    await expect(cards(page)).toHaveCount(1);
+    await expect(c).toContainText('10:00');
+    await expect(c).toContainText(`${svc.name} · 60 мин`);
+    await expect(c).toContainText('Подтверждено');
+    await expect(c).toContainText('Кабинет № 2 · без оборудования');
+    await expect(c).toContainText('уборка 15 мин');
+    await expect(c).toContainText(`${f.item.name} 30 мл`);
+    await expect(stock(page)).toContainText('Остатки кабинета');
+    await expect(stock(page)).toContainText(f.item.name);
+    await page.reload();
+    await expect(cards(page)).toHaveCount(1, { timeout: 20_000 });
+  });
+
+  test('владелец на стенде: «Завершить процедуру» списывает по техкарте один раз', async ({
+    app,
+    page,
+  }, testInfo) => {
+    const { alta, svc, day } = await setup(app, page, testInfo.project.name, {
+      stocked: true,
+      past: true,
+    });
+    await openDay(app, page, alta, day);
+    await visitCard(page, svc.name)
+      .getByRole('button', { name: /^Завершить процедуру/ })
+      .click();
+    await expect(visitCard(page, svc.name)).toContainText('Завершено · списано', {
+      timeout: 20_000,
+    });
+    await expect(
+      visitCard(page, svc.name).getByRole('button', { name: /^Завершить процедуру/ }),
+    ).toHaveCount(0);
+    await expect(issue(page).filter({ hasText: svc.name })).toHaveCount(0);
+  });
+
+  test('владелец на стенде: нехватка материала — баннер «Учёт материалов не завершён», после прихода «Завершить учёт» списывает', async ({
+    app,
+    page,
+  }, testInfo) => {
+    const { alta, svc, f, day } = await setup(app, page, testInfo.project.name, { past: true });
+    await openDay(app, page, alta, day);
+    await visitCard(page, svc.name)
+      .getByRole('button', { name: /^Завершить процедуру/ })
+      .click();
+    // Сообщение о нехватке — тост, он гаснет за секунды; устойчивый признак — карточка и баннер.
+    await expect(visitCard(page, svc.name)).toContainText('Выполнено · учёт не завершён', {
+      timeout: 20_000,
+    });
+    // Баннер общий для всех визитов с незавершённым учётом на стенде — свой находим по названию услуги.
+    const mine = issue(page).filter({ hasText: svc.name });
+    await expect(mine).toContainText('Учёт материалов не завершён.');
+    await expect(mine.getByRole('button')).toHaveText(['Завершить учёт']);
+    // Остаток не списан. Приход на склад салона — и «Завершить учёт» доводит визит до конца.
+    await stockSalonWarehouse(page, alta, f.item.id, '100', dateIn(300));
+    await mine.getByRole('button', { name: 'Завершить учёт' }).click();
+    await expect(visitCard(page, svc.name)).toContainText('Завершено · списано', {
+      timeout: 20_000,
+    });
+    await expect(mine).toHaveCount(0);
+  });
+
+  test('владелец на стенде: запись клиента — конфликт ресурсов, затем свободное время', async ({
+    app,
+    page,
+  }, testInfo) => {
+    const { alta, svc, day } = await setup(app, page, testInfo.project.name);
+    await openDay(app, page, alta, day);
+    await section(page).getByRole('button', { name: 'Записать клиента' }).click();
+    const d = dialog(page);
+    await expect(d.getByRole('heading', { name: 'Записать клиента' })).toBeVisible();
+    await d.getByLabel('Услуга').selectOption({ label: svc.name });
+    await d.getByLabel('Клиент').selectOption({ index: 1 });
+    await d.getByLabel('Специалист').selectOption({ index: 1 });
+    await d.getByLabel('Кабинет').selectOption({ label: 'Кабинет № 2' });
+    await d.getByLabel('Начало').selectOption({ label: '10:30' });
+    await d.getByRole('button', { name: 'Записать', exact: true }).click();
+    await expect(d.getByRole('alert').first()).toContainText('Время занято', {
+      timeout: 20_000,
+    });
+    await expect(toast(page)).toHaveCount(0);
+    await d.getByLabel('Начало').selectOption({ label: '15:15' });
+    await d.getByRole('button', { name: 'Записать', exact: true }).click();
+    await expect(dialog(page)).toHaveCount(0, { timeout: 20_000 });
+    await expect(cards(page)).toHaveCount(2);
+    await expect(cards(page).last()).toContainText('15:15');
+  });
+
+  test('владелец на стенде: услуга со столом — без оборудования ошибка под полем, затем запись', async ({
+    app,
+    page,
+  }, testInfo) => {
+    const { alta, svc, res, day } = await setup(app, page, testInfo.project.name, { table: true });
+    await openDay(app, page, alta, day);
+    await section(page).getByRole('button', { name: 'Записать клиента' }).click();
+    const d = dialog(page);
+    await d.getByLabel('Услуга').selectOption({ label: svc.name });
+    await d.getByLabel('Клиент').selectOption({ index: 1 });
+    await d.getByLabel('Специалист').selectOption({ index: 1 });
+    await d.getByLabel('Кабинет').selectOption({ label: 'Кабинет № 3' });
+    await d.getByLabel('Начало').selectOption({ label: '16:30' });
+    await d.getByRole('button', { name: 'Записать', exact: true }).click();
+    await expect(d).toContainText('Для услуги нужно оборудование');
+    await d.getByLabel(res.table.name).check();
+    await d.getByRole('button', { name: 'Записать', exact: true }).click();
+    await expect(dialog(page)).toHaveCount(0, { timeout: 20_000 });
+    await expect(cards(page)).toHaveCount(2);
+  });
+
+  test('владелец на стенде: перенос визита на 16:00 переживает перезагрузку', async ({
+    app,
+    page,
+  }, testInfo) => {
+    const { alta, svc, day } = await setup(app, page, testInfo.project.name);
+    await openDay(app, page, alta, day);
+    await visitCard(page, svc.name)
+      .getByRole('button', { name: /^Перенести/ })
+      .click();
+    const d = dialog(page);
+    await expect(d.getByRole('heading', { name: 'Перенести визит' })).toBeVisible();
+    await d.getByLabel('Начало').selectOption({ label: '16:00' });
+    await d.getByRole('button', { name: 'Перенести', exact: true }).click();
+    await expect(visitCard(page, svc.name)).toContainText('16:00', { timeout: 20_000 });
+    await page.reload();
+    await expect(visitCard(page, svc.name)).toContainText('16:00', { timeout: 20_000 });
+  });
+
+  test('владелец на стенде: отмена — причина обязательна; «Клиент не пришёл» — отдельный статус', async ({
+    app,
+    page,
+  }, testInfo) => {
+    const { alta, svc, res, day } = await setup(app, page, testInfo.project.name);
+    await spaVisit(page, alta, res, svc, { date: day, time: '14:00', roomIndex: 1 });
+    await openDay(app, page, alta, day);
+    await expect(cards(page)).toHaveCount(2);
+    await cards(page)
+      .filter({ hasText: '14:00' })
+      .getByRole('button', { name: /^Отменить визит/ })
+      .click();
+    const d = dialog(page);
+    await d.getByRole('button', { name: 'Отменить визит' }).click();
+    await expect(d).toContainText('Укажите причину');
+    await d.getByLabel('Причина').fill('Клиент перенёс запись');
+    await d.getByRole('button', { name: 'Отменить визит' }).click();
+    await expect(cards(page).filter({ hasText: '14:00' })).toContainText('Отменено', {
+      timeout: 20_000,
+    });
+    await cards(page)
+      .filter({ hasText: '10:00' })
+      .getByRole('button', { name: /^Отменить визит/ })
+      .click();
+    await dialog(page).getByLabel('Клиент не пришёл').check();
+    await dialog(page).getByRole('button', { name: 'Отменить визит' }).click();
+    await expect(cards(page).filter({ hasText: '10:00' })).toContainText('Не пришёл', {
+      timeout: 20_000,
+    });
+    await section(page).getByLabel('Статус').selectOption({ label: 'Завершённые' });
+    await expect(section(page).getByText('Нет визитов с таким статусом')).toBeVisible();
+  });
+
+  test('владелец на стенде: день — следующий и предыдущий, «Сегодня»; ?date= переживает перезагрузку', async ({
+    app,
+    page,
+  }, testInfo) => {
+    const { alta, svc, day } = await setup(app, page, testInfo.project.name);
+    await openDay(app, page, alta, day);
+    await expect(visitCard(page, svc.name)).toBeVisible();
+    await section(page).getByRole('button', { name: 'Следующий день', exact: true }).click();
+    await expect(page).toHaveURL(/[?&]date=\d{4}-\d{2}-\d{2}/);
+    await expect(section(page).getByText('На этот день записей нет')).toBeVisible();
+    await page.reload();
+    await expect(section(page).getByText('На этот день записей нет')).toBeVisible({
+      timeout: 20_000,
+    });
+    await section(page).getByRole('button', { name: 'Сегодня', exact: true }).click();
+    await expect(section(page).locator('.ox-spa-date')).toHaveText('Четверг, 1 октября 2026');
+  });
+
+  test('специалист на стенде: «Мой день», свои визиты, без вкладки услуг и без завершения', async ({
+    app,
+    page,
+  }, testInfo) => {
+    const { alta, svc, day } = await setup(app, page, testInfo.project.name);
+    await openDay(app, page, alta, day, 'therapist');
+    await expect(section(page).locator('.ox-spa-crumb')).toContainText('·');
+    await expect(visitCard(page, svc.name)).toBeVisible();
+    await expect(section(page).getByRole('tab', { name: 'Услуги и техкарты' })).toHaveCount(0);
+    await expect(section(page).getByRole('button', { name: /^Завершить процедуру/ })).toHaveCount(
+      0,
+    );
+    await expect(
+      section(page)
+        .getByRole('button', { name: /^Перенести/ })
+        .first(),
+    ).toBeVisible();
+  });
+
+  test('водитель на стенде: гейт «Нет доступа к разделу «Салон и SPA»»', async ({ app, page }) => {
+    await open(app, page, { persona: 'driver' });
+    await expect(page.getByText('Нет доступа к разделу «Салон и SPA»')).toBeVisible({
+      timeout: 20_000,
+    });
+    await expect(section(page)).toHaveCount(0);
+  });
 });

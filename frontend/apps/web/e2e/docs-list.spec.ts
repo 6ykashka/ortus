@@ -2,13 +2,16 @@
 // no-reference B-6). Эталон design-2026-10-19 «Документы.dc.html» :30–108, :717–739 (documents.md §1.2, §1.9).
 // Режим mock — MSW Docs W7.00 на сиде «Альты» (семь документов: договор объекта на маршруте, приказ, топливная таблица,
 // скан накладной, регламент, договор аренды, финансовая таблица). Пункты verification-protocol §1.3: меню и URL,
-// состояния, клавиатура, axe, 390 / 1440. Режим stand — после W7.23a.
+// состояния, клавиатура, axe, 390 / 1440. Режим stand — backend W7.23 (@stand, W2.103).
 import type { Locator, Page } from '@playwright/test';
 
 import { expect, test } from './_stand/fixtures.ts';
 import { phone } from './logistics-review.helpers.ts';
+import { wide } from './viewport.helpers.ts';
 import { dialog, h1, hitHeight, noHorizontalScroll, openPage, toast } from './modules.helpers.ts';
-import { devScenario } from './shell.helpers.ts';
+import { devScenario, tenantId } from './shell.helpers.ts';
+import { runLabel } from './_stand/stand.ts';
+import { textDoc } from './docs.stand.ts';
 
 /** Хост билета загрузки сценарного сервера (adapter/src/msw/files): хранилище mock содержимое не проверяет. */
 const STORAGE = 'https://storage.example.invalid/**';
@@ -70,7 +73,7 @@ test.describe('docs-list — «Документы», список @mock', () => 
     await expect(c).toContainText('ЖК Речной · квартира 42');
     await expect(c).toContainText('Уровень: «Управляет доступом»');
     await expect(row(page, 'Начисления · октябрь')).toBeVisible();
-    if (phone(page)) {
+    if (!wide(page)) {
       await expect(section(page).getByText('Название и папка', { exact: true })).toHaveCount(0);
     } else {
       await expect(section(page).getByText('Название и папка', { exact: true })).toBeVisible();
@@ -340,8 +343,217 @@ test.describe('docs-list — «Документы», список @mock', () => 
   });
 });
 
+// Стенд: backend документов W7.23/W7.24 в main. Сид «Альты» (шесть документов) читается настоящим backend; создание —
+// окнами страницы, новые документы — командами API (docs.stand.ts). Раздел «Документы» на стенде открыт только владельцу.
 test.describe('docs-list — «Документы», список @stand', () => {
   test.skip(({ harness }) => harness.mode !== 'stand', 'режим stand');
+  test.setTimeout(150_000);
 
-  test.fixme('@stand-spec список на настоящем backend (причина: backend документов — W7.23a, ещё не в main)', () => {});
+  test('владелец на стенде: плитки создания, отборы с числами, документы сида, колонки — 1440 / карточки — 390', async ({
+    app,
+    page,
+  }) => {
+    await open(app, page);
+    await expect(
+      section(page).getByText('Текст, таблицы и PDF, к которым у вас есть доступ'),
+    ).toBeVisible();
+    const tiles = section(page)
+      .getByRole('group', { name: 'Создать документ' })
+      .getByRole('button');
+    await expect(tiles).toHaveText([
+      /Текст.*Пустой документ/,
+      /Таблица.*Пустая или из CSV/,
+      /PDF.*Из файлов и фото/,
+      /Из шаблона.*Приказ, доверенность, акт/,
+      /Скан.*Камера телефона и распознавание/,
+    ]);
+    const filters = section(page).getByRole('group', { name: 'Отбор' }).getByRole('button');
+    await expect(filters).toHaveText([
+      /^Все · \d+$/,
+      /^Мои · \d+$/,
+      /^Поделились со мной · \d+$/,
+      /^На маршруте · \d+$/,
+      'Архив',
+    ]);
+    await expect(filters.first()).toHaveAttribute('aria-pressed', 'true');
+    const c = row(page, 'Договор подряда № 42/26');
+    await expect(c).toContainText('Черновик');
+    await expect(c).toContainText('ЖК Речной · квартира 42');
+    await expect(c).toContainText('Уровень: «Управляет доступом»');
+    await expect(row(page, 'Договор аренды стоянки')).toContainText('Подписан · ПЭП');
+    await expect(
+      row(page, 'Начисления водителям · сентябрь').getByTitle('Финансовый документ'),
+    ).toBeVisible();
+    await expect(row(page, 'Расход топлива · октябрь')).toContainText('Черновик');
+    if (phone(page)) {
+      await expect(section(page).getByText('Название и папка', { exact: true })).toHaveCount(0);
+    } else if (wide(page)) {
+      await expect(section(page).getByText('Название и папка', { exact: true })).toBeVisible();
+      await expect(section(page).getByText('Изменён', { exact: true })).toBeVisible();
+    }
+    await expect(
+      section(page).getByText(/Документ — запись Ортуса: владелец, папка или связь с объектом/),
+    ).toBeVisible();
+  });
+
+  test('владелец на стенде: «Ждут меня» — проверка распознавания скана, «Проверить» открывает карточку', async ({
+    app,
+    page,
+  }) => {
+    await open(app, page);
+    const waits = section(page).getByRole('region', { name: /Ждут меня · \d+/ });
+    await expect(waits).toBeVisible();
+    await expect(waits).toContainText('то же — в «Требует решения» на «Главной»');
+    await expect(waits).toContainText('Проверить распознавание');
+    await expect(waits).toContainText('Накладная № 318 · скан');
+    await expect(waits).toContainText('3 слова под вопросом');
+    await expect(
+      row(page, 'Накладная № 318 · скан').getByTitle('Ждёт вашего решения'),
+    ).toBeAttached();
+    await waits
+      .getByRole('button', { name: /Проверить/ })
+      .first()
+      .click();
+    await expect(page).toHaveURL(/[?&]doc=/);
+    await expect(h1(page, 'Накладная № 318 · скан')).toBeVisible({ timeout: 20_000 });
+  });
+
+  test('владелец на стенде: поиск по названию, пустой результат, отбор и папка держатся в адресе', async ({
+    app,
+    page,
+  }) => {
+    await open(app, page);
+    const search = section(page).getByRole('searchbox', { name: 'Поиск по документам' });
+    expect(await search.evaluate((el: HTMLInputElement) => el.scrollWidth <= el.clientWidth)).toBe(
+      true,
+    );
+    await search.fill('накладная № 318');
+    await expect(row(page, 'Накладная № 318 · скан')).toBeVisible();
+    await expect(row(page, 'Договор аренды стоянки')).toHaveCount(0);
+    await search.fill('такого нет нигде');
+    await expect(section(page).getByText('Под условия отбора ничего не попало.')).toBeVisible();
+    await search.fill('');
+    await expect(row(page, 'Договор аренды стоянки')).toBeVisible();
+    await chip(page, /^На маршруте/).click();
+    await expect(page).toHaveURL(/[?&]filter=route/);
+    await expect(chip(page, /^На маршруте/)).toHaveAttribute('aria-pressed', 'true');
+    await chip(page, /^Мои/).click();
+    await expect(page).toHaveURL(/[?&]filter=mine/);
+    await chip(page, /^Все/).click();
+    await expect(page).not.toHaveURL(/filter=/);
+    await section(page)
+      .getByRole('combobox', { name: 'Папка' })
+      .selectOption({ label: 'Север Логистик › Договоры' });
+    await expect(page).toHaveURL(/[?&]folder=/);
+    await expect(row(page, 'Договор аренды стоянки')).toBeVisible();
+    await expect(row(page, 'Расход топлива · октябрь')).toHaveCount(0);
+    await page.reload();
+    await expect(row(page, 'Договор аренды стоянки')).toBeVisible({ timeout: 20_000 });
+  });
+
+  test('владелец на стенде: «Новый документ» — ошибки полей, затем создание текста и переход в карточку', async ({
+    app,
+    page,
+  }, testInfo) => {
+    await open(app, page);
+    const name = `Приказ ${runLabel(testInfo.project.name)}`;
+    await section(page)
+      .getByRole('button', { name: /^Текст/ })
+      .click();
+    const d = dialog(page);
+    await expect(d.getByRole('heading', { name: 'Новый документ' })).toBeVisible();
+    await expect(d.getByRole('button', { name: 'Закрыть' })).toBeVisible();
+    await d.getByRole('button', { name: 'Создать' }).click();
+    await expect(d).toContainText('Название — не короче 2 символов');
+    await d.getByLabel('Название').fill(name);
+    await d.getByLabel('Папка').selectOption({ label: 'Север Логистик › Приказы' });
+    await d.getByRole('button', { name: 'Создать' }).click();
+    await expect(toast(page)).toHaveText(`Документ «${name}» создан`, { timeout: 20_000 });
+    await expect(page).toHaveURL(/[?&]doc=/);
+    await expect(h1(page, name)).toBeVisible({ timeout: 20_000 });
+  });
+
+  test('владелец на стенде: «Новый документ» — таблица из CSV создаётся, скан без файла отказывает', async ({
+    app,
+    page,
+  }, testInfo) => {
+    await open(app, page);
+    const name = `Смета ${runLabel(testInfo.project.name)}`;
+    await section(page)
+      .getByRole('button', { name: /^Таблица/ })
+      .click();
+    const d = dialog(page);
+    await d.getByLabel('Название').fill(name);
+    await d.getByLabel('Папка').selectOption({ label: 'Север Логистик' });
+    await d.getByLabel('Импорт из CSV, необязательно').setInputFiles({
+      name: 'smeta.csv',
+      mimeType: 'text/csv',
+      buffer: Buffer.from('a;b\n1;2\n'),
+    });
+    await expect(d).toContainText('smeta.csv');
+    await d.getByRole('button', { name: 'Создать' }).click();
+    await expect(h1(page, name)).toBeVisible({ timeout: 20_000 });
+    await page.goBack();
+    await expect(rows(page).first()).toBeVisible({ timeout: 20_000 });
+    await section(page).getByRole('button', { name: /^Скан/ }).click();
+    await dialog(page).getByLabel('Название').fill('Акт сверки');
+    await dialog(page).getByLabel('Папка').selectOption({ label: 'Север Логистик' });
+    await dialog(page).getByRole('button', { name: 'Создать' }).click();
+    await expect(dialog(page)).toContainText('Добавьте файлы или фото');
+  });
+
+  test('владелец на стенде: «Новая папка» — ошибка длины, затем папка появляется в выборе', async ({
+    app,
+    page,
+  }, testInfo) => {
+    await open(app, page);
+    const name = `Акты ${runLabel(testInfo.project.name)}`;
+    await section(page).getByRole('button', { name: 'Новая папка' }).click();
+    const d = dialog(page);
+    await d.getByRole('button', { name: 'Создать папку' }).click();
+    await expect(d).toContainText('Название — не короче 2 символов');
+    await d.getByLabel('Название').fill('я'.repeat(201));
+    await d.getByRole('button', { name: 'Создать папку' }).click();
+    await expect(d).toContainText('Название — не длиннее 200 символов');
+    await d.getByLabel('Название').fill(name);
+    await d.getByLabel('Внутри папки').selectOption({ label: 'Север Логистик' });
+    await d.getByRole('button', { name: 'Создать папку' }).click();
+    await expect(toast(page)).toHaveText(`Папка «${name}» создана`, { timeout: 20_000 });
+    await expect(dialog(page)).toHaveCount(0);
+    await expect(
+      section(page)
+        .getByRole('combobox', { name: 'Папка' })
+        .locator('option', { hasText: `Север Логистик › ${name}` }),
+    ).toHaveCount(1);
+  });
+
+  test('владелец на стенде: в архив из карточки, отбор «Архив», документ виден с пометкой', async ({
+    app,
+    page,
+  }, testInfo) => {
+    await app('/', { persona: 'owner' });
+    const alta = await tenantId(page);
+    const doc = await textDoc(page, alta, testInfo.project.name);
+    await app(`/t/${alta}/docs?doc=${doc.id}`, { persona: 'owner' });
+    await expect(h1(page, doc.title)).toBeVisible({ timeout: 20_000 });
+    await page.getByRole('button', { name: 'Действия с документом' }).click();
+    await page.getByRole('menuitem', { name: 'В архив' }).click();
+    await expect(toast(page)).toHaveText('Документ в архиве', { timeout: 20_000 });
+    await page.getByRole('button', { name: 'К списку документов' }).click();
+    await expect(row(page, doc.title)).toHaveCount(0, { timeout: 20_000 });
+    await chip(page, 'Архив').click();
+    await expect(row(page, doc.title)).toContainText('В архиве');
+  });
+
+  test('сотрудник без права на документы на стенде: гейт «Нет доступа к разделу «Документы»»', async ({
+    app,
+    page,
+  }) => {
+    await openPage(app, page, 'docs', { persona: 'driver' });
+    await expect(page.getByText('Нет доступа к разделу «Документы»')).toBeVisible({
+      timeout: 20_000,
+    });
+    await expect(section(page)).toHaveCount(0);
+    await expect(rows(page)).toHaveCount(0);
+  });
 });

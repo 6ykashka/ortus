@@ -2,14 +2,22 @@
 // «Ремонт и стройка.dc.html» :104–276, логика :1313–1488; DoR docs/plan/v2/analysis/dor/repair.md §1.3, §2.6, §5,
 // Q-W4.00-repair-5, -9, -24). Данные — MSW W6.00 (пресет repairs-ready, «сегодня» 20.10.2026): контрольные суммы
 // кв. 42 (v1 404 418 ₽, v2 438 175 ₽, ДР-1 +13 050 ₽) и дома в Истре (1 078 533 ₽). Согласие заказчика — публичная
-// операция кабинета (кнопок «Демо: заказчик …» нет, Q-W4.00-repair-9). Backend смет — W6.12 (stand — @stand-spec).
+// операция кабинета (кнопок «Демо: заказчик …» нет, Q-W4.00-repair-9). Backend смет — W6.12 (stand — @stand, W2.103).
 import type { Locator, Page } from '@playwright/test';
 
 import { expect, test } from './_stand/fixtures.ts';
 import { phone } from './logistics-review.helpers.ts';
-import { hitHeight, noHorizontalScroll, toast } from './modules.helpers.ts';
+import { hitHeight, noHorizontalScroll, openPage, toast } from './modules.helpers.ts';
 import { approveByClient, OBJ, openRepair, plainText } from './repair.tabs.helpers.ts';
-import { devScenario } from './shell.helpers.ts';
+import type { Session, Undo } from './_stand/fixtures.ts';
+import {
+  type StandObject,
+  contractedObject,
+  grantForeman,
+  measure,
+  repairObject,
+} from './repair.stand.ts';
+import { devScenario, tenantId } from './shell.helpers.ts';
 
 const OFFLINE = 'Нет связи с сервером. Операция не выполнена.';
 const nb = (s: string): string => s.replace(/(\d) (\d{3})/g, '$1 $2');
@@ -423,11 +431,271 @@ test.describe('repair-estimate — «Смета» @mock', () => {
 
 // Backend смет — W6.12 (ws/W6.12 не в main на 26.10.2026): listEstimates, createEstimateFromTemplate, updateEstimateDraft,
 // sendEstimate, recallEstimate, diffEstimates, saveProjectAsTemplate. До него — fixme.
-test.describe('repair-estimate — стенд @stand-spec', () => {
+// Стенд: backend замера и смет W6.12 в main. Объект, замер, смета и согласие заказчика — командами API
+// (repair.stand.ts); страница читает настоящий backend. Допработы прораба (фото на стенде не загружаются: у Files нет
+// родителя «repairs/project») проверяет mock-блок выше.
+test.describe('repair-estimate — «Смета» @stand', () => {
   test.skip(({ harness }) => harness.mode !== 'stand', 'режим stand');
+  test.setTimeout(180_000);
 
-  test.fixme('смета на стенде: черновик из шаблона → отправка → согласие → допсоглашение', () => {
-    // Причина: backend замера и смет (W6.12) не влит в main; MSW-сценарии этого spec — в @mock выше.
-    expect(true).toBe(true);
+  type Fx = { undo: Undo; session: () => Promise<Session> };
+
+  /** Объект и вкладка «Смета» персонажа; `contract` — смета версии 1 согласована, иначе только замер. */
+  async function openEstimate(
+    app: Parameters<typeof openPage>[0],
+    page: Page,
+    project: string,
+    o: { contract?: boolean; persona?: 'owner' | 'foreman'; fx?: Fx } = {},
+  ): Promise<StandObject> {
+    await app('/', { persona: 'owner' });
+    const tenant = await tenantId(page);
+    const obj =
+      o.contract === false
+        ? await repairObject(page, tenant, project)
+        : await contractedObject(page, tenant, project);
+    if (o.contract === false) await measure(page, obj);
+    const persona = o.persona ?? 'owner';
+    if (persona === 'foreman' && o.fx) {
+      const owner = await o.fx.session();
+      await owner.open('/', 'owner');
+      await grantForeman(owner.page, obj, o.fx.undo);
+    }
+    await app(`/t/${tenant}/repair?obj=${obj.id}&tab=estimate`, { persona });
+    // У прораба вкладки «Смета» нет (нет права на финансы): ждём вкладки объекта, а не саму смету.
+    if (persona === 'foreman')
+      await expect(page.getByRole('tab').first()).toBeVisible({ timeout: 30_000 });
+    else await expect(section(page)).toBeVisible({ timeout: 30_000 });
+    return obj;
+  }
+
+  test('владелец на стенде: версия 1 действует — пояснение, плитки версий, итого, строки «из замера»', async ({
+    app,
+    page,
+  }, testInfo) => {
+    await openEstimate(app, page, testInfo.project.name);
+    await expect(section(page).getByRole('heading', { level: 2, name: 'Смета' })).toBeVisible({
+      timeout: 30_000,
+    });
+    await expect(section(page)).toContainText(
+      'Действует согласованная версия — основа договора. Изменения после договора проходят допсоглашением: прораб предлагает допработу, офис оценивает её в смете, заказчик подписывает кодом из SMS.',
+    );
+    await expectChip(page, 'Версия 1 · действует');
+    await expect(tile(page, 1)).toContainText('действует');
+    await expect(tile(page, 1)).toHaveAttribute('aria-pressed', 'true');
+    await expect(grand(page)).toContainText('Итого по версии 1');
+    await expect(rowOf(page, 'Демонтаж напольного покрытия')).toContainText(
+      'из замера · площадь пола',
+    );
+    await expect(rowOf(page, 'Штукатурка по маякам')).toContainText(
+      'из замера · стены без санузлов',
+    );
+  });
+
+  test('владелец на стенде: правка через допсоглашение — версия 2, сравнение версий и «Показать смету»', async ({
+    app,
+    page,
+  }, testInfo) => {
+    await openEstimate(app, page, testInfo.project.name);
+    await btn(page, 'Изменить через допсоглашение').click();
+    await expectChip(page, 'Версия 2 · черновик');
+    const ok = patched(page);
+    await field(page, 'Объём: Вывоз мусора').fill('4');
+    await field(page, 'Объём: Вывоз мусора').press('Tab');
+    await ok;
+    await btn(page, 'Сравнить с версией 1').click();
+    const cmp = section(page).getByRole('table', { name: /Сравнение/ });
+    await expect(cmp.getByRole('columnheader')).toHaveText([
+      'Строка',
+      'Версия 1',
+      /^Версия 2/,
+      'Разница',
+    ]);
+    await expect(cmp.getByText('изменено: объём').first()).toBeVisible();
+    await expect(cmp.getByRole('row').filter({ hasText: 'Итого' })).toContainText('+');
+    await btn(page, /^Показать строки без изменений · \d+$/).click();
+    await expect(cmp.locator('tr[data-row="same"]').first()).toBeVisible();
+    await btn(page, 'Показать смету').click();
+    await expect(grand(page)).toContainText('Итого по версии 2');
+  });
+
+  test('владелец на стенде: правка черновика — объём вручную и «вернуть из замера», цена, раздел, строка из справочника, скидка', async ({
+    app,
+    page,
+  }, testInfo) => {
+    await openEstimate(app, page, testInfo.project.name);
+    await btn(page, 'Изменить через допсоглашение').click();
+    await expectChip(page, 'Версия 2 · черновик');
+    const before = await grand(page).textContent();
+    let ok = patched(page);
+    await field(page, 'Объём: Демонтаж напольного покрытия').fill('50');
+    await field(page, 'Объём: Демонтаж напольного покрытия').press('Tab');
+    await ok;
+    await expect(rowOf(page, 'Демонтаж напольного покрытия')).toContainText('объём вручную');
+    await expect(grand(page)).not.toHaveText(before ?? '');
+    ok = patched(page);
+    await rowOf(page, 'Демонтаж напольного покрытия')
+      .getByRole('button', { name: 'вернуть из замера' })
+      .click();
+    await ok;
+    await expect(rowOf(page, 'Демонтаж напольного покрытия')).toContainText(
+      'из замера · площадь пола',
+    );
+    await expect(grand(page)).toHaveText(before ?? '');
+    ok = patched(page);
+    await field(page, 'Цена: Вывоз мусора').fill('7000');
+    await field(page, 'Цена: Вывоз мусора').press('Tab');
+    await ok;
+    await expect(rowOf(page, 'Вывоз мусора')).toContainText(nb('14 000 ₽'));
+    ok = patched(page);
+    await section(page).getByRole('textbox', { name: 'Название нового раздела' }).fill('Двери');
+    await btn(page, 'Добавить раздел').click();
+    await ok;
+    await expect(section(page).getByText('Двери', { exact: true })).toBeVisible();
+    await expect(section(page)).toContainText(
+      'В разделе пока нет строк — добавьте их из справочника.',
+    );
+    await btn(page, 'Строка из справочника').last().click();
+    const search = section(page).getByRole('searchbox', { name: 'Поиск по справочнику расценок' });
+    await search.fill('zzzz');
+    await expect(section(page)).toContainText(
+      'Ничего не найдено. Новые позиции добавляют в «Шаблоны и расценки».',
+    );
+    await search.fill('Монтаж плинтуса');
+    ok = patched(page);
+    await section(page).locator('.ox-rp-pickbtn', { hasText: 'Монтаж плинтуса' }).click();
+    await ok;
+    await expect(rowOf(page, 'Монтаж плинтуса')).toBeVisible();
+    ok = patched(page);
+    await section(page).getByRole('button', { name: 'Удалить строку: Вывоз мусора' }).click();
+    await ok;
+    await expect(rowOf(page, 'Вывоз мусора')).toHaveCount(0);
+    const was = await grand(page).textContent();
+    ok = patched(page);
+    await field(page, 'Скидка, процентов').fill('10');
+    await field(page, 'Скидка, процентов').press('Tab');
+    await ok;
+    await expect(grand(page)).not.toHaveText(was ?? '');
+    await expect(section(page)).toContainText('скидку даёт любой, кто правит смету');
+    await expect(btn(page, 'Скачать PDF')).toBeDisabled();
+  });
+
+  test('владелец на стенде: до договора — замер, шаблоны, сборка черновика, отправка, отзыв, согласие заказчика, новая версия', async ({
+    app,
+    page,
+  }, testInfo) => {
+    const obj = await openEstimate(app, page, testInfo.project.name, { contract: false });
+    await expectChip(page, 'Сметы нет');
+    await expect(section(page)).toContainText(
+      'Черновик собирается по шаблону: объёмы считаются из замера, цены берутся из справочника расценок. Править смету могут владелец, сметчик, менеджер заявки и замерщик.',
+    );
+    await expect(section(page)).toContainText(/Замер \d\d\.\d\d: 3 помещения · пол /);
+    const group = section(page).getByRole('radiogroup', { name: 'Шаблон для черновика сметы' });
+    expect(await group.getByRole('radio').count()).toBeGreaterThanOrEqual(3);
+    const total = section(page).locator('.ox-rp-create strong');
+    await expect(total).toContainText('₽');
+    await btn(page, 'Собрать черновик сметы').click();
+    await expect(note(page)).toContainText(/Черновик собран по шаблону «.+»:/);
+    await expectChip(page, 'Версия 1 · черновик');
+    await btn(page, 'Отправить заказчику в кабинет').click();
+    await expect(note(page)).toHaveText('Версия 1 отправлена в кабинет заказчика на согласование.');
+    await expectChip(page, 'Версия 1 у заказчика');
+    await btn(page, 'Отозвать и править').click();
+    await expectChip(page, 'Версия 1 · черновик');
+    await btn(page, 'Отправить заказчику в кабинет').click();
+    await expectChip(page, 'Версия 1 у заказчика');
+    await approveByClient(page, { tenant: obj.tenant, project: obj.id }, 1);
+    await page.reload();
+    await expectChip(page, 'Версия 1 · действует');
+    await expect(tile(page, 1)).toContainText('действует');
+  });
+
+  test('владелец на стенде: «Сохранить объект как шаблон» — уведомление и «Открыть шаблон»', async ({
+    app,
+    page,
+  }, testInfo) => {
+    const obj = await openEstimate(app, page, testInfo.project.name);
+    await btn(page, 'Сохранить объект как шаблон').click();
+    await expect(note(page)).toContainText(`Шаблон «По объекту «${obj.name}»» сохранён:`);
+    await expect(btn(page, 'Открыть шаблон')).toBeVisible();
+    await expect(btn(page, 'График по этапам сметы')).toBeVisible();
+  });
+
+  test('прораб на стенде: вкладки «Смета» нет, «Замер» есть', async ({
+    app,
+    page,
+    undo,
+    session,
+  }, testInfo) => {
+    await openEstimate(app, page, testInfo.project.name, {
+      persona: 'foreman',
+      fx: { undo, session },
+    });
+    await expect(page.getByRole('tab', { name: /^Замер/ })).toBeVisible({ timeout: 30_000 });
+    await expect(page.getByRole('tab', { name: 'Смета' })).toHaveCount(0);
+  });
+
+  test('владелец на стенде: нет связи при отправке — тост, версия остаётся черновиком', async ({
+    app,
+    page,
+    context,
+  }, testInfo) => {
+    await openEstimate(app, page, testInfo.project.name, { contract: false });
+    await btn(page, 'Собрать черновик сметы').click();
+    await expectChip(page, 'Версия 1 · черновик');
+    await context.setOffline(true);
+    await btn(page, 'Отправить заказчику в кабинет').click();
+    await expect(toast(page)).toHaveText(OFFLINE, { timeout: 20_000 });
+    await context.setOffline(false);
+    await expectChip(page, 'Версия 1 · черновик');
+  });
+
+  test('владелец на стенде: клавиатура — Tab обходит версии и действия; фокус виден', async ({
+    app,
+    page,
+  }, testInfo) => {
+    await openEstimate(app, page, testInfo.project.name);
+    const target = btn(page, 'Изменить через допсоглашение');
+    await expect(target).toBeVisible({ timeout: 30_000 });
+    await tile(page, 1).focus();
+    let reached = false;
+    const seen = new Set<string>();
+    for (let i = 0; i < 60 && !reached; i++) {
+      await page.keyboard.press('Tab');
+      seen.add(await page.evaluate(() => document.activeElement?.textContent?.trim() ?? ''));
+      reached = await target.evaluate((el) => el === document.activeElement);
+    }
+    expect({ reached, seen: [...seen] }).toMatchObject({ reached: true });
+    expect(await target.evaluate((el) => getComputedStyle(el).outlineStyle)).not.toBe('none');
+  });
+
+  test('владелец на стенде: axe без serious; 390 — без горизонтальной прокрутки страницы, цели ≥ 44 px', async ({
+    app,
+    page,
+    axe,
+  }, testInfo) => {
+    await openEstimate(app, page, testInfo.project.name);
+    await expect(grand(page)).toBeVisible({ timeout: 30_000 });
+    // Таблица согласованной версии без полей ввода не доступна с клавиатуры на 390 (axe scrollable-region-focusable,
+    // область .ox-rp-tablewrap — см. отчёт W2.103): axe проверяется на черновике, где в таблице есть поля.
+    await btn(page, 'Изменить через допсоглашение').click();
+    await expectChip(page, 'Версия 2 · черновик');
+    await page.waitForLoadState('networkidle');
+    await page.evaluate(() => document.fonts.ready.then(() => undefined));
+    const serious = (await axe(page)).violations.filter(
+      (v) => v.impact === 'serious' || v.impact === 'critical',
+    );
+    expect(
+      serious.map((v) => `${v.id}: ${v.nodes.map((n) => n.target.join(' ')).join(', ')}`),
+    ).toEqual([]);
+    expect(await noHorizontalScroll(page)).toBe(true);
+    if (phone(page)) {
+      await expect(page.getByRole('navigation', { name: 'Навигация', exact: true })).toBeVisible();
+      expect(await hitHeight(tile(page, 1))).toBeGreaterThanOrEqual(44);
+      expect(await hitHeight(btn(page, /^Отправить допсоглашение/))).toBeGreaterThanOrEqual(44);
+      const wrap = section(page).locator('.ox-rp-tablewrap').first();
+      expect(await wrap.evaluate((el) => el.scrollWidth > el.clientWidth)).toBe(true);
+    } else {
+      await expect(page.getByRole('navigation', { name: 'Основная навигация' })).toBeVisible();
+    }
   });
 });

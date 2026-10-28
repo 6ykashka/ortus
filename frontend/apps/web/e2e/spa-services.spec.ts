@@ -1,13 +1,14 @@
 // W5.21 · e2e страницы `spa-services` «Салон и SPA» — услуги и техкарты (no-reference, B-6: в прототипе нет экрана
 // правки услуги; состав — API 0.12.0-stage5, screens.yaml `spa-services`; подписи по правилам эталона). Режим mock —
 // MSW W5.21 на сиде «Альты» (три услуги эталона: техкарты масла 30/40/20 мл, крема 20 г; буферы визитов). Пункты
-// verification-protocol §1.3: меню и URL, состояния, клавиатура, axe, 390 / 1440. Режим stand — после W5.20.
+// verification-protocol §1.3: меню и URL, состояния, клавиатура, axe, 390 / 1440. Режим stand — backend W5.20 (@stand, W2.103).
 import type { Locator, Page } from '@playwright/test';
 
 import { expect, test } from './_stand/fixtures.ts';
 import { phone } from './logistics-review.helpers.ts';
 import { dialog, h1, hitHeight, noHorizontalScroll, openPage, toast } from './modules.helpers.ts';
-import { devScenario } from './shell.helpers.ts';
+import { stockFixture } from './inventory.stand.ts';
+import { devScenario, tenantId } from './shell.helpers.ts';
 
 const section = (page: Page): Locator => page.locator('section[aria-labelledby="h-spa"]');
 const service = (page: Page, name: string): Locator => section(page).getByRole('article', { name });
@@ -199,6 +200,89 @@ test.describe('spa-services — «Салон и SPA», услуги и техк�
 
 test.describe('spa-services — «Салон и SPA», услуги и техкарты @stand', () => {
   test.skip(({ harness }) => harness.mode !== 'stand', 'режим stand');
+  test.setTimeout(150_000);
 
-  test.fixme('@stand-spec услуги на настоящем backend (причина: backend SPA — W5.20, ещё не в main)', () => {});
+  /** Позиция склада для техкарты: создаётся командой API, в техкарте выбирается по названию. */
+  async function material(page: Page, app: Parameters<typeof openPage>[0], project: string) {
+    await app('/', { persona: 'owner' });
+    const alta = await tenantId(page);
+    const f = await stockFixture(page, alta, project);
+    return { alta, f };
+  }
+
+  test('владелец на стенде: новая услуга с техкартой — ошибки полей, затем карточка с версией 1', async ({
+    app,
+    page,
+  }, testInfo) => {
+    const { f } = await material(page, app, testInfo.project.name);
+    const name = `Массаж ${f.label}`;
+    await open(app, page);
+    await section(page).getByRole('button', { name: 'Новая услуга' }).click();
+    const d = dialog(page);
+    await d.getByRole('button', { name: 'Добавить услугу' }).click();
+    await expect(d).toContainText('Укажите название');
+    await expect(d).toContainText('Укажите цену числом');
+    await d.getByLabel('Название').fill(name);
+    await d.getByLabel('Длительность').fill('30');
+    await d.getByLabel('Цена').fill('1 800,50');
+    await d.getByLabel('Уборка после визита').fill('10');
+    await d.getByRole('button', { name: 'Добавить позицию' }).click();
+    await d.getByRole('button', { name: 'Добавить услугу' }).click();
+    await expect(d).toContainText('Выберите позицию в каждой строке техкарты');
+    await d.getByLabel('Позиция 1').selectOption({ label: f.item.name });
+    await d.getByLabel('Количество 1').fill('10');
+    await d.getByRole('button', { name: 'Добавить услугу' }).click();
+    await expect(toast(page)).toHaveText(`Услуга «${name}» добавлена`, { timeout: 20_000 });
+    await expect(dialog(page)).toHaveCount(0);
+    const n = service(page, name);
+    await expect(n).toContainText('Длительность: 30 мин · уборка 10 мин · Цена: 1 800,50 ₽');
+    await expect(n).toContainText(`${f.item.name} 10 мл`);
+    await expect(n).toContainText('Версия 1');
+    await page.reload();
+    await expect(service(page, name)).toContainText('Версия 1', { timeout: 20_000 });
+  });
+
+  test('владелец на стенде: правка услуги — версия растёт, длительность и техкарта обновляются', async ({
+    app,
+    page,
+  }, testInfo) => {
+    const { f } = await material(page, app, testInfo.project.name);
+    const name = `Обёртывание ${f.label}`;
+    await open(app, page);
+    await section(page).getByRole('button', { name: 'Новая услуга' }).click();
+    const d = dialog(page);
+    await d.getByLabel('Название').fill(name);
+    await d.getByLabel('Длительность').fill('60');
+    await d.getByLabel('Цена').fill('3200');
+    await d.getByRole('button', { name: 'Добавить позицию' }).click();
+    await d.getByLabel('Позиция 1').selectOption({ label: f.item.name });
+    await d.getByLabel('Количество 1').fill('30');
+    await d.getByRole('button', { name: 'Добавить услугу' }).click();
+    await expect(toast(page)).toHaveText(`Услуга «${name}» добавлена`, { timeout: 20_000 });
+    await service(page, name)
+      .getByRole('button', { name: /^Изменить/ })
+      .click();
+    const e = dialog(page);
+    await expect(e.getByRole('heading', { name: `Услуга «${name}»` })).toBeVisible();
+    await expect(e.getByLabel('Название')).toHaveValue(name);
+    await expect(e.getByLabel('Длительность')).toHaveValue('60');
+    await expect(e.getByLabel('Цена')).toHaveValue('3200');
+    await e.getByLabel('Длительность').fill('75');
+    await e.getByLabel('Количество 1').fill('35');
+    await e.getByRole('button', { name: 'Сохранить' }).click();
+    await expect(toast(page)).toHaveText(`Услуга «${name}» сохранена`, { timeout: 20_000 });
+    const c = service(page, name);
+    await expect(c).toContainText('Длительность: 75 мин');
+    await expect(c).toContainText(`${f.item.name} 35 мл`);
+    await expect(c).toContainText('Версия 2');
+  });
+
+  test('специалист на стенде: вкладки услуг нет, адрес ?tab=services открывает визиты', async ({
+    app,
+    page,
+  }) => {
+    await open(app, page, { persona: 'therapist' });
+    await expect(section(page).getByRole('tab')).toHaveCount(0);
+    await expect(services(page)).toHaveCount(0);
+  });
 });
