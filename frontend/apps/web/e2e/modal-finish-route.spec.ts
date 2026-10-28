@@ -4,14 +4,17 @@
 import { actionBar, depart, finishDialog, openDriver } from './driver.helpers.ts';
 import { expect, test } from './_stand/fixtures.ts';
 import {
+  akhmedov,
   apiDeparture,
   apiReturn,
+  apiShift,
   apiStart,
   approve,
   closeTrip,
   driverTrip,
   label,
   logisticsOn,
+  newTrip,
   NO_STORAGE,
   persona,
   plan,
@@ -114,46 +117,66 @@ test.describe('modal-finish-route — «Завершить рейс» @mock', ()
 // W2.53: backend рейса (W2.05, finishTripRoute) и приёмки (W2.06) в main — fixme снят. Выезд — командами водителя
 // через API (фото — MinIO и cmd/worker), «Завершить рейс» — диалогом; сдача и приёмка — API (рейс закрыт для следующего
 // проекта). Сид e2e-stand и уборка — logistics.stand.ts.
+// Сервер завершает рейс (finishTripRoute) на загруженном ПК дольше 15 с (флейк tablet-768, Q-W2.98-1) — запас до 30 с.
+const FINISH_TOAST_TIMEOUT_MS = 30_000;
+
 test.describe('modal-finish-route — стенд @stand', () => {
   test.skip(({ harness }) => harness.mode !== 'stand', 'режим stand');
 
-  test('водитель на стенде завершает рейс: «Завершить рейс …?», «Внимание», «Осмотр при сдаче»', async ({
-    app,
-    page,
-    session,
-    undo,
-    harness,
-  }, testInfo) => {
-    test.setTimeout(240_000);
-    await realClock(page);
-    const s = await logisticsOn(session, undo);
-    const manager = await persona(session, 'manager');
-    await app('/', { persona: 'driver' });
-    const trip = await driverTrip(page, manager, s, `Стенд ${label(testInfo.project.name)}`);
-    test.skip(!(await storageReachable(page, s.tenant, trip.id, harness.allowHosts)), NO_STORAGE);
-    undo(`бронь рейса ${trip.number}`, () => closeTrip(page, manager, s.tenant, trip.id));
-    const shift = await apiDeparture(page, s.tenant, trip);
-    await apiStart(page, s.tenant, shift);
-    await app(`/t/${s.tenant}/today`, { persona: 'driver' });
-    await expect(page.getByRole('heading', { level: 2, name: 'Маршрут' })).toBeVisible({
-      timeout: 15_000,
+  // Рейс сида водителя (Р-208) стоит в окне «час до сида + 4 ч»: смена той же ГАЗели другого водителя в это окно
+  // (брони `consumed` сокращаются до фактической смены) занимает машину внутри окна рейса — бронь на всё окно рейса
+  // сервер отклоняет 409 reservation_overlap «Машина уже недоступна». Строка «после чужой смены» идёт первой в проекте,
+  // пока рейс сида ещё не сдан; в любом порядке строк и проектов рейс водителя выезжает.
+  for (const afterOther of [true, false]) {
+    const suffix = afterOther ? ' — после смены другого водителя на той же ГАЗели' : '';
+    test(`водитель на стенде завершает рейс: «Завершить рейс …?», «Внимание», «Осмотр при сдаче»${suffix}`, async ({
+      app,
+      page,
+      session,
+      undo,
+      harness,
+    }, testInfo) => {
+      test.setTimeout(240_000);
+      await realClock(page);
+      const s = await logisticsOn(session, undo, { akhmedov: afterOther });
+      const manager = await persona(session, 'manager');
+      await app('/', { persona: 'driver' });
+      const trip = await driverTrip(page, manager, s, `Стенд ${label(testInfo.project.name)}`);
+      test.skip(!(await storageReachable(page, s.tenant, trip.id, harness.allowHosts)), NO_STORAGE);
+      undo(`бронь рейса ${trip.number}`, () => closeTrip(page, manager, s.tenant, trip.id));
+      if (afterOther) {
+        const other = await akhmedov(session);
+        const theirs = await newTrip(manager, s, {
+          title: `Чужая смена ${label(testInfo.project.name)}`,
+          driverMemberId: s.members.akhmedov,
+        });
+        undo(`смена рейса ${theirs.number}`, () => closeTrip(other, manager, s.tenant, theirs.id));
+        await apiShift(other, s.tenant, theirs);
+        await approve(manager, s.tenant, theirs.id);
+      }
+      const shift = await apiDeparture(page, s.tenant, trip);
+      await apiStart(page, s.tenant, shift);
+      await app(`/t/${s.tenant}/today`, { persona: 'driver' });
+      await expect(page.getByRole('heading', { level: 2, name: 'Маршрут' })).toBeVisible({
+        timeout: 15_000,
+      });
+      await page.getByRole('button', { name: 'Прибыл' }).first().click();
+      await expect(page.getByText('Отмечено 1 из 3')).toBeVisible();
+      await actionBar(page).getByRole('button', { name: 'Завершить рейс' }).click();
+      const dlg = finishDialog(page);
+      await expect(
+        dlg.getByRole('heading', { name: `Завершить рейс ${trip.number}?` }),
+      ).toBeVisible();
+      await expect(dlg).toContainText('Отмечено точек: 1 из 3. Убедитесь, что доставка выполнена.');
+      await dlg.getByRole('button', { name: 'Завершить рейс' }).click();
+      await expect(toast(page)).toHaveText('Рейс завершён. Заполните осмотр при сдаче', {
+        timeout: FINISH_TOAST_TIMEOUT_MS,
+      });
+      await expect(page.getByRole('heading', { level: 2, name: 'Осмотр при сдаче' })).toBeVisible();
+      const after = await plan(page, s.tenant, trip.id);
+      expect((after.body as { state: string }).state).toBe('returning');
+      await apiReturn(page, s.tenant, trip, shift, { finish: false });
+      await approve(manager, s.tenant, trip.id);
     });
-    await page.getByRole('button', { name: 'Прибыл' }).first().click();
-    await expect(page.getByText('Отмечено 1 из 3')).toBeVisible();
-    await actionBar(page).getByRole('button', { name: 'Завершить рейс' }).click();
-    const dlg = finishDialog(page);
-    await expect(
-      dlg.getByRole('heading', { name: `Завершить рейс ${trip.number}?` }),
-    ).toBeVisible();
-    await expect(dlg).toContainText('Отмечено точек: 1 из 3. Убедитесь, что доставка выполнена.');
-    await dlg.getByRole('button', { name: 'Завершить рейс' }).click();
-    await expect(toast(page)).toHaveText('Рейс завершён. Заполните осмотр при сдаче', {
-      timeout: 15_000,
-    });
-    await expect(page.getByRole('heading', { level: 2, name: 'Осмотр при сдаче' })).toBeVisible();
-    const after = await plan(page, s.tenant, trip.id);
-    expect((after.body as { state: string }).state).toBe('returning');
-    await apiReturn(page, s.tenant, trip, shift, { finish: false });
-    await approve(manager, s.tenant, trip.id);
-  });
+  }
 });

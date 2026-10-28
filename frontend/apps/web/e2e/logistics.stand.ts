@@ -598,6 +598,42 @@ export interface ApiShift {
   departureInspectionId: string;
 }
 
+/** Шаг сдвига начала брони и минимальная длина брони внутри окна рейса. */
+const RESERVE_START_STEP_MS = 20 * 60_000;
+const RESERVE_MIN_LENGTH_MS = 15 * 60_000;
+
+/**
+ * Бронь машины под рейс (reserveVehicle). Сначала — на всё окно рейса. Рейс сида (Р-208) стоит в окне «час до прогона
+ * сида + 4 ч»: смены той же машины, прошедшие внутри этого окна, оставляют брони `consumed` (сокращены до фактической
+ * смены) и назначения логиста, а бронь на всё окно сервер отклоняет 409 reservation_overlap. Бронь может быть короче
+ * окна рейса (окно внутри окна рейса, reserve.go), поэтому при занятом окне начало сдвигается: сначала на «сейчас +
+ * 1 мин», затем шагом 20 мин, пока до конца окна рейса остаётся не меньше 15 мин. Другая ошибка — сразу ошибка.
+ */
+async function reserveWindow(driver: Page, tenant: string, trip: Plan, v: Vehicle): Promise<Reply> {
+  const end = Date.parse(trip.plannedWindow.endsAt);
+  const send = (window: Plan['plannedWindow']): Promise<Reply> =>
+    call(driver, 'POST', `/api/v1/tenants/${tenant}/fleet/reservations`, {
+      body: { vehicleId: v.id, driverMemberId: trip.driverMemberId, window, tripId: trip.id },
+    });
+  let last = await send(trip.plannedWindow);
+  let start = Math.max(
+    Date.parse(trip.plannedWindow.startsAt),
+    Math.ceil((Date.now() + 60_000) / 60_000) * 60_000,
+  );
+  const overlaps = (r: Reply): boolean =>
+    r.status === 409 && (r.body as { code?: string }).code === 'reservation_overlap';
+  while (overlaps(last) && start + RESERVE_MIN_LENGTH_MS <= end) {
+    last = await send({ ...trip.plannedWindow, startsAt: iso(start), endsAt: iso(end) });
+    start += RESERVE_START_STEP_MS;
+  }
+  return ok(
+    last,
+    overlaps(last)
+      ? `reserveVehicle: окно рейса ${trip.id} исчерпано (свободного куска короче ${RESERVE_MIN_LENGTH_MS / 60_000} мин нет)`
+      : 'reserveVehicle',
+  );
+}
+
 /** Бронь ГАЗели водителем и осмотр перед выездом с пятью фото; `defect` — блокирующий «Стёкла: Скол». */
 export async function apiDeparture(
   driver: Page,
@@ -606,17 +642,7 @@ export async function apiDeparture(
   o: { defect?: boolean } = {},
 ): Promise<ApiShift> {
   const v = await vehicle(driver, tenant);
-  const res = ok(
-    await call(driver, 'POST', `/api/v1/tenants/${tenant}/fleet/reservations`, {
-      body: {
-        vehicleId: v.id,
-        driverMemberId: trip.driverMemberId,
-        window: trip.plannedWindow,
-        tripId: trip.id,
-      },
-    }),
-    'reserveVehicle',
-  ).body as { id: string };
+  const res = (await reserveWindow(driver, tenant, trip, v)).body as { id: string };
   const dep = await inspection(driver, tenant, {
     kind: 'departure',
     vehicleId: v.id,
