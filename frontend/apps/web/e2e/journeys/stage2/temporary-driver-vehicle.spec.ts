@@ -68,6 +68,7 @@ import {
   transferOf,
   twoHeld,
   waitUntil,
+  windowPattern,
   YUG,
 } from './temporary-driver-vehicle.helpers.ts';
 
@@ -238,6 +239,37 @@ test.describe('S2-20 — ожидание часов стенда печатае
   });
 });
 
+// Замечание ревью W2.95 (minor): окно рейса на экране — обе даты или ни одной, а не «любая граница с датой».
+test.describe('S2-20 — шаблон окна рейса на экране @mock', () => {
+  const rx = (w: { startsAt: string; endsAt: string }): RegExp =>
+    new RegExp(`^${windowPattern(w)}$`);
+
+  test('в пределах суток — «14:00–18:00», с датой или с одной датой — нет', () => {
+    const r = rx({ startsAt: '2026-11-02T11:00:00Z', endsAt: '2026-11-02T15:00:00Z' });
+    expect(r.test('14:00–18:00')).toBe(true);
+    expect(r.test('14:00 – 18:00')).toBe(true);
+    expect(r.test('02.11 14:00 – 02.11 18:00')).toBe(false);
+    expect(r.test('02.11 14:00 – 18:00')).toBe(false);
+  });
+
+  test('через полночь — «02.11 23:30 – 03.11 00:00», без дат и с одной датой — нет', () => {
+    const r = rx({ startsAt: '2026-11-02T20:30:00Z', endsAt: '2026-11-02T21:00:00Z' });
+    expect(r.test('02.11 23:30 – 03.11 00:00')).toBe(true);
+    expect(r.test('02.11 23:30–03.11 00:00')).toBe(true);
+    expect(r.test('02.11 23:30 – 00:00')).toBe(false);
+    expect(r.test('23:30 – 03.11 00:00')).toBe(false);
+    expect(r.test('23:30–00:00')).toBe(false);
+  });
+
+  // Возврат 5 (minor): точка в «02.11» — литерал, а не «любой символ».
+  test('точка в дате — литерал: «02x11 23:30 – 03x11 00:00» не подходит', () => {
+    const r = rx({ startsAt: '2026-11-02T20:30:00Z', endsAt: '2026-11-02T21:00:00Z' });
+    expect(r.test('02x11 23:30 – 03x11 00:00')).toBe(false);
+    expect(r.test('02.11 23:30 – 03x11 00:00')).toBe(false);
+    expect(r.test('02.11 23:30 – 03.11 00:00')).toBe(true);
+  });
+});
+
 test.describe('S2-20 — машина временного водителя, журни на стенде @stand', () => {
   test.skip(({ harness }) => harness.mode !== 'stand', 'режим stand');
 
@@ -251,7 +283,8 @@ test.describe('S2-20 — машина временного водителя, ж�
     test.setTimeout(300_000);
     await realClock(page);
     const d = await dayStand({ browser, harness }, session, undo, testInfo.project.name);
-    const win = `${hhmm(d.trip.plannedWindow.startsAt)}–${hhmm(d.trip.plannedWindow.endsAt)}`;
+    // Окно через полночь экран пишет с датами: «02.11 23:30 – 03.11 00:00»; в пределах суток — «14:00–18:00».
+    const win = windowPattern(d.trip.plannedWindow);
 
     // 1a · логист «Юг Транс»: «Ставим нашу машину» Isuzu Elf и «Можно взять свою обычную» (по умолчанию).
     await requestTwo(d.owner, d.tenant, d.trip, d.code);
@@ -287,7 +320,7 @@ test.describe('S2-20 — машина временного водителя, ж�
     expect(before[1]).toMatch(new RegExp(`^\\d\\d:\\d\\d ${SEVER} одобрил водителя с машиной\\.$`));
     expect(before[2]).toMatch(
       new RegExp(
-        `^\\d\\d:\\d\\d Брони до выбора на .*${esc(win)}: ${esc(ELF.model)} и ${esc(SPRINTER.model)}\\.$`,
+        `^\\d\\d:\\d\\d Брони до выбора на .*${win}: ${esc(ELF.model)} и ${esc(SPRINTER.model)}\\.$`,
       ),
     );
     await expect(c).toContainText(

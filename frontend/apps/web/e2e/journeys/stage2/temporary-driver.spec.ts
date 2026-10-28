@@ -147,7 +147,7 @@ async function requestAndApprove(
   await owner.goto(`/t/${tenant}/pool?trip=${trip.id}`);
   await expect(J.h1(owner, 'Ресурсный пул')).toBeVisible({ timeout: 15_000 });
   const card = driverCard(owner, code);
-  await expect(card).toContainText('Кат. B · Север Логистик');
+  await expect(card).toContainText('Кат. B · Север Логистик', J.SERVER);
   await card.getByRole('button', { name: `Запросить на рейс ${trip.number}` }).click();
   const dlg = owner.getByRole('dialog');
   await expect(dlg).toContainText(`${code} · Север Логистик`);
@@ -260,13 +260,9 @@ async function poolClean(owner: Page, tenant: string, driver: string): Promise<v
   ).body as { items: { id: string; status: string; driverMemberId: string }[] };
   for (const x of list.items.filter((t) => t.driverMemberId === driver)) {
     const path = `${base}/driver-transfer-requests/${x.id}`;
-    const cur = J.expectOk(await call(owner, 'GET', path), 'getDriverTransfer');
-    await call(owner, 'POST', `${path}/decision`, {
-      body: {
-        decision: x.status === 'approved' ? 'revoke' : 'reject',
-        comment: 'W2.32: уборка стенд-e2e',
-      },
-      ifMatch: cur.headers.etag ?? '',
+    await cleanStep(owner, path, `${path}/decision`, {
+      decision: x.status === 'approved' ? 'revoke' : 'reject',
+      comment: 'W2.32: уборка стенд-e2e',
     });
   }
   const pubs = J.expectOk(
@@ -275,12 +271,38 @@ async function poolClean(owner: Page, tenant: string, driver: string): Promise<v
   ).body as { items: { id: string; state: string; driverMemberId: string }[] };
   for (const p of pubs.items.filter((x) => x.driverMemberId === driver && x.state === 'active')) {
     const path = `${base}/driver-pool/publications/${p.id}`;
-    const cur = J.expectOk(await call(owner, 'GET', path), 'getDriverPoolPublication');
-    await call(owner, 'POST', `${path}/withdrawal`, {
-      body: { comment: 'W2.32: уборка стенд-e2e' },
-      ifMatch: cur.headers.etag ?? '',
-    });
+    await cleanStep(owner, path, `${path}/withdrawal`, { comment: 'W2.32: уборка стенд-e2e' });
   }
+  // Уборка идемпотентна и проверяется: оставшийся `approved` перевод исключает водителя из каталога молча (fleet/pool/catalog.go).
+  const rest = J.expectOk(
+    await call(
+      owner,
+      'GET',
+      `${base}/driver-transfer-requests?status=requested&status=approved&limit=200`,
+    ),
+    'listDriverTransfers',
+  ).body as { items: { id: string; driverMemberId: string }[] };
+  expect(
+    rest.items.filter((t) => t.driverMemberId === driver),
+    'после уборки пула нет открытых и одобренных переводов водителя',
+  ).toEqual([]);
+}
+
+/**
+ * Один шаг уборки: ETag читается заново на каждой попытке (ревизия перевода «рассчитана по часам» — `CheckRevision(ifMatch,
+ * Settle(x, now).Revision)`: на границе окна GET и POST видят разные ревизии → 412). 200 и 409 («уже рассмотрен»,
+ * «снята») — норма, 412 — повтор, любой другой статус — сразу ошибка уборки; в ошибке статус и тело каждой попытки (503 стенда не маскируется повторами).
+ */
+async function cleanStep(owner: Page, path: string, url: string, body: object): Promise<void> {
+  const seen: string[] = [];
+  for (let attempt = 0; attempt < 3; attempt++) {
+    const cur = J.expectOk(await call(owner, 'GET', path), 'уборка: чтение');
+    const r = await call(owner, 'POST', url, { body, ifMatch: cur.headers.etag ?? '' });
+    if (r.status === 200 || r.status === 409) return;
+    seen.push(`${String(r.status)} ${JSON.stringify(r.body)}`);
+    if (r.status !== 412) break;
+  }
+  throw new Error(`уборка пула: ${url} — ${seen.join('; ')}`);
 }
 
 /** Ждать момента `at` (мс) с запасом `pad` (часы стенда настоящие). */
@@ -443,7 +465,7 @@ async function departOnScreen(
 ): Promise<void> {
   await driver.goto(`/t/${tenant}/today`);
   await expect(J.h1(driver, 'Моя смена')).toBeVisible({ timeout: 15_000 });
-  await expect(driver.getByText(`${trip.number} · ${trip.title}`)).toBeVisible();
+  await expect(driver.getByText(`${trip.number} · ${trip.title}`)).toBeVisible(J.SERVER);
   await expect(J.h2(driver, 'Машина на сегодня')).toBeVisible(J.SERVER);
   await expect(driver.getByRole('button', { name: 'Подтвердить бронь' })).toHaveCount(0);
   await offerCard(driver, ELF).getByRole('button', { name: 'Начать осмотр' }).click();
@@ -752,5 +774,61 @@ test.describe('выход этапа 2 — AC-06: сдача временног�
     await J.returnOnScreen(o.driver, o.tenant, 'stand', o.file, Number(o.elf.odometerKm) + 60);
     expect((await plan(o.owner, o.tenant, o.trip.id)).body).toMatchObject({ state: 'submitted' });
     await acceptedHidden(o);
+  });
+});
+
+/** Ответы по очереди: каждый `call` (page.evaluate) отдаёт следующий; считает обращения. */
+function fakeOwner(statuses: number[], etag = '"r1"') {
+  const calls: string[] = [];
+  let post = 0;
+  const owner = {
+    evaluate: (_fn: unknown, arg: { method: string }) => {
+      calls.push(arg.method);
+      if (arg.method === 'GET')
+        return Promise.resolve({ status: 200, headers: { etag }, body: {} });
+      const n = post++;
+      const status = statuses[Math.min(n, statuses.length - 1)] ?? 0;
+      return Promise.resolve({
+        status,
+        headers: {},
+        body: { code: `fake_${String(status)}`, attempt: n + 1 },
+      });
+    },
+  } as unknown as Page;
+  return { owner, calls };
+}
+
+test.describe('уборка пула — cleanStep (замечание ревью W2.95) @mock', () => {
+  test.skip(({ harness }) => harness.mode !== 'mock', 'чистая логика повторов, без стенда');
+
+  test('412 повторяется с новым чтением ETag, затем 200 — норма', async () => {
+    const { owner, calls } = fakeOwner([412, 412, 200]);
+    await cleanStep(owner, '/p', '/p/decision', {});
+    expect(calls).toEqual(['GET', 'POST', 'GET', 'POST', 'GET', 'POST']);
+  });
+
+  test('409 — норма без повтора', async () => {
+    const { owner, calls } = fakeOwner([409]);
+    await cleanStep(owner, '/p', '/p/decision', {});
+    expect(calls).toEqual(['GET', 'POST']);
+  });
+
+  test('503 не повторяется молча: сразу ошибка с телом ответа', async () => {
+    const { owner, calls } = fakeOwner([503, 200]);
+    await expect(cleanStep(owner, '/p', '/p/decision', {})).rejects.toThrow(/503.*fake_503/s);
+    expect(calls).toEqual(['GET', 'POST']);
+  });
+
+  test('три 412 подряд — ошибка с телом ответа', async () => {
+    const { owner, calls } = fakeOwner([412, 412, 412]);
+    await expect(cleanStep(owner, '/p', '/p/decision', {})).rejects.toThrow(/412.*fake_412/s);
+    expect(calls).toHaveLength(6);
+  });
+
+  test('три 412 подряд — в ошибке тела всех попыток, не только последней', async () => {
+    const { owner } = fakeOwner([412, 412, 412]);
+    await expect(cleanStep(owner, '/p', '/p/decision', {})).rejects.toThrow(
+      /"attempt":1.*"attempt":2.*"attempt":3/s,
+    );
   });
 });

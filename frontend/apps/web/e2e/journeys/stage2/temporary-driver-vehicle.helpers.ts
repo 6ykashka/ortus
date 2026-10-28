@@ -37,7 +37,22 @@ export const hhmm = (at: string | number): string =>
   new Intl.DateTimeFormat('ru-RU', { hour: '2-digit', minute: '2-digit', timeZone: MSK }).format(
     new Date(at),
   );
+const dayMsk = (at: string | number): string =>
+  new Intl.DateTimeFormat('ru-RU', { day: '2-digit', month: '2-digit', timeZone: MSK }).format(
+    new Date(at),
+  );
 export const esc = (s: string): string => s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+/**
+ * Регулярное выражение окна рейса, как его пишет экран: в пределах суток — «14:00–18:00», через полночь — обе
+ * даты: «02.11 23:30 – 03.11 00:00». Дата только на одной границе не подходит.
+ */
+export const windowPattern = (w: { startsAt: string; endsAt: string }): string => {
+  const span = (a: string, b: string): string => `${a} ?– ?${b}`;
+  const [s, e] = [hhmm(w.startsAt), hhmm(w.endsAt)];
+  return dayMsk(w.startsAt) === dayMsk(w.endsAt)
+    ? span(s, e)
+    : span(`${esc(dayMsk(w.startsAt))} ${s}`, `${esc(dayMsk(w.endsAt))} ${e}`);
+};
 /** `[status, code]` ответа Problem. */
 export const statusCode = (r: Reply): [number, string | undefined] => [
   r.status,
