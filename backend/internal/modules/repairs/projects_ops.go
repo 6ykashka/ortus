@@ -635,9 +635,9 @@ func (r *req) checkAct(ctx context.Context, project, act uuid.UUID) error {
 		return invalid("actDocumentId", textActMissing, "unknown")
 	}
 	if err != nil {
-		return store("act", err)
+		return store("handover act", err)
 	}
-	if kind != "handover_act" || (state != "signed" && state != "paid") {
+	if kind != docHandOver || (state != stateSigned && state != statePaid) {
 		return conflict(reasonActNotSigned, textActNotSigned)
 	}
 	return nil

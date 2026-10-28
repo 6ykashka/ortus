@@ -12,6 +12,7 @@ import (
 	"unicode/utf8"
 
 	"github.com/google/uuid"
+	"github.com/jackc/pgx/v5"
 
 	rapi "github.com/ortus/ortus-crm/backend/internal/api/repairs"
 	"github.com/ortus/ortus-crm/backend/internal/platform/events"
@@ -48,9 +49,9 @@ func (s *Service) Schedule(ctx context.Context, tc tenantctx.TenantContext, id u
 	return out, err
 }
 
-// writable reads the schedule of an object for a command: the lock of the object, the right to move, the revision and
+// schedWritable reads the schedule of an object for a command: the lock of the object, the right to move, the revision and
 // the object that is not handed over.
-func (r *req) writable(ctx context.Context, id uuid.UUID, action, text, ifMatch string) (*sched, error) {
+func (r *req) schedWritable(ctx context.Context, id uuid.UUID, action, text, ifMatch string) (*sched, error) {
 	sc, err := r.scheduleOf(ctx, id, action, text, true)
 	if err != nil {
 		return nil, err
@@ -275,8 +276,8 @@ func (r *req) journal(ctx context.Context, project uuid.UUID, text string, reaso
 	return store("journal", err)
 }
 
-// bump moves the revision of the schedule on.
-func (r *req) bump(ctx context.Context, project uuid.UUID) error {
+// bumpProjectRev moves the revision of the schedule on.
+func (r *req) bumpProjectRev(ctx context.Context, project uuid.UUID) error {
 	_, err := r.tx.Exec(ctx, `update repairs.projects set schedule_revision = schedule_revision + 1, updated_at = $2 where id = $1`, project, r.now)
 	return store("schedule revision", err)
 }
@@ -292,7 +293,7 @@ func (r *req) publishProject(ctx context.Context, typ string, project uuid.UUID,
 func (s *Service) ApplySchedule(ctx context.Context, tc tenantctx.TenantContext, id uuid.UUID, ifMatch string, b rapi.ScheduleChangeApply) (rapi.Schedule, error) {
 	var out rapi.Schedule
 	err := s.run(ctx, tc, true, func(r *req) error {
-		sc, err := r.writable(ctx, id, actSchedShift, textNeedSchedShift, ifMatch)
+		sc, err := r.schedWritable(ctx, id, actSchedShift, textNeedSchedShift, ifMatch)
 		if err != nil {
 			return err
 		}
@@ -343,7 +344,7 @@ func (r *req) saveMove(ctx context.Context, sc *sched, pl *plan, b rapi.Schedule
 	if err := r.journal(ctx, sc.p.id, text, &reason, map[string]any{"changes": b.Changes}, notify); err != nil {
 		return err
 	}
-	if err := r.bump(ctx, sc.p.id); err != nil {
+	if err := r.bumpProjectRev(ctx, sc.p.id); err != nil {
 		return err
 	}
 	if err := r.event(ctx, sc.p.id, evScheduleChanged, "перенёс этапы графика: "+reasonLabels[b.Reason]); err != nil {
@@ -372,7 +373,7 @@ func movePayload(pl *plan, reason rapi.RepairScheduleReason, notify []string, be
 func (s *Service) SetStageExecutor(ctx context.Context, tc tenantctx.TenantContext, project, stage uuid.UUID, ifMatch string, b rapi.StageExecutorSet) (rapi.ScheduleStage, error) {
 	var out rapi.ScheduleStage
 	err := s.run(ctx, tc, true, func(r *req) error {
-		sc, err := r.writable(ctx, project, actSchedShift, textNeedSchedShift, ifMatch)
+		sc, err := r.schedWritable(ctx, project, actSchedShift, textNeedSchedShift, ifMatch)
 		if err != nil {
 			return err
 		}
@@ -418,7 +419,7 @@ func (r *req) setExecutor(ctx context.Context, sc *sched, st stageRow, b rapi.St
 	if err := r.journal(ctx, sc.p.id, text, nil, map[string]any{"stageId": st.id}, notified); err != nil {
 		return err
 	}
-	if err := r.bump(ctx, sc.p.id); err != nil {
+	if err := r.bumpProjectRev(ctx, sc.p.id); err != nil {
 		return err
 	}
 	return r.publishProject(ctx, eventScheduleChanged, sc.p.id, map[string]any{"kind": "executor", "stageIds": []uuid.UUID{st.id}, "notify": notified})
@@ -460,7 +461,7 @@ func (r *req) executorOf(ctx context.Context, b rapi.StageExecutorSet) (*uuid.UU
 func (s *Service) CreateBaseline(ctx context.Context, tc tenantctx.TenantContext, id uuid.UUID, ifMatch string, agreementNo int) (rapi.Schedule, error) {
 	var out rapi.Schedule
 	err := s.run(ctx, tc, true, func(r *req) error {
-		sc, err := r.writable(ctx, id, actSchedBaseline, textNeedBaseline, ifMatch)
+		sc, err := r.schedWritable(ctx, id, actSchedBaseline, textNeedBaseline, ifMatch)
 		if err != nil {
 			return err
 		}
@@ -538,7 +539,7 @@ func (r *req) writeBaseline(ctx context.Context, sc *sched, f *forecast, agreeme
 	if err := r.journal(ctx, sc.p.id, text, nil, map[string]any{"agreementNo": agreementNo, "version": version}, []string{}); err != nil {
 		return err
 	}
-	if err := r.bump(ctx, sc.p.id); err != nil {
+	if err := r.bumpProjectRev(ctx, sc.p.id); err != nil {
 		return err
 	}
 	if err := r.event(ctx, sc.p.id, evScheduleBaseline, "зафиксировал базовый план графика: допсоглашение № "+strconv.Itoa(agreementNo)); err != nil {
@@ -579,7 +580,7 @@ const (
 )
 
 // CreateSchedule answers createScheduleFromEstimate: the stages from the sections of an approved version of the
-// estimate by the technology of the template of the object.
+// schedEstimate by the technology of the template of the object.
 func (s *Service) CreateSchedule(ctx context.Context, tc tenantctx.TenantContext, id uuid.UUID, version int) (rapi.Schedule, error) {
 	var out rapi.Schedule
 	err := s.run(ctx, tc, true, func(r *req) error {
@@ -590,14 +591,14 @@ func (s *Service) CreateSchedule(ctx context.Context, tc tenantctx.TenantContext
 		if sc.p.status == statusHandedOver {
 			return conflict(reasonHandedOver, textHandedOverSched)
 		}
-		est, err := r.estimate(ctx, id, version)
+		est, err := r.schedEstimate(ctx, id, version)
 		if err != nil {
 			return err
 		}
 		if len(sc.stages) > 0 {
 			return &failure{code: codeTransition, detail: textScheduleExists}
 		}
-		sections, err := r.sections(ctx, est.id)
+		sections, err := r.schedSections(ctx, est.id)
 		if err != nil {
 			return err
 		}
@@ -614,7 +615,7 @@ func (s *Service) CreateSchedule(ctx context.Context, tc tenantctx.TenantContext
 		if err := r.journal(ctx, id, fmt.Sprintf("График собран по версии %d сметы и технологии шаблона", version), nil, map[string]any{"estimateVersion": version}, []string{}); err != nil {
 			return err
 		}
-		if err := r.bump(ctx, id); err != nil {
+		if err := r.bumpProjectRev(ctx, id); err != nil {
 			return err
 		}
 		if err := r.event(ctx, id, evScheduleBuilt, fmt.Sprintf("собрал график по смете v%d", version)); err != nil {
@@ -630,7 +631,7 @@ func (s *Service) CreateSchedule(ctx context.Context, tc tenantctx.TenantContext
 	return out, err
 }
 
-func (r *req) estimate(ctx context.Context, project uuid.UUID, version int) (estimateRow, error) {
+func (r *req) schedEstimate(ctx context.Context, project uuid.UUID, version int) (estimateRow, error) {
 	var e estimateRow
 	err := r.tx.QueryRow(ctx, `select id, state from repairs.estimates where project_id = $1 and version = $2`, project, version).Scan(&e.id, &e.state)
 	switch {
@@ -644,24 +645,19 @@ func (r *req) estimate(ctx context.Context, project uuid.UUID, version int) (est
 	return e, nil
 }
 
-// sections reads the sections of an estimate with the volume of their works (the lines of the kind «work»).
-func (r *req) sections(ctx context.Context, estimate uuid.UUID) ([]sectionRow, error) {
+// schedSections reads the sections of an estimate with the volume of their works (the lines of the kind «work»).
+func (r *req) schedSections(ctx context.Context, estimate uuid.UUID) ([]sectionRow, error) {
 	rows, err := r.tx.Query(ctx, `select s.id, s.name, coalesce(sum(l.quantity) filter (where l.kind = 'work'), 0)::float8
 		from repairs.estimate_sections s left join repairs.estimate_lines l on l.section_id = s.id
 		where s.estimate_id = $1 group by s.id, s.name, s.sort order by s.sort, s.id`, estimate)
 	if err != nil {
 		return nil, store("estimate sections", err)
 	}
-	defer rows.Close()
-	var out []sectionRow
-	for rows.Next() {
+	out, err := pgx.CollectRows(rows, func(row pgx.CollectableRow) (sectionRow, error) {
 		var sec sectionRow
-		if err := rows.Scan(&sec.id, &sec.name, &sec.volume); err != nil {
-			return nil, store("estimate sections", err)
-		}
-		out = append(out, sec)
-	}
-	return out, store("estimate sections", rows.Err())
+		return sec, row.Scan(&sec.id, &sec.name, &sec.volume)
+	})
+	return out, store("estimate sections", err)
 }
 
 // technology is the sequence of the stages: the technology of the template of the object, else one stage per section.

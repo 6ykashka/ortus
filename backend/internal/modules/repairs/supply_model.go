@@ -72,9 +72,6 @@ const (
 	purchaseNumberPrefix = "ЗК-"
 )
 
-// micro is a quantity in millionths: the unit of the balances of the module «Склад» (numeric(18, 6)).
-type micro int64
-
 func (m milli) micro() micro { return micro(m) * 1000 }
 
 // mulDiv is a×b/d rounded half up (a, b ≥ 0, d > 0) without an overflow of the product.

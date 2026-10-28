@@ -291,7 +291,6 @@ endpoints:
   - op: listChangeOrders
     method: GET
     path: /api/v1/tenants/{tenantId}/repairs/projects/{projectId}/change-orders
-    pending: W6.12
     rows:
       - actor: anonymous
         params:
@@ -306,10 +305,20 @@ endpoints:
         absent:
           - tenant:a
         note: чужая организация — как несуществующая (AC-02)
+      - actor: a.owner
+        params: { tenantId: tenant:a, projectId: repair_project:a.flat }
+        status: 200
+      - actor: a.repairs-foreman
+        params: { tenantId: tenant:a, projectId: repair_project:a.flat }
+        status: 200
+      - actor: a.repairs-foreman-two
+        params: { tenantId: tenant:a, projectId: repair_project:a.flat }
+        status: 404
+        absent: [repair_project:a.flat]
+        note: прораб чужого объекта — как несуществующий объект (AC-01)
   - op: proposeChangeOrder
     method: POST
     path: /api/v1/tenants/{tenantId}/repairs/projects/{projectId}/change-orders
-    pending: W6.12
     rows:
       - actor: anonymous
         params:
@@ -326,10 +335,26 @@ endpoints:
           - tenant:a
         body: '{"title":"x","quantity":"1","unit":"hour","photoFileIds":["00000000-0000-4000-8000-000000000000"]}'
         note: чужая организация — как несуществующая (AC-02)
+      - actor: a.repairs-foreman
+        params: { tenantId: tenant:a, projectId: repair_project:a.flat }
+        status: 201
+        body: '{"title":"Доп. розетка","quantity":"2","unit":"piece","photoFileIds":["{{file:a.msk1}}"]}'
+        note: прораб своего объекта предлагает допработу без цен
+      - actor: a.repairs-foreman-two
+        params: { tenantId: tenant:a, projectId: repair_project:a.flat }
+        status: 404
+        absent: [repair_project:a.flat]
+        note: прораб чужого объекта — как несуществующий объект (AC-01)
+        body: '{"title":"Доп. розетка","quantity":"2","unit":"piece","photoFileIds":["{{file:a.msk1}}"]}'
+      - actor: a.owner
+        params: { tenantId: tenant:a, projectId: repair_project:a.flat }
+        status: 403
+        code: forbidden_action
+        body: '{"title":"Доп. розетка","quantity":"2","unit":"piece","photoFileIds":["{{file:a.msk1}}"]}'
+        note: допработу предлагает только прораб объекта
   - op: rejectChangeOrder
     method: POST
     path: /api/v1/tenants/{tenantId}/repairs/change-orders/{changeOrderId}/reject
-    pending: W6.12
     rows:
       - actor: anonymous
         params:
@@ -349,7 +374,6 @@ endpoints:
   - op: getMeasurement
     method: GET
     path: /api/v1/tenants/{tenantId}/repairs/projects/{projectId}/measurement
-    pending: W6.12
     rows:
       - actor: anonymous
         params:
@@ -364,10 +388,20 @@ endpoints:
         absent:
           - tenant:a
         note: чужая организация — как несуществующая (AC-02)
+      - actor: a.owner
+        params: { tenantId: tenant:a, projectId: repair_project:a.flat }
+        status: 200
+      - actor: a.repairs-foreman
+        params: { tenantId: tenant:a, projectId: repair_project:a.flat }
+        status: 200
+      - actor: a.repairs-foreman-two
+        params: { tenantId: tenant:a, projectId: repair_project:a.flat }
+        status: 404
+        absent: [repair_project:a.flat]
+        note: прораб чужого объекта — как несуществующий объект (AC-01)
   - op: putMeasurement
     method: PUT
     path: /api/v1/tenants/{tenantId}/repairs/projects/{projectId}/measurement
-    pending: W6.12
     rows:
       - actor: anonymous
         params:
@@ -387,7 +421,6 @@ endpoints:
   - op: listEstimates
     method: GET
     path: /api/v1/tenants/{tenantId}/repairs/projects/{projectId}/estimates
-    pending: W6.12
     rows:
       - actor: anonymous
         params:
@@ -402,10 +435,22 @@ endpoints:
         absent:
           - tenant:a
         note: чужая организация — как несуществующая (AC-02)
+      - actor: a.owner
+        params: { tenantId: tenant:a, projectId: repair_project:a.flat }
+        status: 200
+      - actor: a.repairs-foreman
+        params: { tenantId: tenant:a, projectId: repair_project:a.flat }
+        status: 403
+        code: forbidden_action
+        note: прораб не видит цен и смет — нет repairs.finance.read
+      - actor: a.repairs-foreman-two
+        params: { tenantId: tenant:a, projectId: repair_project:a.flat }
+        status: 403
+        code: forbidden_action
+        note: у прораба нет repairs.finance.read ни в одной роли — шлюз отказывает до объекта, чужому как несуществующему (AC-01)
   - op: getEstimate
     method: GET
     path: /api/v1/tenants/{tenantId}/repairs/projects/{projectId}/estimates/{version}
-    pending: W6.12
     rows:
       - actor: anonymous
         params:
@@ -425,7 +470,6 @@ endpoints:
   - op: createEstimateFromTemplate
     method: POST
     path: /api/v1/tenants/{tenantId}/repairs/projects/{projectId}/estimate-drafts
-    pending: W6.12
     rows:
       - actor: anonymous
         params:
@@ -442,10 +486,21 @@ endpoints:
           - tenant:a
         body: '{"templateId":"00000000-0000-4000-8000-000000000000"}'
         note: чужая организация — как несуществующая (AC-02)
+      - actor: a.repairs-foreman
+        params: { tenantId: tenant:a, projectId: repair_project:a.flat }
+        status: 403
+        code: forbidden_action
+        note: прораб не видит цен и смет — нет repairs.finance.read
+        body: '{"templateId":"10000000-0000-4000-8000-000000000001"}'
+      - actor: a.repairs-foreman-two
+        params: { tenantId: tenant:a, projectId: repair_project:a.flat }
+        status: 403
+        code: forbidden_action
+        note: у прораба нет repairs.finance.read ни в одной роли — шлюз отказывает до объекта, чужому как несуществующему (AC-01)
+        body: '{"templateId":"10000000-0000-4000-8000-000000000001"}'
   - op: createEstimateRevision
     method: POST
     path: /api/v1/tenants/{tenantId}/repairs/projects/{projectId}/estimates
-    pending: W6.12
     rows:
       - actor: anonymous
         params:
@@ -462,10 +517,21 @@ endpoints:
           - tenant:a
         body: '{"kind":"revision"}'
         note: чужая организация — как несуществующая (AC-02)
+      - actor: a.repairs-foreman
+        params: { tenantId: tenant:a, projectId: repair_project:a.flat }
+        status: 403
+        code: forbidden_action
+        note: прораб не видит цен и смет — нет repairs.finance.read
+        body: '{"kind":"revision"}'
+      - actor: a.repairs-foreman-two
+        params: { tenantId: tenant:a, projectId: repair_project:a.flat }
+        status: 403
+        code: forbidden_action
+        note: у прораба нет repairs.finance.read ни в одной роли — шлюз отказывает до объекта, чужому как несуществующему (AC-01)
+        body: '{"kind":"revision"}'
   - op: updateEstimateDraft
     method: PATCH
     path: /api/v1/tenants/{tenantId}/repairs/projects/{projectId}/estimates/{version}
-    pending: W6.12
     rows:
       - actor: anonymous
         params:
@@ -487,7 +553,6 @@ endpoints:
   - op: sendEstimate
     method: POST
     path: /api/v1/tenants/{tenantId}/repairs/projects/{projectId}/estimates/{version}/send
-    pending: W6.12
     rows:
       - actor: anonymous
         params:
@@ -507,7 +572,6 @@ endpoints:
   - op: recallEstimate
     method: POST
     path: /api/v1/tenants/{tenantId}/repairs/projects/{projectId}/estimates/{version}/recall
-    pending: W6.12
     rows:
       - actor: anonymous
         params:
@@ -527,7 +591,6 @@ endpoints:
   - op: deleteEstimateDraft
     method: DELETE
     path: /api/v1/tenants/{tenantId}/repairs/projects/{projectId}/estimates/{version}
-    pending: W6.12
     rows:
       - actor: anonymous
         params:
@@ -547,7 +610,6 @@ endpoints:
   - op: diffEstimates
     method: GET
     path: /api/v1/tenants/{tenantId}/repairs/projects/{projectId}/estimates/{version}/diff
-    pending: W6.12
     rows:
       - actor: anonymous
         params:
@@ -567,7 +629,6 @@ endpoints:
   - op: saveProjectAsTemplate
     method: POST
     path: /api/v1/tenants/{tenantId}/repairs/projects/{projectId}/save-as-template
-    pending: W6.12
     rows:
       - actor: anonymous
         params:
@@ -584,10 +645,21 @@ endpoints:
           - tenant:a
         body: "{}"
         note: чужая организация — как несуществующая (AC-02)
+      - actor: a.repairs-foreman
+        params: { tenantId: tenant:a, projectId: repair_project:a.flat }
+        status: 403
+        code: forbidden_action
+        body: "{}"
+        note: шаблоны ведёт только repairs.catalog.manage
+      - actor: a.owner
+        params: { tenantId: tenant:a, projectId: repair_project:a.flat }
+        status: 409
+        code: invalid_transition
+        body: "{}"
+        note: у объекта нет согласованной сметы — шаблон не из чего собрать
   - op: listPriceItems
     method: GET
     path: /api/v1/tenants/{tenantId}/repairs/price-items
-    pending: W6.12
     rows:
       - actor: anonymous
         params:
@@ -600,10 +672,17 @@ endpoints:
         absent:
           - tenant:a
         note: чужая организация — как несуществующая (AC-02)
+      - actor: a.owner
+        params: { tenantId: tenant:a }
+        status: 200
+      - actor: a.repairs-foreman
+        params: { tenantId: tenant:a }
+        status: 403
+        code: forbidden_action
+        note: справочник — для тех, кто ведёт каталог или смету
   - op: createPriceItem
     method: POST
     path: /api/v1/tenants/{tenantId}/repairs/price-items
-    pending: W6.12
     rows:
       - actor: anonymous
         params:
@@ -618,10 +697,18 @@ endpoints:
           - tenant:a
         body: '{"section":"x","name":"x","unit":"hour","kind":"work","price":{"amountMinor":1,"currency":"RUB"}}'
         note: чужая организация — как несуществующая (AC-02)
+      - actor: a.owner
+        params: { tenantId: tenant:a }
+        status: 201
+        body: '{"section":"Стены","name":"Изоляция: позиция","unit":"m2","kind":"work","price":{"amountMinor":50000,"currency":"RUB"}}'
+      - actor: a.repairs-foreman
+        params: { tenantId: tenant:a }
+        status: 403
+        code: forbidden_action
+        body: '{"section":"Стены","name":"Изоляция: чужая позиция","unit":"m2","kind":"work","price":{"amountMinor":50000,"currency":"RUB"}}'
   - op: updatePriceItem
     method: PATCH
     path: /api/v1/tenants/{tenantId}/repairs/price-items/{priceItemId}
-    pending: W6.12
     rows:
       - actor: anonymous
         params:
@@ -641,7 +728,6 @@ endpoints:
   - op: listTemplates
     method: GET
     path: /api/v1/tenants/{tenantId}/repairs/templates
-    pending: W6.12
     rows:
       - actor: anonymous
         params:
@@ -654,10 +740,16 @@ endpoints:
         absent:
           - tenant:a
         note: чужая организация — как несуществующая (AC-02)
+      - actor: a.owner
+        params: { tenantId: tenant:a }
+        status: 200
+      - actor: a.repairs-foreman
+        params: { tenantId: tenant:a }
+        status: 403
+        code: forbidden_action
   - op: getTemplate
     method: GET
     path: /api/v1/tenants/{tenantId}/repairs/templates/{templateId}
-    pending: W6.12
     rows:
       - actor: anonymous
         params:
@@ -675,7 +767,6 @@ endpoints:
   - op: updateTemplate
     method: PATCH
     path: /api/v1/tenants/{tenantId}/repairs/templates/{templateId}
-    pending: W6.12
     rows:
       - actor: anonymous
         params:
@@ -695,7 +786,6 @@ endpoints:
   - op: copyTemplate
     method: POST
     path: /api/v1/tenants/{tenantId}/repairs/templates/{templateId}/copy
-    pending: W6.12
     rows:
       - actor: anonymous
         params:
@@ -891,7 +981,6 @@ endpoints:
   - op: requestDocumentSignature
     method: POST
     path: /api/v1/tenants/{tenantId}/repairs/documents/{documentId}/sign-requests
-    pending: W6.12
     rows:
       - actor: anonymous
         params:

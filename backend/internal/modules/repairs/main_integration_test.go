@@ -9,6 +9,7 @@ import (
 	"os"
 	"slices"
 	"strconv"
+	"sync"
 	"sync/atomic"
 	"testing"
 	"time"
@@ -84,9 +85,9 @@ func runMain(m *testing.M) int {
 }
 
 var (
-	roleOfficeKeys = []string{actRead, actManage, actLogsRead, actReview, actFinance, actEstimates, actHandOver}
+	roleOfficeKeys = []string{actRead, actManage, actLogsRead, actReview, actFinance, actEstimates, actHandOver, actCatalog, actMeasure, actDocSend}
 	deskActions    = []string{actRead, actManage, actLogsRead, actReview}
-	foremanKeys    = []string{actRead, actLogsRead, actSubmit}
+	foremanKeys    = []string{actRead, actLogsRead, actSubmit, actChanges, actMeasure}
 	readerActions  = []string{actRead}
 )
 
@@ -166,7 +167,43 @@ var ticks atomic.Int64
 // clock is the clock of the suites moving a millisecond a call: the requests of a test follow each other.
 func clock() time.Time { return harness.Now().Add(time.Duration(ticks.Add(1)) * time.Millisecond) }
 
-func service() *Service { return &Service{Pools: pools, Now: clock} }
+// inbox is the code delivery port of the suites (D-31): the codes of the signatures by the phone they went to.
+var inbox = &codeInbox{}
+
+type codeInbox struct {
+	mu    sync.Mutex
+	codes map[string][]string
+}
+
+func (c *codeInbox) SendSignCode(_ context.Context, phone, code string, _ time.Time) error {
+	c.mu.Lock()
+	defer c.mu.Unlock()
+	if c.codes == nil {
+		c.codes = map[string][]string{}
+	}
+	c.codes[phone] = append(c.codes[phone], code)
+	return nil
+}
+
+// last is the latest code sent to phone ("" — none) and sent is how many went.
+func (c *codeInbox) last(phone string) string {
+	c.mu.Lock()
+	defer c.mu.Unlock()
+	if all := c.codes[phone]; len(all) > 0 {
+		return all[len(all)-1]
+	}
+	return ""
+}
+
+func (c *codeInbox) sent(phone string) int {
+	c.mu.Lock()
+	defer c.mu.Unlock()
+	return len(c.codes[phone])
+}
+
+func service() *Service {
+	return &Service{Pools: pools, Now: clock, Codes: inbox, SignKey: []byte("key-of-the-suites")}
+}
 
 // as resolves the tenant context of actor in tenant A, as the gateway does.
 func as(t *testing.T, actor string) tenantctx.TenantContext {

@@ -126,7 +126,7 @@ func readinessOf(plan, fact, pending milli, acts, signed int) rapi.RepairReadine
 
 // unitsRu are the short names of the units in the texts of the queue of decisions (the prototype).
 var unitsRu = map[string]string{
-	"hour": "ч", "m2": "м²", "m3": "м³", "m": "м", "piece": "шт", "set": "компл", "trip": "рейс", "mesh": "меш", "liter": "л",
+	unitHour: "ч", unitM2: "м²", unitM3: "м³", unitM: "м", unitPiece: "шт", unitSet: "компл", unitTrip: "рейс", unitMesh: "меш", unitLiter: "л",
 }
 
 func unitRu(u string) string {

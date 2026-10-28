@@ -96,8 +96,6 @@ func w613Ask(t *testing.T, s supply, project, qty string) (supplyOf, http.Header
 	return r, h
 }
 
-func ifMatch(h http.Header) map[string]string { return map[string]string{"If-Match": h.Get("ETag")} }
-
 func w613Path(t *testing.T, s supply) {
 	t.Helper()
 	req, h := w613Ask(t, s, "repair_project:a.flat", "4")

@@ -517,7 +517,7 @@ describe('контракт 0.12.0-stage6 (W6.00): дельты, экраны, м
     const protectedOps = OPERATIONS.filter((o) => !o.public).map((o) => o.id);
     const missing = protectedOps.filter((id) => !listed.has(id) && !LEGACY.includes(id));
     assert.ok(missing.length === 0, `нет строк изоляции: ${missing.join(', ')}`);
-    // W6.11: у 13 операций шагов 6.1–6.2 хендлеры есть (pending снят); у остальных pending — WS-владелец (W6.12–W6.15).
+    // W6.11 и W6.12: у 36 операций шагов 6.1–6.3 хендлеры есть (pending снят); у остальных pending — WS-владелец (W6.13–W6.15).
     const served = new Set([
       'listRepairProjects',
       'createRepairProject',
@@ -551,10 +551,34 @@ describe('контракт 0.12.0-stage6 (W6.00): дельты, экраны, м
       'applyScheduleChange',
       'setScheduleStageExecutor',
       'createScheduleBaseline',
+      // W6.12: замер и смета, допработы, расценки и шаблоны, код подписи (шаг 6.3).
+      'listChangeOrders',
+      'proposeChangeOrder',
+      'rejectChangeOrder',
+      'getMeasurement',
+      'putMeasurement',
+      'listEstimates',
+      'getEstimate',
+      'createEstimateFromTemplate',
+      'createEstimateRevision',
+      'updateEstimateDraft',
+      'sendEstimate',
+      'recallEstimate',
+      'deleteEstimateDraft',
+      'diffEstimates',
+      'saveProjectAsTemplate',
+      'listPriceItems',
+      'createPriceItem',
+      'updatePriceItem',
+      'listTemplates',
+      'getTemplate',
+      'updateTemplate',
+      'copyTemplate',
+      'requestDocumentSignature',
     ]);
     for (const e of rows.endpoints) {
       if (served.has(e.op)) assert.equal(e.pending, undefined, e.op);
-      else assert.match(e.pending, /^W6\.1[2-5]$/, e.op);
+      else assert.match(e.pending, /^W6\.1[3-5]$/, e.op);
     }
   });
 });

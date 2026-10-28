@@ -126,6 +126,9 @@ func TestListVisibilityAndFilters(t *testing.T) { //nolint:gocyclo // one scenar
 	_ = w
 
 	names := func(tc tenantctx.TenantContext, q ListQuery) []string {
+		if q.Q == nil { // the shared test database holds objects of other tests: look at this test's own by the prefix
+			q.Q = &prefix
+		}
 		page := must(s.Projects(ctx, tc, q)).of(t)
 		var out []string
 		for _, n := range ids(page.Items) {

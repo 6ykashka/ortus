@@ -505,7 +505,7 @@ func templateSeed(t *testing.T, state string) (projectID uuid.UUID) {
 			t.Fatal(err)
 		}
 	}
-	exec(`insert into repairs.templates (id, name, kind, source) values ($1, 'Капитальный ремонт квартиры', 'Квартира', 'ortus')`, tpl)
+	exec(`insert into repairs.templates (id, name, kind, source) values ($1, 'Капитальный ремонт квартиры', 'Квартира', 'own')`, tpl)
 	for i, ts := range []struct {
 		name  string
 		rate  any

@@ -68,7 +68,7 @@ func decisions(p *projectRow, f *facts, v viewer) []rapi.RepairDecision {
 	}
 	if v.finance {
 		for _, e := range f.estimates[p.id] {
-			if e.state == "sent" {
+			if e.state == stateSent {
 				out = append(out, decision("estimate_with_client", fmt.Sprintf("Смета v%d: у заказчика", e.version), "Открыть смету", rapi.RepairDecisionTabEstimate, nil))
 				break
 			}
@@ -106,7 +106,7 @@ func draftDecisions(est []estFact, v viewer) []rapi.RepairDecision {
 		open("estimate_missing", "Смета не собрана", "Собрать смету")
 	case est[len(est)-1].state == statusDraft:
 		open("estimate_draft", "Черновик сметы не отправлен заказчику", "Открыть смету")
-	case est[len(est)-1].state == "sent":
+	case est[len(est)-1].state == stateSent:
 		open("estimate_sent", "Смета у заказчика на согласовании", "Открыть смету")
 	case est[len(est)-1].state == "approved":
 		open("estimate_approved", "Смета согласована: следующий шаг — договор", "Открыть смету")
@@ -141,7 +141,7 @@ func documentDecisions(docs []docFact) []rapi.RepairDecision {
 		switch {
 		case d.state == "sms" || d.state == "wait":
 			out = append(out, decision("document_wait_signature", d.title+": ждёт подписи заказчика", "Открыть документы", rapi.RepairDecisionTabDocs, &ref))
-		case d.state == statusDraft && d.kind == "act":
+		case d.state == statusDraft && d.kind == docAct:
 			out = append(out, decision("document_ready", d.title+": готов к отправке", "Открыть документы", rapi.RepairDecisionTabDocs, &ref))
 		}
 	}
@@ -158,7 +158,7 @@ func changeDecisions(changes []changeFact) []rapi.RepairDecision {
 			out = append(out, decision("change_order_new", fmt.Sprintf("Допработа ДР-%d ждёт оценки: %s", c.seq, c.title), "Оценить в смете", rapi.RepairDecisionTabEstimate, &ref))
 		case "priced":
 			out = append(out, decision("change_order_priced", fmt.Sprintf("Допработа ДР-%d в черновике допсоглашения", c.seq), "Открыть смету", rapi.RepairDecisionTabEstimate, &ref))
-		case "sent":
+		case stateSent:
 			out = append(out, decision("change_order_sent", fmt.Sprintf("Допработа ДР-%d в допсоглашении у заказчика", c.seq), "Открыть смету", rapi.RepairDecisionTabEstimate, &ref))
 		}
 	}
@@ -184,9 +184,9 @@ func readiness(p *projectRow, f *facts) rapi.RepairReadiness {
 	}
 	acts, signed := 0, 0
 	for _, d := range f.docs[p.id] {
-		if d.kind == "act" {
+		if d.kind == docAct {
 			acts++
-			if d.state == "signed" || d.state == "paid" {
+			if d.state == stateSigned || d.state == statePaid {
 				signed++
 			}
 		}

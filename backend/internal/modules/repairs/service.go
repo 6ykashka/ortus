@@ -26,6 +26,11 @@ type Pools interface {
 type Service struct {
 	Pools Pools
 	Now   func() time.Time // the clock of the application (APP_FIXED_NOW outside prod); nil: time.Now
+
+	// Codes delivers the code of a signature by SMS to the phone of the client (D-31, W6.12); nil — a request for a
+	// signature is refused with dependency_unavailable. SignKey hashes the codes; empty — a key of the process.
+	Codes   CodeSender
+	SignKey []byte
 }
 
 func (s *Service) now() time.Time {

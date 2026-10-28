@@ -32,7 +32,7 @@ func TestRepairsImplementedFollowsServer(t *testing.T) {
 			t.Errorf("%s is not an operation of the tag Repairs", op)
 		}
 	}
-	if len(repairsImplemented) < 30 {
-		t.Errorf("W6.11, W6.13 and W6.14 serve 30 operations, %d listed", len(repairsImplemented))
+	if len(repairsImplemented) < 53 {
+		t.Errorf("W6.11-W6.14 serve 53 operations, %d listed", len(repairsImplemented))
 	}
 }
