@@ -495,7 +495,7 @@ test.describe('driver-outbox — стенд @stand', () => {
     const departure = Number(gazel.odometerKm) + 130;
     await app(`/t/${s.tenant}/today`, { persona: 'driver' });
     const file = await jpeg(page);
-    await expect(page.getByText(`${trip.number} · ${trip.title}`)).toBeVisible({ timeout: 15_000 });
+    await expect(page.getByText(`${trip.number} · ${trip.title}`)).toBeVisible({ timeout: 30_000 });
     await expect(h2(page, 'Выберите машину')).toBeVisible();
     await reserve(page);
     for (const side of SIDES) await shoot(page, slot(page, side), file, `${side}.jpg`);
@@ -510,6 +510,11 @@ test.describe('driver-outbox — стенд @stand', () => {
     await page.getByLabel('Категория').selectOption('wash');
     await page.getByLabel(/^Сумма, ₽/).fill('400');
     await shoot(page, page.getByRole('button', { name: /^Чек: / }), file, 'receipt.jpg');
+    // Чек сжимается асинхронно: до «На устройстве · ждёт связи» форма отвечает «Добавьте фото чека» и расход не
+    // сохраняет (W2.100: на медленном GitHub-раннере клик опережал сжатие, строка не появлялась).
+    await expect(
+      page.locator('.ox-dr-receipt').getByText('На устройстве · ждёт связи'),
+    ).toBeVisible({ timeout: 30_000 });
     await page.getByRole('button', { name: 'Сохранить на устройстве' }).click();
     await expect(expenseRow(page, 'Мойка · 400 ₽')).toContainText('Локальный черновик');
     await expect(banner(page, 'Нет связи.')).toContainText('(ожидают отправки: 1)');

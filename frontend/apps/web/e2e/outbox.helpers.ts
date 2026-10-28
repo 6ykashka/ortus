@@ -65,7 +65,8 @@ export async function photosOffline(page: Page): Promise<void> {
 export async function finishRoute(page: Page): Promise<void> {
   await actionBar(page).getByRole('button', { name: 'Завершить рейс' }).click();
   await finishDialog(page).getByRole('button', { name: 'Завершить рейс' }).click();
-  await expect(h2(page, 'Осмотр при сдаче')).toBeVisible();
+  // Запас — 20 с: «Выполняем…» на стенде под нагрузкой шёл дольше 5 с (W2.100, driver-outbox :523 tablet-768).
+  await expect(h2(page, 'Осмотр при сдаче')).toBeVisible({ timeout: 20_000 });
 }
 
 /** Строка расхода «{категория} · {сумма}». */
