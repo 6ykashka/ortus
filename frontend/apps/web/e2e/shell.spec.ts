@@ -4,6 +4,7 @@
 import type { Page } from '@playwright/test';
 
 import { expect, test } from './fixtures/index.ts';
+import { grantAdvanceSelf } from './cash-self.helpers.ts';
 import { HOME_H1 } from './home.helpers.ts';
 import { ALTA, call, devScenario, LOTOS, navTitles, setModule, tenantId } from './shell.helpers.ts';
 
@@ -234,6 +235,8 @@ test.describe('shell — оболочка @mock', () => {
     page,
   }) => {
     const bottom = page.getByRole('navigation', BOTTOM_NAV);
+    // Шаблоны «Водитель»/«Прораб» без `cash.advance.self` (Q-W5.33-7): без права страница пуста («Кассы недоступны»).
+    await grantAdvanceSelf(app, page);
     await app('/', { persona: 'driver' });
     await phone(page);
     await expect(bottom.getByRole('button')).toHaveText([
@@ -247,7 +250,7 @@ test.describe('shell — оболочка @mock', () => {
     await expect(bottom.getByRole('button')).toHaveText([/Объекты$/, /Подотчёт$/, /Чаты$/, /Ещё$/]);
     await bottom.getByRole('button', { name: 'Подотчёт' }).click();
     await expect(page).toHaveURL(/\/cash-self$/);
-    await expect(page.getByRole('heading', { level: 1, name: 'Подотчёт' })).toBeVisible();
+    await expect(page.getByRole('heading', { level: 1, name: 'Мой подотчёт' })).toBeVisible();
   });
 
   // W1.49: «Касса» массажиста — по праву cash.* (core() эталона :2964); в «Лотосе» роли «Кассир салона» нет
