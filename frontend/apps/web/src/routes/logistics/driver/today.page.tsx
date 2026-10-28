@@ -101,6 +101,7 @@ import {
 import {
   firmsOf,
   isTemporaryTrip,
+  listDeniedForTrip,
   type NameBook,
   offerBlock,
   offerChip,
@@ -1135,7 +1136,12 @@ export default function TodayPage(): ReactElement {
     );
   } else if (!plan) {
     body = <EmptyState icon="event_busy" title={T.noTrip.title} text={T.noTrip.text} dashed />;
-  } else if (cars && vehicles.isError) {
+  } else if (
+    cars &&
+    vehicles.isError &&
+    // Q-W2.92-1: предложенных машин нет или поставлена одна — 403 списка машин у временного водителя не ошибка.
+    !listDeniedForTrip(foreignTrip, reservations.data, plan, vehicles.error)
+  ) {
     body = (
       <Banner
         tone="danger"

@@ -18,7 +18,14 @@ import { problemText, useBusy } from '../../../shell/run.tsx';
 import { useMyTrip, useReservations, useVehicles } from './api.ts';
 import { useBook } from './book.ts';
 import { type CarCard, carCards, type CarsFilter, needsCars, reserveBlock } from './model.ts';
-import { firmsOf, isTemporaryTrip, offeredVehicleIds, offerOf } from './offer.ts';
+import {
+  firmsOf,
+  isTemporaryTrip,
+  listDeniedForTrip,
+  offeredVehicleIds,
+  offerOf,
+  placedCard,
+} from './offer.ts';
 import { OFFER_NO_REFERENCE as N } from './offer-texts.ts';
 import { OfferNone } from './offer.tsx';
 import { useOutbox } from './outbox/hooks.ts';
@@ -43,7 +50,7 @@ function offerCars(
   plan: Plan,
   vehicles: Parameters<typeof carCards>[0],
   reservations: Reservations,
-  o: { temporary: boolean; blocked: boolean; filter: CarsFilter },
+  o: { temporary: boolean; blocked: boolean; filter: CarsFilter; denied: boolean },
 ): CarCard[] {
   if (!o.temporary) return carCards(vehicles, plan, o.blocked, o.filter);
   const offer = offerOf(reservations, plan, vehicles);
@@ -56,7 +63,9 @@ function offerCars(
   );
   return order.flatMap((car) => {
     const c = cards.find((x) => x.id === car.vehicleId);
-    return c ? [{ ...c, chip: car.tag }] : [];
+    if (c) return [{ ...c, chip: car.tag }];
+    // Список машин закрыт (403 до окна): машина поставлена по брони — карточка из брони, как в «Моей смене».
+    return o.denied && offer?.state === 'one' ? [placedCard(car)] : [];
   });
 }
 
@@ -92,6 +101,10 @@ export default function CarsPage(): ReactElement {
     readOnly,
   );
   const offered = !!plan && !!reservations.data && !!offerOf(reservations.data, plan, []);
+  // Q-W2.92-1: 403 списка машин у временного водителя без предложенных машин — машины ещё нет, не ошибка.
+  const denied =
+    vehicles.isError && listDeniedForTrip(foreign, reservations.data, plan, vehicles.error);
+  const listFailed = vehicles.isError && !denied;
   const temporary = foreign || offered;
 
   let body: ReactElement;
@@ -117,9 +130,9 @@ export default function CarsPage(): ReactElement {
         dashed
       />
     );
-  } else if (vehicles.isError || (foreign && reservations.isError)) {
+  } else if (listFailed || (foreign && reservations.isError)) {
     // Ошибка списка броней на временном рейсе — как ошибка списка машин: без броней предложенных машин не узнать.
-    const failed = vehicles.isError ? vehicles : reservations;
+    const failed = listFailed ? vehicles : reservations;
     body = (
       <Banner
         tone="danger"
@@ -132,6 +145,7 @@ export default function CarsPage(): ReactElement {
       temporary,
       blocked: !!blocked,
       filter,
+      denied,
     });
     body =
       temporary && !cars.length ? (

@@ -289,17 +289,24 @@ func closeVehicle(ctx context.Context, tx pgx.Tx, v *vehicleGrant, at time.Time)
 }
 
 // openVehicle writes the assignment of vehicle to the driver of x — the role and the version of the grant of x in
-// scope resource, valid from the start of the window to until, granted by the approver — and links it to x.
+// scope resource, valid to until, granted by the approver — and links it to x. It is valid from the start of the window;
+// a transfer that prepares its trip (S2-20, W2.99: a request with a vehicle, a vehicle the logist put on the trip) opens
+// the vehicle at the placement or the approval, as the rows of the offered vehicles (openOfferGrant): before the window
+// the driver reads the vehicle of his trip — its name on «Моя смена» — and no other vehicle of the company.
 func openVehicle(ctx context.Context, tx pgx.Tx, x transfer, vehicle uuid.UUID, until, now time.Time) error {
 	var by uuid.UUID
 	if x.decidedBy != nil {
 		by = *x.decidedBy
 	}
+	from := x.period.Start
+	if x.prepare && now.Before(from) {
+		from = now
+	}
 	var id uuid.UUID
 	if err := tx.QueryRow(ctx, `insert into access.role_assignments (principal_kind, principal_id, role_id, role_version,
 		scope_kind, scope_ref, include_descendants, valid, source, granted_by, reason, created_at)
 		values ('person', $1, $2, $3, 'resource', $4, false, tstzrange($5, $6, '[)'), $7, $8, $9, $10) returning id`,
-		x.person, *x.role, *x.roleVersion, vehicle, x.period.Start, until, sourceTransfer, by,
+		x.person, *x.role, *x.roleVersion, vehicle, from, until, sourceTransfer, by,
 		"Пул водителей: запрос "+x.id.String()+" · машина рейса", now).Scan(&id); err != nil {
 		return fmt.Errorf("vehicle grant of %s: %w", x.id, err)
 	}

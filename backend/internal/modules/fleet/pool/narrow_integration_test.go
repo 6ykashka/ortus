@@ -209,6 +209,34 @@ func TestVehicleGrantFollowsTheTrip(t *testing.T) { //nolint:paralleltest // the
 	e.seesVehicles(t, d, "after the window (AC-06)", nil, []uuid.UUID{v1})
 }
 
+// S2-20 (W2.99, Q-W2.75-1 / Q-W2.92-2): перевод с подготовкой рейса — запрос с машиной или бронь рейса, предложенная
+// водителю — открывает строку машины рейса с момента назначения или одобрения, а не с начала окна: до окна водитель
+// читает машину своего рейса (название на экране «Моя смена»), чужие машины фирмы закрыты, конец строки — конец окна.
+func TestVehicleGrantOpensAtThePlacement(t *testing.T) { //nolint:paralleltest // the settlement of the pool writes the whole tenant
+	e := newEnv(t)
+	c := e.newOffer(t, "Поставлена до окна", 700*time.Hour)
+	spare := newCar(t, "msk1")
+	x := e.requestOffer(t, c, modeHost, approve)
+	approvedAt := e.clock.Now()
+	g := vehicleGrant(t, x.Id)
+	if g == nil {
+		t.Fatal("no assignment of the vehicle of the trip after the approval with the vehicle")
+	}
+	expect(t, "assignment of the vehicle of the trip", g, g.principal == c.d, g.scopeKind == "resource",
+		g.scopeRef != nil && *g.scopeRef == c.host, g.state == "active", atMoment(g.from, approvedAt),
+		atMoment(g.until, c.w.End))
+	d := as(c.d)
+	e.seesVehicles(t, d, "before the window", []uuid.UUID{c.host}, []uuid.UUID{spare})
+	e.settleTrip(t, c.tr)
+	if again := vehicleGrant(t, x.Id); again == nil || !atMoment(again.from, approvedAt) {
+		t.Errorf("the settlement before the window moved the row of the vehicle: %+v, want the same row from %v", again, approvedAt)
+	}
+	e.clock.Set(c.w.Start.Add(time.Hour))
+	e.seesVehicles(t, d, "in the window", []uuid.UUID{c.host}, []uuid.UUID{spare})
+	e.clock.Set(c.w.End.Add(time.Minute))
+	e.seesVehicles(t, d, "after the window (AC-06)", nil, []uuid.UUID{c.host, spare})
+}
+
 // resourceAssignment is the latest temporary assignment of person in scope resource on vehicle v.
 func resourceAssignment(t *testing.T, person, v uuid.UUID) uuid.UUID {
 	t.Helper()

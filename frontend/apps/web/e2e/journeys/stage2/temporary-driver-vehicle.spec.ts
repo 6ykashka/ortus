@@ -418,7 +418,7 @@ test.describe('S2-20 — машина временного водителя, ж�
     const res = await reservation(d.owner, d.tenant, t1.reservationId ?? '');
     expect([res.state, res.tripId]).toEqual(['confirmed', d.trip.id]);
 
-    // Пункт снят. Экран водителя до окна — строка Q-W2.75-1 (`@known-defect` ниже).
+    // Пункт снят. Экран водителя до окна — строка Q-W2.75-1 (ниже, `@stand`).
     await d.owner.goto(`/t/${d.tenant}/home`);
     await d.owner.locator('section[aria-labelledby="h-home"]').waitFor();
     await d.owner.waitForLoadState('networkidle');
@@ -623,13 +623,14 @@ test.describe('S2-20 — машина временного водителя, ж�
 // Q-W2.75-1 · дефект W2.74 ↔ W2.72: до окна рейса у временного водителя без предложенных машин listVehicles отвечает
 // 403 forbidden_action (узкая роль, строк машин нет), а «Моя смена» показывает «Не удалось загрузить машины: Нет права
 // на это действие…» вместо «Машину ещё не поставили» (1c, «Только водителя») и вместо «Машина на сегодня» после
-// «Поставить машину» логиста (1g → assignTripVehicle: машина рейса водителю до окна не открыта). В mock (роль
-// «Водитель» своей фирмы, Q-W2.74-6) список отдаётся — строки W2.74 зелёные. Строка вне grep e2e-stand (Q-W2.32-10),
-// как `@known-defect` W2.32; после исправления — снять fixme и сменить тег на `@stand`.
-test.describe('S2-20 — «Только водителя»: «Машину ещё не поставили» на телефоне @known-defect', () => {
+// «Поставить машину» логиста (1g → assignTripVehicle). W2.92: «Моя смена» и «Автомобили» принимают 403 списка машин
+// у временного водителя без предложения за «машины ещё нет»; W2.99: pool.openVehicle открывает поставленную машину
+// с назначения, до окна экран показывает её название; строка
+// снова `@stand` (в mock роль «Водитель» своей фирмы, Q-W2.74-6, список отдаётся — строки W2.74 зелёные).
+test.describe('S2-20 — «Только водителя»: «Машину ещё не поставили» на телефоне @stand', () => {
   test.skip(({ harness }) => harness.mode !== 'stand', 'режим stand');
 
-  test.fixme('Q-W2.75-1: машины нет — «Машину ещё не поставили», без ошибки списка машин', async ({
+  test('Q-W2.75-1: машины нет — «Машину ещё не поставили», без ошибки списка машин', async ({
     page,
     browser,
     harness,
@@ -658,9 +659,17 @@ test.describe('S2-20 — «Только водителя»: «Машину ещ�
       'assignTripVehicle',
     );
     await dr.reload();
+    // Строка машины рейса открыта водителю с назначения (pool.openVehicle, W2.99; Q-W2.92-2): listVehicles до окна
+    // отдаёт поставленную машину — на экране её название, а не «—».
     await expect(h2(dr, 'Машина на сегодня')).toBeVisible(J.SERVER);
-    await expect(dr.locator('article.ox-dr-offer .ox-dr-car-model')).toHaveText([ELF.model]);
     await expect(dr.getByText(/^Не удалось загрузить машины/)).toHaveCount(0);
-    await onlyOffered(dr, d.tenant, [ELF.model]);
+    await expect(dr.locator('article.ox-dr-offer')).toHaveCount(1);
+    await expect(dr.locator('article.ox-dr-offer .ox-dr-car-model')).toHaveText([ELF.model]);
+    await expect(dr.locator('.ox-dr-trip .ox-dr-chip')).toContainText('Машина назначена');
+    await expect(dr.getByRole('button', { name: 'Начать осмотр' })).toBeVisible(J.SERVER);
+    await expect(dr.getByText('Машину ещё не поставили')).toHaveCount(0);
+    await noBooking(dr);
+    // «Автомобили» на стенде роли «Временный водитель» недоступны (пункта меню нет, маршрут отвечает «Нет роли с
+    // доступом к модулю «Логистика»»): состояние «одна машина + 403» на этой странице проверяют vitest и mock.
   });
 });

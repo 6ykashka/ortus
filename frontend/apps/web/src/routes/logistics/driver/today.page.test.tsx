@@ -562,6 +562,12 @@ describe('«Сегодня»: состояния', () => {
     await screen.findByText('Р-208 · Северный маршрут', undefined, SLOW);
   });
 
+  // Возврат 5: 403 списка машин не ошибка только у временного водителя (Q-W2.92-1); водитель своей фирмы видит ошибку.
+  it('водитель своей фирмы: 403 forbidden_action списка машин остаётся ошибкой «Не удалось загрузить машины»', async () => {
+    await open({ scenario: 'listVehicles=forbidden_action' });
+    await screen.findByText(/^Не удалось загрузить машины/, undefined, SLOW);
+    expect(screen.queryByText('Машину ещё не поставили')).toBeNull();
+  });
   it('загрузка: скелетон «Загрузка»', async () => {
     await open({ scenario: 'listTripPlans=delay=400' });
     expect(within(screen.getByRole('main')).getByRole('status', { name: 'Загрузка' })).toBeTruthy();

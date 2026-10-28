@@ -57,7 +57,7 @@ func ac06ID(name string) uuid.UUID {
 var ac06Names = []string{
 	"trip-active", "trip-future", "trip-over", "trip-closing", "trip-accepted", "trip-revoked-started",
 	"trip-revoked", "trip-cancelled", "trip-unassigned", "trip-other", "trip-history",
-	"vehicle-active", "vehicle-closing", "vehicle-revoked", "vehicle-accepted", "vehicle-spare",
+	"vehicle-active", "vehicle-closing", "vehicle-revoked", "vehicle-accepted", "vehicle-spare", "vehicle-placed", "trip-placed",
 	"expense-closing", "expense-over", "expense-accepted", "expense-cancelled", "expense-unassigned",
 	"file-trip", "file-unit", "file-closing", "file-accepted", "file-over", "file-future", "file-expense-accepted",
 	"file-departure",
@@ -184,10 +184,18 @@ func (s *ac06Seed) grant(scope string, ref any, from time.Time, until any, state
 func (s *ac06Seed) transfer(trip uuid.UUID, state string, from, until time.Time, grantUntil any, grantState string,
 	vehicle uuid.UUID, vehicleUntil time.Time) {
 	s.t.Helper()
+	s.transferPlaced(trip, state, from, until, grantUntil, grantState, vehicle, from, vehicleUntil)
+}
+
+// transferPlaced is transfer with the vehicle row valid from vehicleFrom: a transfer that prepares its trip opens the
+// vehicle at the placement, before the window (W2.99, pool.openVehicle).
+func (s *ac06Seed) transferPlaced(trip uuid.UUID, state string, from, until time.Time, grantUntil any, grantState string,
+	vehicle uuid.UUID, vehicleFrom, vehicleUntil time.Time) {
+	s.t.Helper()
 	self := s.grant("self", nil, from, grantUntil, grantState)
 	var va any
 	if vehicle != uuid.Nil {
-		va = s.grant("resource", vehicle, from, vehicleUntil, "active")
+		va = s.grant("resource", vehicle, vehicleFrom, vehicleUntil, "active")
 	}
 	var completed, revokedBy any
 	switch state {
@@ -249,6 +257,11 @@ func seedAC06(t *testing.T) {
 	vClosing := s.vehicle("vehicle-closing")
 	s.transfer(s.trip("trip-closing", "on_route", d, vClosing, s.at(-30*h), s.at(-26*h)), "approved", s.at(-30*h),
 		s.at(-26*h), nil, "active", vClosing, s.at(-26*h))
+	// Поставленная машина до окна (W2.99, Q-W2.75-1): перевод готовит рейс, строка машины открыта с назначения, строка
+	// self — с начала окна. Водитель читает только её; запасная машина фирмы закрыта.
+	vPlaced := s.vehicle("vehicle-placed")
+	s.transferPlaced(s.trip("trip-placed", "assigned", d, vPlaced, s.at(30*h), s.at(34*h)), "approved", s.at(30*h), s.at(34*h),
+		s.at(34*h), "active", vPlaced, s.at(-15*time.Minute), s.at(34*h))
 	// Принят — завершён; отозван начатый (доработка) — продолжение; отозван не начатый; отменён; водителя сменили.
 	vAccepted := s.vehicle("vehicle-accepted")
 	s.transfer(s.trip("trip-accepted", "accepted", d, vAccepted, s.at(-50*h), s.at(-46*h)), "completed", s.at(-50*h),
@@ -358,6 +371,7 @@ func ac06Rows() matrix.File {
 		{Op: "getTripPlan", Method: http.MethodGet, Path: plan, Channel: matrix.ChannelHTTP, Rows: []matrix.Row{
 			open("trip-active", "в окне — свой рейс"),
 			notFound("trip-future", "до окна (scheduled) — 404, хотя водитель уже на рейсе (Q-W2.07-2)"),
+			notFound("trip-placed", "машина поставлена до окна, сам рейс открыт только окном — 404, машина читается (W2.99)"),
 			notFound("trip-over", "после окна не начатый рейс — 404 сразу, без досчёта (AC-06)"),
 			open("trip-closing", "после окна начатый рейс — продолжение (D09): чтение рейса"),
 			notFound("trip-accepted", "после приёмки — 404, хотя домашняя роль self видит рейс, где он водитель"),
@@ -393,9 +407,9 @@ func ac06Rows() matrix.File {
 			}},
 		{Op: "listVehicles", Method: http.MethodGet, Path: "/api/v1/tenants/{tenantId}/fleet/vehicles",
 			Channel: matrix.ChannelHTTP, Rows: []matrix.Row{
-				ac06Row(nil, http.StatusOK, "", []string{"ac06:vehicle-active"},
+				ac06Row(nil, http.StatusOK, "", []string{"ac06:vehicle-active", "ac06:vehicle-placed"},
 					[]string{"ac06:vehicle-spare", "ac06:vehicle-closing", "ac06:vehicle-revoked", "ac06:vehicle-accepted"},
-					"машины фирмы — только забронированная под рейс в окне (область resource)"),
+					"машины фирмы — забронированная под рейс в окне и поставленная на рейс до окна (область resource, W2.99); чужие — нет"),
 			}},
 		{Op: "listTripExpenses", Method: http.MethodGet, Path: "/api/v1/tenants/{tenantId}/fleet/trips/{tripId}/expenses",
 			Channel: matrix.ChannelHTTP, Rows: []matrix.Row{

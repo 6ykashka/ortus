@@ -2,13 +2,14 @@
 // renderVals :516–628): состояния предложения по броням рейса (две на выбор, одна, выбрана, срок прошёл), карточки 1c,
 // лист 1d «Берёте …?», статус 1e, временный рейс без машины, только предложенные машины на «Автомобилях», имена
 // невыбранной машины после выбора (сервер её больше не показывает), подписи с фирмами и без их названий.
-import type { components } from '@ortus/api-client';
+import { type components, ProblemError } from '@ortus/api-client';
 import { describe, expect, it } from 'vitest';
 
 import {
   firmsOf,
   heldBanner,
   isTemporaryTrip,
+  listDeniedForTrip,
   noneText,
   type Offer,
   offerBlock,
@@ -463,5 +464,26 @@ describe('временный рейс, связь, «Автомобили»', ()
     expect(() => rememberNames(broken, 'g-1', two.cars)).not.toThrow();
     expect(recallNames(broken, 'g-1')).toEqual({});
     expect(recallNames(null, 'g-1')).toEqual({});
+  });
+});
+
+describe('listDeniedForTrip — какой отказ списка машин не ошибка (Q-W2.92-1)', () => {
+  const denied = (status: number, code: string) =>
+    new ProblemError(status, { type: 'about:blank', title: 'Отказ', status, code } as never);
+  const ONE = [{ ...HOST, state: 'confirmed' as const, chosenAt: UNTIL, holdExpiresAt: W.endsAt }];
+
+  it('временный водитель, машина поставлена, 403 forbidden_action — не ошибка списка', () => {
+    expect(listDeniedForTrip(true, ONE, plan(), denied(403, 'forbidden_action'))).toBe(true);
+  });
+
+  it('другой код 403, другой статус, не временный водитель, выбор из двух, нет рейса — ошибка', () => {
+    expect(listDeniedForTrip(true, ONE, plan(), denied(403, 'function_blocked'))).toBe(false);
+    expect(listDeniedForTrip(true, ONE, plan(), denied(429, 'forbidden_action'))).toBe(false);
+    expect(listDeniedForTrip(false, ONE, plan(), denied(403, 'forbidden_action'))).toBe(false);
+    expect(listDeniedForTrip(true, [HOST, USUAL], plan(), denied(403, 'forbidden_action'))).toBe(
+      false,
+    );
+    expect(listDeniedForTrip(true, ONE, null, denied(403, 'forbidden_action'))).toBe(false);
+    expect(listDeniedForTrip(true, ONE, plan(), new Error('forbidden_action'))).toBe(false);
   });
 });

@@ -3,12 +3,13 @@
 // `offerGroupId`, предложенные водителю — две `held` до `chooseUntil` (выбор), `confirmed` (выбрана водителем, логистом
 // или сервером к сроку, или единственная), `released` (`releasedAt`, `releaseReason`). Подписи с фирмами — по
 // названиям подразделений, если водителю их видно, иначе — нейтральные (OFFER_NO_REFERENCE).
-import type { components } from '@ortus/api-client';
+import { type components, ProblemError } from '@ortus/api-client';
 import { compat } from '@ortus/domain/modules';
 import { format, logisticsDriver as L } from '@ortus/texts';
 import type { IconName, Tone } from '@ortus/ui';
 
 import {
+  type CarCard,
   type Chip,
   domainTrip,
   domainVehicle,
@@ -366,6 +367,68 @@ export function isTemporaryTrip(
         c.scope.kind === 'self' ||
         (c.scope.kind === 'org_unit' && c.scope.resourceIds.includes(plan.orgUnitId))),
   );
+}
+
+/** Код отказа по праву из api/errors.yaml; другого общего имени в клиенте нет (строка в каждом модуле). */
+const FORBIDDEN_ACTION = 'forbidden_action';
+
+/**
+ * Q-W2.92-1 (Q-W2.75-1): до окна рейса у временного водителя без предложенных машин listVehicles отвечает 403
+ * forbidden_action (узкая роль, строк машин нет) — это «машины ещё нет», а не ошибка списка. Любая другая ошибка и
+ * 403 у водителя своей фирмы остаются ошибкой.
+ */
+function carsListDenied(temporary: boolean, error: unknown): boolean {
+  return (
+    temporary &&
+    error instanceof ProblemError &&
+    error.status === 403 &&
+    error.code === FORBIDDEN_ACTION
+  );
+}
+
+/**
+ * Q-W2.92-1: идёт выбор из двух машин — строки обеих открыты при согласовании, так что 403 списка машин здесь ошибка.
+ * Одна поставленная машина («Поставить машину» логиста до окна) строку машины получает с начала окна: 403 — её названия
+ * ещё нет («—»), но не ошибка смены.
+ */
+function choosingOffer(reservations: readonly Reservation[] | undefined, plan: Plan): boolean {
+  return !!reservations && offerOf(reservations, plan, [])?.state === 'two';
+}
+
+/**
+ * Ошибка списка машин «Моей смены» и «Автомобилей» временного водителя, которую показывать не нужно: 403
+ * `forbidden_action` вне выбора из двух машин (Q-W2.92-1) — одна функция для обеих страниц.
+ */
+export function listDeniedForTrip(
+  foreign: boolean,
+  reservations: readonly Reservation[] | undefined,
+  plan: Plan | null,
+  error: unknown,
+): boolean {
+  return !!plan && !choosingOffer(reservations, plan) && carsListDenied(foreign, error);
+}
+
+/**
+ * «Автомобили» временного водителя, список машин закрыт (403): карточка поставленной машины по брони — модель и номер
+ * из запомненных имён или «—», как в «Машине на сегодня» («Моя смена»), без обещаний «Подходит рейсу».
+ */
+export function placedCard(car: OfferCar): CarCard {
+  return {
+    id: car.vehicleId,
+    model: car.model,
+    plate: car.plate,
+    icon: car.icon,
+    specs: car.specs,
+    chip: car.tag,
+    reasons: [],
+    fit: false,
+    ok: false,
+    fitOk: false,
+    canBook: false,
+    mine: true,
+    bookLabel: '',
+    noBookLabel: '',
+  };
 }
 
 /** Машины действующих броней предложения рейса («Автомобили» временного водителя — только предложенные). */

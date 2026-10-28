@@ -3,7 +3,7 @@
 // (D-09), 409 offer_closed — сообщение и перечитывание, у временного водителя нет «Подтвердить бронь» и
 // «Забронировать», «Автомобили» — только предложенные. MSW W2.71, сюжет — offer.fixtures.test-util.tsx.
 import { onlineManager } from '@tanstack/react-query';
-import { fireEvent, screen, waitFor, within } from '@testing-library/react';
+import { configure, fireEvent, screen, waitFor, within } from '@testing-library/react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import {
@@ -17,6 +17,8 @@ import { transport } from './photos.ts';
 
 const SLOW = { timeout: 8_000 };
 vi.setConfig({ testTimeout: 40_000 });
+// Под нагрузкой ПК findBy/waitFor с 1 с по умолчанию давали единичные таймауты (возврат 2).
+configure({ asyncUtilTimeout: 8_000 });
 
 let app: OfferApp | undefined;
 const realPut = transport.put;
@@ -324,6 +326,62 @@ describe('«Сегодня»: одна машина и машины нет', () 
     expect(screen.queryByRole('button', { name: 'Написать логисту' })).toBeNull();
     expect(document.querySelectorAll('article')).toHaveLength(0);
     noBooking();
+  });
+});
+
+// Q-W2.75-1: до окна рейса у временного водителя без предложенных машин listVehicles отвечает 403 (узкая роль, строк
+// машин нет) — это не ошибка смены: машины ещё нет (1c, «Только водителя»).
+describe('Q-W2.75-1: листинг машин закрыт до окна (403 forbidden_action)', () => {
+  it('«Сегодня»: «Машину ещё не поставили», без «Не удалось загрузить машины»', async () => {
+    app = await renderOffer('none', { scenario: 'listVehicles=forbidden_action' });
+    await screen.findByText('Машину ещё не поставили', undefined, SLOW);
+    expect(screen.queryByText(/^Не удалось загрузить машины/)).toBeNull();
+    expect(document.querySelectorAll('article')).toHaveLength(0);
+    noBooking();
+  });
+
+  it('«Автомобили»: «Машину ещё не поставили», без ошибки списка машин', async () => {
+    app = await renderOffer('none', { route: 'cars', scenario: 'listVehicles=forbidden_action' });
+    await screen.findByText('Машину ещё не поставили', undefined, SLOW);
+    expect(screen.queryByText(/^Не удалось загрузить машины/)).toBeNull();
+    expect(document.querySelectorAll('article')).toHaveLength(0);
+    noBooking();
+  });
+
+  // Возврат 1: «Автомобили» в том же состоянии согласованы с «Моей сменой» — машина поставлена, а не «ещё не поставили».
+  it('«Автомобили»: машина рейса поставлена, список машин закрыт — карточка поставленной машины, без «Машину ещё не поставили»', async () => {
+    app = await renderOffer('one', { route: 'cars', scenario: 'listVehicles=forbidden_action' });
+    await screen.findByRole('heading', { level: 1, name: 'Автомобили' }, SLOW);
+    await waitFor(() => expect(document.querySelectorAll('article')).toHaveLength(1), SLOW);
+    expect(screen.queryByText('Машину ещё не поставили')).toBeNull();
+    expect(screen.queryByText(/^Не удалось загрузить машины/)).toBeNull();
+    expect(document.querySelector('article .ox-dr-chip')?.textContent).toContain('Поставил логист');
+    noBooking();
+  });
+
+  it('«Автомобили»: две машины на выбор и 403 списка — ошибка остаётся (строки обеих открыты при согласовании)', async () => {
+    app = await renderOffer('two', { route: 'cars', scenario: 'listVehicles=forbidden_action' });
+    await screen.findByText(/^Не удалось загрузить машины/, undefined, SLOW);
+  });
+
+  it('другая ошибка списка машин (429) у временного водителя остаётся ошибкой', async () => {
+    app = await renderOffer('none', { scenario: 'listVehicles=rate_limited' });
+    await screen.findByText(/^Не удалось загрузить машины/, undefined, SLOW);
+  });
+
+  // 1g «Поставить машину» до окна: бронь машины рейса подтверждена, а строка машины открывается с начала окна —
+  // listVehicles 403, названия машины ещё нет («—»), но смена не падает.
+  it('«Сегодня»: машина рейса поставлена, список машин закрыт — «Машина на сегодня», без ошибки списка', async () => {
+    app = await renderOffer('one', { scenario: 'listVehicles=forbidden_action' });
+    await screen.findByRole('heading', { level: 2, name: 'Машина на сегодня' }, SLOW);
+    expect(screen.queryByText(/^Не удалось загрузить машины/)).toBeNull();
+    noBooking();
+  });
+
+  it('выбор из двух машин: 403 списка машин остаётся ошибкой «Не удалось загрузить машины»', async () => {
+    app = await renderOffer('two', { scenario: 'listVehicles=forbidden_action' });
+    // Предложение есть (бронь на выбор): список машин нужен для карточек, его отказ — настоящая ошибка.
+    await screen.findByText(/^Не удалось загрузить машины/, undefined, SLOW);
   });
 });
 
