@@ -6,8 +6,8 @@
 # If-Match (README, «Цель набора»): без него строгий сервер отвечает 428 раньше хендлера, поэтому у них только отказы
 # шлюза — без сессии 401, чужая организация 404. Публичные операции кабинета заказчика: неизвестная ссылка — 404.
 # Отказы шлюза (403 module_not_installed — модуль у фикстур не подключён) — repairs_w600_gate.yaml. Формат — README.md.
-# W6.11: 13 операций шагов 6.1–6.2 без pending (хендлеры есть); у остальных pending — WS-владелец (W6.12 замер и смета, W6.13 снабжение,
-# W6.14 график, W6.15 финансы и кабинет). Позитивные строки хендлеров пишутся, когда у фикстур подключён модуль «Ремонт и стройка».
+# W6.11: 13 операций шагов 6.1–6.2 без pending (хендлеры есть); W6.14: 6 операций графика без pending; у остальных pending — WS-владелец (W6.12 замер и смета,
+# W6.13 снабжение, W6.15 финансы и кабинет). Позитивные строки хендлеров пишутся, когда у фикстур подключён модуль «Ремонт и стройка».
 # После правки: go -C backend generate ./test/isolation
 module: repairs_w600
 endpoints:
@@ -715,7 +715,6 @@ endpoints:
   - op: getSchedule
     method: GET
     path: /api/v1/tenants/{tenantId}/repairs/projects/{projectId}/schedule
-    pending: W6.14
     rows:
       - actor: anonymous
         params:
@@ -730,10 +729,22 @@ endpoints:
         absent:
           - tenant:a
         note: чужая организация — как несуществующая (AC-02)
+      - actor: a.owner
+        params: { tenantId: tenant:a, projectId: repair_project:a.flat }
+        status: 200
+        note: владелец читает график объекта (у объекта без этапов — пустой график с прогнозом null)
+      - actor: a.repairs-foreman
+        params: { tenantId: tenant:a, projectId: repair_project:a.flat }
+        status: 200
+        note: прораб читает график своего объекта (repairs.schedule.read у роли)
+      - actor: a.repairs-foreman-two
+        params: { tenantId: tenant:a, projectId: repair_project:a.flat }
+        status: 404
+        absent: [repair_project:a.flat]
+        note: прораб чужого объекта — как несуществующий объект (AC-01)
   - op: createScheduleFromEstimate
     method: POST
     path: /api/v1/tenants/{tenantId}/repairs/projects/{projectId}/schedule/from-estimate
-    pending: W6.14
     rows:
       - actor: anonymous
         params:
@@ -750,10 +761,15 @@ endpoints:
           - tenant:a
         body: '{"estimateVersion":1}'
         note: чужая организация — как несуществующая (AC-02)
+      - actor: a.repairs-foreman-two
+        params: { tenantId: tenant:a, projectId: repair_project:a.flat }
+        status: 404
+        absent: [repair_project:a.flat]
+        body: '{"estimateVersion":1}'
+        note: прораб чужого объекта — как несуществующий объект (AC-01)
   - op: previewScheduleChange
     method: POST
     path: /api/v1/tenants/{tenantId}/repairs/projects/{projectId}/schedule/preview
-    pending: W6.14
     rows:
       - actor: anonymous
         params:
@@ -770,10 +786,15 @@ endpoints:
           - tenant:a
         body: '{"changes":[{"stageId":"00000000-0000-4000-8000-000000000000"}]}'
         note: чужая организация — как несуществующая (AC-02)
+      - actor: a.repairs-foreman-two
+        params: { tenantId: tenant:a, projectId: repair_project:a.flat }
+        status: 404
+        absent: [repair_project:a.flat]
+        body: '{"changes":[{"stageId":"00000000-0000-4000-8000-000000000000"}]}'
+        note: прораб чужого объекта — как несуществующий объект (AC-01)
   - op: applyScheduleChange
     method: POST
     path: /api/v1/tenants/{tenantId}/repairs/projects/{projectId}/schedule/changes
-    pending: W6.14
     rows:
       - actor: anonymous
         params:
@@ -793,7 +814,6 @@ endpoints:
   - op: setScheduleStageExecutor
     method: PATCH
     path: /api/v1/tenants/{tenantId}/repairs/projects/{projectId}/schedule/stages/{stageId}
-    pending: W6.14
     rows:
       - actor: anonymous
         params:
@@ -815,7 +835,6 @@ endpoints:
   - op: createScheduleBaseline
     method: POST
     path: /api/v1/tenants/{tenantId}/repairs/projects/{projectId}/schedule/baselines
-    pending: W6.14
     rows:
       - actor: anonymous
         params:

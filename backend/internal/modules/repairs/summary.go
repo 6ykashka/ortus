@@ -49,7 +49,7 @@ func decision(kind, text, label string, tab rapi.RepairDecisionTab, ref *uuid.UU
 }
 
 // decisions is the queue «Требует решения» of an object (decisionsOf of the prototype port; the schedule slip comes
-// with the schedule, W6.14): the same list feeds the card, the list and «Главная».
+// from the schedule, W6.14): the same list feeds the card, the list and «Главная».
 func decisions(p *projectRow, f *facts, v viewer) []rapi.RepairDecision {
 	if p.status == statusDraft {
 		return draftDecisions(f.estimates[p.id], v)
@@ -59,9 +59,7 @@ func decisions(p *projectRow, f *facts, v viewer) []rapi.RepairDecision {
 		out = append(out, decision("no_foreman", "Не назначен прораб", "Назначить прораба", rapi.RepairDecisionTabOverview, nil))
 	}
 	out = append(out, markDecisions(p, f, v)...)
-	if idle := f.idle[p.id]; len(idle) > 0 {
-		out = append(out, decision("stage_no_executor", "Не назначен исполнитель: "+strings.Join(idle, ", "), "Открыть график", rapi.RepairDecisionTabSchedule, nil))
-	}
+	out = append(out, scheduleDecisions(p, f)...)
 	if v.finance {
 		out = append(out, documentDecisions(f.docs[p.id])...)
 	}
@@ -78,6 +76,18 @@ func decisions(p *projectRow, f *facts, v viewer) []rapi.RepairDecision {
 	}
 	if v.estimator {
 		out = append(out, changeDecisions(f.changes[p.id])...)
+	}
+	return out
+}
+
+// scheduleDecisions are the decisions of the schedule: the hand over slips past the term, a stage has no executor.
+func scheduleDecisions(p *projectRow, f *facts) []rapi.RepairDecision {
+	out := []rapi.RepairDecision{}
+	if sf := f.sched[p.id]; sf != nil && sf.delay > 0 {
+		out = append(out, decision("schedule_slip", "Сдача сдвигается на "+sf.fin.Format("02.01"), "Открыть график", rapi.RepairDecisionTabSchedule, nil))
+	}
+	if idle := f.idle[p.id]; len(idle) > 0 {
+		out = append(out, decision("stage_no_executor", "Не назначен исполнитель: "+strings.Join(idle, ", "), "Открыть график", rapi.RepairDecisionTabSchedule, nil))
 	}
 	return out
 }
@@ -211,7 +221,7 @@ func (r *req) projectDTO(p *projectRow, f *facts, v viewer, todo []rapi.RepairDe
 	if p.area != nil {
 		dto.AreaM2 = new(p.area.String())
 	}
-	setDates(&dto, p)
+	setDates(&dto, p, f.sched[p.id])
 	if len(todo) > 0 {
 		dto.TodoTop = &todo[0]
 	}
@@ -224,14 +234,17 @@ func (r *req) projectDTO(p *projectRow, f *facts, v viewer, todo []rapi.RepairDe
 	return dto, nil
 }
 
-// setDates writes the dates of p into dto; without a schedule the forecast is the term (the forecast comes with W6.14).
-func setDates(dto *rapi.RepairProject, p *projectRow) {
+// setDates writes the dates of p into dto; the forecast is the one of the schedule (W6.14), without a schedule — the term.
+func setDates(dto *rapi.RepairProject, p *projectRow, sf *schedFact) {
 	if p.startOn != nil {
 		alloc(&dto.StartOn).Time = *p.startOn
 	}
 	if p.dueOn != nil {
 		alloc(&dto.DueOn).Time = *p.dueOn
 		alloc(&dto.ForecastDueOn).Time = *p.dueOn
+	}
+	if sf != nil {
+		alloc(&dto.ForecastDueOn).Time = sf.fin
 	}
 	if p.handedOverOn != nil {
 		alloc(&dto.HandedOverOn).Time = *p.handedOverOn

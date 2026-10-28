@@ -26,9 +26,9 @@ const (
 	repairsManifest = "0.12" // manifest_version of the module (the gate does not read it)
 )
 
-// foremanActions: the foreman of an object reads it and his marks and sends marks; no repairs.finance.read — he sees
+// foremanActions: the foreman of an object reads it and his marks, sends marks, reads and moves the schedule (W6.14); no repairs.finance.read — he sees
 // neither the sum of the contract nor the phone of the client (D-17, «прораб без цен»).
-var foremanActions = []string{"repairs.projects.read", "repairs.work_logs.read", "repairs.work_logs.submit"}
+var foremanActions = []string{"repairs.projects.read", "repairs.work_logs.read", "repairs.work_logs.submit", "repairs.schedule.read", "repairs.schedule.shift"}
 
 // RepairProjectDef is an active repair object (repairs.projects) of an object of the catalog (ObjectRepairProject,
 // the key is the one of the object, the id is the one of the reference repair_project:<t>.<key>) with its foreman.

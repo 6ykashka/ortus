@@ -141,6 +141,7 @@ type facts struct {
 	measured  map[uuid.UUID]bool
 	crew      map[uuid.UUID][]crewRow
 	hasLink   map[uuid.UUID]bool
+	sched     map[uuid.UUID]*schedFact // the forecast of the schedule (W6.14)
 }
 
 // group reads the rows of a query into dst by the key of the object each row starts with.
@@ -181,7 +182,7 @@ func (r *req) loadFacts(ctx context.Context, ids []uuid.UUID) (*facts, error) {
 	f := &facts{works: map[uuid.UUID][]workFact{}, pending: map[uuid.UUID][]pendingLog{}, today: map[uuid.UUID]bool{},
 		estimates: map[uuid.UUID][]estFact{}, docs: map[uuid.UUID][]docFact{}, supply: map[uuid.UUID]int{},
 		changes: map[uuid.UUID][]changeFact{}, idle: map[uuid.UUID][]string{}, measured: map[uuid.UUID]bool{},
-		crew: map[uuid.UUID][]crewRow{}, hasLink: map[uuid.UUID]bool{}}
+		crew: map[uuid.UUID][]crewRow{}, hasLink: map[uuid.UUID]bool{}, sched: map[uuid.UUID]*schedFact{}}
 	if len(ids) == 0 {
 		return f, nil
 	}
@@ -249,6 +250,7 @@ func (r *req) loadFacts(ctx context.Context, ids []uuid.UUID) (*facts, error) {
 					return w.project, w, err
 				}, ids)
 		},
+		func() error { return r.factSchedules(ctx, f, ids) },
 		func() error {
 			return flag(ctx, tx, "client links", `select distinct project_id from repairs.client_links where project_id = any($1) and revoked_at is null
 				and (expires_at is null or expires_at > $2)`, f.hasLink, ids, r.now)

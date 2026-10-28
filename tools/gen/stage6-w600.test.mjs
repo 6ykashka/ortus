@@ -532,6 +532,13 @@ describe('контракт 0.12.0-stage6 (W6.00): дельты, экраны, м
       'submitWorkLog',
       'acceptWorkLog',
       'returnWorkLog',
+      // W6.14: график (шаг 6.5)
+      'getSchedule',
+      'createScheduleFromEstimate',
+      'previewScheduleChange',
+      'applyScheduleChange',
+      'setScheduleStageExecutor',
+      'createScheduleBaseline',
     ]);
     for (const e of rows.endpoints) {
       if (served.has(e.op)) assert.equal(e.pending, undefined, e.op);

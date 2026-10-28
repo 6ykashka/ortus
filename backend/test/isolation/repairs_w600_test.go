@@ -856,7 +856,6 @@ var repairsW600Matrix = matrix.File{
 			Method:  "GET",
 			Path:    "/api/v1/tenants/{tenantId}/repairs/projects/{projectId}/schedule",
 			Channel: "http",
-			Pending: "W6.14",
 			Rows: []matrix.Row{
 				{
 					Actor:  "anonymous",
@@ -869,6 +868,25 @@ var repairsW600Matrix = matrix.File{
 					Status: 404,
 					Absent: []string{"tenant:a"},
 					Note:   "чужая организация — как несуществующая (AC-02)",
+				},
+				{
+					Actor:  "a.owner",
+					Params: map[string]string{"projectId": "repair_project:a.flat", "tenantId": "tenant:a"},
+					Status: 200,
+					Note:   "владелец читает график объекта (у объекта без этапов — пустой график с прогнозом null)",
+				},
+				{
+					Actor:  "a.repairs-foreman",
+					Params: map[string]string{"projectId": "repair_project:a.flat", "tenantId": "tenant:a"},
+					Status: 200,
+					Note:   "прораб читает график своего объекта (repairs.schedule.read у роли)",
+				},
+				{
+					Actor:  "a.repairs-foreman-two",
+					Params: map[string]string{"projectId": "repair_project:a.flat", "tenantId": "tenant:a"},
+					Status: 404,
+					Absent: []string{"repair_project:a.flat"},
+					Note:   "прораб чужого объекта — как несуществующий объект (AC-01)",
 				},
 			},
 		},
@@ -877,7 +895,6 @@ var repairsW600Matrix = matrix.File{
 			Method:  "POST",
 			Path:    "/api/v1/tenants/{tenantId}/repairs/projects/{projectId}/schedule/from-estimate",
 			Channel: "http",
-			Pending: "W6.14",
 			Rows: []matrix.Row{
 				{
 					Actor:  "anonymous",
@@ -892,6 +909,14 @@ var repairsW600Matrix = matrix.File{
 					Absent: []string{"tenant:a"},
 					Body:   "{\"estimateVersion\":1}",
 					Note:   "чужая организация — как несуществующая (AC-02)",
+				},
+				{
+					Actor:  "a.repairs-foreman-two",
+					Params: map[string]string{"projectId": "repair_project:a.flat", "tenantId": "tenant:a"},
+					Status: 404,
+					Absent: []string{"repair_project:a.flat"},
+					Body:   "{\"estimateVersion\":1}",
+					Note:   "прораб чужого объекта — как несуществующий объект (AC-01)",
 				},
 			},
 		},
@@ -900,7 +925,6 @@ var repairsW600Matrix = matrix.File{
 			Method:  "POST",
 			Path:    "/api/v1/tenants/{tenantId}/repairs/projects/{projectId}/schedule/preview",
 			Channel: "http",
-			Pending: "W6.14",
 			Rows: []matrix.Row{
 				{
 					Actor:  "anonymous",
@@ -916,6 +940,14 @@ var repairsW600Matrix = matrix.File{
 					Body:   "{\"changes\":[{\"stageId\":\"00000000-0000-4000-8000-000000000000\"}]}",
 					Note:   "чужая организация — как несуществующая (AC-02)",
 				},
+				{
+					Actor:  "a.repairs-foreman-two",
+					Params: map[string]string{"projectId": "repair_project:a.flat", "tenantId": "tenant:a"},
+					Status: 404,
+					Absent: []string{"repair_project:a.flat"},
+					Body:   "{\"changes\":[{\"stageId\":\"00000000-0000-4000-8000-000000000000\"}]}",
+					Note:   "прораб чужого объекта — как несуществующий объект (AC-01)",
+				},
 			},
 		},
 		{
@@ -923,7 +955,6 @@ var repairsW600Matrix = matrix.File{
 			Method:  "POST",
 			Path:    "/api/v1/tenants/{tenantId}/repairs/projects/{projectId}/schedule/changes",
 			Channel: "http",
-			Pending: "W6.14",
 			Rows: []matrix.Row{
 				{
 					Actor:  "anonymous",
@@ -946,7 +977,6 @@ var repairsW600Matrix = matrix.File{
 			Method:  "PATCH",
 			Path:    "/api/v1/tenants/{tenantId}/repairs/projects/{projectId}/schedule/stages/{stageId}",
 			Channel: "http",
-			Pending: "W6.14",
 			Rows: []matrix.Row{
 				{
 					Actor:  "anonymous",
@@ -969,7 +999,6 @@ var repairsW600Matrix = matrix.File{
 			Method:  "POST",
 			Path:    "/api/v1/tenants/{tenantId}/repairs/projects/{projectId}/schedule/baselines",
 			Channel: "http",
-			Pending: "W6.14",
 			Rows: []matrix.Row{
 				{
 					Actor:  "anonymous",

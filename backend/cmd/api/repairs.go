@@ -18,7 +18,8 @@ import (
 // one line in newRepairs) and takes its operations out of repairsPending; the stubs of repairsPending are one level
 // deeper than the methods of the embedded servers and never shadow them.
 type repairsServer struct {
-	repairs.Server // W6.11
+	repairs.Server         // W6.11
+	repairs.ScheduleServer // W6.14
 	repairsPending
 }
 
@@ -27,7 +28,8 @@ var _ repairsapi.StrictServerInterface = repairsServer{}
 // newRepairs is the server of the tag Repairs over the tenant pools and the clock of the application (APP_FIXED_NOW
 // outside prod).
 func newRepairs(pools repairs.Pools, now func() time.Time) repairsapi.StrictServerInterface {
-	return repairsServer{Server: repairs.Server{S: &repairs.Service{Pools: pools, Now: now}}}
+	svc := &repairs.Service{Pools: pools, Now: now}
+	return repairsServer{Server: repairs.Server{S: svc}, ScheduleServer: repairs.ScheduleServer{S: svc}}
 }
 
 // repairsImplemented are the operations of the tag Repairs that have a server; an owner adds its own together with the
@@ -35,6 +37,8 @@ func newRepairs(pools repairs.Pools, now func() time.Time) repairsapi.StrictServ
 var repairsImplemented = map[string]bool{
 	// W6.11: objects, the foreman, works, marks.
 	"listRepairProjects": true, "createRepairProject": true, "getRepairProject": true, "updateRepairProject": true, "getRepairProjectOverview": true, "assignRepairForeman": true, "activateRepairProject": true, "handOverRepairProject": true, "listRepairWorks": true, "listWorkLogs": true, "submitWorkLog": true, "acceptWorkLog": true, "returnWorkLog": true,
+	// W6.14: the schedule.
+	"getSchedule": true, "createScheduleFromEstimate": true, "previewScheduleChange": true, "applyScheduleChange": true, "setScheduleStageExecutor": true, "createScheduleBaseline": true,
 }
 
 // mountRepairsPending answers 501 for the operations of the tag Repairs without a server over the routes of the
@@ -56,10 +60,6 @@ type repairsNotImplemented struct{}
 var errRepairsNotImplemented = problem.New(problem.CodeNotImplemented, "")
 
 func (repairsNotImplemented) AccrueByAct(context.Context, repairsapi.AccrueByActRequestObject) (repairsapi.AccrueByActResponseObject, error) {
-	return nil, errRepairsNotImplemented
-}
-
-func (repairsNotImplemented) ApplyScheduleChange(context.Context, repairsapi.ApplyScheduleChangeRequestObject) (repairsapi.ApplyScheduleChangeResponseObject, error) {
 	return nil, errRepairsNotImplemented
 }
 
@@ -88,14 +88,6 @@ func (repairsNotImplemented) CreatePriceItem(context.Context, repairsapi.CreateP
 }
 
 func (repairsNotImplemented) CreatePurchase(context.Context, repairsapi.CreatePurchaseRequestObject) (repairsapi.CreatePurchaseResponseObject, error) {
-	return nil, errRepairsNotImplemented
-}
-
-func (repairsNotImplemented) CreateScheduleBaseline(context.Context, repairsapi.CreateScheduleBaselineRequestObject) (repairsapi.CreateScheduleBaselineResponseObject, error) {
-	return nil, errRepairsNotImplemented
-}
-
-func (repairsNotImplemented) CreateScheduleFromEstimate(context.Context, repairsapi.CreateScheduleFromEstimateRequestObject) (repairsapi.CreateScheduleFromEstimateResponseObject, error) {
 	return nil, errRepairsNotImplemented
 }
 
@@ -128,10 +120,6 @@ func (repairsNotImplemented) GetMeasurement(context.Context, repairsapi.GetMeasu
 }
 
 func (repairsNotImplemented) GetProjectFinance(context.Context, repairsapi.GetProjectFinanceRequestObject) (repairsapi.GetProjectFinanceResponseObject, error) {
-	return nil, errRepairsNotImplemented
-}
-
-func (repairsNotImplemented) GetSchedule(context.Context, repairsapi.GetScheduleRequestObject) (repairsapi.GetScheduleResponseObject, error) {
 	return nil, errRepairsNotImplemented
 }
 
@@ -191,10 +179,6 @@ func (repairsNotImplemented) PayoutAccruals(context.Context, repairsapi.PayoutAc
 	return nil, errRepairsNotImplemented
 }
 
-func (repairsNotImplemented) PreviewScheduleChange(context.Context, repairsapi.PreviewScheduleChangeRequestObject) (repairsapi.PreviewScheduleChangeResponseObject, error) {
-	return nil, errRepairsNotImplemented
-}
-
 func (repairsNotImplemented) ProposeChangeOrder(context.Context, repairsapi.ProposeChangeOrderRequestObject) (repairsapi.ProposeChangeOrderResponseObject, error) {
 	return nil, errRepairsNotImplemented
 }
@@ -236,10 +220,6 @@ func (repairsNotImplemented) SaveProjectAsTemplate(context.Context, repairsapi.S
 }
 
 func (repairsNotImplemented) SendEstimate(context.Context, repairsapi.SendEstimateRequestObject) (repairsapi.SendEstimateResponseObject, error) {
-	return nil, errRepairsNotImplemented
-}
-
-func (repairsNotImplemented) SetScheduleStageExecutor(context.Context, repairsapi.SetScheduleStageExecutorRequestObject) (repairsapi.SetScheduleStageExecutorResponseObject, error) {
 	return nil, errRepairsNotImplemented
 }
 
