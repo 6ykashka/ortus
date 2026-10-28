@@ -1,4 +1,4 @@
-# Матрица изоляции: тег Docs («Документы») контрактного PR этапа 7 (W7.00, 0.12.0-stage7) — хендлеры сервера модуля W7.23; маршрут, подпись и ознакомление (pending W7.24) ждут W7.24.
+# Матрица изоляции: тег Docs («Документы») контрактного PR этапа 7 (W7.00, 0.12.0-stage7) — хендлеры сервера модуля W7.23; маршрут, подпись и ознакомление — сервер W7.24; syncDocDataset — pending (набор данных и движок листа).
 # Данные «Документы» — данные организации (tenant 0061): чужая организация — 404, как несуществующая (AC-01, AC-02), без сессии — 401.
 # Объектные id в пути — tenant:missing (такого объекта нет ни в одной базе); строки с содержимым фикстур — docs_w723.yaml.
 # Отказы шлюза по правам — docs_w700_gate.yaml. Публичные операции без тенанта (openDocLink, docServerCallback)
@@ -396,7 +396,6 @@ endpoints:
   - op: startDocRoute
     method: POST
     path: /api/v1/tenants/{tenantId}/docs/{documentId}/route
-    pending: W7.24
     rows:
       - actor: b.owner
         params: { tenantId: tenant:a, documentId: tenant:missing }
@@ -411,7 +410,6 @@ endpoints:
   - op: decideDocRoute
     method: POST
     path: /api/v1/tenants/{tenantId}/docs/{documentId}/route/decisions
-    pending: W7.24
     rows:
       - actor: b.owner
         params: { tenantId: tenant:a, documentId: tenant:missing }
@@ -426,7 +424,6 @@ endpoints:
   - op: requestDocSignCode
     method: POST
     path: /api/v1/tenants/{tenantId}/docs/{documentId}/route/sign/code
-    pending: W7.24
     rows:
       - actor: b.owner
         params: { tenantId: tenant:a, documentId: tenant:missing }
@@ -441,7 +438,6 @@ endpoints:
   - op: confirmDocSign
     method: POST
     path: /api/v1/tenants/{tenantId}/docs/{documentId}/route/sign
-    pending: W7.24
     rows:
       - actor: b.owner
         params: { tenantId: tenant:a, documentId: tenant:missing }
@@ -456,7 +452,6 @@ endpoints:
   - op: ackDocument
     method: POST
     path: /api/v1/tenants/{tenantId}/docs/{documentId}/ack
-    pending: W7.24
     rows:
       - actor: b.owner
         params: { tenantId: tenant:a, documentId: tenant:missing }
@@ -471,7 +466,6 @@ endpoints:
   - op: closeDocAck
     method: POST
     path: /api/v1/tenants/{tenantId}/docs/{documentId}/route/ack/close
-    pending: W7.24
     rows:
       - actor: b.owner
         params: { tenantId: tenant:a, documentId: tenant:missing }
@@ -486,7 +480,6 @@ endpoints:
   - op: resumeDocRoute
     method: POST
     path: /api/v1/tenants/{tenantId}/docs/{documentId}/route/resume
-    pending: W7.24
     rows:
       - actor: b.owner
         params: { tenantId: tenant:a, documentId: tenant:missing }
@@ -501,7 +494,6 @@ endpoints:
   - op: cancelDocRoute
     method: POST
     path: /api/v1/tenants/{tenantId}/docs/{documentId}/route/cancel
-    pending: W7.24
     rows:
       - actor: b.owner
         params: { tenantId: tenant:a, documentId: tenant:missing }

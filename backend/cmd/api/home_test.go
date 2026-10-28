@@ -32,7 +32,7 @@ func TestHome(t *testing.T) {
 	dir := tenantctx.NewPGDirectory(nil)
 	states := moduleStates{S: &modulesreg.Service{}}
 	control := &pgxpool.Pool{}
-	srv := homeServer(dir, noPools{}, ev, states, orgFacts{control: control}, func() time.Time { return at })
+	srv := homeServer(dir, noPools{}, ev, states, orgFacts{control: control}, func() time.Time { return at }, nil)
 	s, ok := srv.(home.Server)
 	if !ok || s.S == nil {
 		t.Fatalf("home server %#v", srv)

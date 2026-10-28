@@ -54,7 +54,7 @@ func writeDocsWith(ctx context.Context, ex docsExec, td tenantData) error {
 		return nil
 	}
 	id := func(proto string) uuid.UUID { return seedID(td.tenant.proto, proto) }
-	steps := []func(context.Context, docsExec, func(string) uuid.UUID, tenantData) error{docsFolders, docsTemplates, docsDocuments, docsExtras}
+	steps := []func(context.Context, docsExec, func(string) uuid.UUID, tenantData) error{docsFolders, docsTemplates, docsDocuments, docsExtras, docsRoute}
 	for _, step := range steps {
 		if err := step(ctx, ex, id, td); err != nil {
 			return err
@@ -249,6 +249,45 @@ func docsExtras(ctx context.Context, ex docsExec, id func(string) uuid.UUID, _ t
 			values ($1, $2, $3, $4, $5, $6, $7, $8, $9::timestamptz) on conflict (id) do nothing`,
 			id(j.proto), j.op, []uuid.UUID{id("doc-318")}, j.name, j.status, j.progress, errText, id(sokolov), finished); err != nil {
 			return fmt.Errorf("docs job %s: %w", j.proto, err)
+		}
+	}
+	return nil
+}
+
+// docsRoute writes the finished route of the lease (the prototype rt-0, documents.js altaDocs): version 3 went to
+// Марина Котова for approval and to the owner for the signature by the code of the SMS (D-31: the method is kept in the
+// sheet), and was signed.
+func docsRoute(ctx context.Context, ex docsExec, id func(string) uuid.UUID, _ tenantData) error {
+	const (
+		started = "2026-08-31T15:02:00+03:00"
+		done    = "2026-09-01T12:10:00+03:00"
+	)
+	rules := jsonOf(map[string]bool{"lock": true, "notAuthor": true, "commentOnBack": true, "escalate": false})
+	if err := ex(ctx, `insert into docs.routes (id, document_id, version, started_by, started_at, status, current_step, rules, finished_at)
+		values ($1, $2, 3, $3, $4::timestamptz, 'done', 1, $5::jsonb, $6::timestamptz) on conflict (id) do nothing`,
+		id("rt-0"), id("doc-lease"), id(memberKotova), started, rules, done); err != nil {
+		return fmt.Errorf("docs route: %w", err)
+	}
+	for _, s := range []struct {
+		pos         int
+		kind, name  string
+		who         string
+		due         string
+		decidedAt   string
+		method, dec string
+	}{
+		{0, "approve", "Согласовать", memberKotova, "2026-09-01T12:00:00+03:00", "2026-08-31T16:20:00+03:00", "click", "ok"},
+		{1, "sign", "Утвердить", memberOwner, "2026-09-02T12:00:00+03:00", done, "pep_sms", "ok"},
+	} {
+		if err := ex(ctx, `insert into docs.route_steps (route_id, position, kind, name, mode, who, days, status, due_at)
+			values ($1, $2, $3, $4, 'all', $5, 1, 'done', $6::timestamptz) on conflict (route_id, position) do nothing`,
+			id("rt-0"), s.pos, s.kind, s.name, []uuid.UUID{id(s.who)}, s.due); err != nil {
+			return fmt.Errorf("docs route step %d: %w", s.pos, err)
+		}
+		if err := ex(ctx, `insert into docs.route_decisions (id, route_id, position, member_id, decision, method, at)
+			values ($1, $2, $3, $4, $5, $6, $7::timestamptz) on conflict (id) do nothing`,
+			id(fmt.Sprintf("rd-0-%d", s.pos)), id("rt-0"), s.pos, id(s.who), s.dec, s.method, s.decidedAt); err != nil {
+			return fmt.Errorf("docs route decision %d: %w", s.pos, err)
 		}
 	}
 	return nil

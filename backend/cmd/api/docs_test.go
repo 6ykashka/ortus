@@ -99,15 +99,14 @@ func TestNewDocs(t *testing.T) {
 }
 
 // The 45 operations of the tag Docs reach the module through the router: without a tenant the module answers 404; the
-// route, the signature, the acknowledgement and the sync of datasets wait for their streams (501).
+// sync of datasets waits for its stream (501); the route, the signature and the acknowledgement are W7.24.
 func TestDocsRoutes(t *testing.T) {
 	t.Parallel()
 	w, err := newDocs(noPools{}, nil, authz.New(nil, nil, time.Now), docsEnv(nil), envDev, quiet, time.Now)
 	if err != nil {
 		t.Fatal(err)
 	}
-	later := map[string]bool{"startDocRoute": true, "decideDocRoute": true, "requestDocSignCode": true, "confirmDocSign": true,
-		"ackDocument": true, "closeDocAck": true, "resumeDocRoute": true, "cancelDocRoute": true, "syncDocDataset": true}
+	later := map[string]bool{"syncDocDataset": true}
 	h := newRouter(deps{servers: Servers{Docs: w.docs, PublicDocs: w.public}})
 	n := 0
 	for _, op := range catalog.Operations {

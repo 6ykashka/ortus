@@ -254,106 +254,79 @@ func (r *req) discussion(ctx context.Context, d *document, out *dapi.Document, r
 
 // routeDTO is the route of a document with its steps, decisions and acknowledgements; nil — none.
 func (r *req) routeDTO(ctx context.Context, d *document) (*dapi.DocRoute, error) {
-	b := d.route
-	if b == nil {
+	if d.route == nil {
 		return nil, nil
 	}
-	var (
-		out     dapi.DocRoute
-		project *uuid.UUID
-		task    *uuid.UUID
-		rules   []byte
-		back    []byte
-	)
-	err := r.tx.QueryRow(ctx, `select id, version, started_by, started_at, status, current_step, project_id, task_id, rules, back
-		from docs.routes where id = $1`, b.id).
-		Scan(&out.Id, &out.Version, &out.StartedBy.MemberId, &out.StartedAt, &out.Status, &out.CurrentStep, &project, &task, &rules, &back)
-	if err != nil {
-		return nil, fmt.Errorf("docs: route: %w", err)
+	rd, err := r.loadRouteByID(ctx, d.id, d.route.id)
+	if err != nil || rd == nil {
+		return nil, err
 	}
-	out.StartedBy = r.memberRef(out.StartedBy.MemberId)
-	out.StartedAt = instant(out.StartedAt)
-	if project != nil {
-		out.Project = &dapi.ObjectRef{ModuleKey: "tasks", EntityType: "project", EntityId: *project}
+	out := dapi.DocRoute{Id: rd.id, Version: int64(rd.version), StartedBy: r.memberRef(rd.startedBy), StartedAt: instant(rd.startedAt),
+		Status: dapi.DocRouteStatus(rd.status), CurrentStep: int64(rd.current), Steps: make([]dapi.DocRouteStep, 0, len(rd.steps))}
+	if rd.project != uuid.Nil {
+		out.Project = &dapi.ObjectRef{ModuleKey: "tasks", EntityType: "project", EntityId: rd.project}
 	}
-	if task != nil {
-		out.Task = &dapi.ObjectRef{ModuleKey: "tasks", EntityType: "task", EntityId: *task}
+	if rd.task != uuid.Nil {
+		out.Task = &dapi.ObjectRef{ModuleKey: "tasks", EntityType: "task", EntityId: rd.task}
 	}
-	if rl := decodeObject[map[string]bool](rules); rl != nil {
-		out.Rules.CommentOnBack, out.Rules.Escalate, out.Rules.Lock, out.Rules.NotAuthor =
-			(*rl)["commentOnBack"], (*rl)["escalate"], (*rl)["lock"], (*rl)["notAuthor"]
+	out.Rules.CommentOnBack, out.Rules.Escalate, out.Rules.Lock, out.Rules.NotAuthor = rd.rules.CommentOnBack, rd.rules.Escalate, rd.rules.Lock, rd.rules.NotAuthor
+	if rd.back != nil {
+		out.Back = &struct {
+			Comment *string `json:"comment,omitempty"`
+			Name    string  `json:"name"`
+		}{Name: rd.back.Name}
+		if rd.back.Comment != "" {
+			c := rd.back.Comment
+			out.Back.Comment = &c
+		}
 	}
-	out.Back = decodeObject[struct {
-		Comment *string `json:"comment,omitempty"`
-		Name    string  `json:"name"`
-	}](back)
-	out.Steps, err = r.routeSteps(ctx, b.id)
-	return &out, err
+	for _, s := range rd.steps {
+		st, err := r.stepDTO(ctx, rd, s)
+		if err != nil {
+			return nil, err
+		}
+		out.Steps = append(out.Steps, st)
+	}
+	return &out, nil
 }
 
-// routeSteps reads the steps of a route with their decisions and acknowledgements.
-func (r *req) routeSteps(ctx context.Context, route uuid.UUID) ([]dapi.DocRouteStep, error) {
-	rows, err := r.tx.Query(ctx, `select position, kind, name, mode, who, audience, days, status, due_at, external
-		from docs.route_steps where route_id = $1 order by position`, route)
-	if err != nil {
-		return nil, fmt.Errorf("docs: route steps: %w", err)
+// stepDTO is a step of a route with its decisions, its acknowledgements and its customer.
+func (r *req) stepDTO(ctx context.Context, rd *routeData, s *routeStep) (dapi.DocRouteStep, error) {
+	st := dapi.DocRouteStep{Kind: dapi.DocRouteStepKind(s.kind), Name: s.name, Mode: dapi.DocRouteStepMode(s.mode), Days: int64(s.days),
+		Status: dapi.DocRouteStepStatus(s.status), Who: []dapi.DocMemberRef{}, Decisions: []dapi.DocRouteDecisionRec{}}
+	for _, w := range s.who {
+		st.Who = append(st.Who, r.memberRef(w))
 	}
-	type stepRow struct {
-		pos      int
-		kind     string
-		name     string
-		mode     string
-		who      []uuid.UUID
-		audience []byte
-		days     int
-		status   string
-		due      *time.Time
-		external []byte
+	if a := decodeList[dapi.DocShareEntry](s.audience); len(a) > 0 {
+		st.Audience = &a
 	}
-	steps, err := pgx.CollectRows(rows, func(x pgx.CollectableRow) (stepRow, error) {
-		var s stepRow
-		return s, x.Scan(&s.pos, &s.kind, &s.name, &s.mode, &s.who, &s.audience, &s.days, &s.status, &s.due, &s.external)
-	})
-	if err != nil {
-		return nil, fmt.Errorf("docs: route steps: %w", err)
+	if s.due != nil {
+		setDate(&st.Due, dayOf(*s.due))
 	}
-	out := make([]dapi.DocRouteStep, 0, len(steps))
-	for _, s := range steps {
-		st := dapi.DocRouteStep{Kind: dapi.DocRouteStepKind(s.kind), Name: s.name, Mode: dapi.DocRouteStepMode(s.mode), Days: int64(s.days),
-			Status: dapi.DocRouteStepStatus(s.status), Who: []dapi.DocMemberRef{}, Decisions: []dapi.DocRouteDecisionRec{}}
-		for _, w := range s.who {
-			st.Who = append(st.Who, r.memberRef(w))
+	for _, d := range s.decisions {
+		rec := dapi.DocRouteDecisionRec{Member: r.memberRef(d.member), Decision: dapi.DocRouteDecisionRecDecision(d.kind),
+			Method: dapi.DocRouteDecisionRecMethod(d.method), At: instant(d.at)}
+		if d.comment != "" {
+			c := d.comment
+			rec.Comment = &c
 		}
-		if a := decodeList[dapi.DocShareEntry](s.audience); len(a) > 0 {
-			st.Audience = &a
-		}
-		if s.due != nil {
-			setDate(&st.Due, dayOf(*s.due))
-		}
-		st.External = decodeObject[struct {
+		st.Decisions = append(st.Decisions, rec)
+	}
+	switch s.kind {
+	case stepExternal:
+		st.External = &struct {
 			Name        string  `json:"name"`
 			PhoneMasked *string `json:"phoneMasked,omitempty"`
-		}](s.external)
-		drs, err := r.tx.Query(ctx, `select member_id, decision, method, comment, at from docs.route_decisions
-			where route_id = $1 and position = $2 order by at`, route, s.pos)
-		if err != nil {
-			return nil, fmt.Errorf("docs: route decisions: %w", err)
+		}{Name: s.ext.name}
+		if m := maskPhone(s.ext.phone); m != "" {
+			st.External.PhoneMasked = &m
 		}
-		decisions, err := pgx.CollectRows(drs, func(x pgx.CollectableRow) (dapi.DocRouteDecisionRec, error) {
-			var (
-				rec     dapi.DocRouteDecisionRec
-				mid     uuid.UUID
-				comment *string
-			)
-			err := x.Scan(&mid, &rec.Decision, &rec.Method, &comment, &rec.At)
-			rec.Member, rec.Comment, rec.At = r.memberRef(mid), comment, instant(rec.At)
-			return rec, err
-		})
+	case stepAck:
+		done, err := r.stepDone(ctx, rd.doc, rd.version)
 		if err != nil {
-			return nil, fmt.Errorf("docs: route decisions: %w", err)
+			return st, err
 		}
-		st.Decisions = decisions
-		out = append(out, st)
+		st.Done = &done
 	}
-	return out, nil
+	return st, nil
 }

@@ -195,12 +195,6 @@ func (s Server) UpdateDocument(ctx context.Context, req dapi.UpdateDocumentReque
 	})
 }
 
-// AckDocument implements dapi.StrictServerInterface.
-func (s Server) AckDocument(ctx context.Context, req dapi.AckDocumentRequestObject) (dapi.AckDocumentResponseObject, error) {
-	_, _ = ctx, req
-	return nil, problem.New(problem.CodeNotImplemented, textNotYet("W7.24"))
-}
-
 // ListDocActivity implements dapi.StrictServerInterface.
 func (s Server) ListDocActivity(ctx context.Context, req dapi.ListDocActivityRequestObject) (dapi.ListDocActivityResponseObject, error) {
 	return answer(ctx, func(tc tenantctx.TenantContext) (dapi.DocActivityList, error) {
@@ -405,48 +399,6 @@ func (s Server) GetDocRoute(ctx context.Context, req dapi.GetDocRouteRequestObje
 	}, func(v v422) dapi.GetDocRouteResponseObject {
 		return dapi.GetDocRoute422ApplicationProblemPlusJSONResponse{ValidationApplicationProblemPlusJSONResponse: v}
 	})
-}
-
-// StartDocRoute implements dapi.StrictServerInterface.
-func (s Server) StartDocRoute(ctx context.Context, req dapi.StartDocRouteRequestObject) (dapi.StartDocRouteResponseObject, error) {
-	_, _ = ctx, req
-	return nil, problem.New(problem.CodeNotImplemented, textNotYet("W7.24"))
-}
-
-// CloseDocAck implements dapi.StrictServerInterface.
-func (s Server) CloseDocAck(ctx context.Context, req dapi.CloseDocAckRequestObject) (dapi.CloseDocAckResponseObject, error) {
-	_, _ = ctx, req
-	return nil, problem.New(problem.CodeNotImplemented, textNotYet("W7.24"))
-}
-
-// CancelDocRoute implements dapi.StrictServerInterface.
-func (s Server) CancelDocRoute(ctx context.Context, req dapi.CancelDocRouteRequestObject) (dapi.CancelDocRouteResponseObject, error) {
-	_, _ = ctx, req
-	return nil, problem.New(problem.CodeNotImplemented, textNotYet("W7.24"))
-}
-
-// DecideDocRoute implements dapi.StrictServerInterface.
-func (s Server) DecideDocRoute(ctx context.Context, req dapi.DecideDocRouteRequestObject) (dapi.DecideDocRouteResponseObject, error) {
-	_, _ = ctx, req
-	return nil, problem.New(problem.CodeNotImplemented, textNotYet("W7.24"))
-}
-
-// ResumeDocRoute implements dapi.StrictServerInterface.
-func (s Server) ResumeDocRoute(ctx context.Context, req dapi.ResumeDocRouteRequestObject) (dapi.ResumeDocRouteResponseObject, error) {
-	_, _ = ctx, req
-	return nil, problem.New(problem.CodeNotImplemented, textNotYet("W7.24"))
-}
-
-// ConfirmDocSign implements dapi.StrictServerInterface.
-func (s Server) ConfirmDocSign(ctx context.Context, req dapi.ConfirmDocSignRequestObject) (dapi.ConfirmDocSignResponseObject, error) {
-	_, _ = ctx, req
-	return nil, problem.New(problem.CodeNotImplemented, textNotYet("W7.24"))
-}
-
-// RequestDocSignCode implements dapi.StrictServerInterface.
-func (s Server) RequestDocSignCode(ctx context.Context, req dapi.RequestDocSignCodeRequestObject) (dapi.RequestDocSignCodeResponseObject, error) {
-	_, _ = ctx, req
-	return nil, problem.New(problem.CodeNotImplemented, textNotYet("W7.24"))
 }
 
 // GetDocShares implements dapi.StrictServerInterface.

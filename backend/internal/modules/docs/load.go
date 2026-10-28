@@ -312,19 +312,20 @@ func (l *loader) tempGrants(ctx context.Context) error {
 	})
 }
 
-// routes reads the active or returned route of every document that has one.
+// routes reads the last route of every document that has one (any status: the card shows a finished route) and, for an
+// active one, who waits at its step; an active route closes the document for editing.
 func (l *loader) routes(ctx context.Context) error {
 	err := l.each(ctx, "routes", `select distinct on (r.document_id) r.document_id, r.id, r.status, r.current_step, r.version,
-		r.started_by, coalesce(s.name, ''), s.due_at from docs.routes r
+		r.started_by, coalesce(s.name, ''), s.due_at, coalesce(r.back->>'name', '') from docs.routes r
 		left join docs.route_steps s on s.route_id = r.id and s.position = r.current_step
-		where r.status in ('active', 'returned') order by r.document_id, r.started_at desc`,
+		order by r.document_id, (r.status in ('active', 'returned')) desc, r.started_at desc, r.id`,
 		func(r pgx.Rows) error {
 			var (
 				id  uuid.UUID
 				b   routeBrief
 				due *time.Time
 			)
-			if err := r.Scan(&id, &b.id, &b.status, &b.current, &b.version, &b.started, &b.stepName, &due); err != nil {
+			if err := r.Scan(&id, &b.id, &b.status, &b.current, &b.version, &b.started, &b.stepName, &due, &b.backBy); err != nil {
 				return err
 			}
 			if due != nil {
@@ -333,10 +334,14 @@ func (l *loader) routes(ctx context.Context) error {
 			}
 			if d := l.w.docs[id]; d != nil {
 				d.route = &b
+				d.lock = d.lock || b.status == routeActive
 			}
 			return nil
 		})
 	if err != nil {
+		return err
+	}
+	if err := l.waitingAtSteps(ctx); err != nil {
 		return err
 	}
 	return l.each(ctx, "route templates", `select folder_id from docs.route_templates`, func(r pgx.Rows) error {
@@ -395,4 +400,31 @@ func (l *loader) objects(ctx context.Context) error {
 		l.w.objects[o.ID] = o
 	}
 	return nil
+}
+
+// waitingAtSteps computes who waits at the current step of every active route (stepWaiting): the approvers who have not
+// agreed, the signer, the addressees who have not acknowledged.
+func (l *loader) waitingAtSteps(ctx context.Context) error {
+	return l.each(ctx, "route waits", `select r.document_id, s.kind, s.mode, s.who,
+		coalesce((select array_agg(d.member_id) from docs.route_decisions d
+			where d.route_id = s.route_id and d.position = s.position and d.decision = 'ok'), '{}'),
+		coalesce((select array_agg(a.member_id) from docs.acks a where a.document_id = r.document_id and a.version = r.version), '{}')
+		from docs.routes r join docs.route_steps s on s.route_id = r.id and s.position = r.current_step
+		where r.status = 'active'`, func(r pgx.Rows) error {
+		var (
+			doc    uuid.UUID
+			agreed []uuid.UUID
+			st     = routeStep{status: stepStatusActive}
+		)
+		if err := r.Scan(&doc, &st.kind, &st.mode, &st.who, &agreed, &st.acked); err != nil {
+			return err
+		}
+		for _, m := range agreed {
+			st.decisions = append(st.decisions, decision{member: m, kind: decisionOK})
+		}
+		if d := l.w.docs[doc]; d != nil && d.route != nil {
+			d.route.waiting, d.route.kind = st.waiting(), st.kind
+		}
+		return nil
+	})
 }

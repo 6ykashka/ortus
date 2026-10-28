@@ -317,7 +317,7 @@ func (r *req) saveFromEngine(ctx context.Context, doc uuid.UUID, base int, b Cal
 	if _, err := r.tx.Exec(ctx, `update docs.documents set current_version = $2, revision = revision + 1, updated_at = $3 where id = $1`, doc, next, r.now); err != nil {
 		return fmt.Errorf("docs: callback current version: %w", err)
 	}
-	if _, err := r.publishService(ctx, "docs.version.saved", aggDocument, doc, map[string]any{"version": next, "source": sourceEdit, "forcesave": b.Status == cbForce}); err != nil {
+	if _, err := r.publishService(ctx, "docs.version.saved", aggDocument, doc, map[string]any{keyVersion: next, "source": sourceEdit, "forcesave": b.Status == cbForce}); err != nil {
 		return err
 	}
 	return r.recordService(ctx, "docs.version.save", doc, fmt.Sprintf("Сохранена v%d сервером документов", next))

@@ -15,6 +15,7 @@ import (
 	docsapi "github.com/ortus/ortus-crm/backend/internal/api/docs"
 	publicdocsapi "github.com/ortus/ortus-crm/backend/internal/api/publicdocs"
 	"github.com/ortus/ortus-crm/backend/internal/modules/docs"
+	"github.com/ortus/ortus-crm/backend/internal/modules/tasks"
 	"github.com/ortus/ortus-crm/backend/internal/platform/authz"
 	"github.com/ortus/ortus-crm/backend/internal/platform/notify/inbox"
 	"github.com/ortus/ortus-crm/backend/internal/platform/storage"
@@ -26,6 +27,7 @@ const minSecret = 32
 // docsWiring is what «Документы» (W7.23) give to the application: the servers of the tags Docs and PublicDocs and the
 // check of the call of the document server the gateway makes for it (the call has no session).
 type docsWiring struct {
+	svc      *docs.Service // the service itself: «Главная» reads the waits of the member from it (W7.24)
 	docs     docsapi.StrictServerInterface
 	public   publicdocsapi.StrictServerInterface
 	callback func(*http.Request) (context.Context, error)
@@ -48,7 +50,7 @@ func newDocs(pools docs.Pools, control *pgxpool.Pool, ev *authz.Evaluator, geten
 		return docsWiring{}, err
 	}
 	docs.Register(ev, pools) // the places of folders and documents for explainAccess (W4.01)
-	return docsWiring{docs: docs.Server{S: svc}, public: docs.PublicServer{S: svc}, callback: svc.AuthorizeCallback}, nil
+	return docsWiring{svc: svc, docs: docs.Server{S: svc}, public: docs.PublicServer{S: svc}, callback: svc.AuthorizeCallback}, nil
 }
 
 // docsService is the service of «Документы» of the configuration (the API and the worker of jobs build it alike).
@@ -71,6 +73,12 @@ func docsService(pools docs.Pools, control *pgxpool.Pool, ev *authz.Evaluator, g
 	}
 	if p := docs.ExecProcessorFromEnv(getenv); p != nil {
 		svc.Processor = p
+	}
+	if svc.Signer, err = docsSigner(getenv, appEnv, log); err != nil { // W7.24: the second confirmation of a signature (D-31)
+		return nil, err
+	}
+	if control != nil { // W7.24: the mirror tasks of the routes live in the module «Задачи»
+		svc.Tasks = docRouteTasks{S: &tasks.Service{Pools: pools, Authz: ev, Directory: tasks.ControlDirectory{DB: control}, Audience: inbox.AuthzAudience{E: ev}, Now: now}}
 	}
 	cfg, ok, err := storage.ConfigFromEnv(getenv)
 	switch {

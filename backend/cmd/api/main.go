@@ -257,7 +257,7 @@ func build(ctx context.Context, cfg config, log *slog.Logger, getenv func(string
 				Extras:   meExtras{subs: subs, modules: modules, pools: pools},             // W1.08: modules, tenantState
 				Branding: ctl.themes,                                                       // W4.60: TenantContext.branding
 			},
-			Home: homeServer(dir, pools, ev, moduleStates{S: modules}, orgFacts{control: control, subs: subs}, cfg.clock(), // W2.09, W2.54
+			Home: homeServer(dir, pools, ev, moduleStates{S: modules}, orgFacts{control: control, subs: subs}, cfg.clock(), docsW.svc, // W2.09, W2.54, W7.24
 				homeservice.Source{Requests: serviceHome{S: svcW.svc}}), // W7.31: the requests that need a decision
 			Auth: auth,
 			// W4.60 (control.go): the requests, the price book, the usage and the facts of the tenants, the catalogue of

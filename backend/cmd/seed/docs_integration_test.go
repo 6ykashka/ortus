@@ -43,6 +43,8 @@ func TestWriteDocsTwice(t *testing.T) {
 		`select count(*) from docs.documents`:                                                 6,
 		`select count(*) from docs.versions`:                                                  11,
 		`select count(*) from docs.ocr_words`:                                                 3,
+		`select count(*) from docs.routes where status = 'done' and version = 3`:              1,
+		`select count(*) from docs.route_decisions where method = 'pep_sms'`:                  1,
 		`select count(*) from docs.jobs where status = 'failed'`:                              1,
 		`select count(*) from docs.folders where sensitivity = 'finance' and mode = 'listed'`: 1,
 	} {

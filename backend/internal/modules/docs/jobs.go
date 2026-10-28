@@ -543,7 +543,7 @@ func (r *req) nextVersion(ctx context.Context, id uuid.UUID, f JobFile, source s
 	if _, err := r.tx.Exec(ctx, `update docs.documents set current_version = $2, revision = revision + 1, updated_at = $3 where id = $1`, id, next, r.now); err != nil {
 		return 0, fmt.Errorf("docs: next version: %w", err)
 	}
-	if _, err := r.publishService(ctx, "docs.version.saved", aggDocument, id, map[string]any{"version": next, "source": source}); err != nil {
+	if _, err := r.publishService(ctx, "docs.version.saved", aggDocument, id, map[string]any{keyVersion: next, "source": source}); err != nil {
 		return 0, err
 	}
 	return next, nil

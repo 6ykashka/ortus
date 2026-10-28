@@ -268,6 +268,9 @@ type routeBrief struct {
 	started  uuid.UUID
 	stepName string
 	due      *time.Time
+	backBy   string      // who returned a returned route
+	kind     string      // the kind of the current step of an active route
+	waiting  []uuid.UUID // who the current step of an active route waits for
 }
 
 // repairObject is an object of repairs of the relation «прораб объекта» (none until stage 6).

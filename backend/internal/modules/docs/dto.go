@@ -122,8 +122,36 @@ func (r *req) my(d *document, rt rights, withChain bool) dapi.DocMy {
 }
 
 // waits are the things that wait for the member in d (docWaits): a mention to answer, a scan to check, a returned
-// route; the steps of a route are added by the route (W7.24).
+// route, the step of an active route that waits for the member.
 func (r *req) waits(d *document) []dapi.DocWait {
+	out := r.mentionWaits(d)
+	if n := r.w.ocrOpen[d.id]; n > 0 && (d.owner == r.me.id || r.me.owner) {
+		c := int64(n)
+		out = append(out, dapi.DocWait{Kind: dapi.DocWaitKind("ocr"), Count: &c})
+	}
+	b := d.route
+	switch {
+	case b == nil:
+	case b.status == routeReturned && b.started == r.me.id:
+		w := dapi.DocWait{Kind: dapi.DocWaitKind("returned")}
+		if b.backBy != "" {
+			by := b.backBy
+			w.By = &by
+		}
+		out = append(out, w)
+	case b.status == routeActive && slices.Contains(b.waiting, r.me.id):
+		w := dapi.DocWait{Kind: dapi.DocWaitKind(b.kind)}
+		if b.due != nil {
+			setDate(&w.Due, *b.due)
+		}
+		out = append(out, w)
+	}
+	return out
+}
+
+// mentionWaits are the mentions the member answers, or — for the author — the mentioned ones who cannot open the
+// document yet.
+func (r *req) mentionWaits(d *document) []dapi.DocWait {
 	out := []dapi.DocWait{}
 	for _, m := range r.w.mentions[d.id] {
 		id, text := m.comment, m.text
@@ -138,13 +166,6 @@ func (r *req) waits(d *document) []dapi.DocWait {
 				out = append(out, dapi.DocWait{Kind: dapi.DocWaitKind("mention"), CommentId: &id, By: &by, Comment: &text})
 			}
 		}
-	}
-	if n := r.w.ocrOpen[d.id]; n > 0 && (d.owner == r.me.id || r.me.owner) {
-		c := int64(n)
-		out = append(out, dapi.DocWait{Kind: dapi.DocWaitKind("ocr"), Count: &c})
-	}
-	if b := d.route; b != nil && b.status == "returned" && b.started == r.me.id {
-		out = append(out, dapi.DocWait{Kind: dapi.DocWaitKind("returned")})
 	}
 	return out
 }

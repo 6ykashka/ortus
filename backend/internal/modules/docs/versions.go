@@ -139,7 +139,7 @@ func (s *Service) RestoreVersion(ctx context.Context, tc tenantctx.TenantContext
 		if err := r.touch(ctx, d); err != nil {
 			return err
 		}
-		if _, err := r.publish(ctx, "docs.version.saved", aggDocument, id, map[string]any{"version": next, "source": "restore", "base": number}); err != nil {
+		if _, err := r.publish(ctx, "docs.version.saved", aggDocument, id, map[string]any{keyVersion: next, "source": "restore", "base": number}); err != nil {
 			return err
 		}
 		if err := r.record(ctx, "docs.version.restore", id, fmt.Sprintf("Восстановлена v%d как v%d", number, next), false, nil); err != nil {

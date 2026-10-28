@@ -8,7 +8,8 @@ import (
 )
 
 // The documents of the demo (W7.23) are written for «Альта» only: six folders with their lists, three templates and two
-// route templates, six documents with their versions, a comment with a mention, the words of a scan and its two jobs.
+// route templates, six documents with their versions, a comment with a mention, the words of a scan and its two jobs, and
+// the finished route of the lease (W7.24: approve, sign — the prototype rt-0).
 func TestDocsSeedStatements(t *testing.T) {
 	t.Parallel()
 	for _, c := range []struct {
@@ -16,7 +17,8 @@ func TestDocsSeedStatements(t *testing.T) {
 		want map[string]int
 	}{
 		{alta, map[string]int{"docs.folders": 6, "docs.shares": 3, "docs.templates": 3, "docs.route_templates": 2, "docs.documents": 6,
-			"docs.versions": 11, "docs.comments": 1, "docs.ocr_words": 3, "docs.jobs": 2}},
+			"docs.versions": 11, "docs.comments": 1, "docs.ocr_words": 3, "docs.jobs": 2, "docs.routes": 1, "docs.route_steps": 2,
+			"docs.route_decisions": 2}},
 		{lotosData, map[string]int{}},
 	} {
 		got := map[string]int{}

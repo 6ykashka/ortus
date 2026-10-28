@@ -30,13 +30,15 @@ type Service struct {
 	Relations   Relations        // nil: no objects of repairs (until stage 6)
 	Recipients  inbox.Recipients // nil: no notifications
 	Audience    inbox.Audience
-	Engine      Engine    // the document server behind the adapter (D-32); nil: none, the document opens for viewing
-	Blobs       Blobs     // object storage of the files of versions; nil: the bytes of files are not reachable
-	Processor   Processor // the programs of the jobs (OCRmyPDF, qpdf, converter); nil: the jobs fail with a hint
-	Secrets     Secrets   // the key of the tokens and PINs of external links; nil: a random key per process
-	Links       Links     // the control index of external links (control 0011); nil: external links are off
-	PublicBase  string    // the origin of the public pages (PUBLIC_BASE_URL); "" — the links are relative
-	CallbackURL string    // the absolute URL of docServerCallback the document server calls; "" — derived from PublicBase
+	Engine      Engine     // the document server behind the adapter (D-32); nil: none, the document opens for viewing
+	Blobs       Blobs      // object storage of the files of versions; nil: the bytes of files are not reachable
+	Processor   Processor  // the programs of the jobs (OCRmyPDF, qpdf, converter); nil: the jobs fail with a hint
+	Secrets     Secrets    // the key of the tokens and PINs of external links; nil: a random key per process
+	Links       Links      // the control index of external links (control 0011); nil: external links are off
+	Tasks       RouteTasks // the mirror tasks of the routes (W7.24); nil: a route has no task
+	Signer      Signer     // the second confirmation of a signature (D-31); nil: a signature is dependency_unavailable
+	PublicBase  string     // the origin of the public pages (PUBLIC_BASE_URL); "" — the links are relative
+	CallbackURL string     // the absolute URL of docServerCallback the document server calls; "" — derived from PublicBase
 	Now         func() time.Time
 	NewID       func() uuid.UUID // nil: uuid.New (tests fix ids)
 }

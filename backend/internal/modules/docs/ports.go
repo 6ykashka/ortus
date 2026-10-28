@@ -7,6 +7,7 @@ import (
 	"time"
 
 	"github.com/google/uuid"
+	"github.com/jackc/pgx/v5"
 
 	"github.com/ortus/ortus-crm/backend/internal/platform/storage"
 )
@@ -150,4 +151,69 @@ type Processor interface {
 // random key per process is used and the tokens do not survive a restart (tests only).
 type Secrets interface {
 	LinkKey() []byte
+}
+
+// RouteTaskState is what a route tells its mirror task (documents.js syncTask): the step and who waits, the status of
+// the route (active, returned, done, cancelled), the person to assign and the term of the step.
+type RouteTaskState struct {
+	Status       string
+	Title        string // the title of the document
+	Version      int
+	Step         int // the number of the current step, from 1
+	Steps        int
+	StepName     string
+	Waiting      []uuid.UUID
+	WaitingNames []string
+	Assignee     uuid.UUID  // uuid.Nil: keep the assignee
+	Due          *time.Time // nil: keep the term
+	Actor        uuid.UUID  // the member whose action moved the route (the author of the line in the task); uuid.Nil — the system
+}
+
+// RouteTask is the mirror task of a route (Q-W4.00-documents-3): the project (uuid.Nil — the system project «ДОК ·
+// Документы · маршруты»), the starter of the route, the document and the first state.
+type RouteTask struct {
+	Project     uuid.UUID
+	Author      uuid.UUID
+	AuthorOwner bool
+	AuthorName  string
+	Document    uuid.UUID
+	Route       uuid.UUID
+	Title       string
+	Description string
+	State       RouteTaskState
+}
+
+// RouteTaskResult is the task made — its id, number («ДОК-101») and project — or the cause of a refusal.
+type RouteTaskResult struct {
+	ID        uuid.UUID
+	Key       string
+	Project   uuid.UUID
+	Refused   string // the text of a refusal; "" — the task is made
+	Forbidden bool   // the refusal is «нет права», not «нет проекта»
+}
+
+// RouteTasks is the module «Задачи» for the routes: cmd/api adapts tasks.Service (the module imports no other module).
+// Every call runs in the transaction tx of the route, so the task and the route stand or fall together.
+type RouteTasks interface {
+	// MayCreate reports whether member may create tasks in project (uuid.Nil — the system project, always).
+	MayCreate(ctx context.Context, tx pgx.Tx, tenant, member uuid.UUID, owner bool, project uuid.UUID) (bool, error)
+	// CreateRouteTask makes the mirror task of a route.
+	CreateRouteTask(ctx context.Context, tx pgx.Tx, tenant uuid.UUID, t RouteTask) (RouteTaskResult, error)
+	// SyncRouteTask moves the task after its route: the status, the assignee, the term, the card of the route and a
+	// system comment (note, may be empty).
+	SyncRouteTask(ctx context.Context, tx pgx.Tx, tenant uuid.UUID, task uuid.UUID, st RouteTaskState, note string) error
+}
+
+// ErrNoDelivery is the answer of a Signer without a channel of the code (D-31: the SMS are put off): the caller
+// answers dependency_unavailable.
+var ErrNoDelivery = errors.New("docs: the code cannot be delivered")
+
+// Signer is the second confirmation of a signature (PEP, D-31 of the set): the repeated sign-in to Ortus by the
+// password or by the code of the second factor, and the code the delivery port sends (SMS to the customer).
+type Signer interface {
+	// ConfirmLogin checks the password or the one-time code of the second factor of member; false — refused.
+	ConfirmLogin(ctx context.Context, tenant, member uuid.UUID, password, totp string) (bool, error)
+	// SendCode delivers code to member and returns the masked address («+7 9•• •••-••-42»); ErrNoDelivery without a
+	// channel.
+	SendCode(ctx context.Context, tenant, member uuid.UUID, code string) (string, error)
 }

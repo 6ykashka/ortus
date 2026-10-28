@@ -8,7 +8,9 @@ import (
 
 	homeapi "github.com/ortus/ortus-crm/backend/internal/api/home"
 	"github.com/ortus/ortus-crm/backend/internal/control/subscriptions"
+	"github.com/ortus/ortus-crm/backend/internal/modules/docs"
 	"github.com/ortus/ortus-crm/backend/internal/modules/home"
+	homedocs "github.com/ortus/ortus-crm/backend/internal/modules/home/docs"
 	homefleet "github.com/ortus/ortus-crm/backend/internal/modules/home/fleet"
 	homeorg "github.com/ortus/ortus-crm/backend/internal/modules/home/org"
 	hometasks "github.com/ortus/ortus-crm/backend/internal/modules/home/tasks"
@@ -24,14 +26,37 @@ import (
 // here), the memberships of the control DB for the tenant of the query, the module states of the registry W1.08 and the
 // clock of the application (APP_FIXED_NOW outside prod). The source of tasks also gives the counters of
 // getMyTaskSummary; it reads through the port of the module «Задачи» on the same pools, evaluator and control DB.
-func homeServer(dir tenantctx.Directory, pools scopeddb.Pools, ev *authz.Evaluator, states home.Modules, org orgFacts, now func() time.Time, extra ...home.Source) homeapi.StrictServerInterface {
+func homeServer(dir tenantctx.Directory, pools scopeddb.Pools, ev *authz.Evaluator, states home.Modules, org orgFacts, now func() time.Time,
+	documents *docs.Service, extra ...home.Source) homeapi.StrictServerInterface {
 	tk := hometasks.Source{Tasks: taskPort{S: &tasks.Service{Pools: pools, Authz: ev, Directory: tasks.ControlDirectory{DB: org.control}, Now: now}}}
-	reg, err := home.NewRegistry(append([]home.Source{homefleet.Source{Pools: pools, Authz: ev},
-		homeorg.Source{Pools: pools, Authz: ev, Control: org.control, Subscriptions: orgSubscriptions{current: org.subs.Current}}, tk}, extra...)...)
+	sources := []home.Source{homefleet.Source{Pools: pools, Authz: ev},
+		homeorg.Source{Pools: pools, Authz: ev, Control: org.control, Subscriptions: orgSubscriptions{current: org.subs.Current}}, tk}
+	if documents != nil {
+		sources = append(sources, homedocs.Source{Docs: docsPort{S: documents}})
+	}
+	reg, err := home.NewRegistry(append(sources, extra...)...)
 	if err != nil { // the sources above are never nil: a programming error
 		panic(err)
 	}
 	return home.Server{S: &home.Service{Dir: dir, Registry: reg, Modules: states, Now: now, Tasks: tk}}
+}
+
+// docsPort adapts the waits of the module «Документы» (docs.Service.HomeWaits, W7.24) to the source of documents.
+type docsPort struct{ S *docs.Service }
+
+var _ homedocs.Reader = docsPort{}
+
+// HomeWaits implements homedocs.Reader.
+func (p docsPort) HomeWaits(ctx context.Context, tc tenantctx.TenantContext, limit int) ([]homedocs.Wait, error) {
+	ws, err := p.S.HomeWaits(ctx, tc, limit)
+	if err != nil {
+		return nil, err
+	}
+	out := make([]homedocs.Wait, 0, len(ws))
+	for _, w := range ws {
+		out = append(out, homedocs.Wait{Document: w.Document, Title: w.Title, Kind: w.Kind, Due: w.Due, By: w.By})
+	}
+	return out, nil
 }
 
 // taskPort adapts the port of «Главная» of the module «Задачи» (tasks.Service.Home) to the source of tasks (W4.81).
