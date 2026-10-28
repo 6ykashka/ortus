@@ -1567,6 +1567,10 @@ ID — `Q-<WS>-<n>`. До решения действует колонка «П�
 | Q-W2.99-1 | Строка машины открывается с момента одобрения или назначения только для переводов с подготовкой рейса; перевод 0.6.2 без машины — с начала окна (закрывает Q-W2.92-2) | Применено | `modules/fleet/pool` | стюард контракта | технический |
 | Q-W2.99-2 | Нужна общая константа `forbidden_action` в `@ortus/api-client`: сейчас локальная `FORBIDDEN_ACTION` в `routes/logistics/driver/offer.ts` | Локальная константа | `routes/logistics/driver/offer.ts` | стюард контракта | технический |
 | Q-W2.98-1 | Флейк `modal-finish-route.spec.ts:129` на tablet-768: таймаут тоста 30 с вместо 15 маскирует причину; при повторе нужна трасса Playwright (`--trace on`) для поиска причины в `finishTripRoute` | Таймаут тоста 30 с | `frontend/apps/web/e2e/modal-finish-route.spec.ts` | владелец страницы | технический |
+| Q-W2.93-1 | Флейк `logistics-plan.spec.ts:267` (W2.53/W2.20): тост под нагрузкой не успевает за таймаут | Не менялось | `frontend/apps/web/e2e/logistics-plan.spec.ts` | владелец страницы | технический |
+| Q-W2.93-2 | `logistics-fleet.spec.ts:447`: три машины FLEET_PICK на три проекта | Не менялось | `frontend/apps/web/e2e/logistics-fleet.spec.ts` | владелец страницы | технический |
+| Q-W2.93-3 | UI-бронь на весь рейс Р-208 (`driver-today:665/696`, `driver-cars:136`) даёт 409 `reservation_overlap` при `consumed`-бронях прошлых смен; хелпер `reserveWindow` сдвигает окно и явно сообщает об исчерпании, UI-путь не закрыт | Продукт и сид не менялись | e2e стенда, сид флота | владелец продукта | продуктовый |
+| Q-W2.93-4 | `temporary-driver-vehicle*.spec.ts` (244, 341, 429) и `-shift.spec.ts:40` на tablet-768 (W2.70) проходят только на повторе; нужен разбор владельца | Не менялось | `frontend/apps/web/e2e/journeys/stage2/` | владелец страницы | технический |
 
 <!-- renumber:off -->
 ## Вопросы DoR этапов 4–7 (W4.00)
