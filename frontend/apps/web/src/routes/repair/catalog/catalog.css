@@ -1,0 +1,398 @@
+/* W6.22 · Стили страницы «Шаблоны и расценки» (эталон design-2026-10-19, «Ремонт и стройка.dc.html» :614–721).
+   Общие элементы — ../supply/repair.css (`ox-rps-*`). Цели нажатия на телефоне ≥ 44 px. */
+
+.ox-rc-split {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  align-items: flex-start;
+}
+
+.ox-rc-list {
+  flex: 1 1 250px;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.ox-rc-tpl {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 5px;
+  min-height: 44px;
+  padding: 12px 14px;
+  border-radius: var(--ox-radius-xl);
+  border: 1.5px solid var(--ox-line);
+  background: var(--ox-card);
+  color: var(--ox-text);
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.ox-rc-tpl[aria-pressed='true'] {
+  border-color: var(--ox-accent);
+  background: #f1f7f3;
+}
+
+.ox-rc-tpl:focus-visible {
+  outline: 2px solid var(--ox-focus);
+  outline-offset: 2px;
+}
+
+.ox-rc-tpl-name {
+  font-size: var(--ox-fs-md);
+  font-weight: var(--ox-fw-semibold);
+  text-wrap: pretty;
+}
+
+.ox-rc-detail {
+  flex: 2.4 1 520px;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.ox-rc-head {
+  padding: 16px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px 16px;
+  align-items: flex-start;
+  justify-content: space-between;
+}
+
+.ox-rc-head-body {
+  flex: 1 1 280px;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 6px;
+}
+
+.ox-rc-meta {
+  font-size: var(--ox-fs-sm);
+}
+
+.ox-rc-from {
+  font-size: var(--ox-fs-sm);
+  color: var(--ox-text-label);
+  text-wrap: pretty;
+}
+
+.ox-rc-foot {
+  padding: 10px 16px;
+  border-top: 1px solid var(--ox-divider);
+  font-size: var(--ox-fs-xs);
+  color: var(--ox-text-muted);
+  text-wrap: pretty;
+}
+
+/* Таблица шаблона и справочника: строка раздела. */
+.ox-rc-sec td {
+  padding: 8px 14px;
+  background: var(--ox-raised);
+  border-top: 1px solid var(--ox-line);
+}
+
+.ox-rps-table tbody tr.ox-rc-sec:first-child td {
+  border-top: 0;
+}
+
+.ox-rc-sec-line {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+}
+
+.ox-rc-add {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  min-height: 44px;
+  padding: 0 10px;
+  border-radius: var(--ox-radius-sm);
+  border: 1px dashed var(--ox-accent);
+  background: var(--ox-card);
+  color: var(--ox-accent);
+  font: inherit;
+  font-size: var(--ox-fs-xs);
+  font-weight: var(--ox-fw-medium);
+  cursor: pointer;
+}
+
+.ox-rc-add:focus-visible,
+.ox-rc-x:focus-visible,
+.ox-rc-pick-item:focus-visible {
+  outline: 2px solid var(--ox-focus);
+  outline-offset: 1px;
+}
+
+@media (min-width: 640px) {
+  .ox-rc-add {
+    min-height: 30px;
+  }
+}
+
+.ox-rc-th-x {
+  width: 44px;
+}
+
+.ox-rc-td-x {
+  text-align: center;
+}
+
+.ox-rc-x {
+  display: inline-grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  border: 0;
+  border-radius: var(--ox-radius-md);
+  background: transparent;
+  color: var(--ox-danger-fg);
+  cursor: pointer;
+}
+
+.ox-rc-x:hover {
+  background: var(--ox-danger-bg);
+}
+
+@media (min-width: 640px) {
+  .ox-rc-x {
+    width: 32px;
+    height: 32px;
+  }
+}
+
+.ox-rc-pick td {
+  padding: 10px 14px;
+  background: #f1f7f3;
+}
+
+.ox-rc-pick-box {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.ox-rc-pick-q {
+  max-width: 420px;
+}
+
+.ox-rc-pick-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.ox-rc-pick-item {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 1px;
+  min-height: 44px;
+  padding: 6px 10px;
+  border-radius: var(--ox-radius-md);
+  border: 1px solid var(--ox-line-control);
+  background: var(--ox-card);
+  color: var(--ox-text);
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.ox-rc-pick-item:hover {
+  border-color: var(--ox-accent);
+}
+
+.ox-rc-pick-name {
+  font-size: var(--ox-fs-sm);
+  font-weight: var(--ox-fw-medium);
+}
+
+.ox-rc-rule {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: var(--ox-fs-sm);
+  color: var(--ox-text-label);
+}
+
+.ox-rc-rule[data-kind='formula'] {
+  color: var(--ox-info-fg);
+}
+
+.ox-rc-how {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  align-items: center;
+}
+
+.ox-rc-how-sel {
+  max-width: 250px;
+}
+
+.ox-rc-coef {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: var(--ox-fs-xs);
+  color: var(--ox-text-muted);
+}
+
+.ox-rc-num {
+  width: 60px;
+}
+
+.ox-rc-num-q {
+  width: 72px;
+}
+
+/* Технология, документы, материалы, чек-лист. */
+.ox-rc-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 300px), 1fr));
+  gap: 12px;
+}
+
+.ox-rc-col {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.ox-rc-box {
+  padding: 14px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.ox-rc-tech,
+.ox-rc-ul {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  font-size: var(--ox-fs-sm);
+}
+
+.ox-rc-tech li {
+  display: grid;
+  grid-template-columns: 22px minmax(0, 1fr);
+  gap: 8px;
+}
+
+.ox-rc-n {
+  display: grid;
+  place-items: center;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: var(--ox-neutral-bg);
+  color: var(--ox-neutral-fg);
+  font-size: 11px;
+  font-weight: var(--ox-fw-semibold);
+}
+
+.ox-rc-ul li {
+  display: flex;
+  gap: 8px;
+  align-items: flex-start;
+  text-wrap: pretty;
+}
+
+.ox-rc-ul li svg,
+.ox-rc-ul li .ox-icon {
+  flex: none;
+  color: var(--ox-text-muted);
+}
+
+.ox-rc-mats li {
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 2px 10px;
+}
+
+/* Справочник: поиск, тип, счётчик, «Новая позиция». */
+.ox-rc-tools {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 12px;
+  align-items: center;
+}
+
+.ox-rc-search {
+  flex: 1 1 240px;
+  max-width: 360px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 44px;
+  padding: 0 10px;
+  border: 1px solid var(--ox-line-control);
+  border-radius: var(--ox-radius-md);
+  background: var(--ox-card);
+  color: var(--ox-text-muted);
+}
+
+.ox-rc-search input {
+  flex: 1;
+  min-width: 0;
+  border: 0;
+  background: transparent;
+  color: var(--ox-text);
+  font: inherit;
+}
+
+.ox-rc-search:focus-within {
+  outline: 2px solid var(--ox-focus);
+  outline-offset: 1px;
+}
+
+.ox-rc-search input:focus {
+  outline: none;
+}
+
+@media (min-width: 640px) {
+  .ox-rc-search {
+    min-height: 40px;
+  }
+}
+
+.ox-rc-count {
+  margin-left: auto;
+}
+
+.ox-rc-price {
+  width: 104px;
+}
+
+.ox-rc-new {
+  border: 1px solid var(--ox-line);
+}
+
+.ox-rc-f-kind {
+  flex: 1 1 120px;
+}
+
+.ox-rc-f-sec {
+  flex: 1 1 130px;
+}
+
+.ox-rc-f-unit {
+  flex: 0 1 90px;
+}
+
+.ox-rc-f-price {
+  flex: 0 1 110px;
+}

@@ -354,13 +354,14 @@ test.describe('repair-card — карточка объекта, обзор 1a @m
     await expect(main(page)).toContainText('Назначается после договора');
   });
 
-  test('вкладка другого WS — заглушка с пунктами «Требует решения»; адрес и «Объекты» назад', async ({
+  test('вкладка «Снабжение» (W6.22) вместо заглушки; адрес и «Объекты» назад', async ({
     app,
     page,
   }) => {
     await open(app, page, 'ЖК Речной · квартира 42', 'owner', 'Снабжение');
     await expect(page).toHaveURL(/tab=supply/);
-    await expect(main(page)).toContainText('Снабжение: раздел ещё не подключён');
+    await expect(main(page).getByRole('heading', { level: 2, name: 'Снабжение' })).toBeVisible();
+    await expect(main(page)).not.toContainText('раздел ещё не подключён');
     await reloadReady(page);
     await expect(tabs(page).filter({ hasText: 'Снабжение' })).toHaveAttribute(
       'aria-selected',
@@ -962,7 +963,7 @@ test.describe('repair-stand — страницы на backend @stand', () => {
     await expect(m).toContainText('Отметка за сегодня не отправлена');
   });
 
-  test('владелец на стенде: вкладка «Работы» — пустые состояния; вкладка «Снабжение» — заглушка; «Объекты» возвращает к списку', async ({
+  test('владелец на стенде: вкладка «Работы» — пустые состояния; вкладка «Снабжение» — раздел W6.22; «Объекты» возвращает к списку', async ({
     app,
     page,
   }, testInfo) => {
@@ -979,7 +980,8 @@ test.describe('repair-stand — страницы на backend @stand', () => {
     await expect(m).toContainText('Допработ по объекту пока нет.');
     await tabs(page).filter({ hasText: 'Снабжение' }).click();
     await expect(page).toHaveURL(/tab=supply/);
-    await expect(m).toContainText('Снабжение: раздел ещё не подключён');
+    await expect(m.getByRole('heading', { level: 2, name: 'Снабжение' })).toBeVisible();
+    await expect(m).not.toContainText('раздел ещё не подключён');
     await reloadReady(page);
     await expect(tabs(page).filter({ hasText: 'Снабжение' })).toHaveAttribute(
       'aria-selected',

@@ -209,11 +209,12 @@ describe('карточка объекта по правам', () => {
     expect(screen.getAllByRole('button', { name: 'Отметить работу' }).length).toBeGreaterThan(0);
   });
 
-  it('вкладка другого WS без реализации — заглушка, а не ошибка', async () => {
+  it('вкладка «Снабжение» (W6.22) встроена в карточку: заявки объекта вместо заглушки', async () => {
     await open();
     await openObject('ЖК Северный парк · квартира 117');
     await tab('Снабжение');
-    expect(await screen.findByText('Снабжение: раздел ещё не подключён')).toBeTruthy();
+    expect(await screen.findByRole('heading', { level: 2, name: 'Снабжение' })).toBeTruthy();
+    expect(screen.queryByText('Снабжение: раздел ещё не подключён')).toBeNull();
     expect(screen.getByRole('tab', { name: /Снабжение/ }).getAttribute('aria-selected')).toBe(
       'true',
     );

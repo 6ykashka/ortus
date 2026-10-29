@@ -12,6 +12,7 @@ import './child/gantt/gantt.css';
 import { EstimateTab } from './estimate/index.ts';
 import { MeasureTab, type RepairTabLink } from './measure/index.ts';
 import { MONEY_TABS } from './money-tabs/index.ts';
+import { SupplyTab } from './supply/SupplyTab.tsx';
 import './money-tabs/money.css';
 import { decisionView, type TabId } from './model.ts';
 import { REPAIR_TEXT as T } from './texts.ts';
@@ -55,10 +56,15 @@ function SchedulePanel(p: TabPanelProps): ReactElement {
   );
 }
 
+function SupplyPanel(p: TabPanelProps): ReactElement {
+  return <SupplyTab projectId={p.ov.project.id} />;
+}
+
 export const TAB_PANELS: Partial<Record<TabId, ComponentType<TabPanelProps>>> = {
   measure: MeasurePanel,
   estimate: EstimatePanel,
   schedule: SchedulePanel,
+  supply: SupplyPanel,
   ...Object.fromEntries(
     MONEY_TABS.map((m) => {
       const Tab = m.component;

@@ -1,0 +1,589 @@
+/* W6.22 · Общие стили страниц «Снабжение» и «Шаблоны и расценки» (эталон design-2026-10-19: CRM :1901–1916,
+   «Ремонт и стройка.dc.html» :532–545, :613–829). Токены @ortus/tokens, цели нажатия на телефоне ≥ 44 px. */
+
+.ox-rps {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.ox-rps-head {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.ox-rps-crumb {
+  font-size: var(--ox-fs-sm);
+  color: var(--ox-text-muted);
+}
+
+.ox-rps-title {
+  margin: 0;
+  font-size: 26px;
+  line-height: 1.2;
+  font-weight: var(--ox-fw-semibold);
+  letter-spacing: -0.02em;
+}
+
+.ox-rps-title:focus {
+  outline: none;
+}
+
+.ox-rps-intro {
+  margin: 0;
+  max-width: 780px;
+  font-size: var(--ox-fs-sm);
+  color: var(--ox-text-muted);
+  text-wrap: pretty;
+}
+
+/* Сегментные вкладки и группы: серый фон, выбранная — белая плитка (`seg`). */
+.ox-rps-seg {
+  align-self: flex-start;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2px;
+  padding: 3px;
+  border-radius: var(--ox-radius-lg);
+  background: var(--ox-canvas);
+  max-width: 100%;
+}
+
+.ox-rps-seg-btn {
+  min-height: 44px;
+  padding: 0 14px;
+  border: 0;
+  border-radius: var(--ox-radius-md);
+  background: transparent;
+  color: var(--ox-text);
+  font: inherit;
+  font-weight: var(--ox-fw-medium);
+  cursor: pointer;
+}
+
+.ox-rps-seg-btn[aria-selected='true'],
+.ox-rps-seg-btn[aria-pressed='true'] {
+  background: var(--ox-card);
+  box-shadow: 0 1px 2px rgba(28, 42, 38, 0.14);
+  font-weight: var(--ox-fw-semibold);
+}
+
+.ox-rps-seg-btn:focus-visible {
+  outline: 2px solid var(--ox-focus);
+  outline-offset: 1px;
+}
+
+@media (min-width: 640px) {
+  .ox-rps-seg-btn {
+    min-height: 38px;
+  }
+
+  .ox-rps-seg-sm .ox-rps-seg-btn {
+    min-height: 34px;
+  }
+}
+
+.ox-rps-note {
+  display: flex;
+  gap: 8px 12px;
+  align-items: center;
+  padding: 10px 14px;
+  border-radius: var(--ox-radius-lg);
+  background: var(--ox-ok-bg);
+  border: 1px solid var(--ox-ok-border);
+  color: #1f4d3c;
+  font-size: var(--ox-fs-sm);
+}
+
+.ox-rps-note svg,
+.ox-rps-note .ox-icon {
+  color: var(--ox-accent);
+}
+
+.ox-rps-note-text {
+  flex: 1;
+  text-wrap: pretty;
+}
+
+.ox-rps-note-x {
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  margin: -6px -8px -6px 0;
+  border: 0;
+  border-radius: var(--ox-radius-md);
+  background: transparent;
+  color: inherit;
+  cursor: pointer;
+}
+
+.ox-rps-note-x:focus-visible {
+  outline: 2px solid var(--ox-focus);
+}
+
+/* Карточки и таблицы. */
+.ox-rps-card {
+  background: var(--ox-card);
+  border: 1px solid var(--ox-line);
+  border-radius: var(--ox-radius-xl);
+  overflow: hidden;
+}
+
+.ox-rps-card-sel {
+  border: 1.5px solid var(--ox-accent);
+  border-radius: var(--ox-radius-xl);
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  background: var(--ox-card);
+}
+
+.ox-rps-card-head {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 12px;
+  align-items: center;
+  padding: 12px 16px;
+}
+
+.ox-rps-h3 {
+  margin: 0;
+  font-size: var(--ox-fs-lg);
+  font-weight: var(--ox-fw-semibold);
+}
+
+.ox-rps-count {
+  display: grid;
+  place-items: center;
+  min-width: 22px;
+  height: 22px;
+  padding: 0 7px;
+  border-radius: var(--ox-radius-pill);
+  background: var(--ox-warn-bg);
+  color: var(--ox-warn-fg);
+  font-size: var(--ox-fs-xs);
+  font-weight: var(--ox-fw-semibold);
+}
+
+.ox-rps-hint {
+  flex: 1 1 200px;
+  font-size: var(--ox-fs-xs);
+  color: var(--ox-text-muted);
+}
+
+.ox-rps-sub {
+  font-size: var(--ox-fs-xs);
+  color: var(--ox-text-muted);
+}
+
+.ox-rps-mono {
+  font-family: var(--ox-font-mono);
+  font-size: var(--ox-fs-xs);
+  color: var(--ox-text-muted);
+}
+
+.ox-rps-scroll {
+  overflow-x: auto;
+  border-top: 1px solid var(--ox-divider);
+}
+
+.ox-rps-card > .ox-rps-scroll:first-child {
+  border-top: 0;
+}
+
+.ox-rps-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: var(--ox-fs-md);
+}
+
+.ox-rps-table th {
+  padding: 10px 8px;
+  background: var(--ox-raised);
+  text-align: left;
+  font-size: var(--ox-fs-xs);
+  font-weight: var(--ox-fw-medium);
+  color: var(--ox-text-muted);
+}
+
+.ox-rps-table th:first-child,
+.ox-rps-table td:first-child {
+  padding-left: 16px;
+}
+
+.ox-rps-table th:last-child,
+.ox-rps-table td:last-child {
+  padding-right: 16px;
+}
+
+.ox-rps-table td {
+  padding: 10px 8px;
+  vertical-align: top;
+  border-top: 1px solid var(--ox-divider);
+}
+
+.ox-rps-table tbody tr:first-child td {
+  border-top: 0;
+}
+
+.ox-rps-table .ox-rps-r {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+.ox-rps-table tfoot td {
+  border-top: 2px solid var(--ox-line);
+  font-weight: var(--ox-fw-semibold);
+}
+
+.ox-rps-cell {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.ox-rps-cell-strong {
+  font-weight: var(--ox-fw-medium);
+}
+
+.ox-rps-warn {
+  color: var(--ox-warn-fg);
+}
+
+.ox-rps-ok {
+  color: var(--ox-accent);
+}
+
+.ox-rps-muted {
+  color: var(--ox-text-muted);
+}
+
+.ox-rps-empty {
+  padding: 16px;
+  color: var(--ox-text-muted);
+}
+
+.ox-rps-sr {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+
+/* Флажок «В закупку»: область нажатия 44 px вокруг 18-пиксельного квадрата. */
+.ox-rps-check {
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  margin: -12px 0 -12px -14px;
+}
+
+.ox-rps-check input {
+  width: 18px;
+  height: 18px;
+  margin: 0;
+  accent-color: var(--ox-accent);
+}
+
+/* Кнопки. */
+.ox-rps-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  min-height: 44px;
+  padding: 0 14px;
+  border-radius: var(--ox-radius-md);
+  border: 1px solid var(--ox-line-control);
+  background: var(--ox-card);
+  color: var(--ox-text);
+  font: inherit;
+  font-size: var(--ox-fs-sm);
+  font-weight: var(--ox-fw-medium);
+  text-align: left;
+  cursor: pointer;
+}
+
+.ox-rps-btn[data-variant='primary'] {
+  border-color: var(--ox-accent);
+  background: var(--ox-accent);
+  color: var(--ox-on-accent);
+}
+
+.ox-rps-btn[data-variant='accent'] {
+  border-color: var(--ox-accent);
+  color: var(--ox-accent);
+}
+
+.ox-rps-btn:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+.ox-rps-btn:focus-visible {
+  outline: 2px solid var(--ox-focus);
+  outline-offset: 2px;
+}
+
+@media (min-width: 640px) {
+  .ox-rps-btn {
+    min-height: 36px;
+  }
+
+  .ox-rps-btn[data-size='lg'] {
+    min-height: 40px;
+  }
+}
+
+/* Поля. */
+.ox-rps-field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-size: var(--ox-fs-sm);
+  font-weight: var(--ox-fw-medium);
+  color: var(--ox-text-label);
+}
+
+.ox-rps-input,
+.ox-rps-select {
+  min-height: 44px;
+  padding: 0 10px;
+  border: 1px solid var(--ox-line-control);
+  border-radius: var(--ox-radius-md);
+  background: var(--ox-card);
+  color: var(--ox-text);
+  font: inherit;
+  font-weight: var(--ox-fw-regular);
+}
+
+.ox-rps-input:focus-visible,
+.ox-rps-select:focus-visible {
+  outline: 2px solid var(--ox-focus);
+  outline-offset: 1px;
+}
+
+.ox-rps-input[data-num] {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+@media (min-width: 640px) {
+  .ox-rps-input,
+  .ox-rps-select {
+    min-height: 40px;
+  }
+
+  .ox-rps-input[data-sm],
+  .ox-rps-select[data-sm] {
+    min-height: 36px;
+  }
+}
+
+.ox-rps-alert {
+  font-size: var(--ox-fs-sm);
+  color: var(--ox-danger-fg);
+}
+
+/* Чипы состояния: тон → фон и цвет. */
+.ox-rps-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px 8px 2px 6px;
+  border-radius: var(--ox-radius-pill);
+  font-size: var(--ox-fs-xs);
+  font-weight: var(--ox-fw-medium);
+  white-space: nowrap;
+  background: var(--ox-neutral-bg);
+  color: var(--ox-neutral-fg);
+}
+
+.ox-rps-chip[data-tone='ok'] {
+  background: var(--ox-ok-bg);
+  color: var(--ox-ok-fg);
+}
+
+.ox-rps-chip[data-tone='info'] {
+  background: var(--ox-info-bg);
+  color: var(--ox-info-fg);
+}
+
+.ox-rps-chip[data-tone='warn'] {
+  background: var(--ox-warn-bg);
+  color: var(--ox-warn-fg);
+}
+
+.ox-rps-chip[data-tone='danger'] {
+  background: var(--ox-danger-bg);
+  color: var(--ox-danger-fg);
+}
+
+/* Строки списков («В работе», вкладка объекта, остатки на объектах). */
+.ox-rps-rows > * + * {
+  border-top: 1px solid var(--ox-divider);
+}
+
+.ox-rps-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 14px;
+  align-items: center;
+  padding: 12px 16px;
+}
+
+.ox-rps-row-body {
+  flex: 1 1 240px;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.ox-rps-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  align-items: center;
+}
+
+.ox-rps-form-head {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px 16px;
+  align-items: flex-end;
+  justify-content: space-between;
+}
+
+.ox-rps-form-inner {
+  overflow-x: auto;
+  border: 1px solid var(--ox-divider);
+  border-radius: var(--ox-radius-lg);
+}
+
+.ox-rps-form-foot {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+}
+
+.ox-rps-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  align-items: flex-end;
+}
+
+.ox-rps-banner {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 14px 16px;
+  border-radius: var(--ox-radius-xl);
+  border: 1px solid var(--ox-warn-border);
+  background: var(--ox-warn-bg);
+  color: var(--ox-warn-fg);
+}
+
+.ox-rps-banner strong {
+  font-weight: var(--ox-fw-semibold);
+}
+
+.ox-rps-done {
+  font-size: var(--ox-fs-xs);
+  color: var(--ox-text-muted);
+}
+
+.ox-rps-lines {
+  font-size: var(--ox-fs-sm);
+}
+
+/* Минимальная ширина таблиц эталона: уже — прокрутка внутри контейнера, не страницы. */
+.ox-rps-w620 {
+  min-width: 620px;
+}
+
+.ox-rps-w640 {
+  min-width: 640px;
+}
+
+.ox-rps-w720 {
+  min-width: 720px;
+}
+
+.ox-rps-w860 {
+  min-width: 860px;
+}
+
+.ox-rps-w900 {
+  min-width: 900px;
+}
+
+.ox-rps-th-check {
+  width: 40px;
+}
+
+.ox-rps-tnum {
+  font-variant-numeric: tabular-nums;
+}
+
+.ox-rps-pad {
+  padding: 12px 16px;
+}
+
+.ox-rps-col {
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 2px;
+}
+
+.ox-rps-price {
+  width: 104px;
+}
+
+.ox-rps-field-err {
+  display: block;
+  margin-top: 4px;
+  font-size: 12px;
+  color: var(--ox-danger, #b3261e);
+}
+
+.ox-rps-qr {
+  min-width: 180px;
+}
+
+.ox-rps-select-wide {
+  max-width: 340px;
+}
+
+.ox-rps-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  min-width: 0;
+}
+
+.ox-rps-h2 {
+  margin: 0;
+  font-size: var(--ox-fs-xl);
+  font-weight: var(--ox-fw-semibold);
+}
+
+.ox-rps-grow {
+  flex: 3 1 220px;
+}
+
+.ox-rps-narrow {
+  flex: 1 1 130px;
+}
+
+.ox-rps-scroll:focus-visible {
+  outline: 2px solid var(--ox-focus);
+  outline-offset: -2px;
+}
