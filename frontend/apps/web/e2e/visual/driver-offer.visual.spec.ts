@@ -4,14 +4,52 @@
 // структурная — заголовки и кнопки кадра (модели машин заменены на {model}), строки статуса 1e — по образцу.
 // Снимки кадров макета и реализации — в EVIDENCE_DIR, если он задан (проходка, docs/plan/evidence/driver-today/).
 import { join } from 'node:path';
+import { fileURLToPath } from 'node:url';
 
+import { openReference } from '@ortus/e2e-kit';
 import type { Locator, Page } from '@playwright/test';
 
 import { offerCard, offerSheet, openOffer, SPRINTER } from '../driver-offer.helpers.ts';
 import { expect, test } from '../fixtures/index.ts';
+import { type OwnReference, startOwnReference } from './own-reference.ts';
 
 const FILE = 'Временный водитель - варианты.dc.html';
+/** Тег снимка эталона с макетом S2-20 (design-2026-10-19b). */
+const OFFER_REF = 'design-2026-10-19b';
+const REPO_ROOT = fileURLToPath(new URL('../../../../../', import.meta.url));
 const MODELS = /Hyundai HD-35|Ford Transit|Mercedes Sprinter|Isuzu Elf/g;
+
+let own: Promise<OwnReference> | undefined;
+
+/**
+ * Свой сервер эталона на снимке OFFER_REF: в CI общий эталон стоит на design-stage-1 (W2.70, Q-W2.70-15),
+ * где макета «Временный водитель - варианты» ещё нет, и `reference(FILE)` ждал `.sc-host` до тайм-аута
+ * теста (2 мин на строку, три попытки). Один сервер на воркер, гасится в afterAll.
+ */
+function ownReference(): Promise<OwnReference> {
+  own ??= startOwnReference({ repoRoot: REPO_ROOT, ref: OFFER_REF, probeFile: FILE });
+  return own;
+}
+
+test.afterAll(async () => {
+  const started = own;
+  own = undefined;
+  await (await started?.catch(() => undefined))?.stop();
+});
+type ReferenceFn = (file?: string) => Promise<{ page: Page }>;
+
+/** Макет FILE: на общем эталоне, если он там есть, иначе — на своём сервере снимка OFFER_REF. */
+async function offerReference(
+  reference: ReferenceFn,
+  referenceFiles: readonly string[],
+): Promise<{ page: Page }> {
+  if (referenceFiles.includes(FILE)) return reference(FILE);
+  const host = await reference();
+  const base = (await ownReference()).url;
+  // Сеть контекста пропускает только allowlist; свой порт — тоже loopback эталона.
+  await host.page.context().route(`${base}/**`, (route) => route.continue());
+  return openReference(host.page, { baseURL: base, file: FILE });
+}
 
 test.describe.configure({ timeout: 120_000 });
 
@@ -45,11 +83,19 @@ const frame = (page: Page, id: string): Locator => page.locator(`[id="${id}"] > 
 test.describe('driver-today · S2-20 1c–1e: структура как в макете @mock', () => {
   test.skip(({ harness }) => harness.mode !== 'mock', 'структурная сверка mock-визуала');
 
-  test('1c «Выберите машину»: заголовки и кнопки', async ({ app, page, reference }, testInfo) => {
-    const ref = await reference(FILE);
+  test('1c «Выберите машину»: заголовки и кнопки', async ({
+    app,
+    page,
+    reference,
+    referenceFiles,
+  }, testInfo) => {
+    const ref = await offerReference(reference, referenceFiles);
     const r = frame(ref.page, '1c');
     await openOffer(app, page, 'two');
     const mine = page.locator('section.ox-dr');
+    // `openOffer` ждёт только h1 «Моя смена»; предложение приходит после загрузки броней — без ожидания чтение
+    // заголовков изредка видело один «Моя смена» (возврат 3).
+    await expect(mine.getByRole('heading', { level: 2, name: 'Выберите машину' })).toBeVisible();
     expect(await headings(mine)).toEqual(await headings(r));
     expect(await buttons(mine)).toEqual(await buttons(r));
     await shoot(r, `s2-20-1c-reference-${testInfo.project.name}.png`);
@@ -60,8 +106,9 @@ test.describe('driver-today · S2-20 1c–1e: структура как в ма�
     app,
     page,
     reference,
+    referenceFiles,
   }, testInfo) => {
-    const ref = await reference(FILE);
+    const ref = await offerReference(reference, referenceFiles);
     const r = frame(ref.page, '1d').getByRole('dialog');
     await openOffer(app, page, 'two');
     await offerCard(page, SPRINTER.model).getByRole('button', { name: 'Взять эту машину' }).click();
@@ -77,8 +124,9 @@ test.describe('driver-today · S2-20 1c–1e: структура как в ма�
     app,
     page,
     reference,
+    referenceFiles,
   }, testInfo) => {
-    const ref = await reference(FILE);
+    const ref = await offerReference(reference, referenceFiles);
     const r = frame(ref.page, '1e');
     await openOffer(app, page, 'two');
     await offerCard(page, SPRINTER.model).getByRole('button', { name: 'Взять эту машину' }).click();
